@@ -429,16 +429,16 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Coincident Time of Peak Demand Rate D:        { unit: s,  Unit Modifiers: [ *RateD                                                           ] }
     - Frozen Peak Demand Rate D:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev                    ] }
     - Coincident Time of Frozen Peak Demand Rate D: { unit: s,  Unit Modifiers: [ *RateD, *Prev                                                 ] }
-    - Primary Voltage:                              { unit: V,  Unit Modifiers: [ Primary, *milli                                                       ] }
-    - Secondary Voltage:                            { unit: V,  Unit Modifiers: [ Secondary, *milli                                                     ] }
+    - Primary Voltage:                              { unit: V,  Unit Modifiers: [ *Pri, *milli                                                       ] }
+    - Secondary Voltage:                            { unit: V,  Unit Modifiers: [ *Sec, *milli                                                     ] }
     - RFN Temperature:                              { unit: °C, Unit Modifiers: [                                                                      ] }
      
 # Table 6 – RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology
 RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology:
     - Watt-hours Delivered: { unit: Wh, Unit Modifiers: [ *Q1, *Q4 ] }
     - Watt-hours Received:  { unit: Wh, Unit Modifiers: [ *Q2, *Q3 ] }
-    - Primary Voltage:      { unit: V,  Unit Modifiers: [ Primary, *milli         ] }
-    - Secondary Voltage:    { unit: V,  Unit Modifiers: [ Secondary, *milli       ] }
+    - Primary Voltage:      { unit: V,  Unit Modifiers: [ *Pri, *milli         ] }
+    - Secondary Voltage:    { unit: V,  Unit Modifiers: [ *Sec, *milli       ] }
     - Interval Demand:      { unit: W,  Unit Modifiers: [ *Q1, *Q4 ] }
     - RFN Temperature:      { unit: °C, Unit Modifiers: [                        ] }
 
