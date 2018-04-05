@@ -129,7 +129,7 @@ Modifiers:
         - &Leading Leading
         - &Lagging Lagging
     Range:
-        - &NetFlow Net Flow
+        - &Net Net Flow
         - &Minimum Minimum 
         - &Average Average 
         - &Maximum Maximum
@@ -171,11 +171,11 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Delivered:                         { unit: Wh,  Unit Modifiers: [ *Q1, *Q4                                               ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received:                          { unit: Wh,  Unit Modifiers: [ *Q2, *Q3                                               ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Total:                             { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                       ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net:                               { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ], Models: [ *c1sx, *c2sx ] }
+    - Watt-hours Net:                               { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ], Models: [ *c1sx, *c2sx ] }
     - Volt-Ampere Hours Delivered:                  { unit: VAh, Unit Modifiers: [ *Q1, *Q4                                               ], Models: [        *c2sx ] }
     - Volt-Ampere Hours Received:                   { unit: VAh, Unit Modifiers: [ *Q2, *Q3                                               ], Models: [        *c2sx ] }
     - Volt-Ampere Hours Total:                      { unit: VAh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                       ], Models: [        *c2sx ] }
-    - Volt-Ampere Hours Net:                        { unit: VAh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ], Models: [        *c2sx ] }
+    - Volt-Ampere Hours Net:                        { unit: VAh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ], Models: [        *c2sx ] }
     - Interval Demand:                              { unit: W,   Unit Modifiers: [ *Q1, *Q4                                               ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand:                                  { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max                                          ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand:               { unit: s,   Unit Modifiers: [                                                                      ], Models: [ *c1sx, *c2sx ] }
@@ -192,7 +192,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Delivered Rate A:                  { unit: Wh,  Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received Rate A:                   { unit: Wh,  Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Total Rate A:                      { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A           ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate A:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A ], Models: [ *c1sx, *c2sx ] }
+    - Watt-hours Net Rate A:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate A:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate A:        { unit: s,   Unit Modifiers: [ TOU Rate A                                                           ], Models: [ *c1sx, *c2sx ] }
     - Frozen Peak Demand Rate A:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ], Models: [ *c1sx, *c2sx ] }
@@ -200,7 +200,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Delivered Rate B:                  { unit: Wh,  Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received Rate B:                   { unit: Wh,  Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Total Rate B:                      { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B           ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate B:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B ], Models: [ *c1sx, *c2sx ] }
+    - Watt-hours Net Rate B:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate B:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate B:        { unit: s,   Unit Modifiers: [ TOU Rate B                                                           ], Models: [ *c1sx, *c2sx ] }
     - Frozen Peak Demand Rate B:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ], Models: [ *c1sx, *c2sx ] }
@@ -208,7 +208,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Delivered Rate C:                  { unit: Wh,  Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received Rate C:                   { unit: Wh,  Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Total Rate C:                      { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C           ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate C:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C ], Models: [ *c1sx, *c2sx ] }
+    - Watt-hours Net Rate C:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate C:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate C:        { unit: s,   Unit Modifiers: [ TOU Rate C                                                           ], Models: [ *c1sx, *c2sx ] }
     - Frozen Peak Demand Rate C:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ], Models: [ *c1sx, *c2sx ] }
@@ -216,7 +216,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Delivered Rate D:                  { unit: Wh,  Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received Rate D:                   { unit: Wh,  Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Total Rate D:                      { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D           ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate D:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D ], Models: [ *c1sx, *c2sx ] }
+    - Watt-hours Net Rate D:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate D:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate D:        { unit: s,   Unit Modifiers: [ TOU Rate D                                                           ], Models: [ *c1sx, *c2sx ] }
     - Frozen Peak Demand Rate D:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ], Models: [ *c1sx, *c2sx ] }
@@ -264,7 +264,7 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Watt-hours Delivered:                         { unit: Wh,        Unit Modifiers: [ *Q1, *Q4                                               ] }
     - Watt-hours Received:                          { unit: Wh,        Unit Modifiers: [ *Q2, *Q3                                               ] }
     - Watt-hours Total:                             { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                       ] }
-    - Watt-hours Net:                               { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ] }
+    - Watt-hours Net:                               { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ] }
     - Interval Demand:                              { unit: W,         Unit Modifiers: [ *Q1, *Q4                                               ] }
     - Peak Demand:                                  { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max                                          ] }
     - Coincident Time of Peak Demand:               { unit: s,         Unit Modifiers: [                                                                      ] }
@@ -278,7 +278,7 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Watt-hours Delivered Rate A:                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                   ] }
     - Watt-hours Received Rate A:                   { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                   ] }
     - Watt-hours Total Rate A:                      { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A           ] }
-    - Watt-hours Net Rate A:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A ] }
+    - Watt-hours Net Rate A:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ] }
     - Peak Demand Rate A:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ] }
     - Coincident Time of Peak Demand Rate A:        { unit: s,         Unit Modifiers: [ TOU Rate A                                                           ] }
     - Frozen Peak Demand Rate A:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ] }
@@ -286,7 +286,7 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Watt-hours Delivered Rate B:                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ] }
     - Watt-hours Received Rate B:                   { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ] }
     - Watt-hours Total Rate B:                      { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B           ] }
-    - Watt-hours Net Rate B:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B ] }
+    - Watt-hours Net Rate B:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ] }
     - Peak Demand Rate B:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ] }
     - Coincident Time of Peak Demand Rate B:        { unit: s,         Unit Modifiers: [ TOU Rate B                                                           ] }
     - Frozen Peak Demand Rate B:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ] }
@@ -294,7 +294,7 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Watt-hours Delivered Rate C:                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ] }
     - Watt-hours Received Rate C:                   { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ] }
     - Watt-hours Total Rate C:                      { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C           ] }
-    - Watt-hours Net Rate C:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C ] }
+    - Watt-hours Net Rate C:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ] }
     - Peak Demand Rate C:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ] }
     - Coincident Time of Peak Demand Rate C:        { unit: s,         Unit Modifiers: [ TOU Rate C                                                           ] }
     - Frozen Peak Demand Rate C:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ] }
@@ -302,7 +302,7 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Watt-hours Delivered Rate D:                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ] }
     - Watt-hours Received Rate D:                   { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ] }
     - Watt-hours Total Rate D:                      { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D           ] }
-    - Watt-hours Net Rate D:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D ] }
+    - Watt-hours Net Rate D:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ] }
     - Peak Demand Rate D:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ] }
     - Coincident Time of Peak Demand Rate D:        { unit: s,         Unit Modifiers: [ TOU Rate D                                                           ] }
     - Frozen Peak Demand Rate D:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ] }
@@ -334,27 +334,27 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
 RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     - Watt-hours Delivered:        { unit: Wh,                  Unit Modifiers: [ *Q1, *Q4                                               ] }
     - Watt-hours Received:         { unit: Wh,                  Unit Modifiers: [ *Q2, *Q3                                               ] }
-    - Watt-hours Net:              { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ] }
+    - Watt-hours Net:              { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ] }
     - Peak Demand:                 { unit: W,                   Unit Modifiers: [ *Q1, *Q4, Max                                          ] }
     - Watt-hours Delivered Rate A: { unit: Wh,                  Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                   ] }
     - Watt-hours Received Rate A:  { unit: Wh,                  Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                   ] }
-    - Watt-hours Net Rate A:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A ] }
+    - Watt-hours Net Rate A:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ] }
     - Peak Demand Rate A:          { unit: W,                   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ] }
     - Watt-hours Delivered Rate B: { unit: Wh,                  Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ] }
     - Watt-hours Received Rate B:  { unit: Wh,                  Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ] }
-    - Watt-hours Net Rate B:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B ] }
+    - Watt-hours Net Rate B:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ] }
     - Peak Demand Rate B:          { unit: W,                   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ] }
     - Watt-hours Delivered Rate C: { unit: Wh,                  Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ] }
     - Watt-hours Received Rate C:  { unit: Wh,                  Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ] }
-    - Watt-hours Net Rate C:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C ] }
+    - Watt-hours Net Rate C:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ] }
     - Peak Demand Rate C:          { unit: W,                   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ] }
     - Watt-hours Delivered Rate D: { unit: Wh,                  Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ] }
     - Watt-hours Received Rate D:  { unit: Wh,                  Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ] }
-    - Watt-hours Net Rate D:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D ] }
+    - Watt-hours Net Rate D:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ] }
     - Peak Demand Rate D:          { unit: W,                   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ] }
     - Watt-hours Delivered Rate E: { unit: Wh,                  Unit Modifiers: [ *Q1, *Q4, TOU Rate E                                   ] }
     - Watt-hours Received Rate E:  { unit: Wh,                  Unit Modifiers: [ *Q2, *Q3, TOU Rate E                                   ] }
-    - Watt-hours Net Rate E:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate E ] }
+    - Watt-hours Net Rate E:       { unit: Wh,                  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate E ] }
     - Peak Demand Rate E:          { unit: W,                   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate E                              ] }
     - Voltage Phase A:             { unit: V,                   Unit Modifiers: [ Phase A, milli                                                       ] }
     - Voltage Phase B:             { unit: V,                   Unit Modifiers: [ Phase B, milli                                                       ] }
@@ -382,7 +382,7 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Watt-hours Delivered:                         { unit: Wh, Unit Modifiers: [ *Q1, *Q4                                               ] }
     - Watt-hours Received:                          { unit: Wh, Unit Modifiers: [ *Q2, *Q3                                               ] }
     - Watt-hours Total:                             { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                       ] }
-    - Watt-hours Net:                               { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ] }
+    - Watt-hours Net:                               { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ] }
     - Interval Demand:                              { unit: W,  Unit Modifiers: [ *Q1, *Q4                                               ] }
     - Peak Demand:                                  { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max                                          ] }
     - Coincident Time of Peak Demand:               { unit: s,  Unit Modifiers: [                                                                      ] }
@@ -396,7 +396,7 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Watt-hours Delivered Rate A:                  { unit: Wh, Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                   ] }
     - Watt-hours Received Rate A:                   { unit: Wh, Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                   ] }
     - Watt-hours Total Rate A:                      { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A           ] }
-    - Watt-hours Net Rate A:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A ] }
+    - Watt-hours Net Rate A:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ] }
     - Peak Demand Rate A:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ] }
     - Coincident Time of Peak Demand Rate A:        { unit: s,  Unit Modifiers: [ TOU Rate A                                                           ] }
     - Frozen Peak Demand Rate A:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ] }
@@ -404,7 +404,7 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Watt-hours Delivered Rate B:                  { unit: Wh, Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ] }
     - Watt-hours Received Rate B:                   { unit: Wh, Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ] }
     - Watt-hours Total Rate B:                      { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B           ] }
-    - Watt-hours Net Rate B:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B ] }
+    - Watt-hours Net Rate B:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ] }
     - Peak Demand Rate B:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ] }
     - Coincident Time of Peak Demand Rate B:        { unit: s,  Unit Modifiers: [ TOU Rate B                                                           ] }
     - Frozen Peak Demand Rate B:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ] }
@@ -412,7 +412,7 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Watt-hours Delivered Rate C:                  { unit: Wh, Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ] }
     - Watt-hours Received Rate C:                   { unit: Wh, Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ] }
     - Watt-hours Total Rate C:                      { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C           ] }
-    - Watt-hours Net Rate C:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C ] }
+    - Watt-hours Net Rate C:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ] }
     - Peak Demand Rate C:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ] }
     - Coincident Time of Peak Demand Rate C:        { unit: s,  Unit Modifiers: [ TOU Rate C                                                           ] }
     - Frozen Peak Demand Rate C:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ] }
@@ -420,7 +420,7 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Watt-hours Delivered Rate D:                  { unit: Wh, Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ] }
     - Watt-hours Received Rate D:                   { unit: Wh, Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ] }
     - Watt-hours Total Rate D:                      { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D           ] }
-    - Watt-hours Net Rate D:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D ] }
+    - Watt-hours Net Rate D:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ] }
     - Peak Demand Rate D:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ] }
     - Coincident Time of Peak Demand Rate D:        { unit: s,  Unit Modifiers: [ TOU Rate D                                                           ] }
     - Frozen Peak Demand Rate D:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ] }
@@ -443,15 +443,15 @@ Elster A3:
     - Watt-hours Delivered:                                            { unit: Wh,        Unit Modifiers: [ *Q1, *Q4                                                  ], Models: *DTKR, Other names: [ "kWh delivered" ] }
     - Watt-hours Received:                                             { unit: Wh,        Unit Modifiers: [ *Q2, *Q3                                                  ], Models: *DTKR, Other names: [ "kWh received" ] }
     - Watt-hours Total:                                                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                          ], Models: *DTKR, Other names: [ "kWh sum" ] }
-    - Watt-hours Net:                                                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                ], Models: *DTKR, Other names: [ "kWh net" ] }
+    - Watt-hours Net:                                                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                ], Models: *DTKR, Other names: [ "kWh net" ] }
     - Volt-ampere-hours Delivered:                                     { unit: VAh,       Unit Modifiers: [ *Q1, *Q4                                                  ], Models: *__KR, Other names: [ "kVAh delivered" ] }
     - Volt-ampere_hours Received:                                      { unit: VAh,       Unit Modifiers: [ *Q2, *Q3                                                  ], Models: *__KR, Other names: [ "kVAh received" ] }
     - Volt-ampere-hours Total:                                         { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                          ], Models: *__KR, Other names: [ "KVAh sum" ] }
-    - Volt-ampere-hours Net:                                           { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                ], Models: *__K_, Other names: [ "kVAh net" ] }
+    - Volt-ampere-hours Net:                                           { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                ], Models: *__K_, Other names: [ "kVAh net" ] }
     - Volt-ampere-reactive hours Delivered:                            { unit: Varh,      Unit Modifiers: [ *Q1, *Q2                                                  ], Models: *___R, Other names: [ "kVARh delivered" ] }
     - Volt-ampere-reactive hours Received:                             { unit: Varh,      Unit Modifiers: [ *Q3, *Q4                                                  ], Models: *___R, Other names: [ "kVARh received" ] }
     - Volt-ampere-reactive hours Total:                                { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                          ], Models: *___R, Other names: [ "kVARh sum" ] }
-    - Volt-ampere-reactive hours Net:                                  { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                ], Models: *___R, Other names: [ "kVARh net" ] }
+    - Volt-ampere-reactive hours Net:                                  { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                ], Models: *___R, Other names: [ "kVARh net" ] }
     - Volt-ampere-reactive hours Quadrant 1:                           { unit: Varh,      Unit Modifiers: [ *Q1                                                              ], Models: *___R, Other names: [ "kVARh Q1" ] }
     - Volt-ampere-reactive hours Quadrant 2:                           { unit: Varh,      Unit Modifiers: [ *Q2                                                              ], Models: *___R, Other names: [ "kVARh Q2" ] }
     - Volt-ampere-reactive hours Quadrant 3:                           { unit: Varh,      Unit Modifiers: [ *Q3                                                              ], Models: *___R, Other names: [ "kVARh Q3" ] }
@@ -658,12 +658,12 @@ ELO:
 Itron Sentinel:
     - Watt-hours Delivered:                                           { unit: Wh,       Unit Modifiers: [ *Q1, *Q4                                                                         ], Models: *01234, Itron name: Delivered kWh }
     - Watt-hours Received:                                            { unit: Wh,       Unit Modifiers: [ *Q2, *Q3                                                                         ], Models: *_1234, Itron name: Received kWh }
-    - Watt-hours Net:                                                 { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                                       ], Models: *_1234, Itron name: Net Delivered kWh }
+    - Watt-hours Net:                                                 { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                                       ], Models: *_1234, Itron name: Net Delivered kWh }
     - Watt-hours Total:                                               { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                                 ], Models: *_1234, Itron name: Unidirectional kWh }
     - Volt-ampere-reactive hours Delivered:                           { unit: Varh,     Unit Modifiers: [ *Q1, *Q2                                                                         ], Models: *__234, Itron name: Delivered VARh }
     - Volt-ampere-reactive hours Received:                            { unit: Varh,     Unit Modifiers: [ *Q3, *Q4                                                                         ], Models: *__234, Itron name: Received VARh }
-    - Volt-ampere-reactive hours Net Delivered:                       { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, Net Flow                                                               ], Models: *____4, Itron name: Net Delivered VARh }
-    - Volt-ampere-reactive hours Net Received:                        { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, Net Flow                                                               ], Models: *____4, Itron name: Net Received VARh }
+    - Volt-ampere-reactive hours Net Delivered:                       { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, *Net                                                               ], Models: *____4, Itron name: Net Delivered VARh }
+    - Volt-ampere-reactive hours Net Received:                        { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, *Net                                                               ], Models: *____4, Itron name: Net Received VARh }
     - Volt-ampere-reactive hours Quadrant 1:                          { unit: Varh,     Unit Modifiers: [ *Q1                                                                                     ], Models: *___34, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 2:                          { unit: Varh,     Unit Modifiers: [ *Q2                                                                                     ], Models: *____4, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 3:                          { unit: Varh,     Unit Modifiers: [ *Q3                                                                                     ], Models: *____4, Itron name: Four Quadrant VARh }
@@ -691,12 +691,12 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Demand:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 3, Continuous Cumulative                         ], Models: *_1234, Itron name: Continuous Cumulative Watts Received }
     - Watt-hours Delivered Rate A:                                    { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                                             ], Models: *_1234, Itron name: Delivered kWh }
     - Watt-hours Received Rate A:                                     { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                                             ], Models: *_1234, Itron name: Received kWh }
-    - Watt-hours Net Rate A:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A                           ], Models: *_1234, Itron name: Net Delivered kWh }
+    - Watt-hours Net Rate A:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A                           ], Models: *_1234, Itron name: Net Delivered kWh }
     - Watt-hours Total Rate A:                                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A                                     ], Models: *_1234, Itron name: Unidirectional kWh }
     - Volt-ampere-reactive hours Delivered Rate A:                    { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate A                                                             ], Models: *__234, Itron name: Delivered VARh }
     - Volt-ampere-reactive hours Received Rate A:                     { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate A                                                             ], Models: *__234, Itron name: Received VARh }
-    - Volt-ampere-reactive hours Net Delivered Rate A:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, Net Flow, TOU Rate A                                                   ], Models: *____4, Itron name: Net Delivered VARh }
-    - Volt-ampere-reactive hours Net Received Rate A:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, Net Flow, TOU Rate A                                                   ], Models: *____4, Itron name: Net Received VARh }
+    - Volt-ampere-reactive hours Net Delivered Rate A:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, *Net, TOU Rate A                                                   ], Models: *____4, Itron name: Net Delivered VARh }
+    - Volt-ampere-reactive hours Net Received Rate A:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, *Net, TOU Rate A                                                   ], Models: *____4, Itron name: Net Received VARh }
     - Volt-ampere-reactive hours Quadrant 1 Rate A:                   { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate A                                                                         ], Models: *___34, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 2 Rate A:                   { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate A                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 3 Rate A:                   { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate A                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
@@ -724,12 +724,12 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Demand Rate A:        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 3, Continuous Cumulative, TOU Rate A             ], Models: *_1234, Itron name: Continuous Cumulative Watts Received Rate A }
     - Watt-hours Delivered Rate B:                                    { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                                             ], Models: *_1234, Itron name: Delivered kWh }
     - Watt-hours Received Rate B:                                     { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                                             ], Models: *_1234, Itron name: Received kWh }
-    - Watt-hours Net Rate B:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B                           ], Models: *_1234, Itron name: Net Delivered kWh }
+    - Watt-hours Net Rate B:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B                           ], Models: *_1234, Itron name: Net Delivered kWh }
     - Watt-hours Total Rate B:                                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B                                     ], Models: *_1234, Itron name: Unidirectional kWh }
     - Volt-ampere-reactive hours Delivered Rate B:                    { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate B                                                             ], Models: *__234, Itron name: Delivered VARh }
     - Volt-ampere-reactive hours Received Rate B:                     { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate B                                                             ], Models: *__234, Itron name: Received VARh }
-    - Volt-ampere-reactive hours Net Delivered Rate B:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, Net Flow, TOU Rate B                                                   ], Models: *____4, Itron name: Net Delivered VARh }
-    - Volt-ampere-reactive hours Net Received Rate B:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, Net Flow, TOU Rate B                                                   ], Models: *____4, Itron name: Net Received VARh }
+    - Volt-ampere-reactive hours Net Delivered Rate B:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, *Net, TOU Rate B                                                   ], Models: *____4, Itron name: Net Delivered VARh }
+    - Volt-ampere-reactive hours Net Received Rate B:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, *Net, TOU Rate B                                                   ], Models: *____4, Itron name: Net Received VARh }
     - Volt-ampere-reactive hours Quadrant 1 Rate B:                   { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate B                                                                         ], Models: *___34, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 2 Rate B:                   { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate B                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 3 Rate B:                   { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate B                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
@@ -757,12 +757,12 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Demand Rate B:        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 3, Continuous Cumulative, TOU Rate B             ], Models: *_1234, Itron name: Continuous Cumulative Watts Received Rate B }
     - Watt-hours Delivered Rate C:                                    { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                                             ], Models: *_1234, Itron name: Delivered kWh }
     - Watt-hours Received Rate C:                                     { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                                             ], Models: *_1234, Itron name: Received kWh }
-    - Watt-hours Net Rate C:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C                           ], Models: *_1234, Itron name: Net Delivered kWh }
+    - Watt-hours Net Rate C:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C                           ], Models: *_1234, Itron name: Net Delivered kWh }
     - Watt-hours Total Rate C:                                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C                                     ], Models: *_1234, Itron name: Unidirectional kWh }
     - Volt-ampere-reactive hours Delivered Rate C:                    { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate C                                                             ], Models: *__234, Itron name: Delivered VARh }
     - Volt-ampere-reactive hours Received Rate C:                     { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate C                                                             ], Models: *__234, Itron name: Received VARh }
-    - Volt-ampere-reactive hours Net Delivered Rate C:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, Net Flow, TOU Rate C                                                   ], Models: *____4, Itron name: Net Delivered VARh }
-    - Volt-ampere-reactive hours Net Received Rate C:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, Net Flow, TOU Rate C                                                   ], Models: *____4, Itron name: Net Received VARh }
+    - Volt-ampere-reactive hours Net Delivered Rate C:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, *Net, TOU Rate C                                                   ], Models: *____4, Itron name: Net Delivered VARh }
+    - Volt-ampere-reactive hours Net Received Rate C:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, *Net, TOU Rate C                                                   ], Models: *____4, Itron name: Net Received VARh }
     - Volt-ampere-reactive hours Quadrant 1 Rate C:                   { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate C                                                                         ], Models: *___34, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 2 Rate C:                   { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate C                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 3 Rate C:                   { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate C                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
@@ -790,12 +790,12 @@ Itron Sentinel:
     - Coincident Continuous Cumulative Received Demand Rate C:        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 3, Continuous Cumulative, TOU Rate C             ], Models: *_1234, Itron name: Continuous Cumulative Watts Received Rate C }
     - Watt-hours Delivered Rate D:                                    { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                                             ], Models: *_1234, Itron name: Delivered kWh }
     - Watt-hours Received Rate D:                                     { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                                             ], Models: *_1234, Itron name: Received kWh }
-    - Watt-hours Net Rate D:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D                           ], Models: *_1234, Itron name: Net Delivered kWh }
+    - Watt-hours Net Rate D:                                          { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D                           ], Models: *_1234, Itron name: Net Delivered kWh }
     - Watt-hours Total Rate D:                                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D                                     ], Models: *_1234, Itron name: Unidirectional kWh }
     - Volt-ampere-reactive hours Delivered Rate D:                    { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate D                                                             ], Models: *__234, Itron name: Delivered VARh }
     - Volt-ampere-reactive hours Received Rate D:                     { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate D                                                             ], Models: *__234, Itron name: Received VARh }
-    - Volt-ampere-reactive hours Net Delivered Rate D:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, Net Flow, TOU Rate D                                                   ], Models: *____4, Itron name: Net Delivered VARh }
-    - Volt-ampere-reactive hours Net Received Rate D:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, Net Flow, TOU Rate D                                                   ], Models: *____4, Itron name: Net Received VARh }
+    - Volt-ampere-reactive hours Net Delivered Rate D:                { unit: Varh,     Unit Modifiers: [ *Q1, *Q4, *Net, TOU Rate D                                                   ], Models: *____4, Itron name: Net Delivered VARh }
+    - Volt-ampere-reactive hours Net Received Rate D:                 { unit: Varh,     Unit Modifiers: [ *Q2, *Q3, *Net, TOU Rate D                                                   ], Models: *____4, Itron name: Net Received VARh }
     - Volt-ampere-reactive hours Quadrant 1 Rate D:                   { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate D                                                                         ], Models: *___34, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 2 Rate D:                   { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate D                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
     - Volt-ampere-reactive hours Quadrant 3 Rate D:                   { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate D                                                                         ], Models: *____4, Itron name: Four Quadrant VARh }
@@ -844,7 +844,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4                                                                                              ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3                                                                                              ], Models: *ADTR-RDTR-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                                                      ], Models: *ADTR-RDTR-650 }
-    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                                                            ], Models: *ADTR-RDTR-___ }
+    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                                                            ], Models: *ADTR-RDTR-___ }
     - Q1 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q1                                                                                                          ], Models: *____-____-650 }
     - Q2 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q2                                                                                                          ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q3                                                                                                          ], Models: *____-____-650 }
@@ -852,7 +852,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered VARarhours:                       { unit: Varh,     Unit Modifiers: [ *Q1, *Q2                                                                                              ], Models: *____-____-650 }
     - Received VARhours:                          { unit: Varh,     Unit Modifiers: [ *Q3, *Q4                                                                                              ], Models: *____-____-650 }
     - Total VARhours:                             { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                                                      ], Models: *____-RDTR-650 }
-    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                                                            ], Models: *____-RDTR-___ }
+    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                                                            ], Models: *____-RDTR-___ }
     - Q1 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q1                                                                                                          ], Models: *____-____-650 }
     - Q2 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q2                                                                                                          ], Models: *____-____-650 }
     - Q3 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q3                                                                                                          ], Models: *____-____-650 }
@@ -884,11 +884,11 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 3, Continuous Cumulative                      ], Models: *ADTR-RDTR-650 }
     - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous                                                       ], Models: *ADTR-RDTR-650 }
     - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *ADTR-RDTR-650 }
-    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow                                                       ], Models: *____-____-650 }
+    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net                                                       ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
-    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, Coincident Value 2, Cumulative                       ], Models: *____-____-650 }
-    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, Coincident Value 3, Continuous Cumulative            ], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, Previous                                             ], Models: *____-____-650 }
+    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Coincident Value 2, Cumulative                       ], Models: *____-____-650 }
+    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Coincident Value 3, Continuous Cumulative            ], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Previous                                             ], Models: *____-____-650 }
     - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max                                                                                         ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
@@ -935,7 +935,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A                                                          ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A                                                ], Models: *A_TR-R_TR-___ }
+    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A                                                ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q1, TOU Rate A                                                                                              ], Models: *____-____-650 }
     - Q2 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q2, TOU Rate A                                                                                              ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q3, TOU Rate A                                                                                              ], Models: *____-____-650 }
@@ -943,7 +943,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered VARarhours:                       { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate A                                                                                  ], Models: *____-____-650 }
     - Received VARhours:                          { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate A                                                                                  ], Models: *____-____-650 }
     - Total VARhours:                             { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A                                                          ], Models: *____-R_TR-650 }
-    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A                                                ], Models: *____-R_TR-___ }
+    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A                                                ], Models: *____-R_TR-___ }
     - Q1 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate A                                                                                              ], Models: *____-____-650 }
     - Q2 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate A                                                                                              ], Models: *____-____-650 }
     - Q3 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate A                                                                                              ], Models: *____-____-650 }
@@ -973,11 +973,11 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
     - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Previous                                           ], Models: *____-____-650 }
     - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
-    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate A                                           ], Models: *____-____-650 }
+    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
-    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate A, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
-    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate A, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate A, Previous                                 ], Models: *____-____-650 }
+    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
+    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A, Previous                                 ], Models: *____-____-650 }
     - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate A                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
@@ -1024,7 +1024,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B                                                          ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B                                                ], Models: *A_TR-R_TR-___ }
+    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B                                                ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q1, TOU Rate B                                                                                              ], Models: *____-____-650 }
     - Q2 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q2, TOU Rate B                                                                                              ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q3, TOU Rate B                                                                                              ], Models: *____-____-650 }
@@ -1032,7 +1032,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered VARarhours:                       { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate B                                                                                  ], Models: *____-____-650 }
     - Received VARhours:                          { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate B                                                                                  ], Models: *____-____-650 }
     - Total VARhours:                             { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B                                                          ], Models: *____-R_TR-650 }
-    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B                                                ], Models: *____-R_TR-___ }
+    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B                                                ], Models: *____-R_TR-___ }
     - Q1 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate B                                                                                              ], Models: *____-____-650 }
     - Q2 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate B                                                                                              ], Models: *____-____-650 }
     - Q3 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate B                                                                                              ], Models: *____-____-650 }
@@ -1062,11 +1062,11 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
     - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Previous                                           ], Models: *____-____-650 }
     - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
-    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate B                                           ], Models: *____-____-650 }
+    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
-    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate B, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
-    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate B, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate B, Previous                                 ], Models: *____-____-650 }
+    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
+    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B, Previous                                 ], Models: *____-____-650 }
     - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate B                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
@@ -1113,7 +1113,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C                                                          ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C                                                ], Models: *A_TR-R_TR-___ }
+    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C                                                ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q1, TOU Rate C                                                                                              ], Models: *____-____-650 }
     - Q2 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q2, TOU Rate C                                                                                              ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q3, TOU Rate C                                                                                              ], Models: *____-____-650 }
@@ -1121,7 +1121,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered VARarhours:                       { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate C                                                                                  ], Models: *____-____-650 }
     - Received VARhours:                          { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate C                                                                                  ], Models: *____-____-650 }
     - Total VARhours:                             { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C                                                          ], Models: *____-R_TR-650 }
-    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C                                                ], Models: *____-R_TR-___ }
+    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C                                                ], Models: *____-R_TR-___ }
     - Q1 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate C                                                                                              ], Models: *____-____-650 }
     - Q2 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate C                                                                                              ], Models: *____-____-650 }
     - Q3 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate C                                                                                              ], Models: *____-____-650 }
@@ -1151,11 +1151,11 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
     - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Previous                                           ], Models: *____-____-650 }
     - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
-    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate C                                           ], Models: *____-____-650 }
+    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
-    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate C, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
-    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate C, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate C, Previous                                 ], Models: *____-____-650 }
+    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
+    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C, Previous                                 ], Models: *____-____-650 }
     - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate C                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
@@ -1202,7 +1202,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D                                                          ], Models: *A_TR-R_TR-650 }
-    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D                                                ], Models: *A_TR-R_TR-___ }
+    - Net Watthours:                              { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D                                                ], Models: *A_TR-R_TR-___ }
     - Q1 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q1, TOU Rate D                                                                                              ], Models: *____-____-650 }
     - Q2 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q2, TOU Rate D                                                                                              ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: Wh,       Unit Modifiers: [ *Q3, TOU Rate D                                                                                              ], Models: *____-____-650 }
@@ -1210,7 +1210,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered VARarhours:                       { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, TOU Rate D                                                                                  ], Models: *____-____-650 }
     - Received VARhours:                          { unit: Varh,     Unit Modifiers: [ *Q3, *Q4, TOU Rate D                                                                                  ], Models: *____-____-650 }
     - Total VARhours:                             { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D                                                          ], Models: *____-R_TR-650 }
-    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D                                                ], Models: *____-R_TR-___ }
+    - Net VARhours:                               { unit: Varh,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D                                                ], Models: *____-R_TR-___ }
     - Q1 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q1, TOU Rate D                                                                                              ], Models: *____-____-650 }
     - Q2 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q2, TOU Rate D                                                                                              ], Models: *____-____-650 }
     - Q3 VARhours:                                { unit: Varh,     Unit Modifiers: [ *Q3, TOU Rate D                                                                                              ], Models: *____-____-650 }
@@ -1240,11 +1240,11 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
     - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Previous                                           ], Models: *____-____-650 }
     - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
-    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate D                                           ], Models: *____-____-650 }
+    - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
-    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate D, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
-    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate D, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, TOU Rate D, Previous                                 ], Models: *____-____-650 }
+    - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
+    - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D, Previous                                 ], Models: *____-____-650 }
     - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate D                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
@@ -1326,15 +1326,15 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Watt-hours Delivered:                 { unit: Wh,        Unit Modifiers: [ *Q1, *Q4                                               ], Models: *AX-RX }
     - Watt-hours Received:                  { unit: Wh,        Unit Modifiers: [ *Q2, *Q3                                               ], Models: *AX-RX }
     - Watt-hours Total:                     { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                       ], Models: *AX-RX }
-    - Watt-hours Net:                       { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ], Models: *AX-RX }
+    - Watt-hours Net:                       { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ], Models: *AX-RX }
     - Var-hours Delivered:                  { unit: Varh,      Unit Modifiers: [ *Q1, *Q2                                               ], Models: *__-RX }
     - Var-hours Received:                   { unit: Varh,      Unit Modifiers: [ *Q3, *Q4                                               ], Models: *__-RX }
     - Var-hours Total:                      { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                       ], Models: *__-RX }
-    - Var -hours Net:                       { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ], Models: *__-RX }
+    - Var -hours Net:                       { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ], Models: *__-RX }
     - VA-hours Delivered:                   { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q4                                   ], Models: *__-RX }
     - VA-hours Received:                    { unit: VAh,       Unit Modifiers: [ *Q2, *Q3, *Q4                                   ], Models: *__-RX }
     - VA-hours Total:                       { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                       ], Models: *__-RX }
-    - VA-hours Net:                         { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow             ], Models: *__-RX }
+    - VA-hours Net:                         { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ], Models: *__-RX }
     - Peak Delivered Demand:                { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max                                          ], Models: *AX-RX }
     - Time of Peak Delivered Demand:        { unit: s,         Unit Modifiers: [ Coincident Value 1                                                   ], Models: *AX-RX }
     - Frozen Peak Delivered Demand:         { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, Previous                                ], Models: *AX-RX }
@@ -1358,7 +1358,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Watt-hours Delivered Rate A:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                   ], Models: *AX-RX }
     - Watt-hours Received Rate A:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                   ], Models: *AX-RX }
     - Watt-hours Total Rate A:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A           ], Models: *AX-RX }
-    - Watt-hours Net Rate A:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate A ], Models: *AX-RX }
+    - Watt-hours Net Rate A:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ], Models: *AX-RX }
     - Peak Demand Rate A:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ], Models: *AX-RX }
     - Time of Peak Demand Rate A:           { unit: s,         Unit Modifiers: [ TOU Rate A                                                           ], Models: *AX-RX }
     - Frozen Peak Demand Rate A:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ], Models: *AX-RX }
@@ -1366,7 +1366,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Watt-hours Delivered Rate B:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ], Models: *AX-RX }
     - Watt-hours Received Rate B:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ], Models: *AX-RX }
     - Watt-hours Total Rate B:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B           ], Models: *AX-RX }
-    - Watt-hours Net Rate B:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate B ], Models: *AX-RX }
+    - Watt-hours Net Rate B:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ], Models: *AX-RX }
     - Peak Demand Rate B:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ], Models: *AX-RX }
     - Time of Peak Demand Rate B:           { unit: s,         Unit Modifiers: [ TOU Rate B                                                           ], Models: *AX-RX }
     - Frozen Peak Demand Rate B:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ], Models: *AX-RX }
@@ -1374,7 +1374,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Watt-hours Delivered Rate C:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ], Models: *AX-RX }
     - Watt-hours Received Rate C:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ], Models: *AX-RX }
     - Watt-hours Total Rate C:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C           ], Models: *AX-RX }
-    - Watt-hours Net Rate C:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate C ], Models: *AX-RX }
+    - Watt-hours Net Rate C:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ], Models: *AX-RX }
     - Peak Demand Rate C:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ], Models: *AX-RX }
     - Time of Peak Demand Rate C:           { unit: s,         Unit Modifiers: [ TOU Rate C                                                           ], Models: *AX-RX }
     - Frozen Peak Demand Rate C:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ], Models: *AX-RX }
@@ -1382,7 +1382,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Watt-hours Delivered Rate D:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ], Models: *AX-RX }
     - Watt-hours Received Rate D:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ], Models: *AX-RX }
     - Watt-hours Total Rate D:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D           ], Models: *AX-RX }
-    - Watt-hours Net Rate D:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow, TOU Rate D ], Models: *AX-RX }
+    - Watt-hours Net Rate D:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ], Models: *AX-RX }
     - Peak Demand Rate D:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ], Models: *AX-RX }
     - Time of Peak Demand Rate D:           { unit: s,         Unit Modifiers: [ TOU Rate D                                                           ], Models: *AX-RX }
     - Frozen Peak Demand Rate D:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ], Models: *AX-RX }
@@ -1432,7 +1432,7 @@ Metric IDs:
     1:   { name: Watt hour delivered,                  unit: Wh,        Unit Modifiers: [ *Q1, *Q4                                                  ] }
     2:   { name: Watt hour received,                   unit: Wh,        Unit Modifiers: [ *Q2, *Q3                                                  ] }
     3:   { name: Watt hour total,                      unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                          ] }
-    4:   { name: Watt hour net,                        unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                ] }
+    4:   { name: Watt hour net,                        unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                ] }
     5:   { name: Watts delivered, current demand,      unit: W,         Unit Modifiers: [ *Q1, *Q4                                                  ] }
     6:   { name: Watts received, current demand,       unit: W,         Unit Modifiers: [ *Q2, *Q3                                                  ] }
     7:   { name: Watts delivered, peak demand,         unit: W,         Unit Modifiers: [ *Q1, *Q4, Max                                             ] }
@@ -1448,18 +1448,18 @@ Metric IDs:
     17:  { name: VA hour lagging,                      unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q4                                      ] }
     18:  { name: Var hour Q1 + Q3,                     unit: Varh,      Unit Modifiers: [ *Q1, *Q3                                                  ] }
     19:  { name: Var hour Q2 + Q4,                     unit: Varh,      Unit Modifiers: [ *Q2, *Q4                                                  ] }
-    20:  { name: Var hour Q2 - Q3,                     unit: Varh,      Unit Modifiers: [ *Q2, *Q3, Net Flow                                        ] }
+    20:  { name: Var hour Q2 - Q3,                     unit: Varh,      Unit Modifiers: [ *Q2, *Q3, *Net                                        ] }
     21:  { name: Var hour delivered,                   unit: Varh,      Unit Modifiers: [ *Q1, *Q2                                                  ] }
     22:  { name: Var hour received,                    unit: Varh,      Unit Modifiers: [ *Q3, *Q4                                                  ] }
     23:  { name: Var hour total,                       unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                          ] }
-    24:  { name: Var hour net,                         unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                ] }
+    24:  { name: Var hour net,                         unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                ] }
     25:  { name: Var hour Q1,                          unit: Var,       Unit Modifiers: [ *Q1                                                              ] }
     26:  { name: Var hour Q2,                          unit: Var,       Unit Modifiers: [ *Q2                                                              ] }
     27:  { name: Var hour Q3,                          unit: Var,       Unit Modifiers: [ *Q3                                                              ] }
     28:  { name: Var hour Q4,                          unit: Var,       Unit Modifiers: [ *Q4                                                              ] }
     29:  { name: Var hour Q1 + Q4,                     unit: Var,       Unit Modifiers: [ *Q1, *Q4                                                  ] }
     30:  { name: Var hour Q2 + Q3,                     unit: Var,       Unit Modifiers: [ *Q2, *Q3                                                  ] }
-    31:  { name: Var hour Q1 - Q4,                     unit: Var,       Unit Modifiers: [ *Q1, *Q4, Net Flow                                        ] }
+    31:  { name: Var hour Q1 - Q4,                     unit: Var,       Unit Modifiers: [ *Q1, *Q4, *Net                                        ] }
     32:  { name: Var delivered, current demand,        unit: Var,       Unit Modifiers: [ *Q1, *Q2                                                  ] }
     33:  { name: Var received, current demand,         unit: Var,       Unit Modifiers: [ *Q3, *Q4                                                  ] }
     34:  { name: Var delivered, peak demand,           unit: Var,       Unit Modifiers: [ *Q1, *Q2, Max                                             ] }
@@ -1472,7 +1472,7 @@ Metric IDs:
     41:  { name: VA hour delivered,                    unit: VAh,       Unit Modifiers: [ *Q1, *Q4                                                  ] }
     42:  { name: VA hour received,                     unit: VAh,       Unit Modifiers: [ *Q2, *Q3                                                  ] }
     43:  { name: VA hour total,                        unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                          ] }
-    44:  { name: VA hour net,                          unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                ] }
+    44:  { name: VA hour net,                          unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                ] }
     45:  { name: VA hour Q1,                           unit: VAh,       Unit Modifiers: [ *Q1                                                              ] }
     46:  { name: VA hour Q2,                           unit: VAh,       Unit Modifiers: [ *Q2                                                              ] }
     47:  { name: VA hour Q3,                           unit: VAh,       Unit Modifiers: [ *Q3                                                              ] }
@@ -1491,7 +1491,7 @@ Metric IDs:
     61:  { name: Q hour delivered,                     unit: Qh,        Unit Modifiers: [ *Q1, *Q2                                                  ] }
     62:  { name: Q hour received,                      unit: Qh,        Unit Modifiers: [ *Q3, *Q4                                                  ] }
     63:  { name: Q hour total,                         unit: Qh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                          ] }
-    64:  { name: Q hour net,                           unit: Qh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Net Flow                ] }
+    64:  { name: Q hour net,                           unit: Qh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                ] }
     65:  { name: Q delivered, current demand,          unit: Q,         Unit Modifiers: [ *Q1, *Q2                                                  ] }
     66:  { name: Q received, current demand,           unit: Q,         Unit Modifiers: [ *Q3, *Q4                                                  ] }
     67:  { name: Q delivered, peak demand,             unit: Q,         Unit Modifiers: [ *Q1, *Q2, Max                                             ] }
@@ -1517,8 +1517,8 @@ Metric IDs:
     95:  { name: Var Q3, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q3, Max, Previous                                               ] }
     96:  { name: Var Q4, peak,                         unit: Var,       Unit Modifiers: [ *Q4, Max                                                         ] }
     97:  { name: Var Q4, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q4, Max, Previous                                               ] }
-    98:  { name: Var peak, net,                        unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow           ] }
-    99:  { name: Var peak, net (Frozen),               unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, Previous ] }
+    98:  { name: Var peak, net,                        unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net           ] }
+    99:  { name: Var peak, net (Frozen),               unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Previous ] }
     100: { name: Voltage Phase A,                      unit: V,         Unit Modifiers: [ Phase A                                                                 ] }
     101: { name: Voltage Phase B,                      unit: V,         Unit Modifiers: [ Phase B                                                                 ] }
     102: { name: Voltage Phase C,                      unit: V,         Unit Modifiers: [ Phase C                                                                 ] }
@@ -1595,8 +1595,8 @@ Metric IDs:
     213: { name: VA Q1 + Q3, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q1, *Q3, Max, Previous                                   ] }
     214: { name: VA Q2 + Q4, peak,                     unit: VA,        Unit Modifiers: [ *Q2, *Q4, Max                                             ] }
     215: { name: VA Q2 + Q4, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q2, *Q4, Max, Previous                                   ] }
-    216: { name: VA net, peak,                         unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow           ] }
-    217: { name: VA net, peak (Frozen),                unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Net Flow, Previous ] }
+    216: { name: VA net, peak,                         unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net           ] }
+    217: { name: VA net, peak (Frozen),                unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Previous ] }
     # ------
     220: { name: VA hour Q1 + Q2,                      unit: VAh,       Unit Modifiers: [ *Q1, *Q2                                                  ] }
     221: { name: VA hour Q3 + Q4,                      unit: VAh,       Unit Modifiers: [ *Q3, *Q4                                                  ] }
