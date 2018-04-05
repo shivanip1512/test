@@ -1370,7 +1370,7 @@
   }, {
     "Volt-ampere-reactive hours Net" : {
       "unit" : "Varh",
-      "Unit Modifiers" : [ "Varh Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Net Flow" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Net Flow" ],
       "Models" : [ "Elster A3R" ],
       "Other names" : [ "kVARh net" ]
     }
@@ -1589,7 +1589,7 @@
   }, {
     "Coincident Time of Peak Var Received" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1" ],
+      "Unit Modifiers" : [ "Coincident Value 1" ],
       "Models" : [ "Elster A3R" ]
     }
   }, {
@@ -1607,7 +1607,7 @@
   }, {
     "Coincident Time of Peak VA Delivered" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1" ],
+      "Unit Modifiers" : [ "Coincident Value 1" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -1619,7 +1619,7 @@
   }, {
     "Coincident Time of Peak VA" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1" ],
+      "Unit Modifiers" : [ "Coincident Value 1" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -1748,7 +1748,7 @@
   }, {
     "Coincident Time of Peak Var Received Rate A" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate A" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate A" ],
       "Models" : [ "Elster A3R" ]
     }
   }, {
@@ -1785,7 +1785,7 @@
   }, {
     "Coincident Time of Peak VA Delivered Rate A" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate A" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate A" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -1797,7 +1797,7 @@
   }, {
     "Coincident Time of Peak VA Rate A" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate A" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate A" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -1933,7 +1933,7 @@
   }, {
     "Coincident Time of Peak Var Received Rate B" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate B" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate B" ],
       "Models" : [ "Elster A3R" ]
     }
   }, {
@@ -1970,7 +1970,7 @@
   }, {
     "Coincident Time of Peak VA Delivered Rate B" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate B" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate B" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -1982,7 +1982,7 @@
   }, {
     "Coincident Time of Peak VA Rate B" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate B" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate B" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -2118,7 +2118,7 @@
   }, {
     "Coincident Time of Peak Var Received Rate C" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate C" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate C" ],
       "Models" : [ "Elster A3R" ]
     }
   }, {
@@ -2155,7 +2155,7 @@
   }, {
     "Coincident Time of Peak VA Delivered Rate C" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate C" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate C" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -2167,7 +2167,7 @@
   }, {
     "Coincident Time of Peak VA Rate C" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate C" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate C" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -2303,7 +2303,7 @@
   }, {
     "Coincident Time of Peak Var Received Rate D" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate D" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate D" ],
       "Models" : [ "Elster A3R" ]
     }
   }, {
@@ -2340,7 +2340,7 @@
   }, {
     "Coincident Time of Peak VA Delivered Rate D" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate D" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate D" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -2352,7 +2352,7 @@
   }, {
     "Coincident Time of Peak VA Rate D" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate D" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate D" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     }
   }, {
@@ -4165,7 +4165,7 @@
   }, {
     "Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -4177,19 +4177,19 @@
   }, {
     "Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -4441,7 +4441,7 @@
   }, {
     "Previous Min Power factor" : {
       "unit" : "PF",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "Previoius" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "Previous" ],
       "Models" : [ "Landis and Gyr S4-RD", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -4675,19 +4675,19 @@
   }, {
     "Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate A", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate A", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate A", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate A", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate A", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate A", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -4699,7 +4699,7 @@
   }, {
     "Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate A" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate A" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -4711,19 +4711,19 @@
   }, {
     "Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate A", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate A", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate A", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate A", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate A", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate A", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -4783,19 +4783,19 @@
   }, {
     "Cumullative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate A", "Coincident Value 2" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate A", "Coincident Value 2" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate A", "Coincident Value 3" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate A", "Coincident Value 3" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate A", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate A", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -4975,7 +4975,7 @@
   }, {
     "Previous Min Power factor" : {
       "unit" : "PF",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate A", "Previoius" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate A", "Previous" ],
       "Models" : [ "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5209,19 +5209,19 @@
   }, {
     "Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate B", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate B", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate B", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate B", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate B", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate B", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5233,7 +5233,7 @@
   }, {
     "Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate B" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate B" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5245,19 +5245,19 @@
   }, {
     "Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate B", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate B", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate B", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate B", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate B", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate B", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5317,19 +5317,19 @@
   }, {
     "Cumullative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate B", "Coincident Value 2" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate B", "Coincident Value 2" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate B", "Coincident Value 3" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate B", "Coincident Value 3" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate B", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate B", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5509,7 +5509,7 @@
   }, {
     "Previous Min Power factor" : {
       "unit" : "PF",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate B", "Previoius" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate B", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5743,19 +5743,19 @@
   }, {
     "Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate C", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate C", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate C", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate C", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate C", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate C", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5767,7 +5767,7 @@
   }, {
     "Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate C" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate C" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5779,19 +5779,19 @@
   }, {
     "Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate C", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate C", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate C", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate C", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate C", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate C", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -5851,19 +5851,19 @@
   }, {
     "Cumullative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate C", "Coincident Value 2" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate C", "Coincident Value 2" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate C", "Coincident Value 3" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate C", "Coincident Value 3" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate C", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate C", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -6043,7 +6043,7 @@
   }, {
     "Previous Min Power factor" : {
       "unit" : "PF",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate C", "Previoius" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate C", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -6277,19 +6277,19 @@
   }, {
     "Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate D", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate D", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate D", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate D", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Total watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max TOU Rate D", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "TOU Rate D", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -6301,7 +6301,7 @@
   }, {
     "Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate D" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate D" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -6313,19 +6313,19 @@
   }, {
     "Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate D", "Coincident Value 2", "Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate D", "Coincident Value 2", "Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate D", "Coincident Value 3", "Continuous Cumulative" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate D", "Coincident Value 3", "Continuous Cumulative" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Net watts" : {
       "unit" : "W",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max Net Flow", "TOU Rate D", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Max", "Net Flow", "TOU Rate D", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -6385,19 +6385,19 @@
   }, {
     "Cumullative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate D", "Coincident Value 2" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate D", "Coincident Value 2" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Continuous Cumulative Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate D", "Coincident Value 3" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate D", "Coincident Value 3" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
     "Previous Peak Received VAR" : {
       "unit" : "Var",
-      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max TOU Rate D", "Previous" ],
+      "Unit Modifiers" : [ "Quadrant 3", "Quadrant 4", "Max", "TOU Rate D", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -6577,7 +6577,7 @@
   }, {
     "Previous Min Power factor" : {
       "unit" : "PF",
-      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate D", "Previoius" ],
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4", "Min", "TOU Rate D", "Previous" ],
       "Models" : [ "Landis and Gyr S4x E650" ]
     }
   }, {
@@ -7933,47 +7933,47 @@
     "116" : {
       "name" : "Voltage Min Phase A",
       "unit" : "V",
-      "Unit Modifiers" : [ "Min Phase A" ]
+      "Unit Modifiers" : [ "Min", "Phase A" ]
     },
     "117" : {
       "name" : "Voltage Min Phase B",
       "unit" : "V",
-      "Unit Modifiers" : [ "Min Phase B" ]
+      "Unit Modifiers" : [ "Min", "Phase B" ]
     },
     "118" : {
       "name" : "Voltage Min Phase C",
       "unit" : "V",
-      "Unit Modifiers" : [ "Min Phase C" ]
+      "Unit Modifiers" : [ "Min", "Phase C" ]
     },
     "119" : {
       "name" : "Voltage Avg Phase A",
       "unit" : "V",
-      "Unit Modifiers" : [ "Avg Phase A" ]
+      "Unit Modifiers" : [ "Avg", "Phase A" ]
     },
     "120" : {
       "name" : "Voltage Avg Phase B",
       "unit" : "V",
-      "Unit Modifiers" : [ "Avg Phase B" ]
+      "Unit Modifiers" : [ "Avg", "Phase B" ]
     },
     "121" : {
       "name" : "Voltage Avg Phase C",
       "unit" : "V",
-      "Unit Modifiers" : [ "Avg Phase C" ]
+      "Unit Modifiers" : [ "Avg", "Phase C" ]
     },
     "122" : {
       "name" : "Voltage Max Phase A",
       "unit" : "V",
-      "Unit Modifiers" : [ "Max Phase A" ]
+      "Unit Modifiers" : [ "Max", "Phase A" ]
     },
     "123" : {
       "name" : "Voltage Max Phase B",
       "unit" : "V",
-      "Unit Modifiers" : [ "Max Phase B" ]
+      "Unit Modifiers" : [ "Max", "Phase B" ]
     },
     "124" : {
       "name" : "Voltage Max Phase C",
       "unit" : "V",
-      "Unit Modifiers" : [ "Max Phase C" ]
+      "Unit Modifiers" : [ "Max", "Phase C" ]
     },
     "125" : {
       "name" : "Current",
@@ -8112,7 +8112,7 @@
       "name" : "Var Q1 + Q3",
       "peak (Frozen)" : null,
       "unit" : "Var",
-      "Unit Modifiers" : [ "Previous Quadrant 1", "Quadrant 3", "Max" ]
+      "Unit Modifiers" : [ "Quadrant 1", "Quadrant 3", "Max", "Previous" ]
     },
     "188" : {
       "name" : "Var Q2 + Q4",
@@ -8149,22 +8149,22 @@
     "200" : {
       "name" : "Watts",
       "unit" : "W",
-      "Unit Modifiers" : [ "Watts" ]
+      "Unit Modifiers" : [ ]
     },
     "201" : {
       "name" : "Var",
       "unit" : "Var",
-      "Unit Modifiers" : [ "Var" ]
+      "Unit Modifiers" : [ ]
     },
     "202" : {
       "name" : "VA",
       "unit" : "VA",
-      "Unit Modifiers" : [ "VA" ]
+      "Unit Modifiers" : [ ]
     },
     "203" : {
       "name" : "Q",
       "unit" : "Q",
-      "Unit Modifiers" : [ "Q" ]
+      "Unit Modifiers" : [ ]
     },
     "206" : {
       "name" : "VA Q1 + Q2",
