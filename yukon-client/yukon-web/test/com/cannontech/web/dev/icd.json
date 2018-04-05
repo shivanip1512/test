@@ -14,7 +14,7 @@
     "Quadrant" : [ "Quadrant 1", "Quadrant 2", "Quadrant 3", "Quadrant 4" ],
     "Fundamental / Harmonic" : [ "Fundamental", "Harmonic" ],
     "Leading / Lagging" : [ "Leading", "Lagging" ],
-    "Range" : [ "Net Flow", "Minimum", "Average", "Maximum" ],
+    "Range" : [ "Net Flow", "Minimum", "Average", "Maximum", "Previous" ],
     "Segmentation" : [ "A to B", "B to C", "C to A", "Phase Neutral->Ground", "A to Neutral", "B to Neutral", "C to Neutral" ],
     "Rate" : [ "Rate A", "Rate B", "Rate C", "Rate D", "Rate E", "Rate F", "Rate G" ],
     "Scaling Factor" : [ "Giga", "Mega", "Kilo", "milli", "Micro", "Tenths", "Overflow" ],

@@ -133,6 +133,7 @@ Modifiers:
         - &Minimum Minimum 
         - &Average Average 
         - &Maximum Maximum
+        - &Prev Previous
     Segmentation:
         - &AtoB A to B
         - &BtoC B to C
@@ -179,7 +180,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Interval Demand:                              { unit: W,   Unit Modifiers: [ *Q1, *Q4                                               ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand:                                  { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max                                          ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand:               { unit: s,   Unit Modifiers: [                                                                      ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, Previous                                ], Models: [ *c1sx, *c2sx ] }
+    - Frozen Peak Demand:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Frozen Peak Demand:        { unit: s,   Unit Modifiers: [                                                                      ], Models: [ *c1sx, *c2sx ] }
     - Interval Demand:                              { unit: VA,  Unit Modifiers: [ *Q1, *Q4                                               ], Models: [        *c2sx ] }
     - Peak Demand:                                  { unit: VA,  Unit Modifiers: [ *Q1, *Q4, Max                                          ], Models: [        *c2sx ] }
@@ -195,7 +196,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Net Rate A:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate A:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate A:        { unit: s,   Unit Modifiers: [ TOU Rate A                                                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate A:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ], Models: [ *c1sx, *c2sx ] }
+    - Frozen Peak Demand Rate A:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, *Prev                    ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Frozen Peak Demand Rate A: { unit: s,   Unit Modifiers: [ TOU Rate A                                                           ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Delivered Rate B:                  { unit: Wh,  Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received Rate B:                   { unit: Wh,  Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ], Models: [ *c1sx, *c2sx ] }
@@ -203,7 +204,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Net Rate B:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate B:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate B:        { unit: s,   Unit Modifiers: [ TOU Rate B                                                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate B:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ], Models: [ *c1sx, *c2sx ] }
+    - Frozen Peak Demand Rate B:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, *Prev                    ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Frozen Peak Demand Rate B: { unit: s,   Unit Modifiers: [ TOU Rate B                                                           ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Delivered Rate C:                  { unit: Wh,  Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received Rate C:                   { unit: Wh,  Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ], Models: [ *c1sx, *c2sx ] }
@@ -211,7 +212,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Net Rate C:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate C:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate C:        { unit: s,   Unit Modifiers: [ TOU Rate C                                                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate C:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ], Models: [ *c1sx, *c2sx ] }
+    - Frozen Peak Demand Rate C:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, *Prev                    ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Frozen Peak Demand Rate C: { unit: s,   Unit Modifiers: [ TOU Rate C                                                           ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Delivered Rate D:                  { unit: Wh,  Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ], Models: [ *c1sx, *c2sx ] }
     - Watt-hours Received Rate D:                   { unit: Wh,  Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ], Models: [ *c1sx, *c2sx ] }
@@ -219,7 +220,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Net Rate D:                        { unit: Wh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ], Models: [ *c1sx, *c2sx ] }
     - Peak Demand Rate D:                           { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Peak Demand Rate D:        { unit: s,   Unit Modifiers: [ TOU Rate D                                                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate D:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ], Models: [ *c1sx, *c2sx ] }
+    - Frozen Peak Demand Rate D:                    { unit: W,   Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, *Prev                    ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Frozen Peak Demand Rate D: { unit: s,   Unit Modifiers: [ TOU Rate D                                                           ], Models: [ *c1sx, *c2sx ] }
     - RFN Temperature:                              { unit: °C,  Unit Modifiers: [                                                                      ], Models: [ *c1sx, *c2sx ] }
 
@@ -268,8 +269,8 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Interval Demand:                              { unit: W,         Unit Modifiers: [ *Q1, *Q4                                               ] }
     - Peak Demand:                                  { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max                                          ] }
     - Coincident Time of Peak Demand:               { unit: s,         Unit Modifiers: [                                                                      ] }
-    - Frozen Peak Demand:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, Previous                                ] }
-    - Coincident Time of Frozen Peak Demand:        { unit: s,         Unit Modifiers: [ Previous                                                             ] }
+    - Frozen Peak Demand:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                ] }
+    - Coincident Time of Frozen Peak Demand:        { unit: s,         Unit Modifiers: [ *Prev                                                             ] }
     - Interval Voltage:                             { unit: V,         Unit Modifiers: [ milli                                                                ] }
     - Peak Voltage:                                 { unit: V,         Unit Modifiers: [ Max, milli                                                           ] }
     - Coincident Time for Peak Voltage:             { unit: s,         Unit Modifiers: [                                                                      ] }
@@ -281,32 +282,32 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Watt-hours Net Rate A:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ] }
     - Peak Demand Rate A:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ] }
     - Coincident Time of Peak Demand Rate A:        { unit: s,         Unit Modifiers: [ TOU Rate A                                                           ] }
-    - Frozen Peak Demand Rate A:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate A: { unit: s,         Unit Modifiers: [ TOU Rate A, Previous                                                 ] }
+    - Frozen Peak Demand Rate A:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate A: { unit: s,         Unit Modifiers: [ TOU Rate A, *Prev                                                 ] }
     - Watt-hours Delivered Rate B:                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ] }
     - Watt-hours Received Rate B:                   { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ] }
     - Watt-hours Total Rate B:                      { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B           ] }
     - Watt-hours Net Rate B:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ] }
     - Peak Demand Rate B:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ] }
     - Coincident Time of Peak Demand Rate B:        { unit: s,         Unit Modifiers: [ TOU Rate B                                                           ] }
-    - Frozen Peak Demand Rate B:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate B: { unit: s,         Unit Modifiers: [ TOU Rate B, Previous                                                 ] }
+    - Frozen Peak Demand Rate B:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate B: { unit: s,         Unit Modifiers: [ TOU Rate B, *Prev                                                 ] }
     - Watt-hours Delivered Rate C:                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ] }
     - Watt-hours Received Rate C:                   { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ] }
     - Watt-hours Total Rate C:                      { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C           ] }
     - Watt-hours Net Rate C:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ] }
     - Peak Demand Rate C:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ] }
     - Coincident Time of Peak Demand Rate C:        { unit: s,         Unit Modifiers: [ TOU Rate C                                                           ] }
-    - Frozen Peak Demand Rate C:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate C: { unit: s,         Unit Modifiers: [ TOU Rate C, Previous                                                 ] }
+    - Frozen Peak Demand Rate C:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate C: { unit: s,         Unit Modifiers: [ TOU Rate C, *Prev                                                 ] }
     - Watt-hours Delivered Rate D:                  { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ] }
     - Watt-hours Received Rate D:                   { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ] }
     - Watt-hours Total Rate D:                      { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D           ] }
     - Watt-hours Net Rate D:                        { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ] }
     - Peak Demand Rate D:                           { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ] }
     - Coincident Time of Peak Demand Rate D:        { unit: s,         Unit Modifiers: [ TOU Rate D                                                           ] }
-    - Frozen Peak Demand Rate D:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate D: { unit: s,         Unit Modifiers: [ TOU Rate D, Previous                                                 ] }
+    - Frozen Peak Demand Rate D:                    { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate D: { unit: s,         Unit Modifiers: [ TOU Rate D, *Prev                                                 ] }
     - Voltage Phase A:                              { unit: V,         Unit Modifiers: [ Phase A, milli                                                       ] }
     - Voltage Phase B:                              { unit: V,         Unit Modifiers: [ Phase B, milli                                                       ] }
     - Voltage Phase C:                              { unit: V,         Unit Modifiers: [ Phase C, milli                                                       ] }
@@ -386,8 +387,8 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Interval Demand:                              { unit: W,  Unit Modifiers: [ *Q1, *Q4                                               ] }
     - Peak Demand:                                  { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max                                          ] }
     - Coincident Time of Peak Demand:               { unit: s,  Unit Modifiers: [                                                                      ] }
-    - Frozen Peak Demand:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, Previous                                ] }
-    - Coincident Time of Frozen Peak Demand:        { unit: s,  Unit Modifiers: [ Previous                                                             ] }
+    - Frozen Peak Demand:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                ] }
+    - Coincident Time of Frozen Peak Demand:        { unit: s,  Unit Modifiers: [ *Prev                                                             ] }
     - Interval Voltage:                             { unit: V,  Unit Modifiers: [ milli                                                                ] }
     - Peak Voltage:                                 { unit: V,  Unit Modifiers: [ Max, milli                                                           ] }
     - Coincident Time for Peak Voltage:             { unit: S,  Unit Modifiers: [                                                                      ] }
@@ -399,32 +400,32 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Watt-hours Net Rate A:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ] }
     - Peak Demand Rate A:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ] }
     - Coincident Time of Peak Demand Rate A:        { unit: s,  Unit Modifiers: [ TOU Rate A                                                           ] }
-    - Frozen Peak Demand Rate A:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate A: { unit: s,  Unit Modifiers: [ TOU Rate A, Previous                                                 ] }
+    - Frozen Peak Demand Rate A:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate A: { unit: s,  Unit Modifiers: [ TOU Rate A, *Prev                                                 ] }
     - Watt-hours Delivered Rate B:                  { unit: Wh, Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ] }
     - Watt-hours Received Rate B:                   { unit: Wh, Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ] }
     - Watt-hours Total Rate B:                      { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B           ] }
     - Watt-hours Net Rate B:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ] }
     - Peak Demand Rate B:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ] }
     - Coincident Time of Peak Demand Rate B:        { unit: s,  Unit Modifiers: [ TOU Rate B                                                           ] }
-    - Frozen Peak Demand Rate B:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate B: { unit: s,  Unit Modifiers: [ TOU Rate B, Previous                                                 ] }
+    - Frozen Peak Demand Rate B:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate B: { unit: s,  Unit Modifiers: [ TOU Rate B, *Prev                                                 ] }
     - Watt-hours Delivered Rate C:                  { unit: Wh, Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ] }
     - Watt-hours Received Rate C:                   { unit: Wh, Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ] }
     - Watt-hours Total Rate C:                      { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C           ] }
     - Watt-hours Net Rate C:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ] }
     - Peak Demand Rate C:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ] }
     - Coincident Time of Peak Demand Rate C:        { unit: s,  Unit Modifiers: [ TOU Rate C                                                           ] }
-    - Frozen Peak Demand Rate C:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate C: { unit: s,  Unit Modifiers: [ TOU Rate C, Previous                                                 ] }
+    - Frozen Peak Demand Rate C:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate C: { unit: s,  Unit Modifiers: [ TOU Rate C, *Prev                                                 ] }
     - Watt-hours Delivered Rate D:                  { unit: Wh, Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ] }
     - Watt-hours Received Rate D:                   { unit: Wh, Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ] }
     - Watt-hours Total Rate D:                      { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D           ] }
     - Watt-hours Net Rate D:                        { unit: Wh, Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ] }
     - Peak Demand Rate D:                           { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ] }
     - Coincident Time of Peak Demand Rate D:        { unit: s,  Unit Modifiers: [ TOU Rate D                                                           ] }
-    - Frozen Peak Demand Rate D:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ] }
-    - Coincident Time of Frozen Peak Demand Rate D: { unit: s,  Unit Modifiers: [ TOU Rate D, Previous                                                 ] }
+    - Frozen Peak Demand Rate D:                    { unit: W,  Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, *Prev                    ] }
+    - Coincident Time of Frozen Peak Demand Rate D: { unit: s,  Unit Modifiers: [ TOU Rate D, *Prev                                                 ] }
     - Primary Voltage:                              { unit: V,  Unit Modifiers: [ Primary, milli                                                       ] }
     - Secondary Voltage:                            { unit: V,  Unit Modifiers: [ Secondary, milli                                                     ] }
     - RFN Temperature:                              { unit: °C, Unit Modifiers: [                                                                      ] }
@@ -870,68 +871,68 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, Coincident Value 2, Cumulative                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered watts: { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, Coincident Value 3, Continuous Cumulative                                              ], Models: *____-____-650 }
-    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, Previous                                                                               ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
+    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                                                               ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-____-650 }
     - Peak Received watts:                        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max                                                                                         ], Models: *____-____-650 }
     - Time of Peak Received watts:                { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 2, Cumulative                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received watts:  { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 3, Continuous Cumulative                                              ], Models: *____-____-650 }
-    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, Previous                                                                               ], Models: *____-____-650 }
-    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
+    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, *Prev                                                                               ], Models: *____-____-650 }
+    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-____-650 }
     - Peak Total watts:                           { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                                                                 ], Models: *ADTR-RDTR-650 }
     - Time of Peak Total watts:                   { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *ADTR-RDTR-650 }
     - Cumulative Peak Total watts:                { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 2, Cumulative                                 ], Models: *ADTR-RDTR-650 }
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 3, Continuous Cumulative                      ], Models: *ADTR-RDTR-650 }
-    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous                                                       ], Models: *ADTR-RDTR-650 }
-    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *ADTR-RDTR-650 }
+    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev                                                       ], Models: *ADTR-RDTR-650 }
+    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *ADTR-RDTR-650 }
     - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net                                                       ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Coincident Value 2, Cumulative                       ], Models: *____-____-650 }
     - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Coincident Value 3, Continuous Cumulative            ], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Previous                                             ], Models: *____-____-650 }
-    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, *Prev                                             ], Models: *____-____-650 }
+    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max                                                                                         ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, Coincident Value 2, Cumulative                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VAR:   { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, Coincident Value 3, Continuous Cumulative                                              ], Models: *____-____-650 }
-    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, Previous                                                                               ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
+    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, *Prev                                                                               ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-____-650 }
     - Peak Received VAR:                          { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max                                                                                         ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, Coincident Value 2                                                                     ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VAR:    { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, Coincident Value 3                                                                     ], Models: *____-____-650 }
-    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, Previous                                                                               ], Models: *____-____-650 }
-    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
+    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, *Prev                                                                               ], Models: *____-____-650 }
+    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-____-650 }
     - Peak Total VAR:                             { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                                                                 ], Models: *____-RDTR-650 }
     - Time of Peak Total VAR:                     { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-RDTR-650 }
     - Cumulative Peak Total VAR:                  { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 2, Cumulative                                 ], Models: *____-RDTR-650 }
     - Continuous Cumulative Peak Total VAR:       { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 3, Continuous Cumulative                      ], Models: *____-RDTR-650 }
-    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous                                                       ], Models: *____-RDTR-650 }
-    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-RDTR-650 }
+    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev                                                       ], Models: *____-RDTR-650 }
+    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-RDTR-650 }
     - Peak Delivered VA:                          { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max                                                                                         ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, Coincident Value 2, Cumulative                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VA:    { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, Coincident Value 3, Continuous Cumulative                                              ], Models: *____-____-650 }
-    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, Previous                                                                               ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
+    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                                                               ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-____-650 }
     - Peak Received VA:                           { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max                                                                                         ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { unit: VA,       Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 2, Cumulative                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VA:     { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, Coincident Value 3, Continuous Cumulative                                              ], Models: *____-____-650 }
-    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, Previous                                                                               ], Models: *____-____-650 }
-    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-____-650 }
+    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, *Prev                                                                               ], Models: *____-____-650 }
+    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-____-650 }
     - Peak Total VA:                              { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                                                                 ], Models: *____-RDTR-650 }
     - Time of Peak Total VA:                      { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 1                                             ], Models: *____-RDTR-650 }
     - Cumulative Peak Total VA:                   { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 2, Cumulative                                 ], Models: *____-RDTR-650 }
     - Continuous Cumulative Peak Total VA:        { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Coincident Value 3, Continuous Cumulative                      ], Models: *____-RDTR-650 }
-    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous                                                       ], Models: *____-RDTR-650 }
-    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-RDTR-650 }
+    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev                                                       ], Models: *____-RDTR-650 }
+    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-RDTR-650 }
     - Min Power factor:                           { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min                                                                 ], Models: *____-RDTR-650 }
     - Time of Min Power factor:                   { unit: s,        Unit Modifiers: [ Coincident Value 1                                                                                                  ], Models: *____-RDTR-650 }
     - Cumulative Min Power factor:                { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, Cumulative                                                     ], Models: *____-____-650 }
     - Continuous Cumulative Min Power factor:     { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, Continuous Cumulative                                          ], Models: *____-____-650 }
-    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, Previous                                                       ], Models: *____-RDTR-650 }
-    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ Coincident Value 1, Previous                                                                                        ], Models: *____-RDTR-650 }
+    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, *Prev                                                       ], Models: *____-RDTR-650 }
+    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ Coincident Value 1, *Prev                                                                                        ], Models: *____-RDTR-650 }
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A                                                          ], Models: *A_TR-R_TR-650 }
@@ -959,68 +960,68 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered watts: { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received watts:                        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A                                                                             ], Models: *____-____-650 }
     - Time of Peak Received watts:                { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received watts:  { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total watts:                           { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A                                                     ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 2, Cumulative                     ], Models: *A_TR-R_TR-650 }
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
-    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
     - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A, Previous                                 ], Models: *____-____-650 }
-    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate A, *Prev                                 ], Models: *____-____-650 }
+    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate A                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate A, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VAR:   { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate A, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate A, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VAR:                          { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate A                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate A, Coincident Value 2                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VAR:    { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate A, Coincident Value 3                                                         ], Models: *____-____-650 }
-    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate A, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate A, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VAR:                             { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VAR:       { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VA:                          { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VA:    { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VA:                           { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { unit: VA,       Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VA:     { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate A, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VA:                              { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 1                                 ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VA:        { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate A, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Min Power factor:                           { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate A                                                     ], Models: *____-R_TR-650 }
     - Time of Min Power factor:                   { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1                                                                                      ], Models: *____-R_TR-650 }
     - Cumulative Min Power factor:                { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate A, Cumulative                                         ], Models: *____-____-650 }
     - Continuous Cumulative Min Power factor:     { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate A, Continuous Cumulative                              ], Models: *____-____-650 }
-    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate A, Previous                                           ], Models: *____-R_TR-650 }
-    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, Previous                                                                            ], Models: *____-R_TR-650 }
+    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate A, *Prev                                           ], Models: *____-R_TR-650 }
+    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate A, Coincident Value 1, *Prev                                                                            ], Models: *____-R_TR-650 }
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B                                                          ], Models: *A_TR-R_TR-650 }
@@ -1048,68 +1049,68 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered watts: { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received watts:                        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B                                                                             ], Models: *____-____-650 }
     - Time of Peak Received watts:                { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received watts:  { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total watts:                           { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B                                                     ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 2, Cumulative                     ], Models: *A_TR-R_TR-650 }
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
-    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
     - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B, Previous                                 ], Models: *____-____-650 }
-    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate B, *Prev                                 ], Models: *____-____-650 }
+    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate B                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate B, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VAR:   { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate B, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate B, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VAR:                          { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate B                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate B, Coincident Value 2                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VAR:    { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate B, Coincident Value 3                                                         ], Models: *____-____-650 }
-    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate B, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate B, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VAR:                             { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VAR:       { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VA:                          { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VA:    { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VA:                           { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { unit: VA,       Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VA:     { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate B, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VA:                              { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 1                                 ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VA:        { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate B, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Min Power factor:                           { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate B                                                     ], Models: *____-____-650 }
     - Time of Min Power factor:                   { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Min Power factor:                { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate B, Cumulative                                         ], Models: *____-____-650 }
     - Continuous Cumulative Min Power factor:     { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate B, Continuous Cumulative                              ], Models: *____-____-650 }
-    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate B, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate B, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate B, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C                                                          ], Models: *A_TR-R_TR-650 }
@@ -1137,68 +1138,68 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered watts: { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received watts:                        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C                                                                             ], Models: *____-____-650 }
     - Time of Peak Received watts:                { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received watts:  { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total watts:                           { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C                                                     ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 2, Cumulative                     ], Models: *A_TR-R_TR-650 }
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
-    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
     - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C, Previous                                 ], Models: *____-____-650 }
-    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate C, *Prev                                 ], Models: *____-____-650 }
+    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate C                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate C, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VAR:   { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate C, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate C, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VAR:                          { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate C                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate C, Coincident Value 2                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VAR:    { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate C, Coincident Value 3                                                         ], Models: *____-____-650 }
-    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate C, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate C, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VAR:                             { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VAR:       { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VA:                          { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VA:    { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VA:                           { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { unit: VA,       Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VA:     { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate C, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VA:                              { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 1                                 ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VA:        { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate C, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Min Power factor:                           { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate C                                                     ], Models: *____-____-650 }
     - Time of Min Power factor:                   { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Min Power factor:                { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate C, Cumulative                                         ], Models: *____-____-650 }
     - Continuous Cumulative Min Power factor:     { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate C, Continuous Cumulative                              ], Models: *____-____-650 }
-    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate C, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate C, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate C, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                                                                  ], Models: *____-____-650 }
     - Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                                                                  ], Models: *____-____-650 }
     - Total Watthours:                            { unit: Wh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D                                                          ], Models: *A_TR-R_TR-650 }
@@ -1226,68 +1227,68 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Delivered watts:               { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered watts: { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered watts:              { unit: W,        Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered watts:      { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received watts:                        { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D                                                                             ], Models: *____-____-650 }
     - Time of Peak Received watts:                { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received watts:             { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received watts:  { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received watts:               { unit: W,        Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received watts:       { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total watts:                           { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D                                                     ], Models: *A_TR-R_TR-650 }
     - Time of Peak Total watts:                   { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *A_TR-R_TR-650 }
     - Cumulative Peak Total watts:                { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 2, Cumulative                     ], Models: *A_TR-R_TR-650 }
     - Continuous Cumulative Peak Total watts:     { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative          ], Models: *A_TR-R_TR-650 }
-    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total watts:          { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Net watts:                             { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D                                           ], Models: *____-____-650 }
     - Time of Peak Net watts:                     { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D, Coincident Value 2, Cumulative           ], Models: *____-____-650 }
     - Continuous Cumulative Peak Net watts:       { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D, Coincident Value 3, Continuous Cumulative], Models: *____-____-650 }
-    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D, Previous                                 ], Models: *____-____-650 }
-    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Net watts:                    { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, TOU Rate D, *Prev                                 ], Models: *____-____-650 }
+    - Time of Previous Peak Net watts:            { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VAR:                         { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate D                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VAR:                 { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VAR:              { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate D, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VAR:   { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate D, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VAR:                { unit: Var,      Unit Modifiers: [ *Q1, *Q2, Max, TOU Rate D, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VAR:        { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VAR:                          { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate D                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VAR:                  { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumullative Peak Received VAR:              { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate D, Coincident Value 2                                                         ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VAR:    { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate D, Coincident Value 3                                                         ], Models: *____-____-650 }
-    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate D, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VAR:                 { unit: Var,      Unit Modifiers: [ *Q3, *Q4, Max, TOU Rate D, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VAR:         { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VAR:                             { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VAR:                     { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VAR:                  { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VAR:       { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VAR:                    { unit: Var,      Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VAR:            { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Delivered VA:                          { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                                                                             ], Models: *____-____-650 }
     - Time of Peak Delivered VA:                  { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Delivered VA:               { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Delivered VA:    { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Delivered VA:                 { unit: VA,       Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Delivered VA:         { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Received VA:                           { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D                                                                             ], Models: *____-____-650 }
     - Time of Peak Received VA:                   { unit: VA,       Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Peak Received VA:                { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, Coincident Value 2, Cumulative                                             ], Models: *____-____-650 }
     - Continuous Cumulative Peak Received VA:     { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative                                  ], Models: *____-____-650 }
-    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, Previous                                                                   ], Models: *____-____-650 }
-    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Received VA:                  { unit: VA,       Unit Modifiers: [ *Q2, *Q3, Max, TOU Rate D, *Prev                                                                   ], Models: *____-____-650 }
+    - Time of Previous Peak Received VA:          { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Peak Total VA:                              { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D                                                     ], Models: *____-R_TR-650 }
     - Time of Peak Total VA:                      { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 1                                 ], Models: *____-R_TR-650 }
     - Cumulative Peak Total VA:                   { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 2, Cumulative                     ], Models: *____-R_TR-650 }
     - Continuous Cumulative Peak Total VA:        { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Coincident Value 3, Continuous Cumulative          ], Models: *____-R_TR-650 }
-    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Peak Total VA:                     { unit: VA,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, TOU Rate D, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Peak Total VA:             { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Min Power factor:                           { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate D                                                     ], Models: *____-____-650 }
     - Time of Min Power factor:                   { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1                                                                                      ], Models: *____-____-650 }
     - Cumulative Min Power factor:                { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate D, Cumulative                                         ], Models: *____-____-650 }
     - Continuous Cumulative Min Power factor:     { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate D, Continuous Cumulative                              ], Models: *____-____-650 }
-    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate D, Previous                                           ], Models: *____-____-650 }
-    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, Previous                                                                            ], Models: *____-____-650 }
+    - Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Min, TOU Rate D, *Prev                                           ], Models: *____-____-650 }
+    - Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ TOU Rate D, Coincident Value 1, *Prev                                                                            ], Models: *____-____-650 }
     - Delivered Watts:                            { unit: W,        Unit Modifiers: [ *Q1, *Q4                                                                                              ], Models: *____-____-650 }
     - Received Watts:                             { unit: W,        Unit Modifiers: [ *Q2, *Q3                                                                                              ], Models: *____-____-650 }
     - Total Watts:                                { unit: W,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                                                      ], Models: *____-____-650 }
@@ -1337,56 +1338,56 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - VA-hours Net:                         { unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net             ], Models: *__-RX }
     - Peak Delivered Demand:                { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max                                          ], Models: *AX-RX }
     - Time of Peak Delivered Demand:        { unit: s,         Unit Modifiers: [ Coincident Value 1                                                   ], Models: *AX-RX }
-    - Frozen Peak Delivered Demand:         { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, Previous                                ], Models: *AX-RX }
-    - Time of Frozen Peak Delivered Demand: { unit: s,         Unit Modifiers: [ Coincident Value 1, Previous                                         ], Models: *AX-RX }
+    - Frozen Peak Delivered Demand:         { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                ], Models: *AX-RX }
+    - Time of Frozen Peak Delivered Demand: { unit: s,         Unit Modifiers: [ Coincident Value 1, *Prev                                         ], Models: *AX-RX }
     - Peak Delivered Var:                   { unit: Var,       Unit Modifiers: [ *Q1, *Q2, Max                                          ], Models: *__-RX }
     - Time of Peak Delivered Var:           { unit: s,         Unit Modifiers: [ Coincident Value 1                                                   ], Models: *__-RX }
-    - Frozen Peak Delivered Var:            { unit: Var,       Unit Modifiers: [ *Q1, *Q2, Max, Previous                                ], Models: *__-RX }
-    - Time of Frozen Peak Delivered Var:    { unit: s,         Unit Modifiers: [ Coincident Value 1, Previous                                         ], Models: *__-RX }
+    - Frozen Peak Delivered Var:            { unit: Var,       Unit Modifiers: [ *Q1, *Q2, Max, *Prev                                ], Models: *__-RX }
+    - Time of Frozen Peak Delivered Var:    { unit: s,         Unit Modifiers: [ Coincident Value 1, *Prev                                         ], Models: *__-RX }
     - Peak Total Var:                       { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                  ], Models: *__-RX }
     - Time of Peak Total Var:               { unit: s,         Unit Modifiers: [ Coincident Value 1                                                   ], Models: *__-RX }
-    - Frozen Peak Total Var:                { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous        ], Models: *__-RX }
-    - Time of Frozen Peak Total Var:        { unit: s,         Unit Modifiers: [ Coincident Value 1, Previous                                         ], Models: *__-RX }
+    - Frozen Peak Total Var:                { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev        ], Models: *__-RX }
+    - Time of Frozen Peak Total Var:        { unit: s,         Unit Modifiers: [ Coincident Value 1, *Prev                                         ], Models: *__-RX }
     - Peak Delivered VA:                    { unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q4, Max                              ], Models: *__-RX }
     - Time of Peak Delivered VA:            { unit: s,         Unit Modifiers: [ Coincident Value 1                                                   ], Models: *__-RX }
-    - Frozen Peak Delivered VA:             { unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q4, Max, Previous                    ], Models: *__-RX }
-    - Time of Frozen Peak Delivered VA:     { unit: s,         Unit Modifiers: [ Coincident Value 1, Previous                                         ], Models: *__-RX }
+    - Frozen Peak Delivered VA:             { unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q4, Max, *Prev                    ], Models: *__-RX }
+    - Time of Frozen Peak Delivered VA:     { unit: s,         Unit Modifiers: [ Coincident Value 1, *Prev                                         ], Models: *__-RX }
     - Peak Total VA:                        { unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                  ], Models: *__-RX }
     - Time of Peak Total VA:                { unit: s,         Unit Modifiers: [ Coincident Value 1                                                   ], Models: *__-RX }
-    - Frozen Peak Total VA:                 { unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous        ], Models: *__-RX }
-    - Time of Frozen Peak Total VA:         { unit: s,         Unit Modifiers: [ Coincident Value 1, Previous                                         ], Models: *__-RX }
+    - Frozen Peak Total VA:                 { unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev        ], Models: *__-RX }
+    - Time of Frozen Peak Total VA:         { unit: s,         Unit Modifiers: [ Coincident Value 1, *Prev                                         ], Models: *__-RX }
     - Watt-hours Delivered Rate A:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate A                                   ], Models: *AX-RX }
     - Watt-hours Received Rate A:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate A                                   ], Models: *AX-RX }
     - Watt-hours Total Rate A:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate A           ], Models: *AX-RX }
     - Watt-hours Net Rate A:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate A ], Models: *AX-RX }
     - Peak Demand Rate A:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A                              ], Models: *AX-RX }
     - Time of Peak Demand Rate A:           { unit: s,         Unit Modifiers: [ TOU Rate A                                                           ], Models: *AX-RX }
-    - Frozen Peak Demand Rate A:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, Previous                    ], Models: *AX-RX }
-    - Time of Frozen Peak Demand Rate A:    { unit: s,         Unit Modifiers: [ TOU Rate A, Previous                                                 ], Models: *AX-RX }
+    - Frozen Peak Demand Rate A:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate A, *Prev                    ], Models: *AX-RX }
+    - Time of Frozen Peak Demand Rate A:    { unit: s,         Unit Modifiers: [ TOU Rate A, *Prev                                                 ], Models: *AX-RX }
     - Watt-hours Delivered Rate B:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate B                                   ], Models: *AX-RX }
     - Watt-hours Received Rate B:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate B                                   ], Models: *AX-RX }
     - Watt-hours Total Rate B:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate B           ], Models: *AX-RX }
     - Watt-hours Net Rate B:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate B ], Models: *AX-RX }
     - Peak Demand Rate B:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B                              ], Models: *AX-RX }
     - Time of Peak Demand Rate B:           { unit: s,         Unit Modifiers: [ TOU Rate B                                                           ], Models: *AX-RX }
-    - Frozen Peak Demand Rate B:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, Previous                    ], Models: *AX-RX }
-    - Time of Frozen Peak Demand Rate B:    { unit: s,         Unit Modifiers: [ TOU Rate B, Previous                                                 ], Models: *AX-RX }
+    - Frozen Peak Demand Rate B:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate B, *Prev                    ], Models: *AX-RX }
+    - Time of Frozen Peak Demand Rate B:    { unit: s,         Unit Modifiers: [ TOU Rate B, *Prev                                                 ], Models: *AX-RX }
     - Watt-hours Delivered Rate C:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate C                                   ], Models: *AX-RX }
     - Watt-hours Received Rate C:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate C                                   ], Models: *AX-RX }
     - Watt-hours Total Rate C:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate C           ], Models: *AX-RX }
     - Watt-hours Net Rate C:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate C ], Models: *AX-RX }
     - Peak Demand Rate C:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C                              ], Models: *AX-RX }
     - Time of Peak Demand Rate C:           { unit: s,         Unit Modifiers: [ TOU Rate C                                                           ], Models: *AX-RX }
-    - Frozen Peak Demand Rate C:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, Previous                    ], Models: *AX-RX }
-    - Time of Frozen Peak Demand Rate C:    { unit: s,         Unit Modifiers: [ TOU Rate C, Previous                                                 ], Models: *AX-RX }
+    - Frozen Peak Demand Rate C:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate C, *Prev                    ], Models: *AX-RX }
+    - Time of Frozen Peak Demand Rate C:    { unit: s,         Unit Modifiers: [ TOU Rate C, *Prev                                                 ], Models: *AX-RX }
     - Watt-hours Delivered Rate D:          { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, TOU Rate D                                   ], Models: *AX-RX }
     - Watt-hours Received Rate D:           { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, TOU Rate D                                   ], Models: *AX-RX }
     - Watt-hours Total Rate D:              { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, TOU Rate D           ], Models: *AX-RX }
     - Watt-hours Net Rate D:                { unit: Wh,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, TOU Rate D ], Models: *AX-RX }
     - Peak Demand Rate D:                   { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D                              ], Models: *AX-RX }
     - Time of Peak Demand Rate D:           { unit: s,         Unit Modifiers: [ TOU Rate D                                                           ], Models: *AX-RX }
-    - Frozen Peak Demand Rate D:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, Previous                    ], Models: *AX-RX }
-    - Time of Frozen Peak Demand Rate D:    { unit: s,         Unit Modifiers: [ TOU Rate D, Previous                                                 ], Models: *AX-RX }
+    - Frozen Peak Demand Rate D:            { unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, TOU Rate D, *Prev                    ], Models: *AX-RX }
+    - Time of Frozen Peak Demand Rate D:    { unit: s,         Unit Modifiers: [ TOU Rate D, *Prev                                                 ], Models: *AX-RX }
     - Minimum Voltage:                      { unit: V,         Unit Modifiers: [ Min, milli                                                           ], Models: *AX-RX }
     - Time for Minimum Voltage:             { unit: s,         Unit Modifiers: [ Coincident Value 1                                                   ], Models: *AX-RX }
     - Peak Voltage:                         { unit: V,         Unit Modifiers: [ Max, milli                                                           ], Models: *AX-RX }
@@ -1437,12 +1438,12 @@ Metric IDs:
     6:   { name: Watts received, current demand,       unit: W,         Unit Modifiers: [ *Q2, *Q3                                                  ] }
     7:   { name: Watts delivered, peak demand,         unit: W,         Unit Modifiers: [ *Q1, *Q4, Max                                             ] }
     8:   { name: Watts received, peak demand,          unit: W,         Unit Modifiers: [ *Q2, *Q3, Max                                             ] }
-    9:   { name: Watts delivered, peak demand (Frozen),unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, Previous                                   ] }
-    10:  { name: Watts received, peak demand (Frozen), unit: W,         Unit Modifiers: [ *Q2, *Q3, Max, Previous                                   ] }
-    11:  { name: Watt hour delivered (Frozen),         unit: Wh,        Unit Modifiers: [ *Q1, *Q4, Previous                                        ] }
-    12:  { name: Watt hour received (Frozen),          unit: Wh,        Unit Modifiers: [ *Q2, *Q3, Previous                                        ] }
+    9:   { name: Watts delivered, peak demand (Frozen),unit: W,         Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                   ] }
+    10:  { name: Watts received, peak demand (Frozen), unit: W,         Unit Modifiers: [ *Q2, *Q3, Max, *Prev                                   ] }
+    11:  { name: Watt hour delivered (Frozen),         unit: Wh,        Unit Modifiers: [ *Q1, *Q4, *Prev                                        ] }
+    12:  { name: Watt hour received (Frozen),          unit: Wh,        Unit Modifiers: [ *Q2, *Q3, *Prev                                        ] }
     13:  { name: Watts, peak,                          unit: W,         Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                     ] }
-    14:  { name: Watts, peak (Frozen),                 unit: W,         Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous           ] }
+    14:  { name: Watts, peak (Frozen),                 unit: W,         Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev           ] }
     15:  { name: VA hour Q1 + Q3,                      unit: VAh,       Unit Modifiers: [ *Q1, *Q3                                                  ] }
     16:  { name: VA hour Q2 + Q4,                      unit: VAh,       Unit Modifiers: [ *Q2, *Q4                                                  ] }
     17:  { name: VA hour lagging,                      unit: VAh,       Unit Modifiers: [ *Q1, *Q2, *Q4                                      ] }
@@ -1464,8 +1465,8 @@ Metric IDs:
     33:  { name: Var received, current demand,         unit: Var,       Unit Modifiers: [ *Q3, *Q4                                                  ] }
     34:  { name: Var delivered, peak demand,           unit: Var,       Unit Modifiers: [ *Q1, *Q2, Max                                             ] }
     35:  { name: Var received, peak demand,            unit: Var,       Unit Modifiers: [ *Q3, *Q4, Max                                             ] }
-    36:  { name: Var delivered, peak demand (Frozen),  unit: Var,       Unit Modifiers: [ *Q1, *Q2, Max, Previous                                   ] }
-    37:  { name: Var received, peak demand (Frozen),   unit: Var,       Unit Modifiers: [ *Q3, *Q4, Max, Previous                                   ] }
+    36:  { name: Var delivered, peak demand (Frozen),  unit: Var,       Unit Modifiers: [ *Q1, *Q2, Max, *Prev                                   ] }
+    37:  { name: Var received, peak demand (Frozen),   unit: Var,       Unit Modifiers: [ *Q3, *Q4, Max, *Prev                                   ] }
     38:  { name: Var Q1,                               unit: Var,       Unit Modifiers: [ *Q1                                                              ] }
     39:  { name: Var Q2,                               unit: Var,       Unit Modifiers: [ *Q2                                                              ] }
     40:  { name: Var Q3,                               unit: Var,       Unit Modifiers: [ *Q3                                                              ] }
@@ -1481,10 +1482,10 @@ Metric IDs:
     50:  { name: VA received, current demand,          unit: VA,        Unit Modifiers: [ *Q2, *Q3                                                  ] }
     51:  { name: VA delivered, peak demand,            unit: VA,        Unit Modifiers: [ *Q1, *Q4, Max                                             ] }
     52:  { name: VA received, peak demand,             unit: VA,        Unit Modifiers: [ *Q2, *Q3, Max                                             ] }
-    53:  { name: VA delivered peak demand (Frozen),    unit: VA,        Unit Modifiers: [ *Q1, *Q4, Max, Previous                                   ] }
-    54:  { name: VA received, peak demand (Frozen),    unit: VA,        Unit Modifiers: [ *Q2, *Q3, Max, Previous                                   ] }
+    53:  { name: VA delivered peak demand (Frozen),    unit: VA,        Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                   ] }
+    54:  { name: VA received, peak demand (Frozen),    unit: VA,        Unit Modifiers: [ *Q2, *Q3, Max, *Prev                                   ] }
     55:  { name: VA lagging peak,                      unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q4, Max                                 ] }
-    56:  { name: VA lagging peak (Frozen),             unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q4, Max, Previous                       ] }
+    56:  { name: VA lagging peak (Frozen),             unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q4, Max, *Prev                       ] }
     # ------
     59:  { name: Q hour Q1 + Q4,                       unit: Qh,        Unit Modifiers: [ *Q1, *Q4                                                  ] }
     60:  { name: Q hour Q2 + Q3,                       unit: Qh,        Unit Modifiers: [ *Q2, *Q3                                                  ] }
@@ -1496,8 +1497,8 @@ Metric IDs:
     66:  { name: Q received, current demand,           unit: Q,         Unit Modifiers: [ *Q3, *Q4                                                  ] }
     67:  { name: Q delivered, peak demand,             unit: Q,         Unit Modifiers: [ *Q1, *Q2, Max                                             ] }
     68:  { name: Q received, peak demand,              unit: Q,         Unit Modifiers: [ *Q3, *Q4, Max                                             ] }
-    69:  { name: Q delivered, peak demand (Frozen),    unit: Q,         Unit Modifiers: [ *Q1, *Q2, Max, Previous                                   ] }
-    70:  { name: Q received, peak demand (Frozen),     unit: Q,         Unit Modifiers: [ *Q3, *Q4, Max, Previous                                   ] }
+    69:  { name: Q delivered, peak demand (Frozen),    unit: Q,         Unit Modifiers: [ *Q1, *Q2, Max, *Prev                                   ] }
+    70:  { name: Q received, peak demand (Frozen),     unit: Q,         Unit Modifiers: [ *Q3, *Q4, Max, *Prev                                   ] }
     # ------
     80:  { name: Power Factor,                         unit: PF,        Unit Modifiers: [                                                                         ] }
     81:  { name: Power Factor,                         unit: PF,        Unit Modifiers: [ *Q1, *Q2, *Q4                                      ] }
@@ -1510,15 +1511,15 @@ Metric IDs:
     88:  { name: Power Factor, minimum,                unit: PF,        Unit Modifiers: [ Min                                                                     ] }
     89:  { name: Var Q4,                               unit: Var,       Unit Modifiers: [ *Q4                                                              ] }
     90:  { name: Var Q1, peak,                         unit: Var,       Unit Modifiers: [ *Q1, Max                                                         ] }
-    91:  { name: Var Q1, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q1, Max, Previous                                               ] }
+    91:  { name: Var Q1, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q1, Max, *Prev                                               ] }
     92:  { name: Var Q2, peak,                         unit: Var,       Unit Modifiers: [ *Q2, Max                                                         ] }
-    93:  { name: Var Q2, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q2, Max, Previous                                               ] }
+    93:  { name: Var Q2, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q2, Max, *Prev                                               ] }
     94:  { name: Var Q3, peak,                         unit: Var,       Unit Modifiers: [ *Q3, Max                                                         ] }
-    95:  { name: Var Q3, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q3, Max, Previous                                               ] }
+    95:  { name: Var Q3, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q3, Max, *Prev                                               ] }
     96:  { name: Var Q4, peak,                         unit: Var,       Unit Modifiers: [ *Q4, Max                                                         ] }
-    97:  { name: Var Q4, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q4, Max, Previous                                               ] }
+    97:  { name: Var Q4, peak (Frozen),                unit: Var,       Unit Modifiers: [ *Q4, Max, *Prev                                               ] }
     98:  { name: Var peak, net,                        unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net           ] }
-    99:  { name: Var peak, net (Frozen),               unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Previous ] }
+    99:  { name: Var peak, net (Frozen),               unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, *Prev ] }
     100: { name: Voltage Phase A,                      unit: V,         Unit Modifiers: [ Phase A                                                                 ] }
     101: { name: Voltage Phase B,                      unit: V,         Unit Modifiers: [ Phase B                                                                 ] }
     102: { name: Voltage Phase C,                      unit: V,         Unit Modifiers: [ Phase C                                                                 ] }
@@ -1567,14 +1568,14 @@ Metric IDs:
     # ------
     180: { name: Peak Var Q1 + Q4,                     unit: Var,       Unit Modifiers: [ *Q1, *Q4, Max                                             ] }
     181: { name: Peak Var Q2 + Q3,                     unit: Var,       Unit Modifiers: [ *Q2, *Q3, Max                                             ] }
-    182: { name: Previous Peak Var Q1 + Q4,            unit: Var,       Unit Modifiers: [ *Q1, *Q4, Max, Previous                                   ] }
-    183: { name: Previous Peak Var Q2 + Q3,            unit: Var,       Unit Modifiers: [ *Q2, *Q3, Max, Previous                                   ] }
+    182: { name: Previous Peak Var Q1 + Q4,            unit: Var,       Unit Modifiers: [ *Q1, *Q4, Max, *Prev                                   ] }
+    183: { name: Previous Peak Var Q2 + Q3,            unit: Var,       Unit Modifiers: [ *Q2, *Q3, Max, *Prev                                   ] }
     184: { name: Var total, peak,                      unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                     ] }
-    185: { name: Var total, peak (Frozen),             unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous           ] }
+    185: { name: Var total, peak (Frozen),             unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev           ] }
     186: { name: Var Q1 + Q3, peak,                    unit: Var,       Unit Modifiers: [ *Q1, *Q3, Max                                             ] }
-    187: { name: Var Q1 + Q3, peak (Frozen),           unit: Var,       Unit Modifiers: [ *Q1, *Q3, Max, Previous                                   ] }
+    187: { name: Var Q1 + Q3, peak (Frozen),           unit: Var,       Unit Modifiers: [ *Q1, *Q3, Max, *Prev                                   ] }
     188: { name: Var Q2 + Q4, peak,                    unit: Var,       Unit Modifiers: [ *Q2, *Q4, Max                                             ] }
-    189: { name: Var Q2 + Q4, peak (Frozen),           unit: Var,       Unit Modifiers: [ *Q2, *Q4, Max, Previous                                   ] }
+    189: { name: Var Q2 + Q4, peak (Frozen),           unit: Var,       Unit Modifiers: [ *Q2, *Q4, Max, *Prev                                   ] }
     190: { name: Watt hour Q1,                         unit: Wh,        Unit Modifiers: [ *Q1                                                              ] }
     191: { name: Watt hour Q2,                         unit: Wh,        Unit Modifiers: [ *Q2                                                              ] }
     192: { name: Watt hour Q3,                         unit: Wh,        Unit Modifiers: [ *Q3                                                              ] }
@@ -1586,17 +1587,17 @@ Metric IDs:
     203: { name: Q,                                    unit: Q,         Unit Modifiers: [                                                                         ] }
     # ------
     206: { name: VA Q1 + Q2, peak,                     unit: VA,        Unit Modifiers: [ *Q1, *Q2, Max                                             ] }
-    207: { name: VA Q1 + Q2, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q1, *Q2, Max, Previous                                   ] }
+    207: { name: VA Q1 + Q2, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q1, *Q2, Max, *Prev                                   ] }
     208: { name: VA Q3 + Q4, peak,                     unit: VA,        Unit Modifiers: [ *Q3, *Q4, Max                                             ] }
-    209: { name: VA Q3 + Q4, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q3, *Q4, Max, Previous                                   ] }
+    209: { name: VA Q3 + Q4, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q3, *Q4, Max, *Prev                                   ] }
     210: { name: VA total, peak,                       unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max                     ] }
-    211: { name: VA total, peak (Frozen),              unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, Previous           ] }
+    211: { name: VA total, peak (Frozen),              unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Prev           ] }
     212: { name: VA Q1 + Q3, peak,                     unit: VA,        Unit Modifiers: [ *Q1, *Q3, Max                                             ] }
-    213: { name: VA Q1 + Q3, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q1, *Q3, Max, Previous                                   ] }
+    213: { name: VA Q1 + Q3, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q1, *Q3, Max, *Prev                                   ] }
     214: { name: VA Q2 + Q4, peak,                     unit: VA,        Unit Modifiers: [ *Q2, *Q4, Max                                             ] }
-    215: { name: VA Q2 + Q4, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q2, *Q4, Max, Previous                                   ] }
+    215: { name: VA Q2 + Q4, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q2, *Q4, Max, *Prev                                   ] }
     216: { name: VA net, peak,                         unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net           ] }
-    217: { name: VA net, peak (Frozen),                unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, Previous ] }
+    217: { name: VA net, peak (Frozen),                unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, Max, *Net, *Prev ] }
     # ------
     220: { name: VA hour Q1 + Q2,                      unit: VAh,       Unit Modifiers: [ *Q1, *Q2                                                  ] }
     221: { name: VA hour Q3 + Q4,                      unit: VAh,       Unit Modifiers: [ *Q3, *Q4                                                  ] }
@@ -1608,7 +1609,7 @@ Metric IDs:
     # ------
     255: { name: Unknown,                              unit: -,         Unit Modifiers: [                                                                         ] }
     256: { name: Time in Seconds,                      unit: s,         Unit Modifiers: [                                                                         ] }
-    256: { name: Time in Seconds (Frozen),             unit: s,         Unit Modifiers: [ Previous                                                                ] }
+    256: { name: Time in Seconds (Frozen),             unit: s,         Unit Modifiers: [ *Prev                                                                ] }
     257: { name: Temperature in Degrees C,             unit: °C,        Unit Modifiers: [                                                                         ] }
     # ------
     300: { name: Gallons,                              unit: gal,       Unit Modifiers: [                                                                         ] }
