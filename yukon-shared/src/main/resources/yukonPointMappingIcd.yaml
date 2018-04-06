@@ -69,22 +69,20 @@ Units of measure:
     - &VAh  VAh  : VA-Hour
     - &s    s    : Time (in seconds)
     - &V    V    : Volts (10ths Volt)
-    - &A
-        Current (10ths Amp)
-    - &Vdeg
-        Voltage Angle (10ths Degree)
-    - &Adeg
-        Current Angle (10ths Degree)
+    - &A    A    : Current (10ths Amp)
     - &PF   PF   : Power Factor
+    - &V_deg  V degree : Voltage Angle (10ths Degree)
+    - &A_deg  A degree : Current Angle (10ths Degree)
+    - &PF_deg PF degree : Power Factor Angle (10ths Degree)
     # Pound Hour
-    - &Gal
-        Gallon
-    - &None
-        No units
-    - &W    W   : Watt
-    - &Var  Var : Var
-    - &Q    Q   : Q
-    - &VA   VA  : Volt-Amps
+    - &gal  gal  : Gallon
+    - &ft3  ft^3 : Cubic feet
+    - &m3   m^3  : Cubic meters
+    - &None none : No units
+    - &W    W    : Watt
+    - &Var  Var  : Var
+    - &Q    Q    : Q
+    - &VA   VA   : Volt-Amps
     - &Outages
         Outage Count
     - &Restores
@@ -93,8 +91,7 @@ Units of measure:
         Outage Blink Count
     - &RestBlinks
         Restore Blink Count
-    - &DegC
-        °C
+    - &C    °C  : Temperature (in degrees Celsius)
     - &Unknown
         Unknown
 
@@ -214,7 +211,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Coincident Time of Peak Demand Rate D:        { unit: *s,   Unit Modifiers: [ *RateD                           ], Models: [ *c1sx, *c2sx ] }
     - Frozen Peak Demand Rate D:                    { unit: *W,   Unit Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: [ *c1sx, *c2sx ] }
     - Coincident Time of Frozen Peak Demand Rate D: { unit: *s,   Unit Modifiers: [ *RateD                           ], Models: [ *c1sx, *c2sx ] }
-    - RFN Temperature:                              { unit: °C,   Unit Modifiers: [                                  ], Models: [ *c1sx, *c2sx ] }
+    - RFN Temperature:                              { unit: *C,   Unit Modifiers: [                                  ], Models: [ *c1sx, *c2sx ] }
 
 # Table 2 – Centron C2SX Prior To Advanced Metrology
 Centron C2SX prior to Advanced Metrology:
@@ -241,7 +238,7 @@ Centron C2SX prior to Advanced Metrology:
     - Watt-hours Total Rate D:                { unit: *Wh, Unit Modifiers: [ *RateD                 ] }
     - Peak Demand Rate D:                     { unit: *W,  Unit Modifiers: [ *Q1, *Q4, *Max, *RateD ] }
     - Coincident Time for Peak Demand Rate D: { unit: *s,  Unit Modifiers: [ *RateD                 ] }
-    - RFN Temperature:                        { unit: °C,  Unit Modifiers: [                        ] }
+    - RFN Temperature:                        { unit: *C,  Unit Modifiers: [                        ] }
 
 # L & G Focus AX and kWh Meters
     # This section presents the Units and Modifiers used in metric data from L & G Focus meters to be used for point mapping.
@@ -303,15 +300,15 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Voltage Phase A:                              { unit: *V,         Unit Modifiers: [ *PhA, *milli                     ] }
     - Voltage Phase B:                              { unit: *V,         Unit Modifiers: [ *PhB, *milli                     ] }
     - Voltage Phase C:                              { unit: *V,         Unit Modifiers: [ *PhC, *milli                     ] }
-    - Voltage Angle Phase A:                        { unit: V degree,   Unit Modifiers: [ *PhA                             ] }
-    - Voltage Angle Phase B:                        { unit: V degree,   Unit Modifiers: [ *PhB                             ] }
-    - Voltage Angle Phase C:                        { unit: V degree,   Unit Modifiers: [ *PhC                             ] }
-    - Current Phase A:                              { unit: A,          Unit Modifiers: [ *PhA, *milli                     ] }
-    - Current Phase B:                              { unit: A,          Unit Modifiers: [ *PhB, *milli                     ] }
-    - Current Phase C:                              { unit: A,          Unit Modifiers: [ *PhC, *milli                     ] }
-    - Power Factor Angle Phase A:                   { unit: PF degree,  Unit Modifiers: [ *PhA                             ] }
-    - Power Factor Angle Phase B:                   { unit: PF degree,  Unit Modifiers: [ *PhB                             ] }
-    - Power Factor Angle Phase C:                   { unit: PF degree,  Unit Modifiers: [ *PhC                             ] }
+    - Voltage Angle Phase A:                        { unit: *V_deg,     Unit Modifiers: [ *PhA                             ] }
+    - Voltage Angle Phase B:                        { unit: *V_deg,     Unit Modifiers: [ *PhB                             ] }
+    - Voltage Angle Phase C:                        { unit: *V_deg,     Unit Modifiers: [ *PhC                             ] }
+    - Current Phase A:                              { unit: *A,         Unit Modifiers: [ *PhA, *milli                     ] }
+    - Current Phase B:                              { unit: *A,         Unit Modifiers: [ *PhB, *milli                     ] }
+    - Current Phase C:                              { unit: *A,         Unit Modifiers: [ *PhC, *milli                     ] }
+    - Power Factor Angle Phase A:                   { unit: *PF_deg,    Unit Modifiers: [ *PhA                             ] }
+    - Power Factor Angle Phase B:                   { unit: *PF_deg,    Unit Modifiers: [ *PhB                             ] }
+    - Power Factor Angle Phase C:                   { unit: *PF_deg,    Unit Modifiers: [ *PhC                             ] }
     - Average Voltage Phase A:                      { unit: *V,         Unit Modifiers: [ *PhA, *Avg, *milli               ] }
     - Average Voltage Phase B:                      { unit: *V,         Unit Modifiers: [ *PhB, *Avg, *milli               ] }
     - Average Voltage Phase C:                      { unit: *V,         Unit Modifiers: [ *PhC, *Avg, *milli               ] }
@@ -321,7 +318,7 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Maximum Voltage Phase A:                      { unit: *V,         Unit Modifiers: [ *PhA, *Max, *milli               ] }
     - Maximum Voltage Phase B:                      { unit: *V,         Unit Modifiers: [ *PhB, *Max, *milli               ] }
     - Maximum Voltage Phase C:                      { unit: *V,         Unit Modifiers: [ *PhC, *Max, *milli               ] }
-    - RFN Temperature:                              { unit: °C,         Unit Modifiers: [                                  ] }
+    - RFN Temperature:                              { unit: *C,         Unit Modifiers: [                                  ] }
      
 # Table 4 – RFN-420 Node in L & G Focus AX Prior to Advanced Metrology
 RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
@@ -352,20 +349,20 @@ RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     - Voltage Phase A:             { unit: *V,                   Unit Modifiers: [ *PhA, *milli                     ] }
     - Voltage Phase B:             { unit: *V,                   Unit Modifiers: [ *PhB, *milli                     ] }
     - Voltage Phase C:             { unit: *V,                   Unit Modifiers: [ *PhC, *milli                     ] }
-    - Voltage Angle Phase A:       { unit: V degree,             Unit Modifiers: [ *PhA                             ] }
-    - Voltage Angle Phase A:       { unit: V degree,             Unit Modifiers: [ *PhB                             ] }
-    - Voltage Angle Phase C:       { unit: V degree,             Unit Modifiers: [ *PhC                             ] }
-    - Current Phase A:             { unit: A,                    Unit Modifiers: [ *PhA, *milli                     ] }
-    - Current Phase B:             { unit: A,                    Unit Modifiers: [ *PhB, *milli                     ] }
-    - Current Phase C:             { unit: A,                    Unit Modifiers: [ *PhC, *milli                     ] }
-    - Power Factor Angle Phase A:  { unit: PF degree,            Unit Modifiers: [ *PhA                             ] }
-    - Power Factor Angle Phase B:  { unit: PF degree,            Unit Modifiers: [ *PhB                             ] }
-    - Power Factor Angle Phase C:  { unit: PF degree,            Unit Modifiers: [ *PhC                             ] }
+    - Voltage Angle Phase A:       { unit: *V_deg,               Unit Modifiers: [ *PhA                             ] }
+    - Voltage Angle Phase A:       { unit: *V_deg,               Unit Modifiers: [ *PhB                             ] }
+    - Voltage Angle Phase C:       { unit: *V_deg,               Unit Modifiers: [ *PhC                             ] }
+    - Current Phase A:             { unit: *A,                   Unit Modifiers: [ *PhA, *milli                     ] }
+    - Current Phase B:             { unit: *A,                   Unit Modifiers: [ *PhB, *milli                     ] }
+    - Current Phase C:             { unit: *A,                   Unit Modifiers: [ *PhC, *milli                     ] }
+    - Power Factor Angle Phase A:  { unit: *PF_deg,              Unit Modifiers: [ *PhA                             ] }
+    - Power Factor Angle Phase B:  { unit: *PF_deg,              Unit Modifiers: [ *PhB                             ] }
+    - Power Factor Angle Phase C:  { unit: *PF_deg,              Unit Modifiers: [ *PhC                             ] }
     - Outage Count:                { unit: Outage Count,         Unit Modifiers: [                                  ] }
     - Restore Count:               { unit: Restore Count,        Unit Modifiers: [                                  ] }
     - Outage Blink Count:          { unit: Outage Blink Count,   Unit Modifiers: [                                  ] }
     - Restore Blink Count:         { unit: Restore Blink Count,  Unit Modifiers: [                                  ] }
-    - RFN Temperature:             { unit: °C,                   Unit Modifiers: [                                  ] }
+    - RFN Temperature:             { unit: *C,                   Unit Modifiers: [                                  ] }
      
 # Table 5 – RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology
 # The model name for meters with RFN-420 nodes is FocuskWh
@@ -420,7 +417,7 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Coincident Time of Frozen Peak Demand Rate D: { unit: *s,  Unit Modifiers: [ *RateD, *Prev                    ] }
     - Primary Voltage:                              { unit: *V,  Unit Modifiers: [ *Pri, *milli                     ] }
     - Secondary Voltage:                            { unit: *V,  Unit Modifiers: [ *Sec, *milli                     ] }
-    - RFN Temperature:                              { unit: °C,  Unit Modifiers: [                                  ] }
+    - RFN Temperature:                              { unit: *C,  Unit Modifiers: [                                  ] }
      
 # Table 6 – RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology
 RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology:
@@ -429,7 +426,7 @@ RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology:
     - Primary Voltage:      { unit: *V,  Unit Modifiers: [ *Pri, *milli ] }
     - Secondary Voltage:    { unit: *V,  Unit Modifiers: [ *Sec, *milli ] }
     - Interval Demand:      { unit: *W,  Unit Modifiers: [ *Q1, *Q4     ] }
-    - RFN Temperature:      { unit: °C,  Unit Modifiers: [              ] }
+    - RFN Temperature:      { unit: *C,  Unit Modifiers: [              ] }
 
 # Table 7 – Elster A3
 Elster A3:
@@ -599,15 +596,15 @@ Elster A3:
     - Peak VA Received Rate D:                                         { unit: *VA,        Unit Modifiers: [ *Q2, *Q3, *Max, *RateD                ], Models: *__KR }
     - Coincident Time of Peak VA Rate D:                               { unit: *s,         Unit Modifiers: [ *Coin1, *RateD                        ], Models: *__KR }
     - Average Power Factor Rate D:                                     { unit: *PF,        Unit Modifiers: [ *Q1, *Q2, *Q4, *RateD                 ], Models: *__KR, Other names: [ "Rate D average power factor" ] }
-    - Power Factor Angle Phase A:                                      { unit: PF degree,  Unit Modifiers: [ *PhA                                  ], Models: *___R }
-    - Power Factor Angle Phase B:                                      { unit: PF degree,  Unit Modifiers: [ *PhB                                  ], Models: *___R }
-    - Power Factor Angle Phase C:                                      { unit: PF degree,  Unit Modifiers: [ *PhC                                  ], Models: *___R }
+    - Power Factor Angle Phase A:                                      { unit: *PF_deg,    Unit Modifiers: [ *PhA                                  ], Models: *___R }
+    - Power Factor Angle Phase B:                                      { unit: *PF_deg,    Unit Modifiers: [ *PhB                                  ], Models: *___R }
+    - Power Factor Angle Phase C:                                      { unit: *PF_deg,    Unit Modifiers: [ *PhC                                  ], Models: *___R }
     - Voltage Phase A:                                                 { unit: *V,         Unit Modifiers: [ *PhA, *milli                          ], Models: *DTKR, Other names: [ "Phase A voltage" ] }
     - Voltage Phase B:                                                 { unit: *V,         Unit Modifiers: [ *PhB, *milli                          ], Models: *DTKR, Other names: [ "Phase B voltage" ] }
     - Voltage Phase C:                                                 { unit: *V,         Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase C voltage" ] }
-    - Current Phase A:                                                 { unit: A,          Unit Modifiers: [ *PhA, *milli                          ], Models: *DTKR, Other names: [ "Phase A current" ] }
-    - Current Phase B:                                                 { unit: A,          Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase B current" ] }
-    - Current Phase C:                                                 { unit: A,          Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase C current" ] }
+    - Current Phase A:                                                 { unit: *A,         Unit Modifiers: [ *PhA, *milli                          ], Models: *DTKR, Other names: [ "Phase A current" ] }
+    - Current Phase B:                                                 { unit: *A,         Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase B current" ] }
+    - Current Phase C:                                                 { unit: *A,         Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase C current" ] }
     - Power Factor Phase A:                                            { unit: *PF,        Unit Modifiers: [ *PhA                                  ], Models: *__KR, Other names: [ "Phase A power factor" ] }
     - Power Factor Phase B:                                            { unit: *PF,        Unit Modifiers: [ *PhB                                  ], Models: *__KR, Other names: [ "Phase B power factor" ] }
     - Power Factor Phase C:                                            { unit: *PF,        Unit Modifiers: [ *PhC                                  ], Models: *__KR, Other names: [ "Phase C power factor" ] }
@@ -620,7 +617,7 @@ Elster A3:
     - Volt-amperes Phase A:                                            { unit: *VA,        Unit Modifiers: [ *PhA                                  ], Models: *__KR, Other names: [ "Phase A kVA" ] }
     - Volt-amperes Phase B:                                            { unit: *VA,        Unit Modifiers: [ *PhB                                  ], Models: *__KR, Other names: [ "Phase B kVA" ] }
     - Volt-amperes Phase C:                                            { unit: *VA,        Unit Modifiers: [ *PhC                                  ], Models: *__KR, Other names: [ "Phase C kVA" ] }
-    - RFN Temperature:                                                 { unit: °C,         Unit Modifiers: [                                       ], Models: *DTKR }
+    - RFN Temperature:                                                 { unit: *C,         Unit Modifiers: [                                       ], Models: *DTKR }
 
 # Table 8 - ELO
 ELO:
@@ -638,14 +635,14 @@ ELO:
     - Voltage Phase A:                     { unit: *V,             Unit Modifiers: [ *PhA, *milli     ] }
     - Voltage Phase B:                     { unit: *V,             Unit Modifiers: [ *PhB, *milli     ] }
     - Voltage Phase C:                     { unit: *V,             Unit Modifiers: [ *PhC, *milli     ] }
-    - Current Phase A:                     { unit: A,              Unit Modifiers: [ *PhA, *milli     ] }
-    - Current Phase B:                     { unit: A,              Unit Modifiers: [ *PhB, *milli     ] }
-    - Current Phase C:                     { unit: A,              Unit Modifiers: [ *PhC, *milli     ] }
-    - Current Angle Phase A:               { unit: 1/10 A degree,  Unit Modifiers: [ *PhA             ] }
-    - Current Angle Phase B:               { unit: 1/10 A degree,  Unit Modifiers: [ *PhB             ] }
-    - Current Angle Phase C:               { unit: 1/10 A degree,  Unit Modifiers: [ *PhC             ] }
+    - Current Phase A:                     { unit: *A,             Unit Modifiers: [ *PhA, *milli     ] }
+    - Current Phase B:                     { unit: *A,             Unit Modifiers: [ *PhB, *milli     ] }
+    - Current Phase C:                     { unit: *A,             Unit Modifiers: [ *PhC, *milli     ] }
+    - Current Angle Phase A:               { unit: *A_deg,         Unit Modifiers: [ *PhA             ] }
+    - Current Angle Phase B:               { unit: *A_deg,         Unit Modifiers: [ *PhB             ] }
+    - Current Angle Phase C:               { unit: *A_deg,         Unit Modifiers: [ *PhC             ] }
     - Power Factor:                        { unit: *PF,            Unit Modifiers: [                  ] }
-    - RFN Temperature:                     { unit: °C,             Unit Modifiers: [                  ] }
+    - RFN Temperature:                     { unit: *C,             Unit Modifiers: [                  ] }
 
 #Table 9 – Itron Sentinel
 Itron Sentinel:
@@ -820,17 +817,17 @@ Itron Sentinel:
     - Voltage Phase A:                                                { unit: *V,        Unit Modifiers: [ *PhA, *milli                               ], Models: *_1234, Itron name: Instantaneous Voltage, Phase A }
     - Voltage Phase B:                                                { unit: *V,        Unit Modifiers: [ *PhB, *milli                               ], Models: *_1234, Itron name: Instantaneous Voltage, Phase B }
     - Voltage Phase C:                                                { unit: *V,        Unit Modifiers: [ *PhC, *milli                               ], Models: *_1234, Itron name: Instantaneous Voltage, Instantaneous Phase C }
-    - Current Phase A:                                                { unit: A,         Unit Modifiers: [ *PhA, *milli                               ], Models: *_1234, Itron name: Instantaneous Current, Phase A }
-    - Current Phase B:                                                { unit: A,         Unit Modifiers: [ *PhB, *milli                               ], Models: *_1234, Itron name: Instantaneous Current, Phase B }
-    - Current Phase C:                                                { unit: A,         Unit Modifiers: [ *PhC, *milli                               ], Models: *_1234, Itron name: Instantaneous Current, Phase C }
-    - Current Neutral to Ground:                                      { unit: A,         Unit Modifiers: [ *Neutral, *milli                           ], Models: *_1234, Itron name: Instantaneous Neutral Current }
-    - Angle of Voltage Phase B to Voltage Phase A:                    { unit: V degree,  Unit Modifiers: [ *PhB                                       ], Models: *_1234, Itron name: Angle Voltage B To Voltage A }
-    - Angle of Voltage Phase C to Voltage Phase A:                    { unit: V degree,  Unit Modifiers: [ *PhC                                       ], Models: *_1234, Itron name: Angle Voltage C To Voltage A }
-    - Angle of Current Phase A to Voltage Phase A:                    { unit: A degree,  Unit Modifiers: [ *PhA                                       ], Models: *_1234, Itron name: Angle Current A To Voltage A }
-    - Angle of Current Phase B to Voltage Phase A:                    { unit: A degree,  Unit Modifiers: [ *PhB                                       ], Models: *_1234, Itron name: Angle Current B To Voltage A }
-    - Angle of Current Phase C to Voltage Phase A:                    { unit: A degree,  Unit Modifiers: [ *PhC                                       ], Models: *_1234, Itron name: Angle Current C To Voltage A }
+    - Current Phase A:                                                { unit: *A,        Unit Modifiers: [ *PhA, *milli                               ], Models: *_1234, Itron name: Instantaneous Current, Phase A }
+    - Current Phase B:                                                { unit: *A,        Unit Modifiers: [ *PhB, *milli                               ], Models: *_1234, Itron name: Instantaneous Current, Phase B }
+    - Current Phase C:                                                { unit: *A,        Unit Modifiers: [ *PhC, *milli                               ], Models: *_1234, Itron name: Instantaneous Current, Phase C }
+    - Current Neutral to Ground:                                      { unit: *A,        Unit Modifiers: [ *Neutral, *milli                           ], Models: *_1234, Itron name: Instantaneous Neutral Current }
+    - Angle of Voltage Phase B to Voltage Phase A:                    { unit: *V_deg,    Unit Modifiers: [ *PhB                                       ], Models: *_1234, Itron name: Angle Voltage B To Voltage A }
+    - Angle of Voltage Phase C to Voltage Phase A:                    { unit: *V_deg,    Unit Modifiers: [ *PhC                                       ], Models: *_1234, Itron name: Angle Voltage C To Voltage A }
+    - Angle of Current Phase A to Voltage Phase A:                    { unit: *A_deg,    Unit Modifiers: [ *PhA                                       ], Models: *_1234, Itron name: Angle Current A To Voltage A }
+    - Angle of Current Phase B to Voltage Phase A:                    { unit: *A_deg,    Unit Modifiers: [ *PhB                                       ], Models: *_1234, Itron name: Angle Current B To Voltage A }
+    - Angle of Current Phase C to Voltage Phase A:                    { unit: *A_deg,    Unit Modifiers: [ *PhC                                       ], Models: *_1234, Itron name: Angle Current C To Voltage A }
     - Power Factor:                                                   { unit: *PF,       Unit Modifiers: [                                            ], Models: *_1234, Itron name: Instantaneous Power Factor }
-    - RFN Temperature:                                                { unit: °C,        Unit Modifiers: [                                            ], Models: *01234 }
+    - RFN Temperature:                                                { unit: *C,        Unit Modifiers: [                                            ], Models: *01234 }
 
 #  Table 10 - RFN-500 Node in Landis & Gyr S4e and S4x
 RFN-500 Node in Landis & Gyr S4e and S4x:
@@ -1302,17 +1299,17 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Max Voltage Phase A:                        { unit: *V,        Unit Modifiers: [ *PhA, *Max, *milli                                    ], Models: *____-____-650 }
     - Max Voltage Phase B:                        { unit: *V,        Unit Modifiers: [ *PhB, *Max, *milli                                    ], Models: *____-____-650 }
     - Max Voltage Phase C:                        { unit: *V,        Unit Modifiers: [ *PhC, *Max, *milli                                    ], Models: *____-____-650 }
-    - Voltage Angle Phase A:                      { unit: V degree,  Unit Modifiers: [ *PhA                                                  ], Models: *____-____-650 }
-    - Voltage Angle Phase B:                      { unit: V degree,  Unit Modifiers: [ *PhB                                                  ], Models: *ADTR-RDTR-650 }
-    - Voltage Angle Phase C:                      { unit: V degree,  Unit Modifiers: [ *PhC                                                  ], Models: *ADTR-RDTR-650 }
-    - Current Phase A:                            { unit: A,         Unit Modifiers: [ *PhA, *milli                                          ], Models: *ADTR-RDTR-650 }
-    - Current Phase B:                            { unit: A,         Unit Modifiers: [ *PhB, *milli                                          ], Models: *ADTR-RDTR-650 }
-    - Current Phase C:                            { unit: A,         Unit Modifiers: [ *PhC, *milli                                          ], Models: *ADTR-RDTR-650 }
-    - Current Neutral to Ground:                  { unit: A,         Unit Modifiers: [ *Neutral, *milli                                      ], Models: *ADTR-RDTR-650 }
-    - Current Angle Phase A:                      { unit: A degree,  Unit Modifiers: [ *PhA                                                  ], Models: *ADTR-RDTR-650 }
-    - Current Angle Phase B:                      { unit: A degree,  Unit Modifiers: [ *PhB                                                  ], Models: *ADTR-RDTR-650 }
-    - Current Angle Phase C:                      { unit: A degree,  Unit Modifiers: [ *PhC                                                  ], Models: *ADTR-RDTR-650 }
-    - RFN Temperature:                            { unit: °C,        Unit Modifiers: [                                                       ], Models: *ADTR-RDTR-650 }
+    - Voltage Angle Phase A:                      { unit: *V_deg,    Unit Modifiers: [ *PhA                                                  ], Models: *____-____-650 }
+    - Voltage Angle Phase B:                      { unit: *V_deg,    Unit Modifiers: [ *PhB                                                  ], Models: *ADTR-RDTR-650 }
+    - Voltage Angle Phase C:                      { unit: *V_deg,    Unit Modifiers: [ *PhC                                                  ], Models: *ADTR-RDTR-650 }
+    - Current Phase A:                            { unit: *A,        Unit Modifiers: [ *PhA, *milli                                          ], Models: *ADTR-RDTR-650 }
+    - Current Phase B:                            { unit: *A,        Unit Modifiers: [ *PhB, *milli                                          ], Models: *ADTR-RDTR-650 }
+    - Current Phase C:                            { unit: *A,        Unit Modifiers: [ *PhC, *milli                                          ], Models: *ADTR-RDTR-650 }
+    - Current Neutral to Ground:                  { unit: *A,        Unit Modifiers: [ *Neutral, *milli                                      ], Models: *ADTR-RDTR-650 }
+    - Current Angle Phase A:                      { unit: *A_deg,    Unit Modifiers: [ *PhA                                                  ], Models: *ADTR-RDTR-650 }
+    - Current Angle Phase B:                      { unit: *A_deg,    Unit Modifiers: [ *PhB                                                  ], Models: *ADTR-RDTR-650 }
+    - Current Angle Phase C:                      { unit: *A_deg,    Unit Modifiers: [ *PhC                                                  ], Models: *ADTR-RDTR-650 }
+    - RFN Temperature:                            { unit: *C,        Unit Modifiers: [                                                       ], Models: *ADTR-RDTR-650 }
 
 # Table 11 – RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology)
 RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
@@ -1398,19 +1395,19 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Maximum Voltage Phase A:              { unit: *V,         Unit Modifiers: [ *PhA, *Max, *milli               ], Models: *AX-RX }
     - Maximum Voltage Phase B:              { unit: *V,         Unit Modifiers: [ *PhB, *Max, *milli               ], Models: *AX-RX }
     - Maximum Voltage Phase C:              { unit: *V,         Unit Modifiers: [ *PhC, *Max, *milli               ], Models: *AX-RX }
-    - Voltage Angle Phase A:                { unit: V degree,   Unit Modifiers: [ *PhA                             ], Models: *AX-RX }
-    - Voltage Angle Phase B:                { unit: V degree,   Unit Modifiers: [ *PhB                             ], Models: *AX-RX }
-    - Voltage Angle Phase C:                { unit: V degree,   Unit Modifiers: [ *PhC                             ], Models: *AX-RX }
-    - Current Phase A:                      { unit: A,          Unit Modifiers: [ *PhA, *milli                     ], Models: *AX-RX }
-    - Current Phase B:                      { unit: A,          Unit Modifiers: [ *PhB, *milli                     ], Models: *AX-RX }
-    - Current Phase C:                      { unit: A,          Unit Modifiers: [ *PhC, *milli                     ], Models: *AX-RX }
-    - Current Angle Phase A:                { unit: A degree,   Unit Modifiers: [ *PhA, *milli                     ], Models: *AX-RX }
-    - Current Angle Phase B:                { unit: A degree,   Unit Modifiers: [ *PhB, *milli                     ], Models: *AX-RX }
-    - Current Angle Phase C:                { unit: A degree,   Unit Modifiers: [ *PhC, *milli                     ], Models: *AX-RX }
-    - Power Factor Angle Phase A:           { unit: PF degree,  Unit Modifiers: [ *PhA                             ], Models: *AX-RX }
-    - Power Factor Angle Phase B:           { unit: PF degree,  Unit Modifiers: [ *PhB                             ], Models: *AX-RX }
-    - Power Factor Angle Phase C:           { unit: PF degree,  Unit Modifiers: [ *PhC                             ], Models: *AX-RX }
-    - RFN Temperature:                      { unit: °C,         Unit Modifiers: [                                  ], Models: *AX-RX }
+    - Voltage Angle Phase A:                { unit: *V_deg,     Unit Modifiers: [ *PhA                             ], Models: *AX-RX }
+    - Voltage Angle Phase B:                { unit: *V_deg,     Unit Modifiers: [ *PhB                             ], Models: *AX-RX }
+    - Voltage Angle Phase C:                { unit: *V_deg,     Unit Modifiers: [ *PhC                             ], Models: *AX-RX }
+    - Current Phase A:                      { unit: *A,         Unit Modifiers: [ *PhA, *milli                     ], Models: *AX-RX }
+    - Current Phase B:                      { unit: *A,         Unit Modifiers: [ *PhB, *milli                     ], Models: *AX-RX }
+    - Current Phase C:                      { unit: *A,         Unit Modifiers: [ *PhC, *milli                     ], Models: *AX-RX }
+    - Current Angle Phase A:                { unit: *A_deg,     Unit Modifiers: [ *PhA, *milli                     ], Models: *AX-RX }
+    - Current Angle Phase B:                { unit: *A_deg,     Unit Modifiers: [ *PhB, *milli                     ], Models: *AX-RX }
+    - Current Angle Phase C:                { unit: *A_deg,     Unit Modifiers: [ *PhC, *milli                     ], Models: *AX-RX }
+    - Power Factor Angle Phase A:           { unit: *PF_deg,    Unit Modifiers: [ *PhA                             ], Models: *AX-RX }
+    - Power Factor Angle Phase B:           { unit: *PF_deg,    Unit Modifiers: [ *PhB                             ], Models: *AX-RX }
+    - Power Factor Angle Phase C:           { unit: *PF_deg,    Unit Modifiers: [ *PhC                             ], Models: *AX-RX }
+    - RFN Temperature:                      { unit: *C,         Unit Modifiers: [                                  ], Models: *AX-RX }
 
 # Table 12 - Next Gen Water Node
 Next Gen Water Node:
@@ -1419,7 +1416,7 @@ Next Gen Water Node:
     #     The goal of the Faceplate Reading channel is to match the number on the meter’s faceplate.  The actual units of the meter’s faceplate 
     #     reading will differ among the various meter types that may be attached to the node.
     - Battery Voltage:  { unit: *V,  Unit Modifiers: [ *milli ], Metric ID: 115 }
-    - Temperature:      { unit: °C,  Unit Modifiers: [       ], Metric ID: 257 }
+    - Temperature:      { unit: *C,  Unit Modifiers: [       ], Metric ID: 257 }
 
 Metric IDs:
     1:   { name: Watt hour delivered,                  unit: *Wh,        Unit Modifiers: [ *Q1, *Q4                              ] }
@@ -1515,15 +1512,15 @@ Metric IDs:
     100: { name: Voltage Phase A,                      unit: *V,         Unit Modifiers: [ *PhA                                  ] }
     101: { name: Voltage Phase B,                      unit: *V,         Unit Modifiers: [ *PhB                                  ] }
     102: { name: Voltage Phase C,                      unit: *V,         Unit Modifiers: [ *PhC                                  ] }
-    103: { name: Current Phase A,                      unit: A,          Unit Modifiers: [ *PhA                                  ] }
-    104: { name: Current Phase B,                      unit: A,          Unit Modifiers: [ *PhB                                  ] }
-    105: { name: Current Phase C,                      unit: A,          Unit Modifiers: [ *PhC                                  ] }
-    106: { name: Voltage Angle Phase A,                unit: V degree,   Unit Modifiers: [ *PhA                                  ] }
-    107: { name: Voltage Angle Phase B,                unit: V degree,   Unit Modifiers: [ *PhB                                  ] }
-    108: { name: Voltage Angle Phase C,                unit: V degree,   Unit Modifiers: [ *PhC                                  ] }
-    109: { name: Current Angle Phase A,                unit: A degree,   Unit Modifiers: [ *PhA                                  ] }
-    110: { name: Current Angle Phase B,                unit: A degree,   Unit Modifiers: [ *PhB                                  ] }
-    111: { name: Current Angle Phase C,                unit: A degree,   Unit Modifiers: [ *PhC                                  ] }
+    103: { name: Current Phase A,                      unit: *A,         Unit Modifiers: [ *PhA                                  ] }
+    104: { name: Current Phase B,                      unit: *A,         Unit Modifiers: [ *PhB                                  ] }
+    105: { name: Current Phase C,                      unit: *A,         Unit Modifiers: [ *PhC                                  ] }
+    106: { name: Voltage Angle Phase A,                unit: *V_deg,     Unit Modifiers: [ *PhA                                  ] }
+    107: { name: Voltage Angle Phase B,                unit: *V_deg,     Unit Modifiers: [ *PhB                                  ] }
+    108: { name: Voltage Angle Phase C,                unit: *V_deg,     Unit Modifiers: [ *PhC                                  ] }
+    109: { name: Current Angle Phase A,                unit: *A_deg,     Unit Modifiers: [ *PhA                                  ] }
+    110: { name: Current Angle Phase B,                unit: *A_deg,     Unit Modifiers: [ *PhB                                  ] }
+    111: { name: Current Angle Phase C,                unit: *A_deg,     Unit Modifiers: [ *PhC                                  ] }
     112: { name: V Min,                                unit: *V,         Unit Modifiers: [ *Min                                  ] }
     113: { name: V Avg,                                unit: *V,         Unit Modifiers: [ *Avg                                  ] }
     114: { name: V Max,                                unit: *V,         Unit Modifiers: [ *Max                                  ] }
@@ -1537,10 +1534,10 @@ Metric IDs:
     122: { name: Voltage Max Phase A,                  unit: *V,         Unit Modifiers: [ *Max, *PhA                            ] }
     123: { name: Voltage Max Phase B,                  unit: *V,         Unit Modifiers: [ *Max, *PhB                            ] }
     124: { name: Voltage Max Phase C,                  unit: *V,         Unit Modifiers: [ *Max, *PhC                            ] }
-    125: { name: Current,                              unit: A,          Unit Modifiers: [                                       ] }
-    126: { name: Voltage Angle,                        unit: V degree,   Unit Modifiers: [                                       ] }
-    127: { name: Current Angle,                        unit: A degree,   Unit Modifiers: [                                       ] }
-    128: { name: Current Neutral to Ground,            unit: A,          Unit Modifiers: [ *Neutral                              ] }
+    125: { name: Current,                              unit: *A,         Unit Modifiers: [                                       ] }
+    126: { name: Voltage Angle,                        unit: *V_deg,     Unit Modifiers: [                                       ] }
+    127: { name: Current Angle,                        unit: *A_deg,     Unit Modifiers: [                                       ] }
+    128: { name: Current Neutral to Ground,            unit: *A,         Unit Modifiers: [ *Neutral                              ] }
     # ------
     150: { name: Watts Phase A,                        unit: *W,         Unit Modifiers: [ *PhA                                  ] }
     151: { name: Watts Phase B,                        unit: *W,         Unit Modifiers: [ *PhB                                  ] }
@@ -1551,9 +1548,9 @@ Metric IDs:
     156: { name: VA Phase A,                           unit: *VA,        Unit Modifiers: [ *PhA                                  ] }
     157: { name: VA Phase B,                           unit: *VA,        Unit Modifiers: [ *PhB                                  ] }
     158: { name: VA Phase C,                           unit: *VA,        Unit Modifiers: [ *PhC                                  ] }
-    159: { name: PF Angle Phase A,                     unit: PF degree,  Unit Modifiers: [ *PhA                                  ] }
-    160: { name: PF Angle Phase B,                     unit: PF degree,  Unit Modifiers: [ *PhB                                  ] }
-    161: { name: PF Angle Phase C,                     unit: PF degree,  Unit Modifiers: [ *PhC                                  ] }
+    159: { name: PF Angle Phase A,                     unit: *PF_deg,    Unit Modifiers: [ *PhA                                  ] }
+    160: { name: PF Angle Phase B,                     unit: *PF_deg,    Unit Modifiers: [ *PhB                                  ] }
+    161: { name: PF Angle Phase C,                     unit: *PF_deg,    Unit Modifiers: [ *PhC                                  ] }
     162: { name: PF Phase A,                           unit: *PF,        Unit Modifiers: [ *PhA                                  ] }
     163: { name: PF Phase B,                           unit: *PF,        Unit Modifiers: [ *PhB                                  ] }
     164: { name: PF Phase C,                           unit: *PF,        Unit Modifiers: [ *PhC                                  ] }
@@ -1602,11 +1599,11 @@ Metric IDs:
     255: { name: Unknown,                              unit: -,          Unit Modifiers: [                                       ] }
     256: { name: Time in Seconds,                      unit: *s,         Unit Modifiers: [                                       ] }
     256: { name: Time in Seconds (Frozen),             unit: *s,         Unit Modifiers: [ *Prev                                 ] }
-    257: { name: Temperature in Degrees C,             unit: °C,         Unit Modifiers: [                                       ] }
+    257: { name: Temperature in Degrees C,             unit: *C,         Unit Modifiers: [                                       ] }
     # ------
-    300: { name: Gallons,                              unit: gal,        Unit Modifiers: [                                       ] }
+    300: { name: Gallons,                              unit: *gal,       Unit Modifiers: [                                       ] }
     # ------
-    310: { name: Cubic Feet,                           unit: ft^3,       Unit Modifiers: [                                       ] }
+    310: { name: Cubic Feet,                           unit: *ft3,       Unit Modifiers: [                                       ] }
     # ------
-    320: { name: Cubic Meters,                         unit: m^3,        Unit Modifiers: [                                       ] }
+    320: { name: Cubic Meters,                         unit: *m3,        Unit Modifiers: [                                       ] }
     

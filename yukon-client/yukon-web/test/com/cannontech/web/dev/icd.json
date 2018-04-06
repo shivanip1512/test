@@ -19,9 +19,25 @@
     "s" : "Time (in seconds)"
   }, {
     "V" : "Volts (10ths Volt)"
-  }, "Current (10ths Amp)", "Voltage Angle (10ths Degree)", "Current Angle (10ths Degree)", {
+  }, {
+    "A" : "Current (10ths Amp)"
+  }, {
     "PF" : "Power Factor"
-  }, "Gallon", "No units", {
+  }, {
+    "V degree" : "Voltage Angle (10ths Degree)"
+  }, {
+    "A degree" : "Current Angle (10ths Degree)"
+  }, {
+    "PF degree" : "Power Factor Angle (10ths Degree)"
+  }, {
+    "gal" : "Gallon"
+  }, {
+    "ft^3" : "Cubic feet"
+  }, {
+    "m^3" : "Cubic meters"
+  }, {
+    "none" : "No units"
+  }, {
     "W" : "Watt"
   }, {
     "Var" : "Var"
@@ -29,7 +45,9 @@
     "Q" : "Q"
   }, {
     "VA" : "Volt-Amps"
-  }, "Outage Count", "Restore Count", "Outage Blink Count", "Restore Blink Count", "°C", "Unknown" ],
+  }, "Outage Count", "Restore Count", "Outage Blink Count", "Restore Blink Count", {
+    "°C" : "Temperature (in degrees Celsius)"
+  }, "Unknown" ],
   "Modifiers" : {
     "Primary / Secondary" : [ "Primary", "Secondary" ],
     "Phase" : [ "Phase A", "Phase B", "Phase C" ],
@@ -2622,17 +2640,17 @@
     }
   }, {
     "Current Angle Phase A" : {
-      "unit" : "1/10 A degree",
+      "unit" : "A degree",
       "Unit Modifiers" : [ "Phase A" ]
     }
   }, {
     "Current Angle Phase B" : {
-      "unit" : "1/10 A degree",
+      "unit" : "A degree",
       "Unit Modifiers" : [ "Phase B" ]
     }
   }, {
     "Current Angle Phase C" : {
-      "unit" : "1/10 A degree",
+      "unit" : "A degree",
       "Unit Modifiers" : [ "Phase C" ]
     }
   }, {
