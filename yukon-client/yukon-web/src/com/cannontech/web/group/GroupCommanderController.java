@@ -106,13 +106,14 @@ public class GroupCommanderController {
         }
         userInputs.put("Command", commandString);
         final URL hostURL = ServletUtil.getHostURL(request);
+        final String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
 
         if (commandAuthorizationService.isAuthorized(context.getYukonUser(), commandString)) {
             SimpleCallback<CollectionActionResult> emailCallback = new SimpleCallback<CollectionActionResult>() {
                 @Override
                 public void handle(CollectionActionResult result) throws Exception {
                     if (sendEmail) {
-                        sendEmail(emailAddress, hostURL, commandString, result, context, request);
+                        sendEmail(emailAddress, hostURL, partialUrl, commandString, result, context, request);
                     }
                     commanderEventLogService.groupCommandCompleted(
                         result.getDetail(CollectionActionDetail.SUCCESS).getDevices().getDeviceCount(),
@@ -135,13 +136,12 @@ public class GroupCommanderController {
         }
     }
 
-    private void sendEmail(String emailAddress, URL hostUrl, String commandString, CollectionActionResult result,
+    private void sendEmail(String emailAddress, URL hostUrl, String partialUrl, String commandString, CollectionActionResult result,
                            YukonUserContext userContext, HttpServletRequest request) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
         String subject = accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + "   " + System.lineSeparator();
-        String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
         DecimalFormat format = new DecimalFormat("0.#");
         StringBuilder builder = new StringBuilder();
         builder.append(accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + "   " + System.lineSeparator());
