@@ -75,7 +75,6 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private AttributeService attributeService;
     @Autowired public AsyncDynamicDataSource asyncDynamicDataSource;
-    private final CountDownLatch messageSendingDone = new CountDownLatch(1);
 
     private static final Logger log = YukonLogManager.getLogger(DrReconciliationServiceImpl.class);
     private final List<ScheduledFuture<?>> schedulersFuture = new ArrayList<>();
@@ -310,8 +309,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Override
     public boolean startDRReconciliation(Instant processEndTime) {
         try {
+            CountDownLatch messageSendingDone = new CountDownLatch(1);
             stopSchedulers();
-            if (!doDRReconciliation()) {
+            if (!doDRReconciliation(messageSendingDone)) {
                 return true;
             }
             long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
@@ -338,7 +338,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     /**
      * This method send the appropriate messages to LCR.
      */
-    private boolean doDRReconciliation() {
+    private boolean doDRReconciliation(CountDownLatch messageSendingDone) {
 
         ScheduledFuture<?> futureSchdTwelveMin, futureSchdOneMin;
         BlockingQueue<LCRCommandHolder> queue = new ArrayBlockingQueue<>(10000);
