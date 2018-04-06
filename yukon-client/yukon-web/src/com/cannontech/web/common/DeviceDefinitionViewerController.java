@@ -62,11 +62,11 @@ public class DeviceDefinitionViewerController {
         Set<PaoTag> allTags = new HashSet<PaoTag>();
         
         // parameters
-        String deviceTypeParam = definitionsFilter.getDeviceType() == null ? "-1" : definitionsFilter.getDeviceType();
-        String displayGroupParam = definitionsFilter.getDisplayGroup() == null ? "-1" : definitionsFilter.getDisplayGroup();
-        String changeGroupParam = definitionsFilter.getChangeGroup() == null ? "-1" : definitionsFilter.getChangeGroup();
-        String attributeParam = definitionsFilter.getAttribute() == null ? "-1" : definitionsFilter.getAttribute();
-        String tagParam = definitionsFilter.getTag() == null ? "-1" : definitionsFilter.getTag();
+        String deviceTypeParam = definitionsFilter.getDeviceType();
+        String displayGroupParam = definitionsFilter.getDisplayGroup();
+        String changeGroupParam = definitionsFilter.getChangeGroup();
+        String attributeParam = definitionsFilter.getAttribute();
+        String tagParam = definitionsFilter.getTag();
         
         // all
         for (PaoDefinition deviceDefiniton : allDefinitions) {
@@ -106,27 +106,25 @@ public class DeviceDefinitionViewerController {
         		}
         	}
         	
-        	// add to displayDefinitions
-            if (deviceTypeParam.equals(NO_FILTER) || displayGroupParam.equals(NO_FILTER) || changeGroupParam.equals(NO_FILTER) 
-                    || attributeParam.equals(NO_FILTER) || tagParam.equals(NO_FILTER)) {
+            // add to displayDefinitions
+            if (isNotFiltered(deviceTypeParam) || isNotFiltered(displayGroupParam) || isNotFiltered(changeGroupParam)
+                || isNotFiltered(attributeParam) || isNotFiltered(tagParam)) {
                 displayDefinitions.add(deviceDefiniton);
-            } else if (!deviceTypeParam.equals("-1") && (StringUtils.isBlank(deviceTypeParam) 
-                    || PaoType.valueOf(deviceTypeParam) == deviceDefiniton.getType())) {
+            } else if (!StringUtils.isBlank(deviceTypeParam) && PaoType.valueOf(deviceTypeParam) == deviceDefiniton.getType()) {
                 displayDefinitions.add(deviceDefiniton);
-            } else if (!displayGroupParam.equals("-1") && (StringUtils.isBlank(displayGroupParam) 
-                    || displayGroupParam.equals(deviceDefiniton.getDisplayGroup() == null ? "Untitled" : deviceDefiniton.getDisplayGroup()))) {
+            } else if (!StringUtils.isBlank(displayGroupParam) && displayGroupParam.equals(
+                deviceDefiniton.getDisplayGroup() == null ? "Untitled" : deviceDefiniton.getDisplayGroup())) {
                 displayDefinitions.add(deviceDefiniton);
-            } else if (!changeGroupParam.equals("-1") && (StringUtils.isBlank(changeGroupParam)
-                    || changeGroupParam.equals(deviceDefiniton.getChangeGroup()))) {
+            } else if (!StringUtils.isBlank(changeGroupParam) && changeGroupParam.equals(deviceDefiniton.getChangeGroup())) {
                 displayDefinitions.add(deviceDefiniton);
-            } else if (!attributeParam.equals("-1")) {
+            } else if (!StringUtils.isBlank(attributeParam)) {
                 for (AttributeDefinition attribute : definitionAttributes) {
                     if (StringUtils.isBlank(attributeParam)
                         || attribute.getAttribute().getKey().equals(attributeParam)) {
                         displayDefinitions.add(deviceDefiniton);
                     }
                 }
-            } else if (!StringUtils.isBlank(tagParam) && !tagParam.equals("-1")) {
+            } else if (!StringUtils.isBlank(tagParam)) {
                 for (PaoTag tag : definitionTags) {
                     if (StringUtils.isBlank(tagParam) || tagParam.equals(tag.name())) {
                         displayDefinitions.add(deviceDefiniton);
@@ -168,7 +166,11 @@ public class DeviceDefinitionViewerController {
         
         return "deviceDefinition/deviceDefinitionViewer.jsp";
     }
-	
+
+    private boolean isNotFiltered(String field) {
+        return field != null && field.equals(NO_FILTER);
+    }
+
 	private Map<String, Set<PaoDefinition>> sortDeviceTypesByGroupOrder(Map<String, Set<PaoDefinition>> allDeviceTypes) {
 		Map<String, Set<PaoDefinition>> sortedAllDeviceTypes = new LinkedHashMap<String, Set<PaoDefinition>>();
 		for (String displayGroup : DISPLAY_GROUP_ORDER) {

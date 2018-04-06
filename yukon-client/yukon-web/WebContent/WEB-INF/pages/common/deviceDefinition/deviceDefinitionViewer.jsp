@@ -28,21 +28,21 @@
             </div>
             <cti:msg2 var="allText" key=".allDefinitions"/>
             <tags:selectWithItems id="deviceType" inputClass="deviceDefinition-select" path="deviceType" useKeyLabel="true" groupItems="true" 
-            items="${allDeviceTypes}" itemValue="type" itemLabel="${fn:escapeXml(definition.displayName)}" defaultItemLabel="${noneText}" allKeyLabel="${allText}" defaultItemValue="-1"/>
+            items="${allDeviceTypes}" itemValue="type" itemLabel="${fn:escapeXml(definition.displayName)}" defaultItemLabel="${noneText}" allKeyLabel="${allText}"/>
         </div>
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".displayGroup"/></strong>
             </div>
             <cti:msg2 var="allText" key=".anyDisplayGroup"/>
-            <tags:selectWithItems id="displayGroup" inputClass="deviceDefinition-select" path="displayGroup" items="${allDisplayGroups}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
+            <tags:selectWithItems id="displayGroup" inputClass="deviceDefinition-select" path="displayGroup" items="${allDisplayGroups}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" />
         </div>
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".changeGroup"/></strong>
             </div>
             <cti:msg2 var="allText" key=".anyChangeGroup"/>
-            <tags:selectWithItems id="changeGroup" inputClass="deviceDefinition-select" path="changeGroup" items="${allChangeGroups}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
+            <tags:selectWithItems id="changeGroup" inputClass="deviceDefinition-select" path="changeGroup" items="${allChangeGroups}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" />
         </div>
         
         <div class="dib filterOption">
@@ -50,7 +50,7 @@
                 <strong><i:inline key=".attribute"/></strong>
             </div>
             <cti:msg2 var="allText" key=".anyAttribute"/>
-            <tags:selectWithItems id="attribute" inputClass="deviceDefinition-select" path="attribute" items="${allAttributes}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
+            <tags:selectWithItems id="attribute" inputClass="deviceDefinition-select" path="attribute" items="${allAttributes}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" />
         </div>
         
         <div class="dib filterOption">
@@ -58,7 +58,7 @@
                 <strong><i:inline key=".tag"/></strong>
             </div>
             <cti:msg2 var="allText" key=".anyTag"/>
-            <tags:selectWithItems id="tag" inputClass="deviceDefinition-select" path="tag" items="${allTags}" itemLabel="description" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
+            <tags:selectWithItems id="tag" inputClass="deviceDefinition-select" path="tag" items="${allTags}" itemLabel="description" allKeyLabel="${allText}" defaultItemLabel="${noneText}" />
         </div>
         </form:form>
     </div>

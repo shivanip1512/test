@@ -10,24 +10,22 @@ yukon.support.deviceDefinitions = (function () {
     
     var _initialized = false,
 
-        mod;
-
     mod = {
             
         init: function () {
             if (_initialized) return;
             $('.deviceDefinition-select').on('change', function () {
-                var currentId=$(this).attr('id');
+                var currentId = $(this).attr('id');
                 $('.deviceDefinition-select').each(function() {
-                    if($(this).attr('id')!=currentId){
-                        $(this).val('-1');
+                    if($(this).attr('id') != currentId){
+                        $(this).val('');
                     }
                 });
             	$('#filterForm').submit();
             });
 
             _initialized = true;
-        },
+        }
         
     };
 
