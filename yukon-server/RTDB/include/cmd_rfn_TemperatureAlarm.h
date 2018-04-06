@@ -14,8 +14,6 @@ public:
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response ) = 0;
 
-    virtual std::string getCommandName() = 0;
-
     struct AlarmConfiguration
     {
         bool        alarmEnabled;

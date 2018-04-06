@@ -46,6 +46,7 @@ class IM_EX_DEVDB RfnFocusAlLcdConfigurationReadCommand : public RfnFocusAlLcdCo
 public:
     boost::optional<MetricVector> getDisplayItemsReceived() const;
     boost::optional<unsigned char> getDisplayItemDurationReceived() const;
+
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
     std::string getCommandName() override;
 
@@ -63,8 +64,10 @@ class IM_EX_DEVDB RfnFocusAlLcdConfigurationWriteCommand : public RfnFocusAlLcdC
 {
 public:
     RfnFocusAlLcdConfigurationWriteCommand( const MetricVector &metrics_, const unsigned char displayItemDuration_ );
+
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
     std::string getCommandName() override;
+
     const MetricVector metrics;
     const unsigned char displayItemDuration;
 

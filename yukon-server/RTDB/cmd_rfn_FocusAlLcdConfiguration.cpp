@@ -214,7 +214,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
 std::string RfnFocusAlLcdConfigurationReadCommand::getCommandName()
 {
-    return "Focus All Lcd Configuration Read Request";
+    return "Lcd Configuration Read Request";
 }
 
 
@@ -242,7 +242,7 @@ RfnFocusAlLcdConfigurationWriteCommand::RfnFocusAlLcdConfigurationWriteCommand( 
 
 std::string RfnFocusAlLcdConfigurationWriteCommand::getCommandName()
 {
-    return "Focus All Lcd Configuration Write Request";
+    return "Lcd Configuration Write Request";
 }
 
 unsigned char RfnFocusAlLcdConfigurationWriteCommand::getOperation() const

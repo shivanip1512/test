@@ -10,12 +10,14 @@ namespace Commands {
 //  Delegate directly to the individual command decode method
 RfnCommandResultList RfnIndividualCommand::handleResponse(const CtiTime now, const RfnResponsePayload &response)
 {
-    try {
+    try
+    {
         RfnCommandResult result = decodeCommand(now, response);
         result.description = getCommandName() + " " + result.description;
         return { result };
     }
-    catch (YukonErrorException yee) {
+    catch (YukonErrorException yee)
+    {
         yee.error_description = getCommandName() + " " + yee.error_description;
         throw yee;
     }

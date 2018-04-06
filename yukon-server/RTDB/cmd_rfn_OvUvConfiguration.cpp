@@ -91,7 +91,7 @@ RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
 
 std::string RfnOvUvConfigurationCommand::getCommandName()
 {
-    return "Ov/Uv Configuration Request";
+    return "OV/UV Configuration Request";
 }
 
 

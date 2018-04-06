@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_send_no_items)
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
-        std::string exp = "Display metrics successfully set"
+        std::string exp = "Display metrics successfully set:"
             "\nNo display metrics"
             "\nDisconnect display: disabled"
             "\nLCD cycle time: (default)"
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_send_no_items_disconnect_omitted)
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
-        std::string exp = "Display metrics successfully set"
+        std::string exp = "Display metrics successfully set:"
             "\nNo display metrics"
             "\nLCD cycle time: (default)"
             "\nDisplay digits: 5x1";
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_send_3_items)
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
-        std::string exp = "Display metrics successfully set"
+        std::string exp = "Display metrics successfully set:"
                           "\nDisplay metric 1: Metric Slot Disabled"
                           "\nDisplay metric 2: No Segments"
                           "\nDisplay metric 3: All Segments"
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(test_send_all_items)
 
         RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
 
-        std::string exp = "Display metrics successfully set"
+        std::string exp = "Display metrics successfully set:"
                           "\nDisplay metric 1: Metric Slot Disabled"
                           "\nDisplay metric 2: No Segments"
                           "\nDisplay metric 3: All Segments"

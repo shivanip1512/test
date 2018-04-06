@@ -249,7 +249,7 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
 
 std::string RfnCentronGetLcdConfigurationCommand::getCommandName()
 {
-    return "Centron Get Lcd Configuration Request";
+    return "Get Lcd Configuration Request";
 }
 
 //  Decode a Lcd configuration response
@@ -273,7 +273,7 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
     validate(Condition(metrics_nbr == 0, ClientErrors::InvalidData)
             << "Invalid number of display metrics - (" << metrics_nbr << ", expecting 0)");
 
-    resultDescription << "Display metrics successfully set" << describeMetrics(display_metrics);
+    resultDescription << "Display metrics successfully set:" << describeMetrics(display_metrics);
 
     if( disconnect_display )
     {
@@ -309,7 +309,7 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
 
 std::string RfnCentronSetLcdConfigurationCommand::getCommandName()
 {
-    return "Centron Set Lcd Configuration Request";
+    return "Set Lcd Configuration Request";
 }
 
 //  returns the command code

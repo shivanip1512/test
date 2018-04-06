@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display )
             const auto & result = results.front();
 
             const std::string exp =
-                    "Focus All Lcd Configuration Write Request Status: Success (0)"
+                    "Lcd Configuration Write Request Status: Success (0)"
                     "\nDisplay items sent:"
                     "\nLCD cycle time : 8 seconds"
                     "\nDisplay metric 1 : Delivered kWh (5 digit)"
