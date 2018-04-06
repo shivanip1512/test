@@ -198,7 +198,7 @@ boost::optional<RfnTouConfigurationCommand::TouState> RfnTouConfigurationCommand
 
 std::string RfnTouConfigurationCommand::getCommandName()
 {
-    return "TOU configuration Request";
+    return "TOU Configuration Request";
 }
 
 //-----------------------------------------------------------------------------
