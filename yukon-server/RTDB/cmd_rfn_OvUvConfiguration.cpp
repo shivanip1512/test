@@ -89,6 +89,11 @@ RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
     return "Status: " + *status + " (" + std::to_string(response[1]) + ")";
 }
 
+std::string RfnOvUvConfigurationCommand::getCommandName()
+{
+    return "Ov/Uv Configuration Request";
+}
+
 
 ////////////////////////
 ///
@@ -271,6 +276,11 @@ RfnCommand::Bytes RfnGetOvUvAlarmConfigurationCommand::getCommandData()
 RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration  RfnGetOvUvAlarmConfigurationCommand::getAlarmConfiguration() const
 {
     return _alarmConfig;
+}
+
+std::string RfnGetOvUvAlarmConfigurationCommand::getCommandName()
+{
+    return "Get Ov/Uv Alarm Configuration Request";
 }
 
 

@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfDa_getconfig_dnp_address )
 
             const auto & result = results.front();
 
-            BOOST_CHECK_EQUAL( result.description, "Outstation DNP3 address: 4660" );
+            BOOST_CHECK_EQUAL( result.description, "Da Read Dnp Slave Address Request Outstation DNP3 address: 4660" );
             BOOST_CHECK_EQUAL( result.points.size(), 0 );
 
             dut.extractCommandResult( *command );

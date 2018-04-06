@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
         const auto & commandResult = commandResults.front();
 
         const std::string expectedDescription =
-            "Status: Success (0)"
+            "Channel Selection Request Status: Success (0)"
             "\nChannel Registration Full Description:"
             "\nMetric(s) descriptors:"
             "\nWatt hour received (2): Scaling Factor: 1"

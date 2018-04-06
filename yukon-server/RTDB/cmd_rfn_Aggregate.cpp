@@ -155,15 +155,17 @@ try
         {
             try
             {
-                aggregateResults.emplace_back(
-                    (*cmd)->decodeCommand(
-                        now,
-                        { response.cbegin() + pos,
-                          response.cbegin() + pos + length }));
+                RfnCommandResult result = (*cmd)->decodeCommand(
+                                              now,
+                                              { response.cbegin() + pos,
+                                              response.cbegin() + pos + length });
+
+                result.description = (*cmd)->getCommandName() + " " + result.description;
+                aggregateResults.push_back(result);
             }
             catch( const CommandException & ce )
             {
-                aggregateResults.emplace_back(ce.error_description, ce.error_code);
+                aggregateResults.emplace_back((*cmd)->getCommandName() + " " + ce.error_description, ce.error_code);
             }
 
             _statuses.emplace(contextId, aggregateResults.back().status);

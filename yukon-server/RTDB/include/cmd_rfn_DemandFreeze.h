@@ -112,6 +112,8 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response ) = 0;
+
+    virtual std::string getCommandName() = 0;
 };
 
 
@@ -131,6 +133,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
     const unsigned char freezeDay;
 };
@@ -152,6 +156,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
 };
 
@@ -205,6 +211,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
     DemandFreezeData getDemandFreezeData() const;
 

@@ -527,6 +527,11 @@ RfnCommandResult RfnChannelSelectionCommand::decodeCommand( const CtiTime now,
     return description + "\n" + decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()), longTlvs ), getExpectedTlvType() );
 }
 
+std::string RfnChannelSelectionCommand::getCommandName()
+{
+    return "Channel Selection Request";
+}
+
 std::string RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, const unsigned char tlvTypeExpected )
 {
     validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
@@ -647,6 +652,11 @@ RfnCommandResult RfnChannelIntervalRecordingCommand::decodeCommand( const CtiTim
             << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
 
     return description + "\n" + decodeTlv( tlvs[0] );
+}
+
+std::string RfnChannelIntervalRecordingCommand::getCommandName()
+{
+    return "Channel Interval Recording Request";
 }
 
 namespace RfnChannelIntervalRecording {

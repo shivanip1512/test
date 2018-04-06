@@ -15,6 +15,8 @@ public:
     //  Single-command (non-aggregate) decode methods
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResult error(const CtiTime now, const YukonError_t errorCode);
+    
+    virtual std::string getCommandName() = 0;
 
 protected:
     enum UnitOfMeasure

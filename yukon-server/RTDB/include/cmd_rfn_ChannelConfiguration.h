@@ -82,7 +82,9 @@ protected:
 
 public:
     RfnCommandResult decodeCommand( const CtiTime now,
-                                    const RfnResponsePayload & response );
+                                    const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 };
 
 /**
@@ -158,7 +160,9 @@ protected:
 
 public:
     RfnCommandResult decodeCommand( const CtiTime now,
-                                    const RfnResponsePayload & response );
+                                    const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 };
 
 namespace RfnChannelIntervalRecording {

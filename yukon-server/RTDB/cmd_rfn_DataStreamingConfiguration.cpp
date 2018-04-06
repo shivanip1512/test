@@ -200,6 +200,11 @@ RfnCommandResult RfnDataStreamingGetMetricsListCommand::decodeCommand(const CtiT
     return createJson(cr, _paoType);
 }
 
+std::string RfnDataStreamingGetMetricsListCommand::getCommandName()
+{
+    return "Data Streaming Get Metrics List Request";
+}
+
 
 RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(const DeviceTypes paoType, StreamingState enabled)
     :   RfnDataStreamingConfigurationCommand(paoType),
@@ -279,6 +284,11 @@ RfnCommandResult RfnDataStreamingSetMetricsCommand::decodeCommand(const CtiTime 
     }
 
     return json;
+}
+
+std::string RfnDataStreamingSetMetricsCommand::getCommandName()
+{
+    return "Data Streaming Set Metrics Request";
 }
 
 

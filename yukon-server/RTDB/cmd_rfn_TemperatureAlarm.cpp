@@ -92,7 +92,7 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 
     _commandStatus = statusDescription->first;
 
-    return "Temperature Alarm Request Status: " + statusDescription->second + " (" + std::to_string(response[2]) + ")";
+    return "Status: " + statusDescription->second + " (" + std::to_string(response[2]) + ")";
 }
 
 
@@ -203,6 +203,11 @@ auto RfnSetTemperatureAlarmConfigurationCommand::getAlarmConfiguration() const -
     return boost::none;
 }
 
+std::string RfnSetTemperatureAlarmConfigurationCommand::getCommandName()
+{
+    return "Set Temperature Alarm Configuration Request";
+}
+
 
 RfnCommand::Bytes RfnSetTemperatureAlarmConfigurationCommand::getCommandData()
 {
@@ -276,6 +281,11 @@ RfnGetTemperatureAlarmConfigurationCommand::RfnGetTemperatureAlarmConfigurationC
 auto RfnGetTemperatureAlarmConfigurationCommand::getAlarmConfiguration() const -> boost::optional<AlarmConfiguration>
 {
     return _configuration;
+}
+
+std::string RfnGetTemperatureAlarmConfigurationCommand::getCommandName()
+{
+    return "Get Temperature Alarm Configuration Request";
 }
 
 

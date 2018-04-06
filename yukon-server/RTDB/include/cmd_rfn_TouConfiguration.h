@@ -18,6 +18,8 @@ public:
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
 
+    std::string getCommandName() override;
+
     enum Rate
     {
         RateA,

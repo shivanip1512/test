@@ -65,6 +65,8 @@ public:
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
+    std::string getCommandName() override;
+
 private:
     enum
     {
@@ -86,6 +88,8 @@ public:
     RfnDataStreamingSetMetricsCommand(const DeviceTypes paoType, MetricList&& states);
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
+
+    std::string getCommandName() override;
 
 private:
     const StreamingState _enabled;

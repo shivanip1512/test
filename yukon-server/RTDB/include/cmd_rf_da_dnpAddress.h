@@ -32,6 +32,8 @@ public:
     unsigned short getDnpSlaveAddress() const;
 
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 };
 
 

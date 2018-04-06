@@ -196,6 +196,11 @@ boost::optional<RfnTouConfigurationCommand::TouState> RfnTouConfigurationCommand
     return _touState_received;
 }
 
+std::string RfnTouConfigurationCommand::getCommandName()
+{
+    return "Tou configuration Request";
+}
+
 //-----------------------------------------------------------------------------
 //  RFN TOU configuration command schedule
 //-----------------------------------------------------------------------------

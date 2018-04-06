@@ -73,6 +73,8 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response ) = 0;
+
+    virtual std::string getCommandName() = 0;
 };
 
 
@@ -105,6 +107,8 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
+    std::string getCommandName() override;
+
     boost::optional<unsigned> getVoltageAveragingInterval() const;
     boost::optional<unsigned> getLoadProfileInterval()      const;
 
@@ -128,6 +132,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
     const unsigned voltageAveragingInterval,    // seconds
                    loadProfileInterval;         // minutes
@@ -170,6 +176,8 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
+    std::string getCommandName() override;
+
     boost::optional<RecordingOption> getRecordingOption() const;
     boost::optional<CtiTime>         getEndTime() const;
 
@@ -199,6 +207,8 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
+    std::string getCommandName() override;
+
     const RecordingOption recordingOption;
 };
 
@@ -215,6 +225,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
     const RecordingOption recordingOption;
 };
@@ -233,6 +245,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
 protected:
 

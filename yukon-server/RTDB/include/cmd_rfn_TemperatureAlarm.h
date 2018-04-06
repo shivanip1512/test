@@ -14,6 +14,8 @@ public:
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response ) = 0;
 
+    virtual std::string getCommandName() = 0;
+
     struct AlarmConfiguration
     {
         bool        alarmEnabled;
@@ -104,6 +106,8 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
+    std::string getCommandName() override;
+
     boost::optional<AlarmConfiguration> getAlarmConfiguration() const override;
 
 protected:
@@ -123,6 +127,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
     boost::optional<AlarmConfiguration> getAlarmConfiguration() const override;
 

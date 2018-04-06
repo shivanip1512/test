@@ -276,6 +276,11 @@ RfnCommandResult RfnRemoteDisconnectSetConfigurationCommand::decodeCommand( cons
     return result;
 }
 
+std::string RfnRemoteDisconnectSetConfigurationCommand::getCommandName()
+{
+    return "Remote Disconnect Set Configuration Request";
+}
+
 
 BaseCmd::TlvList RfnRemoteDisconnectSetConfigurationCommand::getTlvs()
 {
@@ -430,6 +435,11 @@ RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( cons
     result.description += decodeDisconnectConfigTlv( tlvs[0] );
 
     return result;
+}
+
+std::string RfnRemoteDisconnectGetConfigurationCommand::getCommandName()
+{
+    return "Remote Disconnect Get Configuration Request";
 }
 
 }

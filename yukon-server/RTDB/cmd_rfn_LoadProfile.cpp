@@ -170,6 +170,11 @@ boost::optional<unsigned> RfnVoltageProfileGetConfigurationCommand::getLoadProfi
     return _loadProfileInterval;
 }
 
+std::string RfnVoltageProfileGetConfigurationCommand::getCommandName()
+{
+    return "Voltage Profile Get Configuration Request";
+}
+
 //
 // Voltage profile set configuration
 //
@@ -198,6 +203,11 @@ RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationComma
             << ") overflow (maximum: 255)" );
 }
 
+
+std::string RfnVoltageProfileSetConfigurationCommand::getCommandName()
+{
+    return "Voltage Profile Set Configuration Request";
+}
 
 RfnLoadProfileCommand::TlvList RfnVoltageProfileSetConfigurationCommand::getTlvs()
 {
@@ -267,6 +277,11 @@ bool RfnLoadProfileGetRecordingCommand::isPermanentEnabled() const
 bool RfnLoadProfileGetRecordingCommand::isTemporaryEnabled() const
 {
     return _isTemporaryEnabled;
+}
+
+std::string RfnLoadProfileGetRecordingCommand::getCommandName()
+{
+    return "Load Profile Get Recording Request";
 }
 
 
@@ -376,6 +391,11 @@ RfnCommandResult RfnLoadProfileSetTemporaryRecordingCommand::decodeCommand( cons
     return result;
 }
 
+std::string RfnLoadProfileSetTemporaryRecordingCommand::getCommandName()
+{
+    return "Load Profile Set Temporary Recording Request";
+}
+
 
 //
 // Load Profile Set Permanent Recording State
@@ -401,6 +421,11 @@ RfnCommandResult RfnLoadProfileSetPermanentRecordingCommand::decodeCommand( cons
             << "Invalid TLV count (" << tlvs.size() << ")" );
 
     return result;
+}
+
+std::string RfnLoadProfileSetPermanentRecordingCommand::getCommandName()
+{
+    return "Load Profile Set Permanent Recording Request";
 }
 
 
@@ -542,6 +567,11 @@ RfnCommandResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiTime n
             << "Response TLV does not match expected size (" << lpPointDescriptor.size() << ", expected " << pos << ")" );
 
     return result;
+}
+
+std::string RfnLoadProfileReadPointsCommand::getCommandName()
+{
+    return "Load Profile Read Points Request";
 }
 
 

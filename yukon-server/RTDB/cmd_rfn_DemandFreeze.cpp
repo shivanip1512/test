@@ -141,6 +141,11 @@ RfnCommandResult RfnDemandFreezeConfigurationCommand::decodeCommand( const CtiTi
     return result;
 }
 
+std::string RfnDemandFreezeConfigurationCommand::getCommandName()
+{
+    return "Demand Freeze Configuration Request";
+}
+
 
 ////
 
@@ -171,6 +176,11 @@ RfnCommandResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime n
             << "Invalid TLV count (" << response[4] << ")" );
 
     return result;
+}
+
+std::string RfnImmediateDemandFreezeCommand::getCommandName()
+{
+    return "Immediate Demand Freeze Request";
 }
 
 
@@ -392,6 +402,11 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
     result.description += describeFreezeData(_freezeData);
 
     return result;
+}
+
+std::string RfnGetDemandFreezeInfoCommand::getCommandName()
+{
+    return "Get Demand Freeze Info Request";
 }
 
 

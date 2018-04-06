@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
             BOOST_CHECK_EQUAL(
                     result.description,
-                    "Status: Success (0)\n"
+                    "Channel Interval Recording Request Status: Success (0)\n"
                     "Channel Interval Recording Full Description:\n"
                     "Metric(s) descriptors:\n"
                     "Watt hour total/sum (3): Scaling Factor: 1\n"
@@ -449,7 +449,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
             BOOST_CHECK_EQUAL(
                     result.description,
-                    "Status: Success (0)\n"
+                    "Channel Interval Recording Request Status: Success (0)\n"
                     "Channel Interval Recording Full Description:\n"
                     "Metric(s) descriptors:\n"
                     "Watt hour total/sum (3): Scaling Factor: 1\n"
@@ -654,7 +654,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
         const auto & result = *itr++;
 
         BOOST_CHECK_EQUAL(result.description, 
-            "Status: Success (0)"
+            "Channel Selection Request Status: Success (0)"
             "\nChannel Registration Full Description:"
             "\nMetric(s) descriptors:"
             "\nWatt hour delivered (1): Scaling Factor: 1"
@@ -665,14 +665,14 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
     {
         const auto & result = *itr++;
 
-        BOOST_CHECK_EQUAL(result.description, "Number of bytes for channel descriptors received 0, expected >= 1");
+        BOOST_CHECK_EQUAL(result.description, "Channel Interval Recording Request Number of bytes for channel descriptors received 0, expected >= 1");
         BOOST_CHECK_EQUAL(result.status, 264);
         BOOST_CHECK(result.points.empty());
     }
     {
         const auto & result = *itr++;
 
-        BOOST_CHECK_EQUAL(result.description, "Temperature Alarm Request Status: Success (0)");
+        BOOST_CHECK_EQUAL(result.description, "Set Temperature Alarm Configuration Request Status: Success (0)");
         BOOST_CHECK_EQUAL(result.status, 0);
         BOOST_CHECK(result.points.empty());
     }

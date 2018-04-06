@@ -104,6 +104,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload &response ) override;
 
+    std::string getCommandName() override;
+
 protected:
 
     RfnRemoteDisconnectSetConfigurationCommand();
@@ -193,6 +195,8 @@ public:
     RfnRemoteDisconnectGetConfigurationCommand();
 
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 };
 
 }

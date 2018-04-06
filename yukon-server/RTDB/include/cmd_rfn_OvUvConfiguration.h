@@ -61,6 +61,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 };
 
 
@@ -182,6 +184,8 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
+
+    std::string getCommandName() override;
 
     AlarmConfiguration  getAlarmConfiguration() const;
 

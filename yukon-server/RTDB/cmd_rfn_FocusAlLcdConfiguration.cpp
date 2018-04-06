@@ -212,6 +212,11 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
     return description;
 }
 
+std::string RfnFocusAlLcdConfigurationReadCommand::getCommandName()
+{
+    return "Focus All Lcd Configuration Read Request";
+}
+
 
 /**
  * get the display items received, will contain empty vector is valid response is received with no display items
@@ -233,6 +238,11 @@ RfnFocusAlLcdConfigurationWriteCommand::RfnFocusAlLcdConfigurationWriteCommand( 
     metrics(metrics_),
     displayItemDuration(displayItemDuration_)
 {
+}
+
+std::string RfnFocusAlLcdConfigurationWriteCommand::getCommandName()
+{
+    return "Focus All Lcd Configuration Write Request";
 }
 
 unsigned char RfnFocusAlLcdConfigurationWriteCommand::getOperation() const

@@ -878,7 +878,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
 
         const auto & result = results.front();
 
-        BOOST_CHECK_EQUAL( result.description, "Temperature Alarm Request Status: Success (0)" );
+        BOOST_CHECK_EQUAL( result.description, "Set Temperature Alarm Configuration Request Status: Success (0)" );
 
         dut.extractCommandResult(*command);
 
@@ -1267,7 +1267,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 
                 const auto & result = results.front();
 
-                BOOST_CHECK_EQUAL( result.description, "Status: Success (0)" );
+                BOOST_CHECK_EQUAL( result.description, "Load Profile Set Permanent Recording Request Status: Success (0)" );
             }
 
             dut.extractCommandResult( *command );
@@ -1333,7 +1333,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 
                 const auto & result = results.front();
 
-                BOOST_CHECK_EQUAL( result.description, "Status: Success (0)" );
+                BOOST_CHECK_EQUAL( result.description, "Load Profile Set Permanent Recording Request Status: Success (0)" );
             }
 
             dut.extractCommandResult( *command );

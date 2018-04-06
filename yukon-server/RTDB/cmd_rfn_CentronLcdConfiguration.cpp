@@ -247,6 +247,11 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
     return resultDescription.str();
 }
 
+std::string RfnCentronGetLcdConfigurationCommand::getCommandName()
+{
+    return "Centron Get Lcd Configuration Request";
+}
+
 //  Decode a Lcd configuration response
 RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
@@ -300,6 +305,11 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
     }
 
     return resultDescription.str();
+}
+
+std::string RfnCentronSetLcdConfigurationCommand::getCommandName()
+{
+    return "Centron Set Lcd Configuration Request";
 }
 
 //  returns the command code

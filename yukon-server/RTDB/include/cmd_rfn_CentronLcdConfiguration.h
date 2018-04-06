@@ -28,6 +28,8 @@ public:
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
 
+    virtual std::string getCommandName() = 0;
+
 protected:
 
     enum
@@ -59,6 +61,8 @@ public:
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
 
+    std::string getCommandName() override;
+
     const metric_vector_t display_metrics;
     const boost::optional<DisconnectDisplayState> disconnect_display;
     const DisplayDigits display_digits;
@@ -79,6 +83,8 @@ public:
     RfnCentronGetLcdConfigurationCommand();
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
+
+    std::string getCommandName() override;
 
     metric_map_t getDisplayMetrics() const;
     boost::optional<bool> getDisconnectDisplayDisabled() const;

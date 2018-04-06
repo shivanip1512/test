@@ -9,7 +9,6 @@ namespace Commands {
 class IM_EX_DEVDB RfnFocusAlLcdConfigurationCommand : public RfnIndividualCommand
 {
 public:
-
     enum Metrics
     {
         deliveredKwh6x1,
@@ -36,7 +35,6 @@ public:
     typedef std::vector<Metrics> MetricVector;
 
 protected:
-
     virtual unsigned char getCommandCode() const;
     virtual unsigned char getOperation() const = 0;
     virtual Bytes         getCommandData() = 0;
@@ -48,8 +46,8 @@ class IM_EX_DEVDB RfnFocusAlLcdConfigurationReadCommand : public RfnFocusAlLcdCo
 public:
     boost::optional<MetricVector> getDisplayItemsReceived() const;
     boost::optional<unsigned char> getDisplayItemDurationReceived() const;
-
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
+    std::string getCommandName() override;
 
 protected:
     virtual unsigned char getOperation() const;
@@ -65,9 +63,8 @@ class IM_EX_DEVDB RfnFocusAlLcdConfigurationWriteCommand : public RfnFocusAlLcdC
 {
 public:
     RfnFocusAlLcdConfigurationWriteCommand( const MetricVector &metrics_, const unsigned char displayItemDuration_ );
-
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
-
+    std::string getCommandName() override;
     const MetricVector metrics;
     const unsigned char displayItemDuration;
 
