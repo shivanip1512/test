@@ -7,7 +7,15 @@
     "Itron" : [ "Itron SENTINEL-L0", "Itron SENTINEL-L1", "Itron SENTINEL-L2", "Itron SENTINEL-L3", "Itron SENTINEL-L4" ]
   },
   "Meter combinations" : [ [ "Elster A3D", "Elster A3T", "Elster A3K", "Elster A3R" ], [ "Elster A3T", "Elster A3K", "Elster A3R" ], [ "Elster A3K", "Elster A3R" ], [ "Elster A3K" ], [ "Elster A3R" ], [ "Itron SENTINEL-L4", "Itron SENTINEL-L3", "Itron SENTINEL-L2", "Itron SENTINEL-L1", "Itron SENTINEL-L0" ], [ "Itron SENTINEL-L4", "Itron SENTINEL-L3", "Itron SENTINEL-L2", "Itron SENTINEL-L1" ], [ "Itron SENTINEL-L4", "Itron SENTINEL-L3", "Itron SENTINEL-L2" ], [ "Itron SENTINEL-L4", "Itron SENTINEL-L3" ], [ "Itron SENTINEL-L4" ], [ "Landis and Gyr S4-AD", "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RD", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR" ], [ "Landis and Gyr S4-AD", "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RD", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ], [ "Landis and Gyr S4-RD", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR" ], [ "Landis and Gyr S4-RD", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ], [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR" ], [ "Landis and Gyr S4-AT", "Landis and Gyr S4-AR", "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ], [ "Landis and Gyr S4-RT", "Landis and Gyr S4-RR" ], [ "Landis and Gyr S4-RT", "Landis and Gyr S4-RR", "Landis and Gyr S4x E650" ], [ "Landis and Gyr S4x E650" ], [ "Landis and Gyr FocusRXD-500", "Landis and Gyr FocusRXT-500", "Landis and Gyr FocusRXR-500", "Landis and Gyr FocusRXD-SD-500", "Landis and Gyr FocusRXT-SD-500", "Landis and Gyr FocusRXR-SD-500" ], [ "Landis and Gyr FocusRXD-500", "Landis and Gyr FocusRXT-500", "Landis and Gyr FocusRXR-500", "Landis and Gyr FocusRXD-SD-500", "Landis and Gyr FocusRXT-SD-500", "Landis and Gyr FocusRXR-SD-500", "Landis and Gyr FocusAXD-500", "Landis and Gyr FocusAXT-500", "Landis and Gyr FocusAXR-500", "Landis and Gyr FocusAXD-SD-500", "Landis and Gyr FocusAXT-SD-500", "Landis and Gyr FocusAXR-SD-500" ] ],
-  "Units of measure" : [ "Watt-Hour", "Var-Hour", "Q-Hour", "VA-Hour", "Time (in seconds)", "Volts (10ths Volt)", "Current (10ths Amp)", "Voltage Angle (10ths Degree)", "Current Angle (10ths Degree)", "Power Factor", "Gallon", "No units", "Watt", "var", "Q", "VA", "Outage Count", "Restore Count", "Outage Blink Count", "Restore Blink Count", "°C", "Unknown" ],
+  "Units of measure" : [ {
+    "Wh" : "Watt-Hour"
+  }, {
+    "Varh" : "Var-Hour"
+  }, {
+    "Qh" : "Q-Hour"
+  }, {
+    "VAh" : "VA-Hour"
+  }, "Time (in seconds)", "Volts (10ths Volt)", "Current (10ths Amp)", "Voltage Angle (10ths Degree)", "Current Angle (10ths Degree)", "Power Factor", "Gallon", "No units", "Watt", "var", "Q", "VA", "Outage Count", "Restore Count", "Outage Blink Count", "Restore Blink Count", "°C", "Unknown" ],
   "Modifiers" : {
     "Primary / Secondary" : [ "Primary", "Secondary" ],
     "Phase" : [ "Phase A", "Phase B", "Phase C" ],
