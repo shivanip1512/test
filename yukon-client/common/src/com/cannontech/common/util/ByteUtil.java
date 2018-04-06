@@ -55,6 +55,14 @@ public class ByteUtil {
         return bytes;
     }
     
+    public static List<Byte> getTimestampBytesList(Instant timestamp) {
+        List<Byte> bytes = new ArrayList<>();
+        for (byte b : getTimestampBytes(timestamp)) {
+            bytes.add(b);
+        }
+        return bytes;
+    }
+    
     public static byte[] convertListToArray(List<Byte> list) {
         Byte[] wrappedByteArray = list.toArray(new Byte[list.size()]);
         return ArrayUtils.toPrimitive(wrappedByteArray);

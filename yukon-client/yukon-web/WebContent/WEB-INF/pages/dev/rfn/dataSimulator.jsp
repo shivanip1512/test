@@ -47,29 +47,31 @@
     </div>
     <div id="taskStatusDiv" class="column two nogutter">
         <tags:sectionContainer title="Simulation status by range">
-         <div id="taskStatusMessage"></div>
-                    <div>
-                        <div><span id="status-running" style="font-size:12pt;color:blue;">${dataSimulatorStatus.running}</span></div>
-                        <div>Start Time: <span id="status-start-time">${dataSimulatorStatus.startTime}</span></div>
-                        <div>Stop Time: <span id="status-stop-time">${dataSimulatorStatus.stopTime}</span></div>
-                        <div>Success:  <span id="status-num-success" class="success">${dataSimulatorStatus.success}</span></div>
-                        <div>Failure:  <span id="status-num-failed" class="error">${dataSimulatorStatus.failure}</span></div>
-                        <div>Last Injection Time: <span id="status-last-injection-time">${dataSimulatorStatus.lastInjectionTime}</span></div>
-                    </div>
-           </div>
+        <div id="taskStatusMessage"></div>
+            <div>
+                <div><span id="status-running" style="font-size:12pt;color:blue;">${dataSimulatorStatus.running}</span></div>
+                <div>Start Time: <span id="status-start-time">${dataSimulatorStatus.startTime}</span></div>
+                <div>Stop Time: <span id="status-stop-time">${dataSimulatorStatus.stopTime}</span></div>
+                <div>Success:  <span id="status-num-success" class="success">${dataSimulatorStatus.success}</span></div>
+                <div>Failure:  <span id="status-num-failed" class="error">${dataSimulatorStatus.failure}</span></div>
+                <div>Last Injection Time: <span id="status-last-injection-time">${dataSimulatorStatus.lastInjectionTime}</span></div>
+            </div>
+        </div>
         </tags:sectionContainer>
         <div id="existingDeviceTaskStatusDiv" class="column two nogutter">
         <tags:sectionContainer title="Simulation status for all RFN LCRs">
-         <div id="existingDeviceTaskStatusMessage"></div>
-                    <div>
-                        <div><span id="existing-status-running" style="font-size:12pt;color:blue;">${existingDataSimulatorStatus.running}</span></div>
-                        <div>Start Time: <span id="existing-status-start-time">${existingDataSimulatorStatus.startTime}</span></div>
-                        <div>Stop Time: <span id="existing-status-stop-time">${existingDataSimulatorStatus.stopTime}</span></div>
-                        <div>Success:  <span id="existing-status-num-success" class="success">${existingDataSimulatorStatus.success}</span></div>
-                        <div>Failure:  <span id="existing-status-num-failed" class="error">${existingDataSimulatorStatus.failure}</span></div>
-                        <div>Last Injection Time: <span id="existing-status-last-injection-time">${existingDataSimulatorStatus.lastInjectionTime}</span></div>
-                    </div>
-                    </div>
+        <div id="existingDeviceTaskStatusMessage"></div>
+            <div>
+                <div><span id="existing-status-running" style="font-size:12pt;color:blue;">${existingDataSimulatorStatus.running}</span></div>
+                <div>Start Time: <span id="existing-status-start-time">${existingDataSimulatorStatus.startTime}</span></div>
+                <div>Stop Time: <span id="existing-status-stop-time">${existingDataSimulatorStatus.stopTime}</span></div>
+                <div>Success:  <span id="existing-status-num-success" class="success">${existingDataSimulatorStatus.success}</span></div>
+                <div>Failure:  <span id="existing-status-num-failed" class="error">${existingDataSimulatorStatus.failure}</span></div>
+                <div>Last Injection Time: <span id="existing-status-last-injection-time">${existingDataSimulatorStatus.lastInjectionTime}</span></div>
+                <hr>
+                <cti:icon icon="icon-clock"/>Insertion time is calculated as a minute of the day, using the formula (serialNumber/10) % 1440
+            </div>
+        </div>
         </tags:sectionContainer>
     </div>
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>

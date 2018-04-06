@@ -110,8 +110,9 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 }
                 
                 // If the point is missing, and it's PQR data, create the point automatically
-                if (!attributeService.pointExistsForAttribute(device, entry.getAttribute()) && entry.isPowerQualityResponse()) {
-                    log.info("Creating point for PQR attribute (" + entry.getAttribute() + ") on device: " 
+                boolean pointExists = attributeService.pointExistsForAttribute(device, entry.getAttribute());
+                if (!pointExists && entry.isPowerQualityResponse()) {
+                    log.debug("Creating point for PQR attribute (" + entry.getAttribute() + ") on device: " 
                              + device.getName() + ".");
                     attributeService.createPointForAttribute(device, entry.getAttribute());
                 }

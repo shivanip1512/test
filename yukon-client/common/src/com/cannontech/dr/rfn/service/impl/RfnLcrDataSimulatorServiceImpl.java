@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBContext;
@@ -41,6 +42,8 @@ import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
+import com.cannontech.dr.rfn.model.PqrEventType;
+import com.cannontech.dr.rfn.model.PqrResponseType;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
@@ -59,6 +62,7 @@ import com.cannontech.dr.rfn.model.jaxb.DRReport.Relays.Relay.IntervalData.Inter
 import com.cannontech.dr.rfn.model.jaxb.ObjectFactory;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
+import com.cannontech.dr.rfn.tlv.TlvTypeLength;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.HashMultimap;
@@ -91,7 +95,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 3),
         PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
         CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
-        //Power Quality Response (GridBallast) fields:
+        //Power Quality Response fields:
         LOV_TRIGGER((byte)0x44, 2, 1),
         LOV_RESTORE((byte)0x45, 2, 1),
         LOV_TRIGGER_TIME((byte)0x46, 2, 1),
@@ -385,8 +389,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 outputStream.write(data);
                 
                 //Add PQR event log blob
-                //byte[] pqrEvents = generatePqrEvents(reportTime);
-                //TODO: outputStream.write(pqrEvents);
+                byte[] pqrEvents = generatePqrEvents(reportTime);
+                outputStream.write(pqrEvents);
                 
                 // Add verification messages
                 outputStream.write((0x16 >> 4) & 0x0f); // Upper nibble of first byte
@@ -431,35 +435,34 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 throw new RfnLcrSimulatorException("There was an error generating the TLV payload for serial number "
                         + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
             }
-        }
-        else {
-        // Generate raw XML for archive reading.
-        String xmlData = null;
-        try {
-            xmlData = getLcrReadXmlPayload(deviceParameters);
-            if (log.isTraceEnabled()) {
-                log.trace("RFN LCR simulator - device: " + deviceParameters.getRfnIdentifier().getSensorManufacturer()
-                    + "/" + deviceParameters.getRfnIdentifier().getSensorModel() + "/"
-                    + deviceParameters.getRfnIdentifier().getSensorSerialNumber() + " payload: " + xmlData);
-            }
-        } catch (JAXBException e) {
-            throw new RfnLcrSimulatorException("There was an error generating the XML payload for serial number "
-                + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
-        } catch (Exception e) {
-            throw new RfnLcrSimulatorException("There was an error generating the XML payload for serial number "
+        } else {
+            // Generate raw XML for archive reading.
+            String xmlData = null;
+            try {
+                xmlData = getLcrReadXmlPayload(deviceParameters);
+                if (log.isTraceEnabled()) {
+                    log.trace("RFN LCR simulator - device: " + deviceParameters.getRfnIdentifier().getSensorManufacturer()
+                        + "/" + deviceParameters.getRfnIdentifier().getSensorModel() + "/"
+                        + deviceParameters.getRfnIdentifier().getSensorSerialNumber() + " payload: " + xmlData);
+                }
+            } catch (JAXBException e) {
+                throw new RfnLcrSimulatorException("There was an error generating the XML payload for serial number "
                     + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
-        }
-        // Create EXI encoded payload with status header.
-        byte[] encodedXml = null;
-        try {
-            encodedXml = exiParsingService.encodePayload(xmlData);
-        } catch (TransmogrifierException | EXIOptionsException | IOException e) {
-            throw new RfnLcrSimulatorException("There was an error encoding XML payload to EXI for serial number "
-                + deviceParameters.getRfnIdentifier().getSensorManufacturer() + "/"
-                + deviceParameters.getRfnIdentifier().getSensorModel() + "/"
-                + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
-        }
-        payload = createPayload(deviceParameters, encodedXml);
+            } catch (Exception e) {
+                throw new RfnLcrSimulatorException("There was an error generating the XML payload for serial number "
+                        + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
+            }
+            // Create EXI encoded payload with status header.
+            byte[] encodedXml = null;
+            try {
+                encodedXml = exiParsingService.encodePayload(xmlData);
+            } catch (TransmogrifierException | EXIOptionsException | IOException e) {
+                throw new RfnLcrSimulatorException("There was an error encoding XML payload to EXI for serial number "
+                    + deviceParameters.getRfnIdentifier().getSensorManufacturer() + "/"
+                    + deviceParameters.getRfnIdentifier().getSensorModel() + "/"
+                    + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
+            }
+            payload = createPayload(deviceParameters, encodedXml);
         }
 
         RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
@@ -471,13 +474,47 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
         return readArchiveRequest;
     }
-
+    
     private byte[] generatePqrEvents(DateTime reportTime) {
-        Instant eventStart = reportTime.minus(Duration.standardHours(12)).toInstant();
-        //TODO
-        //1. Build a reasonable series of PqrEvents with timestamps based on reportTime
-        //2. Convert events into appropriate bytes
-        return null;
+        //Build a reasonable series of PqrEvents with timestamps based on reportTime
+        List<List<Byte>> events = new ArrayList<>();
+        
+        Instant startTime = reportTime.minus(Duration.standardHours(8)).toInstant(); //reportTime - 8h
+        events.add(buildEventBytes(startTime, PqrEventType.EVENT_DETECTED, PqrResponseType.OVER_VOLTAGE, (short)2421));
+        
+        Instant activeTime = startTime.plus(Duration.standardSeconds(2)); //startTime + 2s (1 for activation, 1 for randomization)
+        events.add(buildEventBytes(activeTime, PqrEventType.EVENT_SUSTAINED, PqrResponseType.OVER_VOLTAGE, (short)2422));
+        
+        Instant inactiveTime = activeTime.plus(Duration.standardMinutes(5)); //activeTime + 5m
+        events.add(buildEventBytes(inactiveTime, PqrEventType.RESTORE_DETECTED, PqrResponseType.OVER_VOLTAGE, (short)2409));
+        
+        Instant endTime = inactiveTime.plus(Duration.standardSeconds(2)); //inactiveTime + 2s (1 for deactivation, 1 for randomization)
+        events.add(buildEventBytes(endTime, PqrEventType.EVENT_COMPLETE, PqrResponseType.OVER_VOLTAGE, (short)2400));
+        
+        //Add the PQR log blob Type and Length values
+        int eventsLengthInBytes = 8 * events.size();
+        TlvTypeLength pqrEventsTypeLength = new TlvTypeLength(87, eventsLengthInBytes);
+        
+        List<Byte> bytes = new ArrayList<>();
+        bytes.addAll(pqrEventsTypeLength.bytesList());
+        
+        //Add the event values
+        bytes.addAll(events.stream()
+                           .flatMap(List::stream)
+                           .collect(Collectors.toList()));
+        
+        return ByteUtil.convertListToArray(bytes);
+    }
+    
+    private List<Byte> buildEventBytes(Instant timestamp, PqrEventType eventType, PqrResponseType responseType, short value) {
+        List<Byte> bytes = new ArrayList<>();
+        bytes.add(eventType.getValue());
+        bytes.addAll(ByteUtil.getTimestampBytesList(timestamp));
+        bytes.add(responseType.getValue());
+        ByteBuffer valueBytes = ByteBuffer.allocate(2).putShort(value);
+        bytes.add(valueBytes.get(0));
+        bytes.add(valueBytes.get(1));
+        return bytes;
     }
     
     private void writeUTC(ByteArrayOutputStream outputStream, DateTime reportTime) {
@@ -507,40 +544,39 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
      * Generate byte Array (part of TLV report) from TLVField enum and generate values for each field.
      */
     private byte[] generateTlvPointData() {
-        List<Byte> data = new ArrayList<>();
-        int index = 0;
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
         for (TLVField field : TLVField.values()) {
             int fieldCount = 0;
             while (fieldCount < field.frequency) {
                 int valueIndex = 0;
-                // Upper Nibble of first bye and Lower nibble of second byte makes FieldType in TLV format
-                data.add(index++, (byte) ((field.type >> 4) & 0x0f));
-                data.add(index++, (byte) ((field.type & 0x0f) << 4));
-                data.add(index++, (byte) field.length);
+                // Upper Nibble of first byte and Lower nibble of second byte makes FieldType in TLV format
+                data.write((byte) ((field.type >> 4) & 0x0f));
+                data.write((byte) ((field.type & 0x0f) << 4));
+                data.write((byte) field.length);
                 
                 if (field == TLVField.RELAY_N_RUNTIME || field == TLVField.RELAY_N_SHEDTIME ||
                     field == TLVField.RELAY_N_PROGRAM_ADDRESS|| field == TLVField.RELAY_N_SPLINTER_ADDRESS) {
                     
-                    data.add(index++, (byte) fieldCount);
+                    data.write((byte) fieldCount);
                     valueIndex++;
                 }
                 
                 if (field == TLVField.RELAY_N_REMAINING_CONTROLTIME) {
                     // 5 elements, first is relay number, last 4 are control time in seconds.
                     int remainingSeconds = 60*60*(valueIndex+1); // relay 1 = 1 hour, relay 2 = 2 hour.... 
-                    data.add(index++, (byte) fieldCount);
-                    data.add(index++, (byte) (remainingSeconds >> 24));
-                    data.add(index++, (byte) (remainingSeconds >> 16));
-                    data.add(index++, (byte) (remainingSeconds >> 8));
-                    data.add(index++, (byte) remainingSeconds);
+                    data.write((byte) fieldCount);
+                    data.write((byte) (remainingSeconds >> 24));
+                    data.write((byte) (remainingSeconds >> 16));
+                    data.write((byte) (remainingSeconds >> 8));
+                    data.write((byte) remainingSeconds);
                     valueIndex = field.length; // Let everyone know we took care of this field in its entirety
                 }
                 
                 if (field == TLVField.PROTECTION_TIME_RELAY_N || field == TLVField.CLP_TIME_FOR_RELAY_N) {
                     // 3 elements, first is relay number, the rest is a time possibly in seconds?
-                    data.add(index++, (byte) fieldCount);
-                    data.add(index++, (byte) 0);
-                    data.add(index++, (byte) 120);
+                    data.write((byte) fieldCount);
+                    data.write((byte) 0);
+                    data.write((byte) 120);
                     valueIndex = field.length; // Let everyone know we took care of this field in its entirety
                 }
 
@@ -551,123 +587,129 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                     byte[] relayStartTime = buffer.putLong(intervalStartTime).array();
                     // Add relay interval start time to byte array.
                     for (int i = 4; i < relayStartTime.length; i++) {
-                        data.add(index++, relayStartTime[i]);
+                        data.write(relayStartTime[i]);
                     }
                     valueIndex = field.length;
                 }
                 
-                //TODO get "reasonable" values from Joe Childs
                 if (field == TLVField.LOV_TRIGGER) {
-                    insertTwoByteTlvField(data, index, (short) 2420); // 1/10 volts
+                    insertTwoByteTlvField(data, (short) 2420); // 1/10 volts
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_RESTORE) {
-                    insertTwoByteTlvField(data, index, (short) 2400); // 1/10 volts
+                    insertTwoByteTlvField(data, (short) 2410); // 1/10 volts
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_TRIGGER_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_RESTORE_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_EVENT_COUNT) {
-                    insertTwoByteTlvField(data, index, (short) 10); // counts
+                    insertTwoByteTlvField(data, (short) 10); // counts
+                    valueIndex = field.length;
                 }
                 
                 //1000 millis / 60hz = 16.66... millis per oscillation
                 if (field == TLVField.LOF_TRIGGER) {
-                    insertTwoByteTlvField(data, index, (short) 18); // millis
+                    insertTwoByteTlvField(data, (short) 18); // millis
+                    valueIndex = field.length;
                 }
                 
                 //1000 millis / 60hz = 16.66... millis per oscillation
                 if (field == TLVField.LOF_RESTORE) {
-                    insertTwoByteTlvField(data, index, (short) 17); // millis
+                    insertTwoByteTlvField(data, (short) 17); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOF_TRIGGER_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOF_RESTORE_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOF_EVENT_COUNT) {
-                    insertTwoByteTlvField(data, index, (short) 10); // counts
+                    insertTwoByteTlvField(data, (short) 10); // counts
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOF_START_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOF_END_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_START_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_END_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                    insertTwoByteTlvField(data, (short) 1000); // millis
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOF_MIN_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, index, (short) 60); // seconds
+                    insertTwoByteTlvField(data, (short) 60); // seconds
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_MIN_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, index, (short) 60); // seconds
+                    insertTwoByteTlvField(data, (short) 60); // seconds
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOF_MAX_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, index, (short) (60*60)); // seconds
+                    insertTwoByteTlvField(data, (short) (60*60)); // seconds
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.LOV_MAX_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, index, (short) (60*60)); // seconds
+                    insertTwoByteTlvField(data, (short) (60*60)); // seconds
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.MINIMUM_EVENT_SEPARATION) {
-                    insertTwoByteTlvField(data, index, (short) 60); // seconds
+                    insertTwoByteTlvField(data, (short) 60); // seconds
+                    valueIndex = field.length;
                 }
                 
                 if (field == TLVField.POWER_QUALITY_RESPONSE_ENABLED) {
-                    data.add(index++, (byte) 1); // 0 = disabled, 1 = enabled
+                    data.write((byte) 1); // 0 = disabled, 1 = enabled
+                    valueIndex = field.length;
                 }
                 
-                // Fill in remaining values with incrementing numbers. (Affects all TLVFields not handled above).
-                /*
-                SERIAL_NUMBER
-                SSPEC
-                FIRMWARE_VERSION
-                SPID
-                GEO_ADDRESS
-                FEEDER_ADDRESS
-                ZIP_ADDRESS
-                UDA_ADDRESS
-                REQUIRED_ADDRESS
-                SUBSTATION_ADDRESS,
-                BLINK_COUNT
-                */
+                // Fill in remaining values with numbers based on their field ID. (Affects all TLVFields not handled above).
                 while (valueIndex < field.length) {
-                    data.add(index++, (byte) (data.get(index-1) + 1));
+                    data.write(field.type);
                     valueIndex++;
                 }
                 fieldCount++;
             }
         }
         
-        return ByteUtil.convertListToArray(data);
+        return data.toByteArray();
     }
 
-    private void insertTwoByteTlvField(List<Byte> data, int index, short value) {
+    private void insertTwoByteTlvField(ByteArrayOutputStream data, short value) {
         ByteBuffer bytes = ByteBuffer.allocate(2).putShort(value);
-        data.add(index++, bytes.get(0));
-        data.add(index++, bytes.get(1));
+        data.write(bytes.get(0));
+        data.write(bytes.get(1));
     }
     
     /**

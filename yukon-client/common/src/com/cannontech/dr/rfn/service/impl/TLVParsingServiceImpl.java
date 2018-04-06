@@ -9,6 +9,7 @@ import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.dr.rfn.service.ParsingService;
 import com.cannontech.dr.rfn.tlv.FieldType;
+import com.cannontech.dr.rfn.tlv.TlvTypeLength;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
@@ -64,24 +65,15 @@ public class TLVParsingServiceImpl implements ParsingService<ListMultimap<FieldT
     /**
      * Parses tlv report data
      */
-
     private ListMultimap<FieldType, byte[]> parseTlvReport(final byte[] report, RfnIdentifier rfnId) {
         ListMultimap<FieldType, byte[]> fieldTypeValues = ArrayListMultimap.create();
 
         for (int postion = 0; postion < report.length - 1;) {
 
             byte[] typeLengthBytes = Arrays.copyOfRange(report, postion, postion = postion + 3);
-            final byte upperTypeByte = typeLengthBytes[0];
-
-            byte middleTypeLengthByte = typeLengthBytes[1];
-            byte upperLengthNibble = (byte) (middleTypeLengthByte & 0xf);
-            byte lowerTypeNibble = (byte) ((middleTypeLengthByte >> 4) & 0xf);
-
-            final int type = ((upperTypeByte & 0xff) << 4) | (lowerTypeNibble & 0xf);
-            byte lowerLengthByte = typeLengthBytes[2];
-
-            final int length = (lowerLengthByte & 0xff) | ((upperLengthNibble & 0xf) << 12);
-
+            int type = TlvTypeLength.getType(typeLengthBytes[0], typeLengthBytes[1]);
+            int length = TlvTypeLength.getLength(typeLengthBytes[1], typeLengthBytes[2]);
+            
             if (FieldType.isFieldTypeSupported(type)) {
                 final byte[] tlvValue = Arrays.copyOfRange(report, postion, postion += length);
 
