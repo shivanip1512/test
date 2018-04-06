@@ -407,6 +407,11 @@ begin
     InstallMessageBroker();
     endif;
 	
+	// Adding monitor service in case of upgrade from version < 7.1.0
+    if (!ServiceExistsService(MONITOR_NAME)) then
+    InstallMonitorService();
+    endif;
+    
 	//Remove Lucene indexes so they're rebuilt on startup
 	if(ExistsDir(TARGETDIR ^ "cache") = EXISTS) then
 		nResult = DeleteDir(TARGETDIR ^ "cache", ALLCONTENTS);
