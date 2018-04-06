@@ -15,7 +15,21 @@
     "Qh" : "Q-Hour"
   }, {
     "VAh" : "VA-Hour"
-  }, "Time (in seconds)", "Volts (10ths Volt)", "Current (10ths Amp)", "Voltage Angle (10ths Degree)", "Current Angle (10ths Degree)", "Power Factor", "Gallon", "No units", "Watt", "var", "Q", "VA", "Outage Count", "Restore Count", "Outage Blink Count", "Restore Blink Count", "°C", "Unknown" ],
+  }, {
+    "s" : "Time (in seconds)"
+  }, {
+    "V" : "Volts (10ths Volt)"
+  }, "Current (10ths Amp)", "Voltage Angle (10ths Degree)", "Current Angle (10ths Degree)", {
+    "PF" : "Power Factor"
+  }, "Gallon", "No units", {
+    "W" : "Watt"
+  }, {
+    "Var" : "Var"
+  }, {
+    "Q" : "Q"
+  }, {
+    "VA" : "Volt-Amps"
+  }, "Outage Count", "Restore Count", "Outage Blink Count", "Restore Blink Count", "°C", "Unknown" ],
   "Modifiers" : {
     "Primary / Secondary" : [ "Primary", "Secondary" ],
     "Phase" : [ "Phase A", "Phase B", "Phase C" ],
@@ -1078,7 +1092,7 @@
     }
   }, {
     "Coincident Time for Peak Voltage" : {
-      "unit" : "S",
+      "unit" : "s",
       "Unit Modifiers" : [ ]
     }
   }, {
