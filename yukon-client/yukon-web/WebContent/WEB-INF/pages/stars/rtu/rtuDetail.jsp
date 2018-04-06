@@ -121,7 +121,7 @@
                             ${rtu.deviceWindow.type}
                             <tags:hidden path="deviceWindow.type"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".winTimeRange" valueClass="full-width">
+                        <tags:nameValue2 nameKey=".winTimeRange" valueClass="full-width" data-toggle-group="scanWindow">
                             <tags:timeSlider dataToggleGroup="scanWindow" startPath="deviceWindow.winOpen" endPath="deviceWindow.winClose"
                                 viewOnlyMode="${mode == 'VIEW'}" rangeEnabled="true" timeFormat="SECONDS"/>
                         </tags:nameValue2>
