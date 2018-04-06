@@ -63,37 +63,31 @@ Meter combinations:
     - &AX-RX [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *axd-500, *axt-500, *axr-500, *axd-sd-500, *axt-sd-500, *axr-sd-500 ]
 
 Units of measure:
-    - &Wh   Wh   : Watt-Hour
-    - &Varh Varh : Var-Hour
-    - &Qh   Qh   : Q-Hour
-    - &VAh  VAh  : VA-Hour
-    - &s    s    : Time (in seconds)
-    - &V    V    : Volts (10ths Volt)
-    - &A    A    : Current (10ths Amp)
-    - &PF   PF   : Power Factor
-    - &V_deg  V degree : Voltage Angle (10ths Degree)
-    - &A_deg  A degree : Current Angle (10ths Degree)
-    - &PF_deg PF degree : Power Factor Angle (10ths Degree)
-    # Pound Hour
-    - &gal  gal  : Gallon
-    - &ft3  ft^3 : Cubic feet
-    - &m3   m^3  : Cubic meters
-    - &None none : No units
-    - &W    W    : Watt
-    - &Var  Var  : Var
-    - &Q    Q    : Q
-    - &VA   VA   : Volt-Amps
-    - &Outages
-        Outage Count
-    - &Restores
-        Restore Count
-    - &OutBlinks
-        Outage Blink Count
-    - &RestBlinks
-        Restore Blink Count
-    - &C    °C  : Temperature (in degrees Celsius)
-    - &Unknown
-        Unknown
+    &Wh     Wh   : Watt-Hour
+    &Varh   Varh : Var-Hour
+    &Qh     Qh   : Q-Hour
+    &VAh    VAh  : VA-Hour
+    &s      s    : Time (in seconds)
+    &V      V    : Volts (10ths Volt)
+    &A      A    : Current (10ths Amp)
+    &PF     PF   : Power Factor
+    &V_deg  V degree  : Voltage Angle (10ths Degree)
+    &A_deg  A degree  : Current Angle (10ths Degree)
+    &PF_deg PF degree : Power Factor Angle (10ths Degree)
+    &gal    gal  : Gallon
+    &ft3    ft^3 : Cubic feet
+    &m3     m^3  : Cubic meters
+    &None   none : No units
+    &W      W    : Watt
+    &Var    Var  : Var
+    &Q      Q    : Q
+    &VA     VA   : Volt-Amps
+    &C      °C   : Temperature (in degrees Celsius)
+    &Unk    "-"  : Unknown
+    &Out    Outage Count        : Outage Count
+    &Rest   Restore Count       : Restore Count
+    &OutB   Outage Blink Count  : Outage Blink Count
+    &RestB  Restore Blink Count : Restore Blink Count
 
 Modifiers:
     Primary / Secondary:
@@ -358,10 +352,10 @@ RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     - Power Factor Angle Phase A:  { unit: *PF_deg,              Unit Modifiers: [ *PhA                             ] }
     - Power Factor Angle Phase B:  { unit: *PF_deg,              Unit Modifiers: [ *PhB                             ] }
     - Power Factor Angle Phase C:  { unit: *PF_deg,              Unit Modifiers: [ *PhC                             ] }
-    - Outage Count:                { unit: Outage Count,         Unit Modifiers: [                                  ] }
-    - Restore Count:               { unit: Restore Count,        Unit Modifiers: [                                  ] }
-    - Outage Blink Count:          { unit: Outage Blink Count,   Unit Modifiers: [                                  ] }
-    - Restore Blink Count:         { unit: Restore Blink Count,  Unit Modifiers: [                                  ] }
+    - Outage Count:                { unit: *Out,                 Unit Modifiers: [                                  ] }
+    - Restore Count:               { unit: *Rest,                Unit Modifiers: [                                  ] }
+    - Outage Blink Count:          { unit: *OutB,                Unit Modifiers: [                                  ] }
+    - Restore Blink Count:         { unit: *RestB,               Unit Modifiers: [                                  ] }
     - RFN Temperature:             { unit: *C,                   Unit Modifiers: [                                  ] }
      
 # Table 5 – RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology
@@ -1411,12 +1405,12 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
 
 # Table 12 - Next Gen Water Node
 Next Gen Water Node:
-    - Faceplate Reading: { unit: -,   Unit Modifiers: [       ], Metric ID: 255 }
+    - Faceplate Reading: { unit: *Unk, Unit Modifiers: [       ], Metric ID: 255 }
     # Note: For the Faceplate Reading, the units string (passed to Yukon) is a dash, "-", which corresponds to Unknown units reported by the node.  
     #     The goal of the Faceplate Reading channel is to match the number on the meter’s faceplate.  The actual units of the meter’s faceplate 
     #     reading will differ among the various meter types that may be attached to the node.
-    - Battery Voltage:  { unit: *V,  Unit Modifiers: [ *milli ], Metric ID: 115 }
-    - Temperature:      { unit: *C,  Unit Modifiers: [       ], Metric ID: 257 }
+    - Battery Voltage:  { unit: *V,    Unit Modifiers: [ *milli ], Metric ID: 115 }
+    - Temperature:      { unit: *C,    Unit Modifiers: [       ], Metric ID: 257 }
 
 Metric IDs:
     1:   { name: Watt hour delivered,                  unit: *Wh,        Unit Modifiers: [ *Q1, *Q4                              ] }
@@ -1596,7 +1590,7 @@ Metric IDs:
     # ------
     240: { name: kW Delivered Daily Max,               unit: *W,         Unit Modifiers: [ *Q1, *Q4, *DayMax                     ] }
     # ------
-    255: { name: Unknown,                              unit: -,          Unit Modifiers: [                                       ] }
+    255: { name: Unknown,                              unit: *Unk,       Unit Modifiers: [                                       ] }
     256: { name: Time in Seconds,                      unit: *s,         Unit Modifiers: [                                       ] }
     256: { name: Time in Seconds (Frozen),             unit: *s,         Unit Modifiers: [ *Prev                                 ] }
     257: { name: Temperature in Degrees C,             unit: *C,         Unit Modifiers: [                                       ] }
