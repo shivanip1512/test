@@ -16,18 +16,18 @@ import com.google.common.collect.ImmutableList;
  * <pre>
  */
 public final class TlvTypeLength {
-    final private int type;
-    final private int length;
-    final private byte byte1;
-    final private byte byte2;
-    final private byte byte3;
+    final public int type;
+    final public int length;
+    final public byte byte1;
+    final public byte byte2;
+    final public byte byte3;
     
     public TlvTypeLength(int type, int length) {
-        // Int can hold 32 bytes. Validate that actual values don't exceed 12 bytes.
-        if (type > 2e12 || type < 0) {
+        // Int can hold 32 bits. Validate that actual values don't exceed 12 bits.
+        if (type >= 4096 || type < 0) {
             throw new IllegalArgumentException("Invalid TLV type: " + type);
         }
-        if (length > 2e12 || length < 0) {
+        if (length >= 4096 || length < 0) {
             throw new IllegalArgumentException("Invalid TLV length: " + length);
         }
         
@@ -64,6 +64,10 @@ public final class TlvTypeLength {
     
     public int getLength() {
         return length;
+    }
+    
+    public byte[] bytes() {
+        return new byte[] {byte1, byte2, byte3};
     }
     
     public int getByte1UnsignedValue() {

@@ -120,8 +120,14 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 // Generate the point data
                 try {
                     PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(device, entry.getAttribute());
-                    Integer pointId = pointDao.getPointId(paoPointIdentifier);
-                    PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, pointId, timeOfReading.toDate());
+                    LitePoint point = pointDao.getLitePoint(paoPointIdentifier);
+                    
+                    Double multiplier = point.getMultiplier();
+                    if (multiplier != null) {
+                        value *= multiplier;
+                    }
+                    
+                    PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, point.getPointID(), timeOfReading.toDate());
                     messagesToSend.add(pointData);
                 } catch (NotFoundException e) {
                     log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: "

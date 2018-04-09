@@ -12,6 +12,26 @@ public class TlvTypeLengthTest {
         }
     }
     
+    @Test(expected=IllegalArgumentException.class)
+    public void test_length_negative() {
+        testValues(1, -1);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_length_tooLong() {
+        testValues(1, 4096);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_type_negative() {
+        testValues(-1, 1);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_type_tooLong() {
+        testValues(4096, 1);
+    }
+    
     private void testValues(int type, int length) {
         //Convert type and length to bytes via constructor
         TlvTypeLength ttl = new TlvTypeLength(type, length);
@@ -27,4 +47,6 @@ public class TlvTypeLengthTest {
         int lengthResult = TlvTypeLength.getLength(byte2, byte3);
         Assert.assertEquals("Length mismatch", length, lengthResult);
     }
+    
+    
 }

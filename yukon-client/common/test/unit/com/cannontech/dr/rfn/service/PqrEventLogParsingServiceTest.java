@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.service;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,12 @@ public class PqrEventLogParsingServiceTest {
         Assert.assertEquals("Mismatched event type for event " + index, eventType, event.getEventType());
         Assert.assertEquals("Mismatched response type for event " + index, responseType, event.getResponseType());
         Assert.assertEquals("Mismatched timestamp for event " + index, timestamp, event.getTimestamp());
-        Assert.assertEquals("Mismatched value for event " + index, value, event.getValue().doubleValue(), DOUBLE_DELTA);
+        
+        // Expect that the value in the parsed event has the multiplier applied
+        double originalValueMultiplied = BigDecimal.valueOf(value)
+                                                   .multiply(BigDecimal.valueOf(responseType.getMultiplier()))
+                                                   .doubleValue();
+        Assert.assertEquals("Mismatched value for event " + index, originalValueMultiplied, event.getValue(), DOUBLE_DELTA);
     }
     
     /**

@@ -27,7 +27,9 @@ public class PqrEventLogParsingServiceImpl implements PqrEventLogParsingService 
                              // Response Type: byte 5
                              PqrResponseType responseType = PqrResponseType.of(rawEntry[5]);
                              // Value: bytes 6, 7
-                             int value = ByteUtil.getInteger(Arrays.copyOfRange(rawEntry, 6, 8));
+                             double value = ByteUtil.getInteger(Arrays.copyOfRange(rawEntry, 6, 8));
+                             // Adjust value based on multiplier (e.g. OV values are in 10ths of a volt)
+                             value = value * responseType.getMultiplier();
                              return new PqrEvent(inventoryId, timestamp, eventType, responseType, value);
                          })
                          .collect(Collectors.toList());

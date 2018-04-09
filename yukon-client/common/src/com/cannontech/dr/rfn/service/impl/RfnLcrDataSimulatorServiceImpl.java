@@ -129,8 +129,9 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         }
     }
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
-
-    private final static String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
+    
+    private static final int pqrEventBlobTlvTypeId = 87;
+    private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService<SimpleXPathTemplate> exiParsingService;
@@ -476,7 +477,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     }
     
     private byte[] generatePqrEvents(DateTime reportTime) {
-        //Build a reasonable series of PqrEvents with timestamps based on reportTime
+        // Build a reasonable series of PqrEvents with timestamps based on reportTime
+        // Values are all voltages, in 10ths of a volt
         List<List<Byte>> events = new ArrayList<>();
         
         Instant startTime = reportTime.minus(Duration.standardHours(8)).toInstant(); //reportTime - 8h
@@ -491,9 +493,10 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         Instant endTime = inactiveTime.plus(Duration.standardSeconds(2)); //inactiveTime + 2s (1 for deactivation, 1 for randomization)
         events.add(buildEventBytes(endTime, PqrEventType.EVENT_COMPLETE, PqrResponseType.OVER_VOLTAGE, (short)2400));
         
-        //Add the PQR log blob Type and Length values
+        // Add the PQR log blob Type and Length values
+        // Each event is 8 bytes in length, so the entire field's length is (8 * the # of events)
         int eventsLengthInBytes = 8 * events.size();
-        TlvTypeLength pqrEventsTypeLength = new TlvTypeLength(87, eventsLengthInBytes);
+        TlvTypeLength pqrEventsTypeLength = new TlvTypeLength(pqrEventBlobTlvTypeId, eventsLengthInBytes);
         
         List<Byte> bytes = new ArrayList<>();
         bytes.addAll(pqrEventsTypeLength.bytesList());
@@ -549,151 +552,132 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             int fieldCount = 0;
             while (fieldCount < field.frequency) {
                 int valueIndex = 0;
-                // Upper Nibble of first byte and Lower nibble of second byte makes FieldType in TLV format
-                data.write((byte) ((field.type >> 4) & 0x0f));
-                data.write((byte) ((field.type & 0x0f) << 4));
-                data.write((byte) field.length);
                 
-                if (field == TLVField.RELAY_N_RUNTIME || field == TLVField.RELAY_N_SHEDTIME ||
-                    field == TLVField.RELAY_N_PROGRAM_ADDRESS|| field == TLVField.RELAY_N_SPLINTER_ADDRESS) {
-                    
-                    data.write((byte) fieldCount);
-                    valueIndex++;
-                }
+                TlvTypeLength typeLength = new TlvTypeLength(field.type, field.length);
+                data.write(typeLength.byte1);
+                data.write(typeLength.byte2); 
+                data.write(typeLength.byte3);
                 
-                if (field == TLVField.RELAY_N_REMAINING_CONTROLTIME) {
-                    // 5 elements, first is relay number, last 4 are control time in seconds.
-                    int remainingSeconds = 60*60*(valueIndex+1); // relay 1 = 1 hour, relay 2 = 2 hour.... 
-                    data.write((byte) fieldCount);
-                    data.write((byte) (remainingSeconds >> 24));
-                    data.write((byte) (remainingSeconds >> 16));
-                    data.write((byte) (remainingSeconds >> 8));
-                    data.write((byte) remainingSeconds);
-                    valueIndex = field.length; // Let everyone know we took care of this field in its entirety
+                switch(field) {
+                    case RELAY_N_RUNTIME:
+                    case RELAY_N_SHEDTIME:
+                    case RELAY_N_PROGRAM_ADDRESS:
+                    case RELAY_N_SPLINTER_ADDRESS:
+                        data.write((byte) fieldCount);
+                        valueIndex++;
+                        break;
+                    case RELAY_N_REMAINING_CONTROLTIME:
+                        // 5 elements, first is relay number, last 4 are control time in seconds.
+                        int remainingSeconds = 60*60*(valueIndex+1); // relay 1 = 1 hour, relay 2 = 2 hour.... 
+                        data.write((byte) fieldCount);
+                        data.write((byte) (remainingSeconds >> 24));
+                        data.write((byte) (remainingSeconds >> 16));
+                        data.write((byte) (remainingSeconds >> 8));
+                        data.write((byte) remainingSeconds);
+                        valueIndex = field.length; // Took care of this field in its entirety
+                        break;
+                    case PROTECTION_TIME_RELAY_N:
+                    case CLP_TIME_FOR_RELAY_N:
+                         // 3 elements, first is relay number, the rest is a time possibly in seconds?
+                        data.write((byte) fieldCount);
+                        data.write((byte) 0);
+                        data.write((byte) 120);
+                        valueIndex = field.length; // Took care of this field in its entirety
+                        break;
+                    case RELAY_INTERVAL_START_TIME:
+                        // Add relay interval start time in sec(24 hour before UTC field value).Hourly data will be added after this till UTC (field value).
+                        long intervalStartTime = new DateTime(DateTimeZone.UTC).minusHours(24).withTimeAtStartOfDay().getMillis()/1000;
+                        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+                        byte[] relayStartTime = buffer.putLong(intervalStartTime).array();
+                        // Add relay interval start time to byte array.
+                        for (int i = 4; i < relayStartTime.length; i++) {
+                            data.write(relayStartTime[i]);
+                        }
+                        valueIndex = field.length;
+                        break;
+                    case LOV_TRIGGER:
+                        insertTwoByteTlvField(data, (short) 2530); // 1/10 volts
+                        valueIndex = field.length;
+                        break;
+                    case LOV_RESTORE:
+                        insertTwoByteTlvField(data, (short) 2525); // 1/10 volts
+                        valueIndex = field.length;
+                        break;
+                    case LOV_TRIGGER_TIME:
+                        insertTwoByteTlvField(data, (short) 500); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOV_RESTORE_TIME:
+                        insertTwoByteTlvField(data, (short) 500); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOV_EVENT_COUNT:
+                        insertTwoByteTlvField(data, (short) 10); // counts
+                        valueIndex = field.length;
+                        break;
+                    case LOF_TRIGGER:
+                        //1000 millis / 60hz = 16.66... millis per oscillation
+                        insertTwoByteTlvField(data, (short) 17); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOF_RESTORE:
+                        //1000 millis / 60hz = 16.66... millis per oscillation
+                        insertTwoByteTlvField(data, (short) 18); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOF_TRIGGER_TIME:
+                        insertTwoByteTlvField(data, (short) 167); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOF_RESTORE_TIME:
+                        insertTwoByteTlvField(data, (short) 167); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOF_EVENT_COUNT:
+                        insertTwoByteTlvField(data, (short) 10); // counts
+                        valueIndex = field.length;
+                        break;
+                    case LOF_START_RANDOM_TIME:
+                        insertTwoByteTlvField(data, (short) 167); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOF_END_RANDOM_TIME:
+                        insertTwoByteTlvField(data, (short) 167); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOV_START_RANDOM_TIME:
+                        insertTwoByteTlvField(data, (short) 500); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOV_END_RANDOM_TIME:
+                        insertTwoByteTlvField(data, (short) 500); // millis
+                        valueIndex = field.length;
+                        break;
+                    case LOF_MIN_EVENT_DURATION:
+                        insertTwoByteTlvField(data, (short) 60); // seconds
+                        valueIndex = field.length;
+                        break;
+                    case LOV_MIN_EVENT_DURATION:
+                        insertTwoByteTlvField(data, (short) 60); // seconds
+                        valueIndex = field.length;
+                        break;
+                    case LOF_MAX_EVENT_DURATION:
+                        insertTwoByteTlvField(data, (short) (10*60)); // seconds
+                        valueIndex = field.length;
+                        break;
+                    case LOV_MAX_EVENT_DURATION:
+                        insertTwoByteTlvField(data, (short) (15*60)); // seconds
+                        valueIndex = field.length;
+                        break;
+                    case MINIMUM_EVENT_SEPARATION:
+                        insertTwoByteTlvField(data, (short) 60); // seconds
+                        valueIndex = field.length;
+                        break;
+                    case POWER_QUALITY_RESPONSE_ENABLED:
+                        data.write((byte) 1); // 0 = disabled, >0 = enabled
+                        valueIndex = field.length;
+                        break;
                 }
-                
-                if (field == TLVField.PROTECTION_TIME_RELAY_N || field == TLVField.CLP_TIME_FOR_RELAY_N) {
-                    // 3 elements, first is relay number, the rest is a time possibly in seconds?
-                    data.write((byte) fieldCount);
-                    data.write((byte) 0);
-                    data.write((byte) 120);
-                    valueIndex = field.length; // Let everyone know we took care of this field in its entirety
-                }
-
-                if (field == TLVField.RELAY_INTERVAL_START_TIME) {
-                    // Add relay interval start time in sec(24 hour before UTC field value).Hourly data will be added after this till UTC (field value).
-                    long intervalStartTime = new DateTime(DateTimeZone.UTC).minusHours(24).withTimeAtStartOfDay().getMillis()/1000;
-                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-                    byte[] relayStartTime = buffer.putLong(intervalStartTime).array();
-                    // Add relay interval start time to byte array.
-                    for (int i = 4; i < relayStartTime.length; i++) {
-                        data.write(relayStartTime[i]);
-                    }
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_TRIGGER) {
-                    insertTwoByteTlvField(data, (short) 2420); // 1/10 volts
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_RESTORE) {
-                    insertTwoByteTlvField(data, (short) 2410); // 1/10 volts
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_TRIGGER_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_RESTORE_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_EVENT_COUNT) {
-                    insertTwoByteTlvField(data, (short) 10); // counts
-                    valueIndex = field.length;
-                }
-                
-                //1000 millis / 60hz = 16.66... millis per oscillation
-                if (field == TLVField.LOF_TRIGGER) {
-                    insertTwoByteTlvField(data, (short) 18); // millis
-                    valueIndex = field.length;
-                }
-                
-                //1000 millis / 60hz = 16.66... millis per oscillation
-                if (field == TLVField.LOF_RESTORE) {
-                    insertTwoByteTlvField(data, (short) 17); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOF_TRIGGER_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOF_RESTORE_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOF_EVENT_COUNT) {
-                    insertTwoByteTlvField(data, (short) 10); // counts
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOF_START_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOF_END_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_START_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_END_RANDOM_TIME) {
-                    insertTwoByteTlvField(data, (short) 1000); // millis
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOF_MIN_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, (short) 60); // seconds
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_MIN_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, (short) 60); // seconds
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOF_MAX_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, (short) (60*60)); // seconds
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.LOV_MAX_EVENT_DURATION) {
-                    insertTwoByteTlvField(data, (short) (60*60)); // seconds
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.MINIMUM_EVENT_SEPARATION) {
-                    insertTwoByteTlvField(data, (short) 60); // seconds
-                    valueIndex = field.length;
-                }
-                
-                if (field == TLVField.POWER_QUALITY_RESPONSE_ENABLED) {
-                    data.write((byte) 1); // 0 = disabled, 1 = enabled
-                    valueIndex = field.length;
-                }
-                
                 // Fill in remaining values with numbers based on their field ID. (Affects all TLVFields not handled above).
                 while (valueIndex < field.length) {
                     data.write(field.type);

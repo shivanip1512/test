@@ -10,20 +10,31 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * http://customsp.etn.com/es/EASTeamSite/ProLaunch_Template_Rev01/NODES/Requirements/Grid%20Ballast%20Firmware%20Design.docx
  */
 public enum PqrResponseType implements DisplayableEnum {
-    UNDER_VOLTAGE(0x00),
-    OVER_VOLTAGE(0x01),
+    UNDER_VOLTAGE(0x00, 0.1),
+    OVER_VOLTAGE(0x01, 0.1),
     UNDER_FREQUENCY(0x02),
     OVER_FREQUENCY(0x03),
     ;
     
     private final byte value;
+    private final double multiplier;
     
     private PqrResponseType(int value) {
         this.value = (byte) value;
+        multiplier = 1;
+    }
+    
+    private PqrResponseType(int value, double multiplier) {
+        this.value = (byte) value;
+        this.multiplier = multiplier;
     }
     
     public byte getValue() {
         return value;
+    }
+    
+    public double getMultiplier() {
+        return multiplier;
     }
     
     public static PqrResponseType of(byte value) {
