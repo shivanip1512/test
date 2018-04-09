@@ -110,7 +110,8 @@ BOOST_AUTO_TEST_CASE(test_short_header)
 
     BOOST_CHECK(result.points.empty());
     BOOST_CHECK_EQUAL(result.status, 283);
-    BOOST_CHECK_EQUAL(result.description, "Not enough data received from the device.");
+    BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                          "\nNot enough data received from the device.");
 }
 
 BOOST_AUTO_TEST_CASE(test_invalid_command)
@@ -138,7 +139,8 @@ BOOST_AUTO_TEST_CASE(test_invalid_command)
 
     BOOST_CHECK(result.points.empty());
     BOOST_CHECK_EQUAL(result.status, 38);
-    BOOST_CHECK_EQUAL(result.description, "Unknown Command Received");
+    BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                          "\nUnknown Command Received");
 }
 
 BOOST_AUTO_TEST_CASE(test_short_payload)
@@ -166,7 +168,8 @@ BOOST_AUTO_TEST_CASE(test_short_payload)
 
     BOOST_CHECK(result.points.empty());
     BOOST_CHECK_EQUAL(result.status, 283);
-    BOOST_CHECK_EQUAL(result.description, "Not enough data received from the device.");
+    BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                          "\nNot enough data received from the device.");
 }
 
 BOOST_AUTO_TEST_CASE(test_short_message)
@@ -194,7 +197,8 @@ BOOST_AUTO_TEST_CASE(test_short_message)
 
     BOOST_CHECK(result.points.empty());
     BOOST_CHECK_EQUAL(result.status, 283);
-    BOOST_CHECK_EQUAL(result.description, "Not enough data received from the device.");
+    BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                          "\nNot enough data received from the device.");
 }
 
 BOOST_AUTO_TEST_CASE(test_error_response)
@@ -262,7 +266,8 @@ BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
         const auto & result = results.back();
         BOOST_CHECK(result.points.empty());
         BOOST_CHECK_EQUAL(result.status, 308);
-        BOOST_CHECK_EQUAL(result.description, "Aggregate response did not include an entry for the command.");
+        BOOST_CHECK_EQUAL(result.description, "Set LCD Configuration Request:"
+                                              "\nAggregate response did not include an entry for the command.");
     }
 }
 
@@ -306,7 +311,8 @@ BOOST_AUTO_TEST_CASE(test_error_response_bad_second_payload_length)
         const auto & result = results.back();
         BOOST_CHECK(result.points.empty());
         BOOST_CHECK_EQUAL(result.status, 283);
-        BOOST_CHECK_EQUAL(result.description, "Not enough data received from the device.");
+        BOOST_CHECK_EQUAL(result.description, "Set LCD Configuration Request:"
+                                              "\nNot enough data received from the device.");
     }
 }
 
@@ -331,13 +337,15 @@ BOOST_AUTO_TEST_CASE(test_two_commands_handleError)
         const auto & result = results.front();
         BOOST_CHECK(result.points.empty());
         BOOST_CHECK_EQUAL(result.status, 286);
-        BOOST_CHECK_EQUAL(result.description, "Network is unavailable.");
+        BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                              "\nNetwork is unavailable.");
     }
     {
         const auto & result = results.back();
         BOOST_CHECK(result.points.empty());
         BOOST_CHECK_EQUAL(result.status, 286);
-        BOOST_CHECK_EQUAL(result.description, "Network is unavailable.");
+        BOOST_CHECK_EQUAL(result.description, "Set LCD Configuration Request:"
+                                              "\nNetwork is unavailable.");
     }
 }
 
@@ -361,7 +369,8 @@ BOOST_AUTO_TEST_CASE(test_missing_response)
     const auto & result = results.front();
     BOOST_CHECK(result.points.empty());
     BOOST_CHECK_EQUAL(result.status, 308);
-    BOOST_CHECK_EQUAL(result.description, "Aggregate response did not include an entry for the command.");
+    BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                          "\nAggregate response did not include an entry for the command.");
 }
 
 BOOST_AUTO_TEST_CASE(test_send_two_commands)

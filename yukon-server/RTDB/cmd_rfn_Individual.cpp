@@ -31,7 +31,7 @@ RfnCommandResultList RfnIndividualCommand::handleError(const CtiTime now, const 
 
 RfnCommandResult RfnIndividualCommand::error(const CtiTime now, const YukonError_t errorCode)
 {
-    return { GetErrorString(errorCode), errorCode };
+    return { getCommandName() + ":\n" + GetErrorString(errorCode), errorCode };
 }
 
 double RfnIndividualCommand::adjustByScalingFactor(double value, double scalingFactor) const

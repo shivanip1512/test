@@ -270,7 +270,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 
         const auto & commandResult = commandResults.front();
 
-        BOOST_CHECK_EQUAL(commandResult.description, "Endpoint indicated request not acceptable.");
+        BOOST_CHECK_EQUAL(commandResult.description, "Channel Selection Request:"
+                                                     "\nEndpoint indicated request not acceptable.");
         BOOST_CHECK(commandResult.points.empty());
         BOOST_CHECK_EQUAL(commandResult.status, ClientErrors::E2eRequestNotAcceptable);
     }
