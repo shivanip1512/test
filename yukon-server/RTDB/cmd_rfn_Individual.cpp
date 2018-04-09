@@ -13,12 +13,12 @@ RfnCommandResultList RfnIndividualCommand::handleResponse(const CtiTime now, con
     try
     {
         RfnCommandResult result = decodeCommand(now, response);
-        result.description = getCommandName() + " " + result.description;
+        result.description = getCommandName() + ":\n" + result.description;
         return { result };
     }
     catch (YukonErrorException yee)
     {
-        yee.error_description = getCommandName() + " " + yee.error_description;
+        yee.error_description = getCommandName() + ":\n" + yee.error_description;
         throw yee;
     }
 }

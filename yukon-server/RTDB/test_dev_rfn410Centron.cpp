@@ -127,7 +127,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn410Centron_putconfig_display )
             const auto & result = results.front();
 
             const std::string exp =
-                    "Set Lcd Configuration Request Display metrics successfully set:"
+                    "Set LCD Configuration Request:"
+                    "\nDisplay metrics successfully set:"
                     "\nDisplay metric 1: Date of Peak Voltage"
                     "\nDisplay metric 2: Time of Peak Voltage"
                     "\nDisplay metric 3: Min Voltage (V)"

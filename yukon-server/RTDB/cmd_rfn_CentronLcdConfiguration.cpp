@@ -249,7 +249,7 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
 
 std::string RfnCentronGetLcdConfigurationCommand::getCommandName()
 {
-    return "Get Lcd Configuration Request";
+    return "Get LCD Configuration Request";
 }
 
 //  Decode a Lcd configuration response
@@ -309,7 +309,7 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
 
 std::string RfnCentronSetLcdConfigurationCommand::getCommandName()
 {
-    return "Set Lcd Configuration Request";
+    return "Set LCD Configuration Request";
 }
 
 //  returns the command code

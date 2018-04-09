@@ -160,12 +160,12 @@ try
                                               { response.cbegin() + pos,
                                               response.cbegin() + pos + length });
 
-                result.description = (*cmd)->getCommandName() + " " + result.description;
+                result.description = (*cmd)->getCommandName() + ":\n" + result.description;
                 aggregateResults.push_back(result);
             }
             catch( const CommandException & ce )
             {
-                aggregateResults.emplace_back((*cmd)->getCommandName() + " " + ce.error_description, ce.error_code);
+                aggregateResults.emplace_back((*cmd)->getCommandName() + ":\n" + ce.error_description, ce.error_code);
             }
 
             _statuses.emplace(contextId, aggregateResults.back().status);

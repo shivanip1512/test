@@ -1066,7 +1066,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_on_demand )
 
             const auto & result = results.front();
 
-            const std::string exp = "Remote Disconnect Set Configuration Request Status: Success (0)"
+            const std::string exp = "Remote Disconnect Set Configuration Request:"
+                                    "\nStatus: Success (0)"
                                     "\nDisconnect mode: On Demand"
                                     "\nReconnect param: Arm reconnect";
 
@@ -1142,7 +1143,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_demand_threshold )
             const auto & result = results.front();
 
             BOOST_CHECK_EQUAL( result.description,
-                                     "Remote Disconnect Set Configuration Request Status: Success (0)"
+                                     "Remote Disconnect Set Configuration Request:"
+                                     "\nStatus: Success (0)"
                                      "\nDisconnect mode: Demand Threshold"
                                      "\nReconnect param: Immediate reconnect"
                                      "\nDisconnect demand interval: 5 minutes"
@@ -1223,7 +1225,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_cycling )
             const auto & result = results.front();
 
             const std::string exp =
-                    "Remote Disconnect Set Configuration Request Status: Success (0)"
+                    "Remote Disconnect Set Configuration Request:"
+                    "\nStatus: Success (0)"
                     "\nDisconnect mode: Cycling"
                     "\nReconnect param: Immediate reconnect"
                     "\nDisconnect minutes: 10"
@@ -1701,7 +1704,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
 
             BOOST_CHECK_EQUAL(
                     result.description,
-                    "Channel Interval Recording Request Status: Success (0)\n"
+                    "Channel Interval Recording Request:"
+                    "\nStatus: Success (0)\n"
                     "Channel Interval Recording Full Description:\n"
                     "Metric(s) descriptors:\n"
                     "Watt hour total/sum (3): Scaling Factor: 1\n"
@@ -2178,7 +2182,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
         const auto & result = results.front();
 
-        BOOST_CHECK_EQUAL( result.description, "Set Temperature Alarm Configuration Request Status: Success (0)" );
+        BOOST_CHECK_EQUAL( result.description, "Set Temperature Alarm Configuration Request:"
+                                               "\nStatus: Success (0)" );
 
         dut.extractCommandResult(*command);
 

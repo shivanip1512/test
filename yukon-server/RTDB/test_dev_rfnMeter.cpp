@@ -108,7 +108,8 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
             const auto & result = results.front();
 
             const std::string exp =
-                    "Set Temperature Alarm Configuration Request Status: Success (0)";
+                    "Set Temperature Alarm Configuration Request:"
+                    "\nStatus: Success (0)";
 
             BOOST_CHECK_EQUAL(result.description, exp);
         }
@@ -190,7 +191,8 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch 
             const auto & result = results.front();
 
             const std::string exp =
-                    "Set Temperature Alarm Configuration Request Status: Success (0)"
+                    "Set Temperature Alarm Configuration Request:"
+                    "\nStatus: Success (0)"
                     "\nState: Alarm Enabled (1)"
                     "\nHigh Temperature Threshold: 45 degrees (0x002d)"
                     "\nLow Temperature Threshold: 35 degrees (0x0023)"
@@ -277,7 +279,8 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_failure )
             const auto & result = results.front();
 
             const std::string exp =
-                    "Set Temperature Alarm Configuration Request Status: Failure (1)";
+                    "Set Temperature Alarm Configuration Request:"
+                    "\nStatus: Failure (1)";
 
             BOOST_CHECK_EQUAL(result.description, exp);
         }
@@ -344,7 +347,8 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
             const auto & result = results.front();
 
             const std::string exp =
-                    "Set Temperature Alarm Configuration Request Status: Unsupported (2)";
+                    "Set Temperature Alarm Configuration Request:"
+                    "\nStatus: Unsupported (2)";
 
             BOOST_CHECK_EQUAL(result.description, exp);
         }
@@ -664,7 +668,8 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
             const auto & result = results.front();
 
             const std::string exp =
-                R"SQUID(Data Streaming Set Metrics Request json{
+                R"SQUID(Data Streaming Set Metrics Request:
+json{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {

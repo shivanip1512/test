@@ -81,7 +81,8 @@ BOOST_AUTO_TEST_CASE(test_send_one_command)
         BOOST_CHECK(result.points.empty());
         BOOST_CHECK_EQUAL(result.status, 0);
         BOOST_CHECK_EQUAL(result.description, 
-                          "Get Lcd Configuration Request Display metrics:"
+                          "Get LCD Configuration Request:"
+                          "\nDisplay metrics:"
                           "\nDisplay metric 1: Metric Slot Disabled"
                           "\nDisplay metric 2: No Segments"
                           "\nDisplay metric 3: All Segments");
@@ -220,7 +221,8 @@ BOOST_AUTO_TEST_CASE(test_error_response)
     const auto & result = results.front();
     BOOST_CHECK(result.points.empty());
     BOOST_CHECK_EQUAL(result.status, 264);
-    BOOST_CHECK_EQUAL(result.description, "Get Lcd Configuration Request Invalid display metric length - (0, expecting 6)");
+    BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                          "\nInvalid display metric length - (0, expecting 6)");
 }
 
 BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
@@ -253,7 +255,8 @@ BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
         const auto & result = results.front();
         BOOST_CHECK(result.points.empty());
         BOOST_CHECK_EQUAL(result.status, 264);
-        BOOST_CHECK_EQUAL(result.description, "Get Lcd Configuration Request Invalid display metric length - (0, expecting 6)");
+        BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:\n"
+                                              "Invalid display metric length - (0, expecting 6)");
     }
     {
         const auto & result = results.back();
@@ -296,7 +299,8 @@ BOOST_AUTO_TEST_CASE(test_error_response_bad_second_payload_length)
         const auto & result = results.front();
         BOOST_CHECK(result.points.empty());
         BOOST_CHECK_EQUAL(result.status, 264);
-        BOOST_CHECK_EQUAL(result.description, "Get Lcd Configuration Request Invalid display metric length - (0, expecting 6)");
+        BOOST_CHECK_EQUAL(result.description, "Get LCD Configuration Request:"
+                                              "\nInvalid display metric length - (0, expecting 6)");
     }
     {
         const auto & result = results.back();
@@ -432,7 +436,8 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
             BOOST_CHECK(result.points.empty());
             BOOST_CHECK_EQUAL(result.status, 0);
             BOOST_CHECK_EQUAL(result.description,
-                "Get Lcd Configuration Request Display metrics:"
+                "Get LCD Configuration Request:"
+                "\nDisplay metrics:"
                 "\nDisplay metric 1: Metric Slot Disabled"
                 "\nDisplay metric 2: No Segments"
                 "\nDisplay metric 3: All Segments");
@@ -442,7 +447,8 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
             BOOST_CHECK(result.points.empty());
             BOOST_CHECK_EQUAL(result.status, 0);
             BOOST_CHECK_EQUAL(result.description,
-                "Set Lcd Configuration Request Display metrics successfully set:"
+                "Set LCD Configuration Request:"
+                "\nDisplay metrics successfully set:"
                 "\nDisplay metric 1: Metric Slot Disabled"
                 "\nDisplay metric 2: No Segments"
                 "\nDisplay metric 3: All Segments"
