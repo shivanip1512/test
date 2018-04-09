@@ -7,58 +7,59 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
-
 <cti:msgScope paths="modules.dr.programList">
 
     <%-- Main Program list table section --%>
     <cti:msg2 var="programTitle" key=".programs"/>
     <tags:sectionContainer title="${programTitle}">
     
-        <cti:url var="url" value="${baseUrl}"/>
-        <form:form action="${url}" commandName="filter" method="get">
-            <i:inline key="yukon.common.filterBy"/>
-            <c:if test="${!empty param.controlAreaId}">
-                <input type="hidden" name="controlAreaId" value="${param.controlAreaId}"/>
-            </c:if>
-            <c:if test="${!empty param.scenarioId}">
-                <input type="hidden" name="scenarioId" value="${param.scenarioId}"/>
-            </c:if>
-            
-            <cti:msg2 var="namePlaceholder" key=".filter.name"/>
-            <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>
-
-            <form:select path="state">
-                <form:option value="ALL"><cti:msg2 key=".filter.state.all"/></form:option>
-                <form:option value="ACTIVE"><cti:msg2 key=".filter.state.active"/></form:option>
-                <form:option value="SCHEDULED"><cti:msg2 key=".filter.state.scheduled"/></form:option>
-                <form:option value="INACTIVE"><cti:msg2 key=".filter.state.inactive"/></form:option>
-            </form:select>
-            
-            <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
-                <i:inline key=".filter.priority"/>
-                <cti:msg2 var="minPlaceholder" key=".filter.min"/>
-                <tags:input path="priority.min" size="5" placeholder="${minPlaceholder}"/>
-                <cti:msg2 var="maxPlaceholder" key=".filter.max"/>
-                <tags:input path="priority.max" size="5" placeholder="${maxPlaceholder}"/>
-            </cti:checkRolesAndProperties>
-            
-            <div style="padding-top:5px;margin-left:60px;">
-                <i:inline key=".filter.start"/>
-                <dt:date path="start.min" wrapperClass="fn vam"/>
-                <i:inline key=".filter.to"/>
-                <dt:date path="start.max" wrapperClass="fn vam"/>
-                <i:inline key=".filter.stop"/>
-                <dt:date path="stop.min" wrapperClass="fn vam"/>
-                <i:inline key=".filter.to"/>
-                <dt:date path="stop.max" wrapperClass="fn vam"/>
-            
-                <cti:button nameKey="filter" classes="primary action fn vab" type="submit"/>
-            
-            </div>
-            
-        </form:form>
-        <hr/>
+        <div class="filter-section">
+            <cti:url var="url" value="${baseUrl}"/>
+            <form:form action="${url}" commandName="filter" method="get">
+                <i:inline key="yukon.common.filterBy"/>
+                <c:if test="${!empty param.controlAreaId}">
+                    <input type="hidden" name="controlAreaId" value="${param.controlAreaId}"/>
+                </c:if>
+                <c:if test="${!empty param.scenarioId}">
+                    <input type="hidden" name="scenarioId" value="${param.scenarioId}"/>
+                </c:if>
+                
+                <cti:msg2 var="namePlaceholder" key=".filter.name"/>
+                <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>
+    
+                <form:select path="state">
+                    <form:option value="ALL"><cti:msg2 key=".filter.state.all"/></form:option>
+                    <form:option value="ACTIVE"><cti:msg2 key=".filter.state.active"/></form:option>
+                    <form:option value="SCHEDULED"><cti:msg2 key=".filter.state.scheduled"/></form:option>
+                    <form:option value="INACTIVE"><cti:msg2 key=".filter.state.inactive"/></form:option>
+                </form:select>
+                
+                <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
+                    <i:inline key=".filter.priority"/>
+                    <cti:msg2 var="minPlaceholder" key=".filter.min"/>
+                    <tags:input path="priority.min" size="5" placeholder="${minPlaceholder}" displayValidationToRight="true"/>
+                    <cti:msg2 var="maxPlaceholder" key=".filter.max"/>
+                    <tags:input path="priority.max" size="5" placeholder="${maxPlaceholder}" displayValidationToRight="true"/>
+                </cti:checkRolesAndProperties>
+                
+                <div style="padding-top:5px;margin-left:60px;">
+                    <i:inline key=".filter.start"/>
+                    <dt:date path="start.min" wrapperClass="fn vam" displayValidationToRight="true"/>
+                    <i:inline key=".filter.to"/>
+                    <dt:date path="start.max" wrapperClass="fn vam" displayValidationToRight="true"/>
+                    <br/>
+                    <i:inline key=".filter.stop"/>
+                    <dt:date path="stop.min" wrapperClass="fn vam" displayValidationToRight="true"/>
+                    <i:inline key=".filter.to"/>
+                    <dt:date path="stop.max" wrapperClass="fn vam" displayValidationToRight="true"/>
+                
+                    <cti:button nameKey="filter" classes="primary action fn vab" type="submit"/>
+                
+                </div>
+                
+            </form:form>
+            <hr/>
+        </div>
         
         <c:choose>
             <c:when test="${programs.hitCount == 0}">
@@ -74,10 +75,14 @@
                     </c:if>
                     <cti:param name="name" value="${filter.name}"/>
                     <cti:param name="state" value="${filter.state}"/>
-                    <cti:param name="start.min" value="${filter.start.min}"/>
-                    <cti:param name="start.max" value="${filter.start.max}"/>
-                    <cti:param name="stop.min" value="${filter.stop.min}"/>
-                    <cti:param name="stop.max" value="${filter.stop.max}"/>
+                    <cti:formatDate type="DATE" value="${filter.start.min}" var="startMin"/>
+                    <cti:formatDate type="DATE" value="${filter.start.max}" var="startMax"/>
+                    <cti:formatDate type="DATE" value="${filter.stop.min}" var="stopMin"/>
+                    <cti:formatDate type="DATE" value="${filter.stop.max}" var="stopMax"/>
+                    <cti:param name="start.min" value="${startMin}"/>
+                    <cti:param name="start.max" value="${startMax}"/>
+                    <cti:param name="stop.min" value="${stopMin}"/>
+                    <cti:param name="stop.max" value="${stopMax}"/>
                     <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
                         <cti:param name="priority.min" value="${filter.priority.min}"/>
                         <cti:param name="priority.max" value="${filter.priority.max}"/>
@@ -188,5 +193,6 @@
     </tags:sectionContainer>
 
     <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
     
 </cti:msgScope>

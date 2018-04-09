@@ -24,6 +24,7 @@
 <%@ attribute name="autofocus" %>
 <%@ attribute name="units" %>
 <%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
+<%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
 
 <cti:default var="password" value="${false}"/>
 <cti:default var="autocomplete" value="on"/>
@@ -87,7 +88,12 @@
 <c:if test="${pageScope.units != null}">
 &nbsp;${pageScope.units}
 </c:if>
-<c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
+<c:if test="${status.error}">
+    <c:if test="${!displayValidationToRight}">
+        <br>
+    </c:if>
+    <form:errors path="${path}" cssClass="error"/>
+</c:if>
 
 </cti:displayForPageEditModes>
 

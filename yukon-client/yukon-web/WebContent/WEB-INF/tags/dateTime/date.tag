@@ -21,6 +21,7 @@
 <%@ attribute name="minDate" type="java.lang.Object" 
     description="Set a minimum selectable date via an object consumable by the DateFormatingService#format method (Date, ReadablePartial, ReadableInstant, Long)." %>
 <%@ attribute name="hideErrors" type="java.lang.Boolean" description="Default: false. If true, will not display validation error messages." %>
+<%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
 
 <dt:pickerIncludes/>
 
@@ -89,7 +90,9 @@
                 </span>
             </cti:displayForPageEditModes>
             <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
-                <br>
+                <c:if test="${!displayValidationToRight}">
+                    <br>
+                </c:if>
                 <form:errors path="${path}" cssClass="error" />
             </c:if>
         </spring:bind>
@@ -108,7 +111,7 @@
                     data-class="${pageScope.cssDialogClass}"
                     data-date-time-format="${jsDateTimeFormat}"
                     data-time-zone-short="${timeZoneShort}"
-                       data-time-zone-full="${timeZoneFull}"
+                    data-time-zone-full="${timeZoneFull}"
                     autocomplete="off"/>
             </span>
         </cti:displayForPageEditModes>

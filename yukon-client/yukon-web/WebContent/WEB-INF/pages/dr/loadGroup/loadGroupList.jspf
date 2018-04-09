@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
@@ -13,30 +15,32 @@
 <cti:msg2 var="loadGroupTitle" key=".loadGroups"/>
 <tags:sectionContainer title="${loadGroupTitle}">
 
-    <cti:url var="baseUrlWithContext" value="${baseUrl}"/>
-    <form:form action="${baseUrlWithContext}" commandName="filter" method="get">
-        <i:inline key="yukon.common.filterBy"/>
-        <c:if test="${!empty param.programId}">
-            <input type="hidden" name="programId" value="${param.programId}"/>
-        </c:if>
-        <c:if test="${!empty param.loadGroupId}">
-            <input type="hidden" name="loadGroupId" value="${param.loadGroupId}"/>
-        </c:if>
-        <cti:msg2 var="namePlaceholder" key=".filter.name"/>
-        <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>
-        <form:select path="state">
-            <form:option value="all"><cti:msg2 key=".filter.state.all"/></form:option>
-            <form:option value="active"><cti:msg2 key=".filter.state.active"/></form:option>
-            <form:option value="inactive"><cti:msg2 key=".filter.state.inactive"/></form:option>
-        </form:select>
-        <i:inline key=".filter.lastAction"/>
-        <dt:date path="lastAction.min" wrapperClass="fn vab"/>
-        <i:inline key=".filter.to"/>
-        <dt:date path="lastAction.max" wrapperClass="fn vab"/>
-
-        <cti:button nameKey="filter" classes="primary action fn vab" type="submit"/>
-    </form:form>
-    <hr/>
+    <div class="filter-section">
+        <cti:url var="baseUrlWithContext" value="${baseUrl}"/>
+        <form:form action="${baseUrlWithContext}" commandName="filter" method="get">
+            <i:inline key="yukon.common.filterBy"/>&nbsp;
+            <c:if test="${!empty param.programId}">
+                <input type="hidden" name="programId" value="${param.programId}"/>
+            </c:if>
+            <c:if test="${!empty param.loadGroupId}">
+                <input type="hidden" name="loadGroupId" value="${param.loadGroupId}"/>
+            </c:if>
+            <cti:msg2 var="namePlaceholder" key=".filter.name"/>
+            <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>
+            <form:select path="state">
+                <form:option value="all"><cti:msg2 key=".filter.state.all"/></form:option>
+                <form:option value="active"><cti:msg2 key=".filter.state.active"/></form:option>
+                <form:option value="inactive"><cti:msg2 key=".filter.state.inactive"/></form:option>
+            </form:select>
+            <i:inline key=".filter.lastAction"/>
+            <dt:date path="lastAction.min" wrapperClass="fn vab" displayValidationToRight="true"/>
+            <i:inline key=".filter.to"/>&nbsp;
+            <dt:date path="lastAction.max" wrapperClass="fn vab" displayValidationToRight="true"/>
+    
+            <cti:button nameKey="filter" classes="primary action fn vab" type="submit"/>
+        </form:form>
+        <hr/>
+    </div>
     
     <c:choose>
         <c:when test="${loadGroups.hitCount == 0}">

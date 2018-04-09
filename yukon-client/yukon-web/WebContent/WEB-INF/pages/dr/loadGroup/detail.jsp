@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
@@ -7,24 +9,12 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="dr" page="loadGroupDetail">
-
-    <cti:includeScript link="YUKON_FLOTCHARTS"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_SELECTION"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_AXIS_LABEL"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
-    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
-    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
     <tags:simpleDialog id="drDialog"/>
 
     <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
 
     <input id="assetId" type="hidden" value="${loadGroupId}"/>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
 
     <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
         <div class="column-12-12 clearfix">
@@ -210,4 +200,17 @@
         </div>
         
     </div>
+
+    <cti:includeScript link="YUKON_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_SELECTION"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_AXIS_LABEL"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
+    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
+    
 </cti:standardPage>

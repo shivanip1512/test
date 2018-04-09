@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
@@ -14,26 +16,28 @@
     <cti:msg2 var="controlAreaTitle" key=".controlAreas"/>
     <tags:sectionContainer title="${controlAreaTitle}">
     
-        <cti:url var="baseUrlWithContextPath" value="/dr/controlArea/list"/>
-        <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
-            <i:inline key="yukon.common.filterBy"/>
-            <cti:msg2 var="namePlaceholder" key=".filter.name"/>
-            <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>
-            <form:select path="state">
-                <form:option value="all"><cti:msg2 key=".filter.state.all"/></form:option>
-                <form:option value="active"><cti:msg2 key=".filter.state.active"/></form:option>
-                <form:option value="inactive"><cti:msg2 key=".filter.state.inactive"/></form:option>
-            </form:select>
-            <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
-                <i:inline key=".filter.priority"/>
-                <cti:msg2 var="minPlaceholder" key=".filter.min"/>
-                <tags:input path="priority.min" size="5" placeholder="${minPlaceholder}"/>&nbsp;
-                <cti:msg2 var="maxPlaceholder" key=".filter.max"/>
-                <tags:input path="priority.max" size="5" placeholder="${maxPlaceholder}"/>
-            </cti:checkRolesAndProperties>
-            <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
-        </form:form>
-        <hr/>
+        <div class="filter-section">
+            <cti:url var="baseUrlWithContextPath" value="/dr/controlArea/list"/>
+            <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
+                <i:inline key="yukon.common.filterBy"/>&nbsp;
+                <cti:msg2 var="namePlaceholder" key=".filter.name"/>
+                <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>
+                <form:select path="state">
+                    <form:option value="all"><cti:msg2 key=".filter.state.all"/></form:option>
+                    <form:option value="active"><cti:msg2 key=".filter.state.active"/></form:option>
+                    <form:option value="inactive"><cti:msg2 key=".filter.state.inactive"/></form:option>
+                </form:select>
+                <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
+                    <i:inline key=".filter.priority"/>
+                    <cti:msg2 var="minPlaceholder" key=".filter.min"/>
+                    <tags:input path="priority.min" size="5" placeholder="${minPlaceholder}" displayValidationToRight="true"/>
+                    <cti:msg2 var="maxPlaceholder" key=".filter.max"/>
+                    <tags:input path="priority.max" size="5" placeholder="${maxPlaceholder}" displayValidationToRight="true"/>
+                </cti:checkRolesAndProperties>
+                <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
+            </form:form>
+            <hr/>
+        </div>
         
         <c:choose>
             <c:when test="${areas.hitCount == 0}">

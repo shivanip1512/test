@@ -7,20 +7,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="controlAreaDetail">
-
-    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
-    <cti:includeScript link="YUKON_FLOTCHARTS"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_SELECTION"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_AXIS_LABEL"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
-    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
-    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
-    
-    <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
     <tags:simpleDialog id="drDialog"/>
     
@@ -377,4 +363,19 @@
     </div>
     <cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateControlAreaMenu(${controlAreaId},${changeGearAllowed},${enableDisableProgramsAllowed})" 
         initialize="true" state="DR_CONTROLAREA/${controlAreaId}/SHOW_ACTION"/>
+        
+    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="YUKON_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_SELECTION"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_AXIS_LABEL"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
+    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
+    
+    <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
+    
 </cti:standardPage>

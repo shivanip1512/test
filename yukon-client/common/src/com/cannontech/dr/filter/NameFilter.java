@@ -3,6 +3,8 @@ package com.cannontech.dr.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
@@ -30,7 +32,7 @@ public class NameFilter implements UiFilter<DisplayablePao> {
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
                 SqlStatementBuilder retVal = new SqlStatementBuilder("LOWER(paoName) like LOWER(");
-                retVal.appendArgument('%' + name + '%');
+                retVal.appendArgument('%' + StringUtils.trim(name) + '%');
                 retVal.append(")");
                 return retVal;
             }});
