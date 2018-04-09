@@ -61,7 +61,7 @@
             password="cannontech123">
             <transaction src="tempCreateDatabase.sql" />
             <classpath>
-                <pathelement location="../yukon-client/third-party/jtds-1.3.0.jar"/>
+                <pathelement location="../yukon-client/third-party/jtds-1.3.1.jar"/>
             </classpath>
         </sql>
         
@@ -71,7 +71,7 @@
              userid="sa"
              password="cannontech123">
             <classpath>
-                <pathelement location="../yukon-client/third-party/jtds-1.3.0.jar"/>
+                <pathelement location="../yukon-client/third-party/jtds-1.3.1.jar"/>
             </classpath>
         	sp_addsrvrolemember '${databaseName}' , 'sysadmin';
         </sql>
@@ -85,7 +85,7 @@
             password="${databaseName}"
             delimiter='go'>
             <classpath>
-                <pathelement location="../yukon-client/third-party/jtds-1.3.0.jar"/>
+                <pathelement location="../yukon-client/third-party/jtds-1.3.1.jar"/>
             </classpath>
             <transaction src="CreationScripts/SqlServerTableCreation.sql" />
         </sql>
@@ -100,7 +100,7 @@
             <arg value="--schema=dbo"/>
             <arg value="--outputXmlFile=${dbSnapshotTempDir}/mssql.xml"/>
             <classpath>
-               <pathelement location="../yukon-client/third-party/jtds-1.3.0.jar"/>
+               <pathelement location="../yukon-client/third-party/jtds-1.3.1.jar"/>
             </classpath>
         </java>
         
@@ -112,7 +112,7 @@
             userid="sa"
             password="cannontech123">
             <classpath>
-                <pathelement location="../yukon-client/third-party/jtds-1.3.0.jar"/>
+                <pathelement location="../yukon-client/third-party/jtds-1.3.1.jar"/>
             </classpath>
             <transaction src="tempDropDatabase.sql" />
         </sql>

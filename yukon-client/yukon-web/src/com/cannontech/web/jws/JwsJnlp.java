@@ -91,7 +91,7 @@ public enum JwsJnlp {
                 "jfreechart.jar",
                 "joda-time-2.3.jar",
                 "jradius-client.jar",
-                "jtds-1.3.0.jar",
+                "jtds-1.3.1.jar",
                 "libthrift-0.9.0.jar",
                 "log4j-1.2.17.jar",
                 "lucene-analyzers-common-6.0.0.jar",
