@@ -1106,7 +1106,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             Iterable<? extends YukonPao> displayableDevices, Attribute attribute, boolean excludeDisabledPaos,
             final Order order, final OrderBy orderBy, int value, Set<PointQuality> excludeQualities) {
         Stopwatch stopwatch = null;
-        if (log.isInfoEnabled()) {
+        if (log.isDebugEnabled()) {
             stopwatch = Stopwatch.createStarted();
         }
 
@@ -1148,13 +1148,13 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         };
         ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 1);
 
-        if (log.isInfoEnabled()) {
+        if (log.isDebugEnabled()) {
             stopwatch.stop();
             int numPaos = Iterables.size(displayableDevices);
             String logMessage =
                 "getMostRecentAttributeDataByValue() - " + numPaos + " paos. Attribute: " + attribute.getKey();
             logMessage += ".  Elapsed time: " + stopwatch.toString();
-            log.info(logMessage);
+            log.debug(logMessage);
         }
 
         return values;
