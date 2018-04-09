@@ -48,7 +48,7 @@
     </c:choose>
     
     <c:set var="displaySliderClass" value="${viewOnlyMode ? 'style=display:none;' : ''}"/>
-    <c:set var="labelWidth" value="${rangeEnabled ? 'style=width:140px;' : 'style=width:70px;'}"/>
+    <c:set var="labelWidth" value="${rangeEnabled ? 'style=width:160px;' : 'style=width:70px;'}"/>
     <c:set var="columnLayout" value="${rangeEnabled ? 'column-8-16' : 'column-6-18'}"/>
     <c:choose>
         <c:when test="${displayTimeToLeft}">
