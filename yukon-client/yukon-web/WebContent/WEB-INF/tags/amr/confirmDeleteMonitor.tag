@@ -4,10 +4,12 @@
 <%@ attribute name="target" required="true" type="java.lang.String"
               description="CSS selector of the HTML element that is the target of the data-event"%>
 
-<cti:msg2 var="dialogTitle" key="yukon.web.components.ajaxConfirm.confirmDelete.title"/>
-<cti:msg2 var="dialogMessage" key="yukon.web.components.ajaxConfirm.confirmDelete.message" argument="${monitorName}" 
-          htmlEscapeArguments="true"/>
-<cti:msg2 var="okBtnText" key="yukon.web.components.ajaxConfirm.confirmDelete.ok"/>
+<cti:msgScope paths="yukon.web.components.ajaxConfirm">
+    <cti:msg2 var="dialogTitle" key=".confirmDelete.title"/>
+    <cti:msg2 var="dialogMessage" key=".confirmDelete.message" argument="${monitorName}" 
+              htmlEscapeArguments="true"/>
+    <cti:msg2 var="okBtnText" key=".confirmDelete.ok"/>
+</cti:msgScope>
 
 <div class="dn" id="confirm-delete-monitor-popup" data-dialog data-target="${target}" 
      data-title="${dialogTitle}" 
