@@ -90,6 +90,14 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-18086', '7.1.0', GETDATE());
 /* @end YUK-18086 */
 
+/* @start YUK-18122 */
+UPDATE YukonRoleProperty SET Description = 'Controls access to view Control Area Trigger related information.' 
+    WHERE RolePropertyId = -90021;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-18122', '7.1.0', GETDATE());
+/* @end YUK-18122 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

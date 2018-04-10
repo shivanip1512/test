@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/2/2018 11:00:49 AM                         */
+/* Created on:     4/10/2018 12:40:20 AM                        */
 /*==============================================================*/
 
 
@@ -10278,7 +10278,7 @@ INSERT INTO YukonRoleProperty VALUES (-90009,-900,'Use Pao Permissions','false',
 INSERT INTO YukonRoleProperty VALUES (-90010,-900,'Control Areas','true','Controls access to view Control Areas');
 INSERT INTO YukonRoleProperty VALUES (-90011,-900,'Scenarios','true','Controls access to view Scenarios');
 
-INSERT INTO YukonRoleProperty VALUES (-90021,-900,'Control Area Trigger Info','true','Controls access to view Control Area Trigger realted information.');
+INSERT INTO YukonRoleProperty VALUES (-90021,-900,'Control Area Trigger Info','true','Controls access to view Control Area Trigger related information.');
 INSERT INTO YukonRoleProperty VALUES (-90024,-900,'Priority','true','Controls access to view Control Area, Program, and Group Priority.');
 INSERT INTO YukonRoleProperty VALUES (-90032,-900,'Reduction','true','Controls access to view Program and Group Reduction.');
 INSERT INTO YukonRoleProperty VALUES (-90039,-900,'Start Now Checked By Default','true', 'Controls whether the start now checkbox is checked by default in demand response.');
