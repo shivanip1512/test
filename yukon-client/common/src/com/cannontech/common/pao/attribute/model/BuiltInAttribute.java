@@ -655,10 +655,19 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 PEAK_KVAR_RATE_D,
                 SUM_PEAK_DEMAND,
                 SUM_PEAK_DEMAND_RATE_A,
+                SUM_PEAK_DEMAND_RATE_B,
+                SUM_PEAK_DEMAND_RATE_C,
+                SUM_PEAK_DEMAND_RATE_D,
                 SUM_PEAK_KVA,
                 SUM_PEAK_KVA_RATE_A,
+                SUM_PEAK_KVA_RATE_B,
+                SUM_PEAK_KVA_RATE_C,
+                SUM_PEAK_KVA_RATE_D,
                 SUM_PEAK_KVAR,
-                SUM_PEAK_KVAR_RATE_A);
+                SUM_PEAK_KVAR_RATE_A,
+                SUM_PEAK_KVAR_RATE_B,
+                SUM_PEAK_KVAR_RATE_C,
+                SUM_PEAK_KVAR_RATE_D);
 
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
