@@ -2,6 +2,9 @@ package com.cannontech.common.bulk.collection.device.service.impl;
 
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.CONFIG_NAME;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_TYPE;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -106,7 +109,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     @Override
     public void appendToLog(CollectionActionResult result, List<CollectionActionLogDetail> details) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-        if (cache.getIfPresent(result.getCacheKey()) == null) {
+        if (!hasLog(result.getCacheKey())) {
             cache.put(result.getCacheKey(), new HashSet<>());
             addHeader(accessor, result);
         }
@@ -122,6 +125,13 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
                 fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
                 fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
+                if (result.getAction().contains(CONFIG_NAME)) {
+                    fields.add(detail.getConfigName() != null ? detail.getConfigName() : "");
+                }
+                if (result.getAction().contains(DEVICE_TYPE)) {
+                    fields.add(detail.getDevice() != null
+                        ? accessor.getMessage(detail.getDevice().getDeviceType().getFormatKey()) : "");
+                }
                 String pointName = "";
                 String value = "";
                 if (result.getAction().contains(POINT_DATA)) {
@@ -133,15 +143,20 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                                 try {
                                     pointName = pointDao.getLitePoint(pointId).getPointName();
                                 } catch (NotFoundException e) {
+                                    pointName = "";
                                     log.error(e);
                                 }
                                 log.debug("Unable to find point with id=" + pointId
                                     + "in cache. Attempted the load from DB point name=" + pointName);
                             }
                         }
-                        value = "\""
-                            + pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())
-                            + "\"";
+                        try {
+                            value = "\"" + pointFormattingService.getValueString(detail.getValue(), Format.FULL,
+                                result.getContext()) + "\"";
+
+                        } catch (NotFoundException e) {
+                            log.error(e);
+                        }
                     }
                     fields.add(pointName);
                     fields.add(value);
@@ -158,7 +173,6 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                     }
                     fields.add(value);
                 }
-
                 fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
                 data.add(String.join(",", fields));
             }

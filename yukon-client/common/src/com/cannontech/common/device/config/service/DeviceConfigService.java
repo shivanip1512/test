@@ -19,7 +19,7 @@ public interface DeviceConfigService {
     
     public int readConfigs(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
     
-    public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> deviceCollection, LiteYukonUser user);
+    public VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user);
 
     public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user);
     
@@ -31,10 +31,5 @@ public interface DeviceConfigService {
         READ, SEND, VERIFY
     }
     
-    /**
-     * Logs completion result (success or failure) for each device.
-     * If isSuccessful is true, logs success otherwise logs failure.
-     */
-    void logCompleted(List<SimpleDevice> devices, LogAction action, boolean isSuccessful);
-
+    int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context);
 }

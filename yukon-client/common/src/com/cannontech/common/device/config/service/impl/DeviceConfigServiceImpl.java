@@ -1,7 +1,7 @@
 package com.cannontech.common.device.config.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -22,7 +22,6 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -46,8 +45,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -71,25 +68,15 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+    
+    private static final String VERIFY_COMMAND = "putconfig emetcon install all verify";
 
     private int initiateAction(String command, DeviceCollection deviceCollection, LogAction logAction,
             CollectionAction collectionAction, DeviceRequestType requestType,
             SimpleCallback<CollectionActionResult> callback, YukonUserContext context) {
-        List<SimpleDevice> unsupportedDevices = new ArrayList<>();
-        List<SimpleDevice> supportedDevices = new ArrayList<>();
-        for (SimpleDevice device : deviceCollection.getDeviceList()) {
-            if (!isConfigCommandSupported(device)) {
-                unsupportedDevices.add(device);
-            } else {
-                LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
-                if (configuration != null
-                    && deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getDeviceType())) {
-                    supportedDevices.add(device);
-                } else {
-                    unsupportedDevices.add(device);
-                }
-            }
-        }
+        VerificationSummary summary = new VerificationSummary(deviceCollection.getDeviceList());
+        List<SimpleDevice> unsupportedDevices = summary.unusupported;
+        List<SimpleDevice> supportedDevices = new ArrayList<>(summary.supported.keySet());
         logInitiated(supportedDevices, logAction, context.getYukonUser());
         CollectionActionResult result = collectionActionService.createResult(collectionAction, null, deviceCollection,
             CommandRequestType.DEVICE, requestType, context);
@@ -98,7 +85,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
                 @Override
                 public void receivedLastResultString(CommandRequestDevice command, String value) {
-                    logCompleted(Lists.newArrayList(command.getDevice()), logAction, true);
+                    logCompleted(command.getDevice(), logAction, true);
                     CollectionActionLogDetail detail =
                         new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
                     detail.setLastValue(value);
@@ -107,7 +94,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
 
                 @Override
                 public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                    logCompleted(Lists.newArrayList(command.getDevice()), logAction, false);
+                    logCompleted(command.getDevice(), logAction, false);
                     CollectionActionLogDetail detail =
                         new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.FAILURE);
                     detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
@@ -176,82 +163,154 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return cacheKey;
     }
 
-    @Override
-    public void logCompleted(List<SimpleDevice> devices, LogAction action, boolean isSuccessful) {
-        
+
+    private void logCompleted(SimpleDevice device, LogAction action, boolean isSuccessful) {
         int status = BooleanUtils.toInteger(isSuccessful);
-        for (SimpleDevice device : devices) {
-            String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
-            if (action == LogAction.READ) {
-                eventLogService.readConfigFromDeviceCompleted(deviceName, status);
-            } else if (action == LogAction.VERIFY) {
-                eventLogService.verifyConfigFromDeviceCompleted(deviceName, status);
-            } else if (action == LogAction.SEND) {
-                eventLogService.sendConfigToDeviceCompleted(deviceName, status);
-            }
+        String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
+        if (action == LogAction.READ) {
+            eventLogService.readConfigFromDeviceCompleted(deviceName, status);
+        } else if (action == LogAction.VERIFY) {
+            eventLogService.verifyConfigFromDeviceCompleted(deviceName, status);
+        } else if (action == LogAction.SEND) {
+            eventLogService.sendConfigToDeviceCompleted(deviceName, status);
         }
     }
     
-    /**
-     * Logs device action (read, verify, send).
-     */
-    private void logInitiated(List<SimpleDevice> devices, LogAction action, LiteYukonUser user){
-        for(SimpleDevice device: devices){
+    private void logInitiated(List<SimpleDevice> devices, LogAction action, LiteYukonUser user) {
+        for (SimpleDevice device : devices) {
             String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
-            if(action == LogAction.READ){
+            if (action == LogAction.READ) {
                 eventLogService.readConfigFromDeviceInitiated(deviceName, user);
-            }else if(action == LogAction.VERIFY){
+            } else if (action == LogAction.VERIFY) {
                 eventLogService.verifyConfigFromDeviceInitiated(deviceName, user);
-            }else if(action == LogAction.SEND){
+            } else if (action == LogAction.SEND) {
                 eventLogService.sendConfigToDeviceInitiated(deviceName, user);
             }
-        }   
+        }
     }
 
+    private class VerificationSummary {
+        List<SimpleDevice> unusupported = new ArrayList<>();
+        Map<SimpleDevice, VerifyResult> supported = new HashMap<>();
+
+        public VerificationSummary(List<SimpleDevice> devices) {
+            Map<PaoIdentifier, DisplayablePao> displayableDeviceLookup =
+                paoLoadingService.getDisplayableDeviceLookup(devices);
+            unusupported.addAll(devices);
+            devices.forEach(device -> {
+                if (isConfigCommandSupported(device)) {
+                    DisplayablePao displayableDevice = displayableDeviceLookup.get(device.getPaoIdentifier());
+                    LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
+                    if (configuration != null && deviceConfigurationDao.isTypeSupportedByConfiguration(configuration,
+                        device.getPaoIdentifier().getPaoType())) {
+                        VerifyResult verifyResult = new VerifyResult(displayableDevice);
+                        verifyResult.setConfig(configuration);
+                        supported.put(device, verifyResult);
+                        unusupported.remove(device);
+                    }
+                }
+            });
+        }
+    }
+    
+    @Override
+    public int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context) {
+        eventLogService.verifyConfigInitiated(deviceCollection.getDeviceCount(), context.getYukonUser());
+        
+        VerificationSummary summary = new VerificationSummary(deviceCollection.getDeviceList());
+        List<SimpleDevice> supportedDevices = new ArrayList<>(summary.supported.keySet());
+
+        VerifyConfigCommandResult configResult = new VerifyConfigCommandResult();
+        configResult.getVerifyResultsMap().putAll(summary.supported);
+        
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.VERIFY_CONFIG, null,
+            deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, context);
+        
+        CommandCompletionCallback<CommandRequestDevice> execCallback =
+            new CommandCompletionCallback<CommandRequestDevice>() {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+                @Override
+                public void receivedLastResultString(CommandRequestDevice command, String value) {
+                    CollectionActionLogDetail detail =
+                        new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
+                    VerifyResult discrepancy = configResult.getVerifyResultsMap().get(command.getDevice());
+                    detail.setLastValue(value);
+                    detail.setConfigName(discrepancy.getConfig().getName());
+                    result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
+                    log(command);
+                }
+
+                @Override
+                public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                    SimpleDevice device = command.getDevice();
+                    configResult.addError(device, error.getPorter());
+                }
+                
+                @Override
+                public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                    CollectionActionLogDetail detail =
+                        new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.FAILURE);
+                    detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
+                    VerifyResult discrepancy = configResult.getVerifyResultsMap().get(command.getDevice());
+                    detail.setConfigName(discrepancy.getConfig().getName());
+                    if (!discrepancy.getDiscrepancies().isEmpty()) {
+                        detail.setLastValue(discrepancy.getDiscrepancies().toString());
+                    }
+                    result.addDeviceToGroup(CollectionActionDetail.FAILURE, command.getDevice(), detail);
+                    log(command);
+                }
+
+                @Override
+                public void processingExceptionOccured(String reason) {
+                    result.setExecutionExceptionText(reason);
+                    collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
+                }
+                
+                @Override
+                public void complete() {
+                    collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
+                }
+                
+                private void log(CommandRequestDevice command) {
+                    if (configResult.getVerifyResultsMap().get(command.getDevice()).getDiscrepancies().isEmpty()) {
+                        logCompleted(command.getDevice(), LogAction.VERIFY, true);
+                    } else {
+                        logCompleted(command.getDevice(), LogAction.VERIFY, false);
+                    }
+                }
+            };
+
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, summary.unusupported);
+        if (supportedDevices.isEmpty()) {
+            execCallback.complete();
+        } else {
+            List<CommandRequestDevice> requests = supportedDevices.stream().map(
+                device -> new CommandRequestDevice(VERIFY_COMMAND, new SimpleDevice(device.getPaoIdentifier()))).collect(
+                    Collectors.toList());
+            result.getExecution().setRequestCount(requests.size());
+            log.debug("updating request count =" + requests.size());
+            commandRequestExecutionDao.saveOrUpdate(result.getExecution());
+            commandExecutionService.execute(requests, execCallback, result.getExecution(), false, context.getYukonUser());
+        }
+        return result.getCacheKey();
+    }
 
     @Override
-    public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
+    public VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user) {
         eventLogService.verifyConfigInitiated(Iterables.size(devices), user);
         return doVerifyConfigs(devices, user);
     }
 
-    private VerifyConfigCommandResult doVerifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {   
-        final VerifyConfigCommandResult result = new VerifyConfigCommandResult();
-        final String commandString = "putconfig emetcon install all verify";
-        List<YukonDevice> deviceList = Lists.newArrayList(devices);
-
-        ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper =
-            new ObjectMapper<YukonDevice, CommandRequestDevice>() {
-                @Override
-                public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
-                    return new CommandRequestDevice(commandString, new SimpleDevice(from.getPaoIdentifier()));
-                }
-            };
-
-        Map<PaoIdentifier, DisplayablePao> displayableDeviceLookup =
-            paoLoadingService.getDisplayableDeviceLookup(devices);
-        for (YukonDevice device : devices) {
-            if (!isConfigCommandSupported(device)) {
-                deviceList.remove(device);
-                result.getUnsupportedList().add(new SimpleDevice(device));
-            } else {
-                // hit the db to find out I guess.
-                DisplayablePao displayableDevice = displayableDeviceLookup.get(device.getPaoIdentifier());
-                LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
-                if (configuration != null
-                    && deviceConfigurationDao.isTypeSupportedByConfiguration(configuration,
-                        device.getPaoIdentifier().getPaoType())) {
-                    VerifyResult verifyResult = new VerifyResult(displayableDevice);
-                    verifyResult.setConfig(configuration);
-                    result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
-                } else {
-                    deviceList.remove(device);
-                    result.getUnsupportedList().add(new SimpleDevice(device));
-                }
-            }
-        }
-
-        List<CommandRequestDevice> requests = new MappingList<>(deviceList, objectMapper);
+    private VerifyConfigCommandResult doVerifyConfigs(List<SimpleDevice> devices, LiteYukonUser user) {   
+        VerifyConfigCommandResult result = new VerifyConfigCommandResult();
+        
+        VerificationSummary summary = new VerificationSummary(devices);
+        Map<SimpleDevice, VerifyResult> supported = summary.supported;
+        result.getVerifyResultsMap().putAll(supported);
+        
+        List<CommandRequestDevice> requests = supported.keySet().stream()
+                .map(d -> new CommandRequestDevice(VERIFY_COMMAND, d))
+                .collect(Collectors.toList());
 
         CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback =
             new CommandCompletionCallback<CommandRequestDevice>() {
@@ -262,59 +321,41 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 }
 
                 @Override
-                public void
-                    receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                     SimpleDevice device = command.getDevice();
                     result.addError(device, error.getPorter());
                 }
 
                 @Override
                 public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                    SimpleDevice device = command.getDevice();
-                    String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
                     // This was commented out to prevent adding the final summary result status message to the out-of-sync parts list
                     //result.addError(device, error.getPorter());
-                    result.handleFailure(device);
-                    eventLogService.verifyConfigFromDeviceCompleted(deviceName, 0);
+                    logCompleted(command.getDevice(), LogAction.VERIFY, false);
                 }
 
                 @Override
                 public void receivedLastResultString(CommandRequestDevice command, String value) {
                     SimpleDevice device = command.getDevice();
-                    String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
                     result.addResultString(device, value);
                     if (result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
-                        result.handleSuccess(device);
-                        eventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
+                        logCompleted(command.getDevice(), LogAction.VERIFY, true);
                     } else {
-                        result.handleFailure(device);
-                        eventLogService.verifyConfigFromDeviceCompleted(deviceName, 0);
+                        logCompleted(command.getDevice(), LogAction.VERIFY, false);
                     }
-                }
-
-                @Override
-                public void processingExceptionOccured(String reason) {
-                    result.setExceptionReason(reason);
                 }
             };
 
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback =
             waitableCommandCompletionCallbackFactory.createWaitable(commandCompletionCallback);
 
-        logInitiated(deviceList.stream()
-                               .map(x -> new SimpleDevice(x))
-                               .collect(Collectors.toList()), LogAction.VERIFY, user);
+        logInitiated(Lists.newArrayList(supported.keySet()), LogAction.VERIFY, user);
             
         commandRequestService.execute(requests, waitableCallback, DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, user);
         try {
             waitableCallback.waitForCompletion();
-            logCompleted(result.getSuccessList(), LogAction.VERIFY, true);
-            logCompleted(result.getFailureList(), LogAction.VERIFY, false);
         } catch (InterruptedException e) {
-            result.setExceptionReason(e.getMessage());
             log.error(e);
         } catch (TimeoutException e) {
-            result.setExceptionReason("Operation Timed Out");
             log.error(e);
         }
         return result;
@@ -325,7 +366,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
         eventLogService.verifyConfigFromDeviceInitiated(deviceName, user);
 
-        VerifyConfigCommandResult verifyConfigResult = doVerifyConfigs(Collections.singleton(device), user);
+        VerifyConfigCommandResult verifyConfigResult = doVerifyConfigs(Lists.newArrayList(new SimpleDevice(device)), user);
         return verifyConfigResult.getVerifyResultsMap().get(new SimpleDevice(device));
     }
 

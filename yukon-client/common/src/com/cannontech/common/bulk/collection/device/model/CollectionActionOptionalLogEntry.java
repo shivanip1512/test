@@ -6,5 +6,7 @@ package com.cannontech.common.bulk.collection.device.model;
  */
 public enum CollectionActionOptionalLogEntry {
     POINT_DATA,
-    LAST_VALUE
+    LAST_VALUE,
+    DEVICE_TYPE,
+    CONFIG_NAME
 }

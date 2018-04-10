@@ -19,6 +19,7 @@ public class CollectionActionLogDetail {
     private String deviceErrorText;
     private String lastValue;
     private SimplePointValue value;
+    private String configName;
     
     public CollectionActionLogDetail(YukonPao pao, CollectionActionDetail detail) {
         this.device = new SimpleDevice(pao);
@@ -83,6 +84,14 @@ public class CollectionActionLogDetail {
 
     public void setLastValue(String lastValue) {
         this.lastValue = lastValue;
+    }
+
+    public String getConfigName() {
+        return configName;
+    }
+
+    public void setConfigName(String configName) {
+        this.configName = configName;
     }
 
     @Override

@@ -12,6 +12,8 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_TYPE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.CONFIG_NAME;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
 
@@ -42,7 +44,7 @@ public enum CollectionAction implements DisplayableEnum {
     DEMAND_RESET(CRE, null, CONFIRMED, UNCONFIRMED, FAILURE, UNSUPPORTED, CANCELED),
     SEND_CONFIG(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     READ_CONFIG(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
-    ARCHIVE_DATA_ANALYSIS(DB, null, SUCCESS, FAILURE),
+    VERIFY_CONFIG(CRE, getLogEntries(DEVICE_TYPE, CONFIG_NAME, LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED),
     MASS_CHANGE(DB, null, SUCCESS, FAILURE),
     CHANGE_TYPE(DB, null, SUCCESS, FAILURE),
     MASS_DELETE(DB, null, SUCCESS, FAILURE),
