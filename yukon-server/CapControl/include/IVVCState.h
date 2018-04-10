@@ -74,6 +74,8 @@ class IVVCState
 
         std::set<long>  dmvWattVarPointIDs;
 
+        bool dmvRegulatorInAutoMode;
+
         enum
         {
             Down,
