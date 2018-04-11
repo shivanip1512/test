@@ -762,7 +762,7 @@ GO
 /* End YUK-16646 */
 
 /* Start YUK-16660 */
-DROP TABLE UserSystemMetric
+DROP TABLE UserSystemMetric;
 GO
 /* End YUK-16660 */
 
