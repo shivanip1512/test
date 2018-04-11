@@ -55,16 +55,44 @@ public class DeviceConfigController {
     @Autowired protected CollectionActionService collectionActionService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private CollectionActionDao collectionActionDao;
-
-    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
-    @RequestMapping(value = "assignConfig", method = RequestMethod.GET)
-    public String assignConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+    
+    @RequestMapping(value = "deviceConfigs", method = RequestMethod.GET)
+    public String deviceConfigs(DeviceCollection deviceCollection, ModelMap model, String action) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
         
+        //used for assigning a config
         List<LightDeviceConfiguration> existingConfigs = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("existingConfigs", existingConfigs);
         
-        return "config/assignConfig.jsp";
+        //used for sending a config
+        for (SimpleDevice sd : deviceCollection.getDeviceList()) {
+            if (sd.getDeviceType().isRfn()) {
+                model.addAttribute("someRF", true);
+                break;
+            }
+        }
+
+        model.addAttribute("action", action);
+        
+        return "config/deviceConfigs.jsp";
+    }
+    
+    @RequestMapping(value = "deviceConfigs", method = RequestMethod.POST)
+    public String postDeviceConfigs(ModelMap model, HttpServletRequest request, YukonUserContext userContext, String action, 
+                                    int configuration, String method) throws ServletException {
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        if (action.equals("ASSIGN")) {
+            return doAssignConfig(model, request, userContext, configuration);
+        } else if (action.equals("UNASSIGN")) {
+            return doUnassignConfig(model, request, userContext);
+        } else if (action.equals("SEND")){
+            return doSendConfig(request, deviceCollection, method, model, userContext);
+        } else if (action.equals("READ")) {
+            return doReadConfig(request, deviceCollection, model, userContext);
+        } else if (action.equals("VERIFY")) {
+            return doVerifyConfigs(deviceCollection, userContext, model);
+        }
+        return null;
     }
     
     @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
@@ -88,13 +116,6 @@ public class DeviceConfigController {
     }
     
     @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
-    @RequestMapping(value = "unassignConfig", method = RequestMethod.GET)
-    public String unassignConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {        
-        model.addAttribute("deviceCollection", deviceCollection);
-        return "config/unassignConfig.jsp";
-    }
-    
-    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
     @RequestMapping(value = "doUnassignConfig", method = RequestMethod.POST)
     public String doUnassignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -108,34 +129,6 @@ public class DeviceConfigController {
             new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
         
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
-    }
-
-    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
-    @RequestMapping(value = "sendConfig", method = RequestMethod.GET)
-    public String sendConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
-        model.addAttribute("deviceCollection", deviceCollection);
-
-        for (SimpleDevice sd : deviceCollection.getDeviceList()) {
-            if (sd.getDeviceType().isRfn()) {
-                model.addAttribute("someRF", true);
-                break;
-            }
-        }
-
-        return "config/sendConfig.jsp";
-    }
-    
-    @RequestMapping(value = "verifyConfig", method = RequestMethod.GET)
-    public String verifyConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
-        model.addAttribute("deviceCollection", deviceCollection);
-        return "config/verifyConfig.jsp";
-    }
-    
-    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
-    @RequestMapping(value = "readConfig", method = RequestMethod.GET)
-    public String readConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
-        model.addAttribute("deviceCollection", deviceCollection);
-        return "config/readConfig.jsp";
     }
     
     @RequestMapping(value = "doVerifyConfigs", method = RequestMethod.POST)

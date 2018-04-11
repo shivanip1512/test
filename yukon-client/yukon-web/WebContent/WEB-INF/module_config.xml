@@ -316,23 +316,8 @@
                       </page>
                     </pages>
                   </page>
-                  <page name="bulk.assignConfig" type="BASIC">
-                    <link>/bulk/config/assignConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.unassignConfig" type="BASIC">
-                    <link>/bulk/config/unassignConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.sendConfig" type="BASIC">
-                    <link>/bulk/config/sendConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.readConfig" type="BASIC">
-                    <link>/bulk/config/readConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.verifyConfig" type="BASIC">
-                    <link>/bulk/config/verifyConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.verifyConfigResults" type="BASIC"/>
-                    </pages>
+                  <page name="bulk.deviceConfigs" type="BASIC">
+                    <link>/bulk/config/deviceConfigs?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
                   </page>
                   <page name="bulk.dataStreaming.configure" type="BASIC">
                     <link>/bulk/dataStreaming/configure?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>

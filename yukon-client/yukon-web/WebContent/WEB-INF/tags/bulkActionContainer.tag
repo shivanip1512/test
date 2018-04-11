@@ -7,9 +7,10 @@
 <%@ attribute name="key" required="true" %>
 <%@ attribute name="noteTextArguments" %>
 <%@ attribute name="deviceCollection" type="com.cannontech.common.bulk.collection.device.model.DeviceCollection" %>
+<%@ attribute name="helpText" %>
 
 <cti:msg2 var="headerTitle" key="${key}.header"/>
-<tags:sectionContainer title="${headerTitle}" id="collectionActionsContainer">
+<tags:sectionContainer title="${headerTitle}" id="collectionActionsContainer" helpText="${helpText}">
     <div class="stacked notes">
         <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
         <c:if test="${not empty pageScope.deviceCollection}">

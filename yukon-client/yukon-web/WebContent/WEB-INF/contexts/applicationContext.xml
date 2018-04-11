@@ -1090,25 +1090,25 @@
     </bean>
     <bean id="menuItemBulkConfigAssign" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
-        <constructor-arg value="/bulk/config/assignConfig"/>
+        <constructor-arg value="/bulk/config/deviceConfigs?action=ASSIGN"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="ASSIGN_CONFIG"/>
     </bean>
     <bean id="menuItemBulkConfigRead" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
-        <constructor-arg value="/bulk/config/readConfig"/>
+        <constructor-arg value="/bulk/config/deviceConfigs?action=READ"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="SEND_READ_CONFIG"/>
     </bean>
     <bean id="menuItemBulkConfigSend" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
-        <constructor-arg value="/bulk/config/sendConfig"/>
+        <constructor-arg value="/bulk/config/deviceConfigs?action=SEND"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="SEND_READ_CONFIG"/>
     </bean>
     <bean id="menuItemBulkConfigVerify" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
-        <constructor-arg value="/bulk/config/verifyConfig"/>
+        <constructor-arg value="/bulk/config/deviceConfigs?action=VERIFY"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
     <bean id="menuItemBulkDataAnalysis" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">

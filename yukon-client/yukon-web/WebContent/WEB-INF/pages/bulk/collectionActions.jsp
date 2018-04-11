@@ -44,16 +44,8 @@
         <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
 
         <cti:msg var="headerConfigActions" key="yukon.common.device.bulk.collectionActions.header.configActions"/>
-        <cti:msg var="assignConfigLabel" key="yukon.common.device.bulk.collectionActions.assignConfigLabel"/>
-        <cti:msg var="assignConfigDescription" key="yukon.common.device.bulk.collectionActions.assignConfigDescription"/>
-        <cti:msg var="unassignConfigLabel" key="yukon.common.device.bulk.collectionActions.unassignConfigLabel"/>
-        <cti:msg var="unassignConfigDescription" key="yukon.common.device.bulk.collectionActions.unassignConfigDescription"/>
-        <cti:msg var="sendConfigLabel" key="yukon.common.device.bulk.collectionActions.sendConfigLabel"/>
-        <cti:msg var="sendConfigDescription" key="yukon.common.device.bulk.collectionActions.sendConfigDescription"/>
-        <cti:msg var="readConfigLabel" key="yukon.common.device.bulk.collectionActions.readConfigLabel"/>
-        <cti:msg var="readConfigDescription" key="yukon.common.device.bulk.collectionActions.readConfigDescription"/>
-        <cti:msg var="verifyConfigLabel" key="yukon.common.device.bulk.collectionActions.verifyConfigLabel"/>
-        <cti:msg var="verifyConfigDescription" key="yukon.common.device.bulk.collectionActions.verifyConfigDescription"/>
+        <cti:msg var="deviceConfigsLabel" key="yukon.common.device.bulk.collectionActions.deviceConfigsLabel"/>
+        <cti:msg var="deviceConfigsDescription" key="yukon.common.device.bulk.collectionActions.deviceConfigsDescription"/>
         <cti:msg var="configureDataStreamingLabel" key="yukon.common.device.bulk.collectionActions.configureDataStreamingLabel"/>
         <cti:msg var="configureDataStreamingDescription" key="yukon.common.device.bulk.collectionActions.configureDataStreamingDescription"/>
         <cti:msg var="removeDataStreamingLabel" key="yukon.common.device.bulk.collectionActions.removeDataStreamingLabel"/>
@@ -154,31 +146,9 @@
                 <cti:dataGridCell>
                     <tags:sectionContainer title="${headerConfigActions}">
                         <table>
-                            <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-                                <%-- ASSIGN CONFIG --%>
-                                <tags:collectionActionTr buttonValue="${assignConfigLabel}" description="${assignConfigDescription}"
-                                    action="/bulk/config/assignConfig" deviceCollection="${deviceCollection}"/>
-                            </cti:checkRolesAndProperties>
-                            
-                            <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-                                <%-- UNASSIGN CONFIG --%>
-                                <tags:collectionActionTr buttonValue="${unassignConfigLabel}" description="${unassignConfigDescription}"
-                                    action="/bulk/config/unassignConfig" deviceCollection="${deviceCollection}"/>
-                            </cti:checkRolesAndProperties>
-                            
-                            <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-                                <%-- SEND CONFIG --%>
-                                <tags:collectionActionTr buttonValue="${sendConfigLabel}" description="${sendConfigDescription}"
-                                    action="/bulk/config/sendConfig" deviceCollection="${deviceCollection}"/>
-                            
-                                <%-- READ CONFIG --%>
-                                <tags:collectionActionTr buttonValue="${readConfigLabel}" description="${readConfigDescription}"
-                                    action="/bulk/config/readConfig" deviceCollection="${deviceCollection}"/>
-                            </cti:checkRolesAndProperties>
-                            
-                            <%-- VERIFY CONFIG --%>
-                            <tags:collectionActionTr buttonValue="${verifyConfigLabel}" description="${verifyConfigDescription}"
-                                action="/bulk/config/verifyConfig" deviceCollection="${deviceCollection}"/>
+                            <%-- DEVICE CONFIGS --%>
+                            <tags:collectionActionTr buttonValue="${deviceConfigsLabel}" description="${deviceConfigsDescription}"
+                                action="/bulk/config/deviceConfigs" deviceCollection="${deviceCollection}"/>
                                 
                             <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
                             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">

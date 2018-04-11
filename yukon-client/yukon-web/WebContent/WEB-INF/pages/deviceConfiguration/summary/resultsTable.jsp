@@ -15,13 +15,13 @@
             <span class="js-cog-menu">
                 <cm:dropdown icon="icon-cog">
                     <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-                        <cm:dropdownOption key=".assignConfig" classes="js-collection-action" icon="icon-page-edit" data-collection-action="assignConfig"/> 
+                        <cm:dropdownOption key=".assignConfig" classes="js-collection-action" icon="icon-page-edit" data-collection-action="ASSIGN"/> 
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-                        <cm:dropdownOption key=".sendConfig" classes="js-collection-action" icon="icon-ping" data-collection-action="sendConfig"/> 
-                        <cm:dropdownOption key=".readConfig" classes="js-collection-action" icon="icon-read" data-collection-action="readConfig"/> 
+                        <cm:dropdownOption key=".sendConfig" classes="js-collection-action" icon="icon-ping" data-collection-action="SEND"/> 
+                        <cm:dropdownOption key=".readConfig" classes="js-collection-action" icon="icon-read" data-collection-action="READ"/> 
                     </cti:checkRolesAndProperties>
-                    <cm:dropdownOption key=".verifyConfig" classes="js-collection-action" icon="icon-accept" data-collection-action="verifyConfig"/> 
+                    <cm:dropdownOption key=".verifyConfig" classes="js-collection-action" icon="icon-accept" data-collection-action="VERIFY"/> 
                     <cm:dropdownOption key=".download" classes="js-config-download" icon="icon-page-white-excel"/>
                 </cm:dropdown>
             </span>

@@ -239,7 +239,7 @@ public class DeviceConfigurationSummaryController {
         List<SimpleDevice> devices = results.getResultList().stream().map(d -> new SimpleDevice(d.getDevice())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
-        return "redirect:/bulk/config/" + action + "?collectionType=group&group.name=" + tempGroup.getFullName();
+        return "redirect:/bulk/config/deviceConfigs?action=" + action + "&collectionType=group&group.name=" + tempGroup.getFullName();
     }
     
     @RequestMapping(value="download", method=RequestMethod.GET)
