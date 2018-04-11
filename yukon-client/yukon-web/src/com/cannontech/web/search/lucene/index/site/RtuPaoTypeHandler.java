@@ -41,7 +41,7 @@ public class RtuPaoTypeHandler implements PaoTypeHandler {
         
         builder.module(SiteModule.OPERATOR.getName());
         String path = "/stars/rtu/" + paoId;
-        String pageName = "rtuDetail";
+        String pageName = "rtuDetail.VIEW";
         builder.pageName(pageName);
         builder.path(path);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
