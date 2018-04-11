@@ -90,6 +90,11 @@
             <cti:url var="creLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.execution.id}"/>
             <cti:button renderMode="image" icon="icon-report" title="${creText}" href="${creLink}"/>
         </c:if>
+        <c:if test="${result.verificationExecution != null}">
+            <cti:msg2 var="verificationCreText" key=".verificationCreText"/>
+            <cti:url var="verificationCreLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.verificationExecution.id}"/>
+            <cti:button renderMode="image" icon="icon-report-edit" title="${verificationCreText}" href="${verificationCreLink}"/>
+        </c:if>
         <c:set var="logClass" value="${isLogAvailable ? '' : 'dn'}"/>
         <cti:msg2 var="logText" key=".logText"/>
         <cti:url var="logLink" value="/bulk/progressReport/log?key=${result.cacheKey}"/>

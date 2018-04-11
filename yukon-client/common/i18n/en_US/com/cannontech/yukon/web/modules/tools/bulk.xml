@@ -893,6 +893,7 @@
     <entry key="yukon.web.modules.tools.bulk.progressReport.results.title">Results</entry>
     <entry key="yukon.web.modules.tools.bulk.progressReport.cancel.label">Cancel</entry>
     <entry key="yukon.web.modules.tools.bulk.progressReport.creText">Command Request Execution</entry>
+    <entry key="yukon.web.modules.tools.bulk.progressReport.verificationCreText">Verification Command Request Execution</entry>
     <entry key="yukon.web.modules.tools.bulk.progressReport.logText">Log</entry>
     <entry key="yukon.web.modules.tools.bulk.progressReport.collectionActions">Collection Actions</entry>
     <entry key="yukon.web.modules.tools.bulk.progressReport.mapDevices">Map Devices</entry>
