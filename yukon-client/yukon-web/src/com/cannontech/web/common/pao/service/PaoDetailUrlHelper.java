@@ -56,7 +56,7 @@ public class PaoDetailUrlHelper {
                 return "/stars/rtu/" + pao.getPaoIdentifier().getPaoId();
             }
         });
-        pageNameBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, "rtuDetail");
+        pageNameBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, "rtuDetail.VIEW");
 
         urlBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             @Override

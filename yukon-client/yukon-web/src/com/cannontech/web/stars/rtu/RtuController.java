@@ -85,32 +85,20 @@ public class RtuController {
 
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     @RequestMapping(value = "rtu/{id}/edit", method = RequestMethod.GET)
-    public String edit(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext userContext,
-            HttpServletRequest request) {
+    public String edit(ModelMap model, @PathVariable int id) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        RtuDnp rtu = null;
-        if (model.containsAttribute("rtu")) {
-            rtu = (RtuDnp) model.get("rtu");
-        } else {
-            rtu = rtuDnpService.getRtuDnp(id);
-        }
-        getPointsForModel(rtu.getId(), model);
+        RtuDnp rtu = rtuDnpService.getRtuDnp(id);
+        getPointsForModel(id, model);
         return setupModel(rtu, model);
     }
 
     @RequestMapping(value = "rtu/create", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String create(ModelMap model, YukonUserContext userContext) {
-        RtuDnp rtu = null;
+    public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        if (model.containsAttribute("rtu")) {
-            rtu = (RtuDnp) model.get("rtu");
-        } else {
-            rtu = new RtuDnp();
-            DNPConfiguration config =
-                deviceConfigDao.getDnpConfiguration((deviceConfigDao.getDefaultDNPConfiguration()));
-            rtu.setDnpConfigId(config.getConfigurationId());
-        }
+        RtuDnp rtu = new RtuDnp();
+        DNPConfiguration config = deviceConfigDao.getDnpConfiguration((deviceConfigDao.getDefaultDNPConfiguration()));
+        rtu.setDnpConfigId(config.getConfigurationId());
         return setupModel(rtu, model);
     }
 
@@ -210,6 +198,10 @@ public class RtuController {
     }
     
     private String setupModel(RtuDnp rtu, ModelMap model) {
+        if (model.containsAttribute("rtu")) {
+            rtu = (RtuDnp) model.get("rtu");
+        }
+        
         model.addAttribute("threeClassTimeIntervals", TimeIntervals.getUpdateAndScanRate());
         model.addAttribute("fourClassTimeIntervals", TimeIntervals.getScanIntervals());
         model.addAttribute("altTimeIntervals", TimeIntervals.getAltIntervals());

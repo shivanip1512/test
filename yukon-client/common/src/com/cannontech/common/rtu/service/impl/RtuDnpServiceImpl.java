@@ -67,9 +67,16 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         rtu.setDeviceDirectCommSettings(dnpBase.getDeviceDirectCommSettings());
         LightDeviceConfiguration config =
             configurationDao.findConfigurationForDevice(new SimpleDevice(pao.getPaoIdentifier()));
-        DeviceConfiguration deviceConfig =
-            configurationDao.getDeviceConfiguration(config.getConfigurationId());
-        rtu.setDnpConfigId(deviceConfig.getConfigurationId());
+        Integer configId = null;
+        if (config != null) {
+            DeviceConfiguration deviceConfig =
+                    configurationDao.getDeviceConfiguration(config.getConfigurationId());
+            configId = deviceConfig.getConfigurationId();
+        } else {
+            DeviceConfiguration configuration = configurationDao.getDefaultDNPConfiguration();
+            configId = configuration.getConfigurationId();
+        }
+        rtu.setDnpConfigId(configId);
         List<DisplayableDevice> devices = deviceDao.getChildDevices(id);
         Comparator<DisplayableDevice> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
         Collections.sort(devices, comparator);

@@ -6,7 +6,7 @@ yukon.namespace('yukon.assets.rtu');
  * @requires JQUERY
  * @requires yukon
  */
-yukon.assets.rtu= (function () {
+yukon.assets.rtu = (function() {
     
     'use strict';
     
