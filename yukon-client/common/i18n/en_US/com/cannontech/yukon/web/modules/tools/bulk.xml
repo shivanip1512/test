@@ -160,16 +160,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
 
     <entry key="yukon.common.device.bulk.collectionActions.header.configActions">Config Actions</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.assignConfigLabel">Assign Config</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.assignConfigDescription">Assign a config to a collection of devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.unassignConfigLabel">Unassign Config</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.unassignConfigDescription">Unassign a config from a collection of devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.sendConfigLabel">Send Config</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.sendConfigDescription">Send device configurations to a collection of devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.readConfigLabel">Read Config</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.readConfigDescription">Reads device configuration settings from the devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.verifyConfigLabel">Verify Config</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.verifyConfigDescription">Verify settings between the device and the assigned configuration.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceConfigsLabel">Device Configs</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceConfigsDescription">Assign, Unassign, Send, Read or Verify a config for a collection of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.configureDataStreamingLabel">Configure Data Streaming</entry>
     <entry key="yukon.common.device.bulk.collectionActions.configureDataStreamingDescription">Configure data streaming for a collection of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.removeDataStreamingLabel">Remove Data Streaming</entry>
@@ -268,31 +260,42 @@
     <entry key="yukon.common.device.bulk.massChange.deviceType">Change Type</entry>
     <entry key="yukon.common.device.bulk.massChange.deviceType.description">Choose from applicable device types.</entry>
     
-    <!-- ASSIGN CONFIG -->
+    <!-- DEVICE CONFIGS -->
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
     
-    <!-- assignConfig.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.pageName">Assign Configuration</entry>
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.contextualPageName">Assign Config</entry>
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.header">Assign Configuration:</entry>
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.noteText">Select the Device Configuration you wish to assign the selected devices to.</entry>
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.none">There are no existing configurations.</entry>
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.assign.label">Assign</entry>
-    <entry key="yukon.web.modules.tools.bulk.assignConfig.selectLabel">Device Config:</entry>
-    
-    <!-- UNASSIGN CONFIG -->
-    <!-- ******************************************************************************************************************** -->
-    <!-- ******************************************************************************************************************** -->
-    
-    <!-- unassignConfig.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.unassignConfig.pageName">Unassign Configuration</entry>
-    <entry key="yukon.web.modules.tools.bulk.unassignConfig.contextualPageName">Unassign Config</entry>
-    <entry key="yukon.web.modules.tools.bulk.unassignConfig.header">Unassign Configuration:</entry>
-    <entry key="yukon.web.modules.tools.bulk.unassignConfig.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.tools.bulk.unassignConfig.noteText">The devices in the selected device group will have their device configurations unassigned.</entry>
-    <entry key="yukon.web.modules.tools.bulk.unassignConfig.unassign.label">Unassign</entry>
+    <!-- deviceConfigs.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.pageName">Device Configuration</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.contextualPageName">Device Config</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.header">Device Configuration</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.noteText">Select whether you want to Assign, Unassign, Send, Read or Verify a Device Configuration for the selected devices.</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.helpText">
+        <![CDATA[
+            Select which Device Configuration action to perform on the selected devices (options available depend upon permissions):
+            <ul>
+                <li><b>Assign</b> - Select the Device Configuration you wish to assign the selected devices to.</li>
+                <li><b>Unassign</b> - The devices in the selected device group will have their device configurations unassigned.
+                <li><b>Send</b> - Select the method you wish to use when sending configurations to devices. This action will transmit configuration settings out to devices.
+                The standard method will compare the settings of the device with the settings of the configuration and send only the unmatching fields to the device.  The force method
+                will send the entire configuration to the device</li>
+                <li><b>Read</b> - Reads the configuration settings from the device and updates the database information for that device.</li>
+                <li><b>Verify</b> - Compares the settings of the device to the settings of the configuration.
+                This action compares database information and does not read from the device.</li>
+            </ul>
+        ]]>
+    </entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.action">Action</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.assign.label">Assign</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.unassign.label">Unassign</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.send.label">Send</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.read.label">Read</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.verify.label">Verify</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.assignConfig.label">Device Config</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.selectLabel">Send Method</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.standard">Standard</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.force">Force</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.rfnWarning">One or more devices selected are identified as RF. These devices cannot currently use the Force operation. All devices in group will only be run on the standard command.</entry>
         
     <!-- DATA STREAMING CONFIGURATION-->
     <!-- ******************************************************************************************************************** -->
@@ -398,62 +401,6 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.cancelledLabel">Canceled</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.view">View Results Detail</entry>
-    
-    
-    <!-- SEND CONFIG -->
-    <!-- ******************************************************************************************************************** -->
-    <!-- ******************************************************************************************************************** -->
-    
-    <!-- sendConfig.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.sendConfig.pageName">Send Configuration</entry>
-    <entry key="yukon.web.modules.tools.bulk.sendConfig.contextualPageName">Send Config</entry>
-    <entry key="yukon.web.modules.tools.bulk.sendConfig.standard">Standard</entry>
-    <entry key="yukon.web.modules.tools.bulk.sendConfig.force">Force</entry>
-    <entry key="yukon.common.device.bulk.sendConfig.header">Send Configuration:</entry>
-    <entry key="yukon.common.device.bulk.sendConfig.noteLabel">Note:</entry>
-    <entry key="yukon.common.device.bulk.sendConfig.noteText">Select the method you wish to use when sending configurations to devices. This action will transmit configuration settings out to devices.
-        The standard method will compare the settings of the device with the settings of the configuration and send only the unmatching fields to the device.  The force method
-        will send the entire configuration to the device.</entry>
-    <entry key="yukon.common.device.bulk.sendConfig.rfnWarning">One or more devices selected are identified as RF. These devices cannot currently use the Force operation. All devices in group will only be run on the standard command.</entry>
-    <entry key="yukon.common.device.bulk.sendConfig.selectLabel">Send Method:</entry>
-    
-    <!-- VERIFY CONFIG -->
-    <!-- ******************************************************************************************************************** -->
-    <!-- ******************************************************************************************************************** -->
-    
-    <!-- verifyConfig.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.verifyConfig.pageName">Verify Configuration</entry>
-    <entry key="yukon.web.modules.tools.bulk.verifyConfig.contextualPageName">Verify Config</entry>
-    <entry key="yukon.common.device.bulk.verifyConfig.header">Verify Configuration:</entry>
-    <entry key="yukon.common.device.bulk.verifyConfig.noteLabel">Note:</entry>
-    <entry key="yukon.common.device.bulk.verifyConfig.noteText">Compares the settings of the device to the settings of the configuration.
-        This action compares database information and does not read from the device.</entry>
-    <entry key="yukon.common.device.bulk.verifyConfig.verify">Verify</entry>
-    
-    <!-- verifyConfigResults.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.verifyConfigResults.pageName">Verify Config Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.verifyConfigResults.contextualPageName">Results</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.successLabel">Verified Devices:</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.failureLabel">Devices with configuration discrepancies:</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.unsupportedLabel">Devices that do not support this action:</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.successResult">In Sync</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.failureResult">Some attributes did not match:</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.deviceNameColumn">Device Name</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.configNameColumn">Config Name</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.deviceTypeColumn">Device Type</entry>
-    <entry key="yukon.common.device.bulk.verifyConfigResults.verifyResultsColumn">Verify Results</entry>
-    
-    <!-- READ CONFIG -->
-    <!-- ******************************************************************************************************************** -->
-    <!-- ******************************************************************************************************************** -->
-    
-    <!-- readConfig.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.readConfig.pageName">Read Configuration</entry>
-    <entry key="yukon.web.modules.tools.bulk.readConfig.contextualPageName">Read Config</entry>
-    <entry key="yukon.common.device.bulk.readConfig.header">Read Configuration:</entry>
-    <entry key="yukon.common.device.bulk.readConfig.noteLabel">Note:</entry>
-    <entry key="yukon.common.device.bulk.readConfig.noteText">Reads the configuration settings from the device and updates the database information for that device.</entry>
-    <entry key="yukon.common.device.bulk.readConfig.read">Read</entry>
     
     <!-- SEND COMMAND -->
     <!-- ******************************************************************************************************************** -->
