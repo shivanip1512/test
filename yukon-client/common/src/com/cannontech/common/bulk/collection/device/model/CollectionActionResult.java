@@ -47,6 +47,8 @@ public class CollectionActionResult {
     private Instant stopTime;
     private CommandRequestExecutionStatus status;
     private CommandRequestExecution execution;
+    // used by demand reset
+    private CommandRequestExecution verificationExecution;
     // example: porter is down
     private String executionExceptionText;
     private CollectionActionCounts counts;
@@ -272,6 +274,14 @@ public class CollectionActionResult {
         } catch (FileNotFoundException e) {
             return null;
         }
+    }
+    
+    public CommandRequestExecution getVerificationExecution() {
+        return verificationExecution;
+    }
+
+    public void setVerificationExecution(CommandRequestExecution verificationExecution) {
+        this.verificationExecution = verificationExecution;
     }
     
     public void log() {
