@@ -560,6 +560,12 @@ catch ( UninitializedPointValue & )
 }
 
 
+PointValue VoltageRegulator::getCompleteTapPosition()
+{
+    return _controlPolicy->getCompleteTapPosition();
+}
+
+
 void VoltageRegulator::canExecuteVoltageRequest( const double changeAmount ) //const
 try
 {

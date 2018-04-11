@@ -102,9 +102,9 @@ public:
     double getPointValueByAttribute(const Attribute & attribute, const double sentinel = 0) const;
     boost::optional<double> findPointValueByAttribute(const Attribute & attribute) const;
 
-    bool setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp );
-    bool setTwoWayAnalogPointValue( const long pointID, const double value, const CtiTime & timestamp );
-    bool setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp );
+    bool setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp, const unsigned quality );
+    bool setTwoWayAnalogPointValue( const long pointID, const double value, const CtiTime & timestamp, const unsigned quality );
+    bool setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp, const unsigned quality );
 
     void addAllCBCPointsToRegMsg( std::set<long> & pointList ) const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
@@ -118,7 +118,7 @@ public:
                                                   const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
                                                   const boost::optional<const CtiCCCapBank &> & bank );
 
-    bool setTwoWayPointValue(const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp);
+    bool setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp, const unsigned quality );
 
 protected:
 

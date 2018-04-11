@@ -18,7 +18,7 @@ long LastControlReasonCbcDnp::serialize( const CtiCCTwoWayPoints & points )
     return 0;
 }
 
-void LastControlReasonCbcDnp::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
+void LastControlReasonCbcDnp::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
 {
     // empty!
 }
@@ -73,16 +73,16 @@ long LastControlReasonCbc702x::serialize( const CtiCCTwoWayPoints & points )
     return lastControlReason;
 }
 
-void LastControlReasonCbc702x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
+void LastControlReasonCbc702x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
 {
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonLocal ),        !!( dbValue & Local ),        timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonRemote ),       !!( dbValue & Remote ),       timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonOvUv ),         !!( dbValue & OvUv ),         timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ), !!( dbValue & NeutralFault ), timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonScheduled ),    !!( dbValue & Scheduled ),    timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonDigital ),      !!( dbValue & Digital ),      timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonAnalog ),       !!( dbValue & Analog ),       timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonTemperature ),  !!( dbValue & Temperature ),  timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonLocal ),        !!( dbValue & Local ),        timestamp, quality );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonRemote ),       !!( dbValue & Remote ),       timestamp, quality );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonOvUv ),         !!( dbValue & OvUv ),         timestamp, quality );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ), !!( dbValue & NeutralFault ), timestamp, quality );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonScheduled ),    !!( dbValue & Scheduled ),    timestamp, quality );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonDigital ),      !!( dbValue & Digital ),      timestamp, quality );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonAnalog ),       !!( dbValue & Analog ),       timestamp, quality );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonTemperature ),  !!( dbValue & Temperature ),  timestamp, quality );
 }
 
 std::unique_ptr<LastControlReason>  LastControlReasonCbc702x::clone() const
@@ -127,13 +127,13 @@ long LastControlReasonCbc802x::serialize( const CtiCCTwoWayPoints & points )
     return UninitializedRawSate;
 }
 
-void LastControlReasonCbc802x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
+void LastControlReasonCbc802x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
 {
     const long pointID = points.getPointIdByAttribute( Attribute::LastControlReason );
 
     if ( pointID > 0 && dbValue != UninitializedRawSate )
     {
-        points.setTwoWayAnalogPointValue( pointID, dbValue, timestamp );
+        points.setTwoWayAnalogPointValue( pointID, dbValue, timestamp, quality );
     }
 }
 

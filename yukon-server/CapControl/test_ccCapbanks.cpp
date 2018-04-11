@@ -733,16 +733,16 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
     CtiTime now;
 
     // Enable heartbeat control
-    bank->getTwoWayPoints().setTwoWayStatusPointValue( 400, 1, now );
-    bank->getTwoWayPoints().setTwoWayStatusPointValue( 333, 1, now );
+    bank->getTwoWayPoints().setTwoWayStatusPointValue( 400, 1, now, NormalQuality );
+    bank->getTwoWayPoints().setTwoWayStatusPointValue( 333, 1, now, NormalQuality );
 
     BOOST_CHECK_EQUAL(bank->getControlPointId(), 403);
 
     now += 1;
 
     // Re-enable normal control
-    bank->getTwoWayPoints().setTwoWayStatusPointValue(400, 0, now);
-    bank->getTwoWayPoints().setTwoWayStatusPointValue(333, 1, now);
+    bank->getTwoWayPoints().setTwoWayStatusPointValue( 400, 0, now, NormalQuality );
+    bank->getTwoWayPoints().setTwoWayStatusPointValue( 333, 1, now, NormalQuality );
 
     BOOST_CHECK_EQUAL(bank->getControlPointId(), 333);
 

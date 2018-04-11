@@ -3268,7 +3268,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                     {
                         CtiCCTwoWayPoints & twoWayPts = currentCapBank->getTwoWayPoints();
 
-                        if (twoWayPts.setTwoWayStatusPointValue(pointID, value, timestamp))
+                        if (twoWayPts.setTwoWayStatusPointValue(pointID, value, timestamp, quality))
                         {
                             if (currentCapBank->getPointIdByAttribute( Attribute::ControlPoint ) == pointID )
                             {
@@ -3386,7 +3386,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             }
 
                         }
-                        else if (twoWayPts.setTwoWayAnalogPointValue(pointID, value, timestamp))
+                        else if (twoWayPts.setTwoWayAnalogPointValue(pointID, value, timestamp, quality))
                         {
                             if (currentCapBank->getPointIdByAttribute( Attribute::IpAddress ) == pointID)
                             {
@@ -3434,7 +3434,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 CTILOG_DEBUG(dout, "Set a cbc 2 way Analog point... pointID ("<<pointID<<") = "<<value);
                             }
                         }
-                        else if (twoWayPts.setTwoWayPulseAccumulatorPointValue(pointID, value, timestamp))
+                        else if (twoWayPts.setTwoWayPulseAccumulatorPointValue(pointID, value, timestamp, quality))
                         {
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {

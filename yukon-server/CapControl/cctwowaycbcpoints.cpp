@@ -381,7 +381,7 @@ bool CtiCCTwoWayPoints::isTimestampNew( const long pointID, const CtiTime & time
     return ! (_pointValues.getPointTime(pointID, prevTime) && timestamp <= prevTime);
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp )
+bool CtiCCTwoWayPoints::setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp, const unsigned quality )
 {
     CtiPointType_t  lookupType = InvalidPointType;
 
@@ -400,19 +400,19 @@ bool CtiCCTwoWayPoints::setTwoWayPointValue( const long pointID, const double va
     return false;
 }
 
-bool CtiCCTwoWayPoints::setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp )
+bool CtiCCTwoWayPoints::setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp, const unsigned quality )
 {
-    return setTwoWayPointValue( pointID, value, StatusPointType, timestamp );
+    return setTwoWayPointValue( pointID, value, StatusPointType, timestamp, quality );
 }
 
-bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue( const long pointID,  const double value,  const CtiTime & timestamp )
+bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue( const long pointID,  const double value,  const CtiTime & timestamp, const unsigned quality )
 {
-    return setTwoWayPointValue( pointID, value, AnalogPointType, timestamp );
+    return setTwoWayPointValue( pointID, value, AnalogPointType, timestamp, quality );
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp )
+bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp, const unsigned quality )
 {
-    return setTwoWayPointValue( pointID, value, PulseAccumulatorPointType, timestamp );
+    return setTwoWayPointValue( pointID, value, PulseAccumulatorPointType, timestamp, quality );
 }
 
 void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg( std::set<long> & pointList ) const
@@ -452,46 +452,46 @@ void CtiCCTwoWayPoints::setDynamicData( const Transport::TwoWayDynamicDataTransp
                                         const long cbcState,
                                         const CtiTime & timestamp )
 {
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::ControlPoint ), cbcState, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::ControlPoint ), cbcState, timestamp, InitDefaultQuality );
 
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::RecloseBlocked ), transport.RecloseBlocked, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::ControlMode ), transport.ControlMode, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::AutoVoltageControl ), transport.AutoVoltControl, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OperationFailedNeutralCurrent ), transport.OpFailedNeutralCurrent, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentFault ), transport.NeutralCurrentFault, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::BadRelay ), transport.BadRelay, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DailyMaxOperations ), transport.DailyMaxOps, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::VoltageDeltaAbnormal ), transport.VoltageDeltaAbnormal, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TemperatureAlarm ), transport.TempAlarm, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DSTActive ), transport.DSTActive, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralLockout ), transport.NeutralLockout, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::RecloseBlocked ), transport.RecloseBlocked, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::ControlMode ), transport.ControlMode, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::AutoVoltageControl ), transport.AutoVoltControl, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OperationFailedNeutralCurrent ), transport.OpFailedNeutralCurrent, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentFault ), transport.NeutralCurrentFault, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::BadRelay ), transport.BadRelay, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DailyMaxOperations ), transport.DailyMaxOps, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::VoltageDeltaAbnormal ), transport.VoltageDeltaAbnormal, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TemperatureAlarm ), transport.TempAlarm, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DSTActive ), transport.DSTActive, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralLockout ), transport.NeutralLockout, timestamp, InitDefaultQuality );
 
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::AnalogInputOne ), transport.AnalogInputOne, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::RadioSignalStrengthIndicator ), transport.RSSI, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TotalOperationCount ), transport.TotalOpCount, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltageCount ), transport.UvOpCount, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltageCount ), transport.OvOpCount, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverUnderVoltageTrackTime ), transport.OvUvTrackTime, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentSensor ), transport.NeutralCurrentSensor, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::IpAddress ), transport.IPAddress, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UdpPort ), transport.UDPPort, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::AnalogInputOne ), transport.AnalogInputOne, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::RadioSignalStrengthIndicator ), transport.RSSI, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TotalOperationCount ), transport.TotalOpCount, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltageCount ), transport.UvOpCount, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltageCount ), transport.OvOpCount, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverUnderVoltageTrackTime ), transport.OvUvTrackTime, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentSensor ), transport.NeutralCurrentSensor, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::IpAddress ), transport.IPAddress, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UdpPort ), transport.UDPPort, timestamp, InitDefaultQuality );
 
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::Voltage ), transport.Voltage, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::HighVoltage ), transport.HighVoltage, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::LowVoltage ), transport.LowVoltage, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DeltaVoltage ), transport.DeltaVoltage, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TemperatureofDevice ), transport.Temp, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltageThreshold ), transport.UvSetPoint, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltageThreshold ), transport.OvSetPoint, timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentAlarmThreshold ), transport.NeutralCurrentAlarmSetPoint, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::Voltage ), transport.Voltage, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::HighVoltage ), transport.HighVoltage, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::LowVoltage ), transport.LowVoltage, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DeltaVoltage ), transport.DeltaVoltage, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TemperatureofDevice ), transport.Temp, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltageThreshold ), transport.UvSetPoint, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltageThreshold ), transport.OvSetPoint, timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentAlarmThreshold ), transport.NeutralCurrentAlarmSetPoint, timestamp, InitDefaultQuality );
 
-    _lastControlReason->deserialize( *this, transport.LastControl, timestamp );
+    _lastControlReason->deserialize( *this, transport.LastControl, timestamp, InitDefaultQuality );
 
-    _ignoredControlReason->deserializeIndicator( *this, transport.IgnoredIndicator, timestamp );
-    _ignoredControlReason->deserializeReason( *this, transport.IgnoredReason, timestamp );
+    _ignoredControlReason->deserializeIndicator( *this, transport.IgnoredIndicator, timestamp, InitDefaultQuality );
+    _ignoredControlReason->deserializeReason( *this, transport.IgnoredReason, timestamp, InitDefaultQuality );
 
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltage ), !!( transport.Condition & 0x01 ), timestamp );
-    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltage ),  !!( transport.Condition & 0x02 ), timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltage ), !!( transport.Condition & 0x01 ), timestamp, InitDefaultQuality );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltage ),  !!( transport.Condition & 0x02 ), timestamp, InitDefaultQuality );
 
     _ovuvCountResetDate = transport.OvUvCountResetDate;
     _lastOvUvDateTime   = transport.LastOvUvDateTime;

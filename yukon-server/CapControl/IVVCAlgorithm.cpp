@@ -61,6 +61,7 @@ unsigned validateTapOpSolution( const IVVCState::TapOperationZoneMap & tapOp );
 
 
 bool processDmvScanData( IVVCStatePtr state, const std::string & busName );
+PointValueMap getAllRegulatorsTapPositions( const long subbusId );
 
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
@@ -4693,6 +4694,15 @@ bool processDmvScanData( IVVCStatePtr           state,
     allGood &= completionCheck( request, OtherRequestType,     testDataPtr.CommSuccessPercentage );
     allGood &= completionCheck( request, BusPowerRequestType,  testDataPtr.CommSuccessPercentage );
 
+    auto dataToRecord = request->getPointValues();
+    {
+        // glue in the tap position data
+
+        auto tapPositionData = getAllRegulatorsTapPositions( state->getPaoId() );
+
+        dataToRecord.insert( tapPositionData.begin(), tapPositionData.end() );
+    }
+
     // record the point data in the database
     {
         Cti::Database::DatabaseConnection   connection;
@@ -4705,7 +4715,7 @@ bool processDmvScanData( IVVCStatePtr           state,
 
         Cti::Database::DatabaseWriter   writer( connection, sql );
 
-        for ( auto pointData : request->getPointValues() )
+        for ( auto pointData : dataToRecord )
         {                    
             writer
                 << testDataPtr.ExecutionID
@@ -4987,5 +4997,49 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
     }
 
     return ( ! configurationError );
+}
+
+PointValueMap getAllRegulatorsTapPositions( const long subbusId )
+{
+    PointValueMap   info;
+
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+    ZoneManager & zoneManager       = store->getZoneManager();
+
+    Zone::IdSet subbusZoneIds   = zoneManager.getZoneIdsBySubbus(subbusId);
+
+    for ( const Zone::IdSet::value_type & ID : subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for ( const Zone::PhaseIdMap::value_type & mapping : zone->getRegulatorIds() )
+        {
+            try
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                long tapPositionPointID = regulator->getPointByAttribute( Attribute::TapPosition ).getPointId();
+
+                if ( tapPositionPointID > 0 )
+                {
+                    info[ tapPositionPointID ] = regulator->getCompleteTapPosition();
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+            }
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
+                }
+            }
+        }
+    }
+
+    return info;
 }
 

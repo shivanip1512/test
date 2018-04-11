@@ -32,6 +32,8 @@ struct ControlPolicy : Policy
     virtual double getSetPointBandwidth() = 0;
     virtual long getTapPosition() = 0;
 
+    virtual PointValue getCompleteTapPosition() = 0;
+
     ControlModes getControlMode();
 
     bool inReverseFlow() const;

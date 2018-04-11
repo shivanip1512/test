@@ -32,6 +32,9 @@ struct Policy
     //  New style point lookup that relies on twoWayPoints
     double    getValueByAttribute( const Attribute & attribute, const CtiCCTwoWayPoints & twoWayPoints ) const;
 
+    //  Old style point lookup that relies on the internal _pointValues map
+    PointValue getCompleteValueByAttribute( const Attribute & attribute ) const;
+
     void updatePointData( const CtiPointDataMsg & message );
 
     IDSet getRegistrationPointIDs() const;

@@ -140,6 +140,8 @@ public:
 
     boost::optional<long> getTapPosition();
 
+    PointValue getCompleteTapPosition();
+
     long getKeepAliveConfig();
     long getKeepAliveTimer();
 

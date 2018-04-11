@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
     BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
 
     //  Update ControlPoint
-    points->setTwoWayStatusPointValue( 761, 1, now );
+    points->setTwoWayStatusPointValue( 761, 1, now, NormalQuality );
 
     BOOST_CHECK_EQUAL(     1, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
     BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::AutoVoltageControl,  -1776 ) );
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
     BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
 
     //  Update AutoVoltageControl
-    points->setTwoWayStatusPointValue( 762, 2, now );
+    points->setTwoWayStatusPointValue( 762, 2, now, NormalQuality );
 
     BOOST_CHECK_EQUAL(     1, points->getPointValueByAttribute( Attribute::ControlPoint,       -1776 ) );
     BOOST_CHECK_EQUAL(     2, points->getPointValueByAttribute( Attribute::AutoVoltageControl,  -1776 ) );
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP_control_point_override )
     BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
 
     //  Update the point formerly known as ControlPoint, confirm no change occurs for ControlPoint
-    points->setTwoWayStatusPointValue( 761, 1, now );
+    points->setTwoWayStatusPointValue( 761, 1, now, NormalQuality );
 
     BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
     BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP_control_point_override )
     BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
 
     //  Update ControlPoint
-    points->setTwoWayStatusPointValue( 762, 1, now );
+    points->setTwoWayStatusPointValue( 762, 1, now, NormalQuality );
 
     BOOST_CHECK_EQUAL(     1, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
     BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
@@ -332,11 +332,11 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
     // Try to update a status point value with a non-status point attribute
     now += 1;
     BOOST_CHECK( ! points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::TotalOperationCount ),    10, now ) );
+                    points->getPointIdByAttribute( Attribute::TotalOperationCount ),    10, now, NormalQuality ) );
 
     // Do it right!
     BOOST_CHECK( points->setTwoWayPulseAccumulatorPointValue(
-                    points->getPointIdByAttribute( Attribute::TotalOperationCount ),    10, now ) );
+                    points->getPointIdByAttribute( Attribute::TotalOperationCount ),    10, now, NormalQuality ) );
 
     // See what comes out...
     BOOST_CHECK_EQUAL(  711, points->getPointIdByAttribute( Attribute::TotalOperationCount ) );
@@ -356,97 +356,97 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     // Initialize all LastControl... attributes to 0
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonRemote ),        0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonRemote ),        0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonOvUv ),          0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonOvUv ),          0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ),  0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ),  0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonScheduled ),     0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonScheduled ),     0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonDigital ),       0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonDigital ),       0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonTemperature ),   0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonTemperature ),   0, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
 
     // Try to update LastControlReasonLocal with same timestamp
     BOOST_CHECK( ! points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
 
     // Test different LastControlReason... attributes
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Local", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonLocal ),         0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonRemote ),        1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonRemote ),        1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Remote", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonRemote ),        0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonRemote ),        0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonOvUv ),          1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonOvUv ),          1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "OvUv", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonOvUv ),          0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonOvUv ),          0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ),  1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ),  1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "NeutralFault", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ),  0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ),  0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonScheduled ),     1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonScheduled ),     1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Schedule", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonScheduled ),     0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonScheduled ),     0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonDigital ),       1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonDigital ),       1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Digital", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonDigital ),       0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonDigital ),       0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Analog", points->getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        0, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonTemperature ),   1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonTemperature ),   1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Temp", points->getLastControlText() );
 
     // LastControl... points are mutually exclusive - set another and validate the error message.
     now += 1;
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        1, now ) );
+                    points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        1, now, NormalQuality ) );
     BOOST_CHECK_EQUAL( "Unknown State. Value = 192", points->getLastControlText() );
 
     // Make sure LastControlReasonLocal is set
@@ -464,9 +464,9 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     // Initialize all IgnoredControl... attributes to 0
     BOOST_CHECK( points->setTwoWayStatusPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredIndicator ),           0, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredIndicator ),           0, now, NormalQuality ) );
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       0, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       0, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL(  0.0, points->getPointValueByAttribute( Attribute::IgnoredIndicator ) );
     BOOST_CHECK_EQUAL(  0.0, points->getPointValueByAttribute( Attribute::IgnoredControlReason ) );
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       1, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "FaultCurrent", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       2, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       2, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "EmVolt", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -493,7 +493,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       3, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       3, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Time", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -501,7 +501,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       4, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       4, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Voltage", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( true, points->controlRejectedByVoltageLimits() );    // <--- yeah, this guy...
@@ -509,55 +509,55 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     {   // Check delta voltage related math
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::UnderVoltageThreshold ),  115.0, now ) );
+                        points->getPointIdByAttribute( Attribute::UnderVoltageThreshold ),  115.0, now, NormalQuality ) );
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::OverVoltageThreshold ),   125.0, now ) );
+                        points->getPointIdByAttribute( Attribute::OverVoltageThreshold ),   125.0, now, NormalQuality ) );
 
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::Voltage ),    114.0, now ) );
+                        points->getPointIdByAttribute( Attribute::Voltage ),    114.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points->checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::Voltage ),    115.0, now ) );
+                        points->getPointIdByAttribute( Attribute::Voltage ),    115.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points->checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::Voltage ),    115.1, now ) );
+                        points->getPointIdByAttribute( Attribute::Voltage ),    115.1, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( true, points->checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::Voltage ),    120.0, now ) );
+                        points->getPointIdByAttribute( Attribute::Voltage ),    120.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( true, points->checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::Voltage ),    124.9, now ) );
+                        points->getPointIdByAttribute( Attribute::Voltage ),    124.9, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( true, points->checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::Voltage ),    125.0, now ) );
+                        points->getPointIdByAttribute( Attribute::Voltage ),    125.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points->checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                        points->getPointIdByAttribute( Attribute::Voltage ),    126.0, now ) );
+                        points->getPointIdByAttribute( Attribute::Voltage ),    126.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points->checkDeltaVoltageRejection() );
     }
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       5, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       5, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Digital1", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -565,7 +565,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       6, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       6, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Analog1", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -573,7 +573,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       7, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       7, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Digital2", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -581,7 +581,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       8, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       8, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Analog2", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -589,7 +589,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       9, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),       9, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Digital3", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -597,7 +597,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      10, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      10, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Analog3", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -605,7 +605,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      11, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      11, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Digital4", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -613,7 +613,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      12, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      12, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Temp", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -621,7 +621,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      13, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      13, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Remote", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -629,7 +629,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      14, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      14, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "NtrlLockOut", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -637,7 +637,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      15, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      15, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "BrownOut", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -645,7 +645,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      16, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      16, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "BadActRelay", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     now += 1;
     BOOST_CHECK( points->setTwoWayAnalogPointValue(
-                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      17, now ) );
+                    points->getPointIdByAttribute( Attribute::IgnoredControlReason ),      17, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "unknown", points->getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
@@ -761,139 +761,139 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
     BOOST_CHECK_EQUAL( "Uninitialized", points.getLastControlText() );
 
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       0, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       0, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Manual", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       1, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "SCADA Override", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       2, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       2, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Fault Current", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       3, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       3, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Emergency Voltage", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       4, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       4, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Time ONOFF", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       5, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       5, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "OVUV Control", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       6, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       6, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "VAR", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       7, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       7, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Va", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       8, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       8, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Vb", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),       9, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),       9, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Vc", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      10, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      10, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Ia", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      11, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      11, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Ib", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      12, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      12, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Ic", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      13, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      13, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Temp", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      14, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      14, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "N/A", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      15, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      15, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Time", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      16, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      16, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "N/A", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      17, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      17, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Bad Active Relay", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      18, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      18, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "NC Lockout", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      19, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      19, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Control Accepted", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      20, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      20, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Auto Mode", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      21, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      21, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Reclose Block", points.getLastControlText() );
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::LastControlReason ),      22, now ) );
+                    points.getPointIdByAttribute( Attribute::LastControlReason ),      22, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Unknown State. Value = 22", points.getLastControlText() );
 
@@ -906,7 +906,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     // Initialize all IgnoredControl... attributes to 0
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       0, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       0, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL(  0.0, points.getPointValueByAttribute( Attribute::IgnoredControlReason ) );
 
@@ -916,7 +916,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       1, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       1, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Ghidorah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -924,7 +924,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       2, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       2, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Mechagodzilla", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -932,7 +932,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       3, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       3, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Biollante", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -940,7 +940,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       4, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       4, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Mothra", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -948,7 +948,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       5, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       5, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Destoroyah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( true, points.controlRejectedByVoltageLimits() );    // <--- yeah, this guy...
@@ -956,55 +956,55 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     {   // Check delta voltage related math
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::UnderVoltageThreshold ),   115.0, now ) );
+                        points.getPointIdByAttribute( Attribute::UnderVoltageThreshold ),   115.0, now, NormalQuality ) );
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::OverVoltageThreshold ),    125.0, now ) );
+                        points.getPointIdByAttribute( Attribute::OverVoltageThreshold ),    125.0, now, NormalQuality ) );
 
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::Voltage ),     114.0, now ) );
+                        points.getPointIdByAttribute( Attribute::Voltage ),     114.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points.checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::Voltage ),     115.0, now ) );
+                        points.getPointIdByAttribute( Attribute::Voltage ),     115.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points.checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::Voltage ),     115.1, now ) );
+                        points.getPointIdByAttribute( Attribute::Voltage ),     115.1, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( true, points.checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::Voltage ),     120.0, now ) );
+                        points.getPointIdByAttribute( Attribute::Voltage ),     120.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( true, points.checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::Voltage ),     124.9, now ) );
+                        points.getPointIdByAttribute( Attribute::Voltage ),     124.9, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( true, points.checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::Voltage ),     125.0, now ) );
+                        points.getPointIdByAttribute( Attribute::Voltage ),     125.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points.checkDeltaVoltageRejection() );
 
         now += 1;
         BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                        points.getPointIdByAttribute( Attribute::Voltage ),     126.0, now ) );
+                        points.getPointIdByAttribute( Attribute::Voltage ),     126.0, now, NormalQuality ) );
 
         BOOST_CHECK_EQUAL( false, points.checkDeltaVoltageRejection() );
     }
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       6, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       6, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Anguirus", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1012,7 +1012,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       7, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       7, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Orga", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1020,7 +1020,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       8, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       8, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Hedorah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1028,7 +1028,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       9, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),       9, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Rodan", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1036,7 +1036,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      10, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      10, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Megaguirus", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1044,7 +1044,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      11, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      11, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Battra", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1052,7 +1052,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      12, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      12, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Megalon", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1060,7 +1060,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      13, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      13, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Baragon", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1068,7 +1068,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      14, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      14, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Ebirah", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1076,7 +1076,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      15, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      15, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Unknown State. Value = 15", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );
@@ -1084,7 +1084,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     now += 1;
     BOOST_CHECK( points.setTwoWayAnalogPointValue(
-                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      19, now ) );
+                    points.getPointIdByAttribute( Attribute::IgnoredControlReason ),      19, now, NormalQuality ) );
 
     BOOST_CHECK_EQUAL( "Control Accepted", points.getIgnoredControlText() );
     BOOST_CHECK_EQUAL( false, points.controlRejectedByVoltageLimits() );

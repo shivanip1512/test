@@ -2245,7 +2245,7 @@ const string CtiCCCapBank::StandAloneState = "StandAlone";
 
 void CtiCCCapBank::handlePointData( const CtiPointDataMsg & message )
 {
-    _twoWayPoints->setTwoWayPointValue(message.getId(), message.getValue(), message.getType(), message.getTime());
+    _twoWayPoints->setTwoWayPointValue( message.getId(), message.getValue(), message.getType(), message.getTime(), message.getQuality() );
 }
 
 bool CtiCCCapBank::submitHeartbeatCommands( Cti::CapControl::Policy::Actions & actions )

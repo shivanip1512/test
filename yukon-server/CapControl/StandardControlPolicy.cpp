@@ -88,6 +88,11 @@ long StandardControlPolicy::getTapPosition()
     return getValueByAttribute( Attribute::TapPosition );
 }
 
+PointValue StandardControlPolicy::getCompleteTapPosition()
+{
+    return getCompleteValueByAttribute( Attribute::TapPosition );
+}
+
 }
 }
 

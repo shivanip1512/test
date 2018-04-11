@@ -78,6 +78,11 @@ double Policy::getValueByAttribute( const Attribute & attribute, const CtiCCTwoW
     return *value;
 }
 
+PointValue Policy::getCompleteValueByAttribute( const Attribute & attribute ) const
+{
+    return _pointValues.getCompletePointInfo( getPointByAttribute( attribute ).getPointId() );
+}
+
 void Policy::updatePointData( const CtiPointDataMsg & message )
 {
     if ( _pointIDs.count( message.getId() ) )
