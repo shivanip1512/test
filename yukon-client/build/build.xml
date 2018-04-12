@@ -96,7 +96,6 @@
 
         <ant dir="${billing}" target="${dotarget}" />
         <ant dir="${trending}" target="${dotarget}" />
-        <ant dir="${monitor}" target="${dotarget}" />
         <ant dir="${yukonappserver}" target="${dotarget}" />
 
         <ant dir="${export}" target="${dotarget}" />
