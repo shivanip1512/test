@@ -18,11 +18,6 @@
 <%@ attribute name="smartNotificationsEvent" %>
 <%@ attribute name="useIdForCookie" type="java.lang.Boolean" %>
 
-<c:if test="${not empty pageScope.smartNotificationsEvent}">
-    <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
-    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
-</c:if>
-
 <cti:default var="hideEnabled" value="${true}"/>
 <cti:default var="showInitially" value="${true}"/>
 <cti:default var="styleClass" value=""/>
@@ -101,4 +96,10 @@
             data-load-event="yukon:notifications:load"
             data-url="${smartNotificationsUrl}" 
             data-width="600"></div>
+</c:if>
+
+<c:if test="${not empty pageScope.smartNotificationsEvent}">
+    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
+    <cti:includeScript link="/resources/js/common/yukon.ui.timeSlider.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
 </c:if>

@@ -371,6 +371,8 @@ public class SmartNotificationsController {
         }
         model.addAttribute("eventTypes", events);
         model.addAttribute("deviceDataMonitors", ddms);
+        String sendTime = userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME);
+        model.addAttribute("sendTime", sendTime);
     }
     
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)

@@ -54,6 +54,7 @@
 
 <c:if test="${!empty info.smartNotificationsEvent}">
     <script src="<cti:url value="/resources/js/common/yukon.format.time.js"/>"></script>
+    <script src="<cti:url value="/resources/js/common/yukon.ui.timeSlider.js"/>"></script>
     <script src="<cti:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
 </c:if>
 

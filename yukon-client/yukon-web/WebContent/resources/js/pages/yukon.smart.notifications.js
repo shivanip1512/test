@@ -12,6 +12,7 @@ yukon.smart.notifications = (function () {
     
     var
     _initialized = false,
+    _timeFormatter = yukon.timeFormatter,
     
     updateTypeFields = function (popup) {
         var type = popup.find('.js-type').val(),
@@ -123,11 +124,14 @@ yukon.smart.notifications = (function () {
                 updateTypeFields(popup);
                 yukon.ui.timeSlider.init();
                 //check if single notification was selected
-                var singleNotificationSlider = $('#notifications-section').find('.js-time-slider');
-                if (singleNotificationSlider.is(":visible")) {
+                var singleNotificationTime = $('#userSendTime').val();
+                if (singleNotificationTime) {
                     //this made the slider hidden, but we still want it shown just disabled
                     var popupSlider = popup.find('.js-time-slider');
-                    popupSlider.slider({disabled: true});
+                    var sendTimeSliderValue = _timeFormatter.parse24HourTime(singleNotificationTime)
+                    popupSlider.slider({disabled: true, value: sendTimeSliderValue});
+                    var sendTimeLabel = _timeFormatter.formatTime(sendTimeSliderValue, 0);
+                    var label = popup.find('.js-time-label').text(sendTimeLabel);
                     popupSlider.removeClass('ui-state-disabled');
                     $('.js-single-notification-warning').removeClass('dn');
                 }
