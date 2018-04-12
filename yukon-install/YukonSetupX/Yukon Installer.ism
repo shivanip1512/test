@@ -384,8 +384,8 @@
 		<row><td>WINDIR</td><td/><td>Windows</td><td/><td>0</td><td/></row>
 		<row><td>WINSYSDIR</td><td>WINDIR</td><td>Windows System</td><td/><td>0</td><td/></row>
 		<row><td>WINSYSDIR64</td><td>WINDIR</td><td>Windows System (64-bit)</td><td/><td>0</td><td/></row>
-		<row><td>newfolder1</td><td>DesktopFolder</td><td>##ID_STRING48##</td><td/><td>1</td><td>Yukon Debug Servers</td></row>
-		<row><td>newfolder2</td><td>ProgramMenuFolder</td><td>##ID_STRING57##</td><td/><td>1</td><td>newfolder2</td></row>
+		<row><td>newfolder1</td><td>DesktopFolder</td><td>##ID_STRING48##</td><td/><td>1</td><td>Yukon Service Control</td></row>
+		<row><td>newfolder2</td><td>ProgramMenuFolder</td><td>##ID_STRING57##</td><td/><td>1</td><td>newfolder3</td></row>
 	</table>
 
 	<table name="Feature">
