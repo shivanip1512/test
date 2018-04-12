@@ -906,8 +906,8 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.programList.filter.state.active">Active</entry>
 <entry key="yukon.web.modules.dr.programList.filter.state.scheduled">Scheduled</entry>
 <entry key="yukon.web.modules.dr.programList.filter.state.inactive">Inactive</entry>
-<entry key="yukon.web.modules.dr.programList.filter.start">Start:</entry>
-<entry key="yukon.web.modules.dr.programList.filter.stop">Stop:</entry>
+<entry key="yukon.web.modules.dr.programList.filter.start">Start Range:</entry>
+<entry key="yukon.web.modules.dr.programList.filter.stop">Stop Range:</entry>
 <entry key="yukon.web.modules.dr.programList.filter.priority">Priority:</entry>
 <entry key="yukon.web.modules.dr.programList.heading.NAME">Name</entry>
 <entry key="yukon.web.modules.dr.programList.heading.STATE">State</entry>

@@ -43,17 +43,20 @@
                 </cti:checkRolesAndProperties>
                 
                 <div style="padding-top:5px;margin-left:60px;">
-                    <i:inline key=".filter.start"/>
-                    <dt:date path="start.min" wrapperClass="fn vam" displayValidationToRight="true"/>
-                    <i:inline key=".filter.to"/>
-                    <dt:date path="start.max" wrapperClass="fn vam" displayValidationToRight="true"/>
-                    <br/>
-                    <i:inline key=".filter.stop"/>
-                    <dt:date path="stop.min" wrapperClass="fn vam" displayValidationToRight="true"/>
-                    <i:inline key=".filter.to"/>
-                    <dt:date path="stop.max" wrapperClass="fn vam" displayValidationToRight="true"/>
-                
-                    <cti:button nameKey="filter" classes="primary action fn vab" type="submit"/>
+                    <div>
+                        <i:inline key=".filter.start"/>
+                        <dt:date path="start.min" wrapperClass="fn vam" displayValidationToRight="true"/>
+                        <i:inline key=".filter.to"/>
+                        <dt:date path="start.max" wrapperClass="fn vam" displayValidationToRight="true"/>
+                    </div>
+                    <div style="padding-top:5px;">
+                        <i:inline key=".filter.stop"/>
+                        <dt:date path="stop.min" wrapperClass="fn vam" displayValidationToRight="true"/>
+                        <i:inline key=".filter.to"/>
+                        <dt:date path="stop.max" wrapperClass="fn vam" displayValidationToRight="true"/>
+                    
+                        <cti:button nameKey="filter" classes="primary action fn vab" type="submit"/>
+                    </div>
                 
                 </div>
                 
