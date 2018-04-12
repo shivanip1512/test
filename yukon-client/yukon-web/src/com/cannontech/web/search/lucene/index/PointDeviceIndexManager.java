@@ -47,7 +47,6 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("from point p");
         sql.append("join yukonpaobject ypo on (ypo.paobjectid = p.paobjectid)");
-        sql.append("left join device d on (d.deviceid = ypo.paobjectid)");
         sql.append("left join pointunit pu on p.pointid = pu.pointid");
         sql.append("where ypo.category").in(ImmutableList.of(PaoCategory.DEVICE, PaoCategory.CAPCONTROL));
         return sql;
@@ -141,7 +140,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select *");
         sql.append(getQueryGuts());
-        sql.append("AND d.deviceid").eq(deviceId);
+        sql.append("AND p.paobjectid").eq(deviceId);
         sql.append(getOrderBy());
 
         docList = this.jdbcTemplate.query(sql, new DocumentMapper());
