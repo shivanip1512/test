@@ -5,6 +5,7 @@
 
 #include <boost/bimap.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 using std::string;
 
@@ -73,10 +74,8 @@ BankOperationType resolveOperationTypeForPointId( const std::string &commandStri
         {
             BankOperationType operation = command.first;
             CommandInfo info = command.second;
-            auto operationString = getCommandStringForOperation(p, info);
 
-            // If the operation string is found at position 0 of the command string, return the found operation string
-            if( commandString.find( operationString ) == 0 )
+            if( boost::starts_with( commandString, getCommandStringForOperation( p, info ) ) )
             {
                 return operation;
             }
