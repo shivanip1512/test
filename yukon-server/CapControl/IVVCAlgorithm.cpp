@@ -682,7 +682,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             // This does nothing if remote control is already disabled
             sendDisableRemoteControl( subbus );
-            state->setState( IVVCState::IVVC_WAIT );
         }
         else
         {
@@ -1778,7 +1777,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 {
                     subbus->updatePointResponseDeltas( state->getReportedControllers() );
                 }
-                state->setState(IVVCState::IVVC_WAIT);
+                if ( ! busVerificationAnalysisState( state, subbus, strategy, dispatchConnection ) )
+                {
+                    state->setState(IVVCState::IVVC_WAIT);
+                }
             }
             break;
         }

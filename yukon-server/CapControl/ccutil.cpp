@@ -73,8 +73,10 @@ BankOperationType resolveOperationTypeForPointId( const std::string &commandStri
         {
             BankOperationType operation = command.first;
             CommandInfo info = command.second;
+            auto operationString = getCommandStringForOperation(p, info);
 
-            if( commandString == getCommandStringForOperation(p, info) )
+            // If the operation string is found at position 0 of the command string, return the found operation string
+            if( commandString.find( operationString ) == 0 )
             {
                 return operation;
             }
