@@ -47,7 +47,7 @@ public class MaintenanceTaskRunner {
                 break;
             }
         }
-        completedMaintenanceTask.get().clear();;
+        completedMaintenanceTask.get().clear();
         return false;
     }
 
