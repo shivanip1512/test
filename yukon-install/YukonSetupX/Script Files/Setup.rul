@@ -116,7 +116,7 @@ begin
 	sEnv = "Environment";
 	pEnv = &sEnv;
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
-    
+	
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
@@ -406,6 +406,10 @@ begin
 	if (ServiceExistsService(SM_NAME) && !ServiceExistsService(BROKER_NAME)) then
     InstallMessageBroker();
     endif;
+    
+    // Special maintenance for upgrades for 7.1
+    RemoveOldDesktopDebugServers();
+    InstallStartStopServicesShortcuts();
 	
 	// Adding monitor service in case of upgrade from version < 7.1.0
     if (!ServiceExistsService(MONITOR_NAME)) then

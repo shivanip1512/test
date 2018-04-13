@@ -758,3 +758,33 @@ begin
     svDir = TARGETDIR + "\\Runtime\\bin";
     LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
+
+
+//---------------------------------------------------------------------------
+// Workaround method to get these installed on upgrades. Note this matches what is configured
+// in the standard install UI, so there is no matching manual uninstall script as the 
+// uninstall already knows how to remove these files.
+//--------------------------------------------------------------------------- 
+export prototype InstallStartStopServicesShortcuts();
+function InstallStartStopServicesShortcuts()
+string startCommandLine, stopCommandLine, workingDir, iconPath;
+begin
+	startCommandLine = TARGETDIR ^ "\\Server\\bin\\StartYukon.bat";
+	stopCommandLine = TARGETDIR ^ "\\Server\\bin\\StopYukon.bat";
+	iconPath = TARGETDIR ^ "\\Client\\bin\\YukonLogin.ico";
+	
+	AddFolderIcon ( FOLDER_PROGRAMS ^ "Yukon Client", "Start Yukon", startCommandLine, "", iconPath, 0, "", NULL);
+	AddFolderIcon ( FOLDER_PROGRAMS ^ "Yukon Client", "Stop Yukon", stopCommandLine, "", iconPath, 0, "", NULL);
+	
+	AddFolderIcon ( FOLDER_DESKTOP ^ "Yukon Service Control", "Start Yukon", startCommandLine, "", iconPath, 0, "", NULL);
+	AddFolderIcon ( FOLDER_DESKTOP ^ "Yukon Service Control", "Stop Yukon", stopCommandLine, "", iconPath, 0, "", NULL);
+end;
+
+//---------------------------------------------------------------------------
+// Remove old Yukon Debug Servers folder from desktop. Needed for upgrades.
+//--------------------------------------------------------------------------- 
+export prototype RemoveOldDesktopDebugServers();
+function RemoveOldDesktopDebugServers()
+begin
+	DeleteDir( FOLDER_DESKTOP ^ "Yukon Debug Servers", ALLCONTENTS);
+end;
