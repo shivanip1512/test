@@ -490,7 +490,10 @@ int DnpSlave::processScanSlaveRequest (ConnectionProtocol cp)
                 ? fdrPoint.getValue() 
                 : fdrPoint.getValue() * dnpId.Multiplier;
 
-            CTILOG_DEBUG(dout, logNow() << " sending " << desolvePointType(dnpId.PointType) << " for " << dnpId.toString() << ", Value=" << value);
+            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CTILOG_DEBUG(dout, logNow() << " sending " << desolvePointType(dnpId.PointType) << " for " << dnpId.toString() << ", Value=" << value);
+            }
             
             outputPoints.emplace_back(offset, online, dnpType, value);
         };
@@ -519,7 +522,7 @@ int DnpSlave::processScanSlaveRequest (ConnectionProtocol cp)
                     case PulseAccumulatorPointType:   emplacePoint(dnpId, fdrPoint, PointType::Accumulator);  break;
                     case DemandAccumulatorPointType:  emplacePoint(dnpId, fdrPoint, PointType::DemandAccumulator);  break;
                     default:
-                        CTILOG_DEBUG(dout, logNow() << " Unsupported point type " << dnpId.PointType);
+                        CTILOG_WARN(dout, logNow() << " Unsupported point type " << dnpId.PointType);
                     }
                 }
             }
@@ -548,7 +551,7 @@ int DnpSlave::processScanSlaveRequest (ConnectionProtocol cp)
                     case StatusPointType:  emplacePoint(dnpId, fdrPoint, PointType::BinaryOutput);  break;
                     case AnalogPointType:  emplacePoint(dnpId, fdrPoint, PointType::AnalogOutput);  break;
                     default:
-                        CTILOG_DEBUG(dout, logNow() << " Unsupported point type " << dnpId.PointType);
+                        CTILOG_WARN(dout, logNow() << " Unsupported point type " << dnpId.PointType);
                     }
                 }
             }
