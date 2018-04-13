@@ -30,7 +30,6 @@ import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
-import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
@@ -42,7 +41,6 @@ public class PowerQualityResponseActionsController {
     private static final String messagePrefix = "yukon.web.modules.operator.pqrReport.";
     
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private PqrEventDao pqrEventDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;

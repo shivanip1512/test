@@ -19,7 +19,7 @@ public enum PqrEventType implements DisplayableEnum {
     EVENT_RELEASE(0x07), // PQR event active, OV/OF condition ended, event will end (after randomization)
     EVENT_RELEASE_MAX(0x08), // PQR event ran for maximum allowed control time
     EVENT_COMPLETE(0x09), // PQR event occurred, OV/OF condition ended, deactivation randomization occurred, PQR event ended. (DR control resumes)
-    RESTORE_DETECTED(0x0A), // PQR event active, OV/OF condition ended, and wait
+    RESTORE_DETECTED(0x0A), // PQR event active, OV/OF condition ended, and wait period completed.
     ;
     
     private final byte value;

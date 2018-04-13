@@ -16,7 +16,11 @@ public enum LmHardwareCommandParam {
     SPID(Integer.class),
     UNIQUE_MESSAGE_ID(Long.class),
     RELAY(Integer.class),
-    WAITABLE(Boolean.class);
+    WAITABLE(Boolean.class),
+    //PQR parameters
+    PQR_ENABLE(Boolean.class),
+    //TODO Other PQR parameters
+    ;
     
     private Class<?> clazz;
     private LmHardwareCommandParam(Class<?> clazz) {
@@ -26,10 +30,5 @@ public enum LmHardwareCommandParam {
     public Class<?> getClazz() {
         return clazz;
     };
-    
-    //TODO is this stupid?
-    public Object getObjectValue(Object value) {
-        return clazz.cast(value);
-    }
 
 }

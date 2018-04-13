@@ -153,6 +153,13 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 byte ctrlFlags = command.findParam(LmHardwareCommandParam.RELAY, Integer.class).byteValue();
                 outputBuffer.put(ctrlFlags);
                 break;
+            case PQR_ENABLE:
+                outputBuffer.put((byte)0x66);
+                boolean enable = command.findParam(LmHardwareCommandParam.PQR_ENABLE, Boolean.class);
+                byte enableVal = enable ? (byte) 1 : (byte) 0;
+                outputBuffer.put(enableVal);
+                break;
+            //TODO: Other PQR messages
             default:
                 throw new IllegalArgumentException("Command Type: " + type + " not implemented");
         }

@@ -26,7 +26,7 @@
     
     <tr style="height: 5px;"><td colspan="3"></td></tr>
     
-    <%-- SUCESS --%>
+    <%-- SUCCESS --%>
     <tr>
         <td class="name"><i:inline key=".successCount"/>:</td>
         <td class="value">
