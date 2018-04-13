@@ -9,6 +9,7 @@
 #include "NackBehavior.h"
 #include "cparms.h"
 #include "StreamSocketListener.h"
+#include "version.h"
 #include "module_util.h"
 #include "database_reader.h"
 
