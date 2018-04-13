@@ -194,11 +194,7 @@ public:
     bool findSubstationByPointID (long point_id, PointIdToSubstationMultiMap::iterator  &begin, PointIdToSubstationMultiMap::iterator  &end);
     bool findFeederByPointID     (long point_id, PointIdToFeederMultiMap::iterator      &begin, PointIdToFeederMultiMap::iterator      &end);
     bool findCapBankByPointID    (long point_id, PointIdToCapBankMultiMap::iterator     &begin, PointIdToCapBankMultiMap::iterator     &end);
-    int getNbrOfSubBusesWithPointID(long point_id);
-    int getNbrOfSubsWithAltSubID(long altSubId);
     std::pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> getSubsWithAltSubID(int altSubId);
-    int getNbrOfFeedersWithPointID(long point_id);
-    int getNbrOfCapBanksWithPointID(long point_id);
 
     CtiCCSubstationPtr findSubstationByPAObjectID(long paobject_id);
     CtiCCAreaPtr findAreaByPAObjectID(long paobject_id);

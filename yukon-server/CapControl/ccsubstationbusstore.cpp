@@ -369,27 +369,9 @@ bool CtiCCSubstationBusStore::findCapBankByPointID(long point_id, PointIdToCapBa
     return begin != end;
 }
 
-int CtiCCSubstationBusStore::getNbrOfSubBusesWithPointID(long point_id)
-{
-    return _pointid_subbus_map.count(point_id);
-}
-
-int CtiCCSubstationBusStore::getNbrOfSubsWithAltSubID(long altSubId)
-{
-    return _altsub_sub_idmap.count(altSubId);
-}
 pair<PaoIdToPointIdMultiMap::iterator,PaoIdToPointIdMultiMap::iterator> CtiCCSubstationBusStore::getSubsWithAltSubID(int altSubId)
 {
     return _altsub_sub_idmap.equal_range(altSubId);
-}
-
-int CtiCCSubstationBusStore::getNbrOfFeedersWithPointID(long point_id)
-{
-    return _pointid_feeder_map.count(point_id);
-}
-int CtiCCSubstationBusStore::getNbrOfCapBanksWithPointID(long point_id)
-{
-    return _pointid_capbank_map.count(point_id);
 }
 
 CtiCCAreaPtr CtiCCSubstationBusStore::findAreaByPAObjectID(long paobject_id)
@@ -7280,299 +7262,260 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
     }
 }
 
+namespace
+{
+
+template <typename MultiMap>
+void multimapRemoveOne( MultiMap & mmap, const typename MultiMap::key_type key, const typename MultiMap::mapped_type oneToRemove )
+{
+    for ( auto range = mmap.equal_range( key );
+          range.first != range.second;
+          ++range.first )
+    {
+        if ( range.first->second == oneToRemove )
+        {
+            mmap.erase( range.first );
+            break;
+        }
+    }
+}
+
+}
+
 void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 {
-    CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId);
-
-    if( subToDelete == NULL )
-    {
-        return;
-    }
-
     try
     {
-        setStoreRecentlyReset(true);
-        for each(int feederId in subToDelete->getCCFeederIds())
+        if ( CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId) )
         {
-            deleteFeeder(feederId);
-        }
-
-        try
-        {
-            //Delete pointids on this sub
-            for each (long pointid in *subToDelete->getPointIds())
+            setStoreRecentlyReset(true);
+            for ( int feederId : subToDelete->getCCFeederIds() )
             {
-               int ptCount = getNbrOfSubBusesWithPointID(pointid);
-                if (ptCount > 1)
-                {
-                    PointIdToSubBusMultiMap::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
-                    while (iter1 != _pointid_subbus_map.end() || iter1 != _pointid_subbus_map.upper_bound(pointid))
-                    {
-                       if (((CtiCCSubstationBusPtr)iter1->second)->getPaoId() == subToDelete->getPaoId())
-                       {
-                           _pointid_subbus_map.erase(iter1);
-                           break;
-                       }
-                       iter1++;
-                    }
-                }
-                else
-                    _pointid_subbus_map.erase(pointid);
-           }
-           subToDelete->getPointIds()->clear();
-           for each(long pointid in subToDelete->getAllMonitorPointIds() )
-           {
-               _pointid_subbus_map.erase(pointid);
-           }
-
-           subToDelete->removeAllMonitorPoints();
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-        //DUAL BUS Alt Sub deletion...
-        try
-        {
-            //Deleting subs that have this sub as altSub
-            while (_altsub_sub_idmap.find(subBusId) != _altsub_sub_idmap.end())
-            {
-                long tempSubId = _altsub_sub_idmap.find(subBusId)->second;
-                CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(tempSubId);
-                if (tempSub != NULL)
-                {
-                    if ( tempSub->getStrategy()->getUnitType() == ControlStrategy::KVar )
-                    {
-                        long pointid = subToDelete->getCurrentVarLoadPointId();
-                        _pointid_subbus_map.erase(pointid);
-                        tempSub->removePointId(pointid);
-                    }
-                    else if ( tempSub->getStrategy()->getUnitType() != ControlStrategy::Volts )
-                    {
-                        long pointid = subToDelete->getCurrentVoltLoadPointId();
-                        _pointid_subbus_map.erase(pointid);
-                        tempSub->removePointId(pointid);
-                    }
-                }
-                _altsub_sub_idmap.erase(subBusId);
+                deleteFeeder(feederId);
             }
-            //Deleting this sub from altSubMap
-            if (subToDelete->getAltDualSubId() != subToDelete->getPaoId())
+
+            try
             {
-                PaoIdToPointIdMultiMap::iterator iter = _altsub_sub_idmap.begin();
-                while (iter != _altsub_sub_idmap.end())
+                //Delete pointids on this sub
+                for ( long pointid : *subToDelete->getPointIds() )
                 {
-                    if (iter->second == subToDelete->getPaoId())
+                    multimapRemoveOne( _pointid_subbus_map, pointid, subToDelete );
+                }
+                subToDelete->getPointIds()->clear();
+
+                for ( long pointid : subToDelete->getAllMonitorPointIds() )
+                {
+                    multimapRemoveOne( _pointid_subbus_map, pointid, subToDelete );
+                }
+                subToDelete->removeAllMonitorPoints();
+            }
+            catch(...)
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+            }
+
+            //DUAL BUS Alt Sub deletion...
+            try
+            {
+                //Deleting subs that have this sub as altSub
+                for ( auto range = _altsub_sub_idmap.equal_range( subBusId );
+                      range.first != range.second;
+                      ++range.first )
+                {
+                    if ( CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID( range.first->second ) )
                     {
-                        _altsub_sub_idmap.erase(iter);
-                        iter = _altsub_sub_idmap.end();
+                        boost::optional<long> pointID;
+
+                        switch ( tempSub->getStrategy()->getUnitType() )
+                        {
+                            case ControlStrategy::KVar:
+                            case ControlStrategy::PFactorKWKVar:
+                            case ControlStrategy::PFactorKWKQ:
+                            {
+                                pointID = subToDelete->getCurrentVarLoadPointId();
+                                break;
+                            }
+                            case ControlStrategy::Volts:
+                            {
+                                pointID = subToDelete->getCurrentVoltLoadPointId();
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+
+                        if ( pointID )  // remove it if found
+                        {
+                            multimapRemoveOne( _pointid_subbus_map, *pointID, tempSub );
+                            tempSub->removePointId( *pointID );
+                        }
+                    }
+                }
+                _altsub_sub_idmap.erase( subBusId );
+
+                //Deleting this sub from altSubMap
+                if (subToDelete->getAltDualSubId() != subBusId)
+                {
+                    PaoIdToPointIdMultiMap::iterator iter = _altsub_sub_idmap.begin();
+                    while (iter != _altsub_sub_idmap.end())
+                    {
+                        if (iter->second == subBusId)
+                        {
+                            _altsub_sub_idmap.erase(iter);
+                            iter = _altsub_sub_idmap.end();
+                        }
+                        else
+                            iter++;
+                    }
+                }
+
+                // this is a sanity check to make sure we've removed all the references to the bus
+                //  that we are deleting from the _pointid_subbus_map
+                for ( auto iter = _pointid_subbus_map.begin(); iter != _pointid_subbus_map.end();  )
+                {
+                    if ( iter->second == subToDelete )
+                    {
+                        iter = _pointid_subbus_map.erase( iter );
                     }
                     else
-                        iter++;
-                }
-
-            }
-
-            // this is a sanity check to make sure we've removed all the references to the bus
-            //  that we are deleting from the _pointid_subbus_map
-            for ( auto iter = _pointid_subbus_map.begin(); iter != _pointid_subbus_map.end();  )
-            {
-                if ( iter->second == subToDelete )
-                {
-                    iter = _pointid_subbus_map.erase( iter );
-                }
-                else
-                {
-                    ++iter;
+                    {
+                        ++iter;
+                    }
                 }
             }
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-
-        try
-        {
-            string subBusName = subToDelete->getPaoName();
-            _paobject_subbus_map.erase(subToDelete->getPaoId());
-            _subbus_substation_map.erase(subToDelete->getPaoId());
-            CtiCCSubstationBus_vec::iterator itr = _ccSubstationBuses->begin();
-            while ( itr != _ccSubstationBuses->end() )
+            catch(...)
             {
-                CtiCCSubstationBus *subBus = *itr;
-                if (subBus->getPaoId() == subBusId)
-                {
-                    itr = _ccSubstationBuses->erase(itr);
-                    break;
-                }else
-                    ++itr;
-
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
-            if ( subToDelete != NULL )
+
+            try
             {
+                std::string subBusName = subToDelete->getPaoName();
+
+                _paobject_subbus_map.erase( subBusId );
+                _subbus_substation_map.erase( subBusId );
+                _ccSubstationBuses->erase( std::remove( _ccSubstationBuses->begin(), _ccSubstationBuses->end(), subToDelete ),
+                                           _ccSubstationBuses->end() );
+
                 delete subToDelete;
-                subToDelete = NULL;
+
+                if( _CC_DEBUG & CC_DEBUG_DELETION )
+                {
+                    CTILOG_INFO(dout, "SUBBUS: " << subBusName <<" has been deleted.");
+                }
             }
-            if( _CC_DEBUG & CC_DEBUG_DELETION )
+            catch(...)
             {
-                CTILOG_INFO(dout, "SUBBUS: " << subBusName <<" has been deleted.");
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 }
 
 void CtiCCSubstationBusStore::deleteFeeder(long feederId)
 {
-    CtiCCFeederPtr feederToDelete = findFeederByPAObjectID(feederId);
-
-    if (feederToDelete == NULL)
-        return;
     try
     {
-        setStoreRecentlyReset(true);
-        for each(int capBankId in feederToDelete->getAllCapBankIds())
+        if ( CtiCCFeederPtr feederToDelete = findFeederByPAObjectID( feederId ) )
         {
-            deleteCapBank(capBankId);
-        }
+            setStoreRecentlyReset(true);
 
-        //Delete pointids on this feeder
-        for each (long pointid in *feederToDelete->getPointIds())
-        {
-            int ptCount = getNbrOfFeedersWithPointID(pointid);
-            if (ptCount > 1)
+            for ( int capBankId : feederToDelete->getAllCapBankIds() )
             {
-                PointIdToFeederMultiMap::iterator iter1 = _pointid_feeder_map.lower_bound(pointid);
-                while (iter1 != _pointid_feeder_map.end() || iter1 != _pointid_feeder_map.upper_bound(pointid))
+                deleteCapBank(capBankId);
+            }
+
+            //Delete pointids on this feeder
+            for ( long pointid : *feederToDelete->getPointIds() )
+            {
+                multimapRemoveOne( _pointid_feeder_map, pointid, feederToDelete );
+            }
+            feederToDelete->getPointIds()->clear();
+
+            try
+            {
+                if ( long subBusId = findSubBusIDbyFeederID( feederId ) )
                 {
-                    if (((CtiCCFeederPtr)iter1->second)->getPaoId() == feederToDelete->getPaoId())
+                    if ( CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID( subBusId ) )
                     {
-                        _pointid_feeder_map.erase(iter1);
-                        break;
+                        subBus->deleteCCFeeder(feederId);
                     }
-                    iter1++;
                 }
-            }
-            else
-                _pointid_feeder_map.erase(pointid);
-        }
-        feederToDelete->getPointIds()->clear();
-        try
-        {
 
-            long subBusId = findSubBusIDbyFeederID(feederId);
-            if (subBusId != NULL)
-            {
-                CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subBusId);
-                if (subBus != NULL)
-                {
-                    subBus->deleteCCFeeder(feederId);
-                }
-            }
+                std::string feederName = feederToDelete->getPaoName();
 
-            string feederName = feederToDelete->getPaoName();
-            _paobject_feeder_map.erase(feederToDelete->getPaoId());
-            _feeder_subbus_map.erase(feederToDelete->getPaoId());
+                _paobject_feeder_map.erase( feederId );
+                _feeder_subbus_map.erase( feederId );
 
-            if (feederToDelete != NULL)
-            {
                 delete feederToDelete;
-                feederToDelete = NULL;
-            }
 
-            if( _CC_DEBUG & CC_DEBUG_DELETION )
+                if( _CC_DEBUG & CC_DEBUG_DELETION )
+                {
+                    CTILOG_INFO(dout, "FEEDER: " << feederName <<" has been deleted.");
+                }
+            }
+            catch(...)
             {
-                CTILOG_INFO(dout, "FEEDER: " << feederName <<" has been deleted.");
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
-
         }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-    }
+    } 
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
-
 void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
 {
-    CtiCCCapBankPtr capBankToDelete = findCapBankByPAObjectID(capBankId);
-
     try
     {
-        if (capBankToDelete != NULL)
+        if ( CtiCCCapBankPtr capBankToDelete = findCapBankByPAObjectID( capBankId ) )
         {
             setStoreRecentlyReset(true);
-          //Delete pointids on this feeder
-            for each (long pointid in *capBankToDelete->getPointIds())
+
+            //Delete pointids on this feeder
+            for ( long pointid : *capBankToDelete->getPointIds() )
             {
-                int ptCount = getNbrOfCapBanksWithPointID(pointid);
-                if (ptCount > 1)
-                {
-                    PointIdToCapBankMultiMap::iterator iter1 = _pointid_capbank_map.lower_bound(pointid);
-                    while (iter1 != _pointid_capbank_map.end() || iter1 != _pointid_capbank_map.upper_bound(pointid))
-                    {
-                        if (((CtiCCCapBankPtr)iter1->second)->getPaoId() == capBankToDelete->getPaoId())
-                        {
-                            _pointid_capbank_map.erase(iter1);
-                            break;
-                        }
-                        iter1++;
-                    }
-                }
-                else
-                    _pointid_capbank_map.erase(pointid);
+                multimapRemoveOne( _pointid_capbank_map, pointid, capBankToDelete );
             }
             capBankToDelete->getPointIds()->clear();
-            for each (CtiCCMonitorPointPtr mPoint in capBankToDelete->getMonitorPoint())
+
+            for ( CtiCCMonitorPointPtr mPoint : capBankToDelete->getMonitorPoint() )
             {
-                _pointid_capbank_map.erase(mPoint->getPointId());
+                multimapRemoveOne( _pointid_capbank_map, mPoint->getPointId(), capBankToDelete );
                 mPoint.reset();
             }
             capBankToDelete->getMonitorPoint().clear();
 
             for ( long pointID : capBankToDelete->heartbeat._policy->getRegistrationPointIDs() )
             {
-                _pointid_capbank_map.erase( pointID );
+                multimapRemoveOne( _pointid_capbank_map, pointID, capBankToDelete );
             }
 
             try
             {
-                CtiCCFeederPtr feeder = NULL;
-                long feederId = findFeederIDbyCapBankID(capBankId);
-                if (feederId != NULL)
+                if ( long feederId = findFeederIDbyCapBankID( capBankId ) )
                 {
-                    feeder = findFeederByPAObjectID(feederId);
-                    if (feeder != NULL)
+                    if ( CtiCCFeederPtr feeder = findFeederByPAObjectID( feederId ) )
                     {
                         feeder->deleteCCCapBank(capBankId);
                     }
                 }
 
-                string capBankName = capBankToDelete->getPaoName();
-                _paobject_capbank_map.erase(capBankToDelete->getPaoId());
-                _capbank_subbus_map.erase(capBankToDelete->getPaoId());
-                _capbank_feeder_map.erase(capBankToDelete->getPaoId());
-                _cbc_capbank_map.erase(capBankToDelete->getControlDeviceId());
+                std::string capBankName = capBankToDelete->getPaoName();
 
-                if (capBankToDelete != NULL)
-                {
-                    delete capBankToDelete;
-                    capBankToDelete = NULL;
-                }
+                _paobject_capbank_map.erase( capBankId );
+                _capbank_subbus_map.erase( capBankId );
+                _capbank_feeder_map.erase( capBankId );
+                _cbc_capbank_map.erase( capBankToDelete->getControlDeviceId() );
+
+                delete capBankToDelete;
+
                 if( _CC_DEBUG & CC_DEBUG_DELETION )
                 {
                     CTILOG_INFO(dout, "CAPBANK: " << capBankName <<" has been deleted.");
@@ -7582,7 +7525,6 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
-
         }
     }
     catch(...)
