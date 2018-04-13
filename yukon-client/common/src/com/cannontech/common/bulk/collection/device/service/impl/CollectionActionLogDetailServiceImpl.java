@@ -121,16 +121,16 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 }
                 cache.getIfPresent(result.getCacheKey()).add(detail);
                 List<String> fields = new ArrayList<>();
-                fields.add(detail.getDevice() != null ? dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()).getPaoName() : "");
+
+                fields.add(StringUtils.defaultIfEmpty(dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()).getPaoName(), ""));
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
-                fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
-                fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
+                fields.add(StringUtils.defaultIfEmpty(accessor.getMessage(detail.getDetail()), ""));
+                fields.add(StringUtils.defaultIfEmpty(detail.getDeviceErrorText(), ""));
                 if (result.getAction().contains(CONFIG_NAME)) {
-                    fields.add(detail.getConfigName() != null ? detail.getConfigName() : "");
+                    fields.add(StringUtils.defaultIfEmpty(detail.getConfigName(), ""));
                 }
                 if (result.getAction().contains(DEVICE_TYPE)) {
-                    fields.add(detail.getDevice() != null
-                        ? accessor.getMessage(detail.getDevice().getDeviceType().getFormatKey()) : "");
+                    fields.add(StringUtils.defaultIfEmpty(accessor.getMessage(detail.getDevice().getDeviceType().getFormatKey()), ""));
                 }
                 String pointName = "";
                 String value = "";
@@ -164,7 +164,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 if (result.getAction().contains(LAST_VALUE)) {
                     if (StringUtils.isNotEmpty(detail.getLastValue())) {
                         value = detail.getLastValue().replaceAll("/", "");
-                        value = "\"" + value + "\"";
+                        value = value.replaceAll("\n", "");
                         /*
                          * "MCT-410iL 1000026
                          * Config data received: 00 00 00 00 00 00 00 00 00 00 00 00 00"
