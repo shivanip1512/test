@@ -535,7 +535,7 @@ yukon.tools.point = (function () {
                 yukon.ui.blockPage();
                 $('#copy-point-form').ajaxSubmit({
                     success: function (data, status, xhr, $form) {
-                        window.location.href=yukon.url('/tools/points/' + data.pointId);
+                        window.location.href = yukon.url('/tools/points/' + data.pointId);
                     },
                     error: function (xhr, status, error, $form) {
                         $('#copy-point-popup').html(xhr.responseText);

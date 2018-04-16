@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -167,6 +168,7 @@ public class PointController {
                 
                 model.addAttribute("copyPointModel", pointModel);
             } catch (NotFoundException e) {
+                Log.error(e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
             }
         }

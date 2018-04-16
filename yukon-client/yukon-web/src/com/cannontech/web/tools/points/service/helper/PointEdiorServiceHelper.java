@@ -56,7 +56,6 @@ public class PointEdiorServiceHelper {
     public static PointBase populateCalculatedStatusPoint(PointModel<? extends PointBase> pointModel,
             PointBase pointToCopy) {
         PointBase newPoint = populatePointBaseToCopy(pointModel, pointToCopy);
-        Integer newPointId = null;
 
         CalcStatusPoint calcStatusPointToCopy = (CalcStatusPoint) pointToCopy;
         CalcStatusPoint newCalcStatusPoint = (CalcStatusPoint) newPoint;
@@ -68,7 +67,7 @@ public class PointEdiorServiceHelper {
         newCalcStatusPoint.setCalcComponents(populateCalcComponents(calcStatusPointToCopy.getCalcComponents()));
 
         newCalcStatusPoint.setCalcBaselinePoint(
-            new CalcPointBaseline(newPointId, calcStatusPointToCopy.getCalcBaselinePoint().getBaselineID()));
+            new CalcPointBaseline(null, calcStatusPointToCopy.getCalcBaselinePoint().getBaselineID()));
 
         newCalcStatusPoint.setBaselineAssigned(calcStatusPointToCopy.getBaselineAssigned());
 
@@ -77,7 +76,6 @@ public class PointEdiorServiceHelper {
     
     public static PointBase populateCalculatedPoint(PointModel<? extends PointBase> pointModel, PointBase pointToCopy) {
         PointBase newPoint = populatePointBaseToCopy(pointModel, pointToCopy);
-        Integer newPointId = null;
 
         CalculatedPoint calculatedPointToCopy = (CalculatedPoint) pointToCopy;
         CalculatedPoint newCalcStatusPoint = (CalculatedPoint) newPoint;
@@ -89,7 +87,7 @@ public class PointEdiorServiceHelper {
         newCalcStatusPoint.setCalcComponents(populateCalcComponents(calculatedPointToCopy.getCalcComponents()));
 
         newCalcStatusPoint.setCalcBaselinePoint(
-            new CalcPointBaseline(newPointId, calculatedPointToCopy.getCalcBaselinePoint().getBaselineID()));
+            new CalcPointBaseline(null, calculatedPointToCopy.getCalcBaselinePoint().getBaselineID()));
 
         newCalcStatusPoint.setBaselineAssigned(calculatedPointToCopy.getBaselineAssigned());
 
@@ -139,7 +137,6 @@ public class PointEdiorServiceHelper {
         PointType pointType = pointToCopy.getPointTypeEnum();
         String pointName = pointModel.getPointBase().getPoint().getPointName();
         Integer paoID = pointModel.getPointBase().getPoint().getPaoID();
-        Integer newPointId = null;
         Integer pointOffset = 0;
         
         if (pointModel.getPointBase().getPoint().isPhysicalOffset()) {
@@ -150,7 +147,7 @@ public class PointEdiorServiceHelper {
         PointBase newPoint = PointFactory.createPoint(pointType.getPointTypeId());
         
         // set point fields
-        newPoint.setPoint(new Point(newPointId,
+        newPoint.setPoint(new Point(null,
                                     PointTypes.getType(pointType.getPointTypeId()),
                                     pointName,
                                     paoID,
@@ -164,7 +161,7 @@ public class PointEdiorServiceHelper {
         
         // set point alarming fields
         PointAlarming pointAlarmingToCopy = pointBaseToCopy.getPointAlarming();
-        newPoint.setPointAlarming(new PointAlarming(newPointId, pointAlarmingToCopy.getAlarmStates(), 
+        newPoint.setPointAlarming(new PointAlarming(null, pointAlarmingToCopy.getAlarmStates(), 
                                                     pointAlarmingToCopy.getExcludeNotifyStates(), 
                                                     pointAlarmingToCopy.getNotifyOnAcknowledge(), 
                                                     pointAlarmingToCopy.getNotificationGroupID()));
