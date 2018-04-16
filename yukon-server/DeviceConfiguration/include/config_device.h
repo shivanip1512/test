@@ -147,41 +147,41 @@ enum DisplayItem {
 class IM_EX_CONFIG DisplayItemValues
 {
 public:
-    static const std::string SLOT_DISABLED;			    //0
-    static const std::string NO_SEGMENTS;			    //1
-    static const std::string ALL_SEGMENTS;			    //2
+    static const std::string SLOT_DISABLED;              //0
+    static const std::string NO_SEGMENTS;                //1
+    static const std::string ALL_SEGMENTS;               //2
     // Item #3 is deprecated and unused.
-    static const std::string CURRENT_LOCAL_TIME;		//4
-    static const std::string CURRENT_LOCAL_DATE;		//5
-    static const std::string TOTAL_KWH;			        //6
-    static const std::string NET_KWH;			        //7
-    static const std::string DELIVERED_KWH;			    //8
-    static const std::string RECEIVED_KWH;			    //9
-    static const std::string LAST_INTERVAL_KW;			//10
-    static const std::string PEAK_KW;			        //11
-    static const std::string PEAK_KW_DATE;			    //12
-    static const std::string PEAK_KW_TIME;			    //13
-    static const std::string LAST_INTERVAL_VOLTAGE;		//14
-    static const std::string PEAK_VOLTAGE;			    //15
-    static const std::string PEAK_VOLTAGE_DATE;			//16
-    static const std::string PEAK_VOLTAGE_TIME;			//17
-    static const std::string MINIMUM_VOLTAGE;			//18
-    static const std::string MINIMUM_VOLTAGE_DATE;		//19
-    static const std::string MINIMUM_VOLTAGE_TIME;		//20
-    static const std::string TOU_RATE_A_KWH;			//21
-    static const std::string TOU_RATE_A_PEAK_KW;		//22
+    static const std::string CURRENT_LOCAL_TIME;         //4
+    static const std::string CURRENT_LOCAL_DATE;         //5
+    static const std::string TOTAL_KWH;                  //6
+    static const std::string NET_KWH;                    //7
+    static const std::string DELIVERED_KWH;              //8
+    static const std::string RECEIVED_KWH;               //9
+    static const std::string LAST_INTERVAL_KW;           //10
+    static const std::string PEAK_KW;                    //11
+    static const std::string PEAK_KW_DATE;               //12
+    static const std::string PEAK_KW_TIME;               //13
+    static const std::string LAST_INTERVAL_VOLTAGE;      //14
+    static const std::string PEAK_VOLTAGE;               //15
+    static const std::string PEAK_VOLTAGE_DATE;          //16
+    static const std::string PEAK_VOLTAGE_TIME;          //17
+    static const std::string MINIMUM_VOLTAGE;            //18
+    static const std::string MINIMUM_VOLTAGE_DATE;       //19
+    static const std::string MINIMUM_VOLTAGE_TIME;       //20
+    static const std::string TOU_RATE_A_KWH;             //21
+    static const std::string TOU_RATE_A_PEAK_KW;         //22
     static const std::string TOU_RATE_A_DATE_OF_PEAK_KW; //23
     static const std::string TOU_RATE_A_TIME_OF_PEAK_KW; //24
-    static const std::string TOU_RATE_B_KWH;			//25
-    static const std::string TOU_RATE_B_PEAK_KW;		//26
+    static const std::string TOU_RATE_B_KWH;             //25
+    static const std::string TOU_RATE_B_PEAK_KW;         //26
     static const std::string TOU_RATE_B_DATE_OF_PEAK_KW; //27
     static const std::string TOU_RATE_B_TIME_OF_PEAK_KW; //28
-    static const std::string TOU_RATE_C_KWH;			//29
-    static const std::string TOU_RATE_C_PEAK_KW;		//30
+    static const std::string TOU_RATE_C_KWH;             //29
+    static const std::string TOU_RATE_C_PEAK_KW;         //30
     static const std::string TOU_RATE_C_DATE_OF_PEAK_KW; //31
     static const std::string TOU_RATE_C_TIME_OF_PEAK_KW; //32
-    static const std::string TOU_RATE_D_KWH;			//33
-    static const std::string TOU_RATE_D_PEAK_KW;		//34
+    static const std::string TOU_RATE_D_KWH;             //33
+    static const std::string TOU_RATE_D_PEAK_KW;         //34
     static const std::string TOU_RATE_D_DATE_OF_PEAK_KW; //35
     static const std::string TOU_RATE_D_TIME_OF_PEAK_KW; //36;
 };

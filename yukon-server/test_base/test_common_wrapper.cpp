@@ -13,7 +13,7 @@ using namespace boost::iostreams;
 
 /*
 
-	This module runs the legacy Boost Unit Tests.  It runs them each as a seperate processes. 
+    This module runs the legacy Boost Unit Tests.  It runs them each as a seperate processes. 
 
 */
 
@@ -44,7 +44,7 @@ namespace test_base
         TEST_WRAPPER(RTDB);
         TEST_WRAPPER(simulator);
 
-		/* Creates a pipe so the child can return stdout & stderr. */
+        /* Creates a pipe so the child can return stdout & stderr. */
         void createStdOut(HANDLE &stdoutRead, HANDLE &stdoutWrite)
         {
             // Create a pipe to return output.
@@ -64,7 +64,7 @@ namespace test_base
                 Assert::Fail(L"Stdout SetHandleInformation");
         }
 
-		/* Run the boost unit test executable as a seperate process. */
+        /* Run the boost unit test executable as a seperate process. */
         void runBoostTest(std::string name)
         {
             Logger::WriteMessage(string("Running test_" + name + "\r").c_str());
@@ -79,17 +79,17 @@ namespace test_base
             PROCESS_INFORMATION ProcessInfo{};
             unsigned long rc;
 
-			// create the command
-			char cmd[1024];
-			sprintf_s(cmd, sizeof cmd, "test_%s.exe", name.c_str());
+            // create the command
+            char cmd[1024];
+            sprintf_s(cmd, sizeof cmd, "test_%s.exe", name.c_str());
 
-			StartupInfo.cb = sizeof(STARTUPINFO);
+            StartupInfo.cb = sizeof(STARTUPINFO);
             StartupInfo.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
             StartupInfo.wShowWindow = SW_HIDE;
             StartupInfo.hStdError = stdoutWrite;
             StartupInfo.hStdOutput = stdoutWrite;
 
-			// Run our test
+            // Run our test
             if (!CreateProcess(NULL, cmd, NULL, NULL, TRUE,
                 CREATE_NEW_CONSOLE,
                 NULL,
@@ -129,8 +129,8 @@ namespace test_base
             CloseHandle(ProcessInfo.hThread);
             CloseHandle(ProcessInfo.hProcess);
 
-			const std::wstring wname(name.begin(), name.end());
-			Assert::AreEqual(0, (int)rc, (wstring(L"test ") + wname + wstring(L" failed")).c_str());
+            const std::wstring wname(name.begin(), name.end());
+            Assert::AreEqual(0, (int)rc, (wstring(L"test ") + wname + wstring(L" failed")).c_str());
         }
     };
 }

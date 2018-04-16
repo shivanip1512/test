@@ -2297,7 +2297,7 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
     CONTEXT ContextRecord{};
     EXCEPTION_POINTERS ExceptionPointers{};
 
-	// We need to create a MINIDUMP_EXCEPTION_INFORMATION structure to pass to MiniDumpWriteDump.
+    // We need to create a MINIDUMP_EXCEPTION_INFORMATION structure to pass to MiniDumpWriteDump.
     dumpInfo.ThreadId = GetCurrentThreadId();
     dumpInfo.ClientPointers = false;
     if (pExceptionPtrs != 0)

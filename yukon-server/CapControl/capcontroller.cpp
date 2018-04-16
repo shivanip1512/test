@@ -1657,9 +1657,9 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
 void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
 {
     Cti::ConfigManager::handleDbChange( dbChange->getId(),
-                                		dbChange->getCategory(),
-                                		dbChange->getObjectType(),
-                                		dbChange->getTypeOfChange() );
+                                        dbChange->getCategory(),
+                                        dbChange->getObjectType(),
+                                        dbChange->getTypeOfChange() );
 /*
     We have 3 different object types that are possible when reloading a device config:
         1. category
