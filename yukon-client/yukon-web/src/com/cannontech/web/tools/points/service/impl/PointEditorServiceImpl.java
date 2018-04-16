@@ -29,8 +29,9 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
@@ -43,6 +44,7 @@ import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
+import com.cannontech.web.tools.points.service.helper.PointEdiorServiceHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
@@ -409,6 +411,55 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
+    }
+
+    @Override
+    public int copy(PointModel<? extends PointBase> pointModel, YukonUserContext userContext) {
+        PointBase pointBaseToCopy = PointFactory.retrievePoint(pointModel.getPointBase().getPoint().getPointID());
+        
+        int pointType = pointBaseToCopy.getPoint().getPointTypeEnum().getPointTypeId();
+        
+        PointBase newPoint = null;
+        switch (pointType) {
+            case PointTypes.ANALOG_POINT:
+                newPoint = PointEdiorServiceHelper.populateAnalogPointToCopy(pointModel, pointBaseToCopy);
+                break;
+                
+            case PointTypes.STATUS_POINT:
+                newPoint = PointEdiorServiceHelper.populateBankStatusPtToCopy(pointModel, pointBaseToCopy);
+                break;
+                
+            case PointTypes.PULSE_ACCUMULATOR_POINT:
+                newPoint = PointEdiorServiceHelper.populatePulseAccumulatorPtToCopy(pointModel, pointBaseToCopy);
+                break;
+            
+            case PointTypes.DEMAND_ACCUMULATOR_POINT:
+                newPoint = PointEdiorServiceHelper.populatePulseAccumulatorPtToCopy(pointModel, pointBaseToCopy);
+                break;
+                
+            case PointTypes.CALCULATED_STATUS_POINT:
+                newPoint = PointEdiorServiceHelper.populateCalculatedStatusPoint(pointModel, pointBaseToCopy);
+                break;
+                
+            case PointTypes.CALCULATED_POINT:
+                newPoint = PointEdiorServiceHelper.populateCalculatedPoint(pointModel, pointBaseToCopy);
+                break;
+
+            default:
+                throw new Error("PointEditorServiceImpl::copy - Unrecognized point type");
+        }
+
+        // Insert the point into DB.
+        MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
+        dbPersistentVector.getDBPersistentVector().add(newPoint);
+        PointUtil.insertIntoDB(dbPersistentVector);
+        
+        //copy the StaleData
+        StaleData stateDataToCopy = getStaleData(pointModel.getPointBase().getPoint().getPointID());
+        StaleData newStaleData = PointEdiorServiceHelper.populateStaleDataObjectToCopy(stateDataToCopy);
+        saveStaleData(newPoint.getPoint().getPointID(), newStaleData);
+        
+        return newPoint.getPoint().getPointID();
     }
 
 }

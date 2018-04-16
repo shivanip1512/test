@@ -14,8 +14,22 @@
     <c:set var="viewMode" value="${false}" />
     <cti:displayForPageEditModes modes="VIEW">
         <c:set var="viewMode" value="${true}" />
+        
+        <!-- Actions button -->
+        <div id="page-actions" class="dn">
+            <cm:dropdownOption icon="icon-disk-multiple" key="yukon.web.components.button.copy.label" id="copy-option"
+                               data-popup="#copy-point-popup"/>
+        </div>
+        
+        <!-- Copy Point dialog -->
+        <cti:msg2 var="copyPointPopUpTitle" key="yukon.web.modules.tools.point.copyPoint.title"/>
+        <cti:url var="renderCopyPointUrl" value="/tools/points/${pointModel.pointBase.point.pointID}/render-copy-point"/>
+        <div class="dn" id="copy-point-popup" data-title="${copyPointPopUpTitle}"
+             data-url="${renderCopyPointUrl}"></div>
+             
     </cti:displayForPageEditModes>
-	<input type="hidden" class="js-page-mode" value="${mode}">
+    
+    <input type="hidden" class="js-page-mode" value="${mode}">
     <c:set var="nameValueClass" value="natural-width ${viewMode ? '' : 'with-form-controls' }" />
     
     <c:if test="${not empty pointModel}">

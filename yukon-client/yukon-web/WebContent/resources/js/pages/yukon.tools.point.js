@@ -526,6 +526,41 @@ yukon.tools.point = (function () {
                         enableValidDirections(data, row);
                 });
             });
+            
+            $(document).on('click', '#close-copy-point-popup', function() {
+                $("#copy-point-popup").dialog("close");
+            });
+            
+            $(document).on('click', '#copy-point-btn', function() {
+                yukon.ui.blockPage();
+                $('#copy-point-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        window.location.href=yukon.url('/tools/points/' + data.pointId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#copy-point-popup').html(xhr.responseText);
+                        yukon.ui.unblockPage();
+                    }
+                });
+            });
+            
+            $(document).on('click', '#copy-point-physicalOffset-toggle', function () {
+                if ($("#copy-point-physicalOffset-txt").hasClass('dn')) {
+                    $('#pointBase\\.point\\.pointOffset\\.errors').addClass('dn');
+                } else {
+                    $('#pointBase\\.point\\.pointOffset\\.errors').removeClass('dn');
+                }
+            });
+            
+            $(document).on('change', '#copy-point-paos', function () {
+                var pointType = $("#copy-point-pointType").val(),
+                    paoId = $("#copy-point-paos").val(),
+                    url = yukon.url('/tools/points/getNextAvaliablePointOffset');
+                    
+                $.getJSON(url, {paoId : paoId, pointType : pointType}, function (data) {
+                    $("#copy-point-physicalOffset-txt").val(data.nextValidPointOffset);
+                });
+            });
         }
     };
 
