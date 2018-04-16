@@ -4742,10 +4742,13 @@ bool processDmvScanData( IVVCStatePtr           state,
     {
         state->setCommsRetryCount( state->getCommsRetryCount() + 1 );
 
-        CTILOG_INFO( dout, "Incomplete Scan Data: DMV Test '" << testDataPtr.TestName
-                            << "' on bus: " << busName
-                            << ". Preparing scan retry "
-                            << state->getCommsRetryCount() << " of " << _IVVC_COMMS_RETRY_COUNT );
+        if ( state->getCommsRetryCount() <= _IVVC_COMMS_RETRY_COUNT )
+        {
+            CTILOG_INFO( dout, "Incomplete Scan Data: DMV Test '" << testDataPtr.TestName
+                                << "' on bus: " << busName
+                                << ". Preparing scan retry "
+                                << state->getCommsRetryCount() << " of " << _IVVC_COMMS_RETRY_COUNT );
+        }
 
         return state->getCommsRetryCount() <= _IVVC_COMMS_RETRY_COUNT;
     }
