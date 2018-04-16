@@ -17,7 +17,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import com.cannontech.amr.demandreset.service.DemandResetService;
-import com.cannontech.amr.demandreset.service.DemandResetVerificationCallback;
+import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 
 @Endpoint
 public class DemandResetRequestEndpoint {
-    private static class MyDemandResetCallback extends DemandResetVerificationCallback {
+    private static class MyDemandResetCallback implements DemandResetCallback {
         List<Element> errorElems = Collections.emptyList();
         @Override
         public void initiated(Results results) {

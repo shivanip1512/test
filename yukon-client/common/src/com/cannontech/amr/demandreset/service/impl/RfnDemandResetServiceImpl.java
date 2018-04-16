@@ -20,10 +20,9 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
-import com.cannontech.amr.demandreset.service.RfnDemandResetService;
+import com.cannontech.amr.demandreset.service.DemandResetStrategyService;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -33,6 +32,8 @@ import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReplyType;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
@@ -60,7 +61,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDataListener {
+public class RfnDemandResetServiceImpl implements DemandResetStrategyService, PointDataListener {
     private static final Logger log = YukonLogManager.getLogger(RfnDemandResetServiceImpl.class);
 
     private final static String configurationName = "RFN_METER_DEMAND_RESET";
@@ -155,7 +156,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         .synchronizedSet(new HashSet<DeviceVerificationInfo>());
 
     @Override
-    public void cancel(DemandResetResult result) {
+    public void cancel(CollectionActionResult result, LiteYukonUser user) {
         synchronized (devicesAwaitingVerification) {
             Iterator<DeviceVerificationInfo> infoIterator = devicesAwaitingVerification.iterator();
             while (infoIterator.hasNext()) {
@@ -166,18 +167,19 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                     //remove devices from the waiting list
                     infoIterator.remove();
                     //mark devices as canceled
-                    log.debug("Proccessing cancellations for RFN meters:" + verificationInfo.pointToDevice.values());
-                    verificationInfo.pointToDevice.values().forEach(
-                        device -> result.getDemandResetCallback().canceled(device));
+                    log.debug("Proccessing cancellations for RFN meters:" + verificationInfo.pointToDevice.values());             
                     //unregister devices
                     asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
                         verificationInfo.pointToDevice.keySet());
                     //complete execution
                     log.debug("RF Cancel Complete");
-                    result.getDemandResetCallback().complete(StrategyType.NM);
                 }
             }
         }
+        // doesn't support cancellation
+        result.getCancellationCallbacks(getStrategy()).forEach(callback -> {
+            callback.cancel();
+        });
     }
     
     private class TimeoutChecker implements Runnable {
@@ -296,7 +298,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
             new JmsReplyHandler<RfnMeterDemandResetReply>() {
                 @Override
                 public void complete() {
-                    callback.initiated(new Results(paos, errors));
+                    callback.initiated(new Results(paos, errors), getStrategy());
                 }
 
                 @Override
@@ -342,7 +344,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                 private void processError(SimpleDevice device, int errorCode) {
                     
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), errorCode);
-                errors.put(device, getError(errorCode));
+                errors.put(device, getError(DeviceError.getErrorByCode(errorCode)));
                     // check if this device needs to be verified
                     if (verifiableDevices.contains(device)) {
 
@@ -385,6 +387,10 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                 final Set<? extends YukonPao> paos, final DemandResetCallback callback,
                                 LiteYukonUser user) {
 
+        if(callback.getResult() != null) {
+            callback.getResult().addCancellationCallback(
+                new CollectionActionCancellationCallback(getStrategy(),  callback));
+        }
         sendDemandReset(sendExecution, paos, callback, user);
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(paos, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
@@ -437,7 +443,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                         log.debug("resetState: " + resetState);
                         if (resetTime.isAfter(verificationInfo.whenRequested)
                             && resetState == RfnDemandResetState.SUCCESS) {
-                            callback.verified(device, resetTime);
+                            callback.verified(device, pointData);
                             log.debug("Verified: " + device);
                         } else {
                             log.debug("Failed: " + device);
@@ -460,14 +466,15 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
     }
         
     private SpecificDeviceErrorDescription getError(DeviceError error) {
-       return getError(error.getCode());
-    }
-    
-    private SpecificDeviceErrorDescription getError(int errorCode) {
-        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorCode);
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(error.getCode());
         SpecificDeviceErrorDescription deviceErrorDescription =
-            new SpecificDeviceErrorDescription(errorDescription, null);
+            new SpecificDeviceErrorDescription(errorDescription, error.getDescriptionResolvable());
 
         return deviceErrorDescription;
+    }
+
+    @Override
+    public StrategyType getStrategy() {
+        return StrategyType.NM;
     }
 }

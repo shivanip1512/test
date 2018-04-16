@@ -2,6 +2,8 @@ package com.cannontech.common.bulk.collection.device.dao.impl;
 
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CONFIRMED;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
@@ -14,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter
 import com.cannontech.common.bulk.collection.device.model.CollectionActionProcess;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
@@ -335,16 +339,29 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         CollectionActionResult result = new CollectionActionResult(action, Lists.newArrayList(allDevices),
             loadInputs(key), exec, editorDao, tempGroupService, groupHelper, logService, null);
         
-        List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
         List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());
+        List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
         //failure bucket
         result.addDevicesToGroup(FAILURE, failed, null);
         //unsupported buckets
         unsupported.forEach((k, v) -> result.addDevicesToGroup(action.getDetail(k), new ArrayList<>(v), null));
-        //success bucket
         if (action == CollectionAction.DEMAND_RESET) {
-            throw new RuntimeException("Not implemented");
+            List<CommandRequestExecution> execs = commandRequestExecutionDao.getCresByContextId(exec.getContextId());
+            Optional<CommandRequestExecution> optional = execs.stream().filter(
+                e -> e.getCommandRequestExecutionType() == DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY).findFirst();
+            if (optional.isPresent()) {
+                CommandRequestExecution verifExec = optional.get();
+                List<PaoIdentifier> verified = crerDao.getSucessDeviceIdsByExecutionId(verifExec.getId());
+                //verified confirmed bucket
+                result.addDevicesToGroup(CONFIRMED, verified, null);
+                succeeded.removeAll(verified);
+                
+                List<PaoIdentifier> verifFailed = crerDao.getFailDeviceIdsByExecutionId(verifExec.getId());
+                result.addDevicesToGroup(FAILURE, verifFailed, null);
+            }
+            result.addDevicesToGroup(UNCONFIRMED, succeeded, null);
         } else {
+            //success bucket
             result.addDevicesToGroup(CollectionActionDetail.getSuccessDetail(action), succeeded, null);
         }
         return result;

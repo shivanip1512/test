@@ -166,11 +166,8 @@
     <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
-    
-    <bean id="demandResetBackingService" class="com.cannontech.web.updater.demandreset.DemandResetBackingService"/>
-    
+  
     <bean id="dataStreamingBackingService" class="com.cannontech.web.updater.dataStreaming.DataStreamingBackingService"/>
-    
     
     <bean class="com.cannontech.web.dr.ecobee.service.impl.DataDownloadServiceImpl"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
@@ -306,9 +303,6 @@
                 </entry>
                 <entry key="ECOBEE_READ">
                     <ref bean="ecobeeReadBackingService"/>
-                </entry>
-                <entry key="DEMAND_RESET">
-                    <ref bean="demandResetBackingService"/>
                 </entry>
                 <entry key="DATA_STREAMING">
                     <ref bean="dataStreamingBackingService"/>

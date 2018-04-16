@@ -10,13 +10,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 
-import com.cannontech.amr.demandreset.service.DemandResetVerificationCallback;
+import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfEndDeviceEventList;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.ObjectRef;
@@ -44,7 +45,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
-public class MRServerDemandResetCallback extends DemandResetVerificationCallback {
+public class MRServerDemandResetCallback implements DemandResetCallback {
     private final static Logger log = YukonLogManager.getLogger(MRServerDemandResetCallback.class);
     private final ObjectFactory objectFactory = YukonSpringHook.getBean("notObjectFactory", ObjectFactory.class);
     private final NOTClient notClient = YukonSpringHook.getBean("notClientV5", NOTClient.class);
@@ -90,7 +91,7 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
     }
 
     @Override
-    public void verified(SimpleDevice device, Instant pointDataTimeStamp) {
+    public void verified(SimpleDevice device, PointValueHolder pointValue) {
         log.debug("device " + device + " passed verification");
         String meterNumber = meterNumbersByPaoId.get(device.getPaoIdentifier());
         

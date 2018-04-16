@@ -339,9 +339,9 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
 
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
-        CollectionActionCancellationCallback callback = result.getCancellationCallback(getStrategy());
-        if (callback != null) {
+        //doesn't support cancellations
+        result.getCancellationCallbacks(getStrategy()).forEach(callback -> {
             callback.cancel();
-        }
+        });
     }
 }

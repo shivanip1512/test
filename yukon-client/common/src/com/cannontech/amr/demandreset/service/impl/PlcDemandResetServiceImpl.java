@@ -1,11 +1,11 @@
 package com.cannontech.amr.demandreset.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -15,15 +15,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
-import com.cannontech.amr.demandreset.service.PlcDemandResetService;
+import com.cannontech.amr.demandreset.service.DemandResetStrategyService;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigInteger;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -40,15 +42,11 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.base.Function;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class PlcDemandResetServiceImpl implements PlcDemandResetService {
+public class PlcDemandResetServiceImpl implements DemandResetStrategyService {
     private final static Logger log = YukonLogManager.getLogger(PlcDemandResetServiceImpl.class);
-    private final int minutesToWait;
 
     private final static String DEMAND_RESET_COMMAND = "putvalue ied reset";
     private final static String LAST_RESET_TIME_COMMAND = "getconfig ied time";
@@ -58,11 +56,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    
-    @Autowired
-    public  PlcDemandResetServiceImpl(ConfigurationSource configurationSource) {
-        minutesToWait = configurationSource.getInteger(MasterConfigInteger.PLC_ACTIONS_CANCEL_TIMEOUT, 10);
-    }
+    @Autowired private CollectionActionService collectionActionService;
 
     @Override
     public <T extends YukonPao> Set<T> filterDevices(Set<T> devices) {
@@ -70,56 +64,48 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     }
 
     @Override
-    public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos){
+    public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos) {
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(paos, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
         return Sets.newHashSet(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet()));
     }
-    
+
     @Override
-    public CommandCompletionCallback<CommandRequestDevice> sendDemandReset(CommandRequestExecution initiatedExecution,
-                                                                           final Set<? extends YukonPao> paos,
-                                                                           DemandResetCallback callback,
-                                                                           final LiteYukonUser user) {
+    public void sendDemandReset(CommandRequestExecution initiatedExecution, final Set<? extends YukonPao> paos,
+            DemandResetCallback callback, final LiteYukonUser user) {
 
         // send demand reset command
         Set<SimpleDevice> devices = new HashSet<>(PaoUtils.asSimpleDeviceListFromPaos(paos));
         List<CommandRequestDevice> initiatedCommands = getCommandRequests(devices, DEMAND_RESET_COMMAND);
         InitiatedCallback initiatedCallback = new InitiatedCallback(callback, paos);
+        if(callback.getResult() != null) {
+            callback.getResult().addCancellationCallback(new CollectionActionCancellationCallback(StrategyType.PORTER, null, initiatedCallback));
+        }
         commandExecutionService.execute(initiatedCommands, initiatedCallback, initiatedExecution, false, user);
-        return initiatedCallback;
     }
-    
+
     @Override
-    public Set<CommandCompletionCallback<CommandRequestDevice>> sendDemandResetAndVerify(CommandRequestExecution initiatedExecution,
-                                                                                         CommandRequestExecution verificationExecution,
-                                                                                         final Set<? extends YukonPao> paos,
-                                                                                         final DemandResetCallback callback,
-                                                                                         final LiteYukonUser user) {
+    public void sendDemandResetAndVerify(CommandRequestExecution initiatedExecution,
+            CommandRequestExecution verificationExecution, Set<? extends YukonPao> paos, DemandResetCallback callback,
+            LiteYukonUser user) {
 
         // Use midnight in the local (server) time. This assumes the meters use the same
         // timezone as the server. (The reset time for a 470 is always at midnight of the previous
         // night (morning) of the reset.)
-        final DateTime whenRequested = new DateTime().withTimeAtStartOfDay();
-
-        // Callbacks returned from this method are needed for cancellation
-        Set<CommandCompletionCallback<CommandRequestDevice>> callbacks =
-            new HashSet<>();
+        DateTime whenRequested = new DateTime().withTimeAtStartOfDay();
 
         Set<SimpleDevice> devices = new HashSet<>(PaoUtils.asSimpleDeviceListFromPaos(paos));
 
-        CommandCompletionCallback<CommandRequestDevice> initiatedCallback =
-            sendDemandReset(initiatedExecution, paos, callback, user);
-        callbacks.add(initiatedCallback);
+        sendDemandReset(initiatedExecution, paos, callback, user);
 
         // Only devices that support the IED_DEMAND_RESET_COUNT attribute are able to be verified.
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(devices, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
 
         Set<SimpleDevice> deviceToPointKeySet = Sets.newHashSet(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet()));
-        
+
         Set<SimpleDevice> devicesWithoutPoint = Sets.difference(devices, deviceToPointKeySet);
-        callbacks.add(initiatedCallback);
+
         if (!devicesWithoutPoint.isEmpty()) {
             log.error("Can't Verify:" + devicesWithoutPoint + " \"IED Demand Reset Count\" point is missing.");
         }
@@ -133,14 +119,16 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                 getCommandRequests(deviceToPointKeySet, LAST_RESET_TIME_COMMAND);
             VerificationCallback verificationCallback =
                 new VerificationCallback(callback, deviceToPoint, whenRequested);
+            if(callback.getResult() != null) {
+                callback.getResult().addCancellationCallback(new CollectionActionCancellationCallback(StrategyType.PORTER, null, verificationCallback));
+            }
             commandExecutionService.execute(verificationCommands, verificationCallback, verificationExecution, false,
                 user);
         }
-        return callbacks;
     }
-      
+
     private class InitiatedCallback extends CommandCompletionCallback<CommandRequestDevice> {
-        
+
         private final DemandResetCallback callback;
         Set<? extends YukonPao> paos;
 
@@ -153,21 +141,19 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         public void complete() {
             // Sending a demand reset command to PLC devices is a one way command, we will not get
             // any responses other then complete
-            Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new HashMap<>();
-            callback.initiated(new Results(paos, errors));
+            callback.initiated(new Results(paos, new HashMap<>()), getStrategy());
         }
 
         @Override
         public void processingExceptionOccured(String reason) {
-            log.debug("PLC exception (InitiatedCallback)");
-            log.debug("Reason:" + reason);
+            log.debug("PLC exception (InitiatedCallback)" + " Reason:" + reason);
             callback.processingExceptionOccured(reason);
-        } 
+        }
     }
 
     private class VerificationCallback extends CommandCompletionCallback<CommandRequestDevice> {
 
-        private final DemandResetCallback callback;
+        private DemandResetCallback callback;
         Set<SimpleDevice> meters = new HashSet<>();
         DateTime whenRequested;
         BiMap<PaoIdentifier, LitePoint> deviceToPoint;
@@ -182,42 +168,23 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
 
         @Override
         public void complete() {
-            log.debug("PLC Complete (VerificationCallback)");
-
-            log.debug("PLC Canceled:" + callback.isCanceled());
-
-            if (!callback.isCanceled()) {
-                log.debug("PLC Completed");
-                callback.complete(StrategyType.PORTER);
-            } else {
-                log.debug("PLC Waiting for " + minutesToWait + " minutes before completing");
-            }
+            callback.complete(getStrategy());
         }
+
 
         @Override
         public void cancel() {
-            log.debug("PLC Cancel (VerificationCallback)");
-
-            log.debug("Wait " + minutesToWait + " minutes before proccessing cancelations.");
-
-            Runnable cancelationRunner = new Runnable() {
-                @Override
-                public void run() {
-
-                    log.debug("Proccessing cancelations for PLC meters:" + meters);
-                    for (SimpleDevice meter : meters) {
-                        callback.canceled(meter);
-                    }
-                    log.debug("PLC Cancel Complete (VerificationCallback)");
-                    callback.complete(StrategyType.PORTER);
-                }
-            };
-            refreshTimer.schedule(cancelationRunner, minutesToWait, TimeUnit.MINUTES);
+            if (callback.getResult() != null && callback.getResult().getVerificationExecution() != null) {
+                collectionActionService.addUnsupportedToResult(CollectionActionDetail.CANCELED, callback.getResult(),
+                    callback.getResult().getVerificationExecution().getId(), new ArrayList<>(meters));
+            }
+            complete();
         }
 
         @Override
         public void processingExceptionOccured(String reason) {
-            log.debug("PLC exception (VerificationCallback):" + reason);
+            log.debug("PLC exception (VerificationCallback)");
+            log.debug("Reason:" + reason);
             callback.processingExceptionOccured(reason);
         }
 
@@ -241,7 +208,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                         callback.cannotVerify(device, getError(DeviceError.TIMESTAMP_OUT_OF_RANGE));
                     } else {
                         log.debug("Verified:" + device);
-                        callback.verified(device, resetTime);
+                        callback.verified(device, value);
                     }
                 }
                 meters.remove(command.getDevice());
@@ -257,34 +224,27 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     }
 
     @Override
-    public void cancel(Set<CommandCompletionCallback<CommandRequestDevice>> toCancel, LiteYukonUser user) {
-        for (CommandCompletionCallback<CommandRequestDevice> callback : toCancel) {
-            commandExecutionService.cancelExecution(callback, user, false);
-        }
+    public void cancel(CollectionActionResult result, LiteYukonUser user) {
+        result.getCancellationCallbacks(getStrategy()).forEach(callback -> {
+            commandExecutionService.cancelExecution(callback.getCommandCompletionCallback(), user, false);
+        });
     }
-    
-    private List<CommandRequestDevice> getCommandRequests(Set<SimpleDevice> devices, final String command) {
-        Function<SimpleDevice, CommandRequestDevice> toCommandRequestDevice =
-            new Function<SimpleDevice, CommandRequestDevice>() {
-                @Override
-                public CommandRequestDevice apply(SimpleDevice meter) {
-                    return new CommandRequestDevice(meter);
-                }
-            };
-            
-        List<CommandRequestDevice> commands =
-            Lists.newArrayList(Iterables.transform(devices, toCommandRequestDevice));
-        for (CommandRequestDevice c : commands) {
-            log.debug("PLC send " + c);
-        }
-        return commands;
+
+    private List<CommandRequestDevice> getCommandRequests(Set<SimpleDevice> devices, String command) {
+        return devices.stream().map(d -> new CommandRequestDevice(command, d)).collect(Collectors.toList());
     }
-    
+
     private SpecificDeviceErrorDescription getError(DeviceError error) {
+
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(error);
         SpecificDeviceErrorDescription deviceErrorDescription =
-            new SpecificDeviceErrorDescription(errorDescription, null);
+            new SpecificDeviceErrorDescription(errorDescription, error.getDescriptionResolvable());
 
         return deviceErrorDescription;
+    }
+
+    @Override
+    public StrategyType getStrategy() {
+        return StrategyType.PORTER;
     }
 }

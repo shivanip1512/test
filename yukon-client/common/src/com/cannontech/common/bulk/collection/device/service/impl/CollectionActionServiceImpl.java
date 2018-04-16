@@ -109,6 +109,8 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         CommandRequestExecution execution = result.getExecution();
         Date stopTime = status == CommandRequestExecutionStatus.CANCELING ? null : new Date();
         if (execution != null && execution.getCommandRequestExecutionStatus() != CommandRequestExecutionStatus.FAILED) {
+            log.debug("Cache key:" + result.getCacheKey() + " Completing execution:" + execution.getId() + " status="
+                + status + " for " + execution.getCommandRequestExecutionType());
             execution.setStopTime(stopTime);
             execution.setCommandRequestExecutionStatus(status);
             executionDao.saveOrUpdate(execution);
@@ -158,11 +160,17 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> devices) {
-        if(!devices.isEmpty()) {
+        addUnsupportedToResult(detail, result, result.getExecution().getId(), devices);
+    }
+
+    @Override
+    public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, int execId,
+            List<? extends YukonPao> devices) {
+        if (!devices.isEmpty()) {
             log.debug("Adding unsupported devices:" + devices.size() + " detail:" + detail + " cacheKey:"
                 + result.getCacheKey());
             result.addDevicesToGroup(detail, devices, logService.buildLogDetails(devices, detail));
-            commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(devices), result.getExecution().getId(),
+            commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(devices), execId,
                 detail.getCreUnsupportedType());
         }
     }

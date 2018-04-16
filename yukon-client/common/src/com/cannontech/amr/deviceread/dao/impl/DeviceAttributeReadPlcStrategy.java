@@ -124,9 +124,8 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
 
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
-        CollectionActionCancellationCallback callback = result.getCancellationCallback(getStrategy());
-        if (callback != null) {
+        result.getCancellationCallbacks(getStrategy()).forEach(callback ->{
             commandExecutionService.cancelExecution(callback.getCommandCompletionCallback(), user, false);
-        }
+        });
     }
 }

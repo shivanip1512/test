@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -227,8 +228,8 @@ public class CollectionActionResult {
         this.startTime = startTime;
     }
 
-    public CollectionActionCancellationCallback getCancellationCallback(StrategyType type) {
-        return cancelationCallbacks.stream().filter(c -> c.getStrategy() == type).findFirst().orElse(null);
+    public List<CollectionActionCancellationCallback> getCancellationCallbacks(StrategyType type) {
+        return cancelationCallbacks.stream().filter(c -> c.getStrategy() == type).collect(Collectors.toList());
     }
 
     public void addCancellationCallback(CollectionActionCancellationCallback cancelationCallback) {
@@ -292,13 +293,16 @@ public class CollectionActionResult {
             DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
             df.withZone(DateTimeZone.getDefault());
             logger.debug("Key=" + getCacheKey() + " Status=" + getStatus());
-            logger.debug("Cached=" + isCached());
+            logger.debug("<<<Cached=" + isCached()+">>>");
             logger.debug("Start Time:" + startTime.toString(df));
             logger.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
             if (execution != null) {
                 logger.debug("creId:" + execution.getId() + " Execution Type:" + execution.getCommandRequestExecutionType());
             }
-            logger.debug(stopTime == null ? "" : "Stop Time:" + stopTime.toString(df));
+            if (verificationExecution != null) {
+                logger.debug("verifCreId:" + verificationExecution.getId() + " Execution Type:"
+                    + verificationExecution.getCommandRequestExecutionType());
+            }
             logger.debug("---Inputs---");
             logger.debug("Action:" + getAction());
             if (getInputs().getInputs() != null) {

@@ -165,11 +165,6 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                     if (StringUtils.isNotEmpty(detail.getLastValue())) {
                         value = detail.getLastValue().replaceAll("/", "");
                         value = value.replaceAll("\n", "");
-                        /*
-                         * "MCT-410iL 1000026
-                         * Config data received: 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                         */
-                        /* BUG */
                     }
                     fields.add(value);
                 }

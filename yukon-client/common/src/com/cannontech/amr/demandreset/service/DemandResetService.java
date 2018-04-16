@@ -2,7 +2,7 @@ package com.cannontech.amr.demandreset.service;
 
 import java.util.Set;
 
-import com.cannontech.amr.demandreset.model.DemandResetResult;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SimpleCallback;
@@ -16,26 +16,6 @@ public interface DemandResetService {
     <T extends YukonPao> Set<T> filterDevices(Set<T> devices);
 
     /**
-     * Returns result for the key provided.
-     */
-    DemandResetResult getResult(String key);
-    
-    /**
-     * Returns the list of completed and pending results ordered by newest first
-     */
-    Iterable<DemandResetResult> getResults();
-
-    /**
-     * Sends demand reset to the specified list of devices.
-     */
-
-    
-    /**
-     * Attempts to cancel the command sent. 
-     */
-    void cancel(String key, LiteYukonUser user);
-    
-    /**
      * Sends and verifies demand reset.
      */
     void sendDemandResetAndVerify(Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user);
@@ -48,6 +28,6 @@ public interface DemandResetService {
     /**
      * Sends and verifies demand reset.
      */
-    DemandResetResult sendDemandResetAndVerify(DeviceCollection deviceCollection,
-                                      SimpleCallback<DemandResetResult> alertCallback, YukonUserContext userContext);    
+    int sendDemandResetAndVerify(DeviceCollection deviceCollection,
+                                      SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext userContext);    
 }

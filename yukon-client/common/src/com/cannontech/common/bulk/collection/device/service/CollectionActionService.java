@@ -69,4 +69,10 @@ public interface CollectionActionService {
      */
     void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> unsupportedDevices);
+
+    /**
+     * Adds unsupported devices to the list.
+     */
+    void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, int execId,
+            List<? extends YukonPao> devices);
 }

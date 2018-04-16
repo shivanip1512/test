@@ -55,6 +55,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // BY CONTEXTID
+    @Override
     public List<CommandRequestExecution> getCresByContextId(int commandRequestExecutionContextId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE");
@@ -166,21 +167,25 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     
     @PostConstruct
     public void init() throws Exception {
-        template = new SimpleTableAccessTemplate<CommandRequestExecution>(yukonJdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CommandRequestExec");
         template.setPrimaryKeyField("CommandRequestExecId");
         template.setFieldMapper(rowAndFieldMapper);
     }
     
     @Override
-    public CommandRequestExecution createStartedExecution(CommandRequestType commandType,
-                                                          DeviceRequestType deviceType,
-                                                          int requestCount,
-                                                          LiteYukonUser user) {
+    public CommandRequestExecution createStartedExecution(CommandRequestType commandType, DeviceRequestType deviceType,
+            int requestCount, LiteYukonUser user) {
         CommandRequestExecutionContextId contextId =
             new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
+        return createStartedExecution(commandType, deviceType, contextId.getId(), requestCount, user);
+    }
+
+    @Override
+    public CommandRequestExecution createStartedExecution(CommandRequestType commandType, DeviceRequestType deviceType,
+            int contextId, int requestCount, LiteYukonUser user) {
         CommandRequestExecution execution = new CommandRequestExecution();
-        execution.setContextId(contextId.getId());
+        execution.setContextId(contextId);
         execution.setStartTime(new Date());
         execution.setRequestCount(requestCount);
         execution.setCommandRequestExecutionType(deviceType);

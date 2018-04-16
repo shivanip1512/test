@@ -835,13 +835,7 @@
     <!-- Demand Reset -->
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
-    
-    <entry key="yukon.web.modules.tools.bulk.demandReset.CONFIRMED">Confirmed Reset</entry>
-    <entry key="yukon.web.modules.tools.bulk.demandReset.UNCONFIRMED">Unconfirmed Reset</entry>
-    <entry key="yukon.web.modules.tools.bulk.demandReset.UNSUPPORTED">Unsupported</entry>
-    <entry key="yukon.web.modules.tools.bulk.demandReset.FAILED">Failed</entry>
-    <entry key="yukon.web.modules.tools.bulk.demandReset.CANCELED">Canceled</entry>
-    
+
     <!-- /bulk/demand/reset/resultDetail.jsp -->
     <entry key="yukon.web.modules.tools.bulk.demandReset.results.pageName">Demand Reset</entry> 
     <entry key="yukon.web.modules.tools.bulk.demandReset.results.note.label">Note:</entry>

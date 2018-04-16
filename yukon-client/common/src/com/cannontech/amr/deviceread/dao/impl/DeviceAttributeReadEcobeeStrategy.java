@@ -141,9 +141,8 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
         // doesn't support cancellation
-        CollectionActionCancellationCallback callback = result.getCancellationCallback(getStrategy());
-        if (callback != null) {
+        result.getCancellationCallbacks(getStrategy()).forEach(callback -> {
             callback.cancel();
-        }
+        });
     }
 }

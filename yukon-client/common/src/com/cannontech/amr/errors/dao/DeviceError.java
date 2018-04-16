@@ -142,12 +142,6 @@ public enum DeviceError {
     private final int code;
     private final DeviceErrorCategory category;
 
-    private final MessageSourceResolvable porterResolvable = new YukonMessageSourceResolvable(BASE_KEY + getCode() + ".porter");
-    private final MessageSourceResolvable descriptionResolvable = new YukonMessageSourceResolvable(BASE_KEY + getCode()
-        + ".description");
-    private final MessageSourceResolvable troubleshootingResolvable = new YukonMessageSourceResolvable(BASE_KEY + getCode()
-        + ".troubleshooting");
-    
     public DeviceErrorCategory getCategory() {
         return category;
     }
@@ -165,15 +159,15 @@ public enum DeviceError {
     }
     
     public MessageSourceResolvable getPorterResolvable() {
-        return porterResolvable;
+        return new YukonMessageSourceResolvable(BASE_KEY + getCode() + ".porter");
     }
     
     public MessageSourceResolvable getDescriptionResolvable() {
-        return descriptionResolvable;
+        return new YukonMessageSourceResolvable(BASE_KEY + getCode() + ".description");
     }
     
     public MessageSourceResolvable getTroubleshootingResolvable() {
-        return troubleshootingResolvable;
+        return new YukonMessageSourceResolvable(BASE_KEY + getCode() + ".troubleshooting");
     }
     
     public static Map<Integer, DeviceError> getErrorsMap() {

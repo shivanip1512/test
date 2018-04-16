@@ -627,8 +627,9 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
         if (result != null) {
             result.setCanceled(true);
             collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
-            CollectionActionCancellationCallback callback = result.getCancellationCallback(StrategyType.PORTER);
-            cancelExecution(callback.getCommandCompletionCallback(), user, false);
+            result.getCancellationCallbacks(StrategyType.PORTER).forEach(callback ->{
+                cancelExecution(callback.getCommandCompletionCallback(), user, false);
+            });
         }
     }
 }

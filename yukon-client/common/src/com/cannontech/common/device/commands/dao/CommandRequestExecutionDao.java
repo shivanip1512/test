@@ -28,9 +28,16 @@ public interface CommandRequestExecutionDao {
 	 */
     CommandRequestExecution createStartedExecution(CommandRequestType commandType, DeviceRequestType deviceType,
                                                    int requestCount, LiteYukonUser user);
+    /**
+     * Creates an execution with execution status of started.
+     */
+    CommandRequestExecution createStartedExecution(CommandRequestType commandType, DeviceRequestType deviceType,
+            int contextId, int requestCount, LiteYukonUser user);
 
     int getByRangeCount(int jobId, Instant from, Instant to, DeviceRequestType type);
 
     List<CommandRequestExecution> findByRange(PagingParameters paging, int jobId, Instant from, Instant to,
                                               DeviceRequestType type);
+
+    List<CommandRequestExecution> getCresByContextId(int commandRequestExecutionContextId);
 }

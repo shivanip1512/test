@@ -105,9 +105,7 @@
     <bean class="com.cannontech.amr.deviceread.dao.CommandHelper"/>
 
     <bean class="com.cannontech.amr.demandreset.service.impl.PlcDemandResetServiceImpl"/>
-    <bean class="com.cannontech.amr.demandreset.service.impl.DemandResetPlcStrategy"/>
     <bean class="com.cannontech.amr.demandreset.service.impl.RfnDemandResetServiceImpl"/>
-    <bean class="com.cannontech.amr.demandreset.service.impl.DemandResetRfnStrategy"/>
     <bean class="com.cannontech.amr.demandreset.service.impl.DemandResetServiceImpl"/>
     
     <!-- RFN Meter Disconnect Service -->
