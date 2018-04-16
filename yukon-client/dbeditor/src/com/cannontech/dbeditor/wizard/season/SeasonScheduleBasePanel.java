@@ -5,7 +5,9 @@ import java.util.Map;
 
 import javax.swing.JDialog;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.db.season.DateOfSeason;
 
 /**
@@ -25,6 +27,7 @@ public class SeasonScheduleBasePanel extends com.cannontech.common.gui.util.Data
 	
 	private final String SEASON_SPLIT_FIRST_HALF = "&1&";
 	private final String SEASON_SPLIT_SECOND_HALF = "&2&";  
+	private SeasonSchedule sSched = null;
 
 /**
  * Constructor
@@ -458,7 +461,6 @@ private javax.swing.JTextField getJTextFieldSeasonScName() {
  */
 public Object getValue(Object val) 
 {
-	com.cannontech.database.data.season.SeasonSchedule sSched = null;
 	if( val != null )
 		sSched = (com.cannontech.database.data.season.SeasonSchedule)val;
 	else
@@ -623,8 +625,23 @@ public boolean isInputValid()
             return false;
         }
     }
-	return true;
 
+    if (sSched != null) {
+        Integer scheduleid = sSched.getScheduleID();
+        if (scheduleid != null) {
+            try {
+                 boolean isSeasonAssigned = SeasonSchedule.isSeasonAssignedToStrategy(scheduleid);
+                 if (isSeasonAssigned) {
+                    setErrorString("Season cannot be modified. Season is currently assigned to a Cap Control Strategy");
+                    return false;
+                 }
+            } catch (java.sql.SQLException e) {
+                CTILogger.error(e.getMessage(), e);
+                return false;
+              }
+        }
+    }
+    return true;
 }
 /**
  * Comment
@@ -805,7 +822,6 @@ public void mouseReleased(java.awt.event.MouseEvent e) {
  */
 public void setValue(Object val) 
 {
-	com.cannontech.database.data.season.SeasonSchedule sSched = null;
 	DateOfSeason firstHalf = null;
 	DateOfSeason secondHalf = null;
 	

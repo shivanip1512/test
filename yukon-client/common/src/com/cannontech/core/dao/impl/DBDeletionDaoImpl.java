@@ -281,6 +281,11 @@ public class DBDeletionDaoImpl implements DBDeletionDao
             dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a MAC Schedule.") );
             return DBDeletionDao.STATUS_DISALLOW;
         }
+
+        if( SeasonSchedule.isSeasonAssignedToStrategy(dbRes.getItemID())) {
+            dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a Cap Control Strategy.") );
+            return DBDeletionDao.STATUS_DISALLOW;
+        }
 	
 		//this object is deleteable
 		return STATUS_ALLOW;

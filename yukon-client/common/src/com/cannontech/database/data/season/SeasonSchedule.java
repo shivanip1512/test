@@ -1,5 +1,11 @@
 package com.cannontech.database.data.season;
 
+import java.util.Vector;
+
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -13,7 +19,7 @@ public class SeasonSchedule extends com.cannontech.database.db.DBPersistent impl
 	private com.cannontech.database.db.season.SeasonSchedule seasonSchedule = null;
 
 	//objects of type com.cannontech.database.db.season.DateOfSeason will only go in here
-	private java.util.Vector dateOfSeasonVector = null;
+	private Vector dateOfSeasonVector = null;
 /**
  * SeasonSchedule constructor comment.
  */
@@ -178,6 +184,23 @@ public String toString()
 {
 	return getScheduleName();
 }
+/**
+ * This method checks whether the Season is assigned to Cap Control Strategy or not. Returns true if exists else false.
+ */
+public final static boolean isSeasonAssignedToStrategy(int seasonScheduleID) throws java.sql.SQLException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM CCSEASONSTRATEGYASSIGNMENT");
+        sql.append("WHERE SeasonScheduleId").eq("?");
+        sql.append(  "AND SeasonName IN (");
+        sql.append(    "SELECT SeasonName");
+        sql.append(    "FROM DateOfSeason");
+        sql.append(    "WHERE SeasonScheduleId").eq("?");
+        sql.append(  ");");
+        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
+        int count = template.queryForObject(sql.getSql(), Integer.class, seasonScheduleID, seasonScheduleID);
+        return count > 0;
+    }
 /**
  * Insert the method's description here.
  * Creation date: (6/22/2004 10:35:21 AM))
