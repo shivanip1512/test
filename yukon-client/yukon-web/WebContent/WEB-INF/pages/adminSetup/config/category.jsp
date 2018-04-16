@@ -18,7 +18,7 @@
         <div class="clearfix box">
             <div class="category fl">
                 <cti:url value="edit" var="category_url"><cti:param name="category" value="${category}"/></cti:url>
-                <a href="${category_url}" class="icon icon-32 fl ${category_icon}"></a>
+                <cti:button renderMode="appButton" icon="icon-32 ${category_icon}" href="${category_url}"/>
                 <div class="box fl meta">
                     <div><a class="title" href="javascript:void(0);"><i:inline key="yukon.common.setting.subcategory.${category}"/></a></div>
                     <div class="detail"><i:inline key="yukon.common.setting.subcategory.${category}.description"/></div>

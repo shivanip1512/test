@@ -34,7 +34,7 @@
                         <c:if test="${displaySubcategory}">
                              <div class="category">
                                 <cti:url value="edit" var="category_url"><cti:param name="category" value="${subcategory.first}"/></cti:url>
-                                <a href="${category_url}" class="icon icon-32 fl ${subcategory.second}"></a>
+                                <cti:button renderMode="appButton" icon="icon-32 ${subcategory.second}" href="${category_url}"/>
                                 <div class="box fl meta">
                                     <div><a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a></div>
                                     <div class="detail"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}.description"/></div>

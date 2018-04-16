@@ -12,13 +12,13 @@
     <div class="clearfix box">
         <div class="category fl">
             <cti:url var="viewUrl" value="/admin/config/security/view"/>
-            <a href="${viewUrl}" class="icon icon-32 fl icon-32-key"></a>
+            <cti:button renderMode="appButton" icon="icon-app icon-app-32-key" href="${viewUrl}"/>
             <div class="box fl meta">
                 <div><a class="title" href="${viewUrl}"><i:inline key="yukon.common.setting.subcategory.SECURITY"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.SECURITY.description"/></div>
             </div>
         </div>
-    </div>
+    </div><br/>
 	
 	<div id="honeywellPublicKeyStatus" class="dn">
 		<tags:alertBox key='.honeywellPublicKey.notCreated'/>

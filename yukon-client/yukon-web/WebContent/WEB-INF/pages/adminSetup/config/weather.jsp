@@ -13,7 +13,7 @@
 <div class="box clear dashboard">
     <div class="clearfix box">
         <div class="category fl">
-            <a href="weather" class="icon icon-32 fl icon-32-cloud2"></a>
+            <cti:button renderMode="appButton" icon="icon-app icon-app-32-weather" href="weather"/>
             <div class="box fl meta">
                 <div><a class="title" href="<cti:url value="/admin/config/weather"/>">
                     <i:inline key="yukon.common.setting.subcategory.WEATHER"/>

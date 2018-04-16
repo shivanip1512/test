@@ -73,21 +73,21 @@ public class YukonConfigurationController {
         
         Builder<GlobalSettingSubCategory, String> b = ImmutableMap.builder();
         b.put(GlobalSettingSubCategory.AMI, "icon-32-meter1");
-        b.put(GlobalSettingSubCategory.AUTHENTICATION, "icon-32-lock");
-        b.put(GlobalSettingSubCategory.DR, "icon-32-lightbulb");
-        b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-32-gear");
-        b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-32-world");
-        b.put(GlobalSettingSubCategory.DATA_EXPORT, "icon-32-list");
-        b.put(GlobalSettingSubCategory.GRAPHING, "icon-32-stats-lines");
+        b.put(GlobalSettingSubCategory.AUTHENTICATION, "icon-app icon-app-32-lock");
+        b.put(GlobalSettingSubCategory.DR, "icon-app icon-app-32-lightbulb");
+        b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-app icon-app-32-widgets");
+        b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-app icon-app-32-world");
+        b.put(GlobalSettingSubCategory.DATA_EXPORT, "icon-app icon-app-32-list");
+        b.put(GlobalSettingSubCategory.GRAPHING, "icon-app icon-app-32-chart-line");
         b.put(GlobalSettingSubCategory.MULTISPEAK, "icon-32-multispeak");
-        b.put(GlobalSettingSubCategory.VOICE, "icon-32-phone");
+        b.put(GlobalSettingSubCategory.VOICE, "icon-app icon-app-32-phone");
         b.put(GlobalSettingSubCategory.OPEN_ADR, "icon-32-openadr");
-        b.put(GlobalSettingSubCategory.MISC, "icon-32-folder");
-        b.put(GlobalSettingSubCategory.THEMES, "icon-32-brush");
-        b.put(GlobalSettingSubCategory.WEATHER, "icon-32-cloud2");
-        b.put(GlobalSettingSubCategory.SECURITY, "icon-32-key");
-        b.put(GlobalSettingSubCategory.DASHBOARD_ADMIN, "icon-32-home");
-        b.put(GlobalSettingSubCategory.DASHBOARD_WIDGET, "icon-32-window");
+        b.put(GlobalSettingSubCategory.MISC, "icon-app icon-app-32-folder-blue");
+        b.put(GlobalSettingSubCategory.THEMES, "icon-app icon-app-32-paintbrush");
+        b.put(GlobalSettingSubCategory.WEATHER, "icon-app icon-app-32-weather");
+        b.put(GlobalSettingSubCategory.SECURITY, "icon-app icon-app-32-key");
+        b.put(GlobalSettingSubCategory.DASHBOARD_ADMIN, "icon-app icon-app-32-home");
+        b.put(GlobalSettingSubCategory.DASHBOARD_WIDGET, "icon-app icon-app-32-application-windows");
         iconMap = b.build();
     }
     

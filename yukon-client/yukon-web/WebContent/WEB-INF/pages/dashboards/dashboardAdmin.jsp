@@ -12,7 +12,7 @@
     <div class="clearfix box">
         <div class="category fl">
             <cti:url var="viewUrl" value="/dashboards/admin"/>
-            <a href="${viewUrl}" class="icon icon-32 fl icon-32-home"></a>
+            <cti:button renderMode="appButton" icon="icon-app icon-app-32-home" href="${viewUrl}"/>
             <div class="box fl meta">
                 <div><a class="title" href="${viewUrl}"><i:inline key="yukon.common.setting.subcategory.DASHBOARD_ADMIN"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.DASHBOARD_ADMIN.description"/></div>
