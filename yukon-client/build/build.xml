@@ -157,13 +157,6 @@
         </antcall>
     </target>
 
-    <target name="monitor">
-        <antcall target="singlebuild" inheritAll="true">
-            <param name="dotarget" value="build" />
-            <param name="filename" value="${monitor}" />
-        </antcall>
-    </target>
-
     <target name="cbc">
         <antcall target="tdc" />
         <antcall target="singlebuild" inheritAll="true">

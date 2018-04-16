@@ -16,8 +16,7 @@ public enum ApplicationId {
     SERVICE_MANAGER("ServiceManager"),
     TABULAR_DISPLAY_CONSOLE("TDC"),
     TRENDING("Trending"), 
-    WEBSERVER("Webserver"),
-    YUKON_SYSTRAY("Yukon Systray"), 
+    WEBSERVER("Webserver"), 
 
     //  Standalone Tomcat services
     OPENADR("OpenADR"),

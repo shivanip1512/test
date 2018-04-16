@@ -17,7 +17,6 @@
 		<project>export</project>
 		<project>loadcontrol</project>
 		<project>macs</project>
-		<project>monitor</project>
 		<project>multispeak</project>
 		<project>notification</project>
 		<project>report</project>
