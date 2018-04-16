@@ -143,7 +143,7 @@ public class PointController {
     @RequestMapping(value = "/points/{id}/render-copy-point", method = RequestMethod.GET)
     public String renderCopyPoint(ModelMap model, FlashScope flashScope, @PathVariable Integer id,
             YukonUserContext userContext, HttpServletRequest request) {
-        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.LIMITED);
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
         PointModel<? extends PointBase> pointModel = null;
         if (model.containsAttribute("copyPointModel")) {
             pointModel = (PointModel) model.get("copyPointModel");
@@ -181,7 +181,7 @@ public class PointController {
             BindingResult result, RedirectAttributes redirectAttributes, ModelMap model, FlashScope flashScope,
             YukonUserContext userContext, HttpServletResponse response)
             throws JsonGenerationException, JsonMappingException, IOException {
-        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
         copyPointValidator.validate(pointModel, result);
 
         if (result.hasErrors()) {
