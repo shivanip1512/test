@@ -15,12 +15,21 @@
     <cti:displayForPageEditModes modes="VIEW">
         <c:set var="viewMode" value="${true}" />
         
-        <!-- Actions button -->
-        <div id="page-actions" class="dn">
-            <cm:dropdownOption icon="icon-disk-multiple" key="yukon.web.components.button.copy.label" id="copy-option"
-                               data-popup="#copy-point-popup"/>
-        </div>
+        <c:set var="isCopyPointVisible" value= "false" />
+        <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
+            <c:set var="isCopyPointVisible" value= "true" />
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <c:set var="isCopyPointVisible" value= "true" />
+        </cti:checkRolesAndProperties>
         
+        <!-- Actions button -->
+        <c:if test="${isCopyPointVisible}">
+            <div id="page-actions" class="dn">
+                <cm:dropdownOption icon="icon-disk-multiple" key="yukon.web.components.button.copy.label" id="copy-option"
+                                   data-popup="#copy-point-popup"/>
+            </div>
+        </c:if>
         <!-- Copy Point dialog -->
         <cti:msg2 var="copyPointPopUpTitle" key="yukon.web.modules.tools.point.copyPoint.title"/>
         <cti:url var="renderCopyPointUrl" value="/tools/points/${pointModel.pointBase.point.pointID}/render-copy-point"/>
