@@ -697,9 +697,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         case IVVCState::DMV_TEST_SETUP:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
-            CTILOG_INFO( dout, "Preparing to execute DMV test: " << testDataPtr.TestName << " on Bus: " << subbus->getPaoName() );
+            CTILOG_INFO( dout, "Preparing to execute DMV test: " << dmvTestSettings.TestName << " on Bus: " << subbus->getPaoName() );
 
             long    spAreaID,   // unused...
                     areaID,
@@ -710,7 +710,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 Cti::Database::DatabaseConnection   connection;
 
-                testDataPtr.ExecutionID = GetDmvTestExecutionID( connection );
+                dmvTestSettings.ExecutionID = GetDmvTestExecutionID( connection );
 
                 static const std::string sql =
                     "INSERT INTO "
@@ -721,8 +721,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 Cti::Database::DatabaseWriter   writer( connection, sql );
 
                 writer
-                    << testDataPtr.ExecutionID
-                    << testDataPtr.TestId
+                    << dmvTestSettings.ExecutionID
+                    << dmvTestSettings.TestId
                     << areaID
                     << substationID
                     << subbus->getPaoId()
@@ -740,9 +740,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_TEST_DATA_GATHERING_START:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr.DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.DataGatheringDuration );    // DataGatheringDuration in minutes   
 
             state->dmvTestStatusMessage.clear();
             state->feasibilityData.clear();
@@ -757,7 +757,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             // Scan all the devices on the bus to see if we can even bump the bus by the required step size.
 
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             // What points are we wanting?
             std::set<PointRequest> pointRequests;
@@ -766,7 +766,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
             {
                 // Configuration Error
-                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
                 state->dmvTestStatusMessage = "Bus Configuration Error";
@@ -776,7 +776,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             // Set the current and expiration times for the polling interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
+            state->setNextControlTime( timeNow + dmvTestSettings.PollingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -804,9 +804,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             if ( ! allRegulatorsInRemoteMode( subbus->getPaoId() ) )
             {
-                auto & testDataPtr = state->getDmvTestData();
+                auto & dmvTestSettings = state->getDmvTestData();
 
-                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName()
                                     << ". One or more regulators is in 'Auto' mode." );
 
@@ -824,14 +824,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_TEST_POSTSCAN_PROCESSING:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             PointDataRequestPtr request = state->getGroupRequest();
 
             if ( ! processDmvScanData( state, subbus->getPaoName() ) )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
                 CTILOG_INFO( dout, request->createStatusReport() );
 
@@ -880,7 +880,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_TEST_DECIDE_BUMP_DIRECTION:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             PointDataRequestPtr request = state->getGroupRequest();
 
@@ -890,7 +890,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ( request->requestSize() - state->dmvWattVarPointIDs.size() ) != state->feasibilityData.size() )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
                 state->dmvTestStatusMessage = "Incomplete Feasibility Data";
@@ -921,14 +921,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }                   
                 }
 
-                if ( feasibility.second.first - testDataPtr.StepSize < Vmin )  // undervoltage
+                if ( feasibility.second.first - dmvTestSettings.StepSize < Vmin )  // undervoltage
                 {
                     canBumpDown = false;
 
                     CTILOG_INFO( dout, "Feasibility -- PointID: " << feasibility.first
                                         << " - Bumping Down would create an under-voltage condition." );
                 }
-                if ( feasibility.second.second + testDataPtr.StepSize > Vmax ) // overvoltage
+                if ( feasibility.second.second + dmvTestSettings.StepSize > Vmax ) // overvoltage
                 {
                     canBumpUp = false;
 
@@ -941,7 +941,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 // Bail out of the bump test since the StepSize is too big for the existing conditions
 
-                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName()
                                     << ". Test StepSize is too large for the current bus conditions." );
 
@@ -957,7 +957,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_TEST_CALCULATE_BUMPS:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             //  deal with the root zone regulator(s)...
 
@@ -990,7 +990,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
                     const double adjustment = regulator->requestVoltageChange(
-                        ( state->bumpDirection == IVVCState::Up ? 1.0 : -1.0 ) * testDataPtr.StepSize,
+                        ( state->bumpDirection == IVVCState::Up ? 1.0 : -1.0 ) * dmvTestSettings.StepSize,
                         Cti::CapControl::VoltageRegulator::Exclusive );
 
                     state->storedSetPoints[ regulatorID ] =
@@ -1053,7 +1053,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->_tapOps.clear();
 
-                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName()
                                     << ". One or more regulators is in 'Auto' mode." );
 
@@ -1067,7 +1067,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->_tapOps.clear();
 
-                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName()
                                     << ". Cancelling Tap Operations.  One or more regulators is missing, or is missing a required attribute." );
 
@@ -1081,7 +1081,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // 5 second delay between consecutive tap ops on same regulator
             if ( ( state->_tapOpDelay + 5 ) < timeNow )
             {
-                auto & testDataPtr = state->getDmvTestData();
+                auto & dmvTestSettings = state->getDmvTestData();
 
                 state->_tapOpDelay = timeNow;
 
@@ -1104,7 +1104,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             state->_tapOps[ regulatorID ]     -= actualChange;
                             state->_undoTapOps[ regulatorID ] -= actualChange;
 
-                            CTILOG_INFO( dout, "DMV Test '" << testDataPtr.TestName
+                            CTILOG_INFO( dout, "DMV Test '" << dmvTestSettings.TestName
                                             << " - Adjusting Voltage on Regulator: " << regulator->getPaoName() );
                         }
                     }
@@ -1131,16 +1131,16 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_POST_BUMP_TEST_DATA_GATHERING_START:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr.DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.DataGatheringDuration );    // DataGatheringDuration in minutes   
 
             state->setState( IVVCState::DMV_POST_BUMP_TEST_SCAN );
             break;
         }
         case IVVCState::DMV_POST_BUMP_TEST_SCAN:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             // What points are we wanting?
             std::set<PointRequest> pointRequests;
@@ -1149,7 +1149,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
             {
                 // Configuration Error
-                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
                 state->dmvTestStatusMessage = "Bus Configuration Error";
@@ -1159,7 +1159,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             // Set the current and expiration times for the polling interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
+            state->setNextControlTime( timeNow + dmvTestSettings.PollingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -1187,9 +1187,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             if ( ! allRegulatorsInRemoteMode( subbus->getPaoId() ) )
             {
-                auto & testDataPtr = state->getDmvTestData();
+                auto & dmvTestSettings = state->getDmvTestData();
 
-                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName()
                                     << ". One or more regulators is in 'Auto' mode." );
 
@@ -1207,14 +1207,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_POST_BUMP_TEST_SCAN_PROCESSING:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             PointDataRequestPtr request = state->getGroupRequest();
 
             if ( ! processDmvScanData( state, subbus->getPaoName() ) )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
                 CTILOG_INFO( dout, request->createStatusReport() );
 
@@ -1235,7 +1235,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // 5 second delay between consecutive tap ops on same regulator
             if ( ( state->_tapOpDelay + 5 ) < timeNow )
             {
-                auto & testDataPtr = state->getDmvTestData();
+                auto & dmvTestSettings = state->getDmvTestData();
 
                 state->_tapOpDelay = timeNow;
 
@@ -1257,7 +1257,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                             state->_undoTapOps[ regulatorID ] -= actualChange;
 
-                            CTILOG_INFO( dout, "DMV Test '" << testDataPtr.TestName
+                            CTILOG_INFO( dout, "DMV Test '" << dmvTestSettings.TestName
                                             << " - Adjusting Voltage on Regulator: " << regulator->getPaoName() );
                         }
                     }
@@ -1287,16 +1287,16 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_RETURN_BUMP_TEST_DATA_GATHERING_START:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr.DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.DataGatheringDuration );    // DataGatheringDuration in minutes   
 
             state->setState( IVVCState::DMV_RETURN_BUMP_TEST_SCAN );
             break;
         }
         case IVVCState::DMV_RETURN_BUMP_TEST_SCAN:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             // What points are we wanting?
             std::set<PointRequest> pointRequests;
@@ -1305,7 +1305,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
             {
                 // Configuration Error
-                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
                 state->dmvTestStatusMessage = "Bus Configuration Error";
@@ -1315,7 +1315,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             // Set the current and expiration times for the polling interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
+            state->setNextControlTime( timeNow + dmvTestSettings.PollingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -1343,9 +1343,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             if ( ! allRegulatorsInRemoteMode( subbus->getPaoId() ) )
             {
-                auto & testDataPtr = state->getDmvTestData();
+                auto & dmvTestSettings = state->getDmvTestData();
 
-                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName()
                                     << ". One or more regulators is in 'Auto' mode." );
 
@@ -1363,14 +1363,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_RETURN_BUMP_TEST_SCAN_PROCESSING:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
             PointDataRequestPtr request = state->getGroupRequest();
 
             if ( ! processDmvScanData( state, subbus->getPaoName() ) )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr.TestName
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << dmvTestSettings.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
                 CTILOG_INFO( dout, request->createStatusReport() );
 
@@ -1393,15 +1393,15 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_TEST_END_TEST:
         {
-            auto & testDataPtr = state->getDmvTestData();
+            auto & dmvTestSettings = state->getDmvTestData();
 
-            updateDmvTestStatus( testDataPtr.ExecutionID, testDataPtr.TestId, timeNow, state->dmvTestStatusMessage );
+            updateDmvTestStatus( dmvTestSettings.ExecutionID, dmvTestSettings.TestId, timeNow, state->dmvTestStatusMessage );
 
             // If we got here because of a regulator being in 'Auto' mode, we want to let go of the
             //  bus and return all of the devices to 'Local' control mode.
             if ( state->dmvRegulatorInAutoMode )
             {
-                state->dmvRegulatorInAutoMode = true;
+                state->dmvRegulatorInAutoMode = false;
 
                 sendDisableRemoteControl( subbus );
             }
@@ -4682,19 +4682,19 @@ bool processDmvScanData( IVVCStatePtr           state,
 {
     bool    allGood = true;
 
-    auto & testDataPtr = state->getDmvTestData();
+    auto & dmvTestSettings = state->getDmvTestData();
 
     PointDataRequestPtr request = state->getGroupRequest();
 
-    CTILOG_INFO( dout, "Processing Data: DMV Test '" << testDataPtr.TestName
+    CTILOG_INFO( dout, "Processing Data: DMV Test '" << dmvTestSettings.TestName
                         << "' on bus: " << busName
                         << ". Minimum complete data percentage is "
-                        << testDataPtr.CommSuccessPercentage << "%." );
+                        << dmvTestSettings.CommSuccessPercentage << "%." );
 
-    allGood &= completionCheck( request, RegulatorRequestType, testDataPtr.CommSuccessPercentage );
-    allGood &= completionCheck( request, CbcRequestType,       testDataPtr.CommSuccessPercentage );
-    allGood &= completionCheck( request, OtherRequestType,     testDataPtr.CommSuccessPercentage );
-    allGood &= completionCheck( request, BusPowerRequestType,  testDataPtr.CommSuccessPercentage );
+    allGood &= completionCheck( request, RegulatorRequestType, dmvTestSettings.CommSuccessPercentage );
+    allGood &= completionCheck( request, CbcRequestType,       dmvTestSettings.CommSuccessPercentage );
+    allGood &= completionCheck( request, OtherRequestType,     dmvTestSettings.CommSuccessPercentage );
+    allGood &= completionCheck( request, BusPowerRequestType,  dmvTestSettings.CommSuccessPercentage );
 
     auto dataToRecord = request->getPointValues();
     {
@@ -4720,7 +4720,7 @@ bool processDmvScanData( IVVCStatePtr           state,
         for ( auto pointData : dataToRecord )
         {                    
             writer
-                << testDataPtr.ExecutionID
+                << dmvTestSettings.ExecutionID
                 << pointData.first
                 << pointData.second.timestamp
                 << pointData.second.quality
@@ -4744,7 +4744,7 @@ bool processDmvScanData( IVVCStatePtr           state,
 
         if ( state->getCommsRetryCount() <= _IVVC_COMMS_RETRY_COUNT )
         {
-            CTILOG_INFO( dout, "Incomplete Scan Data: DMV Test '" << testDataPtr.TestName
+            CTILOG_INFO( dout, "Incomplete Scan Data: DMV Test '" << dmvTestSettings.TestName
                                 << "' on bus: " << busName
                                 << ". Preparing scan retry "
                                 << state->getCommsRetryCount() << " of " << _IVVC_COMMS_RETRY_COUNT );
