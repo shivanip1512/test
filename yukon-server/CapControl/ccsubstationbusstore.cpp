@@ -43,6 +43,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/range/algorithm_ext/erase.hpp>
 
 #define HOURLY_RATE 3600
 
@@ -7324,7 +7325,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 {
                     if ( CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID( range.first->second ) )
                     {
-                        boost::optional<long> pointID;
+                        long pointID = 0;
 
                         switch ( tempSub->getStrategy()->getUnitType() )
                         {
@@ -7341,14 +7342,11 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                                 break;
                             }
                             default:
-                                break;
+                                continue;
                         }
 
-                        if ( pointID )  // remove it if found
-                        {
-                            multimapRemoveOne( _pointid_subbus_map, *pointID, tempSub );
-                            tempSub->removePointId( *pointID );
-                        }
+                        multimapRemoveOne( _pointid_subbus_map, pointID, tempSub );
+                        tempSub->removePointId( pointID );
                     }
                 }
                 _altsub_sub_idmap.erase( subBusId );
@@ -7394,8 +7392,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 
                 _paobject_subbus_map.erase( subBusId );
                 _subbus_substation_map.erase( subBusId );
-                _ccSubstationBuses->erase( std::remove( _ccSubstationBuses->begin(), _ccSubstationBuses->end(), subToDelete ),
-                                           _ccSubstationBuses->end() );
+                boost::remove_erase( *_ccSubstationBuses, subToDelete );
 
                 delete subToDelete;
 
