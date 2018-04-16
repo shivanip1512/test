@@ -130,8 +130,7 @@ public interface PointEditorService {
      * @param pointId - point id of the point to copy.
      * @param pointType - point type
      * @param paoId - pao id to which the the point is assigned
-     * @param userContext
      * @return
      */
-    int copy(PointModel<? extends PointBase> pointBase, YukonUserContext userContext);
+    int copy(PointModel<? extends PointBase> pointBase);
 }

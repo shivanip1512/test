@@ -27,7 +27,7 @@
                 </form:select>
             </tags:nameValue2>
 
-            <tags:nameValue2 nameKey=".physicalOffset">
+            <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
                 <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
                                    toggleGroup="copy-point-physicalOffset" toggleAction="hide" 
                                    offNameKey=".physicalOffset.pseudo" id="copy-point-physicalOffset-toggle"/>

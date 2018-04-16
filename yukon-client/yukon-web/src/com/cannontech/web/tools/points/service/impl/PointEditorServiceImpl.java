@@ -414,7 +414,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public int copy(PointModel<? extends PointBase> pointModel, YukonUserContext userContext) {
+    public int copy(PointModel<? extends PointBase> pointModel) {
         PointBase pointBaseToCopy = PointFactory.retrievePoint(pointModel.getPointBase().getPoint().getPointID());
         
         int pointType = pointBaseToCopy.getPoint().getPointTypeEnum().getPointTypeId();
