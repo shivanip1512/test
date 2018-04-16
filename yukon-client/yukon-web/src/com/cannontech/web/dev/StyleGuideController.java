@@ -245,7 +245,8 @@ public class StyleGuideController {
     private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {
         ArrayList<String> sprites16Array = new ArrayList<String>();
         ArrayList<String> sprites32Array = new ArrayList<String>();
-        
+        ArrayList<String> spritesNew32Array = new ArrayList<String>();
+
         BufferedReader br = new BufferedReader(new FileReader(request.getServletContext().getRealPath("/WebConfig/yukon/styles/icons.css")));
         try {
             String line = br.readLine();
@@ -255,10 +256,15 @@ public class StyleGuideController {
                     if (endIndex != -1) {
                         sprites32Array.add(line.substring(1, endIndex));
                     }
-                } else if (line.contains("icon-") && !line.contains("icon-32")) {
+                } else if (line.contains("icon-") && !line.contains("icon-32") && !line.contains("icon-app")) {
                     int endIndex = line.indexOf("{");
                     if (endIndex != -1) {
                         sprites16Array.add(line.substring(1, endIndex));
+                    }
+                } else if (line.contains("icon-app-32-")) {
+                    int endIndex = line.indexOf("{");
+                    if (endIndex != -1) {
+                        spritesNew32Array.add(line.substring(1, endIndex));
                     }
                 }
                 line = br.readLine();
@@ -268,6 +274,7 @@ public class StyleGuideController {
         }
         model.addAttribute("sprites16Array", sprites16Array);
         model.addAttribute("sprites32Array", sprites32Array);
+        model.addAttribute("spritesNew32Array", spritesNew32Array);
     }
     
     public class Thing {

@@ -3,21 +3,29 @@
 
 <%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.device.model.DeviceCollection"%>
 <%@ attribute name="action" required="true" type="java.lang.String"%>
+<%@ attribute name="icon" required="true" type="java.lang.String"%>
+<%@ attribute name="linkKey" required="true" type="java.lang.String"%>
+<%@ attribute name="descriptionKey" required="false" type="java.lang.String"%>
 <%@ attribute name="inputName" required="false" type="java.lang.String"%>
 <%@ attribute name="inputValue" required="false" type="java.lang.String"%>
-<%@ attribute name="buttonValue" required="true" type="java.lang.String"%>
-<%@ attribute name="description" required="true" type="java.lang.String"%>
 
 <cti:uniqueIdentifier prefix="form_" var="thisId"/>
 
  <tr>
-    <td style="vertical-align: top;padding-right: 10px;padding-bottom: 10px;">
+    <td class="vam PL0" style="padding-bottom: 10px;">
         <cti:url var="actionUrl" value="${action}">
             <cti:param name="errorDevices" value="${deviceCollection.errorDevices}"/>
             <cti:param name="${pageScope.inputName}" value="${pageScope.inputValue}"/>
             <cti:mapParam value="${deviceCollection.collectionParameters}" />
         </cti:url>
-        <a href="${actionUrl}" class="wsnw">${fn:escapeXml(buttonValue)}</a>
+        <cti:button renderMode="appButton" icon="${icon}" href="${actionUrl}" title="${titleText}"/>
     </td>
-    <td style="vertical-align: top;padding-right: 1px;padding-bottom: 10px;">${description}</td>
+    <td class="vam PL0" style="padding-right:0px;">
+        <div class="box fl meta">
+            <cti:msg2 var="linkText" key="${linkKey}"/>
+            <div><a class="title" href="${actionUrl}">${linkText}</a></div>
+            <cti:msg2 var="descriptionText" key="${descriptionKey}"/>
+            <div class="detail">${descriptionText}</div>
+        </div>
+    </td>
 </tr>

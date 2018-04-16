@@ -46,7 +46,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     protected boolean dialogButton = false;
 
     /* renderMode is to describe how the button should look:
-     * Possible values for renderMode are 'image', 'labeledImage', 'imageButton' and 'button' (default) */
+     * Possible values for renderMode are 'image', 'labeledImage', 'imageButton', 'appButton' and 'button' (default) */
     protected String renderMode = "button";
     
     private Map<String, Object> dynamicAttributes = new HashMap<>();
@@ -186,6 +186,9 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE || mode == RenderMode.LABEL) {
                 classes.append(" naked");
             }
+            if (mode == RenderMode.APPBUTTON) {
+                classes.append(" app-button");
+            }
             if (StringUtils.isNotBlank(this.classes)) {
                 classes.append(" " + this.classes);
             }
@@ -275,13 +278,14 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     }
 
     /* renderMode is to describe how the button should look:
-     * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
+     * Possible values for renderMode are 'image', 'labeledImage', 'appButton' and 'button' (default) */
     private enum RenderMode {
         IMAGE("image"),
         LABELED_IMAGE("labeledImage"),
         BUTTON_IMAGE("buttonImage"),
         BUTTON("button"),
-        LABEL("label");
+        LABEL("label"),
+        APPBUTTON("appButton");  //Displays an App-Like button (used with 32x32 icons)
 
         private String attributeValue;
 

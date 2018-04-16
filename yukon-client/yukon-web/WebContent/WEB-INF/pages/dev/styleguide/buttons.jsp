@@ -131,6 +131,7 @@
     <li><em>image</em> - Looks just like an icon but functions as a button.</li>
     <li><em>buttonImage</em> - A button with an icon and no text.</li>
     <li><em>labeledImage</em> - A button that looks like a link and an icon.</li>
+    <li><em>appButton</em> - A button that looks similar to an app button.  It is used with 32px icons and has rounded corners.</li>
 </ul>
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
@@ -139,6 +140,7 @@
         <cti:button renderMode="image" icon="icon-add"/>
         <cti:button renderMode="buttonImage" icon="icon-add"/>
         <cti:button renderMode="labeledImage" icon="icon-add" nameKey="add"/>
+        <cti:button renderMode="appButton" icon="icon-app icon-app-32-lightbulb"/>
     </div>
 </div>
 <h4 class="subtle">Code:</h4>
@@ -147,6 +149,7 @@
 &lt;cti:button renderMode=&quot;image&quot; icon=&quot;icon-add&quot;/&gt;
 &lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-add&quot;/&gt;
 &lt;cti:button renderMode=&quot;labeledImage&quot; icon=&quot;icon-add&quot; nameKey=&quot;add&quot;/&gt;
+&lt;cti:button renderMode=&quot;appButton&quot; icon=&quot;icon-app icon-app-32-lightbulb&quot;/&gt;
 </pre>
 
 <h2 id="button-groups-example">Button Groups</h2>
