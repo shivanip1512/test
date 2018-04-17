@@ -802,17 +802,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_TEST_PRESCAN_LOOP:
         {
-            if ( ! allRegulatorsInRemoteMode( subbus->getPaoId() ) )
+            if ( ! regulatorsReadyForDmvTest( state, subbus ) )
             {
-                auto & dmvTestSettings = state->getDmvTestData();
-
-                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
-                                    << "' cannot execute on bus: " << subbus->getPaoName()
-                                    << ". One or more regulators is in 'Auto' mode." );
-
-                state->dmvTestStatusMessage = "Invalid Regulator mode";
-                state->dmvRegulatorInAutoMode = true;
-                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
@@ -1049,17 +1040,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             //  verify regulators and regulator attributes we need are available.
             //  If we have some errors - clear out the tapOp mapping... (cancel pending operations)
 
-            if ( ! allRegulatorsInRemoteMode( subbus->getPaoId() ) )
+            if ( ! regulatorsReadyForDmvTest( state, subbus ) )
             {
                 state->_tapOps.clear();
 
-                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
-                                    << "' cannot execute on bus: " << subbus->getPaoName()
-                                    << ". One or more regulators is in 'Auto' mode." );
-
-                state->dmvTestStatusMessage = "Invalid Regulator mode";
-                state->dmvRegulatorInAutoMode = true;
-                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
@@ -1185,17 +1169,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_POST_BUMP_TEST_SCAN_LOOP:
         {
-            if ( ! allRegulatorsInRemoteMode( subbus->getPaoId() ) )
+            if ( ! regulatorsReadyForDmvTest( state, subbus ) )
             {
-                auto & dmvTestSettings = state->getDmvTestData();
-
-                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
-                                    << "' cannot execute on bus: " << subbus->getPaoName()
-                                    << ". One or more regulators is in 'Auto' mode." );
-
-                state->dmvTestStatusMessage = "Invalid Regulator mode";
-                state->dmvRegulatorInAutoMode = true;
-                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
@@ -1341,17 +1316,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_RETURN_BUMP_TEST_SCAN_LOOP:
         {
-            if ( ! allRegulatorsInRemoteMode( subbus->getPaoId() ) )
+            if ( ! regulatorsReadyForDmvTest( state, subbus ) )
             {
-                auto & dmvTestSettings = state->getDmvTestData();
-
-                CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
-                                    << "' cannot execute on bus: " << subbus->getPaoName()
-                                    << ". One or more regulators is in 'Auto' mode." );
-
-                state->dmvTestStatusMessage = "Invalid Regulator mode";
-                state->dmvRegulatorInAutoMode = true;
-                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
@@ -5046,5 +5012,25 @@ PointValueMap getAllRegulatorsTapPositions( const long subbusId )
     }
 
     return info;
+}
+
+bool IVVCAlgorithm::regulatorsReadyForDmvTest( IVVCStatePtr state, CtiCCSubstationBusPtr subbus )
+{
+    if ( allRegulatorsInRemoteMode( subbus->getPaoId() ) )
+    {
+        return true;
+    }
+
+    auto & dmvTestSettings = state->getDmvTestData();
+
+    CTILOG_ERROR( dout, "DMV Test '" << dmvTestSettings.TestName
+                        << "' cannot execute on bus: " << subbus->getPaoName()
+                        << ". One or more regulators is in 'Auto' mode." );
+
+    state->dmvTestStatusMessage = "Invalid Regulator mode";
+    state->dmvRegulatorInAutoMode = true;
+    state->setState( IVVCState::DMV_TEST_END_TEST );
+
+    return false;
 }
 

@@ -152,6 +152,8 @@ class IVVCAlgorithm
 
         bool handleReverseFlow( CtiCCSubstationBusPtr subbus );
 
+        bool regulatorsReadyForDmvTest( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );
+
 
         PointDataRequestFactoryPtr _requestFactory;
 };
