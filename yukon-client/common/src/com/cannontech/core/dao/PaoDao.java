@@ -188,13 +188,4 @@ public interface PaoDao {
      * doesn't exist.
      */
     YukonPao findPort(String paoName);
-    
-    /**
-     * Returns a list of LiteYukonPAObject that has the same paoCategory and paoClass passed as a parameter.
-     * 
-     * @param paoCategory
-     * @param paoClass
-     * @return list of LiteYukonPAObject
-     */
-    List<LiteYukonPAObject> getPaosByPaoCategoryAndPaoClass(PaoCategory paoCategory, PaoClass paoClass);
 }

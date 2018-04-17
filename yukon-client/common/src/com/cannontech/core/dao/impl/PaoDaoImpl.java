@@ -648,13 +648,4 @@ public final class PaoDaoImpl implements PaoDao {
         }
     }
 
-    @Override
-    public List<LiteYukonPAObject> getPaosByPaoCategoryAndPaoClass(PaoCategory paoCategory, PaoClass paoClass) {
-        SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
-        sql.append("WHERE Category").eq_k(paoCategory);
-        sql.append("  AND PAOClass").eq_k(paoClass);
-
-        return jdbcTemplate.query(sql, litePaoRowMapper);
-    };
-
 }

@@ -176,7 +176,6 @@ public class PointController {
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
             }
         }
-        addDevicesToModel(pointModel, model);
         return "point/copyPointPopup.jsp";
     }
     
@@ -191,7 +190,6 @@ public class PointController {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("pointModel", pointModel);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.pointModel", result);
-            addDevicesToModel(pointModel, model);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "point/copyPointPopup.jsp";
         }
@@ -212,14 +210,6 @@ public class PointController {
         Map<String, Object> json = new HashMap<String, Object>();
         json.put("nextValidPointOffset", pointOffset);
         return json;
-    }
-    
-    private void addDevicesToModel(PointModel<? extends PointBase> pointModel, ModelMap model) {
-        LiteYukonPAObject device = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
-        List<LiteYukonPAObject> paos = paoDao.getPaosByPaoCategoryAndPaoClass(
-            device.getPaoType().getPaoCategory(), device.getPaoType().getPaoClass());
-        
-        model.addAttribute("paos", paos);
     }
 
     private String retrievePointAndModel(ModelMap model, YukonUserContext userContext, FlashScope flashScope, int id, HttpServletRequest request){

@@ -10,7 +10,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.PaoPicker;
 
-//TODO refactor this.
 public class CategoryAndClassFilteredPaoPicker extends PaoPicker {
     
     @Override
