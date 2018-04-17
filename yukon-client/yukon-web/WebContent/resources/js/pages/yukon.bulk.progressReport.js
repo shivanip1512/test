@@ -195,6 +195,11 @@ yukon.bulk.progressReport = (function () {
                     }
                 });
             });
+            
+            $(document).on('click', '.js-set-routes', function() {
+                window.location = yukon.url('/bulk/routeLocate/routeSettings?resultId=' + _key);
+            });
+
 
             _initialized = true;
         },

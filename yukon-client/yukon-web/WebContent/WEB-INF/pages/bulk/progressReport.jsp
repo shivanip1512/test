@@ -114,6 +114,9 @@
             <c:if test="${result.isCancelable()}">
                 <cti:button nameKey="cancel" classes="js-cancel fn" busy="true"/>
             </c:if>
+            <c:if test="${result.action == 'LOCATE_ROUTE'}">
+                <cti:button nameKey="setRoutes" classes="js-set-routes fn" busy="true"/>
+            </c:if>
         </div>
         <div style="max-height:220px;max-width:500px;" class="js-pie-chart js-initialize"></div>
     </tags:sectionContainer2>
