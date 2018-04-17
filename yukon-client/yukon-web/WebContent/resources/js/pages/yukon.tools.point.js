@@ -550,6 +550,9 @@ yukon.tools.point = (function () {
                     },
                     error: function (xhr, status, error, $form) {
                         $('#copy-point-popup').html(xhr.responseText);
+                        if ($('#isPhysicalOffset').val() == 'false') {
+                            $("#copy-point-physicalOffset-txt").addClass('dn');
+                        }
                         yukon.ui.unblockPage();
                     }
                 });

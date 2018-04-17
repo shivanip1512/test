@@ -32,7 +32,8 @@
                                    destinationFieldId="paoId"
                                    allowEmptySelection="false"/>
             </tags:nameValue2>
-
+            
+            <input type="hidden" id="isPhysicalOffset" value="${copyPointModel.pointBase.point.physicalOffset}"/>
             <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
                 <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
                                    toggleGroup="copy-point-physicalOffset" toggleAction="hide" 
