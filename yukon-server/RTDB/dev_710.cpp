@@ -203,7 +203,6 @@ INT CtiDeviceCCU710::Loopback(OUTMESS* OutMessage)
    OutMessage->Retry       = 0;
    OutMessage->Sequence    = Command_Loop;
    OutMessage->ReturnNexus = NULL;
-   OutMessage->SaveNexus   = NULL;
 
    return ClientErrors::None;
 }

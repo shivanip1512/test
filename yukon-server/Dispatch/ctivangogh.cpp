@@ -3758,7 +3758,18 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
     {
         if(Now > Refresh || force)   // Should be 5 minutes or greater
         {
-            CTILOG_INFO(dout, "Starting loadRTDB. " << (pChg != 0 ? string(pChg->getCategory() + " DBChange present.") : "No DBChange present."));
+            if( pChg )
+            {
+                CTILOG_INFO(dout, "Starting loadRTDB, DBChange " << 
+                    pChg->getCategory() << " " << pChg->getId() << " " <<
+                        (pChg->getTypeOfChange() == ChangeTypeAdd    ? "ADD" :
+                         pChg->getTypeOfChange() == ChangeTypeDelete ? "DELETE" :
+                         pChg->getTypeOfChange() == ChangeTypeUpdate ? "UPDATE" : "UNKNOWN"));
+            }
+            else
+            {
+                CTILOG_INFO(dout, "Starting loadRTDB, no DBChange present.");
+            }
 
             // This loads up the points that VanGogh will manage.
             if( pChg == NULL || ((pChg->getDatabase() == ChangePointDb) ||

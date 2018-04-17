@@ -140,7 +140,6 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 OutMessage->Priority = MAXPRIORITY - 1;
                 OutMessage->EventCode    = NORESULT | ENCODED;  //  used?
                 OutMessage->ReturnNexus  = NULL;
-                OutMessage->SaveNexus    = NULL;
 
                 if(PortManager.writeQueue(OutMessage))
                 {
@@ -200,7 +199,6 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                         OutMessage->Priority = MAXPRIORITY - 1;
                         OutMessage->EventCode    = NOWAIT | NORESULT | ENCODED | RCONT;
                         OutMessage->ReturnNexus  = NULL;
-                        OutMessage->SaveNexus    = NULL;
 
                         Index = PREIDL;
 
@@ -318,7 +316,6 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 OutMessage->Priority = MAXPRIORITY - 1;
                 OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | RCONT;
                 OutMessage->ReturnNexus = NULL;
-                OutMessage->SaveNexus = NULL;
 
                 Index = PREIDL;
 

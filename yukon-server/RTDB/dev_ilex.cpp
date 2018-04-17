@@ -847,7 +847,6 @@ YukonError_t CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser
                         OutMessage->InLength    = -1;
                         OutMessage->EventCode   |= ENCODED | NOWAIT | NORESULT;          // May contain RESULT based upon the incoming OutMessage
                         OutMessage->ReturnNexus = NULL;
-                        OutMessage->SaveNexus   = NULL;
 
                         if(!OutMessage->TargetID) OutMessage->TargetID = getID();
                         if(!OutMessage->DeviceID) OutMessage->DeviceID = getID();

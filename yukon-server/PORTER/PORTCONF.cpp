@@ -677,7 +677,6 @@ INT VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
       OutMessage.EventCode   = VERSACOM | NOWAIT | NORESULT;
       OutMessage.Sequence    = 0;
       OutMessage.ReturnNexus = NULL;
-      OutMessage.SaveNexus   = NULL;
 
       OutMessage.Buffer.VSt = *VSt;
 

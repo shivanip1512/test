@@ -100,7 +100,10 @@ void DispatchMsgHandlerThread()
                         dbchg.reset(static_cast<const CtiDBChangeMsg *>(MsgPtr.release()));
                         const auto dbCategory = resolveDBCategory(dbchg->getCategory());
 
-                        CTILOG_INFO(dout, "Porter has received a "<< dbchg->getCategory() <<" DBCHANGE message from Dispatch");
+                        CTILOG_INFO(dout, "Porter has received a DBCHANGE message from Dispatch, " << dbchg->getCategory() << " " << dbchg->getId() << " " <<
+                            (dbchg->getTypeOfChange() == ChangeTypeAdd    ? "ADD" :
+                             dbchg->getTypeOfChange() == ChangeTypeDelete ? "DELETE" :
+                             dbchg->getTypeOfChange() == ChangeTypeUpdate ? "UPDATE" : "UNKNOWN"));
 
                         if (dbCategory == CtiDBChangeCategory::GlobalSetting)
                         {

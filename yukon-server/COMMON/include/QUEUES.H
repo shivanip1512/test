@@ -59,10 +59,6 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle, ULONG Request, ULONG DataSi
 IM_EX_CTIBASE INT QueryQueue (HCTIQUEUE QueueHandle, PULONG Elements);
 
 IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
-                             PULONG DataSize,
-                             PPVOID Data,
-                             PULONG Element,
-                             BOOL32 WaitFlag,
                              PBYTE Priority);
 
 IM_EX_CTIBASE INT ReadElementById (HCTIQUEUE QueueHandle,

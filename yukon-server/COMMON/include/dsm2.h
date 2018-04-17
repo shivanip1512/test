@@ -303,7 +303,6 @@ public:
    PIL_ECHO           Request;
 
    Cti::StreamConnection  *ReturnNexus;   // Connection back to requestor.
-   Cti::StreamConnection  *SaveNexus;
    union _outmess_buf
    {
       BYTE            OutMessage[300];
@@ -324,7 +323,6 @@ public:
    {
        ::memset(this, 0, sizeof(CtiOutMessage));
        ReturnNexus = NULL;
-       SaveNexus = NULL;
 
        HeadFrame[0] = 0x02;      // STX
        HeadFrame[1] = 0xe0;
@@ -388,7 +386,6 @@ public:
          Request                = aRef.Request;
 
          ReturnNexus            = aRef.ReturnNexus;
-         SaveNexus              = aRef.SaveNexus;
 
          Buffer                 = aRef.Buffer;
 

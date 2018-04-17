@@ -1286,11 +1286,9 @@ YukonError_t BuildLGrpQToken (CtiDeviceBase& Dev)
 
     if( Count )
     {
-        OUTMESS* MyOutMessage;
-        unsigned long Length, Element;
         unsigned char Priority;
 
-        if( PeekQueue(trxInfo.QueueHandle, &Length, (PVOID *)&MyOutMessage, &Element, DCWW_WAIT, &Priority) )
+        if( PeekQueue(trxInfo.QueueHandle, &Priority) )
         {
             CTILOG_ERROR(dout, "Could not Peek Queue");
 
@@ -1304,7 +1302,7 @@ YukonError_t BuildLGrpQToken (CtiDeviceBase& Dev)
         const auto QueueEntrySequence = QueSequence++;
         if( !(QueSequence & 0x8000) ) QueSequence = 0x8000;
 
-        auto OutMessage = std::make_unique<OUTMESS>(*MyOutMessage);  //  use the copy constructor to make a clean copy
+        auto OutMessage = std::make_unique<OUTMESS>();
 
         OutMessage->Priority       = Priority;
         OutMessage->DeviceID       = Dev.getID();
@@ -1322,7 +1320,6 @@ YukonError_t BuildLGrpQToken (CtiDeviceBase& Dev)
         OutMessage->Source         = 0;
         OutMessage->Destination    = DEST_QUEUE;
         OutMessage->Command        = CMND_LGRPQ;
-        OutMessage->ReturnNexus    = nullptr;                    // This message IS NOT reportable to the requesting client!
 
         /* Check the priority and do not let it be less than 11 */
         OutMessage->Priority = std::max(OutMessage->Priority, gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY", 11));
@@ -1612,7 +1609,6 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
         OutMessage->Destination = DEST_LM;
         OutMessage->Command     = CMND_ACTIN;
         OutMessage->ReturnNexus = NULL;
-        OutMessage->SaveNexus   = NULL;
 
         Offset = PREIDL;
 

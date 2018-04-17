@@ -248,7 +248,6 @@ void CtiPortShareIP::inThread()
                                 OutMessage->Sequence = 0;
                                 OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_PORTSHARE_PRIORITY", MAXPRIORITY - 1);
                                 OutMessage->ReturnNexus = getReturnNexus();
-                                OutMessage->SaveNexus = NULL;
 
                                 OutMessage->MessageFlags |= MessageFlag_PortSharing;
                                 OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt("PORTER_PORTSHARE_EXPIRATION_TIME", 600);

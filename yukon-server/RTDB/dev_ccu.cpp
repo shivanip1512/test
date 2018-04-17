@@ -312,7 +312,6 @@ INT CtiDeviceCCU::CCULoop(OUTMESS* OutMessage)
     OutMessage->Retry       = 0;
     OutMessage->Sequence    = Command_Loop;
     OutMessage->ReturnNexus = NULL;
-    OutMessage->SaveNexus   = NULL;
 
     OutMessage->Buffer.OutMessage[PREIDL] = NO_OP;
 
@@ -337,7 +336,6 @@ INT CtiDeviceCCU::CCU711Reset(OUTMESS* OutMessage)
     OutMessage->Retry       = 0;
     OutMessage->Sequence    = Command_Reset;
     OutMessage->ReturnNexus = NULL;
-    OutMessage->SaveNexus   = NULL;
 
     OutMessage->Buffer.OutMessage[PREIDL] = COLD;  //  16... ?
 

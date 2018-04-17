@@ -157,7 +157,6 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     }
 
     /* get the block semaphore */
-#if 1
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
@@ -170,12 +169,6 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
             DefibBlockSem(QueueHandle);
         }
     }
-#else
-    if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
-    {
-        return(ERROR_QUE_UNABLE_TO_ACCESS);
-    }
-#endif
 
     /* get the Memory */
     if((Entry = (QUEUEENT*)malloc (sizeof (QUEUEENT))) == NULL)
@@ -284,10 +277,6 @@ IM_EX_CTIBASE INT QueryQueue (HCTIQUEUE QueueHandle, PULONG Elements)
 
 /* Routine to peek at first element on queue */
 IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
-                             PULONG DataSize,
-                             PPVOID Data,
-                             PULONG Element,
-                             BOOL32 WaitFlag,
                              PBYTE Priority)
 
 {
@@ -298,46 +287,12 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
         return(ERROR_QUE_INVALID_HANDLE);
     }
 
-    if(!(*Element))
-    {
-        /* Check if we are to wait */
-        if(WaitFlag == DCWW_WAIT)
-        {
-            /* Wait for an element */
-            INT      WaitHandles = 2;
-            DWORD    dwWait;
-
-            if(QueueHandle->WaitArray[1] == NULL)
-            {
-                WaitHandles = 1;
-            }
-
-            dwWait = WaitForMultipleObjects(WaitHandles, QueueHandle->WaitArray, FALSE, INFINITE);
-
-            switch( dwWait - WAIT_OBJECT_0)
-            {
-            case WAIT_OBJECT_0:              // This is the post event!
-            case WAIT_ABANDONED:             // Call this the post event to let things shutdown nice
-                {
-                    break;
-                }
-            case WAIT_OBJECT_0 + 1:
-                {
-                    // This is a quit event!
-                    return(ERROR_QUE_UNABLE_TO_ACCESS);
-                    break;
-                }
-            }
-        }
-    }
-
     if(!(QueueHandle->Elements))
     {
         return(ERROR_QUE_EMPTY);
     }
 
     /* get the exclusion semaphore */
-#if 1
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
@@ -350,12 +305,6 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
             DefibBlockSem(QueueHandle);
         }
     }
-#else
-    if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
-    {
-        return(ERROR_QUE_UNABLE_TO_ACCESS);
-    }
-#endif
 
     /* We the man so unless there has been a fubar...*/
     if(QueueHandle->First == NULL)
@@ -366,28 +315,8 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
 
     Entry = QueueHandle->First;
 
-    if(!(*Element))
-    {
-        while(Entry != NULL)
-        {
-            if(Entry->Element == *Element)
-            {
-                break;
-            }
-            Entry = Entry->Next;
-        }
-        if(Entry == NULL)
-        {
-            CTIReleaseMutexSem (QueueHandle->BlockSem);
-            return(ERROR_QUE_ELEMENT_NOT_EXIST);
-        }
-    }
-
     /* Otherwise put it in there */
-    *DataSize = Entry->DataSize;
-    *Data = Entry->Data;
     *Priority = Entry->Priority;
-    *Element=Entry->Element;
 
     CTIReleaseMutexSem (QueueHandle->BlockSem);
 
@@ -451,7 +380,6 @@ IM_EX_CTIBASE INT ReadElementById(HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID
     }
 
     /* get the exclusion semaphore */
-#if 1
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
@@ -464,12 +392,6 @@ IM_EX_CTIBASE INT ReadElementById(HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID
             DefibBlockSem(QueueHandle);
         }
     }
-#else
-    if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
-    {
-        return(ERROR_QUE_UNABLE_TO_ACCESS);
-    }
-#endif
 
     /* We the man so unless there has been a fubar...*/
     if(QueueHandle->First == NULL)
@@ -537,7 +459,6 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     }
 
     /* get the exclusion semaphore */
-#if 1
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
@@ -550,12 +471,6 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
             DefibBlockSem(QueueHandle);
         }
     }
-#else
-    if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
-    {
-        return(ERROR_QUE_UNABLE_TO_ACCESS);
-    }
-#endif
 
     try
     {

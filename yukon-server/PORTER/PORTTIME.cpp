@@ -93,7 +93,6 @@ struct timeSyncCCU711
         OutMessage->Priority     = MAXPRIORITY;
         OutMessage->EventCode    = NOWAIT | NORESULT | ENCODED | TSYNC | RCONT;
         OutMessage->ReturnNexus  = NULL;
-        OutMessage->SaveNexus    = NULL;
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
@@ -159,7 +158,6 @@ struct timeSyncCCU710
                     OutMessage->Command   = CMND_DTRAN;
                     OutMessage->InLength  = 0;
                     OutMessage->ReturnNexus = NULL;
-                    OutMessage->SaveNexus   = NULL;
                     OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                     OutMessage->ExpirationTime = getNextTimeSync();
 
@@ -272,7 +270,6 @@ struct timeSyncTDMarkV
         OutMessage->Priority    = MAXPRIORITY - 2;
         OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
         OutMessage->ReturnNexus = NULL;
-        OutMessage->SaveNexus   = NULL;
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
@@ -318,7 +315,6 @@ struct timeSyncILEX
         OutMessage->Priority    = MAXPRIORITY - 2;
         OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
         OutMessage->ReturnNexus = NULL;
-        OutMessage->SaveNexus   = NULL;
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
@@ -365,7 +361,6 @@ struct timeSyncWelco_VTU
         OutMessage->Priority    = MAXPRIORITY - 2;
         OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
         OutMessage->ReturnNexus = NULL;
-        OutMessage->SaveNexus   = NULL;
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
@@ -404,7 +399,6 @@ struct timeSyncSeriesVLMIRTU
         OutMessage->Priority    = MAXPRIORITY - 2;
         OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
         OutMessage->ReturnNexus = NULL;
-        OutMessage->SaveNexus   = NULL;
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
@@ -552,7 +546,6 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
             OutMessage->Command   = CMND_DTRAN;
             OutMessage->InLength  = 0;
             OutMessage->ReturnNexus = NULL;
-            OutMessage->SaveNexus   = NULL;
             OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
             OutMessage->ExpirationTime = getNextTimeSync();
 
@@ -633,7 +626,6 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 OutMessage->Priority = MAXPRIORITY;
                 OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
                 OutMessage->ReturnNexus = NULL;
-                OutMessage->SaveNexus = NULL;
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                 OutMessage->ExpirationTime = getNextTimeSync();
 

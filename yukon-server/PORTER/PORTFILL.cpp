@@ -157,7 +157,6 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                                 OutMessage->Priority = MAXPRIORITY;
                                 OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
                                 OutMessage->ReturnNexus = NULL;
-                                OutMessage->SaveNexus = NULL;
 
                                 MasterHeader (OutMessage->Buffer.OutMessage + PREIDLEN, OutMessage->Remote, MASTERSEND, 2);
 

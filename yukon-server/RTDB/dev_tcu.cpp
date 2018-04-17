@@ -416,7 +416,6 @@ YukonError_t CtiDeviceTCU::TCUControl(OUTMESS* OutMessage, VSTRUCT *VSt)
    OutMessage->EventCode               = VERSACOM | NOWAIT | NORESULT | QUEUED;
    OutMessage->Sequence                = 0;
    OutMessage->ReturnNexus             = NULL;
-   OutMessage->SaveNexus               = NULL;
 
    OutMessage->Buffer.VSt = *VSt;
 
@@ -441,7 +440,6 @@ YukonError_t CtiDeviceTCU::TCULoop(OUTMESS* OutMessage)
    OutMessage->Retry                   = 0; //VSt->Retry;
    OutMessage->Sequence                = 0;
    OutMessage->ReturnNexus             = NULL;
-   OutMessage->SaveNexus               = NULL;
 
 
    return ClientErrors::None;

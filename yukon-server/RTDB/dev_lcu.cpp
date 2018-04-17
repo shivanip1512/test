@@ -665,7 +665,6 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
     OutMessage->InLength     = -1;
     OutMessage->EventCode    |= ENCODED | RESULT | RIPPLE;          // May contain RESULT based upon the incoming OutMessage
     OutMessage->ReturnNexus  = NULL;
-    OutMessage->SaveNexus    = NULL;
 
     if(!OutMessage->TargetID) OutMessage->TargetID = getID();
     if(!OutMessage->DeviceID) OutMessage->DeviceID = getID();
@@ -780,7 +779,6 @@ YukonError_t CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
         OutMessage->Retry                   = 2; //VSt->Retry;
         OutMessage->Sequence                = 0;
         OutMessage->ReturnNexus             = NULL;
-        OutMessage->SaveNexus               = NULL;
     }
 
     return ClientErrors::None;
@@ -1582,7 +1580,6 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
                     MyOutMessage->Sequence = 0;
                     MyOutMessage->Retry = 2;
                     MyOutMessage->ReturnNexus = NULL;
-                    MyOutMessage->SaveNexus = NULL;
 
                     /* Build MasterComm header */
                     if( i = MasterHeader (MyOutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage->Remote, MASTERSTAGE, 0) )

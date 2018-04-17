@@ -328,7 +328,6 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
     OutMessage->Priority = MAXPRIORITY - 1;
     OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | RCONT;
     OutMessage->ReturnNexus = NULL;
-    OutMessage->SaveNexus = NULL;
 
     Index = PREIDL;
 
@@ -405,7 +404,6 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
     OutMessage->Priority      = MAXPRIORITY - 1;
     OutMessage->EventCode     = NOWAIT | NORESULT | ENCODED | RCONT;
     OutMessage->ReturnNexus = NULL;
-    OutMessage->SaveNexus = NULL;
 
     Index = PREIDL;
 
@@ -602,7 +600,6 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         OutMessage->Priority      = MAXPRIORITY;
         OutMessage->EventCode     = NOWAIT | NORESULT | ENCODED | RCONT;
         OutMessage->ReturnNexus = NULL;
-        OutMessage->SaveNexus = NULL;
 
         Index = PREIDL;
 
