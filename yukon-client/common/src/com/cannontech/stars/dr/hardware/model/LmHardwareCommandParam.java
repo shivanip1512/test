@@ -17,9 +17,24 @@ public enum LmHardwareCommandParam {
     UNIQUE_MESSAGE_ID(Long.class),
     RELAY(Integer.class),
     WAITABLE(Boolean.class),
-    //PQR parameters
     PQR_ENABLE(Boolean.class),
-    //TODO Other PQR parameters
+    PQR_LOV_TRIGGER(Double.class),
+    PQR_LOV_RESTORE(Double.class),
+    PQR_LOV_TRIGGER_TIME(Short.class),
+    PQR_LOV_RESTORE_TIME(Short.class),
+    PQR_LOV_MIN_EVENT_DURATION(Short.class),
+    PQR_LOV_MAX_EVENT_DURATION(Short.class),
+    PQR_LOV_START_RANDOM_TIME(Short.class),
+    PQR_LOV_END_RANDOM_TIME(Short.class),
+    PQR_LOF_TRIGGER(Short.class),
+    PQR_LOF_RESTORE(Short.class),
+    PQR_LOF_TRIGGER_TIME(Short.class),
+    PQR_LOF_RESTORE_TIME(Short.class),
+    PQR_LOF_MIN_EVENT_DURATION(Short.class),
+    PQR_LOF_MAX_EVENT_DURATION(Short.class),
+    PQR_LOF_START_RANDOM_TIME(Short.class),
+    PQR_LOF_END_RANDOM_TIME(Short.class),
+    PQR_EVENT_SEPARATION(Short.class),
     ;
     
     private Class<?> clazz;

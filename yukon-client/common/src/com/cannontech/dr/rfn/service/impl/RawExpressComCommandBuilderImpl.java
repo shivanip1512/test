@@ -15,6 +15,7 @@ import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.dr.rfn.model.PqrResponseType;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
@@ -154,17 +155,80 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 outputBuffer.put(ctrlFlags);
                 break;
             case PQR_ENABLE:
-                outputBuffer.put((byte)0x66);
+                outputBuffer.put((byte) 0x66);
                 boolean enable = command.findParam(LmHardwareCommandParam.PQR_ENABLE, Boolean.class);
                 byte enableVal = enable ? (byte) 1 : (byte) 0;
                 outputBuffer.put(enableVal);
                 break;
-            //TODO: Other PQR messages
+            case PQR_LOV_PARAMETERS:
+                outputBuffer.put((byte) 0x61);
+                double triggerVolts = command.findParam(LmHardwareCommandParam.PQR_LOV_TRIGGER, Double.class);
+                short triggerTenthsOfVolt = (short) (triggerVolts * 10);
+                outputBuffer.putShort(triggerTenthsOfVolt);
+                double restoreVolts = command.findParam(LmHardwareCommandParam.PQR_LOV_RESTORE, Double.class);
+                short restoreTenthsOfVolt = (short) (restoreVolts * 10);
+                outputBuffer.putShort(restoreTenthsOfVolt);
+                short lovTriggerTime = command.findParam(LmHardwareCommandParam.PQR_LOV_TRIGGER_TIME, Short.class);
+                outputBuffer.putShort(lovTriggerTime);
+                short lovRestoreTime = command.findParam(LmHardwareCommandParam.PQR_LOV_RESTORE_TIME, Short.class);
+                outputBuffer.putShort(lovRestoreTime);
+                break;
+            case PQR_LOV_EVENT_DURATION:
+                outputBuffer.put((byte) 0x67);
+                outputBuffer.put(PqrResponseType.OVER_VOLTAGE.getValue());
+                short minLovDuration = command.findParam(LmHardwareCommandParam.PQR_LOV_MIN_EVENT_DURATION, Short.class);
+                outputBuffer.putShort(minLovDuration);
+                short maxLovDuration = command.findParam(LmHardwareCommandParam.PQR_LOV_MAX_EVENT_DURATION, Short.class);
+                outputBuffer.putShort(maxLovDuration);
+                break;
+            case PQR_LOV_DELAY_DURATION:
+                outputBuffer.put((byte) 0x68);
+                outputBuffer.put(PqrResponseType.OVER_VOLTAGE.getValue());
+                short lovStartRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOV_START_RANDOM_TIME, Short.class);
+                outputBuffer.putShort(lovStartRandomTime);
+                short lovEndRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOV_END_RANDOM_TIME, Short.class);
+                outputBuffer.putShort(lovEndRandomTime);
+                break;
+            case PQR_LOF_PARAMETERS:
+                outputBuffer.put((byte) 0x65);
+                short triggerMillis = command.findParam(LmHardwareCommandParam.PQR_LOF_TRIGGER, Short.class);
+                outputBuffer.putShort(triggerMillis);
+                short restoreMillis = command.findParam(LmHardwareCommandParam.PQR_LOF_RESTORE, Short.class);
+                outputBuffer.putShort(restoreMillis);
+                short lofTriggerTime = command.findParam(LmHardwareCommandParam.PQR_LOF_TRIGGER_TIME, Short.class);
+                outputBuffer.putShort(lofTriggerTime);
+                short lofRestoreTime = command.findParam(LmHardwareCommandParam.PQR_LOF_RESTORE_TIME, Short.class);
+                outputBuffer.putShort(lofRestoreTime);
+                break;
+            case PQR_LOF_EVENT_DURATION:
+                outputBuffer.put((byte) 0x67);
+                outputBuffer.put(PqrResponseType.OVER_FREQUENCY.getValue());
+                short minLofDuration = command.findParam(LmHardwareCommandParam.PQR_LOF_MIN_EVENT_DURATION, Short.class);
+                outputBuffer.putShort(minLofDuration);
+                short maxLofDuration = command.findParam(LmHardwareCommandParam.PQR_LOF_MAX_EVENT_DURATION, Short.class);
+                outputBuffer.putShort(maxLofDuration);
+                break;
+            case PQR_LOF_DELAY_DURATION:
+                outputBuffer.put((byte) 0x68);
+                outputBuffer.put(PqrResponseType.OVER_FREQUENCY.getValue());
+                short lofStartRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOF_START_RANDOM_TIME, Short.class);
+                outputBuffer.putShort(lofStartRandomTime);
+                short lofEndRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOF_END_RANDOM_TIME, Short.class);
+                outputBuffer.putShort(lofEndRandomTime);
+                break;
+            case PQR_EVENT_SEPARATION:
+                outputBuffer.put((byte) 0x69);
+                short minimumEventSeparation = command.findParam(LmHardwareCommandParam.PQR_EVENT_SEPARATION, Short.class);
+                outputBuffer.putShort(minimumEventSeparation);
+                break; 
             default:
                 throw new IllegalArgumentException("Command Type: " + type + " not implemented");
         }
         ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
         trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());
+        
+        log.debug("Inner payload: " + trimmedOutput.toString());
+        
         return trimmedOutput;
     }
 
