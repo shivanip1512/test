@@ -167,6 +167,10 @@ public class PointController {
                 pointModel.getPointBase().getPoint().setPointOffset(pointOffset);
                 
                 model.addAttribute("copyPointModel", pointModel);
+                
+                // Add paoType to model
+                model.addAttribute("paoType",
+                    dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID()).getPaoType());
             } catch (NotFoundException e) {
                 Log.error(e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));

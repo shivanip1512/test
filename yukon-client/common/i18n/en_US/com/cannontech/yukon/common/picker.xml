@@ -29,6 +29,7 @@
 <entry key="yukon.web.picker.programPicker.dialogTitle">Select Program</entry>
 <entry key="yukon.web.picker.cbcSubBusPicker.dialogTitle">Select Substation Bus</entry>
 <entry key="yukon.web.picker.capControlAreaPicker.dialogTitle">Select Area</entry>
+<entry key="yukon.web.picker.categoryAndClassFilteredPaoPicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.cbcPicker.dialogTitle">Select Controller</entry>
 <entry key="yukon.web.picker.lmDevicePicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.lmProgramOrScenarioPicker.dialogTitle">Select Program or Scenario</entry>

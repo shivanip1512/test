@@ -20,11 +20,17 @@
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".device">
-                <form:select path="pointBase.point.paoID" id="copy-point-paos">
-                    <c:forEach var="pao" items="${paos}">
-                        <form:option value="${pao.paoIdentifier.paoId}">${fn:escapeXml(pao.paoName)}</form:option>
-                    </c:forEach>
-                </form:select>
+                <form:hidden id="paoId" path="pointBase.point.paoID"/>
+                <tags:pickerDialog endAction="yukon.tools.point.getNextValidPointOffset"
+                                   extraArgs="${paoType}" 
+                                   id="dbPaoPicker" 
+                                   type="categoryAndClassFilteredPaoPicker" 
+                                   linkType="selection"
+                                   immediateSelectMode="true" 
+                                   selectionProperty="paoName" 
+                                   initialId="${copyPointModel.pointBase.point.paoID}"
+                                   destinationFieldId="paoId"
+                                   allowEmptySelection="false"/>
             </tags:nameValue2>
 
             <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
