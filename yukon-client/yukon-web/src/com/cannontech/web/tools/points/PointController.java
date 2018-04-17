@@ -181,15 +181,16 @@ public class PointController {
     
     @RequestMapping(value = "/points/copy-point", method = RequestMethod.POST)
     public String copyPoint(@ModelAttribute("copyPointModel") PointModel<? extends PointBase> pointModel,
-            BindingResult result, RedirectAttributes redirectAttributes, ModelMap model, FlashScope flashScope,
+            BindingResult result, ModelMap model, FlashScope flashScope,
             YukonUserContext userContext, HttpServletResponse response)
             throws JsonGenerationException, JsonMappingException, IOException {
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
         copyPointValidator.validate(pointModel, result);
 
         if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("pointModel", pointModel);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.pointModel", result);
+            model.addAttribute("paoType",
+                dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID()).getPaoType());
+            model.addAttribute("copyPointModel", pointModel);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "point/copyPointPopup.jsp";
         }

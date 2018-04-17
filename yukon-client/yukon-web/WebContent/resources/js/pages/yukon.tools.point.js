@@ -428,12 +428,18 @@ yukon.tools.point = (function () {
         getNextValidPointOffset : function (selectedPaoInfo) {
             console.log(selectedPaoInfo.paoId);
             var pointType = $("#copy-point-pointType").val(),
-            paoId = selectedPaoInfo[0].paoId,
-            url = yukon.url('/tools/points/getNextAvaliablePointOffset');
+                paoId = selectedPaoInfo[0].paoId,
+                url = yukon.url('/tools/points/getNextAvaliablePointOffset');
             
             $.getJSON(url, {paoId : paoId, pointType : pointType}, function (data) {
                 $("#copy-point-physicalOffset-txt").val(data.nextValidPointOffset);
             });
+            
+            if ($("#copy-point-physicalOffset-txt").hasClass('error')) {
+                $("#copy-point-physicalOffset-txt").removeClass('error');
+                $('#pointBase\\.point\\.pointOffset\\.errors').text('');
+            }
+            
         },
         
         /** Initialize this module. */
