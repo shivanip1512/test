@@ -70,12 +70,13 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
                 List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(device.getInventoryID());
-                if (hardwareConfig.size() != 0 && hardwareConfig.size() != 1) {
+                if (hardwareConfig.size() > 1) {
                     throw new BadConfigurationException("Ecobee only supports one and only one group per device. "
                         + hardwareConfig.size() + " groups found.");
-                }
-                if (hardwareConfig.size() != 0) {
+                } else if (hardwareConfig.size() == 1) {
                     ecobeeCommunicationService.moveDeviceToSet(serialNumber, Integer.toString(hardwareConfig.get(0).getAddressingGroupId()));
+                } else {
+                    ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
                 }
                 break;
             case CONFIG:
