@@ -47,7 +47,7 @@
                         <c:when test="${fn:length(existingConfigs) > 0}">
                             <select name="configuration" class="fl" style="margin-left:5px;">
                                 <c:forEach var="config" items="${existingConfigs}">
-                                    <option value="${config.configurationId}">${config.name}</option>
+                                    <option value="${config.configurationId}">${fn:escapeXml(config.name)}</option>
                                 </c:forEach>
                             </select>
                         </c:when>
