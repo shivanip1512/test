@@ -1371,7 +1371,7 @@ YukonError_t LoadLGrpQMessage(CtiDeviceBase &Dev, OUTMESS& OutMessage, const Cti
 
     /* Zero out the block counter */
     unsigned Offset = PREIDL;                  // First entry starts here.
-    for(int i = 1; i <= Count; i++)
+    for(int i = 1; i <= Count && Offset <= (MaxOcts - MAXQUEENTLEN - 2); i++)
     {
         OUTMESS* MyOutMessage;
         unsigned long Length;
