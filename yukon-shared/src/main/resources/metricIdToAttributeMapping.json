@@ -43,6 +43,7 @@
                 { "metricId" : 49, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVA" },
                 { "metricId" : 50, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVA" },
                 { "metricId" : 51, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA" },
+                { "metricId" : 52, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA" },
 
                 { "metricId" : 80, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR" },
                 { "metricId" : 81, "attributeMagnitude" : 3, "attribute" : "DELIVERED_POWER_FACTOR" },
@@ -130,6 +131,8 @@
                 { "metricId" : 2034, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_RATE_B" },
                 { "metricId" : 2043, "attributeMagnitude" : 3, "attribute" : "SUM_KVAH_RATE_B" },
                 { "metricId" : 2044, "attributeMagnitude" : 3, "attribute" : "NET_KVAH_RATE_B" },
+                { "metricId" : 2184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_B" },
+                { "metricId" : 2210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_B" },
 
                 { "metricId" : 3001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_C" },
                 { "metricId" : 3002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_C" },
@@ -147,6 +150,8 @@
                 { "metricId" : 3034, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_RATE_C" },
                 { "metricId" : 3043, "attributeMagnitude" : 3, "attribute" : "SUM_KVAH_RATE_C" },
                 { "metricId" : 3044, "attributeMagnitude" : 3, "attribute" : "NET_KVAH_RATE_C" },
+                { "metricId" : 3184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_C" },
+                { "metricId" : 3210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_C" },
 
                 { "metricId" : 4001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_D" },
                 { "metricId" : 4002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_D" },
@@ -163,7 +168,9 @@
                 { "metricId" : 4030, "attributeMagnitude" : 3, "attribute" : "NET_RECEIVED_KVARH_RATE_D" },
                 { "metricId" : 4034, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_RATE_D" },
                 { "metricId" : 4043, "attributeMagnitude" : 3, "attribute" : "SUM_KVAH_RATE_D" },
-                { "metricId" : 4044, "attributeMagnitude" : 3, "attribute" : "NET_KVAH_RATE_D" }
+                { "metricId" : 4044, "attributeMagnitude" : 3, "attribute" : "NET_KVAH_RATE_D" },
+                { "metricId" : 4184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_D" },
+                { "metricId" : 4210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_D" }
         ],
         "attributeOverrides" : [
                 { "attribute" : "PEAK_DEMAND",          "metricId" :  13,   "paoTypes" : [ "rfn-530s4x", "rfn-530s4eax", "rfn-530s4eaxr", "rfn-530s4erx", "rfn-530s4erxr" ] },
