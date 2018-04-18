@@ -13,7 +13,7 @@
 
 <cti:msgScope paths="yukon.common.device.bulk.deviceSelection">
 
-    <div class="column-6-6-6-6" style="width:80%;margin-left:0px;">
+    <div class="column-6-6-6-6 ML0" style="width:80%;">
         <div class="column one">
         
             <input type="hidden" id="blockOnSubmit" value="${blockOnSubmit}"/>

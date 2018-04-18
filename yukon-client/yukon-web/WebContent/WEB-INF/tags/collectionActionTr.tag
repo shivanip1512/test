@@ -9,22 +9,20 @@
 <%@ attribute name="inputName" required="false" type="java.lang.String"%>
 <%@ attribute name="inputValue" required="false" type="java.lang.String"%>
 
-<cti:uniqueIdentifier prefix="form_" var="thisId"/>
-
- <tr>
+<cti:msg2 var="descriptionText" key="${descriptionKey}"/>
+<tr>
     <td class="vam PL0" style="padding-bottom: 10px;">
         <cti:url var="actionUrl" value="${action}">
             <cti:param name="errorDevices" value="${deviceCollection.errorDevices}"/>
             <cti:param name="${pageScope.inputName}" value="${pageScope.inputValue}"/>
             <cti:mapParam value="${deviceCollection.collectionParameters}" />
         </cti:url>
-        <cti:button renderMode="appButton" icon="${icon}" href="${actionUrl}" title="${titleText}"/>
+        <cti:button renderMode="appButton" icon="${icon}" href="${actionUrl}" title="${descriptionText}"/>
     </td>
-    <td class="vam PL0" style="padding-right:0px;">
+    <td class="vam PL0 PR0">
         <div class="box fl meta">
             <cti:msg2 var="linkText" key="${linkKey}"/>
             <div><a class="title" href="${actionUrl}">${linkText}</a></div>
-            <cti:msg2 var="descriptionText" key="${descriptionKey}"/>
             <div class="detail">${descriptionText}</div>
         </div>
     </td>

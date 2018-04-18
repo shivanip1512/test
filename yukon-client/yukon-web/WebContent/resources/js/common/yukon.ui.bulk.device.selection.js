@@ -77,10 +77,10 @@ yukon.ui.bulk.device.selection = (function () {
 
         validateAddressRange : function () {
             mod.clearErrors();
-            var start = parseInt($('#byAddrPopup_startRange').val());
-            var end = parseInt($('#byAddrPopup_endRange').val());
-            var errors = [];
-            var MAX_INT = 2147483648; //Maximum 32-bit integer, which is how the range values are eventually interpreted
+            var start = parseInt($('#byAddrPopup_startRange').val()),
+                end = parseInt($('#byAddrPopup_endRange').val()),
+                errors = [],
+                MAX_INT = 2147483648; //Maximum 32-bit integer, which is how the range values are eventually interpreted
             
             //separate errors
             if (isNaN(start)) {

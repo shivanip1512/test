@@ -7,7 +7,8 @@
 <%@ attribute name="id" required="true" %>
 <%@ attribute name="treeCss" %>
 <%@ attribute name="treeParameters" description="This should be a object '{}' with arguments for tree initialization." %>
-<%@ attribute name="triggerElement" %>
+<%@ attribute name="triggerElement" description="The elements that trigger the popup.  If there are multiple, 
+                                        they must be separated by a comma and any after the first one need to have a # symbol.  Example: triggerElement1, #triggerElement2"%>
 <%@ attribute name="highlightNodePath" %>
 <%@ attribute name="multiSelect" type="java.lang.Boolean" %>
 <%@ attribute name="includeControlBar" type="java.lang.Boolean" %>
