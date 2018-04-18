@@ -10,9 +10,9 @@ import com.cannontech.common.util.ByteUtil;
 import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.model.PqrEventType;
 import com.cannontech.dr.rfn.model.PqrResponseType;
-import com.cannontech.dr.rfn.service.PqrEventLogParsingService;
+import com.cannontech.dr.rfn.service.PqrEventParsingService;
 
-public class PqrEventLogParsingServiceImpl implements PqrEventLogParsingService {
+public class PqrEventParsingServiceImpl implements PqrEventParsingService {
 
     @Override
     public List<PqrEvent> parseLogBlob(int inventoryId, byte[] pqrLogBlob) {

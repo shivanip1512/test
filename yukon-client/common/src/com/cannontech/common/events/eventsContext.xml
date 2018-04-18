@@ -129,9 +129,12 @@
     </bean>
     
     <bean id="smartNotificationEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
-        <property name="serviceInterface" value="com.cannontech.common.smartNotification.service.impl.SmartNotificationEventLogService"/>
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.SmartNotificationEventLogService"/>
     </bean>
 
+    <bean id="pqrEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.PqrEventLogService"/>
+    </bean>
     <bean id="pointEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.PointEventLogService" />
     </bean>

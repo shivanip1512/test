@@ -1,8 +1,7 @@
-package com.cannontech.common.smartNotification.service.impl;
+package com.cannontech.common.events.loggers;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
-import com.cannontech.common.events.loggers.ArgEnum;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 

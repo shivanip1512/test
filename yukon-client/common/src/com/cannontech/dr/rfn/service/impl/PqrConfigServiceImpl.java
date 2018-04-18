@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.events.loggers.PqrEventLogService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -39,9 +40,10 @@ public class PqrConfigServiceImpl implements PqrConfigService {
     private final Cache<String, PqrConfigResult> results = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS).build();
     
     @Autowired private AttributeService attributeService;
-    @Autowired private IDatabaseCache serverDatabaseCache;
-    @Autowired private RfCommandStrategy rfCommandStrategy;
     @Autowired @Qualifier("main") private Executor executor;
+    @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private PqrEventLogService pqrEventLogService;
+    @Autowired private RfCommandStrategy rfCommandStrategy;
     
     @Override
     public Optional<PqrConfigResult> getResult(String resultId) {
@@ -50,6 +52,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
     
     @Override
     public String sendConfigs(List<LiteLmHardwareBase> hardware, PqrConfig config, LiteYukonUser user) {
+        pqrEventLogService.sendConfig(user, hardware.size(), config.toString());
         log.info("Initiating Power Quality Response configuration for " + hardware.size() + " inventory. "
                  + config.toString());
         

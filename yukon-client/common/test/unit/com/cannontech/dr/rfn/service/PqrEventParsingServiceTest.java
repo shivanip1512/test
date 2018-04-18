@@ -14,10 +14,10 @@ import com.cannontech.common.util.ByteUtil;
 import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.model.PqrEventType;
 import com.cannontech.dr.rfn.model.PqrResponseType;
-import com.cannontech.dr.rfn.service.impl.PqrEventLogParsingServiceImpl;
+import com.cannontech.dr.rfn.service.impl.PqrEventParsingServiceImpl;
 
-public class PqrEventLogParsingServiceTest {
-    private PqrEventLogParsingService service = new PqrEventLogParsingServiceImpl();
+public class PqrEventParsingServiceTest {
+    private PqrEventParsingService service = new PqrEventParsingServiceImpl();
     private static final int INV_ID = 1234567;
     private static final double DOUBLE_DELTA = 0.0001;
     

@@ -26,7 +26,7 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.service.ParsingService;
 import com.cannontech.dr.rfn.service.ParsingService.Schema;
-import com.cannontech.dr.rfn.service.PqrEventLogParsingService;
+import com.cannontech.dr.rfn.service.PqrEventParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.dr.rfn.service.RfnLcrParsingStrategy;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
@@ -43,7 +43,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PqrEventDao pqrEventDao;
-    @Autowired private PqrEventLogParsingService pqrEventLogParsingService;
+    @Autowired private PqrEventParsingService pqrEventLogParsingService;
     protected JmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrTlvParsingStrategy.class);

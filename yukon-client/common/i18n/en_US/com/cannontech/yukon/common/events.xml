@@ -792,5 +792,9 @@
     <entry key="yukon.common.events.system.notifications.subscriptionsRemoved">All notification subscriptions removed for {2} {3} by {1}.</entry>
     <entry key="yukon.common.events.system.notifications.subscriptionsRemoved.3">Identifier</entry>
     
+    <!-- Power Quality Response -->
+    <entry key="yukon.common.events.dr.powerQualityResponse.sendConfig">{1} send a Power Quality Response configuration to {2} devices: {3}.</entry>
+    <entry key="yukon.common.events.dr.powerQualityResponse.sendConfig.2">Number of Devices</entry>
+    <entry key="yukon.common.events.dr.powerQualityResponse.sendConfig.3">Configuration</entry>
 </properties>
 
