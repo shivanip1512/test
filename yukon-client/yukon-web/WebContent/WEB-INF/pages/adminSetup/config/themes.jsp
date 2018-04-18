@@ -45,9 +45,9 @@
     <div class="clearfix">
         <div class="category fl">
             <cti:url var="themeUrl" value="/admin/config/themes"/>
-            <cti:button renderMode="appButton" icon="icon-app icon-app-32-paintbrush" href="${viewUrl}"/>
+            <cti:button renderMode="appButton" icon="icon-app icon-app-32-paintbrush" href="${themeUrl}"/>
             <div class="fl meta">
-                <div><a class="title" href="<cti:url value="/admin/config/themes"/>"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
+                <div><a class="title" href="${themeUrl}"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.THEMES.description"/></div>
             </div>
         </div>
