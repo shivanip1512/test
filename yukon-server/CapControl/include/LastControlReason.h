@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "pointdefs.h"
 
 class CtiTime;
 class CtiCCTwoWayPoints;
@@ -14,7 +14,7 @@ public:
     virtual std::string getText( const CtiCCTwoWayPoints & points ) = 0;
 
     virtual long serialize( const CtiCCTwoWayPoints & points ) = 0;
-    virtual void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) = 0;
+    virtual void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) = 0;
 
     virtual std::unique_ptr<LastControlReason>  clone() const = 0;
 };
@@ -30,7 +30,7 @@ public:
     std::string getText( const CtiCCTwoWayPoints & points ) override;
 
     long serialize( const CtiCCTwoWayPoints & points ) override;
-    void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
+    void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
 
     std::unique_ptr<LastControlReason>  clone() const override;
 };
@@ -46,7 +46,7 @@ public:
     std::string getText( const CtiCCTwoWayPoints & points ) override;
 
     long serialize( const CtiCCTwoWayPoints & points ) override;
-    void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
+    void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
 
     std::unique_ptr<LastControlReason>  clone() const override;
 
@@ -83,7 +83,7 @@ public:
     std::string getText( const CtiCCTwoWayPoints & points ) override;
 
     long serialize( const CtiCCTwoWayPoints & points ) override;
-    void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
+    void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
 
     std::unique_ptr<LastControlReason>  clone() const override;
 

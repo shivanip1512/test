@@ -4,7 +4,6 @@
 #include "CapControlPao.h"
 #include "UpdatablePao.h"
 #include "LitePoint.h"
-#include "PointValueHolder.h"
 #include "AttributeService.h"
 #include "ccid.h"
 #include "ccutil.h"

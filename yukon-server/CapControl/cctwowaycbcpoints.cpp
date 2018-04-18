@@ -381,7 +381,7 @@ bool CtiCCTwoWayPoints::isTimestampNew( const long pointID, const CtiTime & time
     return ! (_pointValues.getPointTime(pointID, prevTime) && timestamp <= prevTime);
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp, const unsigned quality )
+bool CtiCCTwoWayPoints::setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp, const PointQuality_t quality )
 {
     CtiPointType_t  lookupType = InvalidPointType;
 
@@ -393,24 +393,24 @@ bool CtiCCTwoWayPoints::setTwoWayPointValue( const long pointID, const double va
     if ( lookupType == type && isTimestampNew( pointID, timestamp ) )
     {
         // maybe check if the value is different before we set _dirty = true
-        _pointValues.addPointValue(pointID, value, timestamp);
+        _pointValues.addPointValue( pointID, value, timestamp, quality );
         _dirty = true;
         return true;
     }
     return false;
 }
 
-bool CtiCCTwoWayPoints::setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp, const unsigned quality )
+bool CtiCCTwoWayPoints::setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp, const PointQuality_t quality )
 {
     return setTwoWayPointValue( pointID, value, StatusPointType, timestamp, quality );
 }
 
-bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue( const long pointID,  const double value,  const CtiTime & timestamp, const unsigned quality )
+bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue( const long pointID,  const double value,  const CtiTime & timestamp, const PointQuality_t quality )
 {
     return setTwoWayPointValue( pointID, value, AnalogPointType, timestamp, quality );
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp, const unsigned quality )
+bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp, const PointQuality_t quality )
 {
     return setTwoWayPointValue( pointID, value, PulseAccumulatorPointType, timestamp, quality );
 }

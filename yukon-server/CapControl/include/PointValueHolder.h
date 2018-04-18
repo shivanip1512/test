@@ -2,10 +2,10 @@
 
 #include "yukon.h"
 #include "pointtypes.h"
-#include "ctitime.h"
 #include "PointDataRequest.h"   // for the PointValue struct
 #include "pointdefs.h"
 
+class CtiTime;
 class CtiPointDataMsg;
 
 
@@ -15,12 +15,12 @@ public:
 
     PointValueHolder() {    }
 
-    virtual void addPointValue( const int pointId,
-                                const double pointValue,
-                                const CtiTime & pointTime,
-                                const unsigned pointQuality = UnintializedQuality );
+    void addPointValue( const int pointId,
+                        const double pointValue,
+                        const CtiTime & pointTime,
+                        const PointQuality_t pointQuality );
 
-    virtual void updatePointValue( const CtiPointDataMsg & message );
+    void updatePointValue( const CtiPointDataMsg & message );
 
     bool getPointValue( const int pointId, double & result ) const;
     bool getPointTime( const int pointId, CtiTime & time ) const;
@@ -28,6 +28,11 @@ public:
     PointValue getCompletePointInfo( const int pointId ) const;
 
 private:
+
+    void add( const int pointId,
+              const double pointValue,
+              const CtiTime & pointTime,
+              const unsigned pointQuality );
 
     typedef std::map<int, PointValue> ValueMap;
 

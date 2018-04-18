@@ -45,6 +45,7 @@
 #include "MessageCounter.h"
 #include "database_reader.h"
 #include "CapControlPredicates.h"
+#include "desolvers.h"
 
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/algorithm/for_each.hpp>
@@ -2457,11 +2458,11 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
 ---------------------------------------------------------------------------*/
 void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
 {
-    const int      pointID   = message.getId();
-    const double   value     = message.getValue();
-    const unsigned quality   = message.getQuality();
-    const unsigned tags      = message.getTags();
-    const CtiTime  timestamp = message.getTime();
+    const int      pointID       = message.getId();
+    const double   value         = message.getValue();
+    const PointQuality_t quality = static_cast<PointQuality_t>( message.getQuality() );
+    const unsigned tags          = message.getTags();
+    const CtiTime  timestamp     = message.getTime();
 
     if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
     {
@@ -2471,7 +2472,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
         list.add("ID")      << pointID;
         list.add("Val")     << value;
         list.add("Time")    << timestamp;
-        list.add("Quality") << quality;
+        list.add("Quality") << desolvePointQuality( quality );
         list.add("Tags")    << tags;
 
         CTILOG_INFO(dout, list);
@@ -2582,7 +2583,7 @@ void CtiCapController::checkDisablePaoPoint(CapControlPao* pao, long pointID, bo
     }
 }
 
-void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, const CtiTime& timestamp)
+void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQuality_t quality, const CtiTime& timestamp)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2912,7 +2913,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
 }
 
-void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigned quality, const CtiTime& timestamp )
+void CtiCapController::pointDataMsgByFeeder( long pointID, double value, PointQuality_t quality, const CtiTime& timestamp )
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3141,7 +3142,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 }
 
 
-void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsigned quality, unsigned tags, const CtiTime& timestamp)
+void CtiCapController::pointDataMsgByCapBank( long pointID, double value, PointQuality_t quality, unsigned tags, const CtiTime& timestamp)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 

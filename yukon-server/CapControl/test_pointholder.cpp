@@ -10,9 +10,9 @@ BOOST_AUTO_TEST_CASE(test_PointValueHolder_addPointValue)
 
     CtiTime time;
 
-    pvh.addPointValue(1,1.0,time);
-    pvh.addPointValue(2,2.0,time);
-    pvh.addPointValue(3,3.0,time);
+    pvh.addPointValue(1,1.0,time,NormalQuality);
+    pvh.addPointValue(2,2.0,time,NormalQuality);
+    pvh.addPointValue(3,3.0,time,NormalQuality);
 
     bool ret = false;
     double tester = 0.0;

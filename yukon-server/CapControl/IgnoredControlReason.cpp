@@ -38,12 +38,12 @@ long IgnoredControlReasonCbcDnp::serializeReason( const CtiCCTwoWayPoints & poin
     return 0;
 }
 
-void IgnoredControlReasonCbcDnp::deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void IgnoredControlReasonCbcDnp::deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     // empty...
 }
 
-void IgnoredControlReasonCbcDnp::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void IgnoredControlReasonCbcDnp::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     // empty...
 }
@@ -133,12 +133,12 @@ long IgnoredControlReasonCbc702x::serializeReason( const CtiCCTwoWayPoints & poi
     return UninitializedReason;
 }
 
-void IgnoredControlReasonCbc702x::deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void IgnoredControlReasonCbc702x::deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::IgnoredIndicator ), dbValue, timestamp, quality );
 }
 
-void IgnoredControlReasonCbc702x::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void IgnoredControlReasonCbc702x::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     points.setTwoWayAnalogPointValue( points.getPointIdByAttribute( Attribute::IgnoredControlReason ), dbValue, timestamp, quality );
 }
@@ -213,12 +213,12 @@ long IgnoredControlReasonCbc802x::serializeReason( const CtiCCTwoWayPoints & poi
     return UninitializedReason;
 }
 
-void IgnoredControlReasonCbc802x::deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void IgnoredControlReasonCbc802x::deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     // empty...
 }
 
-void IgnoredControlReasonCbc802x::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void IgnoredControlReasonCbc802x::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     points.setTwoWayAnalogPointValue( points.getPointIdByAttribute( Attribute::IgnoredControlReason ), dbValue, timestamp, quality );
 }

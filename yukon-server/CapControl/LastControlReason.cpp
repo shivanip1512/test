@@ -18,7 +18,7 @@ long LastControlReasonCbcDnp::serialize( const CtiCCTwoWayPoints & points )
     return 0;
 }
 
-void LastControlReasonCbcDnp::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void LastControlReasonCbcDnp::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     // empty!
 }
@@ -73,7 +73,7 @@ long LastControlReasonCbc702x::serialize( const CtiCCTwoWayPoints & points )
     return lastControlReason;
 }
 
-void LastControlReasonCbc702x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void LastControlReasonCbc702x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonLocal ),        !!( dbValue & Local ),        timestamp, quality );
     points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonRemote ),       !!( dbValue & Remote ),       timestamp, quality );
@@ -127,7 +127,7 @@ long LastControlReasonCbc802x::serialize( const CtiCCTwoWayPoints & points )
     return UninitializedRawSate;
 }
 
-void LastControlReasonCbc802x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality )
+void LastControlReasonCbc802x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality )
 {
     const long pointID = points.getPointIdByAttribute( Attribute::LastControlReason );
 

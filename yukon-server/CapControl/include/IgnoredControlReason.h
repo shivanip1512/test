@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "pointdefs.h"
 
 class CtiTime;
 class CtiCCTwoWayPoints;
@@ -20,8 +20,8 @@ public:
     virtual bool serializeIndicator( const CtiCCTwoWayPoints & points ) = 0;
     virtual long serializeReason( const CtiCCTwoWayPoints & points ) = 0;
 
-    virtual void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) = 0;
-    virtual void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) = 0;
+    virtual void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) = 0;
+    virtual void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) = 0;
 
     virtual std::unique_ptr<IgnoredControlReason>  clone() const = 0;
 };
@@ -43,8 +43,8 @@ public:
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
 
-    void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
-    void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
+    void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
+    void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
 
     std::unique_ptr<IgnoredControlReason>  clone() const override;
 };
@@ -66,8 +66,8 @@ public:
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
 
-    void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
-    void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
+    void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
+    void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
 
     std::unique_ptr<IgnoredControlReason>  clone() const override;
 
@@ -118,8 +118,8 @@ public:
     bool serializeIndicator( const CtiCCTwoWayPoints & points ) override;
     long serializeReason( const CtiCCTwoWayPoints & points ) override;
 
-    void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
-    void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const unsigned quality ) override;
+    void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
+    void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp, const PointQuality_t quality ) override;
 
     std::unique_ptr<IgnoredControlReason>  clone() const override;
 

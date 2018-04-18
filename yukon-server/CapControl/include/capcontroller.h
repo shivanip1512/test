@@ -103,9 +103,9 @@ class CtiCapController : public MessageListener
 
         void parseMessage(CtiMessage* message);
         void pointDataMsg( const CtiPointDataMsg & message );
-        void pointDataMsgBySubBus(long pointID, double value, unsigned quality, const CtiTime& timestamp);
-        void pointDataMsgByFeeder(long pointID, double value, unsigned quality, const CtiTime& timestamp);
-        void pointDataMsgByCapBank(long pointID, double value, unsigned quality, unsigned tags, const CtiTime& timestamp);
+        void pointDataMsgBySubBus(long pointID, double value, PointQuality_t quality, const CtiTime& timestamp);
+        void pointDataMsgByFeeder(long pointID, double value, PointQuality_t quality, const CtiTime& timestamp);
+        void pointDataMsgByCapBank(long pointID, double value, PointQuality_t quality, unsigned tags, const CtiTime& timestamp);
         void signalMsg( const CtiSignalMsg & signal );
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);
 
