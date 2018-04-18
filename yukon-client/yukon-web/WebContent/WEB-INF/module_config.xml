@@ -384,11 +384,7 @@
                     <labelArgument>${description}</labelArgument>
                   </page>
                   <page name="bulk.disconnect" type="BASIC"/>
-                  <page name="bulk.demandReset.results" type="BASIC">
-                    <pages>
-                      <page name="bulk.demandReset.results.recent" type="BASIC"/>
-                    </pages>
-                  </page>
+                  <page name="bulk.demandReset" type="BASIC"/>
                 </pages>
               </page>
             </pages>

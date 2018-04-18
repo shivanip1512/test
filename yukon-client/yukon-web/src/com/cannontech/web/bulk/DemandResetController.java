@@ -34,7 +34,7 @@ public class DemandResetController {
    @RequestMapping("action")
     public String action(ModelMap model, DeviceCollection deviceCollection, String key){
         model.addAttribute("deviceCollection", deviceCollection); 
-        return "demand/reset/resultDetail.jsp";
+        return "demand/reset/demandReset.jsp";
     }
 
     @RequestMapping("start")
@@ -44,15 +44,5 @@ public class DemandResetController {
                 messageResolver.getMessageSourceAccessor(userContext), request);
         int key = demandResetService.sendDemandResetAndVerify(deviceCollection, alertCallback, userContext);
         return "redirect:/bulk/progressReport/detail?key=" + key;
-    }
-
-    @RequestMapping("recent-results")
-    public String recentResults(ModelMap model) {
-        return "demand/reset/results.jsp";
-    }
-
-    @RequestMapping("result-detail")
-    public String resultDetail(ModelMap model, String resultKey) {
-        return "demand/reset/resultDetail.jsp";
     }
 }
