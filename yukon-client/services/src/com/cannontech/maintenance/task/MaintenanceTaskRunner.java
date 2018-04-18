@@ -15,24 +15,18 @@ public class MaintenanceTaskRunner {
     private static final Logger log = YukonLogManager.getLogger(MaintenanceTaskRunner.class);
     // TODO will remove after discussion on this
     private long minimumExecutionTime = 300000; // Time in ms i.e. 5 minute
-    // Store completed Tasks
-    private static final ThreadLocal<Set<MaintenanceTaskType>> completedMaintenanceTask =
-        new ThreadLocal<Set<MaintenanceTaskType>>() {
-            @Override
-            protected Set<MaintenanceTaskType> initialValue() {
-                return new HashSet<>();
-            }
-        };
+
     /**
      * This method is run at the start of a run window.
      * It returns true when all the task have completed and false if all task are not completed.
      * Completed here means that there is no further records to delete for now.
      */
-    public  boolean run(List<MaintenanceTask> tasks, Instant endOfRunWindow) {
+    public boolean run(List<MaintenanceTask> tasks, Instant endOfRunWindow) {
+        Set<MaintenanceTaskType> completedMaintenanceTask = new HashSet<>();
         Duration timeSliceLength = getTimeSliceLength(tasks.size(), endOfRunWindow);
-        while (Instant.now().isBefore(endOfRunWindow) && completedMaintenanceTask.get().size() != tasks.size()) {
-            runTasks(tasks, timeSliceLength);
-            int remainingTasks = tasks.size() - completedMaintenanceTask.get().size();
+        while (Instant.now().isBefore(endOfRunWindow) && completedMaintenanceTask.size() != tasks.size()) {
+            runTasks(tasks, completedMaintenanceTask, timeSliceLength);
+            int remainingTasks = tasks.size() - completedMaintenanceTask.size();
             if (remainingTasks == 0) {
                 return true;
             } else if (!isEnoughTimeAvailable(endOfRunWindow)) {
@@ -47,21 +41,21 @@ public class MaintenanceTaskRunner {
                 break;
             }
         }
-        completedMaintenanceTask.get().clear();
+        completedMaintenanceTask.clear();
         return false;
     }
 
-    private void runTasks(List<MaintenanceTask> tasks, Duration timeSliceLength) {
+    private void runTasks(List<MaintenanceTask> tasks, Set<MaintenanceTaskType> completedMaintenanceTask, Duration timeSliceLength) {
         for (MaintenanceTask task : tasks) {
             log.info("Running " + task.getMaintenanceTaskType().name() + " maintenance task");
             Instant endOfTimeSlice = Instant.now().plus(timeSliceLength);
             // The task runs repeatedly, until it's out of work, or the allotted time is up
             boolean taskIsDone = false;
-            if (!completedMaintenanceTask.get().contains(task.getMaintenanceTaskType())) {
+            if (!completedMaintenanceTask.contains(task.getMaintenanceTaskType())) {
                 while (!taskIsDone && isEnoughTimeAvailable(endOfTimeSlice)) {
                     taskIsDone = task.doTask(endOfTimeSlice);
                     if (taskIsDone) {
-                        completedMaintenanceTask.get().add(task.getMaintenanceTaskType());
+                        completedMaintenanceTask.add(task.getMaintenanceTaskType());
                         log.info("Maintenance task " + task.getMaintenanceTaskType().name() + " is completed.");
                     }
                 }
