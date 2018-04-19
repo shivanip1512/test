@@ -191,14 +191,14 @@ public final static boolean isSeasonAssignedToStrategy(int seasonScheduleID) thr
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM CCSEASONSTRATEGYASSIGNMENT");
-        sql.append("WHERE SeasonScheduleId").eq("?");
+        sql.append("WHERE SeasonScheduleId").eq(seasonScheduleID);
         sql.append(  "AND SeasonName IN (");
         sql.append(    "SELECT SeasonName");
         sql.append(    "FROM DateOfSeason");
-        sql.append(    "WHERE SeasonScheduleId").eq("?");
+        sql.append(    "WHERE SeasonScheduleId").eq(seasonScheduleID);
         sql.append(  ");");
         JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
-        int count = template.queryForObject(sql.getSql(), Integer.class, seasonScheduleID, seasonScheduleID);
+        int count = template.queryForObject(sql.getSql(), sql.getArguments(), Integer.class);
         return count > 0;
     }
 /**
