@@ -420,7 +420,7 @@ void CtiDeviceManager::getDevicesByType(int type, vector<ptr_type> &devices)
 }
 
 
-auto CtiDeviceManager::getDeviceByRfnIdentifier(const RfnIdentifier& rfnId) -> ptr_type
+Devices::RfnDeviceSPtr CtiDeviceManager::getDeviceByRfnIdentifier(const RfnIdentifier& rfnId)
 {
     const auto sql = 
         "SELECT"
@@ -441,7 +441,13 @@ auto CtiDeviceManager::getDeviceByRfnIdentifier(const RfnIdentifier& rfnId) -> p
 
     if( rdr() )
     {
-        return getDeviceByID(rdr["DeviceId"].as<long>());
+        if( auto dev = getDeviceByID(rdr["DeviceId"].as<long>()) )
+        {
+            if( auto rfnDev = boost::dynamic_pointer_cast<Devices::RfnDevice>(dev) )
+            {
+                return rfnDev;
+            }
+        }
     }
 
     return nullptr;

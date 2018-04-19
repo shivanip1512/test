@@ -81,6 +81,7 @@ public:
     StreamBufferT& operator<< (const CtiDate& date);
     StreamBufferT& operator<< (const CtiTime& time);
     StreamBufferT& operator<< (const std::chrono::seconds val);
+    StreamBufferT& operator<< (const std::chrono::minutes val);
 
     StreamBufferT& operator<< (const Loggable& loggable);
 

@@ -159,8 +159,14 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::seconds seconds) 
 { 
-    swapOrAppend(std::to_string(seconds.count()) + " seconds"s);   
+    swapOrAppend(std::to_string(seconds.count()) + " seconds");   
     return static_cast<StreamBufferT&>(*this); 
+}
+
+template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::minutes minutes)
+{
+    swapOrAppend(std::to_string(minutes.count()) + " minutes");
+    return static_cast<StreamBufferT&>(*this);
 }
 
 template<class StreamBufferT>

@@ -57,5 +57,7 @@ protected:
     RfnIdentifier _rfnId;
 };
 
+using RfnDeviceSPtr = boost::shared_ptr<RfnDevice>;
+
 }
 }

@@ -92,7 +92,7 @@ struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
 
 struct test_DeviceManager : CtiDeviceManager
 {
-    std::map<int, CtiDeviceSPtr> devices {
+    std::map<int, Cti::Devices::RfnDeviceSPtr> devices {
         { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
         {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
         { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
@@ -106,7 +106,7 @@ struct test_DeviceManager : CtiDeviceManager
         }
     }
 
-    ptr_type getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
+    Cti::Devices::RfnDeviceSPtr getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
     {
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" } )
         {
