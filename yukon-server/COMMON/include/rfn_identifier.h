@@ -7,6 +7,8 @@ namespace Cti {
 
 struct RfnIdentifier : Loggable
 {
+    //  All of these should be less than 16 bytes, benefit from Small String Optimization, and incur no additional heap allocation.
+
     std::string manufacturer;
     std::string model;
     std::string serialNumber;

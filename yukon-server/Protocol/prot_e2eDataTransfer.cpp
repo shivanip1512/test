@@ -43,18 +43,20 @@ unsigned short E2eDataTransferProtocol::getOutboundId()
 }
 
 
-unsigned short E2eDataTransferProtocol::getOutboundIdForEndpoint(long endpointId)
+unsigned short E2eDataTransferProtocol::getOutboundIdForEndpoint(const RfnIdentifier endpointId)
 {
-    if( ! _outboundIds.count(endpointId) )
+    auto outbound_itr = _outboundIds.find(endpointId);
+
+    if( outbound_itr == _outboundIds.end() )
     {
-        _outboundIds[endpointId] = getOutboundId();
+        outbound_itr = _outboundIds.emplace(endpointId, getOutboundId()).first;
     }
 
-    return ++_outboundIds[endpointId];
+    return ++(outbound_itr->second);
 }
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token)
+std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token)
 {
     if( payload.size() > MaxOutboundPayload )
     {
@@ -73,7 +75,7 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vecto
 }
 
 
-E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const long endpointId)
+E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const RfnIdentifier endpointId)
 {
     EndpointResponse er;
 
@@ -106,11 +108,13 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
     {
         case COAP_MESSAGE_ACK:
         {
-            if( ! _outboundIds.count(endpointId) )
+            const auto outbound_itr = _outboundIds.find(endpointId);
+
+            if( outbound_itr == _outboundIds.end() )
             {
                 throw UnexpectedAck(indication_pdu->hdr->id);
             }
-            else if( indication_pdu->hdr->id != _outboundIds[endpointId] )
+            else if( indication_pdu->hdr->id != outbound_itr->second )
             {
                 throw UnexpectedAck(indication_pdu->hdr->id, _outboundIds[endpointId]);
             }
@@ -121,7 +125,9 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
         {
             CTILOG_INFO(dout, "Received NONconfirmable packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
-            if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
+            const auto inbound_itr = _inboundIds.find(endpointId);
+
+            if( inbound_itr != _inboundIds.end() && inbound_itr->second == indication_pdu->hdr->id )
             {
                 CTILOG_WARN(dout, "NONconfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
@@ -136,7 +142,9 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
         {
             CTILOG_INFO(dout, "Received CONfirmable packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
-            if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
+            const auto inbound_itr = _inboundIds.find(endpointId);
+
+            if( inbound_itr != _inboundIds.end() && inbound_itr->second == indication_pdu->hdr->id )
             {
                 CTILOG_WARN(dout, "CONfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
                 //  TODO: Ignore data?
@@ -182,7 +190,7 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
 }
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendBlockContinuation(const unsigned size, const unsigned num, const long endpointId, const unsigned long token)
+std::vector<unsigned char> E2eDataTransferProtocol::sendBlockContinuation(const unsigned size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token)
 {
     scoped_pdu_ptr continuation_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, getOutboundIdForEndpoint(endpointId), COAP_MAX_PDU_SIZE);
 
@@ -210,9 +218,14 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendAck(const unsigned short
 }
 
 
-void E2eDataTransferProtocol::handleTimeout(const long endpointId)
+void E2eDataTransferProtocol::handleTimeout(const RfnIdentifier endpointId)
 {
-    ++_outboundIds[endpointId];  //  invalidate the ID so we ignore any late replies
+    auto itr = _outboundIds.find(endpointId);
+
+    if( itr != _outboundIds.end() )
+    {
+        itr->second++;  //  invalidate the ID so we ignore any late replies
+    }
 }
 
 

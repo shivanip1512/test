@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( test_handleTimeout )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
 
     e2e.id = 0x4567;
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     Cti::Test::byte_str inboundBytes =
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_noRequest )
 {
     test_E2eDataTransferProtocol e2e;
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     Cti::Test::byte_str inboundBytes =
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_resetReceived )
 {
     test_E2eDataTransferProtocol e2e;
 
-    const long endpointId = 11235;
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     Cti::Test::byte_str inboundBytes =

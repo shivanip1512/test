@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dlldefs.h"
+#include "rfn_identifier.h"
 
 #include <boost/optional.hpp>
 #include <boost/random.hpp>
@@ -64,12 +65,12 @@ public:
     E2eDataTransferProtocol();
 
     //  throws PayloadTooLarge
-    std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token);
+    std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws E2eException
-    EndpointResponse handleIndication(const std::vector<unsigned char> &payload, const long endpointId);
+    EndpointResponse handleIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
 
-    void handleTimeout(const long endpointId);
+    void handleTimeout(const RfnIdentifier endpointId);
 
 protected:
 
@@ -77,13 +78,15 @@ protected:
 
 private:
 
-    std::map<long, unsigned short> _outboundIds;
-    std::map<long, unsigned short> _inboundIds;
+    using EndpointIds = std::map<RfnIdentifier, unsigned short>;
+
+    EndpointIds _outboundIds;
+    EndpointIds _inboundIds;
 
     boost::random::mt19937 _generator;
 
-    unsigned short getOutboundIdForEndpoint(long endpointId);
-    std::vector<unsigned char> sendBlockContinuation(const unsigned size, const unsigned num, const long endpointId, const unsigned long token);
+    unsigned short getOutboundIdForEndpoint(const RfnIdentifier endpointId);
+    std::vector<unsigned char> sendBlockContinuation(const unsigned size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
     std::vector<unsigned char> sendAck(const unsigned short id);
 };
 

@@ -73,7 +73,7 @@ void RfnRequestManager::tick()
 }
 
 
-Protocols::E2eDataTransferProtocol::EndpointResponse RfnRequestManager::handleE2eDtIndication(const std::vector<unsigned char> &payload, const long endpointId)
+Protocols::E2eDataTransferProtocol::EndpointResponse RfnRequestManager::handleE2eDtIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId)
 {
     return _e2edt.handleIndication(payload, endpointId);
 }
@@ -116,14 +116,14 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             try
             {
                 const Protocols::E2eDataTransferProtocol::EndpointResponse er =
-                        handleE2eDtIndication(indication.payload, activeRequest.request.parameters.deviceId);
+                        handleE2eDtIndication(indication.payload, indication.rfnIdentifier);
 
                 if( ! er.ack.empty() )
                 {
                     sendE2eDataAck(
                             er.ack,
                             activeRequest.request.command->getApplicationServiceId(),
-                            activeRequest.request.parameters.rfnIdentifier);
+                            indication.rfnIdentifier);
 
                     stats.incrementAcks(activeRequest.request.parameters.deviceId, Now);
                 }
@@ -401,7 +401,7 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
 }
 
 
-std::vector<unsigned char>  RfnRequestManager::sendE2eDtRequest(const std::vector<unsigned char> &payload, const long endpointId, const unsigned long token)
+std::vector<unsigned char>  RfnRequestManager::sendE2eDtRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token)
 {
     return _e2edt.sendRequest(payload, endpointId, token);
 }
@@ -443,7 +443,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             try
             {
-                e2ePacket = sendE2eDtRequest(rfnRequest, request.parameters.deviceId, request.rfnRequestId);
+                e2ePacket = sendE2eDtRequest(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId);
             }
             catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
             {
