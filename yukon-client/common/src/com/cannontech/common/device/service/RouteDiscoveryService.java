@@ -2,6 +2,7 @@ package com.cannontech.common.device.service;
 
 import java.util.List;
 
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -21,16 +22,7 @@ public interface RouteDiscoveryService {
      */
     public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> callback, LiteYukonUser user);
 
-    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> callback, LiteYukonUser user, String command);
+    void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback,
+            LiteYukonUser user, String command, CollectionActionResult result);
 
-    /**
-     * This method takes a list of callbacks and sends out cancel commands for each of them.  
-     * It also adds the callback to a cancellation list so it can't recursively call another 
-     * route locate request during the cancellation process.
-     * 
-     * @param routeFoundCallbacks
-     * @param user
-     */
-    public void cancelRouteDiscovery(List<SimpleCallback<Integer>> routeFoundCallbacks, 
-                                     final LiteYukonUser user);
 }

@@ -122,6 +122,10 @@ public class CollectionActionResult {
     public DeviceCollection getDeviceCollection(CollectionActionDetail detail) {
         return details.get(detail) != null ? details.get(detail).getDevices() : null;
     }
+    
+    public boolean containsDevice(CollectionActionDetail detail, SimpleDevice device) {
+        return getDeviceCollection(detail).getDeviceList().contains(device);
+    }
 
     public CommandRequestExecution getExecution() {
         return execution;

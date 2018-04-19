@@ -2,9 +2,7 @@ package com.cannontech.common.device.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -12,9 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
@@ -23,29 +25,35 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private PaoDao paoDao;
-    @Autowired private ScheduledExecutor scheduledExecutor = null;
+    @Autowired private ScheduledExecutor scheduledExecutor;
     @Autowired private CommandExecutionService commandRequestService;
-    private Map<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>> simpleCallbacksToCommandCompleteCallbacks = 
-        new HashMap<>();
+    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+    
     private List<SimpleCallback<Integer>> cancelationCallbackList = Collections.synchronizedList(new ArrayList<SimpleCallback<Integer>>()); 
 
     private static int MAX_ROUTE_RETRY = 10;
     private static int NEXT_ATTEMPT_WAIT = 5;
     private Logger log = YukonLogManager.getLogger(RouteDiscoveryServiceImpl.class);
     
+    private Cache<Integer, Integer> collectionActionResultCacheKey =
+            CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS).build();
+
     @Override
     public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user) {
-        routeDiscovery(device, routeIds, routeFoundCallback, user, "ping");
+        routeDiscovery(device, routeIds, routeFoundCallback, user, "ping", null);
     }
     
     @Override
-    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback, LiteYukonUser user, final String command) {
-        
+    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, SimpleCallback<Integer> routeFoundCallback,
+            LiteYukonUser user, String command, CollectionActionResult result) {
+      
         // init state for first route
         RouteDiscoveryState state = new RouteDiscoveryState();
         state.setRouteIds(routeIds);
@@ -53,10 +61,10 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         state.setRouteFoundCallback(routeFoundCallback);
         state.setUser(user);
         // run
-        doNextDiscoveryRequest(device, state, command);
+        doNextDiscoveryRequest(device, state, command, result);
     }
     
-    private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state, final String commandString) {
+    private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state, final String commandString, CollectionActionResult result) {
 
         final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + "' (" + device.getPaoIdentifier() + ")";
         
@@ -141,7 +149,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                                 }
 
                                 // run next request
-                                doNextDiscoveryRequest(device, state, commandString);
+                                doNextDiscoveryRequest(device, state, commandString, result);
 
                             } catch (Exception e) {
                                 runCallbackWithNull(state, "doNextDiscoveryRequest failed.", deviceLogStr, routeLogStr, e);
@@ -167,25 +175,28 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                         }
 
                     };
-
-                    synchronized(simpleCallbacksToCommandCompleteCallbacks){
-                        List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbackList = 
-                            simpleCallbacksToCommandCompleteCallbacks.get(state.getRouteFoundCallback());
-                        
-                        if(commandCompletionCallbackList == null){
-                            commandCompletionCallbackList = new ArrayList<>();
-                            simpleCallbacksToCommandCompleteCallbacks.put(state.getRouteFoundCallback(),commandCompletionCallbackList);
-                        }
-                        commandCompletionCallbackList.add(callback);
-                    }
                     
                     // execute
                     try {
-                        commandRequestService.execute(Collections.singletonList(cmdReq), callback, DeviceRequestType.PING_DEVICE_ON_ROUTE_COMMAND, state.getUser());
+                        List<CommandRequestRouteAndDevice> commands = Collections.singletonList(cmdReq);
+                        if (result != null) {
+                            // collecting cancellation callbacks
+                            result.addCancellationCallback(
+                                new CollectionActionCancellationCallback(StrategyType.PORTER, null, callback));
+                            result.getExecution().setRequestCount(
+                                result.getExecution().getRequestCount() + commands.size());
+                            commandRequestExecutionDao.saveOrUpdate(result.getExecution());
+                            collectionActionResultCacheKey.put(result.getCacheKey(), result.getCacheKey());
+                            commandRequestService.execute(commands, callback, result.getExecution(), false,
+                                state.getUser());
+
+                        } else {
+                            commandRequestService.execute(commands, callback,
+                                DeviceRequestType.PING_DEVICE_ON_ROUTE_COMMAND, state.getUser());
+                        }
                     } catch (Exception e) {
                         runCallbackWithNull(state, "Unknown exception.", deviceLogStr, "", e);
                     }
-
                 }
 
             }, NEXT_ATTEMPT_WAIT, TimeUnit.SECONDS);
@@ -221,35 +232,6 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
             	} catch (Exception e) {
             		log.error("Failed to run callback with null. Original reason for null callback was: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, e);
             	}
-            }
-        });
-    }
-    
-    @Override
-    public void cancelRouteDiscovery(final List<SimpleCallback<Integer>> routeFoundCallbacks, final LiteYukonUser user) {
-        
-        // Stops any further commands from being sent out by currently running callbacks.
-        for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
-            this.cancelationCallbackList.add(routeFoundCallback);
-        }        
-        
-        // Sends out a cancel request for all the pings that have not had responses
-        scheduledExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                for (SimpleCallback<Integer> routeFoundCallback : routeFoundCallbacks) {
-                    synchronized(simpleCallbacksToCommandCompleteCallbacks){
-                        List<CommandCompletionCallback<CommandRequestRouteAndDevice>> commandCompletionCallbacks = 
-                            simpleCallbacksToCommandCompleteCallbacks.get(routeFoundCallback);
-                        
-                        // Sends a cancel command to all the commands that have been sent out.
-                        if(commandCompletionCallbacks != null){
-                            for (CommandCompletionCallback<CommandRequestRouteAndDevice> commandCompletionCallback : commandCompletionCallbacks) {
-                                commandRequestService.cancelExecution(commandCompletionCallback, user, true);
-                            }
-                        }
-                    }
-                }
             }
         });
     }

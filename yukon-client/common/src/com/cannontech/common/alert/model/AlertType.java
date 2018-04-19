@@ -12,7 +12,8 @@ public enum AlertType implements DisplayableEnum {
     OUTAGE_PROCESSING_READ_LOGS_COMPLETION,
     TAMPER_FLAG_PROCESSING_READ_INTERNAL_FLAGS_COMPLETION,
     DISCONNECT_COMPLETION,
-    DEMAND_RESET_COMPLETION;
+    DEMAND_RESET_COMPLETION,
+    LOCATE_ROUTE,
     ;
     
     private final static String keyPrefix = "yukon.web.alerts.types.";

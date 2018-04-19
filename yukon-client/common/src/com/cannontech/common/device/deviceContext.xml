@@ -233,7 +233,7 @@
     
     <bean id="routeLocateResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     
-    <bean id="routeLocateExecutor" class="com.cannontech.common.device.routeLocate.impl.RouteLocateExecutorImpl"/>
+    <bean class="com.cannontech.common.device.routeLocate.impl.RouteLocationServiceImpl"/>
     
     <bean id="routeBroadcastService" class="com.cannontech.common.device.service.RouteBroadcastServiceImpl"/>
     
