@@ -131,13 +131,16 @@ class IM_EX_DEVDB RfnCommand : public DeviceCommand, public virtual RfnResultHan
 {
 public:
 
-    typedef Bytes RfnRequestPayload;
-    typedef Bytes RfnResponsePayload;
+    using RfnRequestPayload  = Bytes;
+    using RfnResponsePayload = Bytes;
+    using RfnCommandPtr = std::unique_ptr<RfnCommand>;
 
     RfnRequestPayload executeCommand(const CtiTime now);
 
     virtual RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode) = 0;
+
+    static RfnCommandPtr handleUnsolicitedResponse(const CtiTime now, RfnResponsePayload payload);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 
@@ -163,7 +166,7 @@ protected:
 
 };
 
-using RfnCommandPtr  = std::unique_ptr<RfnCommand>;
+using RfnCommandPtr = RfnCommand::RfnCommandPtr;
 using RfnCommandList = std::vector<RfnCommandPtr>;
 
 }

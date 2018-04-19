@@ -44,6 +44,12 @@ auto RfnCommand::getApplicationServiceId() const -> ASID
 }
 
 
+RfnCommandPtr RfnCommand::handleUnsolicitedResponse(const CtiTime now, RfnResponsePayload payload)
+{
+    return nullptr;
+}
+
+
 }
 }
 }

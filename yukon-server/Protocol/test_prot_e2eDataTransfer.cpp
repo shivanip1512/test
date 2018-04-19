@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
 
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    Cti::Protocols::E2eDataTransferProtocol::EndpointResponse er = e2e.handleIndication(inbound, endpointId);
+    const auto er = e2e.handleIndication(inbound, endpointId);
 
     BOOST_CHECK(er.ack.empty());
     BOOST_CHECK(er.blockContinuation.empty());
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
 
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    Cti::Protocols::E2eDataTransferProtocol::EndpointResponse er = e2e.handleIndication(inbound, endpointId);
+    const auto er = e2e.handleIndication(inbound, endpointId);
 
     BOOST_CHECK(er.ack.empty());
     BOOST_CHECK(er.blockContinuation.empty());

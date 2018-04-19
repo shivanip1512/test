@@ -21,8 +21,10 @@ class IM_EX_PROT E2eDataTransferProtocol : private boost::noncopyable
 {
 public:
 
-    struct EndpointResponse
+    struct EndpointMessage
     {
+        bool nodeOriginated;
+
         unsigned long token;
 
         std::vector<unsigned char> data;  //  bytes payload
@@ -68,7 +70,7 @@ public:
     std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws E2eException
-    EndpointResponse handleIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
+    EndpointMessage handleIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
 
     void handleTimeout(const RfnIdentifier endpointId);
 

@@ -73,7 +73,7 @@ void RfnRequestManager::tick()
 }
 
 
-Protocols::E2eDataTransferProtocol::EndpointResponse RfnRequestManager::handleE2eDtIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId)
+Protocols::E2eDataTransferProtocol::EndpointMessage RfnRequestManager::handleE2eDtIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId)
 {
     return _e2edt.handleIndication(payload, endpointId);
 }
@@ -98,6 +98,9 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         for( auto &indication : recentIndications )
         {
+            CTILOG_INFO(dout, "Indication message received for device "<< indication.rfnIdentifier <<
+                    std::endl << "rfnId: " << indication.rfnIdentifier << ": " << indication.payload);
+
             auto request = mapFindRef(_activeRequests, indication.rfnIdentifier);
 
             if( ! request )
@@ -108,48 +111,64 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
             ActiveRfnRequest &activeRequest = *request;
 
-            CTILOG_INFO(dout, "Indication message received for device "<< activeRequest.request.parameters.rfnIdentifier <<
-                    std::endl << "rfnId: " << activeRequest.request.parameters.rfnIdentifier << ": " << indication.payload);
-
             std::vector<RfnCommandResult> commandResults;
 
             try
             {
-                const Protocols::E2eDataTransferProtocol::EndpointResponse er =
-                        handleE2eDtIndication(indication.payload, indication.rfnIdentifier);
+                const auto message = handleE2eDtIndication(indication.payload, indication.rfnIdentifier);
 
-                if( ! er.ack.empty() )
+                if( ! message.ack.empty() )
                 {
                     sendE2eDataAck(
-                            er.ack,
+                            message.ack,
                             activeRequest.request.command->getApplicationServiceId(),
                             indication.rfnIdentifier);
 
-                    stats.incrementAcks(activeRequest.request.parameters.deviceId, Now);
+                    stats.incrementAcks(indication.rfnIdentifier, Now);
                 }
 
-                if( er.token != activeRequest.request.rfnRequestId )
+                if( message.nodeOriginated )
                 {
-                    CTILOG_ERROR(dout, "Indication received for inactive request token "<< er.token <<" for device "<< activeRequest.request.parameters.rfnIdentifier);
+                    if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedResponse(Now, indication.payload) )
+                    {
+                        _unsolicitedReportsPerTick.emplace_back(indication.rfnIdentifier, std::move(command));
+                    }
+
                     continue;
                 }
 
-                CTILOG_INFO(dout, "Response received for token "<< er.token <<" for device "<< activeRequest.request.parameters.rfnIdentifier <<
-                        std::endl <<"rfnId: "<< activeRequest.request.parameters.rfnIdentifier << ": " << er.data);
+                auto request = mapFindRef(_activeRequests, indication.rfnIdentifier);
+
+                if( ! request )
+                {
+                    CTILOG_WARN(dout, "Indication message received for inactive device " << indication.rfnIdentifier);
+                    continue;
+                }
+
+                ActiveRfnRequest &activeRequest = *request;
+
+                if( message.token != activeRequest.request.rfnRequestId )
+                {
+                    CTILOG_ERROR(dout, "Indication received for inactive request token "<< message.token <<" for device "<< activeRequest.request.parameters.rfnIdentifier);
+                    continue;
+                }
+
+                CTILOG_INFO(dout, "Response received for token "<< message.token <<" for device "<< activeRequest.request.parameters.rfnIdentifier <<
+                        std::endl <<"rfnId: "<< activeRequest.request.parameters.rfnIdentifier << ": " << message.data);
 
                 activeRequest.response.insert(
                         activeRequest.response.end(),
-                        er.data.begin(),
-                        er.data.end());
+                        message.data.begin(),
+                        message.data.end());
 
-                if( ! er.blockContinuation.empty() )
+                if( ! message.blockContinuation.empty() )
                 {
                     const CtiTime  previousBlockTimeSent   = activeRequest.currentPacket.timeSent;
                     const unsigned previousRetransmitCount = activeRequest.currentPacket.retransmits;
 
                     activeRequest.currentPacket =
                             sendE2eDataRequestPacket(
-                                    er.blockContinuation,
+                                    message.blockContinuation,
                                     activeRequest.request.command->getApplicationServiceId(),
                                     activeRequest.request.parameters.rfnIdentifier,
                                     activeRequest.request.parameters.priority,
@@ -196,7 +215,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 CTILOG_INFO(dout, "Result ["<< commandResult.status <<", "<< commandResult.description <<"] for device "<< indication.rfnIdentifier);
             }
 
-            _tickResults.emplace_back(std::move(activeRequest.request), std::move(commandResults));
+            _resultsPerTick.emplace_back(std::move(activeRequest.request), std::move(commandResults));
 
             completedDevices.insert(indication.rfnIdentifier);
 
@@ -248,7 +267,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
                     CTILOG_INFO(dout, "Result [" << commandError.status << ", " << commandError.description << "] for device " << confirm.rfnIdentifier);
                 }
 
-                _tickResults.emplace_back(std::move(activeRequest.request), std::move(commandErrors));
+                _resultsPerTick.emplace_back(std::move(activeRequest.request), std::move(commandErrors));
 
                 rejected.insert(confirm.rfnIdentifier);
 
@@ -358,7 +377,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                 CTILOG_INFO(dout, "Result [" << commandError.status << ", " << commandError.description << "] for device " << rfnId);
             }
 
-            _tickResults.emplace_back(std::move(activeRequest.request), std::move(commandErrors));
+            _resultsPerTick.emplace_back(std::move(activeRequest.request), std::move(commandErrors));
 
             expirations.insert(rfnId);
 
@@ -492,7 +511,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
         {
             CTILOG_INFO(dout, "Result ["<< ce.error_code <<", "<< ce.error_description <<"] for device "<< rfnIdentifier);
 
-            _tickResults.emplace_back(std::move(request), RfnCommandResultList { { ce.error_description, ce.error_code } });
+            _resultsPerTick.emplace_back(std::move(request), RfnCommandResultList { { ce.error_description, ce.error_code } });
         }
     }
 }
@@ -502,12 +521,19 @@ void RfnRequestManager::postResults()
 {
     LockGuard guard(_resultsMux);
 
-    _results.insert(
-            _results.end(),
-            std::make_move_iterator(_tickResults.begin()), 
-            std::make_move_iterator(_tickResults.end()));
+    std::move(
+        _resultsPerTick.begin(),
+        _resultsPerTick.end(),
+        std::back_inserter(_results));
 
-    _tickResults.clear();
+    _resultsPerTick.clear();
+
+    std::move(
+        _unsolicitedReportsPerTick.begin(),
+        _unsolicitedReportsPerTick.end(),
+        std::back_inserter(_unsolicitedReports));
+
+    _unsolicitedReportsPerTick.clear();
 }
 
 
@@ -515,11 +541,21 @@ auto RfnRequestManager::getResults(unsigned max) -> ResultQueue
 {
     LockGuard guard(_resultsMux);
 
-    ResultQueue tmp { 
-            std::make_move_iterator(_results.begin()), 
-            std::make_move_iterator(_results.end())};
+    ResultQueue tmp;
+    
+    tmp.swap(_results);
 
-    _results.clear();
+    return tmp;
+}
+
+
+auto RfnRequestManager::getUnsolicitedReports() -> UnsolicitedReports
+{
+    LockGuard guard(_resultsMux);
+
+    UnsolicitedReports tmp;
+    
+    tmp.swap(_unsolicitedReports);
 
     return tmp;
 }
@@ -697,7 +733,7 @@ void RfnRequestManager::handleStatistics()
         report << "Attempted communication with # nodes: " << stats.nodeStatistics.size() << std::endl;
         report << "Node, # requests, avg time/message, # of block tx, avg # blocks/block tx, avg time/block tx, avg time-to-ack, avg attempts/success, success/1 tx, success/2 tx, success/3 tx, failures";
 
-        for each( const Rfn::E2eStatistics::StatisticsPerNode::value_type &spn in stats.nodeStatistics )
+        for( const auto & spn : stats.nodeStatistics )
         {
             report << std::endl;
             report << spn.first;

@@ -19,7 +19,6 @@ struct E2eNodeStatistics
         blockTransfers = 0;
         blocksReceived = 0;
         cumulativeBlockTransferDelay = 0;
-        totalAcks = 0;
     }
 
     //  Average number of attempts per successful (Acknowledged) E2EDT message
@@ -48,8 +47,6 @@ struct E2eNodeStatistics
     // Average time for each block transfer (last block arrival time – first block request time)
     boost::optional<CtiTime> blockBegin;
     time_t cumulativeBlockTransferDelay;
-
-    unsigned totalAcks;
 };
 
 
@@ -58,9 +55,11 @@ class E2eStatistics
 public:
 
     //  Number of unique E2EDT end points with which data exchanges occurred
-    typedef std::map<long, E2eNodeStatistics> StatisticsPerNode;
+    using StatisticsPerNode = std::map<long, E2eNodeStatistics>;
+    using AcksPerNode = std::map<RfnIdentifier, int>;
 
     StatisticsPerNode nodeStatistics;
+    AcksPerNode acks;
 
     void incrementRequests( const long deviceid, CtiTime requestTime )
     {
@@ -77,11 +76,9 @@ public:
         incrementTransmits(stats, requestTime);
     }
 
-    void incrementAcks( const long deviceid, CtiTime ackTime )
+    void incrementAcks( const RfnIdentifier rfnId, CtiTime ackTime )
     {
-        E2eNodeStatistics &stats = nodeStatistics[deviceid];
-
-        stats.totalAcks++;
+        acks[rfnId]++;
     }
 
     void incrementBlockContinuation( const long deviceid, const unsigned retransmitCount, CtiTime blockSendTime, CtiTime previousBlockSendTime )

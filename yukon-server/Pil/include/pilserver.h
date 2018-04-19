@@ -79,6 +79,7 @@ protected:
 
    void handleInMessageResult(const INMESS &InMessage);
    void handleRfnDeviceResult(RfnDeviceResult result);
+   void handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport report);
 
    void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, RequestQueue& execList, RequestQueue& groupRequests, std::list< CtiMessage* > & retList);
    int  analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, std::list< CtiMessage* > & retList);

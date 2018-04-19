@@ -49,6 +49,7 @@
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/algorithm/count.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm_ext/insert.hpp>
@@ -60,6 +61,7 @@
 
 using namespace std;
 using boost::adaptors::transformed;
+using boost::adaptors::indirected;
 
 extern IM_EX_CTIBASE std::string outMessageToString(const OUTMESS* Om);
 
@@ -472,12 +474,11 @@ void PilServer::resultThread()
 
             unsigned long start = GetTickCount(), elapsed;
 
-            typedef boost::ptr_deque<INMESS> InMessQueue_t;
-            InMessQueue_t pendingInMessages;
+            std::vector<std::unique_ptr<INMESS>> pendingInMessages;
 
             while( pendingInMessages.size() < inQueueBlockSize && (elapsed = (GetTickCount() - start)) < inQueueMaxWait )
             {
-                if( INMESS *im = _inQueue.getQueue(inQueueMaxWait - elapsed) )
+                if( auto im = _inQueue.getQueue(inQueueMaxWait - elapsed) )
                 {
                     MessageCount++;
                     MessageLog++;
@@ -488,17 +489,19 @@ void PilServer::resultThread()
                         CTILOG_INFO(dout, "PIL has processed " << MessageCount << " result messages");
                     }
 
-                    pendingInMessages.push_back(im);
+                    pendingInMessages.emplace_back(im);
                 }
             }
 
             auto pendingRfnResultQueue = _rfnManager.getResults(inQueueBlockSize);
 
+            auto rfnUnsolicitedReports = _rfnManager.getUnsolicitedReports();
+
             auto get_rfn_result_device = [](const RfnDeviceResult & result) { return result.request.parameters.deviceId; };
 
             set<long> paoids;
 
-            boost::insert(paoids, pendingInMessages     | transformed(get_inmess_target_device));
+            boost::insert(paoids, pendingInMessages | indirected | transformed(get_inmess_target_device));
             boost::insert(paoids, pendingRfnResultQueue | transformed(get_rfn_result_device));
 
             if( ! paoids.empty() )
@@ -508,18 +511,25 @@ void PilServer::resultThread()
 
             WorkerThread::interruptionPoint();
 
-            while( !bServerClosing && !pendingInMessages.empty() )
+            for( const auto & InMessage : pendingInMessages )
             {
-                InMessQueue_t::auto_type InMessage = pendingInMessages.pop_front();
+                if( bServerClosing ) break;
 
                 handleInMessageResult(*InMessage);
             }
 
-            while( !bServerClosing && !pendingRfnResultQueue.empty() )
+            for( auto & result : pendingRfnResultQueue )
             {
-                handleRfnDeviceResult(std::move(pendingRfnResultQueue.front()));
+                if( bServerClosing ) break;
 
-                pendingRfnResultQueue.pop_front();
+                handleRfnDeviceResult(std::move(result));
+            }
+
+            for( auto & report : rfnUnsolicitedReports )
+            {
+                if( bServerClosing ) break;
+
+                handleRfnUnsolicitedReport(std::move(report));
             }
 
             const size_t clientReturnBlockSize = 20;
@@ -835,6 +845,25 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
     }
 
     sendResults(vgList, retList, priority, connectionHandle);
+}
+
+
+void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport report)
+{
+    auto rfnDevice = DeviceManager->getDeviceByRfnIdentifier(report.rfnId);
+
+    const auto invokeCommand = [report = std::move(report)](Devices::RfnDevice & rfnDev) {
+        rfnDev.extractCommandResult(*(report.command));
+    };
+        
+    if( ! rfnDevice )
+    {
+        //  invoke system call to Java
+    }
+    else
+    {
+        invokeCommand(*rfnDevice);
+    }
 }
 
 

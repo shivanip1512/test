@@ -75,9 +75,9 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vecto
 }
 
 
-E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const RfnIdentifier endpointId)
+E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const RfnIdentifier endpointId)
 {
-    EndpointResponse er;
+    EndpointMessage message;
 
     if( raw_indication_pdu.size() > COAP_MAX_PDU_SIZE )
     {
@@ -108,6 +108,8 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
     {
         case COAP_MESSAGE_ACK:
         {
+            message.nodeOriginated = false;
+
             const auto outbound_itr = _outboundIds.find(endpointId);
 
             if( outbound_itr == _outboundIds.end() )
@@ -122,37 +124,30 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
             break;
         }
         case COAP_MESSAGE_NON:
+        case COAP_MESSAGE_CON:
         {
-            CTILOG_INFO(dout, "Received NONconfirmable packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
+            message.nodeOriginated = true;
+
+            const bool confirmable = indication_pdu->hdr->type == COAP_MESSAGE_CON;
+            const std::string type = confirmable ? "CONfirmable" : "NONconfirmable";
+
+            CTILOG_INFO(dout, "Received " << type << " packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
             const auto inbound_itr = _inboundIds.find(endpointId);
 
             if( inbound_itr != _inboundIds.end() && inbound_itr->second == indication_pdu->hdr->id )
             {
-                CTILOG_WARN(dout, "NONconfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
+                CTILOG_WARN(dout, type << " packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
                 throw DuplicatePacket(indication_pdu->hdr->id);
             }
 
             _inboundIds[endpointId] = indication_pdu->hdr->id;
 
-            break;
-        }
-        case COAP_MESSAGE_CON:
-        {
-            CTILOG_INFO(dout, "Received CONfirmable packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
-
-            const auto inbound_itr = _inboundIds.find(endpointId);
-
-            if( inbound_itr != _inboundIds.end() && inbound_itr->second == indication_pdu->hdr->id )
+            if( confirmable )
             {
-                CTILOG_WARN(dout, "CONfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
-                //  TODO: Ignore data?
+                message.ack = sendAck(indication_pdu->hdr->id);
             }
-
-            _inboundIds[endpointId] = indication_pdu->hdr->id;
-
-            er.ack = sendAck(indication_pdu->hdr->id);
 
             break;
         }
@@ -164,7 +159,7 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
     }
 
     //  Decode the token
-    er.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
+    message.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
 
     //  Extract the data from the packet
     unsigned char *data;
@@ -172,7 +167,7 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
 
     coap_get_data(indication_pdu, &len, &data);
 
-    er.data.assign(data, data + len);
+    message.data.assign(data, data + len);
 
     //  Look for any block option
     coap_block_t block;
@@ -181,12 +176,12 @@ E2eDataTransferProtocol::EndpointResponse E2eDataTransferProtocol::handleIndicat
     {
         if( block.m )
         {
-            er.blockContinuation =
-                    sendBlockContinuation(block.szx, block.num + 1, endpointId, er.token);
+            message.blockContinuation =
+                    sendBlockContinuation(block.szx, block.num + 1, endpointId, message.token);
         }
     }
 
-    return er;
+    return message;
 }
 
 

@@ -3,6 +3,7 @@
 #include "dlldefs.h"
 #include "prot_e2eDataTransfer.h"
 #include "dev_rfn.h"
+#include "cmd_rfn.h"
 #include "rfn_asid.h"
 #include "rfn_e2e_messenger.h"
 
@@ -65,14 +66,27 @@ class IM_EX_CTIPIL RfnRequestManager
 {
 public:
 
+    struct UnsolicitedReport
+    {
+        UnsolicitedReport( RfnIdentifier rfnId_, Devices::Commands::RfnCommandPtr command_)
+            :   rfnId(rfnId_),
+                command(std::move(command_))
+        { }
+
+        RfnIdentifier rfnId;
+        Devices::Commands::RfnCommandPtr command;
+    };
+
     using ResultQueue          = std::deque<RfnDeviceResult>;
     using RfnDeviceRequestList = std::vector<RfnDeviceRequest>;
+    using UnsolicitedReports   = std::vector<UnsolicitedReport>;
 
     void tick();
 
     void submitRequests(RfnDeviceRequestList requests);
 
     ResultQueue getResults(unsigned max);
+    UnsolicitedReports getUnsolicitedReports();
 
     void  cancelByGroupMessageId(long groupMessageId);
     size_t countByGroupMessageId(long groupMessageId);
@@ -81,7 +95,7 @@ public:
 
 protected:
 
-    virtual Protocols::E2eDataTransferProtocol::EndpointResponse handleE2eDtIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
+    virtual Protocols::E2eDataTransferProtocol::EndpointMessage handleE2eDtIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
     virtual std::vector<unsigned char> sendE2eDtRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
 
 private:
@@ -136,8 +150,9 @@ private:
 
     Mutex                _resultsMux;
     ResultQueue          _results;
-
-    ResultQueue _tickResults;
+    ResultQueue          _resultsPerTick;
+    UnsolicitedReports   _unsolicitedReports;
+    UnsolicitedReports   _unsolicitedReportsPerTick;
 
     Mutex                _pendingRequestsMux;
     RfnIdToRequestHeap   _pendingRequests;

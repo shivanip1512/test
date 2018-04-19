@@ -45,7 +45,7 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 
     } e2e;
 
-    Cti::Protocols::E2eDataTransferProtocol::EndpointResponse handleE2eDtIndication(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId) override
+    Cti::Protocols::E2eDataTransferProtocol::EndpointMessage handleE2eDtIndication(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId) override
     {
         return e2e.handleIndication(payload, endpointId);
     }
