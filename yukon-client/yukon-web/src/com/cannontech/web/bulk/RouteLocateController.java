@@ -17,16 +17,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.routeLocate.DeviceRouteLocation;
-import com.cannontech.common.device.routeLocate.RouteLocateExecutor;
 import com.cannontech.common.device.routeLocate.RouteLocateResult;
+import com.cannontech.common.device.routeLocate.RouteLocationService;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DeviceDao;
@@ -48,12 +49,14 @@ public class RouteLocateController {
 
     @Autowired private PaoDao paoDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private RouteLocateExecutor routeLocateExecutor;
+    @Autowired private RouteLocationService routeLocationService;
     @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
+    @Autowired private AlertService alertService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private static final Logger log = YukonLogManager.getLogger(RouteLocateController.class);
     
@@ -75,7 +78,7 @@ public class RouteLocateController {
         
         // ROUTE OPTIONS
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
-        Map<Integer, String> routeOptions = new LinkedHashMap<Integer, String>(routes.length);
+        Map<Integer, String> routeOptions = new LinkedHashMap<>(routes.length);
         for (LiteYukonPAObject route : routes) {
             routeOptions.put(route.getLiteID(), route.getPaoName());
         }
@@ -90,9 +93,7 @@ public class RouteLocateController {
         model.addAttribute("autoUpdateRoute", autoUpdateRoute);
         
         // ALL RESULTS
-        List<RouteLocateResult> routeLocateResultsList = new ArrayList<RouteLocateResult>();
-        routeLocateResultsList.addAll(new ReverseList<RouteLocateResult>(routeLocateExecutor.getPending()));
-        routeLocateResultsList.addAll(new ReverseList<RouteLocateResult>(routeLocateExecutor.getCompleted()));
+        List<RouteLocateResult> routeLocateResultsList = new ArrayList<>();
         model.addAttribute("routeLocateResultsList", routeLocateResultsList);
         
         return "routeLocate/routeLocateHome.jsp";
@@ -108,7 +109,7 @@ public class RouteLocateController {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
                 
         int[] routesSelect = ServletRequestUtils.getIntParameters(request, "routesSelect");
-        List<Integer> selectedRouteIds = new ArrayList<Integer>();
+        List<Integer> selectedRouteIds = new ArrayList<>();
         for (int routeId : routesSelect) {
             selectedRouteIds.add(routeId);
         }
@@ -144,20 +145,12 @@ public class RouteLocateController {
             model.addAttribute("errorMsg", errorMsg);
             return "redirect:/bulk/routeLocate/home";
         } else {
-            // EXECUTOR CALLBACK
-            SimpleCallback<RouteLocateResult> executorCallback = new SimpleCallback<RouteLocateResult>() {
-                @Override
-                public void handle(RouteLocateResult item) throws Exception {
-                    // maybe send an alert or something cool
-                    log.debug("Inside routeLocateExecutor callback.");
-                }
-            };
-            
-            // RUN EXECUTOR
-            String resultId = routeLocateExecutor.execute(deviceCollection, selectedRouteIds, autoUpdateRoute, executorCallback, userContext.getYukonUser(), commandString);
-            
-            model.addAttribute("resultId", resultId);
-            return "redirect:/bulk/routeLocate/results";
+            SimpleCallback<CollectionActionResult> alertCallback = CollectionActionAlertHelper.createAlert(
+                AlertType.LOCATE_ROUTE, alertService, messageResolver.getMessageSourceAccessor(userContext), request);
+            LinkedHashMap<String, String> inputs = null;
+            int cacheKey = routeLocationService.locate(inputs, deviceCollection, selectedRouteIds, autoUpdateRoute,
+                commandString, alertCallback, userContext);
+            return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
         }
     }
     
@@ -165,7 +158,7 @@ public class RouteLocateController {
     @RequestMapping("cancelCommands")
     public View cancelCommands(String resultId, YukonUserContext userContext) {
         
-        routeLocateExecutor.cancelExecution(resultId,userContext.getYukonUser());
+      
         return new JsonView();
     }
   
@@ -173,16 +166,7 @@ public class RouteLocateController {
     @RequestMapping("results")
     public String results(ModelMap model, HttpServletRequest request) throws ServletException {
         
-        // RESULTID
-        String resultId = ServletRequestUtils.getRequiredStringParameter(request, "resultId");
-        model.addAttribute("resultId", resultId);
-        
-        RouteLocateResult result = routeLocateExecutor.getResult(resultId);
-        model.addAttribute("result", result);
-        model.addAttribute("deviceCollection", result.getDeviceCollection());
-        
-        long deviceCount = result.getDeviceCollection().getDeviceCount();
-        model.addAttribute("deviceCount", deviceCount);
+
         
         return "routeLocate/routeLocateResults.jsp";
     }
@@ -195,13 +179,15 @@ public class RouteLocateController {
         String resultId = ServletRequestUtils.getRequiredStringParameter(request, "resultId");
         model.addAttribute("resultId", resultId);
         
-        RouteLocateResult result = routeLocateExecutor.getResult(resultId);
+        routeLocationService.getLocations(Integer.parseInt(resultId));
+        
+    /*   RouteLocateResult result = routeLocateExecutor.getResult(resultId);
         model.addAttribute("result", result);
         model.addAttribute("deviceCollection", result.getDeviceCollection());
 
         // FOUND/NOT FOUND LISTS
-        List<DeviceRouteLocation> foundRoutes = new ArrayList<DeviceRouteLocation>();
-        List<DeviceRouteLocation> notFoundRoutes = new ArrayList<DeviceRouteLocation>();
+        List<DeviceRouteLocation> foundRoutes = new ArrayList<>();
+        List<DeviceRouteLocation> notFoundRoutes = new ArrayList<>();
         for (Integer drlId : result.getCompletedDeviceRouteLocations().keySet()) {
             
             DeviceRouteLocation drl = result.getCompletedDeviceRouteLocations().get(drlId);
@@ -214,7 +200,7 @@ public class RouteLocateController {
         }
         
         model.addAttribute("foundRoutes", foundRoutes);
-        model.addAttribute("notFoundRoutes", notFoundRoutes);
+        model.addAttribute("notFoundRoutes", notFoundRoutes);*/
         
         return "routeLocate/routeLocateRouteSettings.jsp";
     }
@@ -234,12 +220,12 @@ public class RouteLocateController {
         deviceUpdateService.changeRoute(device, routeId);
         
         // update DeviceRouteLocation
-        RouteLocateResult result = routeLocateExecutor.getResult(resultId);
+   /*     RouteLocateResult result = routeLocateExecutor.getResult(resultId);
         DeviceRouteLocation drl = result.getCompletedDeviceRouteLocations().get(deviceRouteLocationId);
-        drl.setRouteUpdated(true);
+        drl.setRouteUpdated(true);*/
         
-        model.addAttribute("oldRouteName", drl.getInitialRouteName());
-        model.addAttribute("newRouteName", drl.getRouteName());
+     //   model.addAttribute("oldRouteName", drl.getInitialRouteName());
+      //  model.addAttribute("newRouteName", drl.getRouteName());
         
         return "routeLocate/routeLocateRouteUpdateInfo.jsp";
     }
