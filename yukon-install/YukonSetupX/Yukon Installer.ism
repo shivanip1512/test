@@ -106,7 +106,6 @@
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>API Extras</td><td>{9F298104-0C82-4336-861C-0DC4F1C845E5}</td><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>API WAR</td><td>{3D76E4FF-BB3E-45B6-A48E-19B1C3052BDD}</td><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Alarm Monitor</td><td>{CCF6072A-E99C-44D7-BF60-A0B8D766DD06}</td><td>CLIENT</td><td>0</td><td/><td/><td>529</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Calc Logic</td><td>{FE9D3324-9F22-4D15-8E92-E6D07060AAE4}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Cap Control</td><td>{54196791-2CE5-462C-9568-2D2319AA539D}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Client Base</td><td>{9C16CA21-4F40-404D-9ED0-B565427AFE1D}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -423,7 +422,6 @@
 		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING79##</td><td>##ID_STRING80##</td><td>39</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Watchdog Service</td></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING20##</td><td>##ID_STRING41##</td><td>37</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Message Broker</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME21##</td><td>##ID_STRING13##</td><td>31</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Notification</td></row>
-		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME11##</td><td>##ID_STRING21##</td><td>23</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Alarm Monitor</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME8##</td><td>##ID_STRING18##</td><td>17</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Tabular Data Console</td></row>
 	</table>
 
@@ -470,7 +468,6 @@
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>Message Broker</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Java Service Wrapper</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Notification Server</td></row>
-		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>Alarm Monitor</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>TDC</td></row>
 	</table>
 
@@ -521,7 +518,6 @@
 		<col def="S0">Miscellaneous</col>
 		<row><td>API Extras</td><td/><td/><td>_59BB2DEA_6FA0_4383_8D92_2C01F848D412_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>API WAR</td><td/><td/><td>_F56FFCBB_7560_471E_8402_5F76C4B2DB8A_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Alarm Monitor</td><td/><td/><td>_188D5085_4D70_42B5_A093_491B41E4BBF5_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Calc Logic</td><td/><td/><td>_B341430A_4821_43D6_BB7D_E151EAF36DBB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Cap Control</td><td/><td/><td>_EE47412D_D3F8_40E2_955F_8C4694472B84_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Client Base</td><td/><td/><td>_3E938811_D624_46B2_B3EC_A3D950B1BFA9_FILTER</td><td/><td/><td/><td/></row>
@@ -665,7 +661,6 @@
 		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td/><td>YukonWatchdogService_Installed</td><td>YukonWatchdogService_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING81##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td/><td>YukonMessageBroker_Installed</td><td/><td>YukonMessageBroker_UnInstalling</td><td/><td/><td/><td>##ID_STRING62##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td/><td>NotificationServer_Installed</td><td>NotificationServer_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING35##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING42##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING39##</td><td>36</td><td/><td/><td/></row>
 	</table>
 
@@ -968,7 +963,6 @@
 		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
-		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 	</table>
 
@@ -1148,7 +1142,6 @@
 		<row><td>Complete</td><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td></row>
 		<row><td>Complete</td><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td></row>
 		<row><td>Complete</td><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td></row>
-		<row><td>Complete</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
 		<row><td>Complete</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
 		<row><td>Custom</td><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td></row>
 		<row><td>Custom</td><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td></row>
@@ -1172,7 +1165,6 @@
 		<row><td>Custom</td><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td></row>
 		<row><td>Custom</td><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td></row>
 		<row><td>Custom</td><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td></row>
-		<row><td>Custom</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
 		<row><td>Custom</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
 	</table>
 
