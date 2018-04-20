@@ -116,7 +116,7 @@
     	<ant dir="${simulators}" target="${dotarget}"/>
         <ant dir="${services}" target="${dotarget}" />
         <ant dir="${yukon-message-broker}" target="${dotarget}"/>
-        <ant dir="${yukon-monitor-service}" target="${dotarget}"/>
+        <ant dir="${yukon-watchdog-service}" target="${dotarget}"/>
         <ant dir="${api-web}" target="${dotarget}" />
         <ant dir="${yukon-web}" target="${dotarget}" />
     </target>

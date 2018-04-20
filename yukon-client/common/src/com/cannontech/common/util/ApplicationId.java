@@ -11,7 +11,7 @@ public enum ApplicationId {
     COMMANDER("Commander"),
     DATABASE_EDITOR("DBEditor"),
     MESSAGE_BROKER("MessageBroker"),
-    MONITOR("YukonMonitor"),
+    WATCHDOG("Watchdog"),
     NOTIFICATION("NotificationServer"),
     SERVICE_MANAGER("ServiceManager"),
     TABULAR_DISPLAY_CONSOLE("TDC"),
