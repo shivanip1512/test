@@ -83,11 +83,11 @@
         </constructor-arg>
     </bean>
     
-    <bean id="com.cannontech.context.monitor"
+    <bean id="com.cannontech.context.watchdog"
           class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
         <constructor-arg index="0">
             <list merge="true">
-                <value>com/cannontech/monitor/applicationContext.xml</value>
+                <value>com/cannontech/watchdog/applicationContext.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true"/>
