@@ -81,21 +81,29 @@ public:
  */
 class IM_EX_DEVDB RfnVoltageProfileConfigurationCommand : public RfnLoadProfileCommand
 {
-protected:
+public:
 
-    RfnVoltageProfileConfigurationCommand( const Operation operation );
+    struct Read
+    {
+        virtual boost::optional<unsigned> getVoltageAveragingInterval() const = 0;
+        virtual boost::optional<unsigned> getLoadProfileInterval()      const = 0;
+    };
 
     enum
     {
         SecondsPerIncrement = 15
     };
+
+protected:
+
+    RfnVoltageProfileConfigurationCommand( const Operation operation );
 };
 
 
 /**
  * Voltage Profile Get Configuration
  */
-class IM_EX_DEVDB RfnVoltageProfileGetConfigurationCommand : public RfnVoltageProfileConfigurationCommand,
+class IM_EX_DEVDB RfnVoltageProfileGetConfigurationCommand : public RfnVoltageProfileConfigurationCommand, public RfnVoltageProfileConfigurationCommand::Read,
        InvokerFor<RfnVoltageProfileGetConfigurationCommand>
 {
 public:
@@ -107,8 +115,8 @@ public:
 
     std::string getCommandName() override;
 
-    boost::optional<unsigned> getVoltageAveragingInterval() const;
-    boost::optional<unsigned> getLoadProfileInterval()      const;
+    boost::optional<unsigned> getVoltageAveragingInterval() const override;
+    boost::optional<unsigned> getLoadProfileInterval()      const override;
 
 private:
 

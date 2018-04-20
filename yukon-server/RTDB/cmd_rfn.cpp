@@ -3,6 +3,9 @@
 #include "std_helper.h"
 #include "cmd_rfn.h"
 
+#include "cmd_rfn_ConfigNotification.h"
+#include "error_helper.h"
+
 namespace Cti {
 namespace Devices {
 namespace Commands {
@@ -46,6 +49,18 @@ auto RfnCommand::getApplicationServiceId() const -> ASID
 
 RfnCommandPtr RfnCommand::handleUnsolicitedResponse(const CtiTime now, RfnResponsePayload payload)
 {
+    validate( Condition( ! payload.empty(), ClientErrors::DataMissing ) << "Empty payload");
+
+    if( payload[0] == RfnConfigNotificationCommand::getUnsolicitedCommandCode() )
+    {
+        auto command = std::make_unique<RfnConfigNotificationCommand>();
+
+        //  ignore command results
+        command->handleResponse(now, payload);
+
+        return std::move(command);
+    }
+
     return nullptr;
 }
 

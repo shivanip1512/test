@@ -142,7 +142,7 @@ class IM_EX_DEVDB RfnTouHolidayConfigurationCommand : public RfnTouConfiguration
 {
 public:
 
-    typedef boost::array<CtiDate, 3> Holidays;
+    using Holidays = std::array<CtiDate, 3>;
 
     RfnTouHolidayConfigurationCommand(); // read
     RfnTouHolidayConfigurationCommand( const Holidays &holidays_to_send ); // write

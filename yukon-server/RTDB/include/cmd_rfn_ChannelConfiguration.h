@@ -60,8 +60,6 @@ class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCom
 
     std::string decodeTlvs( const TlvList& tlvs, const unsigned char tlv_expected );
 
-    std::string decodeTlvChannelSelection( const Bytes &data );
-
 protected:
     enum
     {
@@ -167,10 +165,17 @@ public:
 
 namespace RfnChannelIntervalRecording {
 
+struct ActiveConfiguration 
+{
+    virtual unsigned getIntervalRecordingSeconds() const = 0;
+    virtual unsigned getIntervalReportingSeconds() const = 0;
+    virtual RfnChannelConfigurationCommand::MetricIds getIntervalMetrics() const = 0;
+};
+
 /**
  * Set channel interval recording channels and intervals
  */
-class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCommand,
+class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCommand, public ActiveConfiguration,
        InvokerFor<SetConfigurationCommand>
 {
     Bytes _setIntervalRecordingTlvPayload;
@@ -189,8 +194,9 @@ public:
                              unsigned intervalRecordingSeconds,
                              unsigned intervalReportingSeconds );
 
-    unsigned getIntervalRecordingSeconds() const;
-    unsigned getIntervalReportingSeconds() const;
+    unsigned getIntervalRecordingSeconds() const override;
+    unsigned getIntervalReportingSeconds() const override;
+    MetricIds getIntervalMetrics() const override;
 };
 
 /**
@@ -217,7 +223,7 @@ public:
 /**
  * Get actual active channels
  */
-class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecordingCommand,
+class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecordingCommand, public ActiveConfiguration,
        InvokerFor<GetActiveConfigurationCommand>
 {
     unsigned char getOperation() const;
@@ -230,8 +236,9 @@ class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecor
     unsigned _intervalReportingSecondsReceived;
 
 public:
-    unsigned getIntervalRecordingSecondsReceived() const;
-    unsigned getIntervalReportingSecondsReceived() const;
+    unsigned getIntervalRecordingSeconds() const override;
+    unsigned getIntervalReportingSeconds() const override;
+    MetricIds getIntervalMetrics() const override;
 };
 
 }

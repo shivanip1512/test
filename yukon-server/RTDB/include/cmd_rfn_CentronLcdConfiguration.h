@@ -26,16 +26,24 @@ public:
         DisplayDigits6x1 = 6,
     };
 
-    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
+    struct Read
+    {
+        virtual metric_map_t getDisplayMetrics() const = 0;
+        virtual boost::optional<bool> getDisconnectDisplayDisabled()   const = 0;
+        virtual boost::optional<unsigned char> getDigitConfiguration() const = 0;
+        virtual boost::optional<unsigned char> getLcdCycleTime()       const = 0;
+    };
+
+	virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
+
+	enum
+	{
+		Slot_DisconnectDisplay  = 0xff,
+		Slot_CycleDelay         = 0xfe,
+		Slot_DigitConfiguration = 0xfd,
+	};
 
 protected:
-
-    enum
-    {
-        Slot_DisconnectDisplay  = 0xff,
-        Slot_CycleDelay         = 0xfe,
-        Slot_DigitConfiguration = 0xfd,
-    };
 
     virtual unsigned char getCommandCode() const;
     virtual unsigned char getOperation() const = 0;
@@ -73,7 +81,7 @@ protected:
 };
 
 
-class IM_EX_DEVDB RfnCentronGetLcdConfigurationCommand : public RfnCentronLcdConfigurationCommand,
+class IM_EX_DEVDB RfnCentronGetLcdConfigurationCommand : public RfnCentronLcdConfigurationCommand, public RfnCentronLcdConfigurationCommand::Read,
        InvokerFor<RfnCentronGetLcdConfigurationCommand>
 {
 public:
@@ -84,15 +92,15 @@ public:
 
     std::string getCommandName() override;
 
-    metric_map_t getDisplayMetrics() const;
-    boost::optional<bool> getDisconnectDisplayDisabled() const;
-    boost::optional<unsigned char> getDigitConfiguration() const;
-    boost::optional<unsigned char> getLcdCycleTime() const;
+    metric_map_t getDisplayMetrics() const override;
+    boost::optional<bool> getDisconnectDisplayDisabled()   const override;
+    boost::optional<unsigned char> getDigitConfiguration() const override;
+    boost::optional<unsigned char> getLcdCycleTime()       const override;
 
 protected:
 
-    virtual unsigned char getOperation() const;
-    virtual Bytes         getCommandData();
+    unsigned char getOperation() const override;
+    Bytes         getCommandData()     override;
 
     metric_map_t _displayMetrics;
     boost::optional<unsigned char> _disconnectDisplay;

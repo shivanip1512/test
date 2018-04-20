@@ -15,6 +15,7 @@ class RfDaReadDnpSlaveAddressCommand;
 class RfnAggregateCommand;
 class RfnCentronSetLcdConfigurationCommand;
 class RfnCentronGetLcdConfigurationCommand;
+class RfnConfigNotificationCommand;
 class RfnFocusAlLcdConfigurationReadCommand;
 class RfnFocusAlLcdConfigurationWriteCommand;
 class RfnDemandFreezeConfigurationCommand;
@@ -71,6 +72,7 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnAggregateCommand &)                                 {}
         virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)                {}
         virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)                {}
+        virtual void handleCommandResult(const RfnConfigNotificationCommand &)                        {}
         virtual void handleCommandResult(const RfnFocusAlLcdConfigurationReadCommand &)               {}
         virtual void handleCommandResult(const RfnFocusAlLcdConfigurationWriteCommand &)              {}
         virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)                 {}

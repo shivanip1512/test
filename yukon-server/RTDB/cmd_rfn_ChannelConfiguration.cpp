@@ -719,6 +719,11 @@ unsigned SetConfigurationCommand::getIntervalReportingSeconds() const
     return _intervalReportingSeconds;
 }
 
+auto SetConfigurationCommand::getIntervalMetrics() const -> MetricIds
+{
+    return getMetricsReceived();
+}
+
 //----------------------------------------------------------------------------
 // Class RfnChannelIntervalRecording::GetConfigurationCommand
 //----------------------------------------------------------------------------
@@ -799,14 +804,19 @@ std::string GetActiveConfigurationCommand::decodeActiveConfiguration( const Byte
            decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()) );
 }
 
-unsigned GetActiveConfigurationCommand::getIntervalRecordingSecondsReceived() const
+unsigned GetActiveConfigurationCommand::getIntervalRecordingSeconds() const
 {
     return _intervalRecordingSecondsReceived;
 }
 
-unsigned GetActiveConfigurationCommand::getIntervalReportingSecondsReceived() const
+unsigned GetActiveConfigurationCommand::getIntervalReportingSeconds() const
 {
     return _intervalReportingSecondsReceived;
+}
+
+auto GetActiveConfigurationCommand::getIntervalMetrics() const -> MetricIds
+{
+    return getMetricsReceived();
 }
 
 } // RfnChannelIntervalRecording
