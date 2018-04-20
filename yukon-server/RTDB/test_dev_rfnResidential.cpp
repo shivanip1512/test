@@ -12,7 +12,6 @@ using namespace Cti::Config;
 
 struct test_RfnResidentialDevice : RfnResidentialDevice
 {
-    using RfnResidentialDevice::handleCommandResult;
     using RfnResidentialDevice::isDisconnectConfigSupported;
     using CtiDeviceBase::setDeviceType;
 

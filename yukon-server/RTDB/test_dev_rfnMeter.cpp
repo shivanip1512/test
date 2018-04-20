@@ -14,7 +14,6 @@ using namespace Cti::Config;
 
 struct test_RfnMeterDevice : RfnMeterDevice
 {
-    using RfnMeterDevice::handleCommandResult;
     using CtiTblPAOLite::_type;
 };
 

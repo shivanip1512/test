@@ -12,7 +12,6 @@ using namespace Cti::Config;
 
 struct test_RfnResidentialVoltageDevice : RfnResidentialVoltageDevice
 {
-    using RfnResidentialDevice::handleCommandResult;
     using CtiDeviceBase::setDeviceType;
 };
 

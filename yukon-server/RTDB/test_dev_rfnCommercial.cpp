@@ -12,7 +12,6 @@ using namespace Cti::Config;
 
 struct test_RfnCommercialDevice : RfnCommercialDevice
 {
-    using RfnCommercialDevice::handleCommandResult;
     using CtiDeviceBase::setDeviceType;
 };
 
