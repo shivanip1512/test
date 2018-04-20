@@ -49,7 +49,7 @@ public class PqrDeviceConfigResult {
         
         //LOV Delay Duration: start random time, end random time
         if (config.hasLovDelayDurations()) {
-            commandStatuses.put(LmHardwareCommandType.PQR_LOV_EVENT_DURATION, PqrConfigCommandStatus.IN_PROGRESS);
+            commandStatuses.put(LmHardwareCommandType.PQR_LOV_DELAY_DURATION, PqrConfigCommandStatus.IN_PROGRESS);
         }
         
         //LOF Parameters: trigger, restore, trigger time, restore time
@@ -62,7 +62,7 @@ public class PqrDeviceConfigResult {
         }
         //LOF Delay Duration: start random time, end random time
         if (config.hasLofDelayDurations()) {
-            commandStatuses.put(LmHardwareCommandType.PQR_LOF_EVENT_DURATION, PqrConfigCommandStatus.IN_PROGRESS);
+            commandStatuses.put(LmHardwareCommandType.PQR_LOF_DELAY_DURATION, PqrConfigCommandStatus.IN_PROGRESS);
         }
         //General Event Separation
         config.getMinimumEventSeparationOptional().ifPresent(e -> {
@@ -85,11 +85,12 @@ public class PqrDeviceConfigResult {
      * Check to see if all messages are complete (i.e. not "in progress") for this device.
      */
     public boolean isComplete() {
-        return commandStatuses.entrySet()
-                              .stream()
-                              .filter(entry -> entry.getValue() == PqrConfigCommandStatus.IN_PROGRESS)
-                              .findAny()
-                              .isPresent();
+        return unsupported == true
+               || !commandStatuses.entrySet()
+                                  .stream()
+                                  .filter(entry -> entry.getValue() == PqrConfigCommandStatus.IN_PROGRESS)
+                                  .findAny()
+                                  .isPresent();
     }
     
     /**
@@ -124,7 +125,9 @@ public class PqrDeviceConfigResult {
      * successful.
      */
     public PqrConfigCommandStatus getOverallStatus() {
-        if (commandStatuses.containsValue(PqrConfigCommandStatus.IN_PROGRESS)) {
+        if (unsupported == true) {
+            return PqrConfigCommandStatus.UNSUPPORTED;
+        } else if (commandStatuses.containsValue(PqrConfigCommandStatus.IN_PROGRESS)) {
             return PqrConfigCommandStatus.IN_PROGRESS;
         } else if (commandStatuses.containsValue(PqrConfigCommandStatus.FAILED)) {
             return PqrConfigCommandStatus.FAILED;

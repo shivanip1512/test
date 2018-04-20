@@ -34,7 +34,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 
-//TODO event logging
 public class PqrConfigServiceImpl implements PqrConfigService {
     private static final Logger log = YukonLogManager.getLogger(PqrConfigServiceImpl.class);
     private final Cache<String, PqrConfigResult> results = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS).build();
@@ -200,15 +199,15 @@ public class PqrConfigServiceImpl implements PqrConfigService {
         sendCommand(hardware, command, resultId, user, params);
     }
     
-    private void sendLovParams(double trigger, double restore, short triggerTimeSeconds, short restoreTimeSeconds,
+    private void sendLovParams(double trigger, double restore, short triggerTimeMillis, short restoreTimeMillis,
                                LiteLmHardwareBase hardware, String resultId, LiteYukonUser user) {
         
         LmHardwareCommandType command = LmHardwareCommandType.PQR_LOV_PARAMETERS;
         Map<LmHardwareCommandParam, Object> params = ImmutableMap.of(
             LmHardwareCommandParam.PQR_LOV_TRIGGER, trigger,
             LmHardwareCommandParam.PQR_LOV_RESTORE, restore,
-            LmHardwareCommandParam.PQR_LOV_TRIGGER_TIME, triggerTimeSeconds,
-            LmHardwareCommandParam.PQR_LOV_RESTORE_TIME, restoreTimeSeconds
+            LmHardwareCommandParam.PQR_LOV_TRIGGER_TIME, triggerTimeMillis,
+            LmHardwareCommandParam.PQR_LOV_RESTORE_TIME, restoreTimeMillis
         );
         
         sendCommand(hardware, command, resultId, user, params);
@@ -226,27 +225,27 @@ public class PqrConfigServiceImpl implements PqrConfigService {
         sendCommand(hardware, command, resultId, user, params);
     }
     
-    private void sendLovDelayDurations(short startRandomTimeSeconds, short endRandomTimeSeconds, 
+    private void sendLovDelayDurations(short startRandomTimeMillis, short endRandomTimeMillis, 
                                        LiteLmHardwareBase hardware, String resultId, LiteYukonUser user) {
         
         LmHardwareCommandType command = LmHardwareCommandType.PQR_LOV_DELAY_DURATION;
         Map<LmHardwareCommandParam, Object> params = ImmutableMap.of(
-            LmHardwareCommandParam.PQR_LOV_START_RANDOM_TIME, startRandomTimeSeconds,
-            LmHardwareCommandParam.PQR_LOV_END_RANDOM_TIME, endRandomTimeSeconds
+            LmHardwareCommandParam.PQR_LOV_START_RANDOM_TIME, startRandomTimeMillis,
+            LmHardwareCommandParam.PQR_LOV_END_RANDOM_TIME, endRandomTimeMillis
         );
         
         sendCommand(hardware, command, resultId, user, params);
     }
     
-    private void sendLofParams(short trigger, short restore, short triggerTimeSeconds, short restoreTimeSeconds,
+    private void sendLofParams(short trigger, short restore, short triggerTimeMillis, short restoreTimeMillis,
                                LiteLmHardwareBase hardware, String resultId, LiteYukonUser user) {
         
         LmHardwareCommandType command = LmHardwareCommandType.PQR_LOF_PARAMETERS;
         Map<LmHardwareCommandParam, Object> params = ImmutableMap.of(
             LmHardwareCommandParam.PQR_LOF_TRIGGER, trigger,
             LmHardwareCommandParam.PQR_LOF_RESTORE, restore,
-            LmHardwareCommandParam.PQR_LOF_TRIGGER_TIME, triggerTimeSeconds,
-            LmHardwareCommandParam.PQR_LOF_RESTORE_TIME, restoreTimeSeconds
+            LmHardwareCommandParam.PQR_LOF_TRIGGER_TIME, triggerTimeMillis,
+            LmHardwareCommandParam.PQR_LOF_RESTORE_TIME, restoreTimeMillis
         );
         
         sendCommand(hardware, command, resultId, user, params);
@@ -264,13 +263,13 @@ public class PqrConfigServiceImpl implements PqrConfigService {
         sendCommand(hardware, command, resultId, user, params);
     }
     
-    private void sendLofDelayDurations(short startRandomTimeSeconds, short endRandomTimeSeconds, 
+    private void sendLofDelayDurations(short startRandomTimeMillis, short endRandomTimeMillis, 
                                        LiteLmHardwareBase hardware, String resultId, LiteYukonUser user) {
         
         LmHardwareCommandType command = LmHardwareCommandType.PQR_LOF_DELAY_DURATION;
         Map<LmHardwareCommandParam, Object> params = ImmutableMap.of(
-            LmHardwareCommandParam.PQR_LOF_START_RANDOM_TIME, startRandomTimeSeconds,
-            LmHardwareCommandParam.PQR_LOF_END_RANDOM_TIME, endRandomTimeSeconds
+            LmHardwareCommandParam.PQR_LOF_START_RANDOM_TIME, startRandomTimeMillis,
+            LmHardwareCommandParam.PQR_LOF_END_RANDOM_TIME, endRandomTimeMillis
         );
         
         sendCommand(hardware, command, resultId, user, params);

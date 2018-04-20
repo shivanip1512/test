@@ -43,11 +43,13 @@ public class PqrConfigResult {
             return true;
         }
         
-        return inventoryResults.values()
-                               .stream()
-                               .filter(result -> !result.isComplete())
-                               .findAny()
-                               .isPresent();
+        boolean anyIncompleteDevices = inventoryResults.values()
+                                                       .stream()
+                                                       .filter(result -> !result.isComplete())
+                                                       .findAny()
+                                                       .isPresent();
+        
+        return !anyIncompleteDevices;
     }
     
     /**

@@ -10,35 +10,35 @@ public class PqrConfig {
     private Boolean pqrEnable;
     
     //LOV Parameters
-    private Double lovTrigger;
-    private Double lovRestore;
-    private Short lovTriggerTime;
-    private Short lovRestoreTime;
+    private Double lovTrigger; //volts
+    private Double lovRestore; //volts
+    private Short lovTriggerTime; //millis
+    private Short lovRestoreTime; //millis
     
     //LOV Event Duration
-    private Short lovMinEventDuration;
-    private Short lovMaxEventDuration;
+    private Short lovMinEventDuration; //seconds
+    private Short lovMaxEventDuration; //seconds
     
     //LOV Delay Duration
-    private Short lovStartRandomTime;
-    private Short lovEndRandomTime;
+    private Short lovStartRandomTime; //millis
+    private Short lovEndRandomTime; //millis
     
     //LOF Parameters
-    private Short lofTrigger;
-    private Short lofRestore;
-    private Short lofTriggerTime;
-    private Short lofRestoreTime;
+    private Short lofTrigger; //millis
+    private Short lofRestore; //millis
+    private Short lofTriggerTime; //millis
+    private Short lofRestoreTime; //millis
     
     //LOF Event Duration
-    private Short lofMinEventDuration;
-    private Short lofMaxEventDuration;
+    private Short lofMinEventDuration; //seconds
+    private Short lofMaxEventDuration; //seconds
     
     //LOF Delay Duration
-    private Short lofStartRandomTime;
-    private Short lofEndRandomTime;
+    private Short lofStartRandomTime; //millis
+    private Short lofEndRandomTime; //millis
     
     //General Event Separation
-    private Short minimumEventSeparation;
+    private Short minimumEventSeparation; //seconds
     
     public Optional<Boolean> getPqrEnable() {
         return Optional.ofNullable(pqrEnable);
