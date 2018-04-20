@@ -1,30 +1,38 @@
 package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.View;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.routeLocate.RouteLocateResult;
+import com.cannontech.common.device.routeLocate.DeviceRouteLocation;
 import com.cannontech.common.device.routeLocate.RouteLocationService;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -39,7 +47,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonView;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 @CheckRoleProperty(YukonRoleProperty.LOCATE_ROUTE)
@@ -57,12 +65,22 @@ public class RouteLocateController {
     @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
     @Autowired private AlertService alertService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CollectionActionService collectionActionService;
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceGroupCollectionHelper groupHelper;
+    
+    private final static String baseKey = "yukon.web.modules.tools.bulk.routeLocateHome.";
     
     private static final Logger log = YukonLogManager.getLogger(RouteLocateController.class);
     
     // HOME
-    @RequestMapping("home")
-    public String home(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+    @RequestMapping(value = "home", method = RequestMethod.GET)
+    public String home(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
+                       @RequestParam(value = "commandString", required = false, defaultValue = "ping") String commandString, 
+                       @RequestParam(value = "commandSelectValue", required = false, defaultValue = "ping") String commandSelectValue, 
+                       String errorMsg, boolean autoUpdateRoute) throws ServletException {
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -71,8 +89,6 @@ public class RouteLocateController {
         List<LiteCommand> commands = deviceGroupService.getDeviceCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
         model.addAttribute("commands", commands);
         
-        String commandString = ServletRequestUtils.getStringParameter(request, "commandString", "ping");
-        String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue", "ping");
         model.addAttribute("commandSelectValue", commandSelectValue);
         model.addAttribute("commandString", commandString);
         
@@ -85,37 +101,30 @@ public class RouteLocateController {
         model.addAttribute("routeOptions", routeOptions);
         
         // ERROR MSG
-        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
         model.addAttribute("errorMsg", errorMsg);
         
         // AUTO UPDATE ROUTE OPTION
-        Boolean autoUpdateRoute = ServletRequestUtils.getBooleanParameter(request, "autoUpdateRoute", false);
         model.addAttribute("autoUpdateRoute", autoUpdateRoute);
-        
-        // ALL RESULTS
-        List<RouteLocateResult> routeLocateResultsList = new ArrayList<>();
-        model.addAttribute("routeLocateResultsList", routeLocateResultsList);
         
         return "routeLocate/routeLocateHome.jsp";
     }
     
     // EXECUTE
-    @RequestMapping("executeRouteLocation")
-    public String executeRouteLocation(ModelMap model, HttpServletRequest request, String commandSelectValue, String commandString) throws ServletException {
+    @RequestMapping(value = "executeRouteLocation", method = RequestMethod.POST)
+    public String executeRouteLocation(ModelMap model, HttpServletRequest request, String commandFromDropdown, String commandSelectValue, 
+                                       String commandString, boolean autoUpdateRoute, int[] routesSelect) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
                 
-        int[] routesSelect = ServletRequestUtils.getIntParameters(request, "routesSelect");
         List<Integer> selectedRouteIds = new ArrayList<>();
         for (int routeId : routesSelect) {
             selectedRouteIds.add(routeId);
         }
         
         // AUTO UPDATE ROUTE OPTION
-        Boolean autoUpdateRoute = ServletRequestUtils.getBooleanParameter(request, "autoUpdateRoute", false);
         model.addAttribute("autoUpdateRoute", autoUpdateRoute);
 
         model.addAttribute("commandSelectValue", commandSelectValue);
@@ -129,7 +138,7 @@ public class RouteLocateController {
             }
             
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.routeLocateHome.noRoutesSelectedError");
+            String errorMsg = messageSourceAccessor.getMessage(baseKey + "noRoutesSelectedError");
             model.addAttribute("errorMsg", errorMsg);
             
             return "redirect:/bulk/routeLocate/home";
@@ -141,92 +150,89 @@ public class RouteLocateController {
                 model.addAttribute(param, deviceCollection.getCollectionParameters().get(param));
             }
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.routeLocateHome.commandNotAuthorizedError");
+            String errorMsg = messageSourceAccessor.getMessage(baseKey + "commandNotAuthorizedError");
             model.addAttribute("errorMsg", errorMsg);
             return "redirect:/bulk/routeLocate/home";
         } else {
             SimpleCallback<CollectionActionResult> alertCallback = CollectionActionAlertHelper.createAlert(
                 AlertType.LOCATE_ROUTE, alertService, messageResolver.getMessageSourceAccessor(userContext), request);
-            LinkedHashMap<String, String> inputs = null;
-            int cacheKey = routeLocationService.locate(inputs, deviceCollection, selectedRouteIds, autoUpdateRoute,
+            LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+            List<String> selectedRouteNames = new ArrayList<>();
+            List<LiteYukonPAObject> routes = Arrays.asList(paoDao.getAllLiteRoutes());
+            routes.forEach(route -> {
+                if (selectedRouteIds.contains(route.getLiteID())) {
+                    selectedRouteNames.add(route.getPaoName());
+                }
+            });  
+            userInputs.put("Selected Routes",  StringUtils.join(selectedRouteNames, ", "));
+            userInputs.put("Automatically Update Route", Boolean.valueOf(autoUpdateRoute).toString());
+            userInputs.put("Selected Command", commandFromDropdown);
+            userInputs.put("Command", commandString);
+            int cacheKey = routeLocationService.locate(userInputs, deviceCollection, selectedRouteIds, autoUpdateRoute,
                 commandString, alertCallback, userContext);
             return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
         }
     }
     
-    // CANCELS A CURRENTLY RUNNING ROUTE LOCATE
-    @RequestMapping("cancelCommands")
-    public View cancelCommands(String resultId, YukonUserContext userContext) {
-        
-      
-        return new JsonView();
-    }
-  
-    // RESULTS
-    @RequestMapping("results")
-    public String results(ModelMap model, HttpServletRequest request) throws ServletException {
-        
-
-        
-        return "routeLocate/routeLocateResults.jsp";
-    }
-    
     // VIEW ROUTES
-    @RequestMapping("routeSettings")
-    public String routeSettings(ModelMap model, HttpServletRequest request) throws ServletException {
+    @RequestMapping(value = "routeSettings", method = RequestMethod.GET)
+    public String routeSettings(ModelMap model, HttpServletRequest request, String resultId) throws ServletException {
         
         // RESULT
-        String resultId = ServletRequestUtils.getRequiredStringParameter(request, "resultId");
         model.addAttribute("resultId", resultId);
         
-        routeLocationService.getLocations(Integer.parseInt(resultId));
-        
-    /*   RouteLocateResult result = routeLocateExecutor.getResult(resultId);
-        model.addAttribute("result", result);
-        model.addAttribute("deviceCollection", result.getDeviceCollection());
-
-        // FOUND/NOT FOUND LISTS
-        List<DeviceRouteLocation> foundRoutes = new ArrayList<>();
+        List<DeviceRouteLocation> locations = routeLocationService.getLocations(Integer.parseInt(resultId));
+        CollectionActionResult result = collectionActionService.getResult(Integer.parseInt(resultId));
         List<DeviceRouteLocation> notFoundRoutes = new ArrayList<>();
-        for (Integer drlId : result.getCompletedDeviceRouteLocations().keySet()) {
-            
-            DeviceRouteLocation drl = result.getCompletedDeviceRouteLocations().get(drlId);
-            
-            if (drl.isLocated()) {
-                foundRoutes.add(drl);
-            } else {
-                notFoundRoutes.add(drl);
+        
+        List<SimpleDevice> foundDevices = new ArrayList<SimpleDevice>();
+        List<SimpleDevice> notFoundDevices = new ArrayList<SimpleDevice>();
+
+        for (SimpleDevice device : result.getInputs().getCollection().getDeviceList()) {
+            boolean found = false;
+            for (DeviceRouteLocation location : locations) {
+                if (location.getDevice().equals(device)) {
+                    foundDevices.add(device);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                LiteYukonPAObject devicePaoObj = databaseCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
+                DeviceRouteLocation location = new DeviceRouteLocation(device);
+                location.setDeviceName(devicePaoObj.getPaoName());
+                notFoundRoutes.add(location);
+                notFoundDevices.add(device);
             }
         }
         
-        model.addAttribute("foundRoutes", foundRoutes);
-        model.addAttribute("notFoundRoutes", notFoundRoutes);*/
+        StoredDeviceGroup foundGroup = tempDeviceGroupService.createTempGroup();
+        deviceGroupMemberEditorDao.addDevices(foundGroup,  foundDevices);
+        DeviceCollection foundCollection = groupHelper.buildDeviceCollection(foundGroup);
+        model.addAttribute("foundCollection", foundCollection);
+        
+        StoredDeviceGroup notFoundGroup = tempDeviceGroupService.createTempGroup();
+        deviceGroupMemberEditorDao.addDevices(notFoundGroup,  notFoundDevices);
+        DeviceCollection notFoundCollection = groupHelper.buildDeviceCollection(notFoundGroup);
+        model.addAttribute("notFoundCollection", notFoundCollection);
+
+        model.addAttribute("foundRoutes", locations);
+        model.addAttribute("notFoundRoutes", notFoundRoutes);
         
         return "routeLocate/routeLocateRouteSettings.jsp";
     }
     
     // SET SINGLE ROUTE
-    @RequestMapping("setRoute")
-    public String setRoute(ModelMap model, HttpServletRequest request) throws ServletException {
-        
-        // get info
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        int routeId = ServletRequestUtils.getRequiredIntParameter(request, "routeId");
-        String resultId = ServletRequestUtils.getRequiredStringParameter(request, "resultId");
-        int deviceRouteLocationId = ServletRequestUtils.getRequiredIntParameter(request, "deviceRouteLocationId");
-        
+    @RequestMapping(value = "setRoute", method = RequestMethod.POST)
+    public String setRoute(ModelMap model, int deviceId, int routeId) throws ServletException {
         // update device
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         deviceUpdateService.changeRoute(device, routeId);
-        
-        // update DeviceRouteLocation
-   /*     RouteLocateResult result = routeLocateExecutor.getResult(resultId);
-        DeviceRouteLocation drl = result.getCompletedDeviceRouteLocations().get(deviceRouteLocationId);
-        drl.setRouteUpdated(true);*/
-        
-     //   model.addAttribute("oldRouteName", drl.getInitialRouteName());
-      //  model.addAttribute("newRouteName", drl.getRouteName());
-        
+        List<LiteYukonPAObject> routes = Arrays.asList(paoDao.getAllLiteRoutes());
+        Optional<LiteYukonPAObject> newRoute = routes.stream().filter(route -> route.getLiteID() == routeId).findFirst();
+        if (newRoute.isPresent()) {
+            model.addAttribute("newRouteName", newRoute.get().getPaoName());
+        }
         return "routeLocate/routeLocateRouteUpdateInfo.jsp";
     }
     

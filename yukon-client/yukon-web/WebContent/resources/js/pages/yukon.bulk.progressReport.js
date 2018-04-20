@@ -150,6 +150,7 @@ yukon.bulk.progressReport = (function () {
                 _updateChart(chart, _getData(data));
             }
             
+            $('.js-set-routes').attr('disabled', true);
             //update stop time and stop updating page when complete
             if (data.status == 'COMPLETE' || data.status == 'CANCELED') {
                 clearTimeout(_updateTimeout);
@@ -157,6 +158,7 @@ yukon.bulk.progressReport = (function () {
                     var timeText = moment(data.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
                     $('.js-stop-time').text(timeText);
                 }
+                $('.js-set-routes').removeAttr('disabled');
             }
             //if execution exception occurred show error
             if (data.executionExceptionText) {

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.clientutils.YukonLogManager;
@@ -31,13 +32,13 @@ public class DemandResetController {
     @Autowired private AlertService alertService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-   @RequestMapping("action")
-    public String action(ModelMap model, DeviceCollection deviceCollection, String key){
+   @RequestMapping(value = "action", method = RequestMethod.GET)
+    public String action(ModelMap model, DeviceCollection deviceCollection){
         model.addAttribute("deviceCollection", deviceCollection); 
         return "demand/reset/demandReset.jsp";
     }
 
-    @RequestMapping("start")
+    @RequestMapping(value = "start", method = RequestMethod.POST)
     public String start(HttpServletRequest request, DeviceCollection deviceCollection, YukonUserContext userContext) {
         SimpleCallback<CollectionActionResult> alertCallback =
             CollectionActionAlertHelper.createAlert(AlertType.DEMAND_RESET_COMPLETION, alertService,

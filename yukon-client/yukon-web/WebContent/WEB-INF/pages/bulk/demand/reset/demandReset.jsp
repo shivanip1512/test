@@ -8,7 +8,10 @@
         <cti:url value="/bulk/demand-reset/start" var="commandUrl">
             <cti:mapParam value="${deviceCollection.collectionParameters}" />
         </cti:url>
-        <cti:button nameKey="start" classes="primary action" href="${commandUrl}" />
+        <form action="${commandUrl}" method="POST">
+            <cti:csrfToken/>
+            <cti:button type="submit" nameKey="start" classes="primary action"/>
+        </form>
     
     </tags:bulkActionContainer>
     

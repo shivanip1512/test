@@ -13,7 +13,8 @@
             <div class="error stacked">${errorMsg}</div>
         </c:if>
         
-        <form id="executeLocateForm" action="<cti:url value="/bulk/routeLocate/executeRouteLocation"/>">
+        <form id="executeLocateForm" action="<cti:url value="/bulk/routeLocate/executeRouteLocation"/>" method = "POST">
+            <cti:csrfToken/>
         
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}"/>
@@ -36,13 +37,14 @@
                 <div class="stacked">
                     <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
                     <h4>${selectCommandLabel}:</h4>
-                    <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
+                    <amr:commandSelector id="commandSelectId" selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
                         selectedCommandString="${commandString}"
                         selectedSelectValue="${commandSelectValue}"/>
+                    <input type="hidden" id="commandFromDropdown" name="commandFromDropdown"/>
                 </div>
             
                 <div class="page-action-area">
-                    <cti:button nameKey="locateRoute" type="submit" classes="primary action" busy="true"/>
+                    <cti:button nameKey="locateRoute" classes="primary action js-locate-route" busy="true"/>
                 </div>
             </cti:checkRolesAndProperties>
             </cti:checkRolesAndProperties>
@@ -50,88 +52,8 @@
         </form>
     
     </tags:bulkActionContainer>
-                    
-    <%-- ROUTE LOCATE RESULTS --%>
-    <c:if test="${not empty routeLocateResultsList}">
     
-        <br>
-        <cti:msg2 var="recentRouteLocateOperationsHeaderTitle" key=".recentRouteLocateResults.header"/>
-        <tags:boxContainer title="${recentRouteLocateOperationsHeaderTitle}" id="recentRouteLocateOperationsContainer" hideEnabled="false">
-        
-            <cti:msg2 var="performNewActionLinkTitle" key=".recentRouteLocateResults.performNewActionLinkTitle"/>
-            
-            <table class="compact-results-table">
-                <thead>
-                    <tr>
-                        <th><i:inline key=".recentRouteLocateResults.updateTime"/></th>
-                        <th class="tar"><i:inline key=".recentRouteLocateResults.located"/></th>
-                        <th class="tar"><i:inline key=".recentRouteLocateResults.notLocated"/></th>
-                        <th class="tar"><i:inline key=".recentRouteLocateResults.resultsDetail"/></th>
-                        <th class="tar"><i:inline key=".recentRouteLocateResults.status"/></th>
-                    </tr>
-                </thead>
-                <tfoot></tfoot>
-                <tbody>
-                    <c:forEach var="b" items="${routeLocateResultsList}" varStatus="resultStatus">
-                    
-                        <tr>
-                            <%-- START/STOP TIME --%>
-                            <td>
-                                <cti:formatDate value="${b.startTime}" type="BOTH"/> - <cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/STOP_TIME"/>
-                            </td>
-                            
-                            <%-- SUCCESS --%>
-                            <td class="tar">
-                                <c:set var="successFormName" value="processingExceptionForm${b.resultId}"/>
-                                
-                                <a href="javascript:$('#${successFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/LOCATED_COUNT"/></a> 
-                                <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}"/>
-                                
-                                <form id="${successFormName}" method="post" action="/bulk/collectionActions">
-                                    <cti:csrfToken/>
-                                    <cti:deviceCollection deviceCollection="${b.successDeviceCollection}"/>
-                                </form>
-                            </td>
-                            
-                            
-                            
-                            <%-- PROCESSING EXCEPTION --%>
-                            <td class="tar">
-                                    
-                                <c:set var="notFoundCollectionActionFormName" value="notFoundCollectionActionFormName${b.resultId}"/>
-                            
-                                <a href="javascript:$('#${notFoundCollectionActionFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/NOT_FOUND_COUNT"/></a> 
-                                
-                                <tags:selectedDevicesPopup deviceCollection="${b.failureDeviceCollection}"/>
-                                
-                                <form id="${notFoundCollectionActionFormName}" method="post" action="/bulk/collectionActions">
-                                    <cti:csrfToken/>
-                                    <cti:deviceCollection deviceCollection="${b.failureDeviceCollection}"/>
-                                </form>
-                                
-                            </td>
-                            
-                            
-                            <%-- DEATIL LINK --%>
-                            <cti:url var="resultDetailUrl" value="/bulk/routeLocate/results">
-                                <cti:param name="resultId" value="${b.resultId}"/>
-                            </cti:url>
-                    
-                            <td class="tar">
-                                <a href="${resultDetailUrl}"><i:inline key=".recentRouteLocateResults.detailLink"/></a>
-                            </td>
-                            
-                            <%-- COMPLETE? --%>
-                            <td class="tar">
-                                <cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/STATUS_TEXT"/>
-                            </td>
-                        </tr>
-                    
-                    </c:forEach>
-                </tbody>
-            </table>
-        </tags:boxContainer>
-        
-    </c:if>
+    <cti:includeScript link="/resources/js/pages/yukon.bulk.route.locate.js"/>
+    
 
 </cti:standardPage>

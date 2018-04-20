@@ -355,12 +355,7 @@
                   <page name="bulk.routeLocateHome" type="BASIC">
                     <link>/bulk/routeLocate/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
                     <pages>
-                      <page name="bulk.routeLocateResults" type="BASIC">
-                        <link>/bulk/routeLocate/results?resultId=${resultId}</link>
-                        <pages>
-                          <page name="bulk.routeLocateSettings" type="BASIC"/>
-                        </pages>
-                      </page>
+                      <page name="bulk.routeLocateSettings" type="BASIC"/>
                     </pages>
                   </page>
                   <page name="bulk.sendCommand" type="BASIC">
