@@ -1273,6 +1273,7 @@
                 </pages>
             </page>
             <page name="rtuList" type="BASIC" hideSearch="true">
+                <link>/stars/rtu-list</link>
                 <pages>
                     <page name="rtuDetail.VIEW" type="DETAIL">
                         <link>/stars/rtu/{id}</link>

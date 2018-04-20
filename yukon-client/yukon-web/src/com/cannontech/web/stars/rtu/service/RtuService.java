@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface RtuService {
     
@@ -23,4 +25,9 @@ public interface RtuService {
      * Generates duplicate points error message by device id and point identifier.
      */
     List<MessageSourceResolvable> generateDuplicatePointsErrorMessages(int paoId, PointIdentifier pointIdentifier, HttpServletRequest request);
+    
+    /**
+     * This methods returns the RTUs of the type specified in the paoType list passed as a parameter. 
+     */
+    List<LiteYukonPAObject> getRtusByType(List<PaoType> rtuTypes);
 }

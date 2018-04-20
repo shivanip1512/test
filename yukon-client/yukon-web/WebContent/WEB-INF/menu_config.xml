@@ -188,6 +188,12 @@
         </permissions>
         <link>/stars/relay</link>
       </option>
+      <option name="rtus">
+        <permissions>
+            <roleProperty name="CBC_DATABASE_EDIT"/>
+        </permissions>
+        <link>/stars/rtu-list</link>
+      </option>
       <option name="optouts">
         <permissions>
           <or>

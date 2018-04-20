@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.rtu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.service.CbcHelperService;
@@ -32,6 +35,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.rtu.model.RtuPointDetail;
@@ -57,6 +61,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.web.stars.rtu.validator.RtuDnpValidator;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 @Controller
 public class RtuController {
@@ -70,7 +75,67 @@ public class RtuController {
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private RtuDnpValidator validator;
 
-    private static final String baseKey = "yukon.web.modules.operator.rtuDetail";
+    private static final String baseKey = "yukon.web.modules.operator.rtuDetail.";
+
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    @RequestMapping(value = "rtu-list", method = RequestMethod.GET)
+    public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "type") SortingParameters sorting,
+            PagingParameters paging, YukonUserContext userContext,
+            @RequestParam(name = "rtuType", required = false) String rtuType) {
+        SearchResults<LiteYukonPAObject> searchResults = new SearchResults<>();
+        List<PaoType> rtuTypes = null;
+
+        if (rtuType == null || StringUtils.equals("AllTypes", rtuType)) {
+            rtuTypes = PaoType.getRtuTypes().asList();
+        } else {
+            rtuTypes = Lists.newArrayList(PaoType.valueOf(rtuType));
+            model.addAttribute("selectedRtuType", rtuType);
+        }
+
+        List<LiteYukonPAObject> filteredRtus = rtuService.getRtusByType(rtuTypes);
+        int startIndex = paging.getStartIndex();
+        int itemsPerPage = paging.getItemsPerPage();
+        int endIndex = Math.min(startIndex + itemsPerPage, filteredRtus.size());
+
+        RtuSortBy sortBy = RtuSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+
+        List<LiteYukonPAObject> itemList = Lists.newArrayList(filteredRtus);
+        Comparator<LiteYukonPAObject> comparator = (o1, o2) -> {
+            return o1.getPaoName().compareToIgnoreCase(o2.getPaoName());
+        };
+
+        if (sortBy == RtuSortBy.type) {
+            comparator = (o1, o2) -> o1.getPaoType().compareTo(o2.getPaoType());
+        }
+
+        if (sortBy == RtuSortBy.status) {
+            comparator = (o1, o2) -> o1.getDisableFlag().compareToIgnoreCase(o2.getDisableFlag());
+        }
+
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        Collections.sort(itemList, comparator);
+
+        itemList = itemList.subList(startIndex, endIndex);
+        searchResults.setBounds(startIndex, itemsPerPage, filteredRtus.size());
+        searchResults.setResultList(itemList);
+
+        model.addAttribute("rtus", searchResults);
+        model.addAttribute("rtuTypes", PaoType.getRtuTypes());
+
+        List<SortableColumn> columns = new ArrayList<>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (RtuSortBy column : RtuSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            columns.add(col);
+            model.addAttribute(column.name(), col);
+        }
+
+        return "/rtu/list.jsp";
+    }
     
     @RequestMapping(value = "rtu/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
@@ -111,7 +176,7 @@ public class RtuController {
             return bindAndForward(rtu, result, redirectAttributes);
         }
         int paoId = rtuDnpService.save(rtu);
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".info.saved"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
         return "redirect:/stars/rtu/" + paoId;
     }
     
@@ -249,6 +314,18 @@ public class RtuController {
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.operator.rtuDetail." + name();
+        }
+    }
+    
+    public enum RtuSortBy implements DisplayableEnum {
+
+        name,
+        type,
+        status;
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + name();
         }
     }
 

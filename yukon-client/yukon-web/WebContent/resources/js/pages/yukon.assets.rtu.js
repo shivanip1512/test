@@ -68,6 +68,9 @@ yukon.assets.rtu = (function() {
                 window.history.back();
             });
             
+            // Initiablize the data-url for that table that displays all the RTUs.
+            $('#rtu-list-container').data('url', yukon.url('/stars/rtu-list?' + $('#filter-rtu-form').serialize()));
+            
             _initialized = true;
         }
         

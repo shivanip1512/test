@@ -97,4 +97,12 @@ public class RtuServiceImpl implements RtuService{
         }
         return new ArrayList<>();
     }
+
+    @Override
+    public List<LiteYukonPAObject> getRtusByType(List<PaoType> rtuTypes) {
+        List<LiteYukonPAObject> filteredRtus = cache.getAllDevices().stream()
+                                                                    .filter(rtu -> rtuTypes.contains(rtu.getPaoType()))
+                                                                    .collect(Collectors.toList());
+        return filteredRtus;
+    }
 }
