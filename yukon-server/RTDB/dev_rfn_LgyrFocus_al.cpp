@@ -3,6 +3,7 @@
 #include "config_helpers.h"
 #include "config_data_rfn.h"
 #include "dev_rfn_LgyrFocus_al.h"
+#include "cmd_rfn_ConfigNotification.h"
 
 #include "std_helper.h"
 
@@ -212,6 +213,19 @@ bool RfnLgyrFocusAlDevice::isDisplayConfigCurrent( const std::vector<std::string
     return
         boost::equal( config_display_metrics, paoinfo_metrics )
             && pao_duration      == config_display_duration;
+}
+
+
+void RfnLgyrFocusAlDevice::handleCommandResult(const Commands::RfnConfigNotificationCommand &cmd)
+{
+    RfnResidentialVoltageDevice::handleCommandResult(cmd);
+
+    if( cmd.focusDisplay )
+    {
+        storeDisplayMetricInfo(cmd.focusDisplay->displayItems);
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime, cmd.focusDisplay->displayItemDuration);
+    }
 }
 
 

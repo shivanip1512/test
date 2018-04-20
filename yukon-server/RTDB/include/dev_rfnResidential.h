@@ -39,6 +39,7 @@ protected:
     YukonError_t executePutConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
     YukonError_t executeGetConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
 
+    void handleCommandResult( const Commands::RfnConfigNotificationCommand               & cmd ) override;
     void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand              & cmd ) override;
     void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand        & cmd ) override;
     void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand      & cmd ) override;
@@ -59,8 +60,12 @@ private:
 
     bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap );
 
-public:
-    RfnResidentialDevice() {};
+    void storeTouState(
+        const boost::optional<Commands::RfnTouScheduleConfigurationCommand::TouState> & touState,
+        const boost::optional<Commands::RfnTouScheduleConfigurationCommand::Schedule> & schedule_received);
+
+    void storeTouHolidays(const Commands::RfnTouHolidayConfigurationCommand::Holidays holidays);
+    void storeDemandFreezeDay(const uint8_t demandFreezeDay);
 };
 
 typedef RfnResidentialDevice Rfn410fxDevice;

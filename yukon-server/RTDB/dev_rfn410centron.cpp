@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "dev_rfn410centron.h"
+#include "cmd_rfn_ConfigNotification.h"
 #include "config_data_rfn.h"
 #include "config_helpers.h"
 #include "std_helper.h"
@@ -201,6 +202,17 @@ YukonError_t Rfn410CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
 }
 
 
+void Rfn410CentronDevice::handleCommandResult(const Commands::RfnConfigNotificationCommand & cmd)
+{
+    RfnResidentialVoltageDevice::handleCommandResult(cmd);
+
+    if( cmd.c2sxDisplay )
+    {
+        storeLcdConfig(*cmd.c2sxDisplay);
+    }
+}
+
+
 void Rfn410CentronDevice::handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd)
 {
     typedef Commands::RfnCentronGetLcdConfigurationCommand::metric_vector_t metric_vector_t;
@@ -220,6 +232,12 @@ void Rfn410CentronDevice::handleCommandResult(const Commands::RfnCentronSetLcdCo
 
 
 void Rfn410CentronDevice::handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd)
+{
+    storeLcdConfig(cmd);
+}
+
+
+void Rfn410CentronDevice::storeLcdConfig(const Commands::RfnCentronLcdConfigurationCommand::Read &cmd)
 {
     typedef Commands::RfnCentronGetLcdConfigurationCommand::metric_map_t metric_map_t;
 

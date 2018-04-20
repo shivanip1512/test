@@ -11,6 +11,9 @@ namespace Devices   {
 class IM_EX_DEVDB RfnResidentialVoltageDevice
     :   public RfnResidentialDevice
 {
+    void storeOvUvConfig( const Commands::RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration & config );
+    void storeVoltageProfileConfig( const Commands::RfnVoltageProfileConfigurationCommand::Read & cmd );
+
 protected:
 
     virtual ConfigMap getConfigMethods(InstallType installType);
@@ -38,6 +41,7 @@ protected:
     YukonError_t executeGetConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     YukonError_t executePutConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
+    void handleCommandResult( const Commands::RfnConfigNotificationCommand               & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetTemporaryRecordingCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetPermanentRecordingCommand & cmd ) override;

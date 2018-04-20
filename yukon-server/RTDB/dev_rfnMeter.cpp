@@ -10,6 +10,7 @@
 #include "cmd_rfn_TemperatureAlarm.h"
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
+#include "cmd_rfn_ConfigNotification.h"
 
 #include "Attribute.h"
 #include "MetricIdLookup.h"
@@ -844,6 +845,24 @@ YukonError_t RfnMeterDevice::executeGetConfigTemperatureAlarm( CtiRequestMsg * p
     return ClientErrors::None;
 }
 
+void RfnMeterDevice::handleCommandResult(const Commands::RfnConfigNotificationCommand & cmd)
+{
+    if( cmd.channelSelections )
+    {
+        storeChannelSelections( *cmd.channelSelections );
+    }
+
+    if( cmd.intervalRecording )
+    {
+        storeIntervalRecordingActiveConfiguration( *cmd.intervalRecording );
+    }
+
+    if( cmd.temperature )
+    {
+        storeTemperatureConfig( *cmd.temperature );
+    }
+}
+
 void RfnMeterDevice::handleCommandResult( const Commands::RfnTemperatureAlarmCommand & cmd )
 {
     const bool unsupported = ! cmd.isSupported();
@@ -854,16 +873,26 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnTemperatureAlarmCom
     }
     else if ( const auto configuration = cmd.getAlarmConfiguration() )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled,         configuration->alarmEnabled );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,    configuration->alarmRepeatInterval );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,       configuration->alarmRepeatCount );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration->alarmHighTempThreshold );
+        storeTemperatureConfig( *configuration );
     }
+}
+
+void RfnMeterDevice::storeTemperatureConfig( const Commands::RfnTemperatureAlarmCommand::AlarmConfiguration & configuration )
+{
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled,         configuration.alarmEnabled );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,    configuration.alarmRepeatInterval );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,       configuration.alarmRepeatCount );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration.alarmHighTempThreshold );
 }
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd )
 {
-    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+    storeChannelSelections( cmd.getMetricsReceived() );
+}
+
+void RfnMeterDevice::storeChannelSelections( const Commands::RfnChannelConfigurationCommand::MetricIds & metricsReceived )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( metricsReceived );
 
     setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMetrics );
 }
@@ -882,16 +911,17 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalReco
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd )
 {
-    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
-
-    setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoMetrics );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, cmd.getIntervalRecordingSecondsReceived() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSecondsReceived() );
+    storeIntervalRecordingActiveConfiguration( cmd );
 }
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand & cmd )
 {
-    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getMetricsReceived() );
+    storeIntervalRecordingActiveConfiguration( cmd );
+}
+
+void RfnMeterDevice::storeIntervalRecordingActiveConfiguration( const Commands::RfnChannelIntervalRecording::ActiveConfiguration & cmd )
+{
+    std::vector<unsigned long> paoMetrics = makeMetricIdsDynamicInfo( cmd.getIntervalMetrics() );
 
     setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoMetrics );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, cmd.getIntervalRecordingSeconds() );

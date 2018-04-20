@@ -14,8 +14,9 @@ class IM_EX_DEVDB RfnLgyrFocusAlDevice
     YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
-    void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationReadCommand &cmd);
-    void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationWriteCommand &cmd);
+    void handleCommandResult(const Commands::RfnConfigNotificationCommand           &cmd) override;
+    void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationReadCommand  &cmd) override;
+    void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationWriteCommand &cmd) override;
 
     void storeDisplayMetricInfo(const Commands::RfnFocusAlLcdConfigurationCommand::MetricVector &metrics);
 

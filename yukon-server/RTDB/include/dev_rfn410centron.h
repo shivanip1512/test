@@ -14,6 +14,8 @@ class IM_EX_DEVDB Rfn410CentronDevice :
     YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     virtual YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
+    void storeLcdConfig(const Commands::RfnCentronLcdConfigurationCommand::Read &cmd);
+
 protected:
     struct c1sx_display
     {
@@ -26,6 +28,7 @@ protected:
 
     bool isDisplayConfigCurrent(const c1sx_display &config);
 
+    void handleCommandResult(const Commands::RfnConfigNotificationCommand         &cmd) override;
     void handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd) override;
     void handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd) override;
 

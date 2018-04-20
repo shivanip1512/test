@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "dev_rfn420centron.h"
+#include "cmd_rfn_ConfigNotification.h"
 #include "config_data_rfn.h"
 #include "config_helpers.h"
 #include "std_helper.h"
@@ -97,6 +98,17 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
 }
 
 
+void Rfn420CentronDevice::handleCommandResult(const Commands::RfnConfigNotificationCommand &cmd)
+{
+	Rfn410CentronDevice::handleCommandResult(cmd);
+
+	if( cmd.c2sxDisplay )
+	{
+		storeLcdConfig(*cmd.c2sxDisplay);
+	}
+}
+
+
 void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd)
 {
     Rfn410CentronDevice::handleCommandResult(cmd);
@@ -112,6 +124,11 @@ void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronGetLcdCo
 {
     Rfn410CentronDevice::handleCommandResult(cmd);
 
+    storeLcdConfig(cmd);
+}
+
+void Rfn420CentronDevice::storeLcdConfig(const Commands::RfnCentronLcdConfigurationCommand::Read &cmd)
+{
     if( const boost::optional<bool> disconnectDisabled = cmd.getDisconnectDisplayDisabled() )
     {
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled, *disconnectDisabled);

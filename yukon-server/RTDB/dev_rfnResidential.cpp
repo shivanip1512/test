@@ -5,6 +5,7 @@
 #include "config_device.h"
 #include "config_helpers.h"
 #include "dev_rfnResidential.h"
+#include "cmd_rfn_ConfigNotification.h"
 #include "devicetypes.h"
 
 #include <boost/optional.hpp>
@@ -875,20 +876,42 @@ bool RfnResidentialDevice::isDisconnectConfigSupported() const
 }
 
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnConfigNotificationCommand & cmd )
+{
+    RfnMeterDevice::handleCommandResult(cmd);
+
+    storeTouState( cmd.touEnabled, cmd.touSchedule );
+
+    if( cmd.touHolidays )
+    {
+        storeTouHolidays(*cmd.touHolidays);
+    }
+
+    if( cmd.demandFreezeDay )
+    {
+        storeDemandFreezeDay(*cmd.demandFreezeDay);
+    }
+}
+
+
+void RfnResidentialDevice::handleCommandResult(const Commands::RfnGetDemandFreezeInfoCommand & cmd)
 {
     Commands::RfnGetDemandFreezeInfoCommand::DemandFreezeData freezeData = cmd.getDemandFreezeData();
 
     if( freezeData.dayOfFreeze )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, *freezeData.dayOfFreeze );
+        storeDemandFreezeDay(*freezeData.dayOfFreeze);
     }
 }
 
-
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult(const Commands::RfnDemandFreezeConfigurationCommand & cmd)
 {
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, cmd.freezeDay );
+    storeDemandFreezeDay(cmd.freezeDay);
+}
+
+void RfnResidentialDevice::storeDemandFreezeDay( const uint8_t demandFreezeDay )
+{
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, demandFreezeDay );
 }
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand & cmd )
@@ -1073,43 +1096,37 @@ void storeSchedule(RfnResidentialDevice &dev, const Commands::RfnTouScheduleConf
 }
 
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand & cmd )
+void RfnResidentialDevice::storeTouState( 
+    const boost::optional<Commands::RfnTouScheduleConfigurationCommand::TouState> & touState, 
+    const boost::optional<Commands::RfnTouScheduleConfigurationCommand::Schedule> & schedule_received )
 {
-    using Commands::RfnTouScheduleConfigurationCommand;
-
-    if( const boost::optional<RfnTouScheduleConfigurationCommand::TouState> touState = cmd.getTouStateReceived() )
+    if( touState )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouScheduleConfigurationCommand::TouEnable);
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == Commands::RfnTouScheduleConfigurationCommand::TouEnable);
     }
 
-    if( const boost::optional<RfnTouScheduleConfigurationCommand::Schedule> schedule_received = cmd.getTouScheduleReceived() )
+    if( schedule_received )
     {
         storeSchedule(*this, *schedule_received);
     }
 }
 
 
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand & cmd )
+{
+    storeTouState( cmd.getTouStateReceived(), cmd.getTouScheduleReceived() );
+}
+
+
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand & cmd )
 {
-    using Commands::RfnTouScheduleSetConfigurationCommand;
-
-    if( const boost::optional<RfnTouScheduleSetConfigurationCommand::TouState> touState = cmd.getTouStateReceived() )
-    {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouScheduleSetConfigurationCommand::TouEnable);
-    }
-
-    storeSchedule(*this, cmd.schedule_to_send);
+    storeTouState( cmd.getTouStateReceived(), cmd.schedule_to_send );
 }
 
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouStateConfigurationCommand & cmd )
 {
-    using Commands::RfnTouStateConfigurationCommand;
-
-    if( const boost::optional<RfnTouStateConfigurationCommand::TouState> touState = cmd.getTouState() )
-    {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouStateConfigurationCommand::TouEnable);
-    }
+    storeTouState( cmd.getTouState(), boost::none );
 }
 
 
@@ -1117,17 +1134,19 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouHolidayCon
 {
     using Commands::RfnTouHolidayConfigurationCommand;
 
-    if( const boost::optional<RfnTouHolidayConfigurationCommand::TouState> touState = cmd.getTouStateReceived() )
-    {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouHolidayConfigurationCommand::TouEnable);
-    }
+    storeTouState( cmd.getTouStateReceived(), boost::none );
 
     if( const boost::optional<RfnTouHolidayConfigurationCommand::Holidays> holidays_received = cmd.getHolidaysReceived() )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday1, (*holidays_received)[0].asStringUSFormat() );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (*holidays_received)[1].asStringUSFormat() );
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (*holidays_received)[2].asStringUSFormat() );
+        storeTouHolidays(*holidays_received);
     }
+}
+
+void RfnResidentialDevice::storeTouHolidays(const Commands::RfnTouHolidayConfigurationCommand::Holidays holidays)
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday1, holidays[0].asStringUSFormat());
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday2, holidays[1].asStringUSFormat());
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Holiday3, holidays[2].asStringUSFormat());
 }
 
 }

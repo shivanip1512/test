@@ -5,6 +5,7 @@
 #include "config_device.h"
 #include "config_helpers.h"
 #include "dev_rfnResidentialVoltage.h"
+#include "cmd_rfn_ConfigNotification.h"
 #include "devicetypes.h"
 #include "CParms.h"
 
@@ -201,7 +202,27 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
     return ClientErrors::None;
 }
 
+void RfnResidentialVoltageDevice::handleCommandResult(const Commands::RfnConfigNotificationCommand & cmd)
+{
+    RfnResidentialDevice::handleCommandResult(cmd);
+
+    if( cmd.voltageProfile )
+    {
+        storeVoltageProfileConfig( *cmd.voltageProfile );
+    }
+
+    if( cmd.ovuv )
+    {
+        storeOvUvConfig( *cmd.ovuv );
+    }
+}
+
 void RfnResidentialVoltageDevice::handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd )
+{
+    storeVoltageProfileConfig( cmd );
+}
+
+void RfnResidentialVoltageDevice::storeVoltageProfileConfig( const Commands::RfnVoltageProfileConfigurationCommand::Read & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageAveragingInterval, *cmd.getVoltageAveragingInterval() );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval,      *cmd.getLoadProfileInterval() );
@@ -404,8 +425,11 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
 
 void RfnResidentialVoltageDevice::handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand & cmd )
 {
-    Commands::RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration   config = cmd.getAlarmConfiguration();
+    storeOvUvConfig( cmd.getAlarmConfiguration() );
+}
 
+void RfnResidentialVoltageDevice::storeOvUvConfig( const Commands::RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration & config )
+{
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,   config.ovuvEnabled );
 
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, config.ovuvAlarmReportingInterval );

@@ -2,6 +2,7 @@
 
 #include "dev_rfn.h"
 #include "cmd_rfn_ChannelConfiguration.h"
+#include "cmd_rfn_TemperatureAlarm.h"
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/container/flat_map.hpp>
 
@@ -69,8 +70,9 @@ protected:
     YukonError_t executePutConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     YukonError_t executeGetConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
-    void handleCommandResult( const Commands::RfnTemperatureAlarmCommand & cmd ) override;
-    void handleCommandResult( const Commands::RfnChannelSelectionCommand & cmd ) override;
+    void handleCommandResult( const Commands::RfnConfigNotificationCommand & cmd ) override;
+    void handleCommandResult( const Commands::RfnTemperatureAlarmCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnChannelSelectionCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand       & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd ) override;
@@ -91,6 +93,10 @@ private:
         std::string prefix, 
         const PaoMetricIds &cfgMidnightMetrics, 
         const boost::optional<PaoMetricIds> &paoMidnightMetrics);
+
+    void storeTemperatureConfig( const Commands::RfnTemperatureAlarmCommand::AlarmConfiguration & configuration );
+    void storeChannelSelections( const Commands::RfnChannelConfigurationCommand::MetricIds & metricsReceived );
+    void storeIntervalRecordingActiveConfiguration( const Commands::RfnChannelIntervalRecording::ActiveConfiguration & cmd );
 };
 
 typedef RfnMeterDevice Rfn410flDevice;  //  kWh only
