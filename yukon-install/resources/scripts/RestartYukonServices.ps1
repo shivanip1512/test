@@ -41,6 +41,7 @@ Clear-Host
 "Yukon Dispatch Service", 
 "YukonServiceMgr",
 "YukonMessageBroker"
+"YukonWatchdogService"
 
 [System.Collections.ArrayList]$ServicesToRestart = @()
 
