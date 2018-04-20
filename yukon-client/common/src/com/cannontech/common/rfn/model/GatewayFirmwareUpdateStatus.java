@@ -50,7 +50,7 @@ public enum GatewayFirmwareUpdateStatus implements DisplayableEnum {
         builder.put(GatewayFirmwareUpdateRequestResult.CONFIGURATION_PARSE_ERROR, CONFIGURATION_PARSE_ERROR);
         builder.put(GatewayFirmwareUpdateRequestResult.FILE_IO_ERROR, FILE_IO_ERROR);
         builder.put(GatewayFirmwareUpdateRequestResult.NETWORK_FAILURE, NETWORK_FAILURE);
-        builder.put(GatewayFirmwareUpdateRequestResult.SSL_VERIFICATION_FAILURE, AUTHENTICATION_FAILURE);
+        builder.put(GatewayFirmwareUpdateRequestResult.SSL_VERIFICATION_FAILURE, SSL_VERIFICATION_FAILURE);
         builder.put(GatewayFirmwareUpdateRequestResult.AUTHENTICATION_FAILURE, AUTHENTICATION_FAILURE);
         builder.put(GatewayFirmwareUpdateRequestResult.PROTOCOL_ERROR, PROTOCOL_ERROR);
         builder.put(GatewayFirmwareUpdateRequestResult.SERVER_ERROR, SERVER_ERROR);
