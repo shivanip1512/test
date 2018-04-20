@@ -1,8 +1,6 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <cti:msgScope paths="modules.tools.point, yukon.common.device.selection">
@@ -44,10 +42,6 @@
                             id="copy-point-physicalOffset-txt" displayValidationToRight="true"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-        <div class="action-area">
-            <cti:button nameKey="copy" classes="primary" id="copy-point-btn"/>
-            <cti:button nameKey="cancel" id="close-copy-point-popup" />
-        </div>
     </form:form>
 </cti:msgScope>
 

@@ -430,11 +430,8 @@ public class PointEditorServiceImpl implements PointEditorService {
                 break;
                 
             case PointTypes.PULSE_ACCUMULATOR_POINT:
-                newPoint = PointEdiorServiceHelper.populatePulseAccumulatorPtToCopy(pointModel, pointBaseToCopy);
-                break;
-            
             case PointTypes.DEMAND_ACCUMULATOR_POINT:
-                newPoint = PointEdiorServiceHelper.populatePulseAccumulatorPtToCopy(pointModel, pointBaseToCopy);
+                newPoint = PointEdiorServiceHelper.populateAccumulatorPointToCopy(pointModel, pointBaseToCopy);
                 break;
                 
             case PointTypes.CALCULATED_STATUS_POINT:

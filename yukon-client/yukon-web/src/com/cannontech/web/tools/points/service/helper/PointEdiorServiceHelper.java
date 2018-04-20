@@ -97,7 +97,7 @@ public class PointEdiorServiceHelper {
     private static List<CalcComponent> populateCalcComponents(List<CalcComponent> calcComponents) {
         List<CalcComponent> newCalcComponents = Lists.newArrayList();
         if (CollectionUtils.isNotEmpty(calcComponents)) {
-            for(CalcComponent calcComponent : calcComponents) {
+            for (CalcComponent calcComponent : calcComponents) {
                 CalcComponent newCalcComponent = new CalcComponent(null, 
                                                                    calcComponent.getComponentOrder(), 
                                                                    calcComponent.getComponentType(),
@@ -128,6 +128,10 @@ public class PointEdiorServiceHelper {
         ((AnalogPoint) newPoint).getPointAnalog().setMultiplier(analogPointToCopy.getPointAnalog().getMultiplier());
         ((AnalogPoint) newPoint).getPointAnalog().setDataOffset(analogPointToCopy.getPointAnalog().getDataOffset());
         ((AnalogPoint) newPoint).getPointAnalog().setDeadband(analogPointToCopy.getPointAnalog().getDeadband());
+        
+        ((AnalogPoint) newPoint).getPointAnalogControl().setControlInhibited(analogPointToCopy.getPointAnalogControl().isControlInhibited());
+        ((AnalogPoint) newPoint).getPointAnalogControl().setControlOffset(analogPointToCopy.getPointAnalogControl().getControlOffset());
+        ((AnalogPoint) newPoint).getPointAnalogControl().setControlType(analogPointToCopy.getPointAnalogControl().getControlType());
         
         return newPoint;
     }
@@ -208,7 +212,7 @@ public class PointEdiorServiceHelper {
         return staleData;
     }
 
-    public static PointBase populatePulseAccumulatorPtToCopy(PointModel<? extends PointBase> pointModel,
+    public static PointBase populateAccumulatorPointToCopy(PointModel<? extends PointBase> pointModel,
             PointBase pointToCopy) {
         PointBase newPoint = populatePointBaseToCopy(pointModel, pointToCopy);
 

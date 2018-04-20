@@ -127,7 +127,6 @@ public class PointValidator extends SimpleValidator<PointModel> {
     protected void validatePointOffset(PointModel pointModel, Errors errors, boolean isCopyOperation) {
         PointBase base = pointModel.getPointBase();
         
-        //TODO : check isPseudo - and then check if the offset is blank.
         if(base.getPoint().isPhysicalOffset()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "pointBase.point.pointOffset", "yukon.web.error.isBlank");
         }

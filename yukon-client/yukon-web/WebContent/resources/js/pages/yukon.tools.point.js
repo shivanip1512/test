@@ -426,7 +426,6 @@ yukon.tools.point = (function () {
     var mod = {
         
         getNextValidPointOffset : function (selectedPaoInfo) {
-            console.log(selectedPaoInfo.paoId);
             var pointType = $("#copy-point-pointType").val(),
                 paoId = selectedPaoInfo[0].paoId,
                 url = yukon.url('/tools/points/getNextAvaliablePointOffset');
@@ -544,11 +543,7 @@ yukon.tools.point = (function () {
                 });
             });
             
-            $(document).on('click', '#close-copy-point-popup', function() {
-                $("#copy-point-popup").dialog("close");
-            });
-            
-            $(document).on('click', '#copy-point-btn', function() {
+            $(document).on('yukon:tools:point:copy', function() {
                 yukon.ui.blockPage();
                 $('#copy-point-form').ajaxSubmit({
                     success: function (data, status, xhr, $form) {
@@ -556,9 +551,7 @@ yukon.tools.point = (function () {
                     },
                     error: function (xhr, status, error, $form) {
                         $('#copy-point-popup').html(xhr.responseText);
-                        if ($('#isPhysicalOffset').val() == 'false') {
-                            $("#copy-point-physicalOffset-txt").addClass('dn');
-                        }
+                        yukon.ui.initContent('#copy-point-popup');
                         yukon.ui.unblockPage();
                     }
                 });

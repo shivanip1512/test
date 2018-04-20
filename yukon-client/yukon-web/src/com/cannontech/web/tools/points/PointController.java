@@ -42,7 +42,6 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -115,7 +114,6 @@ public class PointController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonListDao listDao;
     @Autowired private PointDao pointDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointService pointService;
     @Autowired private RtuService rtuService;
@@ -153,7 +151,8 @@ public class PointController {
                 
                 // set copy point name
                 MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-                String newPointName = accessor.getMessage(YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.copyof", pointModel.getPointBase().getPoint().getPointName()));
+                String newPointName = accessor.getMessage(YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                    "yukon.common.copyof", pointModel.getPointBase().getPoint().getPointName()));
                 pointModel.getPointBase().getPoint().setPointName(newPointName);
                 
                 if (!(pointModel.getPointBase() instanceof SystemPoint)

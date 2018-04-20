@@ -33,8 +33,9 @@
         <!-- Copy Point dialog -->
         <cti:msg2 var="copyPointPopUpTitle" key="yukon.web.modules.tools.point.copyPoint.title"/>
         <cti:url var="renderCopyPointUrl" value="/tools/points/${pointModel.pointBase.point.pointID}/render-copy-point"/>
-        <div class="dn" id="copy-point-popup" data-title="${copyPointPopUpTitle}"
-             data-url="${renderCopyPointUrl}"></div>
+        <cti:msg2 var="copyText" key="components.button.copy.label"/>
+        <div class="dn" id="copy-point-popup" data-title="${copyPointPopUpTitle}" data-dialog data-ok-text="${copyText}" 
+             data-event="yukon:tools:point:copy" data-url="${renderCopyPointUrl}"></div>
              
     </cti:displayForPageEditModes>
     
