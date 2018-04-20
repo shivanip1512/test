@@ -37,39 +37,39 @@
     <c:choose>
         <c:when test="${rtus.hitCount > 0}">
             <div id="rtu-list-container" data-url="${dataUrl}" data-static>
-            <table class="compact-results-table has-actions row-highlighting">
-                <thead>
-                    <tr>
-                        <tags:sort column="${name}" />
-                        <tags:sort column="${type}" />
-                        <tags:sort column="${status}" />
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="rtu" items="${rtus.resultList}">
-                        <c:set var="cssClass" value="success" />
-                        <cti:msg2 var="rtuStatus" key="yukon.common.enabled"/>
-                        <c:if test="${rtu.disableFlag == 'Y'}">
-                            <c:set var="cssClass" value="error" />
-                            <cti:msg2 var="rtuStatus" key="yukon.common.disabled"/>
-                        </c:if>
+                <table class="compact-results-table has-actions row-highlighting">
+                    <thead>
                         <tr>
-                            <c:choose>
-                                <c:when test="${rtu.paoType == 'RTU_DNP'}">
-                                    <cti:url var="rtuDnpUrl" value="/stars/rtu/${rtu.paoIdentifier.paoId}"/>
-                                    <td><a href="${rtuDnpUrl}">${rtu.paoName}</a></td>
-                                </c:when>
-                                <c:otherwise>
-                                    <td>${rtu.paoName}</td>
-                                </c:otherwise>
-                            </c:choose>
-                            <td><i:inline key="${rtu.paoType}"/></td>
-                            <td class="${cssClass}">${rtuStatus}</td>
+                            <tags:sort column="${name}" />
+                            <tags:sort column="${type}" />
+                            <tags:sort column="${status}" />
                         </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-            <tags:pagingResultsControls result="${rtus}" adjustPageCount="true"/>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="rtu" items="${rtus.resultList}">
+                            <c:set var="cssClass" value="success" />
+                            <cti:msg2 var="rtuStatus" key="yukon.common.enabled"/>
+                            <c:if test="${rtu.disableFlag == 'Y'}">
+                                <c:set var="cssClass" value="error" />
+                                <cti:msg2 var="rtuStatus" key="yukon.common.disabled"/>
+                            </c:if>
+                            <tr>
+                                <c:choose>
+                                    <c:when test="${rtu.paoType == 'RTU_DNP'}">
+                                        <cti:url var="rtuDnpUrl" value="/stars/rtu/${rtu.paoIdentifier.paoId}"/>
+                                        <td><a href="${rtuDnpUrl}">${rtu.paoName}</a></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td>${rtu.paoName}</td>
+                                    </c:otherwise>
+                                </c:choose>
+                                <td><i:inline key="${rtu.paoType}"/></td>
+                                <td class="${cssClass}">${rtuStatus}</td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+                <tags:pagingResultsControls result="${rtus}" adjustPageCount="true"/>
             </div>
             
         </c:when>
