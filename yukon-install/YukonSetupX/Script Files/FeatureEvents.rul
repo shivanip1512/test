@@ -24,7 +24,7 @@
 #define NOTIF_NAME      "YukonNotificationServer"
 #define SM_NAME         "YukonServiceMgr"
 #define BROKER_NAME     "YukonMessageBroker"
-#define MONITOR_NAME    "YukonMonitorService"
+#define WATCHDOG_NAME   "YukonWatchdogService"
 
 //---------------------------------------------------------------------------
 // The Installed event is sent after the feature Notification Server
@@ -174,29 +174,29 @@ begin
 end;
 
 //---------------------------------------------------------------------------
-// The Installed event is sent after the feature Yukon Monitor Service
+// The Installed event is sent after the feature Yukon Watchdog Service
 // is installed.
 //--------------------------------------------------------------------------- 
-export prototype YukonMonitorService_Installed();
-function YukonMonitorService_Installed()
+export prototype YukonWatchdogService_Installed();
+function YukonWatchdogService_Installed()
 string sProg, sCMD, svDir;
 begin
     //Install as a service
     sProg = "cmd.exe";
-    sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\yukonmonitorservice.conf";
+    sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\watchdog.conf";
     svDir = TARGETDIR + "\\Runtime\\bin";
     LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
 
 //---------------------------------------------------------------------------
-// The UnInstalling event is sent just before the feature Yukon Monitor Service 
+// The UnInstalling event is sent just before the feature Yukon Watchdog Service 
 // is uninstalled.
 //--------------------------------------------------------------------------- 
-export prototype YukonMonitorService_UnInstalling();
-function YukonMonitorService_UnInstalling()
+export prototype YukonWatchdogService_UnInstalling();
+function YukonWatchdogService_UnInstalling()
 begin
-    //remove the Yukon Monitor Service 
-    ServiceRemoveService(MONITOR_NAME);
+    //remove the Yukon Watchdog Service
+    ServiceRemoveService(WATCHDOG_NAME);
 end;
 
 //---------------------------------------------------------------------------

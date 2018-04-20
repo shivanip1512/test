@@ -50,7 +50,7 @@ begin
 	sServiceNameArray(9) = NOTIF_NAME;
 	sServiceNameArray(10) = SM_NAME;
 	sServiceNameArray(11) = BROKER_NAME;
-	sServiceNameArray(12) = MONITOR_NAME;
+	sServiceNameArray(12) = WATCHDOG_NAME;
 end;
 
 //-------------------------------------------------------
@@ -746,15 +746,15 @@ begin
 end;
 
 //--------------------------------------------------------------------------------------
-//Helper function to install Monitor Service (while upgrading from version < 7.1.0)
+//Helper function to install Watchdog Service (while upgrading from version < 7.1.0)
 //--------------------------------------------------------------------------------------
-export prototype InstallMonitorService();
-function InstallMonitorService()
+export prototype InstallWatchdogService();
+function InstallWatchdogService()
 string sProg, sCMD, svDir;
 begin
 
     sProg = "cmd.exe";
-    sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\yukonmonitorservice.conf";
+    sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\watchdog.conf";
     svDir = TARGETDIR + "\\Runtime\\bin";
     LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;

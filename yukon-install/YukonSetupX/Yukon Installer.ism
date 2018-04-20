@@ -133,9 +133,9 @@
 		<row><td>Tomcat</td><td>{0340C09C-1CA8-4C44-BA53-53138D1F8DD1}</td><td>WEB</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat XML Config</td><td>{6F55A1F8-D6A1-46D4-9B10-F0CE4ABD4633}</td><td>CONF</td><td>16</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Trending</td><td>{8D2982AF-094C-49E2-86FD-CD8CB9F33208}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Watchdog</td><td>{A11E02B2-037D-43A2-A5FE-EA6AE98E171E}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Web Deployment</td><td>{4DEA3DA8-40AC-43FF-90FF-EB6B8649160F}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>529</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>WebStart JRE</td><td>{3C821777-81A3-491F-B232-7CCCE49AE6CC}</td><td>JRE</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Yukon Monitor</td><td>{A11E02B2-037D-43A2-A5FE-EA6AE98E171E}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Control">
@@ -420,7 +420,7 @@
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td><td>##IDS_FEATURE_DISPLAY_NAME24##</td><td>##ID_STRING23##</td><td>17</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Enterprise Integration Module</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME7##</td><td>##ID_STRING17##</td><td>15</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Commander</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td>##IDS_FEATURE_DISPLAY_NAME5##</td><td>##ID_STRING15##</td><td>5</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Client</td></row>
-		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING79##</td><td>##ID_STRING80##</td><td>39</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Monitor Service</td></row>
+		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING79##</td><td>##ID_STRING80##</td><td>39</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Watchdog Service</td></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING20##</td><td>##ID_STRING41##</td><td>37</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Message Broker</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME21##</td><td>##ID_STRING13##</td><td>31</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Notification</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME11##</td><td>##ID_STRING21##</td><td>23</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Alarm Monitor</td></row>
@@ -465,7 +465,7 @@
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>ExportArchive</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Master Config Example</td></row>
 		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>Java Service Wrapper</td></row>
-		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>Yukon Monitor</td></row>
+		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>Watchdog</td></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>Java Service Wrapper</td></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>Message Broker</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Java Service Wrapper</td></row>
@@ -548,9 +548,9 @@
 		<row><td>Tomcat</td><td/><td/><td>_DD4EA8E8_B253_4179_9C64_7142B2CF7172_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Tomcat XML Config</td><td/><td/><td>_B72B45A4_7E51_4635_A54E_2F559776381D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Trending</td><td/><td/><td>_C776352F_352E_4DCA_ADD6_A06317337691_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Watchdog</td><td/><td/><td>_13A7F99A_C8F5_481E_B049_4713177A4F1B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Web Deployment</td><td/><td/><td>_39776812_3316_4905_B00F_4B78AFE83EAF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>WebStart JRE</td><td/><td/><td>_F90FFA2E_106A_46BA_AD6D_7D94F625064D_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Yukon Monitor</td><td/><td/><td>_13A7F99A_C8F5_481E_B049_4713177A4F1B_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISComponentSubFolder">
@@ -624,9 +624,9 @@
 		<row><td>Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>appserver.conf</td><td/><td>0</td></row>
 		<row><td>Tomcat XML Config</td><td>&lt;PATH_TO_TOMCAT_XML_CONFIG&gt;</td><td>1</td><td>web.xml; server.xml</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td>web.xml; server.xml</td><td>2</td></row>
+		<row><td>Watchdog</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>watchdog.conf</td><td/><td>0</td></row>
 		<row><td>Web Deployment</td><td>&lt;PATH_TO_WEB_DEP_FILES&gt;</td><td>1</td><td>*.*</td><td>sublist.html; sublist.jlx;</td><td>2</td></row>
 		<row><td>WebStart JRE</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>0</td></row>
-		<row><td>Yukon Monitor</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>yukonmonitorservice.conf</td><td/><td>0</td></row>
 	</table>
 
 	<table name="ISFeatureExtended">
@@ -662,7 +662,7 @@
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING43##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING38##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING69##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td/><td>YukonMonitorService_Installed</td><td>YukonMonitorService_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING81##</td><td>36</td><td/><td/><td/></row>
+		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td/><td>YukonWatchdogService_Installed</td><td>YukonWatchdogService_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING81##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td/><td>YukonMessageBroker_Installed</td><td/><td>YukonMessageBroker_UnInstalling</td><td/><td/><td/><td>##ID_STRING62##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td/><td>NotificationServer_Installed</td><td>NotificationServer_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING35##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING42##</td><td>36</td><td/><td/><td/></row>
@@ -1182,11 +1182,11 @@
 		<row><td>NewShortcut10</td><td>Commander</td></row>
 		<row><td>NewShortcut11</td><td>TDC</td></row>
 		<row><td>NewShortcut12</td><td>Trending</td></row>
-		<row><td>NewShortcut13</td><td>Yukon Monitor</td></row>
-		<row><td>NewShortcut15</td><td>Yukon Monitor</td></row>
+		<row><td>NewShortcut13</td><td>Watchdog</td></row>
+		<row><td>NewShortcut15</td><td>Watchdog</td></row>
 		<row><td>NewShortcut16</td><td>Tomcat</td></row>
-		<row><td>NewShortcut17</td><td>Yukon Monitor</td></row>
-		<row><td>NewShortcut18</td><td>Yukon Monitor</td></row>
+		<row><td>NewShortcut17</td><td>Watchdog</td></row>
+		<row><td>NewShortcut18</td><td>Watchdog</td></row>
 		<row><td>NewShortcut9</td><td>Database Editor</td></row>
 	</table>
 
@@ -1409,10 +1409,10 @@
 		<row><td>ID_STRING76</td><td>1033</td><td>Select which Yukon features to install.</td><td>0</td><td/><td>421427760</td></row>
 		<row><td>ID_STRING77</td><td>1033</td><td>Configuration</td><td>0</td><td/><td>-912357523</td></row>
 		<row><td>ID_STRING78</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207413974</td></row>
-		<row><td>ID_STRING79</td><td>1033</td><td>Yukon Monitor Service</td><td>0</td><td/><td>707183201</td></row>
+		<row><td>ID_STRING79</td><td>1033</td><td>Yukon Watchdog Service</td><td>0</td><td/><td>-1574536511</td></row>
 		<row><td>ID_STRING8</td><td>1033</td><td>Runs distributed automation operations based on data gathered by the system.</td><td>0</td><td/><td>-1516388534</td></row>
-		<row><td>ID_STRING80</td><td>1033</td><td>Monitoring service for Yukon</td><td>0</td><td/><td>707136289</td></row>
-		<row><td>ID_STRING81</td><td>1033</td><td>Yukon Monitor Service</td><td>0</td><td/><td>707187329</td></row>
+		<row><td>ID_STRING80</td><td>1033</td><td>Watchdog service for Yukon</td><td>0</td><td/><td>-1574524223</td></row>
+		<row><td>ID_STRING81</td><td>1033</td><td>Yukon Watchdog Service</td><td>0</td><td/><td>-1574509887</td></row>
 		<row><td>ID_STRING82</td><td>1033</td><td>Start Yukon</td><td>0</td><td/><td>1512485002</td></row>
 		<row><td>ID_STRING83</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>1512485162</td></row>
 		<row><td>ID_STRING84</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>1512497514</td></row>

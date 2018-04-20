@@ -411,9 +411,9 @@ begin
     RemoveOldDesktopDebugServers();
     InstallStartStopServicesShortcuts();
 	
-	// Adding monitor service in case of upgrade from version < 7.1.0
-    if (!ServiceExistsService(MONITOR_NAME)) then
-    InstallMonitorService();
+	// Adding watchdog service in case of upgrade from version < 7.1.0
+    if (!ServiceExistsService(WATCHDOG_NAME)) then
+    InstallWatchdogService();
     endif;
     
 	//Remove Lucene indexes so they're rebuilt on startup
