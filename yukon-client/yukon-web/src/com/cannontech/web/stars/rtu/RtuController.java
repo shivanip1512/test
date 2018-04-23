@@ -85,7 +85,7 @@ public class RtuController {
         
         // get the RTU types in the system
         List<PaoType> rtuTypes = cache.getAllPaoTypes().stream()
-                                                       .filter(rtyTpe -> PaoType.getRtuTypes().contains(rtyTpe))
+                                                       .filter(paoType -> PaoType.getRtuTypes().contains(paoType))
                                                        .collect(Collectors.toList());
         
         SearchResults<LiteYukonPAObject> searchResults = new SearchResults<>();
