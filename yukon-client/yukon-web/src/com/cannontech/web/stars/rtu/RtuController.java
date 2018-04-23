@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,10 +35,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.definition.model.PaoDefinition;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.rtu.model.RtuPointDetail;
@@ -65,7 +61,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.web.stars.rtu.validator.RtuDnpValidator;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -79,35 +74,31 @@ public class RtuController {
     @Autowired private RtuService rtuService;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private RtuDnpValidator validator;
-    @Autowired private PaoDefinitionService paoDefinitionService;
-    private List<PaoType> creatableRtuTypes = Lists.newArrayList();
 
     private static final String baseKey = "yukon.web.modules.operator.rtuDetail.";
-    
-    @PostConstruct
-    public void init() {
-        ListMultimap<String, PaoDefinition> createablePaos = paoDefinitionService.getCreatablePaoDisplayGroupMap();
-        creatableRtuTypes = createablePaos.get(PaoClass.RTU.getDbString()).stream()
-                                                                          .map(PaoDefinition::getType)
-                                                                          .collect(Collectors.toList());
-    }
 
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     @RequestMapping(value = "rtu-list", method = RequestMethod.GET)
     public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "type") SortingParameters sorting,
             PagingParameters paging, YukonUserContext userContext,
             @RequestParam(name = "rtuType", required = false) String rtuType) {
+        
+        // get the RTU types in the system
+        List<PaoType> rtuTypes = cache.getAllPaoTypes().stream()
+                                                       .filter(rtyTpe -> PaoType.getRtuTypes().contains(rtyTpe))
+                                                       .collect(Collectors.toList());
+        
         SearchResults<LiteYukonPAObject> searchResults = new SearchResults<>();
-        List<PaoType> rtuTypes = null;
+        List<PaoType> rtuTypesToFilter = null;
 
         if (rtuType == null || StringUtils.equals("AllTypes", rtuType)) {
-            rtuTypes = creatableRtuTypes;
+            rtuTypesToFilter = rtuTypes;
         } else {
-            rtuTypes = Lists.newArrayList(PaoType.valueOf(rtuType));
+            rtuTypesToFilter = Lists.newArrayList(PaoType.valueOf(rtuType));
             model.addAttribute("selectedRtuType", rtuType);
         }
 
-        List<LiteYukonPAObject> filteredRtus = rtuService.getRtusByType(rtuTypes);
+        List<LiteYukonPAObject> filteredRtus = rtuService.getRtusByType(rtuTypesToFilter);
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
         int endIndex = Math.min(startIndex + itemsPerPage, filteredRtus.size());
@@ -138,7 +129,7 @@ public class RtuController {
         searchResults.setResultList(itemList);
 
         model.addAttribute("rtus", searchResults);
-        model.addAttribute("rtuTypes", creatableRtuTypes);
+        model.addAttribute("rtuTypes", rtuTypes);
 
         List<SortableColumn> columns = new ArrayList<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
