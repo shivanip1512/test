@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -57,14 +58,14 @@
                                 <c:choose>
                                     <c:when test="${rtu.paoType == 'RTU_DNP'}">
                                         <cti:url var="rtuDnpUrl" value="/stars/rtu/${rtu.paoIdentifier.paoId}"/>
-                                        <td><a href="${rtuDnpUrl}">${rtu.paoName}</a></td>
+                                        <td><a href="${rtuDnpUrl}">${fn:escapeXml(rtu.paoName)}</a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>${rtu.paoName}</td>
                                     </c:otherwise>
                                 </c:choose>
                                 <td><i:inline key="${rtu.paoType}"/></td>
-                                <td class="${cssClass}">${rtuStatus}</td>
+                                <td class="${cssClass}">${fn:escapeXml(rtuStatus)}</td>
                             </tr>
                         </c:forEach>
                     </tbody>
