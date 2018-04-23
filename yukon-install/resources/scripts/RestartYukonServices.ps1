@@ -27,6 +27,7 @@ Clear-Host
 
 # Just Add/Remove any service here if any change comes
 [System.Collections.ArrayList]$YukonServices = 
+"YukonWatchdogService",
 "YukonWebApplicationService",
 "YukonSimulatorsService",
 "Yukon Field Simulator Service",
@@ -40,8 +41,7 @@ Clear-Host
 "Yukon Port Control Service",
 "Yukon Dispatch Service", 
 "YukonServiceMgr",
-"YukonMessageBroker",
-"YukonWatchdogService"
+"YukonMessageBroker"
 
 [System.Collections.ArrayList]$ServicesToRestart = @()
 
