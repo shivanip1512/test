@@ -1181,6 +1181,8 @@
 		<row><td>NewShortcut16</td><td>Tomcat</td></row>
 		<row><td>NewShortcut2</td><td>Shortcut Holder</td></row>
 		<row><td>NewShortcut9</td><td>Database Editor</td></row>
+		<row><td>Start_Yukon1</td><td>Shortcut Holder</td></row>
+		<row><td>Stop_Yukon1</td><td>Shortcut Holder</td></row>
 	</table>
 
 	<table name="ISStorages">
@@ -1412,8 +1414,8 @@
 		<row><td>ID_STRING85</td><td>1033</td><td>Start Yukon</td><td>0</td><td/><td>1512444298</td></row>
 		<row><td>ID_STRING86</td><td>1033</td><td>Start Yukon</td><td>0</td><td/><td>1512446570</td></row>
 		<row><td>ID_STRING87</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>1512454794</td></row>
-		<row><td>ID_STRING88</td><td>1033</td><td>StartYukon</td><td>0</td><td/><td>-1171861270</td></row>
-		<row><td>ID_STRING89</td><td>1033</td><td>StopYukon</td><td>0</td><td/><td>-1171859158</td></row>
+		<row><td>ID_STRING88</td><td>1033</td><td>Start Yukon</td><td>0</td><td/><td>-1171875060</td></row>
+		<row><td>ID_STRING89</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>-1171868916</td></row>
 		<row><td>ID_STRING9</td><td>1033</td><td>Transmits and receives real-time data to and from other systems outside of Yukon.</td><td>0</td><td/><td>-1516413078</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979530865</td></row>
 		<row><td>NEW_STRING10</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979543089</td></row>
@@ -1534,6 +1536,8 @@
 		<row><td>NewShortcut1_E507CC381C904EB9A7CCDFC5C6DB7A89.bat</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 		<row><td>NewShortcut2_44893F0CBFC44164B88D4119B3375CB6.bat</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 		<row><td>NewShortcut9_201FF432E86F49528A97E812667856DD.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\dbEditorIcon.ico</td><td>0</td></row>
+		<row><td>Start_Yukon1_6014B2256561477A983DB5E6B739034D.bat</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
+		<row><td>Stop_Yukon1_9029DAE0D7EB458BAFA5642331D0334C.bat</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 	</table>
 
 	<table name="InstallShield">
@@ -1766,6 +1770,8 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>NewShortcut16</td><td>DesktopFolder</td><td>##ID_STRING72##</td><td/><td>http://127.0.0.1:8080</td><td/><td/><td/><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Login Link</td><td>19</td></row>
 		<row><td>NewShortcut2</td><td>newfolder1</td><td>##ID_STRING89##</td><td/><td>&lt;TARGETDIR&gt;\Server\bin\StopYukon.bat</td><td/><td/><td/><td>NewShortcut2_44893F0CBFC44164B88D4119B3375CB6.bat</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Stop Yukon</td><td>18</td></row>
 		<row><td>NewShortcut9</td><td>newfolder2</td><td>##ID_STRING58##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\dbeditor.jar"</td><td/><td/><td>NewShortcut9_201FF432E86F49528A97E812667856DD.exe</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>DBEditor Shortcut</td><td>18</td></row>
+		<row><td>Start_Yukon1</td><td>newfolder2</td><td>##ID_STRING88##</td><td/><td>&lt;TARGETDIR&gt;\Server\bin\StartYukon.bat</td><td/><td/><td/><td>Start_Yukon1_6014B2256561477A983DB5E6B739034D.bat</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Start Yukon Menu</td><td>18</td></row>
+		<row><td>Stop_Yukon1</td><td>newfolder2</td><td>##ID_STRING89##</td><td/><td>&lt;TARGETDIR&gt;\Server\bin\StopYukon.bat</td><td/><td/><td/><td>Stop_Yukon1_9029DAE0D7EB458BAFA5642331D0334C.bat</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Stop Yukon Menu</td><td>18</td></row>
 	</table>
 
 	<table name="TextStyle">
