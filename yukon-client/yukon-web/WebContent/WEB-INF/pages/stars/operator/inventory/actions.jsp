@@ -67,6 +67,19 @@
                     </td>
                     <td><i:inline key=".controlAuditDescription"/></td>
                 </tr>
+                <cti:checkRolesAndProperties value="ENABLE_POWER_QUALITY_RESPONSE">
+                <tr>
+                    <td>
+                        <cti:url var="url" value="pqrConfig/setup">
+                            <c:forEach var="parm" items="${inventoryCollection.collectionParameters}">
+                                <cti:param name="${parm.key}" value="${parm.value}"/>
+                            </c:forEach>
+                        </cti:url>
+                        <a href="${url}"><i:inline key=".pqrConfig.label"/></a>
+                    </td>
+                    <td><i:inline key=".pqrConfig.description"/></td>
+                </tr>
+                </cti:checkRolesAndProperties>
                 
             </table>
         </div>

@@ -40,7 +40,11 @@ public class PqrConfig {
     //General Event Separation
     private Short minimumEventSeparation; //seconds
     
-    public Optional<Boolean> getPqrEnable() {
+    public Boolean getPqrEnable() {
+        return pqrEnable;
+    }
+    
+    public Optional<Boolean> getPqrEnableOptional() {
         return Optional.ofNullable(pqrEnable);
     }
 
@@ -244,6 +248,10 @@ public class PqrConfig {
         return Optional.ofNullable(minimumEventSeparation);
     }
 
+    public Short getMinimumEventSeparation() {
+        return minimumEventSeparation;
+    }
+    
     public void setMinimumEventSeparation(Short minimumEventSeparation) {
         this.minimumEventSeparation = minimumEventSeparation;
     }

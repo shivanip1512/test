@@ -33,7 +33,7 @@ public class PqrDeviceConfigResult {
     public PqrDeviceConfigResult(LiteLmHardwareBase hardware, PqrConfig config) {
         this.hardware = hardware;
         unsupported = false;
-        config.getPqrEnable().ifPresent(e -> {
+        config.getPqrEnableOptional().ifPresent(e -> {
             commandStatuses.put(LmHardwareCommandType.PQR_ENABLE, PqrConfigCommandStatus.IN_PROGRESS);
         });
         

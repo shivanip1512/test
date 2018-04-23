@@ -1560,6 +1560,8 @@
                             <page name="saveToFile" type="BASIC"/>
                             <page name="controlAudit" type="BASIC"/>
                             <page name="pqrReport" type="BASIC" hideFavorite="true"/>
+                            <page name="pqrConfig" type="BASIC" hideFavorite="true"/>
+                            <page name="pqrConfigResult" type="BASIC" hideFavorite="true"/>
                         </pages>
                     </page>
                     <page name="inventory.config.schedule.status" type="DETAIL_CHILD">

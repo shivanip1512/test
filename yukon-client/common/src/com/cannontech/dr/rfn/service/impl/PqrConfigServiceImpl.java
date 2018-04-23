@@ -118,7 +118,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
                   + hardware.getDeviceID() + ")");
         
         //PQR Enable/Disable
-        config.getPqrEnable()
+        config.getPqrEnableOptional()
               .ifPresent(enable -> sendTogglePqrEnable(enable, hardware, resultId, user));
         
         //LOV Parameters

@@ -15,23 +15,33 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.rfn.dao.PqrEventDao;
+import com.cannontech.dr.rfn.model.PqrConfig;
+import com.cannontech.dr.rfn.model.PqrConfigResult;
 import com.cannontech.dr.rfn.model.PqrEvent;
+import com.cannontech.dr.rfn.service.PqrConfigService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.util.WebFileUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -42,6 +52,8 @@ public class PowerQualityResponseActionsController {
     
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private PqrConfigService pqrConfigService;
     @Autowired private PqrEventDao pqrEventDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
@@ -83,6 +95,50 @@ public class PowerQualityResponseActionsController {
         String exportFileName = "PqrEventReport_" + currentTime + ".csv";
         WebFileUtils.writeToCSV(resp, headerRow, dataRows, exportFileName);
         log.info("PQR event report complete: " + exportFileName);
+    }
+    
+    @RequestMapping("/operator/inventory/pqrConfig/setup")
+    public String pqrConfigSetup(HttpServletRequest req, ModelMap model) {
+        inventoryCollectionFactory.addCollectionToModelMap(req, model);
+        model.addAttribute("config", new PqrConfig());
+        
+        return "operator/inventory/pqrConfig/pqrConfigSetup.jsp";
+    }
+    
+    @RequestMapping("/operator/inventory/pqrConfig/submit")
+    public String pqrConfigSubmit(ModelMap model, InventoryCollection inventoryCollection, PqrConfig config, LiteYukonUser user) {
+        
+        //TODO: does this inventory -> hw conversion belong in the config service?
+        List<LiteLmHardwareBase> hardware = 
+                inventoryBaseDao.getLMHardwareForIds(inventoryCollection.getList()
+                                                                        .stream()
+                                                                        .map(InventoryIdentifier::getInventoryId)
+                                                                        .collect(Collectors.toList()));
+        
+        String resultId = pqrConfigService.sendConfigs(hardware, config, user);
+        
+        return "redirect:result/" + resultId;
+    }
+    
+    @RequestMapping("/operator/inventory/pqrConfig/result/{resultId}")
+    public String pqrConfigResult(ModelMap model, @PathVariable("resultId") String resultId) {
+        
+        PqrConfigResult result = pqrConfigService.getResult(resultId)
+                                                 .orElseThrow(() -> new IllegalArgumentException("Invalid result id: " 
+                                                                                                 + resultId));
+        model.addAttribute("result", result);
+        
+        return "operator/inventory/pqrConfig/pqrConfigResult.jsp";
+    }
+    
+    @ResponseBody
+    @RequestMapping("/operator/inventory/pqrConfig/resultProgress/{resultId}")
+    public String pqrResultProgress(@PathVariable("resultId") String resultId) throws JsonProcessingException {
+        PqrConfigResult result = pqrConfigService.getResult(resultId)
+                                                 .orElseThrow(() -> new IllegalArgumentException("Invalid result id: " 
+                                                                                                 + resultId));
+        
+        return JsonUtils.toJson(result);
     }
     
     /**
