@@ -25,7 +25,7 @@ exit
 # Clear console
 Clear-Host
 
-# Just Add/Remove any service here if any change comes
+# Just Add/Remove any service here if any change comes The first service in the list is stopped first and started last.
 [System.Collections.ArrayList]$YukonServices = 
 "YukonWatchdogService",
 "YukonWebApplicationService",
