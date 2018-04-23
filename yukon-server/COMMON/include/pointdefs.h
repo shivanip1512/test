@@ -153,7 +153,6 @@ enum ElectronicMeterPointOffsets
     OFFSET_RATE_D_KVAH                         = 49,
     OFFSET_RATE_E_KVA                          = 50,
     OFFSET_RATE_E_KVAH                         = 51,
-    OFFSET_RECEIVED_PEAK_KVA                   = 52,
     OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA  = 54,
     OFFSET_LOADPROFILE_KVA                     = 55,
     OFFSET_LOADPROFILE_QUADRANT1_KVA           = 56,
