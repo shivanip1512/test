@@ -39,6 +39,7 @@ import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.events.loggers.PointEventLogService;
+import com.cannontech.common.events.loggers.PqrEventLogService;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
@@ -55,6 +56,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
+import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.DREncryption;
@@ -83,13 +85,14 @@ public class DevEventLogCreationService {
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private OutageEventLogService outageEventLogService;
+    @Autowired private PointEventLogService pointEventLogService;
+    @Autowired private PqrEventLogService pqrEventLogService;
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
-    @Autowired private PointEventLogService pointEventLogService;
 
     private Map<LogType, DevEventLogExecutable> eventLogExecutables;
 
@@ -903,6 +906,23 @@ public class DevEventLogCreationService {
 
             }
         });
+        executables.put(LogType.POWER_QUALITY_RESPONSE, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
+                int totalCount = 10;
+                PqrConfig config = new PqrConfig();
+                config.setLovTrigger(242.0);
+                config.setLovTriggerTime((short)2000);
+                config.setLovRestore(241.0);
+                config.setLovRestoreTime((short)2000);
+                config.setLovMinEventDuration((short)5);
+                config.setLovMaxEventDuration((short)60);
+                config.setLovStartRandomTime((short)1000);
+                config.setLovEndRandomTime((short)1000);
+                pqrEventLogService.sendConfig(user, totalCount, config.toString());
+            }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -928,13 +948,14 @@ public class DevEventLogCreationService {
         METERING(MeteringEventLogService.class, 12),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         OUTAGE(OutageEventLogService.class, 10),
+        POINT(PointEventLogService.class, 6),
+        POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 25),
         TOOLS(ToolsEventLogService.class, 19),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
-        POINT(PointEventLogService.class, 6),
         ;
 
         private final Class<?> eventLogServiceClass;

@@ -64,7 +64,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
             } else {
                 LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(hw.getDeviceID());
                 // It's an actual pao, check if it can support PQR
-                if (!pao.getPaoType().supportsPqr()) {
+                if (pao == null || !pao.getPaoType().supportsPqr()) {
                     unsupportedHardware.add(hw);
                     log.debug("InventoryId=" + hw.getInventoryID() + " (DeviceId=" + hw.getDeviceID() + ") has paoType="
                               + pao.getPaoType() + ", which does not support PQR. Marking as unsupported.");

@@ -7,6 +7,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface PqrEventLogService {
     @YukonEventLog(category = "dr.powerQualityResponse")
     public void sendConfig(@Arg(ArgEnum.username) LiteYukonUser user,
-                           Integer numberOfDevices,
+                           @Arg(ArgEnum.totalCount) Integer totalCount,
                            String configuration);
 }
