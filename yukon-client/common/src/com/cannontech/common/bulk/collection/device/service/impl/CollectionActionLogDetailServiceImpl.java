@@ -124,14 +124,14 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
 
                 fields.add(StringUtils.defaultIfEmpty(dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()).getPaoName(), ""));
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
-                fields.add(StringUtils.defaultIfEmpty(accessor.getMessage(detail.getDetail()), ""));
+                fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
                 fields.add(StringUtils.defaultIfEmpty(detail.getDeviceErrorText(), ""));
                 if (result.getAction().contains(CONFIG_NAME)) {
                     fields.add(StringUtils.defaultIfEmpty(detail.getConfigName(), ""));
                 }
                 if (result.getAction().contains(DEVICE_TYPE)) {
-                    fields.add(StringUtils.defaultIfEmpty(accessor.getMessage(detail.getDevice().getDeviceType().getFormatKey()), ""));
-                }
+                    fields.add(detail.getDevice() != null
+                            ? accessor.getMessage(detail.getDevice().getDeviceType().getFormatKey()) : "");                }
                 String pointName = "";
                 String value = "";
                 if (result.getAction().contains(POINT_DATA)) {
