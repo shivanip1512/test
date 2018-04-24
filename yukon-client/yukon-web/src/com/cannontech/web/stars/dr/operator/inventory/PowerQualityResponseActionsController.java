@@ -15,6 +15,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,11 +36,13 @@ import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.dr.rfn.model.PqrConfigResult;
 import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.service.PqrConfigService;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.util.WebFileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,6 +58,7 @@ public class PowerQualityResponseActionsController {
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private PqrConfigService pqrConfigService;
+    @Autowired private PqrConfigValidator pqrConfigValidator;
     @Autowired private PqrEventDao pqrEventDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
@@ -99,6 +104,7 @@ public class PowerQualityResponseActionsController {
     
     @RequestMapping("/operator/inventory/pqrConfig/setup")
     public String pqrConfigSetup(HttpServletRequest req, ModelMap model) {
+        
         inventoryCollectionFactory.addCollectionToModelMap(req, model);
         model.addAttribute("config", new PqrConfig());
         
@@ -106,7 +112,17 @@ public class PowerQualityResponseActionsController {
     }
     
     @RequestMapping("/operator/inventory/pqrConfig/submit")
-    public String pqrConfigSubmit(ModelMap model, InventoryCollection inventoryCollection, PqrConfig config, LiteYukonUser user) {
+    public String pqrConfigSubmit(ModelMap model, InventoryCollection inventoryCollection, 
+                                  @ModelAttribute("config") PqrConfig config, BindingResult result, LiteYukonUser user, 
+                                  HttpServletRequest req, FlashScope flash) {
+        
+        pqrConfigValidator.doValidation(config, result);
+        if (result.hasErrors()) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.pqrConfig.validation.invalidConfig"));
+            inventoryCollectionFactory.addCollectionToModelMap(req, model);
+            model.addAttribute("config", config);
+            return "operator/inventory/pqrConfig/pqrConfigSetup.jsp";
+        }
         
         //TODO: does this inventory -> hw conversion belong in the config service?
         List<LiteLmHardwareBase> hardware = 
@@ -115,7 +131,7 @@ public class PowerQualityResponseActionsController {
                                                                         .map(InventoryIdentifier::getInventoryId)
                                                                         .collect(Collectors.toList()));
         
-        String resultId = pqrConfigService.sendConfigs(hardware, config, user);
+        String resultId = "";//pqrConfigService.sendConfigs(hardware, config, user);
         
         return "redirect:result/" + resultId;
     }

@@ -75,6 +75,12 @@ public class YukonValidationUtils extends ValidationUtils {
         checkExceedsMaxLength(errors, field, fieldValue, max);
     }
 
+    public static void checkIsPositiveShort(Errors errors, String field, Short fieldValue) {
+        if (fieldValue == null || fieldValue < 0) {
+            errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
+        }
+    }
+    
     public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
         if (fieldValue == null || fieldValue < 0) {
             errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");

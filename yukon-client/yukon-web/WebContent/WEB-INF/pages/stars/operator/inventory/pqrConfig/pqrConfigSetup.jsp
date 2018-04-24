@@ -3,6 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="pqrConfig">
     
@@ -15,13 +16,17 @@
         <i:inline key=".note"/>
     </div>
     
+    <cti:msg2 var="volts" key="yukon.common.units.VOLTS"/>
+    <cti:msg2 var="millis" key="yukon.common.units.MILLIS"/>
+    <cti:msg2 var="secs" key="yukon.common.units.SECONDS"/>
+    
     <cti:url var="submitUrl" value="/stars/operator/inventory/pqrConfig/submit"/>
     <form:form commandName="config" action="${submitUrl}">
         <cti:csrfToken/>
         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-        <form:hidden id="pqr-enable" path="pqrEnable"/>
         
-        <div class="column-8-8-8 clearfix">
+        
+        <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="enable">
                     <tags:nameValueContainer2>
@@ -29,89 +34,89 @@
                             <cti:button nameKey="enableButton" data-input="#pqr-enable" data-value="true" classes="yes"/>
                             <cti:button nameKey="doNotSendButton" data-input="#pqr-enable" data-value="" classes="on"/>
                             <cti:button nameKey="disableButton" data-input="#pqr-enable" data-value="false" classes="no"/>
+                            <form:hidden id="pqr-enable" path="pqrEnable"/>
                         </div>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
-                <tags:sectionContainer2 nameKey="eventSeparation">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".minEventSeparation">
-                            <form:input type="number" min="0" path="minimumEventSeparation" class="skinny"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </tags:sectionContainer2>
-            </div>
-            <div class="column two">
                 <tags:sectionContainer2 nameKey="ovTriggers">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ovTrigger">
-                            <form:input type="number" step="0.1" min="0" maxlength="5" path="lovTrigger" class="skinny"/>
+                            <tags:input path="lovTrigger" units="${volts}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovRestore">
-                            <form:input type="number" step="0.1" min="0" maxlength="5" path="lovRestore" class="skinny"/>
+                            <tags:input path="lovRestore" units="${volts}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovTriggerTime">
-                            <form:input type="number" path="lovTriggerTime" min="0" class="skinny"/>
+                            <tags:input path="lovTriggerTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovRestoreTime">
-                            <form:input type="number" path="lovRestoreTime" min="0" class="skinny"/>
+                            <tags:input path="lovRestoreTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
+                
                 <tags:sectionContainer2 nameKey="ovEventDuration">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ovMinEventDuration">
-                            <form:input type="number" path="lovMinEventDuration" min="0" class="skinny"/>
+                            <tags:input path="lovMinEventDuration" units="${secs}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovMaxEventDuration">
-                            <form:input type="number" path="lovMaxEventDuration" min="0" class="skinny"/>
+                            <tags:input path="lovMaxEventDuration" units="${secs}" inputClass="skinny"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="ovRandomization">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ovStartRandomTime">
-                            <form:input type="number" path="lovStartRandomTime" min="0" class="skinny"/>
+                            <tags:input path="lovStartRandomTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovEndRandomTime">
-                            <form:input type="number" path="lovEndRandomTime" min="0" class="skinny"/>
+                            <tags:input path="lovEndRandomTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </div>
-            <div class="column three nogutter">
+            <div class="column two nogutter">
+                <tags:sectionContainer2 nameKey="eventSeparation">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".minEventSeparation">
+                            <tags:input path="minimumEventSeparation" units="${secs}" inputClass="skinny"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="ofTriggers">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ofTrigger">
-                            <form:input type="number" path="lofTrigger" min="0" class="skinny"/>
+                            <tags:input path="lofTrigger" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ofRestore">
-                            <form:input type="number" path="lofRestore" min="0" class="skinny"/>
+                            <tags:input path="lofRestore" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovTriggerTime">
-                            <form:input type="number" path="lofTriggerTime" min="0" class="skinny"/>
+                            <tags:input path="lofTriggerTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovRestoreTime">
-                            <form:input type="number" path="lofRestoreTime" min="0" class="skinny"/>
+                            <tags:input path="lofRestoreTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="ofEventDuration">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ofMinEventDuration">
-                            <form:input type="number" path="lofMinEventDuration" min="0" class="skinny"/>
+                            <tags:input path="lofMinEventDuration" units="${secs}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ofMaxEventDuration">
-                            <form:input type="number" path="lofMaxEventDuration" min="0" class="skinny"/>
+                            <tags:input path="lofMaxEventDuration" units="${secs}" inputClass="skinny"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="ofRandomization">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ofStartRandomTime">
-                            <form:input type="number" path="lofStartRandomTime" min="0" class="skinny"/>
+                            <tags:input path="lofStartRandomTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ofEndRandomTime">
-                            <form:input type="number" path="lofEndRandomTime" min="0" class="skinny"/>
+                            <tags:input path="lofEndRandomTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
@@ -119,7 +124,7 @@
         </div>
         
         <div class="page-action-area">
-            <cti:button nameKey="send" classes="action primary" type="submit"/>
+            <cti:button nameKey="next" classes="action primary" type="submit"/>
         </div>
     </form:form>
     
