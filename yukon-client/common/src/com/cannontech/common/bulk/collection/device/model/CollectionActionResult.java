@@ -52,6 +52,7 @@ public class CollectionActionResult {
     private CommandRequestExecution verificationExecution;
     // example: porter is down
     private String executionExceptionText;
+    private String infoText;
     private CollectionActionCounts counts;
     private Map<CollectionActionDetail, CollectionActionDetailGroup> details = new HashMap<>();
     @JsonIgnore
@@ -289,6 +290,15 @@ public class CollectionActionResult {
         this.verificationExecution = verificationExecution;
     }
     
+    public String getInfoText() {
+        return infoText;
+    }
+
+    public void setInfoText(String infoText) {
+        this.infoText = infoText;
+        logService.appendToLog(this, new CollectionActionLogDetail(infoText));
+    }
+
     public void log() {
         if(logger == null) {
             throw new RuntimeException("Logger is not initialized.");
