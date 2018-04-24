@@ -229,5 +229,61 @@ private:
     std::string mapEntryPrefix;
 };
 
-}
 
+////
+
+
+struct BasicErrorCodeInfo
+{
+    long errorCode;
+
+    std::string typeString, porterString;
+
+    void clear()
+    {
+        errorCode = -999;
+        porterString.clear();
+        typeString.clear();
+    }
+};
+
+using BasicErrorCodeInfoCollection = std::vector<BasicErrorCodeInfo>;
+
+class ErrorCodeHandler : public BaseSAX2Handler
+{
+
+public:
+    ErrorCodeHandler( BasicErrorCodeInfoCollection & c );
+
+    void startElement( const XMLCh * const uri,
+                       const XMLCh * const localname,
+                       const XMLCh * const qname,
+                       const xercesc::Attributes & attrs );
+
+    void endElement( const XMLCh * const uri,
+                     const XMLCh * const localname,
+                     const XMLCh * const qname );
+
+    void characters( const XMLCh * const chars,
+                     const XMLSize_t     length );
+
+
+private: 
+
+    enum
+    {
+        //states
+        OutsideRootNode,
+        InsideRootNode,
+        InsideErrorNode,
+        ReadPorterNode,
+        InsidePorterNode
+    }
+    _parseState;
+
+    BasicErrorCodeInfoCollection & collection;
+
+    BasicErrorCodeInfo currentErrorCode;
+};
+
+}

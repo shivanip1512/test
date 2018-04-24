@@ -1317,7 +1317,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile )
         const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method or Invalid Command." );
     }
 }
 
@@ -1335,7 +1335,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_enable )
         const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method or Invalid Command." );
     }
 }
 
@@ -1353,7 +1353,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_disable )
         const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method or Invalid Command." );
     }
 }
 
@@ -1371,7 +1371,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_voltage_profile )
         const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method or Invalid Command." );
     }
 }
 
@@ -1389,7 +1389,7 @@ BOOST_AUTO_TEST_CASE( test_getvalue_voltage_profile_state )
         const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method or Invalid Command." );
     }
 }
 

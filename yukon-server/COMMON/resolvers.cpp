@@ -1203,3 +1203,25 @@ CtiControlType_t  resolveControlType(const string& _str)
     return ControlType_Invalid;
 }
 
+ErrorTypes resolveErrorType(const string& _str)
+{
+    string str = sanitizeInput(_str);
+
+    static const std::map<std::string, ErrorTypes> ErrorTypeMap
+    {
+        { "none",       ERRTYPENONE },
+        { "unknown",    ERRTYPEUNKNOWN },
+        { "system",     ERRTYPESYSTEM },
+        { "protocol",   ERRTYPEPROTOCOL },
+        { "comm",       ERRTYPECOMM }
+    };
+
+    if (const auto errorType = Cti::mapFind( ErrorTypeMap, str ) )
+    {
+        return *errorType;
+    }
+
+    CTILOG_ERROR(dout, "Unknown error type \"" << str << "\"");
+
+    return ERRTYPEUNKNOWN;
+}

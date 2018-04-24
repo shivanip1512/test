@@ -358,6 +358,9 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\points.xsd" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\yukon-shared\src\main\resources\error-code.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

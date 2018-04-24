@@ -19,6 +19,10 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.Resource;
+
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorCategory;
 import com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl;
@@ -33,7 +37,9 @@ public class DeviceErrorTranslatorDaoImplTest {
      *       because the i18n files are not on its classpath. Either run All Common Tests or add the 
      *       i18n files to DeviceErrorTranslatorDaoImplTest.launch to resolve the classpath issue.
      */
-    private static final String errorCodePath    = "com/cannontech/amr/errors/dao/impl/error-code.xml";
+    ApplicationContext ctx = new ClassPathXmlApplicationContext();
+    Resource errorCodeResource = ctx.getResource("classpath:error-code.xml");
+    
     private static final String deviceErrorsPath = "com/cannontech/yukon/common/deviceErrors.xml";
 
     private static class ErrorDescription {
@@ -53,13 +59,13 @@ public class DeviceErrorTranslatorDaoImplTest {
         //setup for test_TranslateErrorCode
         translator = new DeviceErrorTranslatorDaoImpl();
         ClassLoader classLoader = getClass().getClassLoader();
-        translator.setErrorDefinitions(classLoader.getResourceAsStream(errorCodePath));
+        translator.setErrorDefinitions(errorCodeResource.getInputStream());
         translator.initialize();
         
         //setup for test_ErrorDefinitions
         SAXBuilder builder = new SAXBuilder();
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        errorCodeDocument    = builder.build(classLoader.getResourceAsStream(errorCodePath));
+        errorCodeDocument    = builder.build(errorCodeResource.getInputStream());
         deviceErrorsDocument = builder.build(classLoader.getResourceAsStream(deviceErrorsPath));
     }
 

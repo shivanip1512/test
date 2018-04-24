@@ -13,7 +13,7 @@
         scope="singleton">
         <property name="errorDefinitions">
             <value type="java.io.InputStream">
-                com/cannontech/amr/errors/dao/impl/error-code.xml
+                error-code.xml
             </value>
         </property>
     </bean>

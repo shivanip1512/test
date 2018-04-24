@@ -1099,7 +1099,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile )
         const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method or Invalid Command." );
     }
 }
 
@@ -1179,7 +1179,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_voltage_profile )
         const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
+        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method or Invalid Command." );
     }
 }
 

@@ -45,19 +45,19 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\pao.xsd">
-        <Filter>XSD Files</Filter>
+      <Filter>XSD Files</Filter>
     </Text>
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\deviceConfigurationCategory.xsd">
-        <Filter>XSD Files</Filter>
+      <Filter>XSD Files</Filter>
     </Text>
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\override.xsd">
-        <Filter>XSD Files</Filter>
+      <Filter>XSD Files</Filter>
     </Text>
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\point.xsd">
-        <Filter>XSD Files</Filter>
+      <Filter>XSD Files</Filter>
     </Text>
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\points.xsd">
-        <Filter>XSD Files</Filter>
+      <Filter>XSD Files</Filter>
     </Text>
   </ItemGroup>
 </Project>

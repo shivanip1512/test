@@ -3,7 +3,21 @@
 
 <!-- NOTE New error codes added to this file also need to be added to DeviceError.java AND deviceErrors.xml -->
 <portererrorcodes>
-    <error code="3">
+    <error code="1" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Not Normal (Unsuccessful) Return</porter>
+        <description>Not Normal (Unsuccessful) Return</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="2" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Route has no associated transmitter</porter>
+        <description>Route has no associated transmitter</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="3" type="PROTOCOL">
         <category>Bulk Communications</category>
         <porter>Bad Message Type</porter>
         <description>The master station has received an unexpected response from the CCU.
@@ -18,7 +32,7 @@
         </troubleshooting>
     </error>
 
-    <error code="4">
+    <error code="4" type="PROTOCOL">
         <category>Bulk Communications</category>
         <porter>D Word Wrong length</porter>
         <description>The master station has received an invalid response from the targeted device.
@@ -32,7 +46,15 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="9">
+    
+    <error code="8" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Bad ID Specification</porter>
+        <description>Bad ID Specification</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="9" type="SYSTEM">
         <category>Data Validation</category>
         <porter>Parameter Out of Range</porter>
         <description>A parameter supplied in the command string is outside of its valid range.
@@ -42,13 +64,29 @@
             Correct the invalid parameter and attempt the command again.
         </troubleshooting>
     </error>
-    <error code="10">
+    
+    <error code="10" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Missing Parameter</porter>
         <description>The command is missing a required parameter.</description>
         <troubleshooting>Confirm the command syntax.</troubleshooting>
     </error>
-    <error code="15">
+
+    <error code="11" type="SYSTEM">
+        <category>Yukon System</category>
+        <porter>Syntax Error</porter>
+        <description>Syntax Error</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="14" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Bad State Specification</porter>
+        <description>Bad State Specification</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="15" type="COMM">
         <category>Bulk Communications</category>
         <porter>Parity Error</porter>
         <description>Checksum verification failed on communication between the master station and
@@ -86,7 +124,7 @@
         </troubleshooting>
     </error>
 
-    <error code="16">
+    <error code="16" type="COMM">
         <category>Bulk Communications</category>
         <porter>Bad CCU Specification</porter>
         <description>The CCU address in the response does not match the address of the targeted CCU.
@@ -112,7 +150,7 @@
         </troubleshooting>
     </error>
 
-    <error code="17">
+    <error code="17" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Word 1 NACK</porter>
         <description>The CCU received a partial response from the targeted device.</description>
@@ -135,7 +173,7 @@
         </troubleshooting>
     </error>
 
-    <error code="18">
+    <error code="18" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Word 2 NACK</porter>
         <description>The CCU received a partial response from the targeted device.</description>
@@ -158,7 +196,7 @@
         </troubleshooting>
     </error>
 
-    <error code="19">
+    <error code="19" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Word 3 NACK</porter>
         <description>The CCU received a partial response from the targeted device.</description>
@@ -181,7 +219,7 @@
         </troubleshooting>
     </error>
 
-    <error code="20">
+    <error code="20" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Word 1 NACK Padded</porter>
         <description>The CCU did not receive a response from the targeted device.</description>
@@ -209,7 +247,8 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="21">
+    
+    <error code="21" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Word 2 NACK Padded</porter>
         <description>The CCU did not receive a response from the targeted device.</description>
@@ -238,7 +277,7 @@
         </troubleshooting>
     </error>
 
-    <error code="22">
+    <error code="22" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Word 3 NACK Padded</porter>
         <description>The CCU did not receive a response from the targeted device.</description>
@@ -266,13 +305,43 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="26">
+    
+    <error code="24" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Requests for CCU Queue</porter>
+        <description>No Requests for CCU Queue</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="26" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Bad Parameter</porter>
         <description>An invalid parameter was specified for the command.</description>
         <troubleshooting>Try different values in the command or Device Configuration.</troubleshooting>
     </error>
-    <error code="31">
+    
+    <error code="27" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Bad Route Specification</porter>
+        <description>Bad Route Specification</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="28" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Bad Bus Specification</porter>
+        <description>Bad Bus Specification</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="30" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Read Error</porter>
+        <description>Read Error</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="31" type="COMM">
         <category>Bulk Communications</category>
         <porter>Timeout Reading from Port</porter>
         <description>The master station did not receive a response from the targeted device.
@@ -305,7 +374,7 @@
         </troubleshooting>
     </error>
 
-    <error code="32">
+    <error code="32" type="COMM">
         <category>Bulk Communications</category>
         <porter>Sequence Reject Frame Received... Sequencing Adjusted</porter>
         <description>The response's sequence number does not match what was expected by the master
@@ -336,7 +405,7 @@
         </troubleshooting>
     </error>
 
-    <error code="33">
+    <error code="33" type="COMM">
         <category>Bulk Communications</category>
         <porter>Framing Error</porter>
         <description>The master station received an invalid header in the response from the targeted
@@ -364,7 +433,7 @@
         </troubleshooting>
     </error>
 
-    <error code="34">
+    <error code="34" type="COMM">
         <category>Bulk Communications</category>
         <porter>Bad CRC on Message</porter>
         <description>Checksum verification failed on response from the targeted device.
@@ -388,8 +457,15 @@
             </ul>
         </troubleshooting>
     </error>
+    
+    <error code="35" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Bad Length Specification</porter>
+        <description>Bad Length Specification</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
 
-    <error code="36">
+    <error code="36" type="COMM">
         <category>Powerline Carrier</category>
         <porter>Bad HDLC UA Frame</porter>
         <description>The CCU did not respond correctly to a reset request.</description>
@@ -401,14 +477,21 @@
         </troubleshooting>
     </error>
     
-    <error code="37">
-        <category>Yukon System</category>
+    <error code="37" type="SYSTEM">
+        <category>N/A</category>
         <porter>Unknown Error</porter>
         <description>An unclassified error occurred in Porter.</description>
         <troubleshooting> No troubleshooting is available for this error. </troubleshooting>
     </error>
     
-    <error code="46">
+    <error code="38" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Unknown Command Received</porter>
+        <description>Unknown Command Received</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="46" type="COMM">
         <category>Bulk Communications</category>
         <porter>REQACK Flag set-- Frame Unexecutable</porter>
         <description>The CCU has rejected a request from the master station.</description>
@@ -424,18 +507,39 @@
             </ul>
         </troubleshooting>
     </error>
+    
+    <error code="49" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Route Not Found</porter>
+        <description>Route Not Found</description>
+        <troubleshooting> No troubleshooting is available for this error. </troubleshooting>
+    </error>
 
-    <error code="54">
+    <error code="54" type="SYSTEM">
         <category>Yukon System</category>
-        <porter>Device ID not found</porter>
+        <porter>Device ID Not Found</porter>
         <description>The device ID requested does not exist or is not loaded yet.</description>
         <troubleshooting>
             The devices may still be in process of being loaded by the servers, wait a few minutes
             and attempt the command again.
         </troubleshooting>
     </error>
+    
+    <error code="55" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Child Device Unknown</porter>
+        <description>Child Device Unknown</description>
+        <troubleshooting> No troubleshooting is available for this error. </troubleshooting>
+    </error>
+    
+    <error code="56" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Function and/or Type Not Found</porter>
+        <description>Function and/or Type Not Found</description>
+        <troubleshooting> No troubleshooting is available for this error. </troubleshooting>
+    </error>
 
-    <error code="57">
+    <error code="57" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>E-Word Received in Returned Message</porter>
         <description>The repeater did not receive a response from the end device.</description>
@@ -464,7 +568,7 @@
         </troubleshooting>
     </error>
     
-    <error code="58">
+    <error code="58" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>B-Word Received in Returned Message</porter>
         <description>Yukon detected interference between two transmitters.</description>
@@ -476,8 +580,43 @@
             </ul>
         </troubleshooting>
     </error>
+    
+    <error code="59" type="SYSTEM">
+        <category>N/A</category>
+        <porter>OS or System Error</porter>
+        <description>OS or System Error</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="60" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Bad Port Specification</porter>
+        <description>Bad Port Specification</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="61" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Error Reading Queue</porter>
+        <description>Error Reading Queue</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="62" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Error Writing Queue</porter>
+        <description>Error Writing Queue</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="63" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Error Allocating or Manipulating Memory</porter>
+        <description>Error Allocating or Manipulating Memory</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
 
-    <error code="65">
+    <error code="65" type="COMM">
         <category>Bulk Communications</category>
         <porter>No DCD on Return Message</porter>
         <description>The master station timed out while waiting for carrier detect on the
@@ -510,7 +649,7 @@
         </troubleshooting>
     </error>
 
-    <error code="67">
+    <error code="67" type="COMM">
         <category>Bulk Communications</category>
         <porter>Error Reading from Port</porter>
         <description>The master station was unable to read from the communications channel.
@@ -527,7 +666,7 @@
         </troubleshooting>
     </error>
 
-    <error code="68">
+    <error code="68" type="COMM">
         <category>Bulk Communications</category>
         <porter>Error Writing to Port</porter>
         <description>The master station was unable to write to the communications channel.
@@ -544,7 +683,14 @@
         </troubleshooting>
     </error>
 
-    <error code="72">
+    <error code="71" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Error Executing CCU Queue Entry</porter>
+        <description>Error Executing CCU Queue Entry</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="72" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>DLC Read Timeout on CCU Queue Entry</porter>
         <description>The CCU did not receive a response from the targeted device on a queued
@@ -573,8 +719,15 @@
             </ul>
         </troubleshooting>
     </error>
+    
+    <error code="73" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Attempt Made on CCU Queue Entry</porter>
+        <description>No Attempt Made on CCU Queue Entry</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
 
-    <error code="74">
+    <error code="74" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Route Failed on CCU Queue Entry</porter>
         <description>The CCU received a partial response from the targeted device on a queued
@@ -597,8 +750,29 @@
             </ul>
         </troubleshooting>
     </error>
+    
+    <error code="75" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Transponder Communication Failed on CCU Queue Entry</porter>
+        <description>Transponder Communication Failed on CCU Queue Entry</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="78" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Communications Attempted With Inhibited Remote</porter>
+        <description>Communications Attempted With Inhibited Remote</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="79" type="SYSTEM">
+        <category>N/A</category>
+        <porter>CCU Queue was Flushed... Entries Lost in Drain</porter>
+        <description>CCU Queue was Flushed... Entries Lost in Drain</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
 
-    <error code="83">
+    <error code="83" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Operation Attempted on Inhibited Port</porter>
         <description>The targeted port is disabled or inhibited in the Yukon System.</description>
@@ -606,8 +780,15 @@
             This is a Yukon system message, the port is flagged as disabled in the Device Setup.
         </troubleshooting>
     </error>
+    
+    <error code="84" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Device Does Not Support Accumulators</porter>
+        <description>Device Does Not Support Accumulators</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
 
-    <error code="85">
+    <error code="85" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Operation Attempted on Inhibited Device</porter>
         <description>The targeted device is disabled or inhibited in the Yukon System.</description>
@@ -616,7 +797,7 @@
         </troubleshooting>
     </error>
 
-    <error code="87">
+    <error code="87" type="COMM">
         <category>Bulk Communications</category>
         <porter>Error Dialing Up Remote</porter>
         <description>The master station was unable to communicate with the targeted device due to
@@ -631,7 +812,7 @@
         </troubleshooting>
     </error>
 
-    <error code="88">
+    <error code="88" type="COMM">
         <category>Powerline Carrier</category>
         <porter>Wrong Unique Address Received</porter>
         <description>The CCU heard a response from a device other than the one it was targeting.
@@ -645,9 +826,9 @@
         </troubleshooting>
     </error>
 
-    <error code="89">
+    <error code="89" type="COMM">
         <category>Bulk Communications</category>
-        <porter>Error Connecting to Terminal Server</porter>
+        <porter>Error Connecting to TCP socket</porter>
         <description>The master station was unable to connect to the communications channel.
         </description>
         <troubleshooting>
@@ -662,9 +843,9 @@
         </troubleshooting>
     </error>
 
-    <error code="90">
+    <error code="90" type="COMM">
         <category>Bulk Communications</category>
-        <porter>Error Writing to Terminal Server</porter>
+        <porter>Error Writing to TCP socket</porter>
         <description>The master station was unable to write to the communications channel.
         </description>
         <troubleshooting>
@@ -679,9 +860,9 @@
         </troubleshooting>
     </error>
 
-    <error code="91">
+    <error code="91" type="COMM">
         <category>Bulk Communications</category>
-        <porter>Error Reading from Terminal Server</porter>
+        <porter>Error Reading from TCP socket</porter>
         <description>The master station was unable to read from the communications channel.
         </description>
         <troubleshooting>
@@ -696,7 +877,7 @@
         </troubleshooting>
     </error>
 
-    <error code="92">
+    <error code="92" type="SYSTEM">
         <category>Powerline Carrier</category>
         <porter>Address Does Not Match Expected Value</porter>
         <description>The CCU heard a response from a device other than the one it was targeting.
@@ -710,7 +891,7 @@
         </troubleshooting>
     </error>
 
-    <error code="93">
+    <error code="93" type="SYSTEM">
         <category>Powerline Carrier</category>
         <porter>Bad Data Buffer for IED</porter>
         <description>The powerline carrier device was unable to communicate to the connected IED.
@@ -726,7 +907,8 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="94">
+    
+    <error code="94" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Missing Required Configuration Entry</porter>
         <description>The device was unable to complete the requested command.</description>
@@ -744,7 +926,7 @@
         </troubleshooting>
     </error>
 
-    <error code="98">
+    <error code="98" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Bad Nexus Specification</porter>
         <description>A connection to the TCP/IP device could not be established or a current
@@ -763,7 +945,7 @@
         </troubleshooting>
     </error>
 
-    <error code="99">
+    <error code="99" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Error Writing to Port</porter>
         <description>A connection to the TCP/IP device could not be established or a current
@@ -782,7 +964,7 @@
         </troubleshooting>
     </error>
 
-    <error code="100">
+    <error code="100" type="PROTOCOL">
         <category>Powerline Carrier</category>
         <porter>Bad BCH</porter>
         <description>Checksum verification failed on the response from the end device.</description>
@@ -804,9 +986,17 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="202">
+    
+    <error code="201" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Memory Error</porter>
+        <description>Memory Error</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="202" type="SYSTEM">
         <category>Yukon System</category>
-        <porter>NoMethod or invalid command.</porter>
+        <porter>No Method or Invalid Command.</porter>
         <description>The command is incorrect or not supported by this device type.</description>
         <troubleshooting>
             <ul>
@@ -815,25 +1005,141 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="218">
+    
+    <error code="204" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No General Scan Method</porter>
+        <description>No General Scan Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="205" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Integrity Scan Method</porter>
+        <description>No Integrity Scan Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="206" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Accum Scan Method</porter>
+        <description>No Accum Scan Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="208" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Process Result Method</porter>
+        <description>No Process Result Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="209" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Exec. Req. Method</porter>
+        <description>No Exec. Req. Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="210" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Result Decode Method</porter>
+        <description>No Result Decode Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="211" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No ErrorDecode Method</porter>
+        <description>No ErrorDecode Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="212" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Handshake Method</porter>
+        <description>No Handshake Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="213" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Generate Command Method</porter>
+        <description>No Generate Command Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="214" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No DecodeResponse Method</porter>
+        <description>No DecodeResponse Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="215" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Data Copy Method</porter>
+        <description>No Data Copy Method</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="218" type="SYSTEM">
         <category>Yukon System</category>
         <porter>No Config Data Found</porter>
         <description>The device is missing required configuration entries.</description>
         <troubleshooting>Confirm that the Device Configuration assigned to the device has all required categories populated.</troubleshooting>
     </error>
-    <error code="219">
+    
+    <error code="219" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Config is not current</porter>
         <description>The configuration on the device does not match its assigned Device Configuration.</description>
         <troubleshooting>Send the Device Configuration to the device.</troubleshooting>
     </error>
-    <error code="220">
+    
+    <error code="220" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Config is current</porter>
         <description>The configuration on the device matches its assigned config.</description>
         <troubleshooting>Confirm that the intended configuration is assigned to the device.</troubleshooting>
     </error>
-    <error code="226">
+    
+    <error code="221" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Route for Group Dev.</porter>
+        <description>No Route for Group Dev.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="222" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No Routes for Macro Rte</porter>
+        <description>No Routes for Macro Rte</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="223" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Macro Offset does not exist in Macro Rte</porter>
+        <description>Macro Offset does not exist in Macro Rte</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="224" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Macro Offset refers to a macro sub-rte</porter>
+        <description>Macro Offset refers to a macro sub-rte</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="225" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Device is control disabled</porter>
+        <description>Device is control disabled</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="226" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Control is currently inhibited for the point.</porter>
         <description>Control is currently inhibited for the point.</description>
@@ -849,13 +1155,176 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="227">
+    
+    <error code="227" type="SYSTEM">
         <category>Yukon System</category>
-        <porter>Timeout</porter>
+        <porter>Request timed out.</porter>
         <description>Request timed out.</description>
         <troubleshooting>Check Yukon Logs for errors.</troubleshooting>
     </error>
-    <error code="260">
+    
+    <error code="228" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Requested operation expired due to time</porter>
+        <description>Requested operation expired due to time</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="229" type="SYSTEM">
+        <category>Yukon System</category>
+        <porter>Point has no control configuration</porter>
+        <description>Point has no control configuration</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="234" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Retry Resubmitted</porter>
+        <description>Retry Resubmitted</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="237" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Scanned device is inhibited</porter>
+        <description>Scanned device is inhibited</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="238" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Illegal scan of global device</porter>
+        <description>Illegal scan of global device</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="239" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Device window is closed</porter>
+        <description>Device window is closed</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="241" type="COMM">
+        <category>N/A</category>
+        <porter>Dialup connection failed. Port in error</porter>
+        <description>Dialup connection failed. Port in error</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="242" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Dialup connection failed. Device in error</porter>
+        <description>Dialup connection failed. Device in error</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="243" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Port is simulated, no inbound data available</porter>
+        <description>Port is simulated, no inbound data available</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="244" type="COMM">
+        <category>N/A</category>
+        <porter>Port echoed request bytes</porter>
+        <description>Port echoed request bytes</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="245" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Invalid transaction, typ. bad pager id or password</porter>
+        <description>Invalid transaction, typ. bad pager id or password</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="246" type="SYSTEM">
+        <category>N/A</category>
+        <porter>TAP Repeat Requested, but retries exhausted</porter>
+        <description>TAP Repeat Requested, but retries exhausted</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="247" type="SYSTEM">
+        <category>N/A</category>
+        <porter>No response from TAP terminal</porter>
+        <description>No response from TAP terminal</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="248" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Invalid/Incomplete Request</porter>
+        <description>Invalid/Incomplete Request</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="250" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Invalid or unsuccessful HTTP response</porter>
+        <description>Invalid or unsuccessful HTTP response</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="251" type="SYSTEM">
+        <category>N/A</category>
+        <porter>XML parser initialization failed</porter>
+        <description>XML parser initialization failed</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="252" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Invalid WCTP response format</porter>
+        <description>Invalid WCTP response format</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="253" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Time out when receiving WCTP response</porter>
+        <description>Time out when receiving WCTP response</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="254" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Protocol Error 300 Series</porter>
+        <description>Protocol Error 300 Series</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="255" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Protocol Error 400 Series</porter>
+        <description>Protocol Error 400 Series</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="256" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Protocol Error 500 Series</porter>
+        <description>Protocol Error 500 Series</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="257" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Protocol Error 600 Series</porter>
+        <description>Protocol Error 600 Series</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="258" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Queue purged to limit memory usage</porter>
+        <description>Queue purged to limit memory usage</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="260" type="SYSTEM">
         <category>Yukon System</category>
         <porter>MACS timed out on this message</porter>
         <description>MACS timed out on this message.</description>
@@ -868,10 +1337,10 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="261">
+    
+    <error code="261" type="PROTOCOL">
         <category>Data Validation</category>
-        <porter>The freeze check bit in the frozen reading does not match the last recorded freeze
-            sent to the device.</porter>
+        <porter>The freeze check bit in the frozen reading does not match the last recorded freeze sent to the device.</porter>
         <description>The freeze check bit in the frozen reading does not match the last recorded
             freeze sent to the device.</description>
         <troubleshooting>
@@ -886,7 +1355,8 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="262">
+    
+    <error code="262" type="PROTOCOL">
         <category>Data Validation</category>
         <porter>The frozen peak timestamp is outside of the expected range.</porter>
         <description>Verification of the frozen peak's timestamp as retrieved from the device has
@@ -906,7 +1376,8 @@
             </ul>
         </troubleshooting>
     </error>
-    <error code="263">
+    
+    <error code="263" type="PROTOCOL">
         <category>Data Validation</category>
         <porter>The freeze counter is less than the expected value.</porter>
         <description>Verification of the freeze counter has failed. Device did not receive one or
@@ -917,21 +1388,31 @@
             freeze command was not received by the device.
         </troubleshooting>
     </error>
-    <error code="264">
+    
+    <error code="264" type="PROTOCOL">
         <category>Data Validation</category>
         <porter>Invalid data was received for one or more data points.</porter>
         <description>Invalid data was received for one or more data points.</description>
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="265">
+    
+    <error code="265" type="PROTOCOL">
         <category>Data Validation</category>
         <porter>There is no record of the last freeze sent to this device.</porter>
         <description>There is no record of the last freeze sent to this device.</description>
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="267">
+    
+    <error code="266" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Request was cancelled</porter>
+        <description>Request was cancelled</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="267" type="SYSTEM">
         <category>Data Validation</category>
         <porter>Invalid time returned OR time outside of requested range.</porter>
         <description>The setup validation data returned by the meter did not match the expected
@@ -940,7 +1421,8 @@
             The meter did not receive the setup command for the read. Attempt the read again.
         </troubleshooting>
     </error>
-    <error code="268">
+    
+    <error code="268" type="SYSTEM">
         <category>Data Validation</category>
         <porter>Invalid channel returned by daily read.</porter>
         <description>The setup validation data returned by the meter did not match the expected
@@ -949,7 +1431,8 @@
             The meter did not receive the setup command for the read. Attempt the read again.
         </troubleshooting>
     </error>
-    <error code="269">
+    
+    <error code="269" type="SYSTEM">
         <category>Data Validation</category>
         <porter>Invalid or insufficient device SSPEC revision.</porter>
         <description>The meter does not support the requested command.</description>
@@ -958,7 +1441,8 @@
             retrieve the SSPEC revision.
         </troubleshooting>
     </error>
-    <error code="270">
+    
+    <error code="270" type="SYSTEM">
         <category>Data Validation</category>
         <porter>Verification of device SSPEC revision is required.</porter>
         <description>Verification of device SSPEC revision is required.</description>
@@ -966,7 +1450,8 @@
             Execute 'getconfig model' to verify the device SSPEC revision.
         </troubleshooting>
     </error>
-    <error code="271">
+    
+    <error code="271" type="SYSTEM">
         <category>Data Validation</category>
         <porter>Invalid future data rejected</porter>
         <description>Data was rejected because its timestamp was more than a year in the future.</description>
@@ -974,15 +1459,17 @@
             Verify the time settings in the remote device.
         </troubleshooting>
     </error>
-	<error code="272">
+    
+	<error code="272" type="SYSTEM">
 		<category>Yukon System</category>
 		<porter>Device not supported by Porter</porter>
 		<description>Device type does not support Commander requests.</description>
 		<troubleshooting>Confirm that the command is supported by the device type.</troubleshooting>
 	</error>
-    <error code="273">
+    
+    <error code="273" type="COMM">
         <category>Bulk Communications</category>
-        <porter>Port is not initialized</porter>
+        <porter>Port not initialized</porter>
         <description>The request has been received, but may be delayed because the port is not
             initialized. Bulk communication channel may be experiencing connection difficulties.
         </description>
@@ -990,17 +1477,18 @@
             Verify the bulk communication channel is functioning properly.
         </troubleshooting>
     </error>
-    <error code="274">
+    
+    <error code="274" type="SYSTEM">
         <category>Data Validation</category>
-        <porter>Daily read request already in progress</porter>
-        <description>The daily read request is already in progress.</description>
+        <porter>Command already in progress</porter>
+        <description>Command is already in progress.</description>
         <troubleshooting>
-            The daily read request is already in progress with another daily read request. Only one
-            daily read can be in progress at a time. Wait for a moment and attempt the command
-            again.
+            Only one instance of this command can be in progress at a time. Wait 
+            for a moment and attempt the command again.
         </troubleshooting>
     </error>
-    <error code="275">
+    
+    <error code="275" type="SYSTEM">
         <category>Bulk Communications</category>
         <porter>No connection to device</porter>
         <description>Yukon is unable to establish a connection with the device.</description>
@@ -1008,7 +1496,8 @@
             Verify the device's connection parameters.
         </troubleshooting>
     </error>
-    <error code="276">
+    
+    <error code="276" type="SYSTEM">
         <category>Yukon System</category>
         <porter>No disconnect configured on this device</porter>
         <description>The device does not have a disconnect to be operated on.</description>
@@ -1016,7 +1505,8 @@
             Verify there is a disconnect configured in the Device Setup.
         </troubleshooting>
     </error>
-    <error code="277">
+    
+    <error code="277" type="PROTOCOL">
         <category>Transmitter</category>
         <porter>Transmitter is overheating</porter>
         <description>The request was denied because the PLC transmitter is overheating.
@@ -1025,7 +1515,8 @@
             Hardware Protection Mode.
         </troubleshooting>
     </error>
-    <error code="278">
+    
+    <error code="278" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Command requires channel configuration to continue.</porter>
         <description>In order to collect load profile, the system needs to retrieve the channel
@@ -1035,7 +1526,8 @@
             the command.
         </troubleshooting>
     </error>
-    <error code="279">
+    
+    <error code="279" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Command requires a valid date.</porter>
         <description>In order to execute, the command must be provided a valid date.</description>
@@ -1043,7 +1535,8 @@
             Verify that the date provided for the command is valid and submit the request again.
         </troubleshooting>
     </error>
-    <error code="280">
+    
+    <error code="280" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Failed to resolve an IP for the given DNS name.</porter>
         <description>The system attempted to look up a network name, but the operating system 
@@ -1052,7 +1545,8 @@
             Verify that the DNS name is correct and that your networking settings are valid.
         </troubleshooting>
     </error>
-    <error code="281">
+    
+    <error code="281" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Failed to find a point for the given device.</porter>
         <description>Point is missing.</description>
@@ -1060,27 +1554,31 @@
             Add missing point.
         </troubleshooting>
     </error>
-    <error code="282">
+    
+    <error code="282" type="SYSTEM">
         <category>Yukon System</category>
         <porter>The device's date range must be reset to continue.</porter>
         <description>The action failed, the timestamp was not received.</description>
         <troubleshooting>
         </troubleshooting>
     </error>
-     <error code="283">
+    
+     <error code="283" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Not enough data received from the device.</porter>
         <description>The action failed, the timestamp is outside of the expected range.</description>
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="284">
+    
+    <error code="284" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Configuration data is invalid.</porter>
         <description>The Device Configuration has entries that are invalid or missing for the device.</description>
         <troubleshooting>Try different values in the command or Device Configuration.</troubleshooting>
     </error>
-    <error code="285">
+    
+    <error code="285" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Device address is unknown.</porter>
         <description>
@@ -1089,7 +1587,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="286">
+    
+    <error code="286" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Network is unavailable.</porter>
         <description>
@@ -1098,7 +1597,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="287">
+    
+    <error code="287" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Request packet is too large.</porter>
         <description>
@@ -1107,7 +1607,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="288">
+    
+    <error code="288" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Protocol is unsupported.</porter>
         <description>
@@ -1116,7 +1617,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="289">
+    
+    <error code="289" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Network server ID is invalid.</porter>
         <description>
@@ -1125,7 +1627,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="290">
+    
+    <error code="290" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Application service ID is invalid.</porter>
         <description>
@@ -1134,7 +1637,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="291">
+    
+    <error code="291" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Network traffic limiting.</porter>
         <description>
@@ -1143,7 +1647,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="292">
+    
+    <error code="292" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Did not receive a response from the device.</porter>
         <description>
@@ -1152,7 +1657,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="293">
+    
+    <error code="293" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Did not receive a response from Network Manager.</porter>
         <description>
@@ -1162,7 +1668,8 @@
             Check Network Manager server logs to identify the root cause of the failure.
         </troubleshooting>
     </error>
-    <error code="294">
+    
+    <error code="294" type="SYSTEM">
         <category>Network Manager</category>
         <porter>E2E request payload too large.</porter>
         <description>
@@ -1171,7 +1678,8 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="295">
+    
+    <error code="295" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Endpoint indicated request not acceptable.</porter>
         <description>
@@ -1180,7 +1688,15 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="297">
+    
+    <error code="296" type="SYSTEM">
+        <category>N/A</category>
+        <porter>The device has no points attached.</porter>
+        <description>The device has no points attached.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="297" type="SYSTEM">
         <category>Network Manager</category>
         <porter>Network service failure.</porter>
         <description>
@@ -1189,7 +1705,85 @@
         <troubleshooting>
         </troubleshooting>
     </error>
-    <error code="1024">
+    
+    <error code="298" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Channel not enabled in RF node.</porter>
+        <description>Channel not enabled in RF node.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="299" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Channel not supported by meter.</porter>
+        <description>Channel not supported by meter.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="300" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Invalid water node device.</porter>
+        <description>Invalid water node device.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="301" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Unknown water node.</porter>
+        <description>Unknown water node.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="302" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Unknown gateway.</porter>
+        <description>Unknown gateway.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="303" type="SYSTEM">
+        <category>N/A</category>
+        <porter>Unspecified water node failure.</porter>
+        <description>Unspecified water node failure.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="304" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Function code not supported.</porter>
+        <description>Function code not supported.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="305" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Unknown object.</porter>
+        <description>Unknown object.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="306" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Parameter error, not all points in the index range or object index prefixes exist.</porter>
+        <description>Parameter error, not all points in the index range or object index prefixes exist.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="307" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Requested operation is already executing.</porter>
+        <description>Requested operation is already executing.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="308" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Aggregate response did not include an entry for the command.</porter>
+        <description>Aggregate response did not include an entry for the command.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>    
+    
+    <error code="1024" type="NONE">
         <category>Network Manager</category>
         <porter>No node in Network Manager.</porter>
         <description>
@@ -1201,7 +1795,8 @@
             nodes.
         </troubleshooting>
     </error>
-    <error code="1025">
+    
+    <error code="1025" type="NONE">
         <category>Network Manager</category>
         <porter>There is no RF gateway associated with the RF node.</porter>
         <description>
@@ -1212,7 +1807,8 @@
             question, if any.
         </troubleshooting>
     </error>
-    <error code="1026">
+    
+    <error code="1026" type="NONE">
         <category>Network Manager</category>
         <porter>There was an error while processing the request.</porter>
         <description>
@@ -1222,43 +1818,50 @@
             Check Network Manager server logs to identify the root cause of the failure.
         </troubleshooting>
     </error>
-    <error code="1027">
+    
+    <error code="1027" type="NONE">
         <category>Network Manager</category>
         <porter>Timeout</porter>
         <description>Request timed out</description>
         <troubleshooting>Check Yukon Logs for errors</troubleshooting>
     </error>
-    <error code="1028">
+    
+    <error code="1028" type="NONE">
         <category>Network Manager</category>
         <porter>Load side voltage detected while disconnected.</porter>
         <description>Load side voltage detected while disconnected.</description>
         <troubleshooting></troubleshooting>
     </error>
-    <error code="1029">
+    
+    <error code="1029" type="NONE">
         <category>Network Manager</category>
         <porter>No load side voltage detected while connected.</porter>
         <description>No load side voltage detected while connected.</description>
         <troubleshooting></troubleshooting>
     </error>
-    <error code="1030">
+    
+    <error code="1030" type="NONE">
         <category>Network Manager</category>
         <porter>No load side voltage detected while connected.</porter>
         <description>Load side voltage higher than the configurable threshold prevented the switch from closing.</description>
         <troubleshooting></troubleshooting>
     </error>
-    <error code="2000">
+    
+    <error code="2000" type="NONE">
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>
         <description>This action cannot be performed on this device type.</description>
         <troubleshooting></troubleshooting>
     </error>
-    <error code="0">
+    
+    <error code="0" type="NONE">
         <category>N/A</category>
-        <porter>N/A</porter>
+        <porter>Normal (Success) Return</porter>
         <description>Successful Read</description>
         <troubleshooting>N/A</troubleshooting>
     </error>
-    <error code="-1">
+    
+    <error code="-1" type="NONE">
         <category>N/A</category>
         <porter>A porter error string is not available for this error code at this time</porter>
         <description>A description for this error code is not available at this time</description>

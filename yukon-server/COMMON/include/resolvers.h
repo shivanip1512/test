@@ -6,6 +6,7 @@
 #include "db_entry_defines.h"
 #include "devicetypes.h"
 #include "yukon.h"
+#include "DSM2ERR.H"
 
 
 namespace Cti {
@@ -50,6 +51,7 @@ IM_EX_CTIBASE CtiDBChangeCategory resolveDBCategory             (const std::stri
 IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, const std::string& str);
 IM_EX_CTIBASE CtiControlType_t  resolveControlType(const std::string& str);
 IM_EX_CTIBASE LONG resolveDeviceWindowType      (const std::string& str);
+IM_EX_CTIBASE ErrorTypes resolveErrorType       (const std::string& str);
 
 IM_EX_CTIBASE bool isKnownUnsupportedDevice     (const std::string& _str);
 

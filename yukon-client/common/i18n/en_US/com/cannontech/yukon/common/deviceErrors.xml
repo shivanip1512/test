@@ -344,7 +344,7 @@
                     Replace the logic card or contact Technical Support.</li>
             </ul>]]></entry>
 
-    <entry key="yukon.web.error.code.54.porter">Device ID not found</entry>
+    <entry key="yukon.web.error.code.54.porter">Device ID Not Found</entry>
     <entry key="yukon.web.error.code.54.description">The device ID requested does not exist or is not
         loaded yet.</entry>
     <entry key="yukon.web.error.code.54.troubleshooting"><![CDATA[The devices may still be in process of being loaded by the servers, wait a few minutes
@@ -510,7 +510,7 @@
                 <li>Attempt the command again</li>
             </ul>]]></entry>
 
-    <entry key="yukon.web.error.code.89.porter">Error Connecting to Terminal Server</entry>
+    <entry key="yukon.web.error.code.89.porter">Error Connecting to TCP socket</entry>
     <entry key="yukon.web.error.code.89.description">The master station was unable to connect to the
         communications channel.</entry>
     <entry key="yukon.web.error.code.89.troubleshooting"><![CDATA[This is a bulk communications error that is associated with the inability to connect to
@@ -522,7 +522,7 @@
                     communication ports</li>
             </ul>]]></entry>
 
-    <entry key="yukon.web.error.code.90.porter">Error Writing to Terminal Server</entry>
+    <entry key="yukon.web.error.code.90.porter">Error Writing to TCP socket</entry>
     <entry key="yukon.web.error.code.90.description">The master station was unable to write to the
         communications channel.</entry>
     <entry key="yukon.web.error.code.90.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
@@ -534,7 +534,7 @@
                     communication ports</li>
             </ul>]]></entry>
 
-    <entry key="yukon.web.error.code.91.porter">Error Reading from Terminal Server</entry>
+    <entry key="yukon.web.error.code.91.porter">Error Reading from TCP socket</entry>
     <entry key="yukon.web.error.code.91.description">The master station was unable to read from the
         communications channel.</entry>
     <entry key="yukon.web.error.code.91.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
@@ -628,7 +628,7 @@
                     (signal strength) at the substation</li>
             </ul>]]></entry>
 
-    <entry key="yukon.web.error.code.202.porter">NoMethod or invalid command.</entry>
+    <entry key="yukon.web.error.code.202.porter">No Method or Invalid Command.</entry>
     <entry key="yukon.web.error.code.202.description">The command is incorrect or not supported by this
         device type.</entry>
     <entry key="yukon.web.error.code.202.troubleshooting"><![CDATA[<ul>
@@ -660,7 +660,7 @@
                 </ol>
             </ul>]]></entry>
 
-    <entry key="yukon.web.error.code.227.porter">Timeout</entry>
+    <entry key="yukon.web.error.code.227.porter">Request timed out.</entry>
     <entry key="yukon.web.error.code.227.description">Request timed out.</entry>
     <entry key="yukon.web.error.code.227.troubleshooting">Check Yukon Logs for errors.</entry>
 
@@ -754,17 +754,17 @@
     <entry key="yukon.web.error.code.272.description">Device type does not support Commander requests.</entry>
     <entry key="yukon.web.error.code.272.troubleshooting"><![CDATA[Confirm that the command is supported by the device type.]]></entry>
 
-    <entry key="yukon.web.error.code.273.porter">Port is not initialized</entry>
+    <entry key="yukon.web.error.code.273.porter">Port not initialized</entry>
     <entry key="yukon.web.error.code.273.description">The request has been received, but may be delayed
         because the port is not initialized. Bulk communication channel may be
         experiencing connection difficulties.</entry>
     <entry key="yukon.web.error.code.273.troubleshooting"><![CDATA[Verify the bulk communication channel is functioning properly.]]></entry>
 
-    <entry key="yukon.web.error.code.274.porter">Daily read request already in progress</entry>
-    <entry key="yukon.web.error.code.274.description">The daily read request is already in progress.</entry>
-    <entry key="yukon.web.error.code.274.troubleshooting"><![CDATA[The daily read request is already in progress with another daily read request. Only one
-            daily read can be in progress at a time. Wait for a moment and attempt the command
-            again.]]></entry>
+    <entry key="yukon.web.error.code.274.porter">Command already in progress</entry>
+    <entry key="yukon.web.error.code.274.description">Command is already in progress.</entry>
+    <entry key="yukon.web.error.code.274.troubleshooting"><![CDATA[            
+        Only one instance of this command can be in progress at a time. Wait 
+            for a moment and attempt the command again.]]></entry>
 
     <entry key="yukon.web.error.code.275.porter">No connection to device</entry>
     <entry key="yukon.web.error.code.275.description">Yukon is unable to establish a connection with the
@@ -901,7 +901,7 @@
     <entry key="yukon.web.error.code.2000.description">This action cannot be performed on this device type.</entry>
     <entry key="yukon.web.error.code.2000.troubleshooting"></entry>
 
-    <entry key="yukon.web.error.code.0.porter">N/A</entry>
+    <entry key="yukon.web.error.code.0.porter">Normal (Success) Return</entry>
     <entry key="yukon.web.error.code.0.description">Successful Read</entry>
     <entry key="yukon.web.error.code.0.troubleshooting">N/A</entry>
 

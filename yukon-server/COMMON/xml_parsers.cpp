@@ -605,5 +605,118 @@ void DeviceConfigCategoryHandler::popIndexedField()
     }
 }
 
+
+////
+
+
+ErrorCodeHandler::ErrorCodeHandler( BasicErrorCodeInfoCollection & c )
+    :   collection( c ),
+        _parseState( OutsideRootNode )
+{
+    // empty...
 }
 
+void ErrorCodeHandler::startElement( const XMLCh * const uri,
+                                     const XMLCh * const localname,
+                                     const XMLCh * const qname,
+                                     const xercesc::Attributes & attrs )
+{
+    std::string element( XmlStringTranscode( localname ) );
+
+    switch ( _parseState )
+    {
+        case OutsideRootNode:
+        {
+            if ( element == "portererrorcodes" )
+            {
+                _parseState = InsideRootNode;
+            }
+            break;
+        }
+        case InsideRootNode:
+        {
+            if ( element == "error" )
+            {
+                _parseState = InsideErrorNode;
+
+                for ( XMLSize_t i = 0; i < attrs.getLength(); i++ )
+                {
+                    std::string name( XmlStringTranscode( attrs.getLocalName( i ) ) );
+
+                    if ( name == "code" )
+                    {
+                        currentErrorCode.errorCode = stol( XmlStringTranscode( attrs.getValue( i ) ) );
+                    }
+
+                    if ( name == "type" )
+                    {
+                        currentErrorCode.typeString = XmlStringTranscode( attrs.getValue( i ) );
+                    }
+                }
+            }
+            break;
+        }
+        case InsideErrorNode: 
+        {
+            if ( element == "porter" ) 
+            {
+                _parseState = ReadPorterNode;
+            }
+            break;
+        }
+    }
+}
+
+void ErrorCodeHandler::endElement( const XMLCh * const uri,
+                                   const XMLCh * const localname,
+                                   const XMLCh * const qname )
+{
+    std::string element( XmlStringTranscode( localname ) );
+
+    switch ( _parseState )
+    {
+        case InsideRootNode:
+        {
+            if ( element == "portererrorcodes" )
+            {
+                _parseState = OutsideRootNode;
+            }
+            break;
+        }
+        case InsideErrorNode:
+        {
+            if ( element == "error" )
+            {
+                _parseState = InsideRootNode;
+
+                collection.push_back(currentErrorCode);
+
+                currentErrorCode.clear();
+            }
+            break;
+        }
+        case ReadPorterNode:
+        {
+            if ( element == "porter" ) 
+            {
+                _parseState = InsideErrorNode;
+            }
+            break;
+        }
+    }
+}
+
+void ErrorCodeHandler::characters( const XMLCh * const chars,
+                                   const XMLSize_t     length )
+{
+    switch ( _parseState )
+    {
+        case ReadPorterNode:
+        {
+            currentErrorCode.porterString = XmlStringTranscode( chars );
+            break;
+        }
+    }
+}
+
+}

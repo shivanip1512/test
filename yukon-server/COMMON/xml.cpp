@@ -8,6 +8,8 @@
 #include "resource_ids.h"
 #include "resource_helper.h"
 #include "xml_parsers.h"
+#include "dsm2err.h"
+#include "resolvers.h"
 
 #include <shlwapi.h>
 
@@ -338,6 +340,70 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
                         }
                     }
                 }
+            }
+        }
+
+        // Read error codes
+
+        BasicErrorCodeInfoCollection errorCodes;
+        {
+            DataBuffer  rawDataBuffer
+                = loadResourceFromLibrary( ERROR_CODE_ID, "XML", "yukon-resource.dll" );
+
+            BufferPtr   memoryBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &rawDataBuffer[0] ),
+                                      rawDataBuffer.size(),
+                                      "error-code.xml" ) );
+
+            XmlReader   reader( xercesc::XMLReaderFactory::createXMLReader() );
+
+            // set the grammer and turn on validation in the reader
+            reader->loadGrammar( *memoryBuffer, xercesc::Grammar::SchemaGrammarType, true );
+
+            reader->setFeature( xercesc::XMLUni::fgSAX2CoreValidation, true );
+            reader->setFeature( xercesc::XMLUni::fgXercesCacheGrammarFromParse, true );
+
+            // this guy handles the xml entities and fills the collection
+            EntityHandler  handler( new ErrorCodeHandler( errorCodes ) );
+
+            // associate the handlers with the reader
+            reader->setContentHandler( handler.get() );
+            reader->setErrorHandler( handler.get() );
+
+            try
+            {
+                reader->parse( *memoryBuffer );
+            }
+            catch( const xercesc::XMLException & ex )
+            {
+                CTILOG_EXCEPTION_ERROR( dout, ex, "** XML Error" );
+                return;
+            }
+            catch( const xercesc::SAXParseException & ex )
+            {
+                CTILOG_EXCEPTION_ERROR( dout, ex, "** XML Parsing Error" );
+                return;
+            }
+            catch( ... )
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR( dout, "** Error: Unexpected Exception" );
+                return;
+            }
+        }
+
+        // Load the CtiErrors map
+        {
+            YukonError_t currentErrorCode;
+            ErrorTypes currentErrorType;
+            std::string currentErrorDescription;
+            void addErrorInfo( YukonError_t code, ErrorTypes type, std::string description );
+
+            for( auto currentError = errorCodes.begin(); currentError != errorCodes.end(); currentError++ )
+            {
+                currentErrorCode = static_cast<YukonError_t>(currentError->errorCode);
+                currentErrorType = resolveErrorType(currentError->typeString);
+                currentErrorDescription = currentError->porterString;
+
+                addErrorInfo( currentErrorCode, currentErrorType, currentErrorDescription );
             }
         }
     }

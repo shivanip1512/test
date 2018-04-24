@@ -408,7 +408,7 @@
     </ClCompile>
     <ClCompile Include="encryption.cpp">
     </ClCompile>
-    <ClCompile Include="error.cpp">
+    <ClCompile Include="ERROR.cpp">
     </ClCompile>
     <ClCompile Include="exception_helper.cpp">
     </ClCompile>
