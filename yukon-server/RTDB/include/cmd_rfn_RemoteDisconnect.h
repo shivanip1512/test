@@ -35,15 +35,18 @@ public:
         DisconnectMode_Cycling         = 0x03
     };
 
-    boost::optional<DisconnectMode> getDisconnectMode() const;
-    boost::optional<Reconnect>      getReconnectParam() const;
-
-    boost::optional<unsigned>  getDemandInterval()    const;
-    boost::optional<double>    getDemandThreshold()   const;
-    boost::optional<unsigned>  getConnectDelay()      const;
-    boost::optional<unsigned>  getMaxDisconnects()    const;
-    boost::optional<unsigned>  getDisconnectMinutes() const;
-    boost::optional<unsigned>  getConnectMinutes()    const;
+    struct Read
+    {
+        virtual boost::optional<DisconnectMode> getDisconnectMode() const = 0;
+        virtual boost::optional<Reconnect>      getReconnectParam() const = 0;
+        
+        virtual boost::optional<unsigned>  getDemandInterval()    const = 0;
+        virtual boost::optional<double>    getDemandThreshold()   const = 0;
+        virtual boost::optional<unsigned>  getConnectDelay()      const = 0;
+        virtual boost::optional<unsigned>  getMaxDisconnects()    const = 0;
+        virtual boost::optional<unsigned>  getDisconnectMinutes() const = 0;
+        virtual boost::optional<unsigned>  getConnectMinutes()    const = 0;
+    };
 
 protected:
 
@@ -77,8 +80,6 @@ protected:
 
     RfnRemoteDisconnectConfigurationCommand( const Operation operation );
 
-private:
-
     boost::optional<DisconnectMode> _disconnectMode;
 
     // Shared parameters
@@ -96,7 +97,7 @@ private:
 //------------------------------------------------------------
 // Base class for remote disconnect set configuration commands
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectSetConfigurationCommand : public RfnRemoteDisconnectConfigurationCommand
+class IM_EX_DEVDB RfnRemoteDisconnectSetConfigurationCommand : public RfnRemoteDisconnectConfigurationCommand, public RfnRemoteDisconnectConfigurationCommand::Read
 {
 public:
 
@@ -105,6 +106,16 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload &response ) override;
 
     std::string getCommandName() override;
+
+    boost::optional<DisconnectMode> getDisconnectMode() const override;
+    boost::optional<Reconnect>      getReconnectParam() const override;
+
+    boost::optional<unsigned>  getDemandInterval()    const override;
+    boost::optional<double>    getDemandThreshold()   const override;
+    boost::optional<unsigned>  getConnectDelay()      const override;
+    boost::optional<unsigned>  getMaxDisconnects()    const override;
+    boost::optional<unsigned>  getDisconnectMinutes() const override;
+    boost::optional<unsigned>  getConnectMinutes()    const override;
 
 protected:
 
@@ -187,7 +198,7 @@ protected:
 //------------------------------------------------------------
 // Base class for remote disconnect get configuration commands
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectGetConfigurationCommand : public RfnRemoteDisconnectConfigurationCommand,
+class IM_EX_DEVDB RfnRemoteDisconnectGetConfigurationCommand : public RfnRemoteDisconnectConfigurationCommand, public RfnRemoteDisconnectConfigurationCommand::Read,
        InvokerFor<RfnRemoteDisconnectGetConfigurationCommand>
 {
 public:
@@ -197,6 +208,16 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response ) override;
 
     std::string getCommandName() override;
+
+    boost::optional<DisconnectMode> getDisconnectMode() const override;
+    boost::optional<Reconnect>      getReconnectParam() const override;
+
+    boost::optional<unsigned>  getDemandInterval()    const override;
+    boost::optional<double>    getDemandThreshold()   const override;
+    boost::optional<unsigned>  getConnectDelay()      const override;
+    boost::optional<unsigned>  getMaxDisconnects()    const override;
+    boost::optional<unsigned>  getDisconnectMinutes() const override;
+    boost::optional<unsigned>  getConnectMinutes()    const override;
 };
 
 }

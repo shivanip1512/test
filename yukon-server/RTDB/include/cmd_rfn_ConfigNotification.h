@@ -5,6 +5,7 @@
 #include "cmd_rfn_TemperatureAlarm.h"
 #include "cmd_rfn_FocusAlLcdConfiguration.h"
 #include "cmd_rfn_CentronLcdConfiguration.h"
+#include "cmd_rfn_RemoteDisconnect.h"
 #include "cmd_rfn_OvUvConfiguration.h"
 #include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_ChannelConfiguration.h"
@@ -87,24 +88,30 @@ public:
 
     boost::optional<IntervalRecording> intervalRecording;
 
-    struct Disconnect
+    struct Disconnect : RfnRemoteDisconnectConfigurationCommand::Read
     {
-        struct OnDemand {
-            uint8_t reconnectMethod;
-        };
-        struct DemandThreshold {
-            uint8_t reconnectMethod;
-            std::chrono::minutes demandInterval;
-            float demandThreshold;
-            std::chrono::minutes connectDelay;
-            uint8_t maxDisconnects;
-        };
-        struct Cycling {
-            uint8_t reconnectMethod;
-            std::chrono::minutes disconnectTime;
-            std::chrono::minutes connectTime;
-        };
-        boost::variant<OnDemand, DemandThreshold, Cycling> format;
+        using RDCC = RfnRemoteDisconnectConfigurationCommand;
+
+        boost::optional<RDCC::DisconnectMode> getDisconnectMode() const override { return disconnectMode; }
+        boost::optional<RDCC::Reconnect>      getReconnectParam() const override { return reconnect;      }
+
+        boost::optional<unsigned>  getDemandInterval()    const override { return demandInterval;  }
+        boost::optional<double>    getDemandThreshold()   const override { return demandThreshold; }
+        boost::optional<unsigned>  getConnectDelay()      const override { return connectDelay;    }
+        boost::optional<unsigned>  getMaxDisconnects()    const override { return maxDisconnects;  }
+        boost::optional<unsigned>  getDisconnectMinutes() const override { return disconnectTime;  }
+        boost::optional<unsigned>  getConnectMinutes()    const override { return connectTime;     }
+
+        RDCC::DisconnectMode disconnectMode;
+        RDCC::Reconnect      reconnect;
+
+        unsigned demandInterval;
+        double   demandThreshold;
+        unsigned connectDelay;
+        unsigned maxDisconnects;
+
+        boost::optional<unsigned> disconnectTime;
+        boost::optional<unsigned> connectTime;
     };
 
     boost::optional<Disconnect> disconnect;
@@ -120,19 +127,19 @@ public:
 
     boost::optional<VoltageProfile> voltageProfile;
 
-	struct C2sxDisplay : RfnCentronLcdConfigurationCommand::Read
-	{
+    struct C2sxDisplay : RfnCentronLcdConfigurationCommand::Read
+    {
         RfnCentronLcdConfigurationCommand::metric_map_t displayItems;
-		boost::optional<uint8_t> lcdCycleTime;
-		boost::optional<uint8_t> displayDigits;
-		boost::optional<bool> disconnectDisplay;
+        boost::optional<uint8_t> lcdCycleTime;
+        boost::optional<uint8_t> displayDigits;
+        boost::optional<bool> disconnectDisplay;
 
         RfnCentronLcdConfigurationCommand::metric_map_t getDisplayMetrics() const override { return displayItems; }
         boost::optional<bool> getDisconnectDisplayDisabled()   const override { return disconnectDisplay; }
         boost::optional<unsigned char> getDigitConfiguration() const override { return displayDigits;     }
         boost::optional<unsigned char> getLcdCycleTime()       const override { return lcdCycleTime;      }
-	};
-	
+    };
+    
     boost::optional<C2sxDisplay> c2sxDisplay;
 
     struct FocusDisplay 
@@ -144,15 +151,6 @@ public:
     boost::optional<FocusDisplay> focusDisplay;
 
     boost::optional<RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration> ovuv;
-
-    struct Temperature
-    {
-        uint8_t enableDisable;
-        uint16_t highTemperatureThreshold;
-        uint16_t lowTemperatureThreshold;
-        std::chrono::minutes repeatInterval;
-        uint8_t maxRepeats;
-    };
 
     boost::optional<RfnTemperatureAlarmCommand::AlarmConfiguration> temperature;
 };

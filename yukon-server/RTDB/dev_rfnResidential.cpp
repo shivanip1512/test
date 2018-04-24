@@ -891,6 +891,11 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnConfigNotific
     {
         storeDemandFreezeDay(*cmd.demandFreezeDay);
     }
+
+    if( cmd.disconnect )
+    {
+        storeDisconnect(*cmd.disconnect);
+    }
 }
 
 
@@ -914,7 +919,17 @@ void RfnResidentialDevice::storeDemandFreezeDay( const uint8_t demandFreezeDay )
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, demandFreezeDay );
 }
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectGetConfigurationCommand & cmd )
+{
+    storeDisconnect(cmd);
+}
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectSetConfigurationCommand & cmd )
+{
+    storeDisconnect(cmd);
+}
+
+void RfnResidentialDevice::storeDisconnect( const Commands::RfnRemoteDisconnectConfigurationCommand::Read & cmd )
 {
     if( cmd.getDisconnectMode() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( *cmd.getDisconnectMode() ) );
     if( cmd.getReconnectParam() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( *cmd.getReconnectParam() ) );

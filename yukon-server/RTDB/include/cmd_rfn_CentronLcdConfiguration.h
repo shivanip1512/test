@@ -34,14 +34,14 @@ public:
         virtual boost::optional<unsigned char> getLcdCycleTime()       const = 0;
     };
 
-	virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
+    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
 
-	enum
-	{
-		Slot_DisconnectDisplay  = 0xff,
-		Slot_CycleDelay         = 0xfe,
-		Slot_DigitConfiguration = 0xfd,
-	};
+    enum
+    {
+        Slot_DisconnectDisplay  = 0xff,
+        Slot_CycleDelay         = 0xfe,
+        Slot_DigitConfiguration = 0xfd,
+    };
 
 protected:
 

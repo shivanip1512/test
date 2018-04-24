@@ -129,7 +129,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
                 if( message.nodeOriginated )
                 {
-                    if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedResponse(Now, indication.payload) )
+                    if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, indication.payload) )
                     {
                         _unsolicitedReportsPerTick.emplace_back(indication.rfnIdentifier, std::move(command));
                     }

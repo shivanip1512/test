@@ -47,7 +47,7 @@ auto RfnCommand::getApplicationServiceId() const -> ASID
 }
 
 
-RfnCommandPtr RfnCommand::handleUnsolicitedResponse(const CtiTime now, RfnResponsePayload payload)
+RfnCommandPtr RfnCommand::handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload)
 {
     validate( Condition( ! payload.empty(), ClientErrors::DataMissing ) << "Empty payload");
 

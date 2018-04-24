@@ -192,7 +192,7 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
             validate( Condition( tlv.value.size() == 5, ClientErrors::InvalidData )
                     << "Response TLV too small (" << tlv.value.size() << " != 5)" );
 
-            const boost::optional<Reconnect> reconnectParam = getReconnectParam();
+            const boost::optional<Reconnect> reconnectParam = _reconnectParam;
 
             validate( Condition( !! reconnectParam, ClientErrors::DataMissing ) // must be 1 for cycling!
                     << "Response reconnect param missing, expecting 1)" );
@@ -237,15 +237,15 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
 }
 
 
-boost::optional<Reconnect>      RfnRemoteDisconnectConfigurationCommand::getReconnectParam() const  {  return _reconnectParam;  }
-boost::optional<DisconnectMode> RfnRemoteDisconnectConfigurationCommand::getDisconnectMode() const  {  return _disconnectMode;  }
+boost::optional<Reconnect>      RfnRemoteDisconnectSetConfigurationCommand::getReconnectParam() const  {  return _reconnectParam;  }
+boost::optional<DisconnectMode> RfnRemoteDisconnectSetConfigurationCommand::getDisconnectMode() const  {  return _disconnectMode;  }
 
-boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getDemandInterval()    const  {  return _demandInterval;     }
-boost::optional<double>   RfnRemoteDisconnectConfigurationCommand::getDemandThreshold()   const  {  return _demandThreshold;    }
-boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getConnectDelay()      const  {  return _connectDelay;       }
-boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getMaxDisconnects()    const  {  return _maxDisconnects;     }
-boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getDisconnectMinutes() const  {  return _disconnectMinutes;  }
-boost::optional<unsigned> RfnRemoteDisconnectConfigurationCommand::getConnectMinutes()    const  {  return _connectMinutes;     }
+boost::optional<unsigned> RfnRemoteDisconnectSetConfigurationCommand::getDemandInterval()    const  {  return _demandInterval;     }
+boost::optional<double>   RfnRemoteDisconnectSetConfigurationCommand::getDemandThreshold()   const  {  return _demandThreshold;    }
+boost::optional<unsigned> RfnRemoteDisconnectSetConfigurationCommand::getConnectDelay()      const  {  return _connectDelay;       }
+boost::optional<unsigned> RfnRemoteDisconnectSetConfigurationCommand::getMaxDisconnects()    const  {  return _maxDisconnects;     }
+boost::optional<unsigned> RfnRemoteDisconnectSetConfigurationCommand::getDisconnectMinutes() const  {  return _disconnectMinutes;  }
+boost::optional<unsigned> RfnRemoteDisconnectSetConfigurationCommand::getConnectMinutes()    const  {  return _connectMinutes;     }
 
 //-----------------------------------------------------------
 // Remote Disconnect Set-Configuration Functions
@@ -441,6 +441,16 @@ std::string RfnRemoteDisconnectGetConfigurationCommand::getCommandName()
 {
     return "Remote Disconnect Get Configuration Request";
 }
+
+boost::optional<Reconnect>      RfnRemoteDisconnectGetConfigurationCommand::getReconnectParam() const  {  return _reconnectParam;  }
+boost::optional<DisconnectMode> RfnRemoteDisconnectGetConfigurationCommand::getDisconnectMode() const  {  return _disconnectMode;  }
+
+boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getDemandInterval()    const  {  return _demandInterval;     }
+boost::optional<double>   RfnRemoteDisconnectGetConfigurationCommand::getDemandThreshold()   const  {  return _demandThreshold;    }
+boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getConnectDelay()      const  {  return _connectDelay;       }
+boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getMaxDisconnects()    const  {  return _maxDisconnects;     }
+boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getDisconnectMinutes() const  {  return _disconnectMinutes;  }
+boost::optional<unsigned> RfnRemoteDisconnectGetConfigurationCommand::getConnectMinutes()    const  {  return _connectMinutes;     }
 
 }
 }

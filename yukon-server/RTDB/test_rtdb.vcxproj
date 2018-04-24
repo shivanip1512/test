@@ -362,6 +362,7 @@
     <ClCompile Include="test_cmd_mct420_LcdConfiguration.cpp">
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_Aggregate.cpp" />
+    <ClCompile Include="test_cmd_rfn_ConfigNotification.cpp" />
     <ClCompile Include="test_cmd_rfn_DataStreamingConfiguration.cpp" />
     <ClCompile Include="test_cmd_rfn_Individual.cpp" />
     <ClCompile Include="test_cmd_rf_da_dnpAddress.cpp">

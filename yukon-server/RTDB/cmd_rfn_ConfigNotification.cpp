@@ -25,6 +25,11 @@ RfnCommandResult RfnConfigNotificationCommand::decodeCommand(const CtiTime now, 
 
     uint16_t tlvCount = response[1] << 8 | response[2];
 
+    if( ! tlvCount )
+    {
+        return "Empty";
+    }
+
     std::vector<TLV> tlvs;
 
     size_t pos = 3;
@@ -33,8 +38,8 @@ RfnCommandResult RfnConfigNotificationCommand::decodeCommand(const CtiTime now, 
     {
         constexpr auto TlvHeaderLength = 4;
 
-        validate(Condition(pos + TlvHeaderLength < response.size(), ClientErrors::DataMissing)
-            << "Incomplete TLV header (" << (pos + TlvHeaderLength) << " >= " << response.size());
+        validate(Condition(pos + TlvHeaderLength <= response.size(), ClientErrors::DataMissing)
+            << "Incomplete TLV header (" << (pos + TlvHeaderLength) << " > " << response.size());
 
         TLV tlv {
             static_cast<uint16_t>(response[pos + 0] << 8 | response[pos + 1]),
@@ -42,8 +47,8 @@ RfnCommandResult RfnConfigNotificationCommand::decodeCommand(const CtiTime now, 
 
         pos += TlvHeaderLength;
 
-        validate(Condition(pos + tlv.length < response.size(), ClientErrors::DataMissing)
-            << "Incomplete TLV data (" << (pos + tlv.length) << " >= " << response.size());
+        validate(Condition(pos + tlv.length <= response.size(), ClientErrors::DataMissing)
+            << "Incomplete TLV data (" << (pos + tlv.length) << " > " << response.size());
 
         const auto dataBegin = response.cbegin() + pos;
 
@@ -83,12 +88,23 @@ std::string RfnConfigNotificationCommand::decodeTlvs(const std::vector<TLV> tlvs
     {
         if( tlv.type <= tlvMethods.size() )
         {
-            validate(Condition( ! tlv.data.empty(), ClientErrors::DataMissing)
-                << "Empty payload for TLV type " << tlv.type);
+            try
+            {
+                validate(Condition( ! tlv.data.empty(), ClientErrors::DataMissing)
+                    << "Empty payload for TLV type " << tlv.type);
 
-            const auto method = *(tlvMethods.begin() + tlv.type - 1);
+                const auto method = *(tlvMethods.begin() + tlv.type - 1);
 
-            results.emplace_back((this->*method)(tlv.data));
+                results.emplace_back((this->*method)(tlv.data));
+            }
+            catch( const YukonErrorException &ex )
+            {
+                results.emplace_back(ex.error_description);
+            }
+        }
+        else
+        {
+            results.emplace_back("Unknown TLV type " + std::to_string(tlv.type));
         }
     }
 
@@ -110,7 +126,7 @@ std::string RfnConfigNotificationCommand::decodeTouEnableDisable(Bytes payload)
 std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
 {
     validate(Condition(payload.size() >= 56, ClientErrors::InvalidData)
-        << "TOU Holiday payload too small - (" << payload.size() << " < 56)");
+        << "TOU Schedule payload too small - (" << payload.size() << " < 56)");
 
     using T = RfnTouScheduleConfigurationCommand;
 
@@ -179,7 +195,7 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
 
     touSchedule = s;
 
-    return "wut";
+    return "TOU schedule configuration:" + l.toString();
 }
 
 std::string RfnConfigNotificationCommand::decodeTouHoliday(Bytes payload)
@@ -189,7 +205,7 @@ std::string RfnConfigNotificationCommand::decodeTouHoliday(Bytes payload)
 
     std::array<CtiDate, 3> dates;
 
-    std::string description = "Holidays :";
+    std::string description = "TOU holiday configuration:";
 
     for( size_t dateIndex = 0; dateIndex < 3; ++dateIndex )
     {
@@ -253,6 +269,8 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
 
     l.add("Interval metrics") << boost::join(r.intervalMetrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
 
+    intervalRecording = r;
+
     return "Interval recording configuration:" + l.toString();
 }
 
@@ -284,7 +302,16 @@ std::string RfnConfigNotificationCommand::decodeChannelSelection(Bytes payload)
 
 std::string RfnConfigNotificationCommand::decodeDisconnect(Bytes payload)
 {
+    using RDCC = RfnRemoteDisconnectConfigurationCommand;
+
+    validate(Condition(payload.size() >= 2, ClientErrors::DataMissing)
+        << "Disconnect payload too small - (" << payload.size() << " < " << 2);
+
+    Disconnect d;
+
     auto mode = payload[0];
+
+    d.reconnect = payload[1] ? RDCC::Reconnect_Immediate : RDCC::Reconnect_Arm;
 
     FormattedList l;
 
@@ -292,18 +319,11 @@ std::string RfnConfigNotificationCommand::decodeDisconnect(Bytes payload)
     {
     case 1:
     {
-        validate(Condition(payload.size() >= 2, ClientErrors::DataMissing)
-            << "Disconnect payload too small - (" << payload.size() << " < " << 2);
-
         l.add("Disconnect mode") << "on demand";
 
-        Disconnect::OnDemand d;
-        
-        d.reconnectMethod = payload[1];
+        d.disconnectMode = RDCC::DisconnectMode_OnDemand;
 
-        l.add("Reconnect method") << d.reconnectMethod;
-
-        disconnect = Disconnect { d };
+        l.add("Reconnect method") << payload[1];
 
         break;
     }
@@ -314,21 +334,18 @@ std::string RfnConfigNotificationCommand::decodeDisconnect(Bytes payload)
 
         l.add("Disconnect mode") << "demand threshold";
 
-        Disconnect::DemandThreshold d;
+        d.disconnectMode = RDCC::DisconnectMode_DemandThreshold;
 
-        d.reconnectMethod = payload[1];
-        d.demandInterval = std::chrono::minutes(payload[2]);
+        d.demandInterval  = payload[2];
         d.demandThreshold = payload[3] * 0.1;
-        d.connectDelay   = std::chrono::minutes(payload[4]);
-        d.maxDisconnects = payload[5];
+        d.connectDelay    = payload[4];
+        d.maxDisconnects  = payload[5];
 
-        l.add("Reconnect method") << d.reconnectMethod;
-        l.add("Demand interval") << d.demandInterval;
+        l.add("Reconnect method") << payload[1];
+        l.add("Demand interval")  << std::chrono::minutes(d.demandInterval);
         l.add("Demand threshold") << d.demandThreshold << "kW";
-        l.add("Connect delay") << d.connectDelay;
-        l.add("Max disconnects") << d.maxDisconnects;
-
-        disconnect = Disconnect { d };
+        l.add("Connect delay")    << std::chrono::minutes(d.connectDelay);
+        l.add("Max disconnects")  << d.maxDisconnects;
 
         break;
     }
@@ -339,23 +356,22 @@ std::string RfnConfigNotificationCommand::decodeDisconnect(Bytes payload)
 
         l.add("Disconnect mode") << "cycling";
 
-        Disconnect::Cycling d;
+        d.disconnectMode = RDCC::DisconnectMode_Cycling;
 
-        d.reconnectMethod = payload[1];
-        d.disconnectTime = std::chrono::minutes(payload[2] | payload[3] << 8);
-        d.connectTime    = std::chrono::minutes(payload[4] | payload[5] << 8);
+        d.disconnectTime = payload[2] | payload[3] << 8;
+        d.connectTime    = payload[4] | payload[5] << 8;
 
-        l.add("Reconnect method") << d.reconnectMethod;
-        l.add("Disconnect time") << d.disconnectTime;
-        l.add("Connect time") << d.connectTime;
-
-        disconnect = Disconnect { d };
+        l.add("Reconnect method") << payload[1];
+        l.add("Disconnect time") << std::chrono::minutes(d.disconnectTime.value());
+        l.add("Connect time")    << std::chrono::minutes(d.connectTime.value());
 
         break;
     }
     default:
         throw YukonErrorException(ClientErrors::InvalidData, "Unknown disconnect mode " + std::to_string(mode));
     }
+
+    disconnect = d;
 
     return "Disconnect configuration:" + l.toString();
 }
@@ -373,8 +389,8 @@ std::string RfnConfigNotificationCommand::decodeVoltageProfile(Bytes payload)
     voltageProfile = vp;
 
     return "Voltage profile configuration:" + FormattedList::of(
-        "Voltage demand interval",  vp.voltageDemandInterval,
-        "Voltage profile interval", vp.voltageProfileInterval);
+        "Voltage demand interval",  std::chrono::seconds(vp.voltageDemandInterval),
+        "Voltage profile interval", std::chrono::minutes(vp.voltageProfileInterval));
 }
 
 std::string RfnConfigNotificationCommand::decodeC2sxDisplay(Bytes payload)
@@ -391,31 +407,31 @@ std::string RfnConfigNotificationCommand::decodeC2sxDisplay(Bytes payload)
 
     for( auto pos = 1; pos < payloadSize - 1; pos += 2 )
     {
-		auto slot  = payload[pos];
-		auto value = payload[pos + 1];
+        auto slot  = payload[pos];
+        auto value = payload[pos + 1];
 
-		switch( slot )
-		{
-		case RfnCentronLcdConfigurationCommand::Slot_CycleDelay:
-			d.lcdCycleTime = value;
-			l.add("Cycle time") << value;
-			break;
-		case RfnCentronLcdConfigurationCommand::Slot_DigitConfiguration:
-			d.displayDigits = value;
-			l.add("Display digits") << value;
-			break;
-		case RfnCentronLcdConfigurationCommand::Slot_DisconnectDisplay:
-			d.disconnectDisplay = value;
-			l.add("Disconnect display") << value;
-			break;
-		default:
-			d.displayItems.emplace(slot, value);
-			l.add("Slot " + std::to_string(slot)) << value;
-			break;
-		}
+        switch( slot )
+        {
+        case RfnCentronLcdConfigurationCommand::Slot_CycleDelay:
+            d.lcdCycleTime = value;
+            l.add("Cycle time") << value;
+            break;
+        case RfnCentronLcdConfigurationCommand::Slot_DigitConfiguration:
+            d.displayDigits = value;
+            l.add("Display digits") << value;
+            break;
+        case RfnCentronLcdConfigurationCommand::Slot_DisconnectDisplay:
+            d.disconnectDisplay = value;
+            l.add("Disconnect display") << value;
+            break;
+        default:
+            d.displayItems.emplace(slot, value);
+            l.add("Slot " + std::to_string(slot)) << value;
+            break;
+        }
     }
 
-	c2sxDisplay = d;
+    c2sxDisplay = d;
 
     return "C2SX display:" + l.toString();
 }
@@ -492,8 +508,8 @@ std::string RfnConfigNotificationCommand::decodeFocusAlDisplay(Bytes payload)
 
 std::string RfnConfigNotificationCommand::decodeOvUvAlarm(Bytes payload)
 {
-    validate(Condition(payload.size() >= 17, ClientErrors::DataMissing)
-        << "Focus AL Display payload too small - (" << payload.size() << " < " << 17);
+    validate(Condition(payload.size() >= 18, ClientErrors::DataMissing)
+        << "Focus AL Display payload too small - (" << payload.size() << " < " << 18);
 
     RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration a;
 
@@ -504,15 +520,16 @@ std::string RfnConfigNotificationCommand::decodeOvUvAlarm(Bytes payload)
     a.ovuvAlarmRepeatInterval    = payload[5];
     a.ovuvAlarmRepeatCount       = payload[6];
     const auto clearAlarmRepeatCount = payload[7];
-    auto setThresholdValue =
-        payload[8] |
-        payload[9]  << 8 |
-        payload[10] << 16 |
-        payload[11] << 24;
+    const auto severity          = payload[8];
+    double setThresholdValue =
+        payload[9] |
+        payload[10]  << 8 |
+        payload[11] << 16 |
+        payload[12] << 24;
     setThresholdValue /= 1000.0;
-    const auto unitOfMeasure = payload[12];
-    const auto uomModifier1  = payload[13] | payload[14] << 8;
-    const auto uomModifier2  = payload[15] | payload[16] << 8;
+    const auto unitOfMeasure = payload[13];
+    const auto uomModifier1  = payload[14] | payload[15] << 8;
+    const auto uomModifier2  = payload[16] | payload[17] << 8;
 
     if( eventId == RfnOvUvConfigurationCommand::EventID::OverVoltage )
     {
@@ -532,10 +549,13 @@ std::string RfnConfigNotificationCommand::decodeOvUvAlarm(Bytes payload)
     l.add("Alarm repeat interval")        << std::chrono::minutes(a.ovuvAlarmRepeatInterval);
     l.add("Set alarm repeat count")       << a.ovuvAlarmRepeatCount;
     l.add("Clear alarm repeat count")     << clearAlarmRepeatCount;
+    l.add("Severity")                     << severity;
     l.add("Set threshold value")          << setThresholdValue;
     l.add("Unit of measure") << unitOfMeasure;
     l.add("UOM modifier 1")  << uomModifier1;
     l.add("UOM modifier 2")  << uomModifier2;
+
+    ovuv = a;
 
     return "OV/UV configuration:" + l.toString();
 }
@@ -560,6 +580,8 @@ std::string RfnConfigNotificationCommand::decodeTemperature(Bytes payload)
     l.add("Low temp threshold") << lowTemperatureThreshold;
     l.add("Repeat interval") << std::chrono::minutes(a.alarmRepeatInterval);
     l.add("Max repeats") << a.alarmRepeatCount;
+
+    temperature = a;
 
     return "Temperature alarm configuration:" + l.toString();
 }

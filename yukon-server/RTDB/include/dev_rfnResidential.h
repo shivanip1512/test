@@ -46,7 +46,8 @@ protected:
     void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand      & cmd ) override;
     void handleCommandResult( const Commands::RfnTouStateConfigurationCommand            & cmd ) override;
     void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand          & cmd ) override;
-    void handleCommandResult( const Commands::RfnRemoteDisconnectConfigurationCommand    & cmd ) override;
+    void handleCommandResult( const Commands::RfnRemoteDisconnectGetConfigurationCommand & cmd ) override;
+    void handleCommandResult( const Commands::RfnRemoteDisconnectSetConfigurationCommand & cmd ) override;
 
 protected:
 
@@ -66,6 +67,7 @@ private:
 
     void storeTouHolidays(const Commands::RfnTouHolidayConfigurationCommand::Holidays holidays);
     void storeDemandFreezeDay(const uint8_t demandFreezeDay);
+    void storeDisconnect(const Commands::RfnRemoteDisconnectConfigurationCommand::Read & cmd);
 };
 
 typedef RfnResidentialDevice Rfn410fxDevice;

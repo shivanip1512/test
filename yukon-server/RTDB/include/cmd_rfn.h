@@ -38,7 +38,8 @@ class RfnSetOvUvAlarmRepeatIntervalCommand;
 class RfnSetOvUvNewAlarmReportIntervalCommand;
 class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
-class RfnRemoteDisconnectConfigurationCommand;
+class RfnRemoteDisconnectGetConfigurationCommand;
+class RfnRemoteDisconnectSetConfigurationCommand;
 class RfnChannelSelectionCommand;
 namespace RfnChannelIntervalRecording {
 class GetConfigurationCommand;
@@ -95,7 +96,8 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnSetOvUvNewAlarmReportIntervalCommand &)             {}
         virtual void handleCommandResult(const RfnSetOvUvSetOverVoltageThresholdCommand &)            {}
         virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
-        virtual void handleCommandResult(const RfnRemoteDisconnectConfigurationCommand &)             {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)          {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectSetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
@@ -142,7 +144,7 @@ public:
     virtual RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode) = 0;
 
-    static RfnCommandPtr handleUnsolicitedResponse(const CtiTime now, RfnResponsePayload payload);
+    static RfnCommandPtr handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 

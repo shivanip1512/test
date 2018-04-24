@@ -230,5 +230,8 @@
     <ClCompile Include="test_cmd_rfn_Individual.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_cmd_rfn_ConfigNotification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

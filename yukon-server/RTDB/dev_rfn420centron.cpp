@@ -100,12 +100,12 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
 
 void Rfn420CentronDevice::handleCommandResult(const Commands::RfnConfigNotificationCommand &cmd)
 {
-	Rfn410CentronDevice::handleCommandResult(cmd);
+    Rfn410CentronDevice::handleCommandResult(cmd);
 
-	if( cmd.c2sxDisplay )
-	{
-		storeLcdConfig(*cmd.c2sxDisplay);
-	}
+    if( cmd.c2sxDisplay )
+    {
+        storeLcdConfig(*cmd.c2sxDisplay);
+    }
 }
 
 

@@ -27,8 +27,8 @@ class IM_EX_DEVDB Rfn420CentronDevice :
 protected:
     YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
 
-	void handleCommandResult(const Commands::RfnConfigNotificationCommand         &cmd) override;
-	void handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd) override;
+    void handleCommandResult(const Commands::RfnConfigNotificationCommand         &cmd) override;
+    void handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd) override;
     void handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd) override;
 };
 
