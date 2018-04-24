@@ -50,6 +50,35 @@ template<typename... Lambdas> auto make_lambda_overloads(Lambdas... lambdas)
     return lambda_overloads <Lambdas...> { lambdas... };
 }
 
+class ScopeExit 
+{
+    std::function<void()> l;
+
+public:
+
+    ScopeExit() = default;
+
+    template<typename T>
+    ScopeExit( T t ) 
+        : l { t } 
+    {
+    }
+
+    template<typename T>
+    void reset( T t )
+    {
+        l = t;
+    }
+
+    ~ScopeExit() 
+    { 
+        if( l ) 
+        {
+            l(); 
+        }
+    }
+};
+
 template <class Map>
 boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename Map::key_type &key )
 {

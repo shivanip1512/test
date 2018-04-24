@@ -69,6 +69,8 @@ CtiPointSPtr DnpRtuDevice::getDevicePointByID(int pointid)
 
 YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
+    ScopeExit resetExecuteId;
+
     //  Does the message specify a child device ID?
     if( pReq->OptionsField() )
     {
@@ -87,6 +89,10 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
         }
 
         _executeId = childDeviceId;
+
+        resetExecuteId.reset( [this] { 
+            _executeId = 0; 
+        } );
     }
 
     if( parse.getCommand() == ScanRequest &&
@@ -114,8 +120,6 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
 
     auto nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
     
-    _executeId = 0;
-
     return nRet;
 }
 
