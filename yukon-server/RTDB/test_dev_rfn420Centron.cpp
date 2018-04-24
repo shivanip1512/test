@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     BOOST_CHECK_EQUAL(dpiString(PI::Key_DisplayItem04), "");
 
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TouEnabled), 1);
-    
+
     BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_MondaySchedule),    "SCHEDULE_2");
     BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_TuesdaySchedule),   "SCHEDULE_3");
     BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_WednesdaySchedule), "SCHEDULE_4");
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmRepeatInterval), 7);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmRepeatCount), 11);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmHighTempThreshold), 5889);
-    
+
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_RecordingIntervalSeconds), 7200);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_ReportingIntervalSeconds), 86400);
     const auto midnightExpected = { 5, 6, 7, 8 };

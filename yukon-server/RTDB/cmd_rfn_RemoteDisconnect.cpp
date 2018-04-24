@@ -192,7 +192,7 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
             validate( Condition( tlv.value.size() == 5, ClientErrors::InvalidData )
                     << "Response TLV too small (" << tlv.value.size() << " != 5)" );
 
-            const boost::optional<Reconnect> reconnectParam = _reconnectParam;
+            const boost::optional<Reconnect> reconnectParam = getReconnectParam();
 
             validate( Condition( !! reconnectParam, ClientErrors::DataMissing ) // must be 1 for cycling!
                     << "Response reconnect param missing, expecting 1)" );

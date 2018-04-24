@@ -48,6 +48,8 @@ public:
         virtual boost::optional<unsigned>  getConnectMinutes()    const = 0;
     };
 
+    virtual boost::optional<Reconnect>      getReconnectParam() const = 0;
+
 protected:
 
     enum CommandCode

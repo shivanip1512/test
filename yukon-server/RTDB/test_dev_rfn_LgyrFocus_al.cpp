@@ -359,6 +359,7 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries.begin()->second.size(), 68);
 
+    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_LcdCycleTime), 6);
     BOOST_CHECK_EQUAL(dpiString(PI::Key_DisplayItem01), "DELIVERED_KWH_6X1");
     BOOST_CHECK_EQUAL(dpiString(PI::Key_DisplayItem02), "DELIVERED_KWH_4X1");
     BOOST_CHECK_EQUAL(dpiString(PI::Key_DisplayItem03), "SLOT_DISABLED");
@@ -414,19 +415,21 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_VoltageAveragingInterval), 105);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_LoadProfileInterval), 11);
+
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_DemandFreezeDay), 32);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_OvUvEnabled), 1);
     BOOST_CHECK_EQUAL(dpiDouble(PI::Key_RFN_UvThreshold), 235802.126);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_OvUvAlarmReportingInterval), 14);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_OvUvAlarmRepeatInterval), 3);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_OvUvRepeatCount), 2);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_LcdCycleTime), 6);
+    
     BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_DisconnectMode), "DEMAND_THRESHOLD");
     BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_ReconnectParam), "IMMEDIATE");
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_DisconnectDemandInterval), 24);
     BOOST_CHECK_EQUAL(dpiDouble(PI::Key_RFN_DemandThreshold), 3.1);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_ConnectDelay), 17);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_MaxDisconnects), 7);
+
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmIsEnabled), 1);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmRepeatInterval), 7);
     BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmRepeatCount), 11);
