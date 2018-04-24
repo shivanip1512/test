@@ -3623,7 +3623,7 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
                 // Not really a big deal here, the CBC will eventually fall out of SCADA override mode when
                 //  the internal timer expires, rahter than exiting the mode immediately.
 
-                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << bankID
                                         << ". Possible BusStore reset in progress." );
             }
         }
