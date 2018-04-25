@@ -122,7 +122,12 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 cache.getIfPresent(result.getCacheKey()).add(detail);
                 List<String> fields = new ArrayList<>();
 
-                fields.add(StringUtils.defaultIfEmpty(dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()).getPaoName(), ""));
+                if (detail.getDevice() != null
+                    && dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()) != null) {
+                    fields.add(dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()).getPaoName());
+                } else {
+                    fields.add("");
+                }
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
                 fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
                 fields.add(StringUtils.defaultIfEmpty(detail.getDeviceErrorText(), ""));
