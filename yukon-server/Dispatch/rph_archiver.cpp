@@ -242,6 +242,7 @@ auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& ro
         l.add("Previous epoch")     << CtiTime(ArchiveEpoch * 60);
         l.add("New epoch")          << CtiTime(newArchiveEpoch * 60);
         l.add("Incoming timestamp") << row.time;
+        l.add("Incoming pointid") << row.pointId;
 
         CTILOG_WARN(dout, "Epoch exceeded, resetting archive cache" << l);
 
@@ -292,6 +293,7 @@ auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& ro
 
         Cti::FormattedList l;
         l.add("Incoming timestamp") << row.time;
+        l.add("Incoming pointid") << row.pointId;
         l.add("Old interval") << record->interval_minutes << " minutes";
         l.add("New interval") << new_interval_minutes << " minutes";
         l.add("Latest timestamp") << CtiTime((record->latest_timestamp + ArchiveEpoch) * 60);
@@ -329,6 +331,7 @@ auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& ro
     {
         Cti::FormattedList l;
         l.add("Incoming timestamp") << row.time;
+        l.add("Incoming pointid") << row.pointId;
         l.add("Interval") << record->interval_minutes << " minutes";
         l.add("Latest timestamp") << CtiTime((record->latest_timestamp + ArchiveEpoch) * 60);
         l.add("Cache") << std::hex << std::setw((IntervalBits + 3) / 4) << record->intervals;
