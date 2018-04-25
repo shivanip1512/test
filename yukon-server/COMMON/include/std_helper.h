@@ -19,24 +19,26 @@ namespace Cti {
 template<class ... Lambdas> struct lambda_overloads : Lambdas... { using Lambdas::operator()...; };
 */
 
-template<typename... Lambdas>
+template<typename Result, typename... Lambdas>
 struct lambda_overloads;
 
-template<typename Lambda, typename... Others>
-struct lambda_overloads<Lambda, Others...> : Lambda, lambda_overloads<Others...>
+template<typename Result, typename Lambda, typename... Others>
+struct lambda_overloads<Result, Lambda, Others...> : Lambda, lambda_overloads<Result, Others...>
 {
     using Lambda::operator();
-    using lambda_overloads<Others...>::operator();
+    using lambda_overloads<Result, Others...>::operator();
 
     lambda_overloads(Lambda ld, Others... others)
         :   Lambda(ld),
-            lambda_overloads<Others...>(others...) 
+            lambda_overloads<Result, Others...>(others...) 
     {}
 };
 
-template<typename Lambda>
-struct lambda_overloads<Lambda> : public Lambda
+template<typename Result, typename Lambda>
+struct lambda_overloads<Result, Lambda> : public Lambda
 {
+    using result_type = Result;  //  for compatibility with boost's apply_visitor - could remove when replaced with std::variant/std::visit
+
     using Lambda::operator ();
 
     lambda_overloads(Lambda ld)
@@ -45,9 +47,9 @@ struct lambda_overloads<Lambda> : public Lambda
 };
 
 //  Type deduction helper, can be replaced with a C++17 type deduction guide when available - see https://dev.to/tmr232/that-overloaded-trick-overloading-lambdas-in-c17
-template<typename... Lambdas> auto make_lambda_overloads(Lambdas... lambdas)
+template<typename Result, typename... Lambdas> auto make_lambda_overloads(Lambdas... lambdas)
 {
-    return lambda_overloads <Lambdas...> { lambdas... };
+    return lambda_overloads <Result, Lambdas...> { lambdas... };
 }
 
 class ScopeExit 

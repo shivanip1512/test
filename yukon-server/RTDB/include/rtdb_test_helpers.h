@@ -13,6 +13,7 @@
 #include "boost_test_helpers.h"
 #include <boost/range/algorithm/count.hpp>
 #include <boost/test/unit_test.hpp>
+#include <boost/variant.hpp>
 
 #include <numeric>
 
@@ -451,6 +452,32 @@ auto extractExpectMore(const CtiDeviceSingle::ReturnMsgList & returnMsgs)
 {
     return boost::copy_range<std::vector<bool>>(returnMsgs | boost::adaptors::transformed([](const std::unique_ptr<CtiReturnMsg> &msg) { return msg->ExpectMore(); }));
 }
+
+struct PaoInfoValidator
+{
+    CtiTableDynamicPaoInfo::PaoInfoKeys key;
+    boost::variant<int, std::string, double> value;
+
+    template<typename T>
+    bool check(CtiDeviceBase & dut, CtiTableDynamicPaoInfo::PaoInfoKeys key, T value)
+    {
+        T paoInfo;
+        const auto hadPaoInfo = dut.getDynamicInfo( key, paoInfo );
+        BOOST_CHECK( hadPaoInfo );
+        BOOST_CHECK_EQUAL( paoInfo, value ); 
+        return hadPaoInfo && paoInfo == value;
+    }
+
+    bool validate(CtiDeviceBase &dut)
+    {
+        auto visitor = Cti::make_lambda_overloads<bool>(
+            [&](const int value)         { return check<long>       (dut, key, value); },
+            [&](const std::string value) { return check<std::string>(dut, key, value); },
+            [&](const double value)      { return check<double>     (dut, key, value); });
+
+        return value.apply_visitor(visitor);
+    }
+};
 
 }
 }

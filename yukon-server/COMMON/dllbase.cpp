@@ -452,30 +452,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             }
         }
     }
-    /*
-    if( !(str = gConfigParms.getValueAsString("DB_ERROR_IGNORE")).empty() )
-    {
-        //  Examples:
-        //  DB_ERROR_IGNORE : 15,78      - the listed errors are ignored if they occur.  (15, 78)
-
-        boost::char_separator<char> sep(", ");
-        Boost_char_tokenizer tok(str, sep);
-        Boost_char_tokenizer::iterator tok_iter = tok.begin();
-
-        resetDBIgnore();
-
-        string err_str;
-        long   err;
-
-        while( (tok_iter != tok.end()) && !(err_str = *tok_iter++).empty() )
-        {
-            if( err = atol(err_str.c_str()) )
-            {
-                addDBIgnore(err);
-            }
-        }
-    }*/
-
 }
 
 
@@ -491,19 +467,21 @@ void InitLog4CXX(void)
     path propertiesPath(getYukonBase());
     propertiesPath.append("Server").append("Config").append("serverLogging.props");
 
-    PropertyConfigurator::configure(propertiesPath.string());
-
-    LoggerPtr root = Logger::getRootLogger();
-
-    AppenderPtr appender = root->getAppender(L"serverFileAppender");
-    if (appender != 0)
+    if( exists(propertiesPath) )
     {
-        log4cxx::helpers::ObjectPtrT<ServerFileAppender> sfa = appender;
-        size_t maxFileSize = sfa->getMaxFileSize();
-        if (maxFileSize > 0)
+        PropertyConfigurator::configure(propertiesPath.string());
+
+        LoggerPtr root = Logger::getRootLogger();
+
+        if( AppenderPtr appender = root->getAppender(L"serverFileAppender") )
         {
-            doutManager.setMaxFileSize(maxFileSize);
-            slogManager.setMaxFileSize(maxFileSize);
+            log4cxx::helpers::ObjectPtrT<ServerFileAppender> sfa = appender;
+            size_t maxFileSize = sfa->getMaxFileSize();
+            if (maxFileSize > 0)
+            {
+                doutManager.setMaxFileSize(maxFileSize);
+                slogManager.setMaxFileSize(maxFileSize);
+            }
         }
     }
 }

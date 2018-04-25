@@ -612,7 +612,7 @@ size_t RfnRequestManager::countByGroupMessageId(long groupMessageId)
     using boost::adaptors::map_values;
     using boost::adaptors::transformed;
 
-    auto get_group_message_id = make_lambda_overloads(
+    auto get_group_message_id = make_lambda_overloads<long>(
         [](const RfnDeviceRequest &r) { return r.parameters.groupMessageId; },
         [](const ActiveRfnRequest &a) { return a.request.parameters.groupMessageId; });
 

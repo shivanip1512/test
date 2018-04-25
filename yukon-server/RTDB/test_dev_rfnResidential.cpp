@@ -6,6 +6,8 @@
 #include "config_data_rfn.h"
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
+#include <boost/variant.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 
 using namespace Cti::Devices;
 using namespace Cti::Config;
@@ -2523,78 +2525,78 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     using PI = CtiTableDynamicPaoInfo;
     using PIIdx = CtiTableDynamicPaoInfoIndexed;
 
-    auto dpiString = [&dut](PI::PaoInfoKeys k) { 
-            std::string s; 
-            dut.getDynamicInfo(k, s); 
-            return s; };
+    Cti::Test::PaoInfoValidator dpiExpected[] 
+    {
+        { PI::Key_RFN_TouEnabled, 1 },
 
-    auto dpiLong = [&dut](PI::PaoInfoKeys k) { 
-            return dut.getDynamicInfo(k); };
-
-    auto dpiDouble = [&dut](PI::PaoInfoKeys k) { 
-        double d; 
-        dut.getDynamicInfo(k, d); 
-        return d; };
-
-    BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries.begin()->second.size(), 50);
-
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TouEnabled), 1);
+        { PI::Key_RFN_MondaySchedule,    "SCHEDULE_2" },
+        { PI::Key_RFN_TuesdaySchedule,   "SCHEDULE_3" },
+        { PI::Key_RFN_WednesdaySchedule, "SCHEDULE_4" },
+        { PI::Key_RFN_ThursdaySchedule,  "SCHEDULE_4" },
+        { PI::Key_RFN_FridaySchedule,    "SCHEDULE_3" },
+        { PI::Key_RFN_SaturdaySchedule,  "SCHEDULE_2" },
+        { PI::Key_RFN_SundaySchedule,    "SCHEDULE_1" },
+        { PI::Key_RFN_HolidaySchedule,   "SCHEDULE_1" },
+        
+        { PI::Key_RFN_DefaultTOURate, "B" },
+        
+        { PI::Key_RFN_Schedule1Rate0, "B" },
+        { PI::Key_RFN_Schedule1Rate1, "A" },
+        { PI::Key_RFN_Schedule1Rate2, "D" },
+        { PI::Key_RFN_Schedule1Rate3, "C" },
+        { PI::Key_RFN_Schedule1Rate4, "B" },
+        { PI::Key_RFN_Schedule1Rate5, "A" },
+        { PI::Key_RFN_Schedule2Rate0, "D" },
+        { PI::Key_RFN_Schedule2Rate1, "C" },
+        { PI::Key_RFN_Schedule2Rate2, "B" },
+        { PI::Key_RFN_Schedule2Rate3, "A" },
+        { PI::Key_RFN_Schedule2Rate4, "D" },
+        { PI::Key_RFN_Schedule2Rate5, "C" },
+        { PI::Key_RFN_Schedule3Rate0, "C" },
+        { PI::Key_RFN_Schedule3Rate1, "B" },
+        { PI::Key_RFN_Schedule3Rate2, "A" },
+        { PI::Key_RFN_Schedule3Rate3, "D" },
+        { PI::Key_RFN_Schedule3Rate4, "C" },
+        { PI::Key_RFN_Schedule3Rate5, "B" },
+        { PI::Key_RFN_Schedule4Rate0, "A" },
+        { PI::Key_RFN_Schedule4Rate1, "D" },
+        { PI::Key_RFN_Schedule4Rate2, "C" },
+        { PI::Key_RFN_Schedule4Rate3, "B" },
+        { PI::Key_RFN_Schedule4Rate4, "A" },
+        { PI::Key_RFN_Schedule4Rate5, "D" },
+         
+        { PI::Key_RFN_Holiday1, "03/14/2018" },
+        { PI::Key_RFN_Holiday2, "06/27/2018" },
+        { PI::Key_RFN_Holiday3, "02/07/2018" },
+         
+        { PI::Key_RFN_DemandFreezeDay, 32 },
+         
+        { PI::Key_RFN_DisconnectMode, "DEMAND_THRESHOLD" },
+        { PI::Key_RFN_ReconnectParam, "IMMEDIATE" },
+        { PI::Key_RFN_DisconnectDemandInterval, 24 },
+        { PI::Key_RFN_DemandThreshold,           3.1 },
+        { PI::Key_RFN_ConnectDelay,             17 },
+        { PI::Key_RFN_MaxDisconnects,            7 },
+        
+        { PI::Key_RFN_TempAlarmIsEnabled,            1 },
+        { PI::Key_RFN_TempAlarmRepeatInterval,       7 },
+        { PI::Key_RFN_TempAlarmRepeatCount,         11 },
+        { PI::Key_RFN_TempAlarmHighTempThreshold, 5889 },
     
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_MondaySchedule),    "SCHEDULE_2");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_TuesdaySchedule),   "SCHEDULE_3");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_WednesdaySchedule), "SCHEDULE_4");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_ThursdaySchedule),  "SCHEDULE_4");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_FridaySchedule),    "SCHEDULE_3");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_SaturdaySchedule),  "SCHEDULE_2");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_SundaySchedule),    "SCHEDULE_1");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_HolidaySchedule),   "SCHEDULE_1");
+        { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
+        { PI::Key_RFN_ReportingIntervalSeconds, 86400 } 
+    };
 
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_DefaultTOURate), "B");
+    BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));
 
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule1Rate0), "B");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule1Rate1), "A");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule1Rate2), "D");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule1Rate3), "C");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule1Rate4), "B");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule1Rate5), "A");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule2Rate0), "D");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule2Rate1), "C");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule2Rate2), "B");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule2Rate3), "A");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule2Rate4), "D");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule2Rate5), "C");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule3Rate0), "C");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule3Rate1), "B");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule3Rate2), "A");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule3Rate3), "D");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule3Rate4), "C");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule3Rate5), "B");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule4Rate0), "A");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule4Rate1), "D");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule4Rate2), "C");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule4Rate3), "B");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule4Rate4), "A");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Schedule4Rate5), "D");
+    for( auto expected : dpiExpected )
+    {
+        BOOST_TEST_CONTEXT("Key " << expected.key)
+        {
+            BOOST_CHECK( expected.validate(dut) );
+        }
+    }
 
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Holiday1), "03/14/2018");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Holiday2), "06/27/2018");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_Holiday3), "02/07/2018");
-
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_DemandFreezeDay), 32);
-
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_DisconnectMode), "DEMAND_THRESHOLD");
-    BOOST_CHECK_EQUAL(dpiString(PI::Key_RFN_ReconnectParam), "IMMEDIATE");
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_DisconnectDemandInterval), 24);
-    BOOST_CHECK_EQUAL(dpiDouble(PI::Key_RFN_DemandThreshold), 3.1);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_ConnectDelay), 17);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_MaxDisconnects), 7);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmIsEnabled), 1);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmRepeatInterval), 7);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmRepeatCount), 11);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_TempAlarmHighTempThreshold), 5889);
-    
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_RecordingIntervalSeconds), 7200);
-    BOOST_CHECK_EQUAL(dpiLong(PI::Key_RFN_ReportingIntervalSeconds), 86400);
     const auto midnightExpected = { 5, 6, 7, 8 };
     const auto midnightActual = dut.findDynamicInfo<unsigned long>(PIIdx::Key_RFN_MidnightMetrics);
     BOOST_REQUIRE(midnightActual);

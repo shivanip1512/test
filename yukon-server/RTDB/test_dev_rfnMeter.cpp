@@ -1347,15 +1347,27 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     using PI = CtiTableDynamicPaoInfo;
     using PIIdx = CtiTableDynamicPaoInfoIndexed;
 
-    BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries.begin()->second.size(), 6);
+    Cti::Test::PaoInfoValidator dpiExpected[]
+    {
+        { PI::Key_RFN_TempAlarmIsEnabled,            1 },
+        { PI::Key_RFN_TempAlarmRepeatInterval,       7 },
+        { PI::Key_RFN_TempAlarmRepeatCount,         11 },
+        { PI::Key_RFN_TempAlarmHighTempThreshold, 5889 },
+        
+        { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
+        { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+    };
 
-    BOOST_CHECK_EQUAL(dut.getDynamicInfo(PI::Key_RFN_TempAlarmIsEnabled), 1);
-    BOOST_CHECK_EQUAL(dut.getDynamicInfo(PI::Key_RFN_TempAlarmRepeatInterval), 7);
-    BOOST_CHECK_EQUAL(dut.getDynamicInfo(PI::Key_RFN_TempAlarmRepeatCount), 11);
-    BOOST_CHECK_EQUAL(dut.getDynamicInfo(PI::Key_RFN_TempAlarmHighTempThreshold), 5889);
+    BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries.begin()->second.size(), std::size(dpiExpected));
 
-    BOOST_CHECK_EQUAL(dut.getDynamicInfo(PI::Key_RFN_RecordingIntervalSeconds), 7200);
-    BOOST_CHECK_EQUAL(dut.getDynamicInfo(PI::Key_RFN_ReportingIntervalSeconds), 86400);
+    for( auto expected : dpiExpected )
+    {
+        BOOST_TEST_CONTEXT("Key " << expected.key)
+        {
+            BOOST_CHECK( expected.validate(dut) );
+        }
+    }
+
     const auto midnightExpected = { 5, 6, 7, 8 };
     const auto midnightActual = dut.findDynamicInfo<unsigned long>(PIIdx::Key_RFN_MidnightMetrics);
     BOOST_REQUIRE(midnightActual);
