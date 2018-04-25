@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -62,7 +63,7 @@ public class PowerQualityResponseActionsController {
     @Autowired private PqrEventDao pqrEventDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    @RequestMapping("/operator/inventory/pqrReport/setup")
+    @RequestMapping(value="/operator/inventory/pqrReport/setup", method=RequestMethod.GET)
     public String pqrReportSetup(HttpServletRequest req, ModelMap model) {
         inventoryCollectionFactory.addCollectionToModelMap(req, model);
         
@@ -73,7 +74,7 @@ public class PowerQualityResponseActionsController {
         return "operator/inventory/pqrReport/setup.jsp";
     }
     
-    @RequestMapping(value="/operator/inventory/pqrReport/export")
+    @RequestMapping(value="/operator/inventory/pqrReport/export", method=RequestMethod.POST)
     public void pqrReportExport(HttpServletResponse resp, YukonUserContext userContext, InventoryCollection collection, 
                                 String reportStart, String reportEnd) throws IOException {
         
@@ -102,7 +103,7 @@ public class PowerQualityResponseActionsController {
         log.info("PQR event report complete: " + exportFileName);
     }
     
-    @RequestMapping("/operator/inventory/pqrConfig/setup")
+    @RequestMapping(value="/operator/inventory/pqrConfig/setup", method=RequestMethod.GET)
     public String pqrConfigSetup(HttpServletRequest req, ModelMap model) {
         
         inventoryCollectionFactory.addCollectionToModelMap(req, model);
@@ -111,7 +112,7 @@ public class PowerQualityResponseActionsController {
         return "operator/inventory/pqrConfig/pqrConfigSetup.jsp";
     }
     
-    @RequestMapping("/operator/inventory/pqrConfig/submit")
+    @RequestMapping(value="/operator/inventory/pqrConfig/submit", method=RequestMethod.POST)
     public String pqrConfigSubmit(ModelMap model, InventoryCollection inventoryCollection, 
                                   @ModelAttribute("config") PqrConfig config, BindingResult result, LiteYukonUser user, 
                                   HttpServletRequest req, FlashScope flash) {
@@ -136,7 +137,7 @@ public class PowerQualityResponseActionsController {
         return "redirect:result/" + resultId;
     }
     
-    @RequestMapping("/operator/inventory/pqrConfig/result/{resultId}")
+    @RequestMapping(value="/operator/inventory/pqrConfig/result/{resultId}", method=RequestMethod.GET)
     public String pqrConfigResult(ModelMap model, @PathVariable("resultId") String resultId) {
         
         PqrConfigResult result = pqrConfigService.getResult(resultId)
@@ -148,7 +149,7 @@ public class PowerQualityResponseActionsController {
     }
     
     @ResponseBody
-    @RequestMapping("/operator/inventory/pqrConfig/resultProgress/{resultId}")
+    @RequestMapping(value="/operator/inventory/pqrConfig/resultProgress/{resultId}", method=RequestMethod.POST)
     public String pqrResultProgress(@PathVariable("resultId") String resultId) throws JsonProcessingException {
         PqrConfigResult result = pqrConfigService.getResult(resultId)
                                                  .orElseThrow(() -> new IllegalArgumentException("Invalid result id: " 

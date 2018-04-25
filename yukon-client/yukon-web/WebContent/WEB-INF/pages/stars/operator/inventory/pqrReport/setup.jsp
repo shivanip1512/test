@@ -11,7 +11,7 @@
     
     <cti:url var="url" value="/stars/operator/inventory/pqrReport/export"/>
     
-    <form action="${url}">
+    <form action="${url}" method="post">
         <cti:csrfToken/>
         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
         
