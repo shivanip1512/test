@@ -26,23 +26,32 @@
     </script>
 </cti:checkRolesAndProperties>
 
-<cti:displayForPageEditModes modes="VIEW,EDIT">
-    <div class="js-page-additional-actions dn">
+<div class="js-page-additional-actions dn">
+    <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
         </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
         <c:if test="${!orphan}">
             <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
                 <cm:dropdownOption linkId="feederState_${feeder.id}" key=".substation.feeder.actions" icon="icon-cog" href="javascript:void(0);" />
             </cti:checkRolesAndProperties>
         </c:if>
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-            <cti:url var="editUrl" value="/capcontrol/feeders/${feeder.id}/edit" />
-            <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
             <cm:dropdownOption key=".edit.capbanks" icon="icon-add-remove" data-popup=".js-edit-capbanks-popup" />
         </cti:checkRolesAndProperties>
-    </div>
-</cti:displayForPageEditModes>
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cti:url var="editUrl" value="/capcontrol/feeders/${feeder.id}/edit" />
+            <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+        </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+</div>
+
 <cti:url var="action" value="/capcontrol/feeders"/>
 <cti:displayForPageEditModes modes="CREATE">
     <c:if test="${not empty parent}">

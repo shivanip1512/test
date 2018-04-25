@@ -14,7 +14,7 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
     <tags:setFormEditMode mode="${mode}" />
-    <cti:displayForPageEditModes modes="VIEW,EDIT">
+    <cti:displayForPageEditModes modes="VIEW">
         <div class="js-page-additional-actions dn">
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                 <li class="divider" />

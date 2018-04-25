@@ -42,11 +42,15 @@ $(function() {
     yukon.da.common.initSubstation();
 });
 </script>
-<cti:displayForPageEditModes modes="VIEW,EDIT">
-    <div class="js-page-additional-actions dn">
+
+<div class="js-page-additional-actions dn">
+    <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
         </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
         <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
             <cti:param name="value" value="${substationId}" />
         </cti:url>
@@ -69,14 +73,20 @@ $(function() {
                 <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
             </cti:checkRolesAndProperties>
         </c:if>
-        
+
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cm:dropdownOption key=".edit.buses" icon="icon-add-remove" data-popup=".js-edit-buses-popup" />
+        </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <cti:url var="editUrl" value="/capcontrol/substations/${substationId}/edit" />
             <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
-            <cm:dropdownOption key=".edit.buses" icon="icon-add-remove" data-popup=".js-edit-buses-popup" />
         </cti:checkRolesAndProperties>
-    </div>
-</cti:displayForPageEditModes>
+    </cti:displayForPageEditModes>
+</div>
+
 <div class="dn" data-pao-id="${substationId}"></div>
 
 <div class="column-14-10">

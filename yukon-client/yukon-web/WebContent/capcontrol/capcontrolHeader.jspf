@@ -2,6 +2,7 @@
 <%@page import="java.util.*" %>
 <%@page import="com.cannontech.message.capcontrol.streamable.*" %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cc" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -51,9 +52,16 @@
      <dt:date name="date"/>
 </div>
 
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
-    </cti:checkRolesAndProperties>
+    <c:set var="showCreateMenuItem" value="false"/>
+    <c:if test="${empty mode || mode == 'VIEW'}">
+        <c:set var="showCreateMenuItem" value="true"/>
+    </c:if>
+
+    <c:if test="${showCreateMenuItem}">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
+        </cti:checkRolesAndProperties>
+    </c:if>
 
     <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">

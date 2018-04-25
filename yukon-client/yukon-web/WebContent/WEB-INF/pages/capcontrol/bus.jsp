@@ -25,24 +25,33 @@
         addCommandMenuBehavior('a[id^="busState_"]');
     </script>
 </cti:checkRolesAndProperties>
-<cti:displayForPageEditModes modes="VIEW,EDIT">
-    <div class="js-page-additional-actions dn">
+
+<div class="js-page-additional-actions dn">
+    <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
         </cti:checkRolesAndProperties>
-        
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
         <c:if test="${!orphan}">
             <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
                 <cm:dropdownOption linkId="busState_${bus.id}" key=".substation.bus.actions" icon="icon-cog" href="javascript:void(0);" />
             </cti:checkRolesAndProperties>
         </c:if>
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cm:dropdownOption key=".edit.feeders" icon="icon-add-remove" data-popup=".js-edit-feeders-popup" />
+        </cti:checkRolesAndProperties>  
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <cti:url var="editUrl" value="/capcontrol/buses/${bus.id}/edit" />
             <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
-            <cm:dropdownOption key=".edit.feeders" icon="icon-add-remove" data-popup=".js-edit-feeders-popup" />
-        </cti:checkRolesAndProperties>   
-    </div>
-</cti:displayForPageEditModes>
+        </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+</div>
+
 <cti:url var="action" value="/capcontrol/buses"/>
 <cti:displayForPageEditModes modes="CREATE">
     <c:if test="${not empty parent}">

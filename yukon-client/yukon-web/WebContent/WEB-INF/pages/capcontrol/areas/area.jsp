@@ -31,11 +31,15 @@
         addCommandMenuBehavior('a[id^="substationState"]');
     </script>
 </cti:checkRolesAndProperties>
-<cti:displayForPageEditModes modes="VIEW,EDIT">
-    <div class="js-page-additional-actions dn">
+
+<div class="js-page-additional-actions dn">
+    <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
         </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
         <c:if test="${showAnalysis}">
             <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
                 <%@ include file="../tier/analysisTrendsOptions.jspf" %>
@@ -52,12 +56,18 @@
             <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cm:dropdownOption key=".edit.stations" icon="icon-add-remove" data-popup=".js-edit-stations-popup" />
+        </cti:checkRolesAndProperties>
+    </cti:displayForPageEditModes>
+
+    <cti:displayForPageEditModes modes="VIEW">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit" />
             <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
-            <cm:dropdownOption key=".edit.stations" icon="icon-add-remove" data-popup=".js-edit-stations-popup" />        
         </cti:checkRolesAndProperties>
-    </div>
-</cti:displayForPageEditModes>
+    </cti:displayForPageEditModes>
+</div>
+
 <%-- EDIT SUBSTATIONS POPUP --%>
 <div class="dn js-edit-stations-popup"
     data-dialog
