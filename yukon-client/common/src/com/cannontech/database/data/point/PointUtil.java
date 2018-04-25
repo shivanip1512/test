@@ -2,7 +2,7 @@ package com.cannontech.database.data.point;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonPao;

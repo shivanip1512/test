@@ -12,7 +12,7 @@ import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;

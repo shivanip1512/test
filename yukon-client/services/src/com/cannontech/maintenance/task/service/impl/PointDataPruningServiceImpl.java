@@ -1,7 +1,7 @@
 package com.cannontech.maintenance.task.service.impl;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Period;

@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.sms.common.MessageEncoder;
 import com.sms.common.UnknownAppCodeException;
 import com.sms.messages.rx.AndorianMessage;
@@ -17,7 +18,7 @@ import com.sms.messages.rx.DataMessage;
 
 public abstract class SensusMessageHandlerBase implements SensusMessageHandler, SensusMessageObjectHandler {
 
-	private Logger log = Logger.getLogger(SensusMessageHandlerBase.class);
+	private Logger log = YukonLogManager.getLogger(SensusMessageHandlerBase.class);
 
 	private MessageEncoder messageEncoder;
 

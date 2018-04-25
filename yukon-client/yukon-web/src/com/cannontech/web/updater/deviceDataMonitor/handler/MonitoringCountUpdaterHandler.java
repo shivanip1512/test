@@ -2,7 +2,7 @@ package com.cannontech.web.updater.deviceDataMonitor.handler;
 
 import java.util.Collections;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;

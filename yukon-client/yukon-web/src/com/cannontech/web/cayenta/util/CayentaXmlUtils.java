@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;

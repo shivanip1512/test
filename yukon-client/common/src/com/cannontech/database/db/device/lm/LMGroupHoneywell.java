@@ -2,7 +2,7 @@ package com.cannontech.database.db.device.lm;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;

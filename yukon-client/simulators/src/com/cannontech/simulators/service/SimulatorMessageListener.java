@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.jms.ObjectMessage;
 
 import org.apache.activemq.DestinationDoesNotExistException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;

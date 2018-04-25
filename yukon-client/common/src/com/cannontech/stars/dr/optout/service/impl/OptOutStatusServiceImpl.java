@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -41,7 +42,7 @@ import com.google.common.collect.Maps;
  * Implementation class for OptOutStatusService
  */
 public class OptOutStatusServiceImpl implements OptOutStatusService {
-    private static final Logger log = Logger.getLogger(OptOutStatusServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(OptOutStatusServiceImpl.class);
 
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;

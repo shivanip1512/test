@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.Alert;

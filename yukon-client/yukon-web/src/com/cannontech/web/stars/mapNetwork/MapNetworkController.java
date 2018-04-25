@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;

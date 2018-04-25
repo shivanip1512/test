@@ -3,7 +3,7 @@ package com.cannontech.dr.rfn.model;
 import java.text.ParseException;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;

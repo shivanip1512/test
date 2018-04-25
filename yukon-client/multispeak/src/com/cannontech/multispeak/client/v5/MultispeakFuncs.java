@@ -18,7 +18,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.WebServiceMessage;

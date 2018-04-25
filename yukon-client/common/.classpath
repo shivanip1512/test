@@ -92,11 +92,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-1.2.17.jar" sourcepath="/third-party/linked-sources/log4j-1.2.17.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/activation.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -383,7 +378,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/slf4j-log4j12-1.7.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.9.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -430,7 +425,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/slf4j-api-1.7.13.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/slf4j-api-1.7.25.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -496,6 +491,21 @@
 	<classpathentry kind="lib" path="/third-party/azure-core-0.9.7.jar"/>
 	<classpathentry kind="lib" path="/third-party/azure-servicebus-0.9.7.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-configuration2-2.1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.9.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.9.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.9.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

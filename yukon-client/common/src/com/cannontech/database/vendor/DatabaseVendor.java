@@ -2,7 +2,7 @@ package com.cannontech.database.vendor;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.google.common.collect.ImmutableSet;

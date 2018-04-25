@@ -3,13 +3,11 @@ package com.cannontech.clientutils;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Layout;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import com.cannontech.common.util.BootstrapUtils;
-import com.cannontech.common.util.CtiUtilities;
 
 /**
  * Implements the logging for remote clients.
@@ -21,14 +19,12 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public class RemoteLoggerImpl implements RemoteLogger {
     
-    // Use a DatedFileAppender to do the actual appending of messages
-    private DatedFileAppender dailyRollingFileAppender;
-    
-    //Maximum log file size before logging stops
-    private static long maxFileSize = 1073741824;
+    // TODO: Need to be Replaced
+    private AbstractAppender dailyRollingFileAppender;
     
     //A map to hold client applicationName+ids (key) and file appenders (value)
-    private Map<String, DatedFileAppender> appenderIPAddresses = new HashMap<String, DatedFileAppender>();
+    // TODO: Need to be Replaced
+    private Map<String, AbstractAppender> appenderIPAddresses = new HashMap<String, AbstractAppender>();
     
     /**
      * The conversion pattern sets the layout for the log4j logging
@@ -55,8 +51,8 @@ public class RemoteLoggerImpl implements RemoteLogger {
      * @see com.cannontech.clientutils.RemoteLogger#doLog(java.lang.String, java.lang.String, org.apache.log4j.spi.LoggingEvent)
      */
     @Override
-    public void doLog(String applicationName, String clientId, LoggingEvent event) {
-        getAppender(applicationName, clientId).doAppend(event);
+    public void doLog(String applicationName, String clientId, LogEvent event) {
+        getAppender(applicationName, clientId).append(event);
     }
     
     /**
@@ -69,8 +65,11 @@ public class RemoteLoggerImpl implements RemoteLogger {
      * @param clientId The IP address of the client's computer
      * @return returns a DatedFileAppender which is a subclass of AppenderSkeleton
      */
-    protected AppenderSkeleton getAppender(String applicationName, String clientId) {
+    
+    // TODO: Need to be updated
+    protected AbstractAppender getAppender(String applicationName, String clientId) {
         String fileName = applicationName + "[" + clientId.replace(':', '_') + "]";
+        String filenameDateFormat = "yyyyMMdd";
 
         //see if the appender for this clientId already exists
         if (appenderIPAddresses.containsKey(fileName)) {
@@ -78,20 +77,21 @@ public class RemoteLoggerImpl implements RemoteLogger {
         } else {
             //get the file path based on yukonbase for this system
             String directory = BootstrapUtils.getServerLogDir();
+            String pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log";
 
             // one doesn't exist so create an appender and put it in the map
             //Use DatedFileAppender to take over the actual appending, rollover, and timing issues
-            dailyRollingFileAppender = new DatedFileAppender(directory, fileName, ".log");
-            dailyRollingFileAppender.setName(fileName + "-appender");
-            dailyRollingFileAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
-            dailyRollingFileAppender.setMaxFileSize(maxFileSize);
-            
-            //The layout for the log file:
-            Layout layout = new PatternLayout(conversionPattern);
-            dailyRollingFileAppender.setLayout(layout);
-            
-            //Inherited from AppenderSkeleton. Calls once options are set
-            dailyRollingFileAppender.activateOptions();
+            dailyRollingFileAppender = new YukonRollingFileAppender
+                    ("RemoteAppender", 
+                       null, PatternLayout.createDefaultLayout(), 
+                       fileName, 
+                       pattern, 
+                       null, 
+                       null, 
+                       applicationName, 
+                       directory, 
+                       null);
+
             
             //add this appender to the map
             appenderIPAddresses.put(fileName, dailyRollingFileAppender);

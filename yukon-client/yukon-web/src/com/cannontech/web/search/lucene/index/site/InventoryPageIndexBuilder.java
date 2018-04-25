@@ -5,7 +5,7 @@ import static com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_INVENTO
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;

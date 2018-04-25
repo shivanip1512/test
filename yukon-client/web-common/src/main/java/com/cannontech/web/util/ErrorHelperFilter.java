@@ -22,9 +22,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.web.HttpSessionRequiredException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -129,10 +129,10 @@ public class ErrorHelperFilter implements Filter {
             if (session != null) {
                 LiteYukonUser yukonUser = ServletUtil.getYukonUser(session);
                 if (yukonUser != null) {
-                    MDC.put("yukonuser", yukonUser);
+                	ThreadContext.push("yukonuser", yukonUser);
                 }
             }
-            MDC.put("path", hReq.getRequestURI());
+            ThreadContext.put("path", hReq.getRequestURI());
             chain.doFilter(request, response);
         } catch (Error e) {
             Throwable rc = CtiUtilities.getRootCause(e);
@@ -163,8 +163,8 @@ public class ErrorHelperFilter implements Filter {
                 throw new ServletException(t);
             }
         } finally {
-            MDC.remove("yukonuser");
-            MDC.remove("path");
+        	ThreadContext.remove("yukonuser");
+        	ThreadContext.remove("path");
         }
 
     }

@@ -1,6 +1,6 @@
 package com.cannontech.amr.toggleProfiling.tasks;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;

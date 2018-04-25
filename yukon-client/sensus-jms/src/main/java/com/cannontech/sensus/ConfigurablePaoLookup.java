@@ -3,7 +3,7 @@ package com.cannontech.sensus;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;

@@ -2,7 +2,7 @@ package com.cannontech.web.common.resources.service.impl;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import com.cannontech.clientutils.YukonLogManager;

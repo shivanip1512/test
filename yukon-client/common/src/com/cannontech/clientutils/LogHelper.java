@@ -1,7 +1,7 @@
 package com.cannontech.clientutils;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.common.util.IterableUtils;
 
@@ -27,7 +27,7 @@ public class LogHelper {
     }
     
     private static void log(Logger log, Level level, String format, Object... args) {
-        if (log.isEnabledFor(level)) {
+        if (log.isEnabled(level)) {
             String output = String.format(format, processArgs(args));
             log.log(level, output);
         }

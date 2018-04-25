@@ -3,8 +3,9 @@ package com.cannontech.dr.rfn.service.impl;
 
 import java.util.Arrays;
 
+import org.apache.logging.log4j.Logger;
+
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.dr.rfn.service.ParsingService;
@@ -36,7 +37,7 @@ import com.google.common.collect.ListMultimap;
  * 
  */
 public class TLVParsingServiceImpl implements ParsingService<ListMultimap<FieldType, byte[]>> {
-    private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
+	private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
 
     @Override
     public ListMultimap<FieldType, byte[]> parseRfLcrReading(RfnIdentifier rfnId, byte[] payload)

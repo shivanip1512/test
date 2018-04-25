@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.data.v5;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;

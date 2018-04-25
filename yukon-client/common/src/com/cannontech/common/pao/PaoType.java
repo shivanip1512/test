@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.*;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;

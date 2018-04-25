@@ -4,7 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;

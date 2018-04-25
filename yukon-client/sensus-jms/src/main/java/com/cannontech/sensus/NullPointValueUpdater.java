@@ -2,7 +2,7 @@ package com.cannontech.sensus;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonPAObject;

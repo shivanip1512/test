@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 

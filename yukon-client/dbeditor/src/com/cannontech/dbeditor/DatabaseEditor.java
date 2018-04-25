@@ -44,7 +44,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;

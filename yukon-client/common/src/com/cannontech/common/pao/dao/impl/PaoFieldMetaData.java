@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;

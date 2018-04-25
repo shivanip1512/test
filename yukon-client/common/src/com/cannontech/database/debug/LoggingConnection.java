@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class LoggingConnection implements Connection {
     private final Connection delegate;

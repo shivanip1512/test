@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.util.FileCopyUtils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.CTILogger;
@@ -48,16 +48,17 @@ public class LoggingServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-        URL classpathUrl = CTILogger.class.getClassLoader().getResource(REMOTE_LOGGING_XML);        
-        //get xml config file for logging
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        URL classpathUrl = CTILogger.class.getClassLoader().getResource(REMOTE_LOGGING_XML);
+        // get xml config file for logging
         File file = new File(path);
-        if (classpathUrl != null) {
-            FileCopyUtils.copy(classpathUrl.openStream(), response.getOutputStream());
-        } else if(file.canRead()) {
+        if (file.canRead()) {
             URL fileUrl = file.toURL();
             FileCopyUtils.copy(fileUrl.openStream(), response.getOutputStream());
+        } else if (classpathUrl != null) {
+            FileCopyUtils.copy(classpathUrl.openStream(), response.getOutputStream());
         } else {
             logger.error("cannot read xml config file for logging, client is only logging to console");
         }

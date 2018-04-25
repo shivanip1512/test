@@ -4,7 +4,7 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;

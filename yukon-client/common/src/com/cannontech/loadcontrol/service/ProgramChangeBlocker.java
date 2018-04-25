@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.service;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.program.service.ConstraintViolations;

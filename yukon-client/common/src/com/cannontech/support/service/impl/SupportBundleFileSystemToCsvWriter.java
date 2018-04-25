@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.clientutils.YukonLogManager;

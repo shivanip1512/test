@@ -2,7 +2,7 @@ package com.cannontech.common.opc.impl;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.opc.YukonOpcConnection;

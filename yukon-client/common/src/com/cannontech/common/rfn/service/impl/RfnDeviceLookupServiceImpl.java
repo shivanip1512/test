@@ -2,7 +2,7 @@ package com.cannontech.common.rfn.service.impl;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;

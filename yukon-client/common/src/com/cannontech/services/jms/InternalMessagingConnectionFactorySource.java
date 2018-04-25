@@ -3,7 +3,7 @@ package com.cannontech.services.jms;
 import static com.cannontech.common.config.MasterConfigString.JMS_INTERNAL_MESSAGING_CONNECTION;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.FactoryBean;
 
 import com.cannontech.clientutils.YukonLogManager;

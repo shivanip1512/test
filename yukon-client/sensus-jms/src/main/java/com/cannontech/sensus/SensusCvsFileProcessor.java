@@ -4,15 +4,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.sms.messages.rx.AndorianMessage;
 import com.sms.messages.rx.AppMessageType1;
 import com.sms.messages.rx.AppMessageType22;
 import com.sms.messages.rx.AppMessageType5;
 
 public class SensusCvsFileProcessor extends SensusMessageHandlerBase {
-    private Logger log = Logger.getLogger(SensusCvsFileProcessor.class);
+    private Logger log = YukonLogManager.getLogger(SensusCvsFileProcessor.class);
     
     @Override
     protected void processStatusMessage(AppMessageType22 message) {

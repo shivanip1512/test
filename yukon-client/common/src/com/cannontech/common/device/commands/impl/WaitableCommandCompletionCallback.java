@@ -3,7 +3,7 @@ package com.cannontech.common.device.commands.impl;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;

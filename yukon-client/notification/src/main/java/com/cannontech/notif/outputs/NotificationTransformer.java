@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;

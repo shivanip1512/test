@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.quartz.CronExpression;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

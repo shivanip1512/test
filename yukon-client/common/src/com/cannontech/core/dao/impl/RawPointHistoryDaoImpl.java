@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;

@@ -3,7 +3,7 @@ package com.cannontech.yukon.conns;
 import java.util.Date;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.cc.service.EconomicEventAction;

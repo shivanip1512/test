@@ -3,7 +3,7 @@ package com.cannontech.web.cayenta.service.impl;
 import java.io.IOException;
 
 import org.apache.http.HttpException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;

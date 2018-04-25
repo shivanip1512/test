@@ -20,7 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 
 import com.cannontech.clientutils.YukonLogManager;

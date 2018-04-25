@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;

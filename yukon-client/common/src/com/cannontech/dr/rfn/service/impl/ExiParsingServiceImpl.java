@@ -15,7 +15,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.openexi.proc.common.EXIOptionsException;
 import org.openexi.proc.common.GrammarOptions;
 import org.openexi.proc.grammars.GrammarCache;
@@ -32,7 +32,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -43,7 +42,7 @@ public class ExiParsingServiceImpl implements ExiParsingService <SimpleXPathTemp
     
     @Autowired ResourceLoader loader;
     private static final Logger log = YukonLogManager.getLogger(ExiParsingServiceImpl.class);
-    private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
+    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
 
     private Map<Schema, EXISchema> schemas = new HashMap<Schema, EXISchema>();
     

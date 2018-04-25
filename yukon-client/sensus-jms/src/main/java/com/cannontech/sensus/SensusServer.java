@@ -9,11 +9,13 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 
 
 public class SensusServer {
-    private static Logger log = Logger.getLogger(SensusServer.class);
+    private static Logger log = YukonLogManager.getLogger(SensusServer.class);
     private Object errorWaiter = new Object();
     private MessageListener messageListener;
     

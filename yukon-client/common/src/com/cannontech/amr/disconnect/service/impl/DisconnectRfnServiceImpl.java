@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
@@ -33,7 +33,6 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
@@ -66,7 +65,7 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
     @Autowired private ConfigurationSource configurationSource;
         
     private static final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
-    private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
+    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     private RfnMeterDisconnectArming mode;
     private Set<PaoType> validTypes;

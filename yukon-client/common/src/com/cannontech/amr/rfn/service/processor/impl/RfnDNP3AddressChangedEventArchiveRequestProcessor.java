@@ -2,7 +2,7 @@ package com.cannontech.amr.rfn.service.processor.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;

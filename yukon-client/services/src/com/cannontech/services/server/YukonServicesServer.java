@@ -1,6 +1,6 @@
 package com.cannontech.services.server;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ApplicationId;

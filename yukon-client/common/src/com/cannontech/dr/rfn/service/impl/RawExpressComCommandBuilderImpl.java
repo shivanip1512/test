@@ -3,7 +3,7 @@ package com.cannontech.dr.rfn.service.impl;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 

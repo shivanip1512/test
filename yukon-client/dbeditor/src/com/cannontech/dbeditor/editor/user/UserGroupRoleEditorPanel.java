@@ -19,7 +19,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableColumn;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;

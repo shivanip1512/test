@@ -3,7 +3,7 @@ package com.cannontech.multispeak.deploy.service.impl.v3;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.demandreset.service.DemandResetCallback;

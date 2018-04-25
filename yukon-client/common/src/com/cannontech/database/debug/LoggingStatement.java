@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class LoggingStatement implements Statement {
     private static final Logger log = DatabaseDebugHelper.getMainLogger();

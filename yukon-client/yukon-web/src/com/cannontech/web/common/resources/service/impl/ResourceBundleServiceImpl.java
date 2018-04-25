@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;

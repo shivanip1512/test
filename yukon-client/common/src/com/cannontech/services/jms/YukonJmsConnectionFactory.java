@@ -4,7 +4,7 @@ import static com.cannontech.common.config.MasterConfigString.JMS_CLIENT_CONNECT
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.jms.connection.CachingConnectionFactory;
 

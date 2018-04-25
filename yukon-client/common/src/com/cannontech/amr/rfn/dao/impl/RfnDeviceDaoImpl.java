@@ -9,13 +9,14 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -44,7 +45,7 @@ import com.google.common.collect.Maps;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
-    private final static Logger log = Logger.getLogger(RfnDeviceDaoImpl.class);
+    private final static Logger log = YukonLogManager.getLogger(RfnDeviceDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private AsyncDynamicDataSource dynamicDataSource;

@@ -2,7 +2,7 @@ package com.cannontech.amr.moveInMoveOut.tasks;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.model.PlcMeter;

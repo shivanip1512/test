@@ -3,7 +3,7 @@ package com.cannontech.dr.assetavailability.ping;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;

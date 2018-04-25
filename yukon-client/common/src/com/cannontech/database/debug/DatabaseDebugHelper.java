@@ -1,14 +1,13 @@
 package com.cannontech.database.debug;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 
 public class DatabaseDebugHelper {
     public static void outputStackTrace(Logger log) {
-        if (!log.isEnabledFor(Level.DEBUG)) {
+        if (!log.isDebugEnabled()) {
             return;
         }
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();

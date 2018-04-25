@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;

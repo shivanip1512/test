@@ -9,8 +9,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.JspTag;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.AnnotationBeanWiringInfoResolver;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.wiring.BeanWiringInfo;
@@ -105,7 +104,7 @@ public class YukonTagSupport extends SimpleTagSupport {
         }
 
         if (beanFactory == null) {
-            if(logger.isEnabledFor(Level.WARN)) {
+            if(logger.isWarnEnabled()) {
                 logger.warn("BeanFactory has not been set on [" + getClass().getName() + "]: " +
                     "Make sure this configurer runs in a Spring container. " +
                     "For example, add it to a Spring application context as an XML bean definition.");

@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -17,7 +17,6 @@ import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
@@ -101,12 +100,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
          * @param request The RFN archive request sent from network manager.
          */
         private void doCommsLogging(T request) {
-            RfnLogger rfnCommsLog = YukonLogManager.getRfnLogger();
+            Logger rfnCommsLog = YukonLogManager.getRfnLogger();
             Level logLevel = rfnCommsLog.getLevel();
             if (request instanceof RfnMeterReadingArchiveRequest) {
-                if (Level.DEBUG.isGreaterOrEqual(logLevel)) {
+                if (Level.DEBUG.isLessSpecificThan(logLevel)) {
                     rfnCommsLog.debug(">>> " + request.toString());
-                } else if (Level.INFO.isGreaterOrEqual(logLevel)) {
+                } else if (Level.INFO.isLessSpecificThan(logLevel)) {
                     RfnMeterReadingArchiveRequest meterRequest = (RfnMeterReadingArchiveRequest) request;
                     rfnCommsLog.info(">>> " +
                         String.format("RfnMeterReadingArchiveRequest [rfnIdentifier=%s, dataPointId=%s, readingType=%s]",
@@ -115,7 +114,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                                 meterRequest.getReadingType()));
                 }
             } else {
-                if (Level.INFO.isGreaterOrEqual(logLevel)) {
+                if (Level.INFO.isLessSpecificThan(logLevel)) {
                     rfnCommsLog.info(">>> " + request.toString());
                 }
             }

@@ -1,65 +1,43 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" packages="com.cannontech.clientutils" monitorInterval="5">
+    <Appenders>
+        <YukonRollingFile name="yukonRollingFileAppender">
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy />
+        </YukonRollingFile>
+        <YukonRfnRollingFile name="YukonRfnRollingFile">
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy />
+        </YukonRfnRollingFile>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.cannontech" level = "info"/>
 
-<log4j:configuration debug="false" 
-                     xmlns:log4j='http://jakarta.apache.org/log4j/'>
+        <Logger name="org.springframework.jdbc.datasource.DataSourceTransactionManager" level = "info"/>
 
-  <!-- appenders -->
-  <!-- Custom appender for Yukon. Adjust maximum file size by setting maxFileSizeString -->
-  <!-- Possible values: 1g, .5M, 1000K, 1000000B or 10000000 -->
-  <appender name="yukonFileAppender" class ="com.cannontech.clientutils.YukonFileAppender">
-  	<!-- set the default file size to 1 gigabyte -->
-  	<param name="maxFileSizeString" value="1G"/>
-  </appender>
-  
-  <!-- Appends messages to the console. To change the layout format, see -->
-  <!-- log4j documents for conversion/format character definitions -->
-  <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %d{zzz} [%t] %-5p %c - %m%n"/>
-    </layout>
-  </appender>
-  
-  <!-- package level loggers -->
-  <!-- Adjust the following logger levels to fine-tune logging output -->
-  <!-- To turn of logging for any package use: level value="off"  -->
-  <!-- Possible levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, OFF -->
-  
-  <logger name="com.cannontech" >
-  	<level value="info"/>
-  </logger>
-  
-  <logger name="org.hibernate" >
-  	<level value="warn"/>
-  </logger>
-  
-  <logger name="org.springframework">
-  	<level value="warn"/>
-  </logger>
-  
-  <logger name="org.apache.myfaces">
-  	<level value="warn"/>
-  </logger>
-  
-  <!-- Spring Web Services Client XML logging (sent and received). (ex. MultiSpeak/EIM) -->
-  <logger name="org.springframework.ws.client.MessageTracing">
-    <level value="DEBUG"/> 
-  </logger>
-  
-  <!-- Spring Web Services Server XML logging (sent and received). (ex. MultiSpeak/EIM) -->
-  <logger name="org.springframework.ws.server.MessageTracing">
-    <level value="DEBUG"/> 
-  </logger>
-  
-  <!-- Controls rfn comms logging to the Server\Log directory -->
-  <logger name="rfnCommsLogger">
-    <level value="INFO"/>
-  </logger>
-  
-  <!-- root logger will be inherited by all loggers-->
-  <root>
-    <level value="info"/>
-    <appender-ref ref="yukonFileAppender"/>
-    <appender-ref ref="consoleAppender"/>
-  </root>  
-</log4j:configuration>
+        <Logger name="com.cannontech.amr.rfn.service.RfnMeterEventService" level = "trace"/>
+
+        <Logger name="org.springframework" level = "warn"/>
+
+        <Logger name="org.springframework.ws.soap.server.endpoint.interceptor" level = "debug"/>
+
+        <!-- Controls rfn comms logging to the Server\Log\Comms directory -->
+        <Logger name="rfnCommsLogger" level="info">
+        <appender-ref ref="YukonRfnRollingFile" />
+        </Logger>
+
+        <Root level="info" additivity="false">
+            <appender-ref ref="console" />
+            <appender-ref ref="yukonRollingFileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

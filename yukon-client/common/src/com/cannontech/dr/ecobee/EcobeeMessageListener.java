@@ -7,7 +7,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.StreamMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;

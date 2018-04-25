@@ -116,7 +116,7 @@
         <mkdir dir="${yukon-web}/build_jsp" />
         <!-- Compile the .java files into .class files -->   
         <javac fork="true" 
-               memoryMaximumSize="768M"
+               memoryMaximumSize="1024M"
                srcdir="${yukon-web}/WebContent_temp"
                destdir="${yukon-web}/build_jsp"
                target="${yukon.javac.target}" 

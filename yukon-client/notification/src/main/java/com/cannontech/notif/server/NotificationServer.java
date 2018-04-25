@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -24,7 +24,9 @@ import com.cannontech.spring.YukonSpringHook;
  * The server used for accepting and creating notification messages.
  */
 public class NotificationServer {
-    private static final Logger log = YukonLogManager.getLogger(NotificationServer.class);
+    private static class LogHolder {
+        static final Logger log = YukonLogManager.getLogger(NotificationServer.class);
+    }
 
     // The servers listening connection
     private ListenerConnection server;
@@ -36,7 +38,7 @@ public class NotificationServer {
     public static void main(String[] argsv) {
         try {
             CtiUtilities.setCtiAppName(ApplicationId.NOTIFICATION);
-            log.info("Starting notification server from main method");
+            getLogger().info("Starting notification server from main method");
             YukonSpringHook.setDefaultContext(YukonSpringHook.NOTIFICATION_BEAN_FACTORY_KEY);
 
             NotificationServer ns = YukonSpringHook.getBean("notificationServer", NotificationServer.class);
@@ -50,9 +52,13 @@ public class NotificationServer {
             }
         }
         catch (Throwable t) {
-            log.error("There was an error starting up the Notification Server", t);
+            getLogger().error("There was an error starting up the Notification Server", t);
             System.exit(1);
         }
+    }
+
+    private static Logger getLogger() {
+        return LogHolder.log;
     }
 
     @Override
@@ -78,7 +84,7 @@ public class NotificationServer {
         // start output handlers
         outputHelper.startup();
 
-        log.info("Started notification server: " + server);
+        getLogger().info("Started notification server: " + server);
     }
 
     /**
@@ -99,10 +105,10 @@ public class NotificationServer {
 
             notify(); // notify main thread
 
-            log.info("Stopped notification server: " + zServer);
+            getLogger().info("Stopped notification server: " + zServer);
         }
         catch (Exception e) {
-            log.error("Error while stopping notification server: "+ zServer, e);
+            getLogger().error("Error while stopping notification server: "+ zServer, e);
             System.exit(1);
         }
     }
@@ -120,7 +126,7 @@ public class NotificationServer {
 
         @Override
         public void onConnectionEvent(Connection source, ConnectionState state) {
-            log.info("Connection state changed to <" + state + "> for " + NotificationServer.this);
+            getLogger().info("Connection state changed to <" + state + "> for " + NotificationServer.this);
 
             switch (state) {
                 case New:
@@ -134,7 +140,7 @@ public class NotificationServer {
                 default:
                     // If the server is not null meaning we were not stopped report the error
                     if (server != null) {
-                        log.error("Failed to connect to the broker.");
+                        getLogger().error("Failed to connect to the broker.");
                     }
                     break;
             }
@@ -150,7 +156,7 @@ public class NotificationServer {
                 conn.connectWithoutWait(); // passes control to another thread
             }
             catch (Exception ex) {
-                log.error("error handling incomming connection", ex);
+                getLogger().error("error handling incomming connection", ex);
             }
         }
     }

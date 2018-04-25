@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;

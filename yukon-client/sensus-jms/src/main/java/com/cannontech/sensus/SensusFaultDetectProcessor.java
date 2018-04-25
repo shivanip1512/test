@@ -4,8 +4,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.INotifConnection;
 import com.sms.messages.rx.AndorianMessage;
@@ -14,7 +15,7 @@ import com.sms.messages.rx.AppMessageType22;
 import com.sms.messages.rx.AppMessageType5;
 
 public class SensusFaultDetectProcessor extends SensusMessageHandlerBase {
-    private Logger log = Logger.getLogger(SensusFaultDetectProcessor.class);
+    private Logger log = YukonLogManager.getLogger(SensusFaultDetectProcessor.class);
     private YukonDeviceLookup yukonDeviceLookup;
     private PointValueUpdater faultGenerator = new NullPointValueUpdater();
     private PointValueUpdater no60Generator = new NullPointValueUpdater();

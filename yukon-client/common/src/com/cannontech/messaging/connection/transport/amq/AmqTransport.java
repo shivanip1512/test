@@ -6,7 +6,7 @@ import javax.jms.MessageListener;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.messaging.connection.transport.Transport;

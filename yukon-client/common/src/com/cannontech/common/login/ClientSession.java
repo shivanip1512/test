@@ -207,6 +207,8 @@ public class ClientSession {
             try {
                 remoteLoginSession = new RemoteLoginSession(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
                 if (remoteLoginSession.login()) {
+                    // setup remote logging
+                    YukonLogManager.initialize(remoteLoginSession);
                     LiteYukonUser u = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(lp.getUsername());
                     CTILogger.debug("user: " + u);
 
@@ -224,8 +226,6 @@ public class ClientSession {
                     ClientApplicationRememberMe rememberMeSetting = LoginPrefs.getInstance().getRememberMeSetting();
                     setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe(), rememberMeSetting);
 
-                    // setup remote logging
-                    YukonLogManager.initialize(remoteLoginSession);
                     return true;
                 } else {
                     displayMessage(p, remoteLoginSession.getErrorMsg(), "Error");

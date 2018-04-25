@@ -10,7 +10,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -116,7 +115,7 @@ public class SystemHealthController {
     @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public @ResponseBody Map<String, String> resync(ModelMap model, HttpServletResponse resp, FlashScope flash, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        RfnLogger rfnCommsLog = YukonLogManager.getRfnLogger();
+        Logger rfnCommsLog = YukonLogManager.getRfnLogger();
         
         Map<String, String> json = new HashMap<>();
         

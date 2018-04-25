@@ -1,7 +1,6 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
-import org.apache.log4j.Logger;
-import org.jdom2.Attribute;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;

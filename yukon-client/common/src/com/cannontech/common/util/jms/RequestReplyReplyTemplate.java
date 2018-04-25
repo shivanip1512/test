@@ -11,17 +11,17 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.config.ConfigurationSource;
 
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
     
-    private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
+	private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {

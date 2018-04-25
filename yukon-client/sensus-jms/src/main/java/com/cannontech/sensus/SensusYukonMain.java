@@ -2,7 +2,7 @@ package com.cannontech.sensus;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 

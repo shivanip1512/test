@@ -2,7 +2,9 @@ Manifest-Version: 1.0
 Main-Class: com.cannontech.sensus.SensusGpuffMain
 Class-Path:  
  lib/apache-activemq-4.1.0-incubator.jar 
- lib/log4j-1.2.17.jar 
+ lib/log4j-api-2.9.1.jar 
+ lib/log4j-core-2.9.1.jar 
+ lib/log4j-jcl-2.9.1.jar  
  lib/spring-aop-4.2.0.RELEASE.jar 
  lib/spring-aspects-4.2.0.RELEASE.jar 
  lib/spring-beans-4.2.0.RELEASE.jar 

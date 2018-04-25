@@ -1,7 +1,7 @@
 package com.cannontech.capcontrol.creation.model;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;

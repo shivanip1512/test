@@ -2,8 +2,9 @@ package com.cannontech.sensus;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -11,7 +12,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public class ConfigurableDeviceLookup implements YukonDeviceLookup {
     private Map<Integer, String> deviceMapping;
     private DeviceDao deviceDao;
-    private Logger log = Logger.getLogger(ConfigurableDeviceLookup.class);
+    private Logger log = YukonLogManager.getLogger(ConfigurableDeviceLookup.class);
 
     public Map<Integer, String> getDeviceMapping() {
         return deviceMapping;

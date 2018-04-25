@@ -7,8 +7,9 @@ import java.util.Set;
 
 import javax.naming.ConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -25,7 +26,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel {	
-    private static final Logger log = Logger.getLogger(UserGroup.class);
+    private static final Logger log = YukonLogManager.getLogger(UserGroup.class);
     
     private com.cannontech.database.db.user.UserGroup userGroup = new com.cannontech.database.db.user.UserGroup();
     private Multimap<YukonRole, LiteYukonGroup> rolesToGroupMap = HashMultimap.create();

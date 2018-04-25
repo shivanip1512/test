@@ -3,7 +3,7 @@ package com.cannontech.multispeak.client.core;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;

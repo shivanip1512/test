@@ -12,9 +12,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
@@ -76,8 +75,8 @@ public class DBPersistentBean implements IDBPersistent {
         }
         
         try {
-            NDC.push("DBPersistent=" + object);
-            NDC.push("objectSuppliedConnection=" + objectSuppliedConnection);
+            ThreadContext.push("DBPersistent=" + object);
+            ThreadContext.push("objectSuppliedConnection=" + objectSuppliedConnection);
             TransactionTemplate tt = YukonSpringHook.getTransactionTemplate();
             tt.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
             tt.execute(new TransactionCallback() {
@@ -144,8 +143,8 @@ public class DBPersistentBean implements IDBPersistent {
                 object.setDbConnection(null);
                 setDbConnection(null);
             }
-            NDC.pop();
-            NDC.pop();
+            ThreadContext.pop();
+            ThreadContext.pop();
         }
         
       
@@ -712,7 +711,7 @@ public class DBPersistentBean implements IDBPersistent {
    {
        Logger logger = YukonLogManager.getLogger("com.cannontech.printsqlfile");
        
-       if (!logger.isEnabledFor(Level.DEBUG)) {
+       if (!logger.isDebugEnabled()) {
            return;
        }
        

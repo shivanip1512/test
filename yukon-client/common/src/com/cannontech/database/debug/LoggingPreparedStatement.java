@@ -23,7 +23,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class LoggingPreparedStatement implements PreparedStatement {
     private static final Logger log = DatabaseDebugHelper.getMainLogger();

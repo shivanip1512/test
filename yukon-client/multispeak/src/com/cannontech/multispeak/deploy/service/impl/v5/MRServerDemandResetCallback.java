@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.demandreset.service.DemandResetCallback;

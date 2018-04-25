@@ -1,6 +1,6 @@
 package com.cannontech.clientutils;
 
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
 
 /**
  * Implemented by RemoteLoggingImpl for 
@@ -10,5 +10,5 @@ import org.apache.log4j.spi.LoggingEvent;
  *
  */
 public interface RemoteLogger {
-    public void doLog(String applicationName, String clientId, LoggingEvent event);
+    public void doLog(String applicationName, String clientId, LogEvent event);
 }

@@ -1,6 +1,6 @@
 package com.cannontech.web.support.systemMetrics.criteria;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.support.systemMetrics.ExtendedQueueData;

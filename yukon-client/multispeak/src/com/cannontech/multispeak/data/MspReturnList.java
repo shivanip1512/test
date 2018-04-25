@@ -3,7 +3,7 @@ package com.cannontech.multispeak.data;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;

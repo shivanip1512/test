@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

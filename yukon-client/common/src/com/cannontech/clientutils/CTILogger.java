@@ -1,7 +1,7 @@
 package com.cannontech.clientutils;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 /**
  * CTILogger acts as a wrapper for log4j, and all older log messages

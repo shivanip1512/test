@@ -13,9 +13,10 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.sms.common.MessageEncoder;
 import com.sms.common.UnknownAppCodeException;
 import com.sms.messages.rx.AndorianMessage;
@@ -24,7 +25,7 @@ import com.sms.messages.rx.DataMessage;
 
 
 public class SensusMessageListener implements MessageListener, InitializingBean {
-    private Logger log = Logger.getLogger(SensusMessageListener.class);
+    private Logger log = YukonLogManager.getLogger(SensusMessageListener.class);
     Set<SensusMessageObjectHandler> sensusMessageObjectHandlerSet;
     int messageCount = 0;
 	private Integer minRepId = 30000000;

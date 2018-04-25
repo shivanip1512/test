@@ -17,8 +17,9 @@ import java.util.stream.IntStream;
 import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -31,7 +32,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 class RfnIdentifierCache implements DBChangeListener {
 
-    private final static Logger log = Logger.getLogger(RfnIdentifierCache.class);
+    private final static Logger log = YukonLogManager.getLogger(RfnIdentifierCache.class);
 
     private final static int SERIAL_DIGITS = 5;
     private final static int SERIALS_PER_SELECT = 250;

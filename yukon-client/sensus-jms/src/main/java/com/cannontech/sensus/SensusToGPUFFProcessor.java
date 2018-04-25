@@ -8,14 +8,15 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.sms.messages.rx.AppMessageType1;
 import com.sms.messages.rx.AppMessageType22;
 import com.sms.messages.rx.AppMessageType5;
 
 public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
-	private Logger log = Logger.getLogger(SensusToGPUFFProcessor.class);
+	private Logger log = YukonLogManager.getLogger(SensusToGPUFFProcessor.class);
 	private Set< URL > udpTargetAddressSet;
 	
 	@Override

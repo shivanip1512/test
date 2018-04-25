@@ -1,7 +1,7 @@
 package com.cannontech.sensus;
 
 import com.cannontech.clientutils.YukonLogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class GpuffConfigGVAR extends GpuffConfig {
 	  private Logger log = YukonLogManager.getLogger(GpuffConfigGVAR.class);

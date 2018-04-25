@@ -35,7 +35,7 @@ import javax.swing.text.BadLocationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.util.FileCopyUtils;
@@ -115,6 +115,8 @@ public final class CtiUtilities {
     public final static String tiff = "tiff";
     public final static String tif = "tif";
     public final static String png = "png";
+
+    public static final String TDC_OUT_FILE = "TDCOut.DAT";
 
     static {
         /** Init our beginning of time here */

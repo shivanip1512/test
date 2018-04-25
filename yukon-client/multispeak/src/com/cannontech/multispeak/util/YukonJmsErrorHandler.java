@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.ErrorHandler;
 
 import com.cannontech.clientutils.YukonLogManager;

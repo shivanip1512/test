@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.keyvalue.MultiKey;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.meter.dao.MeterDao;

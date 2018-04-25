@@ -15,14 +15,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 
 public class GpuffMessageMux {
     private Thread worker;
-    private Logger log = Logger.getLogger(GpuffMessageMux.class);
+    private Logger log = YukonLogManager.getLogger(GpuffMessageMux.class);
     private Set<URL> udpTargetAddressSet;
     private HashMap<Integer, Integer> resetCountMap = new HashMap<Integer, Integer>();
 

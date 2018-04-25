@@ -12,7 +12,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.WebServiceClientException;
