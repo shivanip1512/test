@@ -110,16 +110,40 @@ class RfnIdentifierCache implements DBChangeListener {
     public Integer getPaoIdFor(RfnManufacturerModel mm, String serial) {
         Integer paoId = null;
         Long numericSerial = tryParseSerialAsLong(serial);
-        if (numericSerial != null) {
-            paoId = getPaoIdForSerial(mm, numericSerial, rfnNumericSerials);
-        } else {
-            paoId = getPaoIdForSerial(mm, serial, rfnStringSerials);
+        Lock readLock = cacheLock.readLock(); 
+        try {
+            readLock.lock();
+            paoId = getPaoIdForSerial(mm, serial, numericSerial);
+        } finally {
+            readLock.unlock();
         }
-        if (paoId == null) {
-            //  If not found in cache, try to populate the cache with a chunk of similar devices
-            List<RfnSerialPaoId> paoIdsToSerials = loadSerials(mm, serial);
 
-            paoId = refreshSerialMap(mm, paoIdsToSerials, serial);
+        if (paoId == null) {
+            Lock writeLock = cacheLock.writeLock(); 
+            try {
+                writeLock.lock();
+                //  check the cache again in case another writer has filled it in
+                paoId = getPaoIdForSerial(mm, serial, numericSerial);
+
+                if (paoId == null) {
+                    //  If still not found in cache, try to populate the cache with a chunk of similar devices
+                    List<RfnSerialPaoId> paoIdsToSerials = loadSerials(mm, serial);
+
+                    paoId = refreshSerialMap(mm, paoIdsToSerials, serial);
+                }
+            } finally {
+                writeLock.unlock();
+            }
+        }
+        return paoId;
+    }
+
+    private Integer getPaoIdForSerial(RfnManufacturerModel mm, String serial, Long numericSerial) {
+        Integer paoId;
+        if (numericSerial != null) {
+            paoId = getPaoIdFromTypeCache(mm, numericSerial, rfnNumericSerials);
+        } else {
+            paoId = getPaoIdFromTypeCache(mm, serial, rfnStringSerials);
         }
         return paoId;
     }
@@ -145,17 +169,11 @@ class RfnIdentifierCache implements DBChangeListener {
      * Generics shim to allow String or Long access to the serial-to-paoId maps.
      * @return the paoId, or null if not found or invalidated.
      */
-    private <T, U extends Map<T, Integer>> Integer getPaoIdForSerial(RfnManufacturerModel mm, T serial, Map<RfnManufacturerModel, U> cache) {
-        Lock readLock = cacheLock.readLock(); 
-        try {
-            readLock.lock();
-            return Optional.ofNullable(cache.get(mm))
-                    .map(serialPaoIdMap -> serialPaoIdMap.get(serial))
-                    .filter(id -> !invalidatedPaoIds.contains(id))
-                    .orElse(null);
-        } finally {
-            readLock.unlock();
-        }
+    private <T, U extends Map<T, Integer>> Integer getPaoIdFromTypeCache(RfnManufacturerModel mm, T serial, Map<RfnManufacturerModel, U> cache) {
+        return Optional.ofNullable(cache.get(mm))
+                .map(serialPaoIdMap -> serialPaoIdMap.get(serial))
+                .filter(id -> !invalidatedPaoIds.contains(id))
+                .orElse(null);
     }
     
     /**
@@ -185,15 +203,10 @@ class RfnIdentifierCache implements DBChangeListener {
             paoIds.add(serialId.paoId);
         }
         
-        Lock writeLock = cacheLock.writeLock();
-        try {
-            writeLock.lock();
-            getNumericSerialMapFor(mm).putAll(numericSerials);
-            getStringSerialMapFor(mm).putAll(stringSerials);
-            invalidatedPaoIds.removeAll(paoIds);
-        } finally {
-            writeLock.unlock();
-        }
+        getNumericSerialMapFor(mm).putAll(numericSerials);
+        getStringSerialMapFor(mm).putAll(stringSerials);
+        invalidatedPaoIds.removeAll(paoIds);
+
         return originalPaoId;
     }
     
