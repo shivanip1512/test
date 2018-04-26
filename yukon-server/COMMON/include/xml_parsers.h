@@ -235,13 +235,13 @@ private:
 
 struct BasicErrorCodeInfo
 {
-    long errorCode;
+    boost::optional<long> errorCode;
 
     std::string typeString, porterString;
 
     void clear()
     {
-        errorCode = -999;
+        errorCode = boost::none;
         porterString.clear();
         typeString.clear();
     }

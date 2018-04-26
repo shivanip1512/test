@@ -399,8 +399,8 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 
             for( auto currentError = errorCodes.begin(); currentError != errorCodes.end(); currentError++ )
             {
-                currentErrorCode = static_cast<YukonError_t>(currentError->errorCode);
-                currentErrorType = resolveErrorType(currentError->typeString);
+                currentErrorCode = static_cast<YukonError_t>( * currentError->errorCode );
+                currentErrorType = resolveErrorType( currentError->typeString );
                 currentErrorDescription = currentError->porterString;
 
                 addErrorInfo( currentErrorCode, currentErrorType, currentErrorDescription );
