@@ -91,7 +91,7 @@ public class DeviceErrorTranslatorDaoImplTest {
      *      the error is defined in deviceErrors.xml with valid key names and matches error-code.xml
      *      the error is defined in error-code.xml with a valid category and matches deviceErrors.xml
      *      an entry for the error code is added to DeviceError.java with a valid category
-     *      for each DeviceErrorCategory there is a corresponding entry in deviceErrors.xml
+     *      for each DeviceErrorCategory.java there is a corresponding entry in deviceErrors.xml
      */
     @Test
     public void test_ErrorDefinitions() throws JDOMException, IOException {   
@@ -128,6 +128,8 @@ public class DeviceErrorTranslatorDaoImplTest {
             errorCodeMap.put(errorCode, errorDescription);
         }
         
+        //only need to check that each DeviceError.java has an entry in error-code.xml because
+        //each error-code.xml entry was confirmed to exist in DeviceError.java above
         if (DeviceError.values().length != errorCodeMap.size()) {
             DeviceError.getErrorsMap().keySet().stream().forEach(errorNum -> {
                 assertTrue("Error code " + errorNum + " is defined in DeviceError.java but not in error-code.xml", errorCodeMap.containsKey(errorNum));
@@ -148,7 +150,7 @@ public class DeviceErrorTranslatorDaoImplTest {
             assertEquals(keyElements[2], "error");
             switch (keyElements[3]) {
                 case "category":
-                    //check DeviceErrorCategory against deviceErrors.xml category entry and makes sure it is not a duplicate
+                    //check DeviceErrorCategory.java against deviceErrors.xml category entry and makes sure it is not a duplicate
                     DeviceErrorCategory deviceErrorCategory = DeviceErrorCategory.getByName(elementValue);
                     assertNotNull("An error category entry with value " + elementValue + " in deviceErrors.xml is not defined in DeviceErrorCategory.java", deviceErrorCategory);
                     String keyCategoryText = keyElements[4];
@@ -208,7 +210,17 @@ public class DeviceErrorTranslatorDaoImplTest {
                     fail("Unknown key element in deviceErrors.xml: " + keyElements[3]);
             }
         }
-        //make sure all of the DeviceErrorCategory values have been added to deviceErrors.xml
+        
+        //only need to check that each DeviceError.java has an entry in deviceError.xml because
+        //each deviceError.xml entry was confirmed to exist in DeviceError.java above
+        //this also confirms the # of deviceError.xml entries = the # of error-code.xml entries
+        if (DeviceError.values().length != deviceErrorsMap.size()) {
+            DeviceError.getErrorsMap().keySet().stream().forEach(errorNum -> {
+                assertTrue("Error code " + errorNum + " is defined in DeviceError.java but not in deviceError.xml", deviceErrorsMap.containsKey(errorNum));
+            });
+        }
+        
+        //make sure all of the DeviceErrorCategory.java values have been added to deviceErrors.xml
         DeviceErrorCategory[] categories = DeviceErrorCategory.values();
         if (deviceErrorsCategories.size() != categories.length) {
             Arrays.asList(categories).stream().forEach(category -> {

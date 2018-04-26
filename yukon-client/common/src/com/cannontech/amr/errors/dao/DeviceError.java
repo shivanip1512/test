@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 
 public enum DeviceError {
     // NOTE: Remember to add any new error codes to error-code.xml and deviceErrors.xml
-    //       New error categories must also be added to DeviceErrorCategory.xml
+    //       New error categories must also be added to DeviceErrorCategory.java
     
     //PORTER ERRORS
     ABNORMAL_RETURN(YUKON_SYSTEM, 1),
