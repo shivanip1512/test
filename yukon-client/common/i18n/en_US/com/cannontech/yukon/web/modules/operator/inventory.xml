@@ -134,6 +134,13 @@
     <entry key="yukon.web.modules.operator.pqrConfig.ofStartRandomTime">Trigger Randomization</entry>
     <entry key="yukon.web.modules.operator.pqrConfig.ofEndRandomTime">Restore Randomization</entry>
     
+    <!-- /inventory/pqrConfig/pqrConfigConfirm.jsp -->
+    <entry key="yukon.web.modules.operator.pqrConfigConfirm.pageTitle">Confirm PQR Configuration</entry>
+    <entry key="yukon.web.modules.operator.pqrConfigConfirm.pageHeading">Confirm Power Quality Response Configuration</entry>
+    <entry key="yukon.web.modules.operator.pqrConfigConfirm.crumbTitle">Confirm PQR Configuration</entry>
+    <entry key="yukon.web.modules.operator.pqrConfigConfirm.willBeSubmitted">The following PQR configuration will be sent to the specified devices:</entry>
+    <entry key="yukon.web.modules.operator.pqrConfigConfirm.notSent">(Not Sent)</entry>
+    
       <!-- Validation Error Messages -->
     <entry key="yukon.web.modules.operator.pqrConfig.validation.invalidConfig">The configuration is invalid. Please check errors below.</entry>
     <entry key="yukon.web.modules.operator.pqrConfig.validation.valueEmpty">Value cannot be empty if other values in section are specified.</entry>

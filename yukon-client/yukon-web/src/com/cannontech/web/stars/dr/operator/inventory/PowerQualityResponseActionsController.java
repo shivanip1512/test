@@ -103,17 +103,17 @@ public class PowerQualityResponseActionsController {
         log.info("PQR event report complete: " + exportFileName);
     }
     
-    @RequestMapping(value="/operator/inventory/pqrConfig/setup", method=RequestMethod.GET)
-    public String pqrConfigSetup(HttpServletRequest req, ModelMap model) {
+    @RequestMapping(value="/operator/inventory/pqrConfig/setup", method={RequestMethod.GET, RequestMethod.POST})
+    public String pqrConfigSetup(HttpServletRequest req, ModelMap model, @ModelAttribute("config") PqrConfig config) {
         
         inventoryCollectionFactory.addCollectionToModelMap(req, model);
-        model.addAttribute("config", new PqrConfig());
+        model.addAttribute("config", config);
         
         return "operator/inventory/pqrConfig/pqrConfigSetup.jsp";
     }
     
-    @RequestMapping(value="/operator/inventory/pqrConfig/submit", method=RequestMethod.POST)
-    public String pqrConfigSubmit(ModelMap model, InventoryCollection inventoryCollection, 
+    @RequestMapping(value="/operator/inventory/pqrConfig/confirm", method=RequestMethod.POST)
+    public String pqrConfigConfirm(ModelMap model, InventoryCollection inventoryCollection, 
                                   @ModelAttribute("config") PqrConfig config, BindingResult result, LiteYukonUser user, 
                                   HttpServletRequest req, FlashScope flash) {
         
@@ -124,6 +124,15 @@ public class PowerQualityResponseActionsController {
             model.addAttribute("config", config);
             return "operator/inventory/pqrConfig/pqrConfigSetup.jsp";
         }
+        
+        inventoryCollectionFactory.addCollectionToModelMap(req, model);
+        model.addAttribute("config", config);
+        return "operator/inventory/pqrConfig/pqrConfigConfirm.jsp";
+    }
+    
+    @RequestMapping(value="/operator/inventory/pqrConfig/submit", method=RequestMethod.POST)
+    public String pqrConfigSubmit(ModelMap model, InventoryCollection inventoryCollection, 
+                                  @ModelAttribute("config") PqrConfig config, BindingResult result, LiteYukonUser user) {
         
         //TODO: does this inventory -> hw conversion belong in the config service?
         List<LiteLmHardwareBase> hardware = 

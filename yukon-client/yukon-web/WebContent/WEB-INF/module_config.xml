@@ -1517,6 +1517,7 @@
                             <page name="controlAudit" type="BASIC"/>
                             <page name="pqrReport" type="BASIC" hideFavorite="true"/>
                             <page name="pqrConfig" type="BASIC" hideFavorite="true"/>
+                            <page name="pqrConfigConfirm" type="BASIC" hideFavorite="true"/>
                             <page name="pqrConfigResult" type="BASIC" hideFavorite="true"/>
                         </pages>
                     </page>
