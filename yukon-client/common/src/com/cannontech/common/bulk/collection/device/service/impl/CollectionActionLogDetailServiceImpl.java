@@ -56,7 +56,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ScheduledExecutor executor;
     
-    private static final String header="yukon.web.modules.tools.bulk.collectionAction.log.header.";
+    private static final String header="yukon.web.modules.tools.collectionActions.log.header.";
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionLogDetailServiceImpl.class);
 

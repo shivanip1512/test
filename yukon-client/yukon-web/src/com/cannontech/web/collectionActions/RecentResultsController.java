@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk;
+package com.cannontech.web.collectionActions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public class RecentResultsController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonUserDao userDao;
     
-    private final static String baseKey = "yukon.web.modules.tools.bulk.recentResults.";
+    private final static String baseKey = "yukon.web.modules.tools.collectionActions.recentResults.";
     
     @RequestMapping(value = "recentResults", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter,

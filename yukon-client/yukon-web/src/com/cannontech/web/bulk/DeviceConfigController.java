@@ -58,6 +58,19 @@ public class DeviceConfigController {
     
     @RequestMapping(value = "deviceConfigs", method = RequestMethod.GET)
     public String deviceConfigs(DeviceCollection deviceCollection, ModelMap model, String action) throws ServletException {
+        setupModel(deviceCollection, model, action);
+        model.addAttribute("action", "DEVICE_CONFIGS");
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/config/deviceConfigs.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value = "deviceConfigsInputs", method = RequestMethod.GET)
+    public String deviceConfigsInputs(DeviceCollection deviceCollection, ModelMap model, String action) throws ServletException {
+        setupModel(deviceCollection, model, action);
+        return "config/deviceConfigs.jsp";
+    }
+    
+    private void setupModel(DeviceCollection deviceCollection, ModelMap model, String action) {
         model.addAttribute("deviceCollection", deviceCollection);
         
         //used for assigning a config
@@ -72,9 +85,7 @@ public class DeviceConfigController {
             }
         }
 
-        model.addAttribute("action", action);
-        
-        return "config/deviceConfigs.jsp";
+        model.addAttribute("configAction", action);
     }
     
     @RequestMapping(value = "deviceConfigs", method = RequestMethod.POST)
@@ -112,7 +123,7 @@ public class DeviceConfigController {
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
             new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
    
-        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
+        return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
     
     @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
@@ -128,14 +139,14 @@ public class DeviceConfigController {
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
             new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
         
-        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
+        return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
     
     @RequestMapping(value = "doVerifyConfigs", method = RequestMethod.POST)
     public String doVerifyConfigs(DeviceCollection deviceCollection, YukonUserContext context, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
         int key = deviceConfigService.verifyConfigs(deviceCollection, context);
-        return "redirect:/bulk/progressReport/detail?key=" + key;
+        return "redirect:/collectionActions/progressReport/detail?key=" + key;
     }
 
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
@@ -146,7 +157,7 @@ public class DeviceConfigController {
             CollectionActionAlertHelper.createAlert(AlertType.GROUP_COMMAND_COMPLETION, alertService,
                 messageResolver.getMessageSourceAccessor(context), request);
         int key = deviceConfigService.readConfigs(deviceCollection, alertCallback, context);
-        return "redirect:/bulk/progressReport/detail?key=" + key;
+        return "redirect:/collectionActions/progressReport/detail?key=" + key;
     }
 
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
@@ -157,6 +168,6 @@ public class DeviceConfigController {
             CollectionActionAlertHelper.createAlert(AlertType.GROUP_COMMAND_COMPLETION, alertService,
                 messageResolver.getMessageSourceAccessor(context), request);
         int key = deviceConfigService.sendConfigs(deviceCollection, method, alertCallback, context);
-        return "redirect:/bulk/progressReport/detail?key=" + key;
+        return "redirect:/collectionActions/progressReport/detail?key=" + key;
     }
 }

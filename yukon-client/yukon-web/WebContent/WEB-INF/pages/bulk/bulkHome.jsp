@@ -93,7 +93,7 @@
         <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
             <tr>
                 <td>
-                    <a href="<cti:url value="/bulk/recentResults"/>">
+                    <a href="<cti:url value="/collectionActions/recentResults"/>">
                         <i:inline key=".recentResults"/>
                     </a>
                 </td>

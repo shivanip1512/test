@@ -9,23 +9,31 @@ yukon.bulk.masschange = (function () {
 
     'use strict';
     var initialized = false,
+    
+    enableDisable = function () {
+        var selectMassChangeField = $('input[name=field]:checked').val();
+        $('#massChangeBulkFieldName').val(selectMassChangeField);
+        $('#massChangeSelectForm').ajaxSubmit({
+            success: function(data, status, xhr, $form) {
+                $('#actionInputsDiv2').html(data);
+            }
+        });
+    };
 
     mod = {
 
-            /** Initialize this module. */
-            init: function () {
+        /** Initialize this module. */
+        init: function () {
 
-                if (initialized) return;
-                
-                $(document).on('click', '.js-mass-change', function () {
-                    var selectMassChangeField = $(this).data('field');
-                    $('#massChangeBulkFieldName').val(selectMassChangeField);
-                    $('#massChangeSelectForm').submit();
-                });
-                
-                initialized = true;
-                
-            }
+            enableDisable();
+            
+            $(document).on('click', '.js-mass-change', function () {
+                enableDisable();
+            });
+            
+            initialized = true;
+            
+        }
 
     };
 

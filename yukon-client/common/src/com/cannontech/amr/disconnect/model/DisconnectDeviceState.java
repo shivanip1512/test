@@ -17,6 +17,6 @@ public enum DisconnectDeviceState implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.tools.bulk.collectionActionDetail." + name();
+        return "yukon.web.modules.tools.collectionActions.collectionActionDetail." + name();
     }
 }

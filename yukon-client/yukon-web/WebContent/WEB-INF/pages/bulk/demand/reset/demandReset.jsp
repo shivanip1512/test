@@ -1,18 +1,21 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="tools" page="bulk.demandReset">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.demandReset">
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.demandReset" deviceCollection="${deviceCollection}">
     
         <cti:url value="/bulk/demand-reset/start" var="commandUrl">
             <cti:mapParam value="${deviceCollection.collectionParameters}" />
         </cti:url>
-        <form action="${commandUrl}" method="POST">
+        <form:form action="${commandUrl}" method="post" >
             <cti:csrfToken/>
-            <cti:button type="submit" nameKey="start" classes="primary action"/>
-        </form>
+            <div class="page-action-area">
+                <cti:button nameKey="start" classes="primary action js-action-submit"/>
+            </div>
+        </form:form>
     
     </tags:bulkActionContainer>
     
-</cti:standardPage>
+</cti:msgScope>

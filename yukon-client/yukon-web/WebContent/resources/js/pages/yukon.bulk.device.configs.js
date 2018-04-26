@@ -26,9 +26,7 @@ yukon.bulk.device.configs = (function () {
         
         /** Initialize this module. */
         init : function () {
-            
-            if (_initialized) return;
-            
+                        
             enableDisable();
             
             $(document).on('change', 'input[name=action]', function() {

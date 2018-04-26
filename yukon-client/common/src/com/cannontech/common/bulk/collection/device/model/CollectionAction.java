@@ -102,6 +102,6 @@ public enum CollectionAction implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.tools.bulk.collectionAction." + name();
+        return "yukon.web.modules.tools.collectionActions.collectionAction." + name();
     }
 }

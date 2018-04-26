@@ -54,7 +54,19 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     @Override
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
-
+        setupModel(model, request);
+        model.addAttribute("action", CollectionAction.ADD_POINTS);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/addPoints/addPointsHome.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value = "addPointsInputs", method = RequestMethod.GET)
+    public String addPointsInputs(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
+        setupModel(model, request);
+        return "addPoints/addPointsHome.jsp";
+    }
+    
+    private void setupModel(ModelMap model, HttpServletRequest request) throws ServletException {
         // device collection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
@@ -99,8 +111,6 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         PaoTypeMasks sharedPaoTypeMasks = new PaoTypeMasks();
         sharedPaoTypeMasks.setPointTemplateMaskMap(sharedPointTemplateMaskMap);
         model.addAttribute("sharedPaoTypeMasks", sharedPaoTypeMasks);
-
-        return "addPoints/addPointsHome.jsp";
     }
     
     // EXECUTE ADD
@@ -149,7 +159,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         }
         int key = startBulkProcessor(CollectionAction.ADD_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS, userContext, userInputs);
 
-        return "redirect:/bulk/progressReport/detail?key=" + key;
+        return "redirect:/collectionActions/progressReport/detail?key=" + key;
     }
     
     // add points processor

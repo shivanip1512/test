@@ -245,7 +245,7 @@
         <permissions>
             <role name="DEVICE_ACTIONS"/>
         </permissions>
-        <link>/bulk/deviceSelection</link>
+        <link>/collectionActions/home</link>
       </option>
       <option name="commander">
         <permissions>

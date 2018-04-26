@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<cti:standardPage module="tools" page="bulk.deviceConfigs">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.deviceConfigs">
 
     <cti:msg2 var="helpText" key=".helpText"/>
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.deviceConfigs" deviceCollection="${deviceCollection}" helpText="${helpText}">
@@ -22,23 +22,23 @@
                 <tags:nameValue2 nameKey=".action">
                     <div class="button-group stacked">
                         <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-                            <c:if test="${empty action}">
-                                <c:set var="action" value="ASSIGN"/>
+                            <c:if test="${empty configAction}">
+                                <c:set var="configAction" value="ASSIGN"/>
                             </c:if>
-                            <tags:radio name="action" value="ASSIGN" key=".assign.label" checked="${action == 'ASSIGN'}"/>
-                            <tags:radio name="action" value="UNASSIGN" key=".unassign.label" checked="${action == 'UNASSIGN'}"/>
+                            <tags:radio name="action" value="ASSIGN" key=".assign.label" checked="${configAction == 'ASSIGN'}"/>
+                            <tags:radio name="action" value="UNASSIGN" key=".unassign.label" checked="${configAction == 'UNASSIGN'}"/>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-                            <c:if test="${empty action}">
-                                <c:set var="action" value="SEND"/>
+                            <c:if test="${empty configAction}">
+                                <c:set var="configAction" value="SEND"/>
                             </c:if>
-                            <tags:radio name="action" value="SEND" key=".send.label" checked="${action == 'SEND'}"/>
-                            <tags:radio name="action" value="READ" key=".read.label" checked="${action == 'READ'}"/>
+                            <tags:radio name="action" value="SEND" key=".send.label" checked="${configAction == 'SEND'}"/>
+                            <tags:radio name="action" value="READ" key=".read.label" checked="${configAction == 'READ'}"/>
                         </cti:checkRolesAndProperties>
-                        <c:if test="${empty action}">
-                            <c:set var="action" value="VERIFY"/>
+                        <c:if test="${empty configAction}">
+                            <c:set var="configAction" value="VERIFY"/>
                         </c:if>
-                        <tags:radio name="action" value="VERIFY" key=".verify.label" checked="${action == 'VERIFY'}"/>
+                        <tags:radio name="action" value="VERIFY" key=".verify.label" checked="${configAction == 'VERIFY'}"/>
                     </div>
                 </tags:nameValue2>
                 
@@ -69,17 +69,15 @@
             </tags:nameValueContainer2>
             
             <div class="page-action-area">
-                <cti:button nameKey="assign" type="submit" classes="primary action js-assign-config" busy="true"/>
-                <cti:button nameKey="unassign" type="submit" classes="primary action js-unassign-config" busy="true"/>
-                <cti:button nameKey="send" type="submit" classes="primary action js-send-config" busy="true"/>
-                <cti:button nameKey="read" type="submit" classes="primary action js-read-config" busy="true"/>
-                <cti:button nameKey="verify" type="submit" classes="primary action js-verify-config" busy="true"/>
+                <cti:button nameKey="assign" classes="primary action js-assign-config js-action-submit" busy="true"/>
+                <cti:button nameKey="unassign" classes="primary action js-unassign-config js-action-submit" busy="true"/>
+                <cti:button nameKey="send" classes="primary action js-send-config js-action-submit" busy="true"/>
+                <cti:button nameKey="read" classes="primary action js-read-config js-action-submit" busy="true"/>
+                <cti:button nameKey="verify" classes="primary action js-verify-config js-action-submit" busy="true"/>
             </div>
             
         </form>
 
     </tags:bulkActionContainer>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.bulk.device.configs.js"/>
-    
-</cti:standardPage>
+       
+</cti:msgScope>

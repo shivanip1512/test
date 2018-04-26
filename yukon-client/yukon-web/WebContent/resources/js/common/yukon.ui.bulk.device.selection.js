@@ -14,6 +14,7 @@ yukon.ui.bulk.device.selection = (function () {
     _initialized = false,
     _blockOnSubmit = false,
     _noGroupSelectedText,
+    _eventAfterSubmit,
     
     mod = {
 
@@ -25,7 +26,26 @@ yukon.ui.bulk.device.selection = (function () {
             if (_blockOnSubmit) {
                 yukon.ui.blockPage();
             }
-            $('#selectDevicesByGroupForm').submit();
+            var form = $('#selectDevicesByGroupForm');
+            if (_eventAfterSubmit) {
+                form.ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        mod.updateCollectionActions(data);
+                    }
+                });
+            } else {
+                form.submit();
+            }
+        },
+        
+        updateCollectionActions : function (data) {
+            $('#collectionActionsDiv').html(data);
+            $('.js-device-separator').removeClass('dn');
+            $('.js-count').html($('#deviceCollectionCount').val());
+            $('.js-device-description').html($('#deviceCollectionDescription').val());
+            $('#collectionActionsAccordion').accordion("option", "active", 1);
+            var refreshUrl = $('#refreshLink').val();
+            window.history.pushState({path:refreshUrl}, '', refreshUrl);
         },
 
         updateFileNote : function (id) {
@@ -117,9 +137,11 @@ yukon.ui.bulk.device.selection = (function () {
             
             _blockOnSubmit = $('#blockOnSubmit').val();
             _noGroupSelectedText = $('#noGroupSelectedText').val();
+            _eventAfterSubmit = $('#eventAfterSubmit').val();
             
             /** By Device Functionality */
             $(document).on('click', '.js-device', function () {
+                selectDevicesPicker.clearEntireSelection.call(selectDevicesPicker);
                 selectDevicesPicker.show.call(selectDevicesPicker);            
             });
             
@@ -135,7 +157,16 @@ yukon.ui.bulk.device.selection = (function () {
                 if (_blockOnSubmit) {
                     yukon.ui.blockPage();
                 }
-                $('#selectDevicesForm').submit();
+                var form = $('#selectDevicesForm');
+                if (_eventAfterSubmit) {
+                    form.ajaxSubmit({
+                        success: function(data, status, xhr, $form) {
+                            mod.updateCollectionActions(data);
+                        }
+                    });
+                } else {
+                    form.submit();
+                }
                 return true;
             });
             
@@ -152,7 +183,16 @@ yukon.ui.bulk.device.selection = (function () {
                 var errors = mod.validateAddressRange();
                 if (errors.length === 0) {
                     //submit the form
-                    $('#addByAddressForm').submit();
+                    var form = $('#addByAddressForm');
+                    if (_eventAfterSubmit) {
+                        form.ajaxSubmit({
+                            success: function(data, status, xhr, $form) {
+                                mod.updateCollectionActions(data);
+                            }
+                        });
+                    } else {
+                        form.submit();
+                    }
                 } else {
                     //show the error
                     $(errors.join(',')).show().addClass('error');
@@ -171,6 +211,26 @@ yukon.ui.bulk.device.selection = (function () {
             
             $(document).on('change', '#byFileUpload_uploadType', function () {
                 mod.updateFileNote('byFileUpload');
+            });
+            
+            $(document).on('click', '.js-file-upload-submit', function () {
+                //submit the form
+                var form = $('#addByFileUploadForm');
+                if (_eventAfterSubmit) {
+                    form.ajaxSubmit({
+                        success: function(data, status, xhr, $form) {
+                            yukon.ui.unbusy('.js-file-upload-submit');
+                            $('#byFileUpload').dialog('close');
+                            if (data.errorMsg) {
+                                yukon.ui.alertError(data.errorMsg);
+                            } else {
+                                mod.updateCollectionActions(data);
+                            }
+                        }
+                    });
+                } else {
+                    form.submit();
+                }            
             });
                                                 
             _initialized = true;

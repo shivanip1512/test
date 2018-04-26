@@ -3,6 +3,7 @@ package com.cannontech.web.bulk;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldService;
@@ -38,8 +40,20 @@ public class MassChangeController {
      * @throws ServletRequestBindingException 
      */
     @RequestMapping(value = "massChangeSelect", method = RequestMethod.GET)
-    public String massChangeSelect(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
-        
+    public String massChangeSelect(ModelMap model, HttpServletRequest request) throws ServletException {
+        setupModel(model, request);
+        model.addAttribute("action", CollectionAction.MASS_CHANGE);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/massChange/massChangeSelect.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value = "massChangeSelectInputs", method = RequestMethod.GET)
+    public String massChangeSelectInputs(ModelMap model, HttpServletRequest request) throws ServletException {
+        setupModel(model, request);
+        return "massChange/massChangeSelect.jsp";
+    }
+    
+    private void setupModel(ModelMap model, HttpServletRequest request) throws ServletException {
         // pass along deviceCollection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
@@ -50,8 +64,6 @@ public class MassChangeController {
         
         // pass previously selected bulk field name through
         model.addAttribute("selectedBulkFieldName", ServletRequestUtils.getStringParameter(request, "selectedBulkFieldName", ""));
-        
-        return "massChange/massChangeSelect.jsp";
     }
 
 }

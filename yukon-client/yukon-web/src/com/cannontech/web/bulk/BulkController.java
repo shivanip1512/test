@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -31,7 +29,6 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.callbackResult.BulkFieldBackgroupProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
-import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -49,8 +46,6 @@ import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -74,7 +69,6 @@ public class BulkController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper; 
     @Autowired private PaoPopupHelper paoPopupHelper;
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
-    private static final String baseKey ="yukon.web.modules.tools.collectionActions";
     
     // BULK HOME
     @RequestMapping("bulkHome")
@@ -120,77 +114,11 @@ public class BulkController {
     public String collectionActions(ModelMap model, HttpServletRequest request,
             @RequestParam(defaultValue = "false") boolean isFileUpload, FlashScope flashScope)
             throws ServletRequestBindingException {
+        
+        DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
+        model.addAttribute("deviceCollection", collection);
+        return "../collectionActions/collectionActionsHome.jsp";
 
-        String view = "";
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = userContext.getYukonUser();
-        
-        try {
-        
-            DeviceCollection colleciton = deviceCollectionFactory.createDeviceCollection(request);
-            //if (isFileUpload) {
-                Map<String, String> collectionParameters = colleciton.getCollectionParameters();
-                model.addAllAttributes(collectionParameters);
-            //}
-            view = "collectionActions.jsp";
-            model.addAttribute("deviceCollection", colleciton);
-            boolean showGroupManagement = rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, user);
-            boolean showAddRemovePoints = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
-            boolean hasMassDelete = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_DELETE, user);
-            boolean hasMassChange = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_CHANGE, user);
-            boolean showEditing = hasMassChange || hasMassDelete;
-            model.addAttribute("deviceErrors", colleciton.getErrorDevices());
-            model.addAttribute("deviceErrorCount", colleciton.getDeviceErrorCount());
-            model.addAttribute("showGroupManagement", showGroupManagement);
-            model.addAttribute("showEditing", showEditing);
-            model.addAttribute("showAddRemovePoints", showAddRemovePoints);
-            if (colleciton.getErrorDevices().size() > 0) {
-                String totalErrors = new Integer(colleciton.getErrorDevices().size()).toString();
-                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".deviceUploadFailed", totalErrors));
-            }
-        } catch (ObjectMappingException | UnsupportedOperationException e) {
-            view = "redirect:/bulk/deviceSelection";
-            model.addAttribute("errorMsg", e.getMessage());
-        } catch (IllegalArgumentException exception) {
-            view = "redirect:/bulk/deviceSelection";
-            flashScope.setError(new YukonMessageSourceResolvable(exception.getMessage()));
-        }
-        
-        return view;
-    }
-    
-    @RequestMapping("deviceSelection")
-    public String deviceSelection(ModelMap model, HttpServletRequest request) {
-        
-        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
-        if (!StringUtils.isBlank(errorMsg)) {
-            model.addAttribute("errorMsg", errorMsg);
-        }
-        
-        String redirectUrl = ServletRequestUtils.getStringParameter(request, "redirectUrl", null);
-        if (!StringUtils.isBlank(redirectUrl)) {
-            model.addAttribute("redirectUrl", redirectUrl);
-        }
-        
-        return "deviceSelection.jsp";
-    }
-    
-    @RequestMapping("deviceSelectionGetDevices")
-    public String deviceSelectionGetDevices(ModelMap model, HttpServletRequest request,
-            @RequestParam(defaultValue = "false") boolean isFileUpload, FlashScope flashScope)
-            throws ServletRequestBindingException {
-        String redirectUrl = ServletRequestUtils.getStringParameter(request, "redirectUrl", null);
-        try {
-            String view = collectionActions(model, request, isFileUpload, flashScope);
-            if (!StringUtils.isBlank(redirectUrl)) {
-                return "redirect:" + redirectUrl;
-            } else {
-                return view;
-            }
-        } catch (DeviceCollectionCreationException e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "redirect:/bulk/deviceSelection";
-        }
     }
     
     // DEVICE COLLECTION REPORT

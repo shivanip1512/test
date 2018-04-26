@@ -37,7 +37,7 @@ public class CollectionActionAlertHelper {
             MessageSourceAccessor accessor, SimpleCallback<CollectionActionResult> callback, HttpServletRequest request, String detailText) {
 
         return new SimpleCallback<CollectionActionResult>() {
-            String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
+            String partialUrl = ServletUtil.createSafeUrl(request, "/collectionActions/progressReport/view");
 
             @Override
             public void handle(CollectionActionResult result) throws Exception {

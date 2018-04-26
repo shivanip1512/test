@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<cti:standardPage module="tools" page="bulk.disconnect">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.disconnect">
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.disconnect" deviceCollection="${deviceCollection}">
     
@@ -26,10 +26,10 @@
             </tags:nameValueContainer2>
         
         <div class="page-action-area">
-            <cti:button classes="primary action" nameKey="start" type="submit"/>
+            <cti:button classes="primary action js-action-submit" nameKey="start"/>
         </div>
         
         </form:form>
     </tags:bulkActionContainer>
     
-</cti:standardPage>
+</cti:msgScope>

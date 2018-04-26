@@ -55,7 +55,19 @@ public class ChangeDeviceTypeController {
      */
     @RequestMapping(value = "chooseDeviceType", method = RequestMethod.GET)
     public String chooseDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
-
+        setupModel(model, request);
+        model.addAttribute("action", CollectionAction.CHANGE_TYPE);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/changeDeviceType/chooseDeviceType.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value = "chooseDeviceTypeInputs", method = RequestMethod.GET)
+    public String chooseDeviceTypeInputs(ModelMap model, HttpServletRequest request) throws ServletException {
+        setupModel(model, request);
+        return "changeDeviceType/chooseDeviceType.jsp";
+    }
+    
+    private void setupModel(ModelMap model, HttpServletRequest request) throws ServletException {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
 
@@ -86,8 +98,6 @@ public class ChangeDeviceTypeController {
             }
         }
         model.addAttribute("deviceTypes", deviceTypes);
-
-        return "changeDeviceType/chooseDeviceType.jsp";
     }
     
     /**
@@ -116,7 +126,7 @@ public class ChangeDeviceTypeController {
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
             new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
         
-        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
+        return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
     
 }

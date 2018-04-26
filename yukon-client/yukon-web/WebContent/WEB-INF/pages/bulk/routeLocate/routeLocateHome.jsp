@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
-<cti:standardPage module="tools" page="bulk.routeLocateHome">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.routeLocateHome">
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.routeLocateHome" deviceCollection="${deviceCollection}">
         
@@ -52,8 +52,5 @@
         </form>
     
     </tags:bulkActionContainer>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.bulk.route.locate.js"/>
-    
-
-</cti:standardPage>
+        
+</cti:msgScope>

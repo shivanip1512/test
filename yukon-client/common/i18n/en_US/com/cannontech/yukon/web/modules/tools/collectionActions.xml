@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!-- Collection Actions Home -->
+    <entry key="yukon.web.modules.tools.collectionActions.home.pageName">Collection Actions</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceSelection.title">Select a set of devices to perform a collection action on:</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceSelectionHeader">Device Selection</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.selectActionHeader">Select Action</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.actionInputsHeader">Action Inputs</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReportHeader">Progress Report</entry>
+    
+    <entry key="yukon.web.modules.tools.collectionActions.noDevicesSelected">Please select devices before selecting an action.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.noActionSelected">Please select an action before going to Action Inputs.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.noActionExecuted">Please execute an action under Action Inputs before going to the Progress Report.</entry>
+    
+    <!-- collectionActions.jsp -->
+    <entry key="yukon.web.modules.tools.collectionActions.header.groupManagement.title">Group Management</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.addToGroupLabel">Add To Group</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.addToGroupDescription">Add devices to a Device Group.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.removeFromGroupLabel">Remove From Group</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.removeFromGroupDescription">Remove devices from a Device Group.</entry>
+
+    <entry key="yukon.web.modules.tools.collectionActions.header.commands.title">Commands</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.sendCommandLabel">Send Command</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.sendCommandDescription">Issue a command to multiple devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.readAttributeLabel">Read Attribute</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.readAttributeDescription">Read an attribute of multiple devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.routeLocateLabel">Locate Route</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.disconnectLabel">Disconnect</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.disconnectDescription">Control disconnect of multiple devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.demandResetLabel">Demand Reset</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.demandResetDescription">Send demand reset to multiple devices.</entry>
+
+    <entry key="yukon.web.modules.tools.collectionActions.header.reporting.title">Reporting</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceCollectionReportLabel">Device Report</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceCollectionMapLabel">Map Devices</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceCollectionMapDescription">View device locations on a map.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.dataAnalysisLabel">Data Analysis</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.dataAnalysisDescription">View a report detailing archived reads.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.archivedValueDataExporterLabel">Data Export</entry> 
+    <entry key="yukon.web.modules.tools.collectionActions.archivedValueDataExporterDescription">Export archived point data.</entry>
+
+    <entry key="yukon.web.modules.tools.collectionActions.header.editing.title">Editing</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.massChangeLabel">Mass Change</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.changeDeviceTypeLabel">Change Type</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.changeDeviceTypeDescription">Change the device type of devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.massDeleteLabel">Mass Delete</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
+
+    <entry key="yukon.web.modules.tools.collectionActions.header.configActions.title">Config Actions</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceConfigsLabel">Device Configs</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.deviceConfigsDescription">Assign, Unassign, Send, Read or Verify a config for a collection of devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.configureDataStreamingLabel">Configure Data Streaming</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.configureDataStreamingDescription">Configure data streaming for a collection of devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.removeDataStreamingLabel">Remove Data Streaming</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.removeDataStreamingDescription">Remove data streaming from a collection of devices.</entry>
+
+    <entry key="yukon.web.modules.tools.collectionActions.header.pointActions.title">Points</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.addPointsLabel">Add Points</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.addPointsDescription">Add points to multiple devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.updatePointsLabel">Update Points</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.updatePointsDescription">Update points on multiple devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.removePointsLabel">Remove Points</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.removePointsDescription">Remove points from multiple devices.</entry>
+        
+    <!-- Progress Report -->
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.pageName">Progress Report</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.crumbTitle">Progress Report</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.note.label">Note:</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.note.text"><![CDATA[
+        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.
+        You may view the progress on the <a href="{0}" target="_blank">Recent Results</a> page.
+    ]]></entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.inputs.title">Inputs</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.action">Action</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.devices">Device(s)</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.startDateTime">Start Date/Time</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.stopDateTime">Stop Date/Time</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.results.title">Results</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.cancel.label">Cancel</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.setRoutes.label">View/Set Routes</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.creText">Command Request Execution</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.verificationCreText">Verification Command Request Execution</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.logText">Log</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.collectionActions">Collection Actions</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.mapDevices">Map Devices</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.readAttribute">Read Attribute</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.sendCommand">Send Command</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.deviceReport">Device Report</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.logFileNotFoundError">There was an issue accessing the log file.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.progressReport.logIOError">There was an issue generating the log file.</entry>
+    
+    <!-- Recent Results -->
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.pageName">Recent Results</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.filterBy">Filter By:</entry>    
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.actions">Actions</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.dateRange">Date Range</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.filteredResults">Filtered Results: </entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.userName">User Name</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.status">Status</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.selectAll">Select All</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.action">All Types</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.startTime">Date</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.success">Success</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.failure">Failure</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.notAttempted">Not Attempted</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.detail">Detail</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.status">Status</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.userName">User Name</entry>
+    
+    <!-- Collection Action Types -->
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.SEND_COMMAND">Send Command</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.READ_ATTRIBUTE">Read Attribute</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.LOCATE_ROUTE">Locate Route</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.CONNECT">Connect</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.DISCONNECT">Disconnect</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ARM">Arm</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.DEMAND_RESET">Demand Reset</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.DEVICE_CONFIGS">Device Configs</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.SEND_CONFIG">Send Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.READ_CONFIG">Read Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.VERIFY_CONFIG">Verify Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ARCHIVE_DATA_ANALYSIS">Archive Data Analysis</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.MASS_CHANGE">Mass Change</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.CHANGE_TYPE">Change Type</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.MASS_DELETE">Mass Delete</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ADD_POINTS">Add Points</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.UPDATE_POINTS">Update Points</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.REMOVE_POINTS">Remove Points</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ASSIGN_CONFIG">Assign Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.UNASSIGN_CONFIG">Unassign Config</entry>
+    
+    <!-- Collection Action Detail Types -->
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.SUCCESS">Success</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.FAILURE">Failure</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.UNSUPPORTED">Not Supported</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.CONNECTED">Connected</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.ARMED">Armed</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.DISCONNECTED">Disconnected</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.NOT_CONFIGURED">Not Configured</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.CANCELED">Canceled</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.CONFIRMED">Confirmed</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.UNCONFIRMED">Unconfirmed</entry>
+        
+    <!-- Email -->
+    <entry key="yukon.web.modules.tools.collectionActions.emailMessage.action">Action</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.emailMessage.devices">Device(s)</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.emailMessage.startDateTime">Start Date/Time</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.emailMessage.stopDateTime">Stop Date/Time</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.emailMessage.userName">User Name</entry>
+        
+    <!-- Collection Log Headers-->
+    <entry key="yukon.web.modules.tools.collectionActions.log.header.DeviceName">Device_Name</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.log.header.ResponseDateTime">Response_Date_Time</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.log.header.Status">Status</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.log.header.Error">Error</entry>
+    
+</properties>

@@ -90,7 +90,7 @@
     <tags:sectionContainer title="${infoSectionText}" id="creInfoSection" styleClass="stacked">
                     
         <tags:nameValueContainer>
-            <cti:url var="progressReportUrl" value="/bulk/progressReport/detail?key=${result.cacheKey}"/>
+            <cti:url var="progressReportUrl" value="/collectionActions/progressReport/view?key=${result.cacheKey}"/>
             <tags:nameValue name="${infoTypeText}" nameColumnWidth="160px">
                 <c:choose>
                     <c:when test="${not empty result}"><a href="${progressReportUrl}">${cre.commandRequestExecutionType.shortName}</a></c:when>

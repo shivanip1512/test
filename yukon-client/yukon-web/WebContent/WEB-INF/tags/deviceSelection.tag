@@ -4,6 +4,7 @@
 <%@ attribute name="blockOnSubmit" type="java.lang.Boolean" %>
 <%@ attribute name="groupDataJson" required="true" %>
 <%@ attribute name="pickerType" required="true" %>
+<%@ attribute name="eventAfterSubmit" type="java.lang.Boolean" required="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -19,6 +20,7 @@
             <input type="hidden" id="blockOnSubmit" value="${blockOnSubmit}"/>
             <cti:msg2 var="noGroupSelectedAlertText" key=".selectDevicesByGroupTree.noGroupSelectedAlertText"/>
             <input type="hidden" id="noGroupSelectedText" value="${noGroupSelectedAlertText}"/>
+            <input type="hidden" id="eventAfterSubmit" value="${eventAfterSubmit}"/>
         
             <%-- DEVICES --%>
             <div class="page-action-area">
@@ -150,7 +152,7 @@
                         </tags:nameValueContainer2>
                         
                         <div class="action-area">
-                            <cti:button type="submit" busy="true" nameKey="selectDevices"/>
+                            <cti:button busy="true" nameKey="selectDevices" classes="js-file-upload-submit"/>
                             <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
                         </div>
                     </form>

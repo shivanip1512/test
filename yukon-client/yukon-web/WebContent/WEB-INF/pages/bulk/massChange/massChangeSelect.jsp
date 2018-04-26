@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="tools" page="bulk.massChangeSelect">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.massChangeSelect">
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.massChangeSelect" deviceCollection="${deviceCollection}">
 
@@ -17,20 +17,19 @@
             <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                 <cti:checkRolesAndProperties value="MASS_CHANGE">
                     <input type="hidden" id="massChangeBulkFieldName" name="massChangeBulkFieldName">
-                    <c:forEach var="bulkField" items="${massChangableBulkFields}">
-                        <div class="page-action-area">
-                            <button class="js-mass-change" data-field="${bulkField.inputSource.field}">
-                                <span class="b-label"><cti:msg key="${bulkField.displayKey}" /></span>
-                            </button>
-                            <span><i:inline key="${bulkField.displayKey}.description" /></span>
-                        </div>
-                    </c:forEach>
+                    <div class="button-group stacked">
+                        <c:forEach var="bulkField" items="${massChangableBulkFields}">
+                            <tags:radio name="field" value="${bulkField.inputSource.field}" key="${bulkField.displayKey}" 
+                                inputClass="js-mass-change" checked="${bulkField.inputSource.field == 'enable'}"/>
+                        </c:forEach>
+                    </div>
                 </cti:checkRolesAndProperties>
             </cti:checkRolesAndProperties>
         </form>
+        
+        <div id="actionInputsDiv2" class="PT10">
+        </div>
 
     </tags:bulkActionContainer>
-
-    <cti:includeScript link="/resources/js/pages/yukon.bulk.masschange.js" />
-
-</cti:standardPage>
+    
+</cti:msgScope>

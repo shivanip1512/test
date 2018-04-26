@@ -4,12 +4,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="tools" page="bulk.progressReport">
+<cti:msgScope paths="yukon.web.modules.tools.collectionActions.progressReport">
 
     <table class="stacked">
         <tr>
             <td class="strong-label-small"><i:inline key=".note.label" /></td>
-            <cti:url var="resultsUrl" value="/bulk/recentResults"/>
+            <cti:url var="resultsUrl" value="/collectionActions/recentResults"/>
             <td class="detail"><i:inline key=".note.text" arguments="${resultsUrl}" /></td>
         </tr>
     </table>
@@ -52,13 +52,13 @@
                             <cti:param name="${cp.key}" value="${cp.value}"/>
                         </c:forEach>
                     </cti:url>
-                    <cm:dropdownOption key=".deviceReport" icon="icon-report" href="${deviceReportUrl}"/>
+                    <cm:dropdownOption key=".deviceReport" icon="icon-report" href="${deviceReportUrl}" newTab="true"/>
                     <cti:url var="mapDevicesUrl" value="/tools/map">
                         <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
                             <cti:param name="${cp.key}" value="${cp.value}"/>
                         </c:forEach>
                     </cti:url>
-                    <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapDevicesUrl}"/>
+                    <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapDevicesUrl}" newTab="true"/>
                     <cti:url var="readAttributeUrl" value="/group/groupMeterRead/homeCollection">
                         <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
                             <cti:param name="${cp.key}" value="${cp.value}"/>
@@ -88,16 +88,16 @@
         <c:if test="${result.execution != null}">
             <cti:msg2 var="creText" key=".creText"/>
             <cti:url var="creLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.execution.id}"/>
-            <cti:button renderMode="image" icon="icon-report" title="${creText}" href="${creLink}"/>
+            <cti:button renderMode="image" icon="icon-report" title="${creText}" data-url="${creLink}" classes="js-cre"/>
         </c:if>
         <c:if test="${result.verificationExecution != null}">
             <cti:msg2 var="verificationCreText" key=".verificationCreText"/>
             <cti:url var="verificationCreLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.verificationExecution.id}"/>
-            <cti:button renderMode="image" icon="icon-report-edit" title="${verificationCreText}" href="${verificationCreLink}"/>
+            <cti:button renderMode="image" icon="icon-report-edit" title="${verificationCreText}" data-url="${verificationCreLink}" classes="js-cre"/>
         </c:if>
         <c:set var="logClass" value="${isLogAvailable ? '' : 'dn'}"/>
         <cti:msg2 var="logText" key=".logText"/>
-        <cti:url var="logLink" value="/bulk/progressReport/log?key=${result.cacheKey}"/>
+        <cti:url var="logLink" value="/collectionActions/progressReport/log?key=${result.cacheKey}"/>
         <cti:button renderMode="image" icon="icon-script" title="${logText}" href="${logLink}" classes="js-log-icon ${logClass}"/>
     </c:set>
     
@@ -111,18 +111,16 @@
             <span class="js-percent-text"></span>
             <span class="js-completed-count" style="padding-left:10px;"></span>
             <span class="js-status" style="padding-left:10px"></span>
+            <span class="user-message error js-progress-error dn"></span>
+            <span class="user-message info js-progress-info dn"></span>
             <c:if test="${result.isCancelable()}">
                 <cti:button nameKey="cancel" classes="js-cancel fn" busy="true"/>
             </c:if>
             <c:if test="${result.action == 'LOCATE_ROUTE'}">
-                <cti:button nameKey="setRoutes" classes="js-set-routes fn" busy="true"/>
+                <cti:button nameKey="setRoutes" classes="js-set-routes fn"/>
             </c:if>
         </div>
         <div style="max-height:220px;max-width:500px;" class="js-pie-chart js-initialize"></div>
     </tags:sectionContainer2>
 
-    <cti:includeScript link="HIGH_STOCK"/>
-    <cti:includeScript link="/resources/js/pages/yukon.bulk.progressReport.js"/>
-    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
-      
-</cti:standardPage>
+</cti:msgScope>

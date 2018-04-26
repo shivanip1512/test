@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk;
+package com.cannontech.web.collectionActions;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,17 +38,27 @@ public class ProgressReportController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
     
-    private final static String baseKey = "yukon.web.modules.tools.bulk.progressReport.";
+    private final static String baseKey = "yukon.web.modules.tools.collectionActions.progressReport.";
     
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     public String detail(ModelMap model, Integer key) {
+        setupModel(model, key);
+        return "progressReport.jsp";
+    }
+    
+    @RequestMapping(value = "view", method = RequestMethod.GET)
+    public String view(ModelMap model, Integer key) {
+        setupModel(model, key);
+        return "progressReportPage.jsp";
+    }
+    
+    private void setupModel(ModelMap model, Integer key) {
         CollectionActionResult result = collectionActionService.getResult(key);
         result.log();
         model.addAttribute("result", result);
         model.addAttribute("details", CollectionActionDetail.values());
         model.addAttribute("status", CommandRequestExecutionStatus.values());
         model.addAttribute("isLogAvailable", result.hasLogFile());
-        return "progressReport.jsp";
     }
 
     @RequestMapping(value = "updateProgressReport", method = RequestMethod.GET)

@@ -2,7 +2,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage page="bulk.addPointsHome" module="tools">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.addPointsHome">
+
     <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
     
         <cti:msgScope paths="yukon.common.device.bulk.addPointsHome"> 
@@ -123,7 +124,7 @@
                     </div>
                             
                     <%-- ADD POINTS BUTTON --%>
-                    <cti:button nameKey="add" classes="action primary" type="submit"/>
+                    <cti:button nameKey="add" classes="action primary js-action-submit"/>
                     
                 </form>
         
@@ -132,7 +133,5 @@
         </cti:msgScope>
                         
     </cti:checkRolesAndProperties>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.bulk.point.js"/>
-
-</cti:standardPage>
+        
+</cti:msgScope>

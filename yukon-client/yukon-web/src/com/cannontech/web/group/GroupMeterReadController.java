@@ -17,6 +17,7 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
@@ -47,21 +48,31 @@ public class GroupMeterReadController {
 	
     @RequestMapping(value = "homeCollection", method = RequestMethod.GET)
 	public String homeCollection(ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
-				
-		DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-		model.addAttribute("deviceCollection", deviceCollection);
-		model.addAllAttributes(deviceCollection.getCollectionParameters());
-		
-		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
-		model.addAttribute("selectedAttributes", selectedAttributes);
-		
-		Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
-		Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
-                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
-		model.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
-		
-		return "groupMeterRead/groupMeterReadHomeCollection.jsp";
+		setupModel(model, userContext, request);
+		model.addAttribute("action", CollectionAction.READ_ATTRIBUTE);
+		model.addAttribute("actionInputs", "/WEB-INF/pages/group/groupMeterRead/groupMeterReadHomeCollection.jsp");
+		return "../collectionActions/collectionActionsHome.jsp";
 	}
+    
+    @RequestMapping(value = "readAttributeInputs", method = RequestMethod.GET)
+    public String readAttributeInputs(ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
+        setupModel(model, userContext, request);
+        return "groupMeterRead/groupMeterReadHomeCollection.jsp";
+    }
+    
+    private void setupModel(ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAllAttributes(deviceCollection.getCollectionParameters());
+        
+        Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
+        model.addAttribute("selectedAttributes", selectedAttributes);
+        
+        Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
+                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
+        model.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
+    }
 	
 	@RequestMapping(value = "readCollection", method = RequestMethod.POST)
 	public String readCollection(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) throws ServletException {
@@ -80,7 +91,7 @@ public class GroupMeterReadController {
 
         int resultKey =  deviceAttributeReadService.initiateRead(deviceCollection, selectedAttributes,
                                       DeviceRequestType.GROUP_ATTRIBUTE_READ, alertCallback, userContext);
-        return "redirect:/bulk/progressReport/detail?key=" + resultKey;
+        return "redirect:/collectionActions/progressReport/detail?key=" + resultKey;
 	}
 
 }

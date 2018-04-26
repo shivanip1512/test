@@ -2,7 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="tools" page="bulk.changeDeviceTypeChoose">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.changeDeviceTypeChoose">
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.changeDeviceTypeChoose" deviceCollection="${deviceCollection}">
     
@@ -28,10 +28,10 @@
               </c:otherwise>
             </c:choose>
             <div class="page-action-area">
-              <cti:button nameKey="change" type="submit" classes="primary action" disabled="${disabled}" />
+              <cti:button nameKey="change" classes="js-action-submit primary action" disabled="${disabled}" />
             </div>
         </form>
             
     </tags:bulkActionContainer>
     
-</cti:standardPage>
+</cti:msgScope>

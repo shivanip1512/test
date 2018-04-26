@@ -1,12 +1,12 @@
-yukon.namespace('yukon.bulk.progressReport');
+yukon.namespace('yukon.collection.actions.progress.report');
 
 /**
- * Module for the Bulk Operations/Collection Actions Progress Report
- * @module yukon.bulk.progressReport
+ * Module for the Collection Actions Progress Report
+ * @module yukon.collection.actions.progress.report
  * @requires JQUERY
  * @requires yukon
  */
-yukon.bulk.progressReport = (function () {
+yukon.collection.actions.progress.report = (function () {
     
     'use strict';
     
@@ -112,7 +112,7 @@ yukon.bulk.progressReport = (function () {
     /** Update the page every so many seconds */
     _update = function () {
         $.ajax({
-            url: yukon.url('/bulk/progressReport/updateProgressReport'),
+            url: yukon.url('/collectionActions/progressReport/updateProgressReport'),
             data: {
                 key: _key,
             }
@@ -141,7 +141,7 @@ yukon.bulk.progressReport = (function () {
             progressText.text(percent);
             $('.js-completed-count').text(data.counts.completed + "/" + data.inputs.collection.deviceCount);
             var statusValue = $('#status-' + data.status).val();
-            $('.js-status').text(statusValue);
+            $('.js-status').text(statusValue).toggleClass('error', data.status == 'FAILED');
             
             //update pie chart
             if (chart.is('.js-initialize')) {
@@ -162,7 +162,10 @@ yukon.bulk.progressReport = (function () {
             }
             //if execution exception occurred show error
             if (data.executionExceptionText) {
-                yukon.ui.alertError(data.executionExceptionText);
+                $('.js-progress-error').html(data.executionExceptionText).removeClass('dn');
+            }
+            if (data.infoText) {
+                $('.js-progress-info').html(data.infoText).removeClass('dn');
             }
             //show/hide cancel
             $('.js-cancel').toggleClass('dn', !data.cancelable);
@@ -174,19 +177,22 @@ yukon.bulk.progressReport = (function () {
         /** Initialize this module. */
         init : function () {
             
-            if (_initialized) return;
+            //if (_initialized) return;
             
             _key = $('#key').val();
-            var resultsData = yukon.fromJson('#resultsjson');
-            
-            _updatePage(resultsData);
-            if (resultsData.status != 'COMPLETE') {
-                _update();
+            var resultsJson = $('#resultsjson');
+            var resultsData;
+            if (resultsJson.length > 0) {
+                resultsData = yukon.fromJson('#resultsjson');
+                _updatePage(resultsData);
+                if (resultsData.status != 'COMPLETE') {
+                    _update();
+                }
             }
             
             $(document).on('click', '.js-cancel', function() {
                 $.ajax({
-                    url: yukon.url('/bulk/progressReport/cancel'),
+                    url: yukon.url('/collectionActions/progressReport/cancel'),
                     data: {
                         key: _key,
                     }
@@ -199,9 +205,13 @@ yukon.bulk.progressReport = (function () {
             });
             
             $(document).on('click', '.js-set-routes', function() {
-                window.location = yukon.url('/bulk/routeLocate/routeSettings?resultId=' + _key);
+                window.open(yukon.url('/bulk/routeLocate/routeSettings?resultId=' + _key));
             });
-
+            
+            $(document).on('click', '.js-cre', function() {
+                var url = $(this).data('url');
+                window.open(url);
+            });
 
             _initialized = true;
         },
@@ -215,4 +225,4 @@ yukon.bulk.progressReport = (function () {
     return mod;
 })();
 
-$(function () { yukon.bulk.progressReport.init(); });
+$(function () { yukon.collection.actions.progress.report.init(); });

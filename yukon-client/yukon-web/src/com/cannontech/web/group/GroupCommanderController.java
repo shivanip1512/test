@@ -73,19 +73,30 @@ public class GroupCommanderController {
     @Autowired private DateFormattingService dateFormattingService;
     
     private final static String baseKey = "yukon.web.modules.tools.bulk.sendCommand.";
-    private String emailBasekey = "yukon.web.modules.tools.bulk.emailMessage";
+    private String emailBasekey = "yukon.web.modules.tools.collectionActions.emailMessage";
 
 
     @RequestMapping(value = "collectionProcessing", method = RequestMethod.GET)
     public String collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model) {
-
+        setupModel(deviceCollection, userContext, model);
+        model.addAttribute("action", CollectionAction.SEND_COMMAND);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/group/commander/collectionProcessing.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value = "sendCommandInputs", method = RequestMethod.GET)
+    public String sendCommandInputs(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model) {
+        setupModel(deviceCollection, userContext, model);
+        return "commander/collectionProcessing.jsp";
+    }
+    
+    private void setupModel(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model) {
         List<LiteCommand> commands = deviceGroupService.getDeviceCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
         model.addAttribute("commands", commands);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
         boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
         model.addAttribute("isSmtpConfigured", isSmtpConfigured);
-        return "commander/collectionProcessing.jsp";
     }
 
     @RequestMapping(value = "executeCollectionCommand", method = RequestMethod.POST)
@@ -106,7 +117,7 @@ public class GroupCommanderController {
         }
         userInputs.put("Command", commandString);
         final URL hostURL = ServletUtil.getHostURL(request);
-        final String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
+        final String partialUrl = ServletUtil.createSafeUrl(request, "/collectionActions/progressReport/view");
 
         if (commandAuthorizationService.isAuthorized(context.getYukonUser(), commandString)) {
             SimpleCallback<CollectionActionResult> emailCallback = new SimpleCallback<CollectionActionResult>() {
@@ -129,7 +140,7 @@ public class GroupCommanderController {
                 commandString, CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, alertCallback, context);
             commanderEventLogService.groupCommandInitiated(collection.getDeviceCount(), commandString,
                 String.valueOf(cacheKey), context.getYukonUser());
-            return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
+            return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         } else {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "notAuthorized"));
             return "redirect:collectionProcessing";

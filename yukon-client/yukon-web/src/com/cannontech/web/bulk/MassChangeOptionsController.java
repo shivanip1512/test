@@ -123,7 +123,7 @@ public class MassChangeOptionsController {
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
             new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
             
-        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
+        return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
 
     private BulkYukonDeviceFieldProcessor findYukonDeviceFieldProcessor(BulkField<?, SimpleDevice> bulkField) {

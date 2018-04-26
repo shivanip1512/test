@@ -13,6 +13,7 @@ import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.util.SimpleCallback;
@@ -32,12 +33,23 @@ public class DisconnectController {
 
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, DeviceCollection deviceCollection) throws ServletException {
+        setupModel(model, deviceCollection);
+        model.addAttribute("action", CollectionAction.DISCONNECT);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/disconnect/home.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value = "disconnectInputs", method = RequestMethod.GET)
+    public String disconnectInputs(ModelMap model, DeviceCollection deviceCollection) throws ServletException {
+        setupModel(model, deviceCollection);
+        return "disconnect/home.jsp";
+    }
+    
+    private void setupModel(ModelMap model, DeviceCollection deviceCollection) {
         model.addAttribute("deviceCollection", deviceCollection);
         if (disconnectService.supportsArm(deviceCollection.getDeviceList())) {
             model.addAttribute("displayArmLink", "true");
         }
-       
-        return "disconnect/home.jsp";
     }
 
     @RequestMapping(value = "start", method = RequestMethod.POST)
@@ -48,6 +60,6 @@ public class DisconnectController {
                 messageResolver.getMessageSourceAccessor(userContext), request);
         CollectionActionResult result =
             disconnectService.execute(command, deviceCollection, alertCallback, userContext);
-        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
+        return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
 }

@@ -7,7 +7,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<cti:standardPage page="bulk.recentResults" module="tools">
+<cti:standardPage module="tools" page="collectionActions.recentResults">
 
     <c:set var="urlPath" value="/bulk/filter"/>
     <cti:url var="detailUrl" value="${urlPath}"/>
@@ -95,7 +95,7 @@
                             ${action.notAttemptedCount}
                         </td>
                         <td>
-                            <a href="progressReport/detail?key=${action.cacheKey}">View</a>
+                            <a href="progressReport/view?key=${action.cacheKey}">View</a>
                         </td>                        
                         <td>
                             <i:inline key="${action.status.formatKey}"/>

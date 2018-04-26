@@ -200,6 +200,12 @@
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>collectionActions</servlet-name>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>commander</servlet-name>
@@ -529,6 +535,11 @@
     <servlet-mapping>
         <servlet-name>bulk</servlet-name>
         <url-pattern>/bulk/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>collectionActions</servlet-name>
+        <url-pattern>/collectionActions/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

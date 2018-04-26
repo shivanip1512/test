@@ -106,68 +106,6 @@
     <entry key="yukon.common.device.bulk.deviceSelection.errBigEnd">End of range must be less than 2147483648</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.errLessThanZero">Negative Start value</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.errOutOfRange">Invalid Range: Start cannot be greater than End</entry>
-    
-
-    <!-- COLLECTION ACTIONS collectionActions.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.collectionActions.pageName">Collection Actions</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActions.contextualPageName">Collection Actions</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.header">Select An Action To Perform On Selected Devices:</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.noteLabel">Instruction:</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.noteText"><![CDATA[
-        Selecting any of these options will not immediately make any changes.<br>You will be directed to a page with additional options and/or opportunity to confirm your action.
-    ]]></entry>
-
-    <entry key="yukon.common.device.bulk.collectionActions.header.groupManagement.title">Group Management</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.addToGroupLabel">Add To Group</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.addToGroupDescription">Add devices to a Device Group.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removeFromGroupLabel">Remove From Group</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removeFromGroupDescription">Remove devices from a Device Group.</entry>
-
-    <entry key="yukon.common.device.bulk.collectionActions.header.commands.title">Commands</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.sendCommandLabel">Send Command</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.sendCommandDescription">Issue a command to multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.readAttributeLabel">Read Attribute</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.readAttributeDescription">Read an attribute of multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.routeLocateLabel">Locate Route</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.disconnectLabel">Disconnect</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.disconnectDescription">Control disconnect of multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.demandResetLabel">Demand Reset</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.demandResetDescription">Send demand reset to multiple devices.</entry>
-
-    <entry key="yukon.common.device.bulk.collectionActions.header.reporting.title">Reporting</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionMapLabel">Map Devices</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionMapDescription">View device locations on a map.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel">Data Analysis</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisDescription">View a report detailing archived reads.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Data Export</entry> 
-    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription">Export archived point data.</entry>
-
-    <entry key="yukon.common.device.bulk.collectionActions.header.editing.title">Editing</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massChangeLabel">Mass Change</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel">Change Type</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeDescription">Change the device type of devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massDeleteLabel">Mass Delete</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
-
-    <entry key="yukon.common.device.bulk.collectionActions.header.configActions.title">Config Actions</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.deviceConfigsLabel">Device Configs</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.deviceConfigsDescription">Assign, Unassign, Send, Read or Verify a config for a collection of devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.configureDataStreamingLabel">Configure Data Streaming</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.configureDataStreamingDescription">Configure data streaming for a collection of devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removeDataStreamingLabel">Remove Data Streaming</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removeDataStreamingDescription">Remove data streaming from a collection of devices.</entry>
-
-    <entry key="yukon.common.device.bulk.collectionActions.header.pointActions.title">Points</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.addPointsLabel">Add Points</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.addPointsDescription">Add points to multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.updatePointsLabel">Update Points</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.updatePointsDescription">Update points on multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removePointsLabel">Remove Points</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removePointsDescription">Remove points from multiple devices.</entry>
      
     <!-- DEVICE COLLECTION REPORT -->
     <!-- ******************************************************************************************************************** -->
@@ -226,23 +164,11 @@
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.errorCount">Error Encountered</entry>
   
     <!-- massChangeSelect.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.massChangeSelect.pageName">Mass Change</entry>
-    <entry key="yukon.web.modules.tools.bulk.massChangeSelect.contextualPageName">Mass Change</entry>
     <entry key="yukon.common.device.bulk.massChangeSelect.header">Choose The Type Of Change To Perform On Selected Devices:</entry>
     <entry key="yukon.common.device.bulk.massChangeSelect.noteLabel">Note:</entry>
     <entry key="yukon.common.device.bulk.massChangeSelect.noteText"><![CDATA[
-        Selecting any of these options will not immediately make any changes.<br>You will be directed to a page with additional options specific to the type of change selected.
+        Select whether you want to Enable/Disable the selected devices or change the route for the selected devices.
     ]]></entry>
-
-    <!-- massChangeOptions.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.massChangeOptions.pageName">Mass Change Options</entry>
-    <entry key="yukon.web.modules.tools.bulk.massChangeOptions.contextualPageName">Options</entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.route.header">Select Route To Change Selected Devices To:</entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.route.noteLabel"></entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.route.noteText"></entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.enable.header">Choose To Enable Or Disable Selected Devices:</entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.enable.noteLabel"></entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.enable.noteText"></entry>
 
     <!-- Mass Change Fields -->
     <entry key="yukon.common.device.bulk.massChange.route">Change Route</entry>
@@ -259,8 +185,6 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- deviceConfigs.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.pageName">Device Configuration</entry>
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.contextualPageName">Device Config</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.header">Device Configuration</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.noteText">Select whether you want to Assign, Unassign, Send, Read or Verify a Device Configuration for the selected devices.</entry>
@@ -401,8 +325,6 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- commander/collectionProcessing.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.sendCommand.pageName">Collection Command Processing</entry>
-    <entry key="yukon.web.modules.tools.bulk.sendCommand.contextualPageName">Send Command</entry>
     <entry key="yukon.web.modules.tools.bulk.sendCommand.header">Send Command</entry>
     <entry key="yukon.web.modules.tools.bulk.sendCommand.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.tools.bulk.sendCommand.noteText">Command will be sent to every device in the collection.</entry>
@@ -414,8 +336,6 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- groupMeterRead/groupMeterReadHomeCollection.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.readAttribute.pageName">Read Attribute</entry>
-    <entry key="yukon.web.modules.tools.bulk.readAttribute.contextualPageName">Read Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.readAttribute.header">Select an Attribute to Read</entry>
     <entry key="yukon.web.modules.tools.bulk.readAttribute.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.tools.bulk.readAttribute.noteText">Devices that do not support the attribute will not be included.</entry>
@@ -426,8 +346,6 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- massDeleteConfirm.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.massDeleteConfirm.pageName">Mass Delete</entry>
-    <entry key="yukon.web.modules.tools.bulk.massDeleteConfirm.contextualPageName">Mass Delete</entry>
     <entry key="yukon.common.device.bulk.massDeleteConfirm.header">Confirm Mass Delete:</entry>
     <entry key="yukon.common.device.bulk.massDeleteConfirm.noteLabel"><![CDATA[<span class="strong-label-small error">Confirm:</span>]]></entry>
     <entry key="yukon.common.device.bulk.massDeleteConfirm.noteText"><![CDATA[
@@ -439,8 +357,6 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- chooseDeviceType.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeChoose.pageName">Change Device Type</entry>
-    <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeChoose.contextualPageName">Change Device Type</entry>
     <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.header">Choose A New Device Type</entry>
     <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.noteLabel">Note:</entry>
     <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.noteText">Select the Device Type you wish to change selected devices to.</entry>
@@ -455,7 +371,6 @@
     <entry key="yukon.common.device.bulk.addRemovePointsHome.viewDefinitionDetailPopupTitle">View Device Definition</entry>
     
     <!-- addPointsHome.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.addPointsHome.pageName">Add Points</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.header">Choose Points</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.addPointsHome.noteText"></entry>
@@ -492,7 +407,6 @@
     <entry key="yukon.common.device.bulk.updatePointsHome.viewDefinitionDetailPopupTitle">View Device Definition</entry>
     
     <!-- updatePointsHome.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.updatePointsHome.pageName">Update Points</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.header">Choose Points</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noteText"></entry>
@@ -527,7 +441,6 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- removePointsHome.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.removePointsHome.pageName">Remove Points</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.header">Choose Points</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.removePointsHome.noteText"></entry>
@@ -823,8 +736,6 @@
     <entry key="yukon.web.modules.tools.bulk.disconnect.command.ARM">Arm</entry>
     
     <!-- /bulk/disconnect/home.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.disconnect.pageName">Connect/Disconnect/Arm</entry>
-    <entry key="yukon.web.modules.tools.bulk.disconnect.contextualPageName">Connect/Disconnect/Arm</entry>
     <entry key="yukon.common.device.bulk.disconnect.header">Select command</entry>
     <entry key="yukon.common.device.bulk.disconnect.noteLabel">Note: </entry>
     <entry key="yukon.common.device.bulk.disconnect.noteText"><![CDATA[
@@ -837,7 +748,6 @@
     <!-- ******************************************************************************************************************** -->
 
     <!-- /bulk/demand/reset/demandReset.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.demandReset.pageName">Demand Reset</entry> 
     <entry key="yukon.web.modules.tools.bulk.demandReset.header">Demand Reset</entry>
     <entry key="yukon.web.modules.tools.bulk.demandReset.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.tools.bulk.demandReset.noteText"><![CDATA[
@@ -845,96 +755,5 @@
         Verification of reset will start immediately following the demand reset command being sent out. 
         Verification requires the demand reset point to exist for each device.<br>
     ]]></entry>  
-    
-    <!-- Progress Report -->
-    <entry key="yukon.web.modules.tools.bulk.progressReport.pageName">Progress Report</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.crumbTitle">Progress Report</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.note.label">Note:</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.note.text"><![CDATA[
-        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.
-        You may view the progress on the <a href="{0}">Recent Results</a> page.
-    ]]></entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.inputs.title">Inputs</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.action">Action</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.devices">Device(s)</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.startDateTime">Start Date/Time</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.stopDateTime">Stop Date/Time</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.results.title">Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.cancel.label">Cancel</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.setRoutes.label">View/Set Routes</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.creText">Command Request Execution</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.verificationCreText">Verification Command Request Execution</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.logText">Log</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.collectionActions">Collection Actions</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.mapDevices">Map Devices</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.readAttribute">Read Attribute</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.sendCommand">Send Command</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.deviceReport">Device Report</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.logFileNotFoundError">There was an issue accessing the log file.</entry>
-    <entry key="yukon.web.modules.tools.bulk.progressReport.logIOError">There was an issue generating the log file.</entry>
-    
-    <!-- Collection Action Types -->
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.SEND_COMMAND">Send Command</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.READ_ATTRIBUTE">Read Attribute</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.LOCATE_ROUTE">Locate Route</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.CONNECT">Connect</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.DISCONNECT">Disconnect</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.ARM">Arm</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.DEMAND_RESET">Demand Reset</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.SEND_CONFIG">Send Config</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.READ_CONFIG">Read Config</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.VERIFY_CONFIG">Verify Config</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.ARCHIVE_DATA_ANALYSIS">Archive Data Analysis</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.MASS_CHANGE">Mass Change</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.CHANGE_TYPE">Change Type</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.MASS_DELETE">Mass Delete</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.ADD_POINTS">Add Points</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.UPDATE_POINTS">Update Points</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.REMOVE_POINTS">Remove Points</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.ASSIGN_CONFIG">Assign Config</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.UNASSIGN_CONFIG">Unassign Config</entry>
-    
-    <!-- Collection Log Headers-->
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.DeviceName">Device_Name</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.ResponseDateTime">Response_Date_Time</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.Status">Status</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.Error">Error</entry>
-    
-    <!-- Collection Action Detail Types -->
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.SUCCESS">Success</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.FAILURE">Failure</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.UNSUPPORTED">Not Supported</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.CONNECTED">Connected</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.ARMED">Armed</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.DISCONNECTED">Disconnected</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.NOT_CONFIGURED">Not Configured</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.CANCELED">Canceled</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.CONFIRMED">Confirmed</entry>
-    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.UNCONFIRMED">Unconfirmed</entry>
-    
-    <!-- Recent Results -->
-    <entry key="yukon.web.modules.tools.bulk.recentResults.pageName">Recent Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.filterBy">Filter By:</entry>    
-    <entry key="yukon.web.modules.tools.bulk.recentResults.actions">Actions</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.dateRange">Date Range</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.filteredResults">Filtered Results: </entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.userName">User Name</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.status">Status</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.selectAll">Select All</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.action">All Types</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.startTime">Date</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.success">Success</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.failure">Failure</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.notAttempted">Not Attempted</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.detail">Detail</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.status">Status</entry>
-    <entry key="yukon.web.modules.tools.bulk.recentResults.userName">User Name</entry>
-    
-    <!-- Email -->
-    <entry key="yukon.web.modules.tools.bulk.emailMessage.action">Action</entry>
-    <entry key="yukon.web.modules.tools.bulk.emailMessage.devices">Device(s)</entry>
-    <entry key="yukon.web.modules.tools.bulk.emailMessage.startDateTime">Start Date/Time</entry>
-    <entry key="yukon.web.modules.tools.bulk.emailMessage.stopDateTime">Stop Date/Time</entry>
-    <entry key="yukon.web.modules.tools.bulk.emailMessage.userName">User Name</entry>
-    
+
 </properties>

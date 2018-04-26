@@ -153,7 +153,7 @@
                                     <tr>
                                         <td><cti:formatDate type="BOTH" value="${result.startTime}"/></td>
                                         <td>
-                                            <cti:url var="readLogsDetailUrl" value="/bulk/progressReport/detail">
+                                            <cti:url var="readLogsDetailUrl" value="/collectionActions/progressReport/view">
                                                 <cti:param name="key" value="${result.cacheKey}"/>
                                             </cti:url>
                                             <a href="${readLogsDetailUrl}"><i:inline key=".recentReadLogsResults.viewDetailLink"/></a>

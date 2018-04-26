@@ -34,12 +34,6 @@ yukon.bulk.route.locate = (function () {
                 });
                 
             });
-            
-            $(document).on('click', '.js-locate-route', function () {
-                //set dropdown value
-                $('#commandFromDropdown').val($('#commandSelectId option:selected').text());
-                $('#executeLocateForm').submit();
-            });
 
             _initialized = true;
         }

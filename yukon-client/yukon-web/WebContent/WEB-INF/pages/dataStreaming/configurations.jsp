@@ -14,10 +14,10 @@
         <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
         <cti:url var="discrepanciesUrl" value="/tools/dataStreaming/discrepancies"/>
         <cm:dropdownOption key=".discrepancies" href="${discrepanciesUrl}" icon="icon-error"/>
-        <cti:url var="collectionActionsUrl" value="/bulk/deviceSelection"/>
+        <cti:url var="collectionActionsUrl" value="/collectionActions/home"/>
         <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
         <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
-            <cti:url var="configureOthersUrl" value="/bulk/deviceSelection?redirectUrl=/bulk/dataStreaming/configure"/>
+            <cti:url var="configureOthersUrl" value="/collectionActions/home?redirectUrl=/bulk/dataStreaming/configure"/>
             <cm:dropdownOption key=".configureOtherDevices" href="${configureOthersUrl}" icon="icon-cog-add"/>
         </cti:checkRolesAndProperties>
     </div>

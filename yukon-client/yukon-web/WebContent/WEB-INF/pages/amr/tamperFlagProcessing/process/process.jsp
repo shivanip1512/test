@@ -143,7 +143,7 @@
                                             <cti:formatDate type="BOTH" value="${result.startTime}"/>
                                         </td>
                                         <td>
-                                            <cti:url var="readLogsDetailUrl" value="/bulk/progressReport/detail">
+                                            <cti:url var="readLogsDetailUrl" value="/collectionActions/progressReport/view">
                                                 <cti:param name="key" value="${result.cacheKey}"/>
                                             </cti:url>
                                             <a href="${readLogsDetailUrl}"><i:inline key=".section.readFlags.recentReadFlagsResults.viewDetailLink"/></a>
@@ -201,7 +201,7 @@
                                             <cti:formatDate type="BOTH" value="${result.startTime}"/>
                                         </td>
                                         <td>
-                                            <cti:url var="resetLogsDetailUrl" value="/bulk/progressReport/detail">
+                                            <cti:url var="resetLogsDetailUrl" value="/collectionActions/progressReport/view">
                                                 <cti:param name="key" value="${result.cacheKey}"/>
                                             </cti:url>
                                             <a href="${resetLogsDetailUrl}"><i:inline key=".section.resetFlags.recentResetFlagsResults.viewDetailLink"/></a>

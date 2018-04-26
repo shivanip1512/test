@@ -280,116 +280,72 @@
               <page name="bulk.pointImport.results" type="DETAIL"/>
             </pages>
           </page>
-          <page name="bulk.archivedValueExporter" type="BASIC">
-            <link>/tools/data-exporter/view</link>
-            <pages>
-              <page name="bulk.archivedValueExporter.EDIT" type="DETAIL_CHILD" hideFavorite="true">
-                <labelArgument>${formatName}</labelArgument>
-              </page>
-              <page name="bulk.archivedValueExporter.CREATE" type="BASIC" hideFavorite="true"/>
-              <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
-                <link>/amr/archivedValueExporter/selectDevices</link>
-              </page>
-            </pages>
-          </page>
-          <page name="bulk.archivedValueExporterScheduleSetup" type="BASIC">
-            <link>/tools/data-exporterscheduleReport</link>
-          </page>
-          <page name="bulk.deviceSelection" type="BASIC">
-            <link>/bulk/deviceSelection</link>
-            <pages>
-              <page name="bulk.collectionActions" type="BASIC">
-                <link>/bulk/collectionActions?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                <pages>
-                  <page name="bulk.collectionActions.deviceCollectionReport" type="BASIC"/>
-                  <page name="bulk.analysis.home" type="BASIC">
-                    <link>/bulk/archiveDataAnalysis/home/setup?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.analysis.progress" type="BASIC"/>
-                      <page name="bulk.analysis.list" type="BASIC"/>
-                      <page name="bulk.analysis.results" type="BASIC">
-                        <link>/bulk/archiveDataAnalysis/results/view?analysisId=${analysis.analysisId}</link>
-                        <pages>
-                          <page name="bulk.analysis.tabular" type="BASIC"/>
-                          <page name="bulk.analysis.readResults" type="BASIC"/>
-                        </pages>
-                      </page>
-                    </pages>
-                  </page>
-                  <page name="bulk.deviceConfigs" type="BASIC">
-                    <link>/bulk/config/deviceConfigs?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.dataStreaming.configure" type="BASIC">
-                    <link>/bulk/dataStreaming/configure?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.dataStreaming.verification" type="BASIC"/>
-                    </pages>
-                  </page>
-                  <page name="bulk.dataStreaming.remove" type="BASIC">
-                    <link>/bulk/dataStreaming/remove?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.dataStreaming.verification" type="BASIC"/>
-                    </pages>
-                  </page>
-                  <page name="bulk.dataStreaming.verification" type="BASIC">
-                    <link>/bulk/dataStreaming/verification?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.dataStreaming.results" type="BASIC"/>
-                    </pages>
-                  </page>
-                  <page name="bulk.dataStreaming.results" type="BASIC">
-                    <link>/bulk/dataStreaming/results?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.addPointsHome" type="BASIC">
-                    <link>/bulk/addPoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.updatePointsHome" type="BASIC">
-                    <link>/bulk/updatePoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;sharedPoints=${sharedPoints}&amp;restorePoints=${restorePoints}&amp;maskMissingPoints=${maskMissingPoints}</link>
-                  </page>
-                  <page name="bulk.removePointsHome" type="BASIC">
-                    <link>/bulk/removePoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;sharedPoints=${sharedPoints}</link>
-                  </page>
-                  <page name="bulk.addToGroup" type="BASIC"/>
-                  <page name="bulk.removeFromGroup" type="BASIC"/>
-                  <page name="bulk.readAttribute" type="BASIC"/>
-                  <page name="bulk.routeLocateHome" type="BASIC">
-                    <link>/bulk/routeLocate/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.routeLocateSettings" type="BASIC"/>
-                    </pages>
-                  </page>
-                  <page name="bulk.sendCommand" type="BASIC">
-                    <link>/group/commander/collectionProcessing?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.changeDeviceTypeChoose" type="BASIC">
-                    <link>/bulk/changeDeviceType/chooseDeviceType?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                  </page>
-                  <page name="bulk.massChangeSelect" type="BASIC">
-                    <link>/bulk/massChange/massChangeSelect?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;selectedBulkFieldName=${massChangeBulkFieldName}</link>
-                    <pages>
-                      <page name="bulk.massChangeOptions" type="BASIC">
-                        <link>/bulk/massChangeOptions?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;massChangeBulkFieldName=${massChangeBulkFieldName}</link>
-                      </page>
-                    </pages>
-                  </page>
-                  <page name="bulk.massDeleteConfirm" type="BASIC">
-                    <link></link>
-                  </page>
-                  <page name="map" type="DETAIL">
-                    <labelArgument>${description}</labelArgument>
-                  </page>
-                  <page name="bulk.disconnect" type="BASIC"/>
-                  <page name="bulk.demandReset" type="BASIC"/>
-                </pages>
-              </page>
-            </pages>
-          </page>
-          <page name="bulk.recentResults" type="BASIC">
-          </page>
           <page name="bulk.bulkImporter" type="BASIC">
           </page>
-          <page name="bulk.progressReport" type="BASIC" hideFavorite="true">
-          </page>
+        </pages>
+      </page>
+      <page name="collectionActions.home" type="BASIC">
+        <link>/collectionActions/home</link>
+        <pages>
+            <page name="collectionActions.progressReport" type="BASIC" hideFavorite="true"/>
+            <page name="collectionActions.recentResults" type="BASIC"/>
+            <page name="bulk.addToGroup" type="BASIC"/>
+            <page name="bulk.removeFromGroup" type="BASIC"/>
+            <page name="map" type="DETAIL">
+                <labelArgument>${description}</labelArgument>
+            </page>
+            <page name="bulk.routeLocateSettings" type="BASIC"/>
+            <page name="bulk.collectionActions.deviceCollectionReport" type="BASIC"/>
+            <page name="bulk.analysis.home" type="BASIC">
+                <link>/bulk/archiveDataAnalysis/home/setup?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                <pages>
+                    <page name="bulk.analysis.progress" type="BASIC" />
+                    <page name="bulk.analysis.list" type="BASIC" />
+                    <page name="bulk.analysis.results" type="BASIC">
+                        <link>/bulk/archiveDataAnalysis/results/view?analysisId=${analysis.analysisId}</link>
+                        <pages>
+                            <page name="bulk.analysis.tabular" type="BASIC" />
+                            <page name="bulk.analysis.readResults" type="BASIC" />
+                        </pages>
+                    </page>
+                </pages>
+            </page>
+            <page name="bulk.archivedValueExporter" type="BASIC">
+                <link>/tools/data-exporter/view</link>
+                <pages>
+                    <page name="bulk.archivedValueExporter.EDIT" type="DETAIL_CHILD" hideFavorite="true">
+                        <labelArgument>${formatName}</labelArgument>
+                    </page>
+                    <page name="bulk.archivedValueExporter.CREATE" type="BASIC" hideFavorite="true" />
+                    <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
+                        <link>/amr/archivedValueExporter/selectDevices</link>
+                    </page>
+                </pages>
+            </page>
+            <page name="bulk.archivedValueExporterScheduleSetup" type="BASIC">
+                <link>/tools/data-exporterscheduleReport</link>
+            </page>
+            <page name="bulk.dataStreaming.configure" type="BASIC">
+                <link>/bulk/dataStreaming/configure?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                <pages>
+                    <page name="bulk.dataStreaming.verification" type="BASIC" />
+                </pages>
+            </page>
+            <page name="bulk.dataStreaming.remove" type="BASIC">
+                <link>/bulk/dataStreaming/remove?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                <pages>
+                    <page name="bulk.dataStreaming.verification" type="BASIC" />
+                </pages>
+            </page>
+            <page name="bulk.dataStreaming.verification" type="BASIC">
+                <link>/bulk/dataStreaming/verification?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                <pages>
+                    <page name="bulk.dataStreaming.results" type="BASIC" />
+                </pages>
+            </page>
+            <page name="bulk.dataStreaming.results" type="BASIC">
+                <link>/bulk/dataStreaming/results?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+            </page>
         </pages>
       </page>
       <page name="schedules.all" type="BASIC">

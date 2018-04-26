@@ -1,7 +1,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="tools" page="bulk.massDeleteConfirm">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.massDeleteConfirm">
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.massDeleteConfirm" deviceCollection="${deviceCollection}" noteTextArguments="${deviceCount}">
 
@@ -10,10 +10,10 @@
             <form method="post" action="${massDeleteUrl}">
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                <cti:button nameKey="delete" type="submit" classes="primary action"/>
+                <cti:button nameKey="delete" classes="primary action js-action-submit"/>
             </form>
         </div>
     
     </tags:bulkActionContainer>
     
-</cti:standardPage>
+</cti:msgScope>

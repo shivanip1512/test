@@ -1924,6 +1924,28 @@ li:hover .show-on-hover {
     margin-right:10px;
 }
 
+.ui-accordion-header {
+    background: whitesmoke !important;
+    color: black !important;
+    border: 1px solid #ccc !important;
+}
+
+.ui-accordion-header-active {
+    border: 1px solid @primary-color !important;
+    background: #dedede !important;
+}
+
+.ui-accordion-header-icon {
+    background-image: url(../Icons/icons.png) !important;
+    background-position: -192px -416px !important;
+}
+
+.ui-accordion-header-active .ui-accordion-header-icon {
+    background-image: url(../Icons/icons.png) !important;
+    background-position: -176px -48px !important;
+}
+
+
 /* JUNK TO FIX */
 .CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE, .CONTROLAREA_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE, .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE, .LOADGROUP_STATE_ACTIVE {color: @green;}
 .CONTROLAREA_STATE_INACTIVE,.PROGRAM_STATE_INACTIVE, .PROGRAM_STATE_NON_CONTROL, .LOADGROUP_STATE_INACTIVE {color: #555;}

@@ -3,7 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="tools" page="bulk.sendCommand">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.sendCommand,yukon.common">
     
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.sendCommand" deviceCollection="${deviceCollection}">
         
@@ -43,7 +43,5 @@
         </form>
         
     </tags:bulkActionContainer>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.bulk.commandProcessing.js"/>
-    
-</cti:standardPage>
+        
+</cti:msgScope>

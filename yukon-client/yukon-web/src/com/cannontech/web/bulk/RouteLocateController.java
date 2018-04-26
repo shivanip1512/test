@@ -10,7 +10,6 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -72,41 +71,43 @@ public class RouteLocateController {
     @Autowired private DeviceGroupCollectionHelper groupHelper;
     
     private final static String baseKey = "yukon.web.modules.tools.bulk.routeLocateHome.";
-    
-    private static final Logger log = YukonLogManager.getLogger(RouteLocateController.class);
-    
-    // HOME
+        
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                        @RequestParam(value = "commandString", required = false, defaultValue = "ping") String commandString, 
                        @RequestParam(value = "commandSelectValue", required = false, defaultValue = "ping") String commandSelectValue, 
                        String errorMsg, boolean autoUpdateRoute) throws ServletException {
-        
-        // DEVICE COLLECTION
+        setupModel(model, request, userContext, commandString, commandSelectValue, errorMsg, autoUpdateRoute);
+        model.addAttribute("action", CollectionAction.LOCATE_ROUTE);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/routeLocate/routeLocateHome.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value = "routeLocateInputs", method = RequestMethod.GET)
+    public String routeLocateInputs(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
+                       @RequestParam(value = "commandString", required = false, defaultValue = "ping") String commandString, 
+                       @RequestParam(value = "commandSelectValue", required = false, defaultValue = "ping") String commandSelectValue, 
+                       String errorMsg, boolean autoUpdateRoute) throws ServletException {
+        setupModel(model, request, userContext, commandString, commandSelectValue, errorMsg, autoUpdateRoute);
+        return "routeLocate/routeLocateHome.jsp";
+    }
+    
+    private void setupModel(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
+                            String commandString, String commandSelectValue, String errorMsg, boolean autoUpdateRoute) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
-        
         List<LiteCommand> commands = deviceGroupService.getDeviceCommands(deviceCollection.getDeviceList(), userContext.getYukonUser());
         model.addAttribute("commands", commands);
-        
         model.addAttribute("commandSelectValue", commandSelectValue);
         model.addAttribute("commandString", commandString);
-        
-        // ROUTE OPTIONS
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
         Map<Integer, String> routeOptions = new LinkedHashMap<>(routes.length);
         for (LiteYukonPAObject route : routes) {
             routeOptions.put(route.getLiteID(), route.getPaoName());
         }
         model.addAttribute("routeOptions", routeOptions);
-        
-        // ERROR MSG
         model.addAttribute("errorMsg", errorMsg);
-        
-        // AUTO UPDATE ROUTE OPTION
         model.addAttribute("autoUpdateRoute", autoUpdateRoute);
-        
-        return "routeLocate/routeLocateHome.jsp";
     }
     
     // EXECUTE
@@ -170,7 +171,7 @@ public class RouteLocateController {
             userInputs.put("Command", commandString);
             int cacheKey = routeLocationService.locate(userInputs, deviceCollection, selectedRouteIds, autoUpdateRoute,
                 commandString, alertCallback, userContext);
-            return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
+            return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         }
     }
     
