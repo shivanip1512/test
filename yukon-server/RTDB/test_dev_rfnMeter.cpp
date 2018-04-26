@@ -1378,4 +1378,140 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     BOOST_CHECK_EQUAL_RANGES(intervalActual.value(), intervalExpected);
 }
 
+BOOST_AUTO_TEST_CASE( test_getconfig_install_all_separate )
+{
+    struct : test_RfnMeterDevice 
+    {
+        bool areAggregateCommandsSupported() const override { return false; }
+    } 
+    dut;
+
+    {
+        CtiCommandParser parse("getconfig install all");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 3, rfnRequests.size() );
+
+        {
+            const auto & returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "3 commands queued for device" );
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        auto & command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            const std::vector< unsigned char > exp {
+                0x78, 0x02, 0x00 };  //  channel selection
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+    }
+    {
+        auto & command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            const std::vector< unsigned char > exp {
+                0x7a, 0x02, 0x00 };  //  interval recording
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+    }
+    {
+        auto & command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            const std::vector< unsigned char > exp {
+                0x88, 0x01, 0x00 };  //  temperature alarm
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_getconfig_install_all_aggregate )
+{
+    struct : test_RfnMeterDevice 
+    {
+        bool areAggregateCommandsSupported() const override { return true; }
+    } 
+    dut;
+
+    {
+        CtiCommandParser parse("getconfig install all");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+        {
+            const auto & returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+        }
+    }
+
+    {
+        auto & command = rfnRequests.front();
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            const std::vector< unsigned char > exp {
+                0x1d };
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+
+        {
+            const std::vector< unsigned char > response {
+                0x1e, 
+                0x00, 0x02, 
+                //  TLV 5
+                0x00, 0x05,  //  Interval recording
+                0x00, 0x11,
+                0x20, 0x1c, 0x00, 0x00,  //  7200
+                0x80, 0x51, 0x01, 0x00,  //  86400
+                0x04,  //  4 metrics
+                0x01, 0x00,
+                0x02, 0x00,
+                0x03, 0x00,
+                0x04, 0x00,
+                //  TLV 6
+                0x00, 0x06,  // Channel selection
+                0x00, 0x09,
+                0x04,
+                0x05, 0x00, 
+                0x06, 0x00, 
+                0x07, 0x00, 
+                0x08, 0x00 };
+
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
+
+            const std::string exp =
+                "Device Configuration Request:"
+                "\nInterval recording configuration:"
+                "\nRecording interval : 7200 seconds"
+                "\nReporting interval : 86400 seconds"
+                "\nInterval metrics   : 1, 2, 3, 4"
+                "\nChannel selection configuration:"
+                "\nMetric IDs: 5, 6, 7, 8";
+
+            BOOST_CHECK_EQUAL(result.description, exp);
+        }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

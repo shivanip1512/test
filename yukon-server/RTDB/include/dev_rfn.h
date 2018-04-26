@@ -43,7 +43,7 @@ protected:
         return boost::bind( f, c, _1, _2, _3, _4 );
     }
 
-    virtual bool isAggregateCommandSupported() const;
+    virtual bool areAggregateCommandsSupported() const;
 
     YukonError_t executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );
 

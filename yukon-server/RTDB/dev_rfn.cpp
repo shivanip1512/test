@@ -53,7 +53,7 @@ void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
 }
 
 
-bool RfnDevice::isAggregateCommandSupported() const
+bool RfnDevice::areAggregateCommandsSupported() const
 {
     return gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.0;
 }
@@ -138,7 +138,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
         incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), numRequests);
 
-        if( commands.size() > 1 && isAggregateCommandSupported() )
+        if( commands.size() > 1 && areAggregateCommandsSupported() )
         {
             auto aggregateCommand = std::make_unique<Commands::RfnAggregateCommand>(std::move(commands));
 

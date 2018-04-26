@@ -566,7 +566,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
 {
     struct : test_RfnCommercialDevice 
     {
-        bool isAggregateCommandSupported() const override { return true; }
+        bool areAggregateCommandsSupported() const override { return true; }
     } 
     dut;
 

@@ -11,6 +11,57 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_ConfigNotification )
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
+BOOST_AUTO_TEST_CASE(test_request)
+{
+    RfnConfigNotificationCommand cmd;
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
+
+        const std::vector<unsigned> exp {
+            0x1d };
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    // decode
+    {
+        std::vector<unsigned char> response {
+            0x1e, 
+            0x00, 0x02, 
+            //  TLV 5
+            0x00, 0x05,  //  Interval recording
+            0x00, 0x11,
+            0x20, 0x1c, 0x00, 0x00,  //  7200
+            0x80, 0x51, 0x01, 0x00,  //  86400
+            0x04,  //  4 metrics
+            0x01, 0x00,
+            0x02, 0x00,
+            0x03, 0x00,
+            0x04, 0x00,
+            //  TLV 6
+            0x00, 0x06,  // Channel selection
+            0x00, 0x09,
+            0x04,
+            0x05, 0x00, 
+            0x06, 0x00, 
+            0x07, 0x00, 
+            0x08, 0x00 };
+
+        const auto rcv = cmd.decodeCommand(execute_time, response);
+
+        std::string exp = "Interval recording configuration:"
+            "\nRecording interval : 7200 seconds"
+            "\nReporting interval : 86400 seconds"
+            "\nInterval metrics   : 1, 2, 3, 4"
+            "\nChannel selection configuration:"
+            "\nMetric IDs: 5, 6, 7, 8";
+
+        BOOST_CHECK_EQUAL(rcv.description, exp);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_handle_unsolicited)
 {
     const std::vector<uint8_t> payload { 
@@ -198,7 +249,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
             0x02, 0x00,
             0x03, 0x00,
             0x04, 0x00,
-            //  TLV 6
+        //  TLV 6
         0x00, 0x06,  // Channel selection
         0x00, 0x09,
             0x04,

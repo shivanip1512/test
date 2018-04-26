@@ -340,10 +340,22 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiComman
 
     if( *configPart == ConfigPart::all )
     {
-        bool notCurrent = false;
-        for each( const ConfigMap::value_type & p in configMethods )
+        if( installType == InstallType::GetConfig )
         {
-            if( executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, p.first, p.second ) == ClientErrors::ConfigNotCurrent )
+            if( areAggregateCommandsSupported() )
+            {
+                rfnRequests.emplace_back(std::make_unique<Commands::RfnConfigNotificationCommand>());
+                return ClientErrors::None;
+            }
+        }
+
+        bool notCurrent = false;
+        for( const auto & p : configMethods )
+        {
+            const auto & part   = p.first;
+            const auto & method = p.second;
+
+            if( executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, part, method ) == ClientErrors::ConfigNotCurrent )
             {
                 notCurrent = true;
             }
