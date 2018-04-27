@@ -167,8 +167,6 @@
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
   
-    <bean id="dataStreamingBackingService" class="com.cannontech.web.updater.dataStreaming.DataStreamingBackingService"/>
-    
     <bean class="com.cannontech.web.dr.ecobee.service.impl.DataDownloadServiceImpl"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
         <qualifier value="ecobeeReads"/>
@@ -303,9 +301,6 @@
                 </entry>
                 <entry key="ECOBEE_READ">
                     <ref bean="ecobeeReadBackingService"/>
-                </entry>
-                <entry key="DATA_STREAMING">
-                    <ref bean="dataStreamingBackingService"/>
                 </entry>
             </map>
         </property>

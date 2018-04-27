@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -47,7 +48,6 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -55,7 +55,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
-import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
@@ -74,8 +73,6 @@ import com.google.common.collect.Ordering;
 @RequestMapping("/dataStreaming/*")
 @CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
 public class DataStreamingConfigurationsController {
-
-    private final static String baseKey = "yukon.web.modules.tools.dataStreaming.";
 
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -431,60 +428,46 @@ public class DataStreamingConfigurationsController {
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
             FlashScope flash, PagingParameters paging, SortingParameters sorting) {
-        LiteYukonUser user = userContext.getYukonUser();
-        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
 
-        DataStreamingConfigResult result;
         try {
-            result = dataStreamingService.resend(Arrays.asList(deviceId), user);
-            if(result.acceptedWithError()){
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
+            CollectionActionResult result= dataStreamingService.resend(Arrays.asList(deviceId), userContext);
+            if(result.getInfoText() != null){
+                flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getInfoText()));
             }
-            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:/collectionActions/progressReport/view?key=" + result.getCacheKey();
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
-            return redirectUrl;
+            return getSortingPagingUrl(sorting, paging);
         }
-        return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
     
     @RequestMapping("discrepancies/{deviceId}/read")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String readDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
-            FlashScope flash, PagingParameters paging, SortingParameters sorting) {
-        LiteYukonUser user = userContext.getYukonUser();
-        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
-        
-        DataStreamingConfigResult result;
-        try {
-            result = dataStreamingService.read(deviceId, user);
-            model.addAttribute("resultsId", result.getResultsId());
-        } catch (DataStreamingConfigException e) {
-            flash.setError(e.getMessageSourceResolvable());
-            return redirectUrl;
-        }
-        return "redirect:/bulk/dataStreaming/dataStreamingResults";
+            FlashScope flash, PagingParameters paging, SortingParameters sorting) {        
+        int cacheKey = dataStreamingService.read(deviceId, userContext);
+        return "redirect:/collectionActions/progressReport/view?key=" + cacheKey;
     }
 
 
     @RequestMapping("discrepancies/{deviceId}/accept")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
-    public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
-        LiteYukonUser user = userContext.getYukonUser();
-        accept(Arrays.asList(deviceId), user, flash);
-        return "redirect:/tools/dataStreaming/discrepancies";
+    public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
+            FlashScope flash, PagingParameters paging, SortingParameters sorting) {
+        try {
+            dataStreamingService.accept(Arrays.asList(deviceId), userContext);
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+        }
+        return getSortingPagingUrl(sorting, paging);
     }
 
     @RequestMapping("discrepancies/{deviceId}/remove")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String removeDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
-            FlashScope flash) {
-        LiteYukonUser user = userContext.getYukonUser();
-
-        DataStreamingConfigResult result = dataStreamingService.deleteDataStreamingReportAndUnassignConfig(deviceId, user);
-        model.addAttribute("resultsId", result.getResultsId());
-        return "redirect:/bulk/dataStreaming/dataStreamingResults";
-
+            FlashScope flash, PagingParameters paging, SortingParameters sorting) {
+        dataStreamingService.deleteDataStreamingReportAndUnassignConfig(deviceId, userContext.getYukonUser());
+        return getSortingPagingUrl(sorting, paging);
     }
 
     @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
@@ -497,27 +480,14 @@ public class DataStreamingConfigurationsController {
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
 
-        LiteYukonUser user = userContext.getYukonUser();
-
-        DataStreamingConfigResult result;
         try {
-            result = dataStreamingService.resend(deviceList, user);
+            CollectionActionResult result = dataStreamingService.resend(deviceList, userContext);
+            return "redirect:/collectionActions/progressReport/view?key=" + result.getCacheKey();
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
-            return redirectUrl;
+            return getSortingPagingUrl(sorting, paging);
         }
-        if (result.acceptedWithError()) {
-            if (result.getAcceptedWithErrorFailedDeviceCount() == 0) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
-            } else {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError.resending",
-                        result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
-            }
-        }
-        model.addAttribute("resultsId", result.getResultsId());
-        return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
 
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
@@ -529,36 +499,19 @@ public class DataStreamingConfigurationsController {
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        LiteYukonUser user = userContext.getYukonUser();
 
-        accept(deviceList, user, flash);
-        return "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
-    }
-    
-    /**
-     * Accepts data streaming configuration, add a message to the flash scope (success/failure/errors).
-     */
-    private void accept(List<Integer> deviceList, LiteYukonUser user, FlashScope flash) {
         try {
-            DataStreamingConfigResult result = dataStreamingService.accept(deviceList, user);
-            if (result.acceptedWithError()) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllResend",
-                    deviceList.size(), result.getTotalItems()));
-                if (result.getAcceptedWithErrorFailedDeviceCount() > 0) {
-                    flash.setError(
-                        new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError.resending",
-                            result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
-                }
-            } else {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
-            }
+            dataStreamingService.accept(deviceList, userContext);
+            //dispay success
+            return "";
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
+            return getSortingPagingUrl(sorting, paging);
         }
     }
-
-    private String getSortingPagingParameters(SortingParameters sorting, PagingParameters paging) {
-        return "?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
+    
+    private String getSortingPagingUrl(SortingParameters sorting, PagingParameters paging) {
+        return "redirect:/tools/dataStreaming/discrepancies?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
     }
 
     public enum DiscrepancySortBy implements DisplayableEnum {

@@ -7,14 +7,11 @@ import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,14 +26,12 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
-import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -143,15 +138,12 @@ public class DataStreamingController {
     @RequestMapping(value="remove", method=RequestMethod.POST)
     public String removeSubmit(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
             FlashScope flash) throws ServletException {
-        LiteYukonUser user = userContext.getYukonUser();
 
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
-
         try {
-            DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
-            model.addAttribute("resultsId", result.getResultsId());
-            return "redirect:dataStreamingResults";
+            int cacheKey = dataStreamingService.unassignDataStreamingConfig(deviceCollection,  userContext);
+            return "redirect:/collectionActions/progressReport/view?key=" + cacheKey;
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
             model.addAttribute("deviceCollection", deviceCollection);
@@ -167,8 +159,6 @@ public class DataStreamingController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
 
-        LiteYukonUser user = userContext.getYukonUser();
-
         DataStreamingConfig config = verificationInfo.getConfiguration();
         config.setSelectedInterval(config.getAttributes().get(0).getInterval());
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -176,45 +166,14 @@ public class DataStreamingController {
 
         try {
             List<Integer> failedVerificationDevices = verificationInfo.getFailedVerificationDevices();
-            DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, 
-                                                                                              deviceCollection, 
-                                                                                              failedVerificationDevices, 
-                                                                                              user);
-            model.addAttribute("resultsId", result.getResultsId());
-            return "redirect:dataStreamingResults";
+            int cacheKey = dataStreamingService.assignDataStreamingConfig(config, deviceCollection,
+                failedVerificationDevices, userContext);
+            return "redirect:/collectionActions/progressReport/view?key=" + cacheKey;
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
             model.addAttribute("configuration", config);
             model.addAttribute("deviceCollection", deviceCollection);
             return "dataStreaming/verification.jsp";
         }
-    }
-
-    @RequestMapping("dataStreamingResults")
-    public String dataStreamingResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
-        retrieveResults(request, model, userContext);
-        return "dataStreaming/results.jsp";
-    }
-
-    /**
-     * Helper method for the results
-     */
-    private void retrieveResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
-        String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        DataStreamingConfigResult streamingResult = dataStreamingService.findDataStreamingResult(resultsId);
-        model.addAttribute("result", streamingResult);
-        int configId = streamingResult.getConfigId();
-        if(configId > 0) {
-            DataStreamingConfig config = streamingResult.getConfig();
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            config.setAccessor(accessor);
-            model.addAttribute("config", config);
-        }
-    }
-
-    @RequestMapping(value = "/cancel", method = RequestMethod.POST)
-    public void cancel(HttpServletResponse resp, String key, YukonUserContext userContext) {
-        dataStreamingService.cancel(key, userContext.getYukonUser());
-        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 }

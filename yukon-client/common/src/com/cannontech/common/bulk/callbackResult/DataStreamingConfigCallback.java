@@ -3,7 +3,6 @@ package com.cannontech.common.bulk.callbackResult;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
-import com.cannontech.database.data.lite.LiteYukonUser;
 /**
  * Callback that handles response messages for data streaming config operations.
  */
@@ -24,13 +23,9 @@ public interface DataStreamingConfigCallback {
      */
     void complete();
    
-    boolean isComplete();
+    default boolean isComplete() {
+        return false;
+    }
 
     void processingExceptionOccured(String reason);
-
-    /**
-     * Called when the operation is cancelled.
-     */
-
-    void cancel(LiteYukonUser user);
 }

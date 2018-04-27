@@ -1,5 +1,9 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.NOT_CONFIGURED;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -7,10 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +23,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -35,20 +37,22 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
-import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao.DiscrepancyInfo;
@@ -57,6 +61,7 @@ import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.events.loggers.DataStreamingEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
@@ -76,17 +81,16 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection;
-import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection.CommandType;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
-import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 import com.cannontech.web.rfn.dataStreaming.model.DeviceUnsupported;
 import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.model.GatewayLoading;
@@ -108,7 +112,7 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
-public class DataStreamingServiceImpl implements DataStreamingService {
+public class DataStreamingServiceImpl implements DataStreamingService, CollectionActionCancellationService {
 
     private static final Logger log = YukonLogManager.getLogger(DataStreamingServiceImpl.class);
     private static final Set<DeviceDataStreamingConfigError> nonCriticalDeviceErrors = ImmutableSet.of(
@@ -118,24 +122,24 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         DeviceDataStreamingConfigError.NODE_NOT_READY
     );
     public static final BehaviorType TYPE = BehaviorType.DATA_STREAMING;
+    private final static String baseKey = "yukon.web.modules.tools.dataStreaming.";
 
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
-    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private ConnPool connPool;
     @Autowired private DataStreamingCommunicationService dataStreamingCommService;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private DataStreamingPorterConnection porterConn;
     @Autowired private DeviceBehaviorDao deviceBehaviorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
-    @Resource(name = "recentResultsCache") private RecentResultsCache<DataStreamingConfigResult> resultsCache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataStreamingEventLogService logService;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private CollectionActionService collectionActionService;
+    @Autowired private CommandExecutionService commandExecutionService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     boolean ignoreTimeCheck;
 
@@ -143,11 +147,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     public void init() {
         ignoreTimeCheck =
             configurationSource.getBoolean(MasterConfigBoolean.SIMULATOR_DISCREPANCY_REPORT_IGNORE_TIME_CHECK, false);
-    }
-
-    @Override
-    public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
-        return resultsCache.getResult(resultKey);
     }
 
     private DataStreamingConfig findDataStreamingConfiguration(int configId) {
@@ -691,82 +690,82 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult read(int deviceId, LiteYukonUser user) throws DataStreamingConfigException {
-        DataStreamingConfigResult result = createUncompletedResult();
-        
+    public int read(int deviceId, YukonUserContext context) {
         log.info("Reading configuration for device=" + deviceId);
-        
-        logService.readAttempted(user, result.getResultsId(), rfnDeviceDao.getDeviceForId(deviceId).getName());
-        
-        if (isValidPorterConnection()) {
-            DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
-            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
-            sendConfiguration(user, new DeviceSummary(deviceCollection), requestSeqNumber, result, CommandType.READ);
-        }else {
-            return createEmptyResult(createDeviceCollectionForIds(Lists.newArrayList(deviceId)), "Porter connection is invalid.");
-        }
-        
-        return result;
+        // logService.readAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey())
+        DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
+        LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
+        inputs.put("Selected Command", "Read Data Streaming Configuration");
+        int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, inputs, deviceCollection,
+            "getconfig behavior rfndatastreaming", CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, null, context);
+        return cacheKey;
     }
         
     @Override
-    public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException {
-        DataStreamingConfigResult result = createUncompletedResult();
-        return resend(deviceIds, result, user);
+    public CollectionActionResult resend(List<Integer> deviceIds, YukonUserContext context) throws DataStreamingConfigException{
+        log.info("Re-sending configuration for devices=" + deviceIds);
+        DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.CONFIGURE_DATA_STREAMING, null,
+            deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, context);
+
+        logService.resendAttempted(result.getContext().getYukonUser(), String.valueOf(result.getCacheKey()),
+            result.getCounts().getTotalCount());
+
+        log.info("Re-sending configuration for cache key=" + result.getCacheKey());
+
+        Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
+        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = getConfigToDeviceIds(deviceIdToBehaviorReport);
+
+        int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+        ConfigResponseResult configResponseResult = sendNmConfiguration(configToDeviceIds, requestSeqNumber,
+            DeviceDataStreamingConfigRequestType.UPDATE_WITH_FORCE);
+        List<Integer> devicesToResend = new ArrayList<>();
+        devicesToResend.addAll(deviceIds);
+        if (configResponseResult.hasDeviceErrors) {
+            devicesToResend.removeAll(configResponseResult.deviceIds);
+            String error = "Failed Network Manager verification and will not be configured.";
+            List<SimpleDevice> failedNmConfigRequest =
+                result.getInputs().getCollection().getDeviceList().stream().filter(
+                    device -> configResponseResult.deviceIds.contains(device.getDeviceId())).collect(
+                        Collectors.toList());
+            for (SimpleDevice device : failedNmConfigRequest) {
+                CollectionActionLogDetail detail = new CollectionActionLogDetail(device, FAILURE);
+                detail.setDeviceErrorText(error);
+                result.addDeviceToGroup(FAILURE, device, detail);
+            }
+
+            if (devicesToResend.isEmpty()) {
+                collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
+                return result;
+            }
+        }
+        if (configResponseResult.type == DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+            result.setInfoText(
+                accessor.getMessage(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError")));
+        }
+
+        deviceIdToBehaviorReport = initPendingReports(devicesToResend);
+        configToDeviceIds = getConfigToDeviceIds(deviceIdToBehaviorReport);
+
+        saveBehaviorReports(deviceIdToBehaviorReport);
+        return sendConfiguration(result, new DeviceSummary(devicesToResend), requestSeqNumber);
+
     }
     
-    public DataStreamingConfigResult resend(List<Integer> deviceIds, DataStreamingConfigResult result,
-            LiteYukonUser user) throws DataStreamingConfigException {
-
-        log.info("Re-sending configuration for devices=" + deviceIds);
-
-        logService.resendAttempted(user, result.getResultsId(), deviceIds.size());
-
-        if (isValidPorterConnection()) {
-            Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
-            Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = HashMultimap.create();
-            for (Entry<Integer, BehaviorReport> deviceReport : deviceIdToBehaviorReport.entrySet()) {
-                Integer deviceId = deviceReport.getKey();
-                BehaviorReport report = deviceReport.getValue();
-                PaoType paoType = serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoType();
-                DataStreamingConfig config = convertBehaviorToConfig(report);
-                DeviceDataStreamingConfig ddsConfig = dataStreamingCommService.buildDeviceDataStreamingConfig(config, paoType);
-                configToDeviceIds.put(ddsConfig, deviceId);
-            }
-            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
-            ConfigResponseResult configResponseResult = sendNmConfiguration(configToDeviceIds, requestSeqNumber,
-                DeviceDataStreamingConfigRequestType.UPDATE_WITH_FORCE);
-
-            if (configResponseResult.hasDeviceErrors) {
-                List<Integer> devicesToResend = new ArrayList<>();
-                devicesToResend.addAll(deviceIds);
-                devicesToResend.removeAll(configResponseResult.deviceIds);
-
-                if (devicesToResend.isEmpty()) {
-                    String error =
-                        deviceIds.size() + " devices failed Network Manager verification and will not be configured.";
-                    log.error(error);
-                    throw new DataStreamingConfigException(error, "failed", deviceIds.size() + "");
-                } else {
-                    log.info(configResponseResult.deviceIds.size()
-                        + " devices failed Network Manager verification and will not be configured. Attempting to resend configuration to "
-                        + devicesToResend.size() + " devices.");
-                    result.complete();
-                    result = createUncompletedResult();
-                    result.setAcceptedWithErrorFailedDeviceCount(configResponseResult.deviceIds.size());
-                    return resend(devicesToResend, result, user);
-                }
-            }
-            if (configResponseResult.type == DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR) {
-                result.setAcceptedWithError(true);
-            }
-            saveBehaviorReports(deviceIdToBehaviorReport);
-            DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
-            sendConfiguration(user, new DeviceSummary(deviceCollection), requestSeqNumber, result, CommandType.SEND);
-            return result;
-        } else {
-            return createEmptyResult(createDeviceCollectionForIds(deviceIds), "Porter connection is invalid.");
+    private Multimap<DeviceDataStreamingConfig, Integer> getConfigToDeviceIds(
+            Map<Integer, BehaviorReport> deviceIdToBehaviorReport) {
+        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = HashMultimap.create();
+        for (Entry<Integer, BehaviorReport> deviceReport : deviceIdToBehaviorReport.entrySet()) {
+            Integer deviceId = deviceReport.getKey();
+            BehaviorReport report = deviceReport.getValue();
+            PaoType paoType = serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoType();
+            DataStreamingConfig config = convertBehaviorToConfig(report);
+            DeviceDataStreamingConfig ddsConfig =
+                dataStreamingCommService.buildDeviceDataStreamingConfig(config, paoType);
+            configToDeviceIds.put(ddsConfig, deviceId);
         }
+        return configToDeviceIds;
     }
 
     private Map<Integer, BehaviorReport> initPendingReports(List<Integer> deviceIds) {
@@ -784,65 +783,60 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         deviceIdToBehaviorReport.values()
             .forEach(deviceBehaviorDao::saveBehaviorReport);
     }
-    
+
     @Override
-    public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user)
+    public int unassignDataStreamingConfig(DeviceCollection deviceCollection, YukonUserContext context)
             throws DataStreamingConfigException {
 
-        if (isValidPorterConnection()) {
-            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
-            Map<Integer, SimpleDevice> devices = Maps.uniqueIndex(deviceCollection.getDeviceList(), device -> device.getDeviceId());
-  
-            log.info("Unassign data streaming config from devices=" + devices.keySet());
-            DataStreamingConfigResult result = createUncompletedResult();
+        int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+        Map<Integer, SimpleDevice> devices =
+            Maps.uniqueIndex(deviceCollection.getDeviceList(), device -> device.getDeviceId());
 
-            logService.unassignAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
+        // logService.unassignAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey()),
+        // deviceCollection.getDeviceCount());
 
-            List<Integer> deviceIds = asDeviceIds(getSupportedDevices(deviceCollection));
-            List<Integer> unsupportedDeviceIds = new ArrayList<>(devices.keySet());
-            // remove supported devices
-            unsupportedDeviceIds.removeAll(deviceIds);
-            log.debug("Unsupported=" + unsupportedDeviceIds);
-            Set<Integer> devicesIdsWithoutBehavior = Sets.newHashSet();
-            List<Integer> failedVerificationDevices = new ArrayList<>();
+        List<Integer> deviceIds = asDeviceIds(getSupportedDevices(deviceCollection));
+        List<Integer> unsupportedDeviceIds = new ArrayList<>(devices.keySet());
+        // remove supported devices
+        unsupportedDeviceIds.removeAll(deviceIds);
+        log.debug("Unsupported=" + unsupportedDeviceIds);
+        Set<Integer> devicesIdsWithoutBehavior = Sets.newHashSet();
+        List<Integer> failedVerificationDevices = new ArrayList<>();
 
+        if (!deviceIds.isEmpty()) {
+            Map<Integer, Behavior> deviceIdToBehavior =
+                deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, deviceIds);
+            devicesIdsWithoutBehavior.addAll(deviceIds);
+            // remove devices with behavior
+            devicesIdsWithoutBehavior.removeAll(deviceIdToBehavior.keySet());
+            log.debug("Devices without behaviors=" + devicesIdsWithoutBehavior);
+            deviceIds.removeAll(devicesIdsWithoutBehavior);
             if (!deviceIds.isEmpty()) {
-                Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, deviceIds);
-                devicesIdsWithoutBehavior.addAll(deviceIds);
-                // remove devices with behavior
-                devicesIdsWithoutBehavior.removeAll(deviceIdToBehavior.keySet());
-                log.debug("Devices without behaviors=" + devicesIdsWithoutBehavior);
-                deviceIds.removeAll(devicesIdsWithoutBehavior);
+                failedVerificationDevices.addAll(getAllFailedVerificationDevices(deviceIdToBehavior, devices));
+                deviceIds.removeAll(failedVerificationDevices);
+                log.debug("Devices failed NM verifications=" + failedVerificationDevices);
+                unsupportedDeviceIds.addAll(failedVerificationDevices);
+                log.debug("Unsupported (Unsupported+failed NM verifications)=" + unsupportedDeviceIds);
+
                 if (!deviceIds.isEmpty()) {
-                    failedVerificationDevices.addAll(getAllFailedVerificationDevices(deviceIdToBehavior, devices));
-                    deviceIds.removeAll(failedVerificationDevices);
-                    log.debug("Devices failed NM verifications=" + failedVerificationDevices);
-                    unsupportedDeviceIds.addAll(failedVerificationDevices);
-                    log.debug("Unsupported (Unsupported+failed NM verifications)=" + unsupportedDeviceIds);
-                    
-                    if(!deviceIds.isEmpty()){
-                        sendNmConfigurationRemove(deviceIds, requestSeqNumber); 
-                        Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
-                        saveBehaviorReports(deviceIdToBehaviorReport);
-                        deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
-                    }
+                    sendNmConfigurationRemove(deviceIds, requestSeqNumber);
+                    Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
+                    saveBehaviorReports(deviceIdToBehaviorReport);
+                    deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
                 }
             }
-
-            sendConfiguration(user, new DeviceSummary(deviceCollection, deviceIds, unsupportedDeviceIds), requestSeqNumber,
-                result, CommandType.SEND);
-            if (!devicesIdsWithoutBehavior.isEmpty()) {
-                addDevicesToGroup(new ArrayList<>(devicesIdsWithoutBehavior), result.getSuccessGroup());
-                // mark devices without behavior as "not configured".
-                commandRequestExecutionResultDao.saveUnsupported(
-                    new HashSet<>(getDeviceSubset(devices, new ArrayList<>(devicesIdsWithoutBehavior))),
-                    result.getExecution().getId(), CommandRequestUnsupportedType.NOT_CONFIGURED);
-            }
-                    
-            return result;
-        } else {
-            return createEmptyResult(deviceCollection, "Porter connection is invalid.");
         }
+
+        CollectionActionResult result = sendConfiguration(CollectionAction.REMOVE_DATA_STREAMING,
+            new DeviceSummary(deviceCollection, deviceIds, unsupportedDeviceIds), requestSeqNumber,
+            context);
+        if (!devicesIdsWithoutBehavior.isEmpty()) {
+            // mark devices without behavior as "not configured".
+            collectionActionService.addUnsupportedToResult(NOT_CONFIGURED, result,
+                getDeviceSubset(devices, new ArrayList<>(devicesIdsWithoutBehavior)));
+        }
+
+        return result.getCacheKey();
     }
     
     private List<SimpleDevice> getDeviceSubset(Map<Integer, SimpleDevice> devices, List<Integer> devicesIds) {
@@ -870,185 +864,151 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult deleteDataStreamingReportAndUnassignConfig(int deviceId, LiteYukonUser user) {
+    public void deleteDataStreamingReportAndUnassignConfig(int deviceId, LiteYukonUser user) {
         
         log.info("Deleting report and unassigning config for "+deviceId);
         
         List<Integer> devicesIds = Arrays.asList(deviceId);
-        DeviceCollection deviceCollection = createDeviceCollectionForIds(devicesIds);
-        // creating a result
-        DataStreamingConfigResult result = createEmptyResult(deviceCollection, null);
-        
-        logService.removeAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
-        
-        // mark devices as "success"
-        addDevicesToGroup(devicesIds, result.getSuccessGroup());
-
+  
+        //logService.removeAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
+   
         deviceBehaviorDao.unassignBehavior(TYPE, devicesIds);
         Map<Integer, BehaviorReport> reports = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, devicesIds);
         deviceBehaviorDao.deleteBehaviorReport(reports.get(deviceId).getId());
         
-        logService.removeCompleted(result.getResultsId(), deviceCollection.getDeviceCount());
-
-        return result;
-    }
-
-    private void addDevicesToGroup(List<Integer> deviceIds, StoredDeviceGroup group) {
-        if (!deviceIds.isEmpty()) {
-            Collection<LiteYukonPAObject> paos =
-                deviceIds.stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(toList());
-            deviceGroupMemberEditorDao.addDevices(group, paos);
-        }
+        //logService.removeCompleted(result.getResultsId(), deviceCollection.getDeviceCount());
     }
 
     @Override
-    public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection, 
-                                                               List<Integer> failedVerificationDevices, LiteYukonUser user) 
-                                                               throws DataStreamingConfigException {
-
-        if (isValidPorterConnection()) {
-
-            if (config.getId() != 0) {
-                config = findDataStreamingConfiguration(config.getId());
-            }
-            
-            DataStreamingConfigResult result = createUncompletedResult();
-                
-            logService.assignAttempted(user, result.getResultsId(), config.getName(),
-                deviceCollection.getDeviceCount());
-
-            List<SimpleDevice> devices = getSupportedDevices(deviceCollection);
-
-            // Remove all devices that failed verification, these are treated as unsupported
-            devices.removeIf(device -> failedVerificationDevices.contains(device.getDeviceId()));
-            
-            Multimap<PaoType, Integer> devicesByType = asTypesToDeviceIds(devices);
-            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
-
-            log.info("Assigning data streaming config " + config + " devices=" + devicesByType.values());
-            
-            Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesPerType = 
-                    getUnsupportedAttributesToTypes(config, devicesByType.keySet());
-
-            // Remove the devices that don't support any of the config's attributes
-            Set<BuiltInAttribute> enabledAttributes = getEnabledAttributes(config);
-            Collection<PaoType> typesSupportingNoAttributes = unsupportedAttributesPerType.removeAll(enabledAttributes);
-            Set<Integer> devicesSupportingNoAttributes = removeTypes(devicesByType, typesSupportingNoAttributes);
-            devicesSupportingNoAttributes.addAll(failedVerificationDevices);
-            
-            Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType = 
-                    splitConfigForDevices(config, devicesByType, unsupportedAttributesPerType);
-
-            // Create multiple configurations for different device types if necessary
-            // (Some devices may only support some of the configured attributes)
-            Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = createNmConfigs(configAssignmentsByType);
-            
-            sendNmConfiguration(configToDeviceIds, requestSeqNumber, DeviceDataStreamingConfigRequestType.UPDATE);
-
-            //  Save the config per type
-            configAssignmentsByType.asMap().forEach((typeConfig, typeLists) -> {
-                List<Integer> configDeviceIds = typeLists.stream().flatMap(tl -> tl.deviceIds.stream()).collect(toList());
-                int behaviorId = saveConfig(typeConfig);
-                deviceBehaviorDao.assignBehavior(behaviorId, TYPE, configDeviceIds, true);
-
-                Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(configDeviceIds);
-                saveBehaviorReports(deviceIdToBehaviorReport);
-            });
-            
-            result.setConfig(config);
-
-            sendConfiguration(user, new DeviceSummary(deviceCollection, devicesSupportingNoAttributes), requestSeqNumber, result, CommandType.SEND);
-            return result;
-        } else {
-            return createEmptyResult(deviceCollection, "Porter connection is invalid.");
+    public int assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection,
+            List<Integer> failedVerificationDevices, YukonUserContext context) throws DataStreamingConfigException {
+        if (config.getId() != 0) {
+            config = findDataStreamingConfiguration(config.getId());
         }
+
+        // logService.assignAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey()),
+        // config.getName(),
+        // deviceCollection.getDeviceCount());
+
+        List<SimpleDevice> devices = getSupportedDevices(deviceCollection);
+
+        // Remove all devices that failed verification, these are treated as unsupported
+        devices.removeIf(device -> failedVerificationDevices.contains(device.getDeviceId()));
+
+        Multimap<PaoType, Integer> devicesByType = asTypesToDeviceIds(devices);
+        int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+
+        log.info("Assigning data streaming config " + config + " devices=" + devicesByType.values());
+
+        Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesPerType =
+            getUnsupportedAttributesToTypes(config, devicesByType.keySet());
+
+        // Remove the devices that don't support any of the config's attributes
+        Set<BuiltInAttribute> enabledAttributes = getEnabledAttributes(config);
+        Collection<PaoType> typesSupportingNoAttributes = unsupportedAttributesPerType.removeAll(enabledAttributes);
+        Set<Integer> devicesSupportingNoAttributes = removeTypes(devicesByType, typesSupportingNoAttributes);
+        devicesSupportingNoAttributes.addAll(failedVerificationDevices);
+
+        Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType =
+            splitConfigForDevices(config, devicesByType, unsupportedAttributesPerType);
+
+        // Create multiple configurations for different device types if necessary
+        // (Some devices may only support some of the configured attributes)
+        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = createNmConfigs(configAssignmentsByType);
+
+        sendNmConfiguration(configToDeviceIds, requestSeqNumber, DeviceDataStreamingConfigRequestType.UPDATE);
+
+        // Save the config per type
+        configAssignmentsByType.asMap().forEach((typeConfig, typeLists) -> {
+            List<Integer> configDeviceIds = typeLists.stream().flatMap(tl -> tl.deviceIds.stream()).collect(toList());
+            int behaviorId = saveConfig(typeConfig);
+            deviceBehaviorDao.assignBehavior(behaviorId, TYPE, configDeviceIds, true);
+
+            Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(configDeviceIds);
+            saveBehaviorReports(deviceIdToBehaviorReport);
+        });
+
+        return sendConfiguration(CollectionAction.CONFIGURE_DATA_STREAMING,
+            new DeviceSummary(deviceCollection, devicesSupportingNoAttributes), requestSeqNumber,
+            context).getCacheKey();
     }
 
     @Override
-    public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user) throws DataStreamingConfigException{
+    public void accept(List<Integer> allDeviceIds, YukonUserContext context) throws DataStreamingConfigException {
 
-        DeviceCollection deviceCollection = createDeviceCollectionForIds(allDeviceIds);
-        if (isValidPorterConnection()) {
-            
-            log.info("Attempting to accept reported config for devices=" + allDeviceIds);
+        log.info("Attempting to accept reported config for devices=" + allDeviceIds);
 
-            DataStreamingConfigResult result = createEmptyResult(deviceCollection, null);            
-            logService.acceptAttempted(user, result.getResultsId(), allDeviceIds.size());
-            
-            // deviceId, report
-            Map<Integer, BehaviorReport> deviceIdToReport =
-                deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, allDeviceIds);
+        // logService.acceptAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey()),
+        // allDeviceIds.size());
 
-            //mark devices as success
-            addDevicesToGroup(new ArrayList<>(deviceIdToReport.keySet()), result.getSuccessGroup());
+        // deviceId, report
+        Map<Integer, BehaviorReport> deviceIdToReport =
+            deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, allDeviceIds);
 
-            List<Integer> devicesIdsToUnassign = new ArrayList<>();
-            Multimap<Integer, Integer> configIdsToDeviceIds = ArrayListMultimap.create();
+        List<Integer> devicesIdsToUnassign = new ArrayList<>();
+        Multimap<Integer, Integer> configIdsToDeviceIds = ArrayListMultimap.create();
 
-            List<Integer> devicesToResend = new ArrayList<>();
-            for (int deviceId : allDeviceIds) {
+        List<Integer> devicesToResend = new ArrayList<>();
+        for (int deviceId : allDeviceIds) {
 
-                BehaviorReport report = deviceIdToReport.get(deviceId);
-                DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
-                
-                if(reportedConfig != null){
-                    // If there is a discrepancy because of a metric status (CHANNEL_NOT_SUPPORTED, for example)
-                    // the Accept button should exclude those metrics when creating the new behavior.
-                    boolean attributesRemoved = reportedConfig.removeAttributesWithStatusNotOk();
-                    if(attributesRemoved && !reportedConfig.getAttributes().isEmpty()){
-                        devicesToResend.add(deviceId);
-                    }
-                }
-                 
-                if (report == null || !reportedConfig.isEnabled() || reportedConfig.getAttributes().isEmpty()) {
-                    devicesIdsToUnassign.add(deviceId);
-                    continue;
-                }
-   
-                List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
-                // Look for an existing config matching the behavior report
-                DataStreamingConfig config = findConfig(allConfigs, reportedConfig);
+            BehaviorReport report = deviceIdToReport.get(deviceId);
+            DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
 
-                if (config == null) {
-                    // If no existing config, create a new one from the behavior report
-                    Behavior behavior = convertConfigToBehavior(reportedConfig);
-                    // create behavior
-                    int behaviorId = deviceBehaviorDao.saveBehavior(behavior);
-                    configIdsToDeviceIds.put(behaviorId, deviceId);
-                    log.debug("Match not found, created new behavior with id=" + behaviorId);
-                } else {
-                    log.debug("Match found, behavior id=" + config.getId());
-                    configIdsToDeviceIds.put(config.getId(), deviceId);
+            if (reportedConfig != null) {
+                // If there is a discrepancy because of a metric status (CHANNEL_NOT_SUPPORTED, for
+                // example)
+                // the Accept button should exclude those metrics when creating the new behavior.
+                boolean attributesRemoved = reportedConfig.removeAttributesWithStatusNotOk();
+                if (attributesRemoved && !reportedConfig.getAttributes().isEmpty()) {
+                    devicesToResend.add(deviceId);
                 }
             }
-            
-            log.debug("Accepting devices=" + allDeviceIds);
-            log.debug("Assigning devices=" + configIdsToDeviceIds.values());
-            log.debug("Unassigning devices=" + devicesIdsToUnassign);
-            // assign behaviors
-            for (int configId : configIdsToDeviceIds.keySet()) {
-                deviceBehaviorDao.assignBehavior(configId, TYPE,
-                    new ArrayList<>(configIdsToDeviceIds.get(configId)), false);
+
+            if (report == null || !reportedConfig.isEnabled() || reportedConfig.getAttributes().isEmpty()) {
+                devicesIdsToUnassign.add(deviceId);
+                continue;
             }
-            deviceBehaviorDao.deleteUnusedBehaviors();
-            
-            if(!devicesIdsToUnassign.isEmpty()){
-                unassignDataStreamingConfig(createDeviceCollectionForIds(devicesIdsToUnassign), user);
+
+            List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
+            // Look for an existing config matching the behavior report
+            DataStreamingConfig config = findConfig(allConfigs, reportedConfig);
+
+            if (config == null) {
+                // If no existing config, create a new one from the behavior report
+                Behavior behavior = convertConfigToBehavior(reportedConfig);
+                // create behavior
+                int behaviorId = deviceBehaviorDao.saveBehavior(behavior);
+                configIdsToDeviceIds.put(behaviorId, deviceId);
+                log.debug("Match not found, created new behavior with id=" + behaviorId);
+            } else {
+                log.debug("Match found, behavior id=" + config.getId());
+                configIdsToDeviceIds.put(config.getId(), deviceId);
             }
-            
-            logService.acceptCompleted(result.getResultsId(), allDeviceIds.size(), configIdsToDeviceIds.size(),
-                devicesIdsToUnassign.size());
-            
-            if(!devicesToResend.isEmpty()){
-                log.debug("Re-sending devices=" + devicesToResend);
-                return resend(devicesToResend, user);
-            }
-            return result;
-        } else {
-            return createEmptyResult(deviceCollection, "Porter connection is invalid.");
+        }
+
+        log.debug("Accepting devices=" + allDeviceIds);
+        log.debug("Assigning devices=" + configIdsToDeviceIds.values());
+        log.debug("Unassigning devices=" + devicesIdsToUnassign);
+        // assign behaviors
+        for (int configId : configIdsToDeviceIds.keySet()) {
+            deviceBehaviorDao.assignBehavior(configId, TYPE, new ArrayList<>(configIdsToDeviceIds.get(configId)),
+                false);
+        }
+        deviceBehaviorDao.deleteUnusedBehaviors();
+
+        if (!devicesIdsToUnassign.isEmpty()) {
+            unassignDataStreamingConfig(createDeviceCollectionForIds(devicesIdsToUnassign), context);
+        }
+
+        // logService.acceptCompleted(String.valueOf(result.getCacheKey()), allDeviceIds.size(),
+        // configIdsToDeviceIds.size(), devicesIdsToUnassign.size());
+
+        if (!devicesToResend.isEmpty()) {
+            log.debug("Re-sending devices=" + devicesToResend);
+            resend(devicesToResend, context);
         }
     }
-    
+
     /**
      * Searches allConfigs list for behavior with the same attributes and interval as reportedConfig.
      * 
@@ -1078,16 +1038,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Set<BuiltInAttribute> differences = Sets.symmetricDifference(expected,actual);
         boolean isEqualInterval = expectedConfig.getSelectedInterval() == actualConfig.getSelectedInterval();
         return differences.isEmpty() && isEqualInterval;
-    }
-
-    @Override
-    public void cancel(String resultId, LiteYukonUser user) {
-        DataStreamingConfigResult result = resultsCache.getResult(resultId);
-        
-        logService.cancelAttempted(user, result.getResultsId());
-        
-        result.getConfigCallback().cancel(user);
-        porterConn.cancel(result, user);
     }
 
     private ConfigResponseResult sendNmConfiguration(Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds, int requestSeqNumber,
@@ -1133,37 +1083,70 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         processConfigResponse(response);
     }
 
-    private void sendConfiguration(LiteYukonUser user, DeviceSummary summary, int requestSeqNumber,
-            DataStreamingConfigResult result, CommandType commandType) {
+
+    private CollectionActionResult sendConfiguration(CollectionAction action, DeviceSummary summary,
+            int requestSeqNumber, YukonUserContext context) {
+        CollectionActionResult result = collectionActionService.createResult(action, null, summary.deviceCollection,
+            CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, context);
+        return sendConfiguration(result, summary, requestSeqNumber);
+    }
+    private CollectionActionResult sendConfiguration(CollectionActionResult result, DeviceSummary summary, int requestSeqNumber) {
         List<SimpleDevice> unsupportedDevices = summary.unsupportedDevices;
         List<SimpleDevice> supportedDevices = summary.supportedDevices;
         DeviceCollection deviceCollection = summary.deviceCollection;
-        
-        log.info("Attempting to " + commandType + " configuration command to " + deviceCollection.getDeviceCount() + " devices.");
-
-        CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
-            DeviceRequestType.DATA_STREAMING_CONFIG, 0, user);
-        result.setExecution(execution);
-
-        List<SimpleDevice> allDevices = deviceCollection.getDeviceList();
-        deviceGroupMemberEditorDao.addDevices(result.getAllDevicesGroup(), allDevices);
-        DataStreamingConfigCallback callback =
-            new DataStreamingConfigCallbackImpl(result, execution, deviceCollection.getDeviceList(), requestSeqNumber);
-
-        result.setConfigCallback(callback);
-        if (!unsupportedDevices.isEmpty()) {
-            log.info(unsupportedDevices.size() + " devices are unsupported.");
-            deviceGroupMemberEditorDao.addDevices(result.getUnsupportedGroup(), unsupportedDevices);
-            commandRequestExecutionResultDao.saveUnsupported(new HashSet<>(unsupportedDevices), execution.getId(),
-                CommandRequestUnsupportedType.UNSUPPORTED);
+        collectionActionService.addUnsupportedToResult(UNSUPPORTED, result, unsupportedDevices);
+        if(!connPool.getDefPorterConn().isValid()) {
+            result.setExecutionExceptionText("No porter connection.");
+            collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
+            return result;
         }
+        log.info("Attempting to " + result.getExecution().getCommandRequestType() + " configuration command to " + deviceCollection.getDeviceCount() + " devices.");
+        
+        DataStreamingConfigCallback callback = new DataStreamingConfigCallback() {
+            @Override
+            public void receivedConfigSuccess(SimpleDevice device, ReportedDataStreamingConfig config) {
+                if (!isComplete()) {
+                    CollectionActionLogDetail detail = new CollectionActionLogDetail(device, SUCCESS);
+                    result.addDeviceToGroup(SUCCESS, device, detail);
+                }
+                processReceivedConfigSuccess(device, config, requestSeqNumber);
+            }
+
+            @Override
+            public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error,
+                    ReportedDataStreamingConfig config) {
+                if (!isComplete()) {
+                    CollectionActionLogDetail detail = new CollectionActionLogDetail(device, FAILURE);
+                    detail.setDeviceErrorText(error.getDescription());
+                    result.addDeviceToGroup(FAILURE, device, detail);
+                }
+                processReceivedConfigError(device, config, requestSeqNumber, error);
+            }
+
+            @Override
+            public void processingExceptionOccured(String reason) {
+                result.setExecutionExceptionText(reason);
+                collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
+            }
+
+            @Override
+            public void complete() {
+                if (!result.isComplete()) {
+                    collectionActionService.updateResult(result, !result.isCanceled()
+                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                }
+            }
+        };
+
+       
         if (supportedDevices.isEmpty()) {
             callback.complete();
         } else {
-            List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(supportedDevices, commandType);
-            porterConn.sendConfiguration(commands, result, user);
+            List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(supportedDevices);
+            porterConn.sendConfiguration(commands, result, callback, result.getContext().getYukonUser());
         }
-        updateRequestCount(execution, supportedDevices.size());
+        updateRequestCount(result.getExecution(), supportedDevices.size());
+        return result;
     }
     
     private class DeviceSummary{
@@ -1182,6 +1165,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public DeviceSummary(DeviceCollection deviceCollection) {
             this(deviceCollection, null);
         }
+        
+        public DeviceSummary(Collection<Integer> deviceIds) {
+            this(createDeviceCollectionForIds(deviceIds));
+        }
 
         public DeviceSummary(DeviceCollection deviceCollection, Set<Integer> devicesSupportingNoAttributes) {
             this.deviceCollection = deviceCollection;
@@ -1194,17 +1181,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         } 
     }
     
-    /**
-     * Creates uncompleted result and adds it to cache
-     */
-    private DataStreamingConfigResult createUncompletedResult() {
-        DataStreamingConfigResult result =
-            new DataStreamingConfigResult(tempDeviceGroupService, deviceGroupCollectionHelper);
-        String resultsId = resultsCache.addResult(result);
-        result.setResultsId(resultsId);
-        return result;
-    }
-
     private List<SimpleDevice> getSupportedDevices(DeviceCollection deviceCollection) {
 
         List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(
@@ -1225,26 +1201,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             log.debug("Updating Command Request Execution request count to " + count + ".");
         }
         commandRequestExecutionDao.saveOrUpdate(execution);
-    }
-
-    private boolean isValidPorterConnection() {
-        if (!connPool.getDefPorterConn().isValid()) {
-            log.error("Porter connection is invalid.");
-            return false;
-        }
-        return true;
-    }
-
-    private DataStreamingConfigResult createEmptyResult(DeviceCollection deviceCollection, String reason) {
-        DataStreamingConfigResult result =
-            new DataStreamingConfigResult(tempDeviceGroupService, deviceGroupCollectionHelper);
-        List<SimpleDevice> allDevices = deviceCollection.getDeviceList();
-        deviceGroupMemberEditorDao.addDevices(result.getAllDevicesGroup(), allDevices);
-        result.setExceptionReason(reason);
-        String resultsId = resultsCache.addResult(result);
-        result.setResultsId(resultsId);
-        result.complete();
-        return result;
     }
 
     /**
@@ -1375,13 +1331,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return report;
     }
 
-    private void completeCommandRequestExecutionRecord(CommandRequestExecution cre,
-            CommandRequestExecutionStatus status) {
-        cre.setStopTime(new Date());
-        cre.setCommandRequestExecutionStatus(status);
-        commandRequestExecutionDao.saveOrUpdate(cre);
-    }
-
     /**
      * Internal data class to consolidate info about a data streaming configuration attempt.
      */
@@ -1439,32 +1388,34 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 success = false;
             }
 
-            for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
-                DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
-                
-                // Handle non-critical verification errors. These are things like old firmware or node not ready, where 
-                // we can just put the device in the unsupported bucket and still update other devices.
-                if (nonCriticalDeviceErrors.contains(errorType)) {
-                    RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
-                    log.debug(
-                        "Data streaming verification response - device error: " + device + ", " + errorType.name());
-                    String deviceError = "Device error for " + device + ": " + errorType;
-                    String i18nKey = "device." + errorType.name();
-                    exceptions.add(new DataStreamingConfigException(deviceError, i18nKey, device.getName()));
-                    //device will not be updated
-                    addDeviceUnsupported(Collections.emptySet(), 
-                                         Collections.singleton(device.getPaoIdentifier().getPaoId()), 
-                                         true);
-                    failedVerificationDevices.add(new SimpleDevice(device));
-                } else if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
-                    // Handle all other errors that haven't been covered above
-                    RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
-                    log.debug(
-                        "Data streaming verification response - device error: " + device + ", " + errorType.name());
-                    String deviceError = "Device error for " + device + ": " + errorType;
-                    String i18nKey = "device." + errorType.name();
-                    exceptions.add(new DataStreamingConfigException(deviceError, i18nKey, device.getName()));
-                    success = false;
+            if (response.getErrorConfigedDevices() != null) {
+                for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
+                    DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
+
+                    // Handle non-critical verification errors. These are things like old firmware or node not
+                    // ready, where
+                    // we can just put the device in the unsupported bucket and still update other devices.
+                    if (nonCriticalDeviceErrors.contains(errorType)) {
+                        RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                        log.debug(
+                            "Data streaming verification response - device error: " + device + ", " + errorType.name());
+                        String deviceError = "Device error for " + device + ": " + errorType;
+                        String i18nKey = "device." + errorType.name();
+                        exceptions.add(new DataStreamingConfigException(deviceError, i18nKey, device.getName()));
+                        // device will not be updated
+                        addDeviceUnsupported(Collections.emptySet(),
+                            Collections.singleton(device.getPaoIdentifier().getPaoId()), true);
+                        failedVerificationDevices.add(new SimpleDevice(device));
+                    } else if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
+                        // Handle all other errors that haven't been covered above
+                        RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                        log.debug(
+                            "Data streaming verification response - device error: " + device + ", " + errorType.name());
+                        String deviceError = "Device error for " + device + ": " + errorType;
+                        String i18nKey = "device." + errorType.name();
+                        exceptions.add(new DataStreamingConfigException(deviceError, i18nKey, device.getName()));
+                        success = false;
+                    }
                 }
             }
         }
@@ -1542,133 +1493,75 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return deviceCollection;
     }
 
-    /**
-     * Callback to handle data streaming config responses.
-     */
-    public class DataStreamingConfigCallbackImpl implements DataStreamingConfigCallback {
-        private int requestSeqNumber;
-        private DataStreamingConfigResult result;
-        private StoredDeviceGroup successGroup;
-        private StoredDeviceGroup failedGroup;
-        private StoredDeviceGroup cancelGroup;
-        private CommandRequestExecution execution;
-        private List<SimpleDevice> deviceList;
-        Map<Integer, Behavior> deviceIdToBehavior; 
+    private void handleReportedDataStreamingConfig(SimpleDevice device, ReportedDataStreamingConfig config,
+            BehaviorReport reportedBehavior, int requestSeqNumber) {
+        // Update DB
+        deviceBehaviorDao.saveBehaviorReport(reportedBehavior);
 
-        public DataStreamingConfigCallbackImpl(DataStreamingConfigResult result, CommandRequestExecution execution,
-                List<SimpleDevice> deviceList, int requestSeqNumber) {
-            this.result = result;
-            successGroup = result.getSuccessGroup();
-            failedGroup = result.getFailedGroup();
-            this.execution = execution;
-            this.deviceList = deviceList;
-            cancelGroup = result.getCanceledGroup();
-            this.requestSeqNumber = requestSeqNumber;
-            deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, asDeviceIds(deviceList));
+        // Send sync to NM
+        DeviceDataStreamingConfigRequest request =
+            dataStreamingCommService.buildSyncRequest(config, device, requestSeqNumber);
+        try {
+            dataStreamingCommService.sendConfigRequest(request);
+        } catch (DataStreamingConfigException e) {
+            log.error("Error sending data streaming sync to Network Manager.", e);
         }
+    }
+    
+    private void processReceivedConfigSuccess(SimpleDevice device, ReportedDataStreamingConfig config,
+            int requestSeqNumber) {
+        log.debug("Recieved a config success for device=" + device + " config=" + config);
+        if (config != null) {
+            BehaviorReport reportedBehavior =
+                buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.CONFIRMED);
 
-        @Override
-        public void receivedConfigSuccess(SimpleDevice device, ReportedDataStreamingConfig config) {
-            
-            if (!isComplete()) {
-                // Add to result
-                // mark device as success
-                deviceGroupMemberEditorDao.addDevices(successGroup, device);
-            }
-
-            if (config != null) {
-                BehaviorReport reportedBehavior = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.CONFIRMED);
-
-                handleReportedDataStreamingConfig(device, config, reportedBehavior);
-            }
+            handleReportedDataStreamingConfig(device, config, reportedBehavior, requestSeqNumber);
         }
+    }
+    
+    private void processReceivedConfigError(SimpleDevice device, ReportedDataStreamingConfig config,
+            int requestSeqNumber,  SpecificDeviceErrorDescription error) {
+        log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription() + " config=" + config);
+        
+        if (config != null) {
+            BehaviorReport report = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.FAILED);
 
-        private void handleReportedDataStreamingConfig(SimpleDevice device, ReportedDataStreamingConfig config, BehaviorReport reportedBehavior) {
-            // Update DB
-            deviceBehaviorDao.saveBehaviorReport(reportedBehavior);
-
-            // Send sync to NM
-            DeviceDataStreamingConfigRequest request =
-                dataStreamingCommService.buildSyncRequest(config, device, requestSeqNumber);
-            try {
-                dataStreamingCommService.sendConfigRequest(request);
-            } catch (DataStreamingConfigException e) {
-                log.error("Error sending data streaming sync to Network Manager.", e);
-            }
-        }
-
-        @Override
-        public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error, ReportedDataStreamingConfig config) {
-            log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription() + " config=" + config);
-            
-            if (!isComplete()) {
-                deviceGroupMemberEditorDao.addDevices(failedGroup, device);
-            }
-
-            if (config != null) {
-                BehaviorReport report = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.FAILED);
-                
-                DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
-                for (DataStreamingAttribute attribute : reportedConfig.getAttributes()) {
-                    if (attribute.getStatus() != DataStreamingMetricStatus.OK) {
-                        report.setStatus(BehaviorReportStatus.CONFIGURATION_ERROR);
-                        break;
-                    }
+            DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
+            for (DataStreamingAttribute attribute : reportedConfig.getAttributes()) {
+                if (attribute.getStatus() != DataStreamingMetricStatus.OK) {
+                    report.setStatus(BehaviorReportStatus.CONFIGURATION_ERROR);
+                    break;
                 }
-                handleReportedDataStreamingConfig(device, config, report);
-            } else {
-                deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.FAILED,
-                    Arrays.asList(device.getDeviceId()));
             }
+            handleReportedDataStreamingConfig(device, config, report, requestSeqNumber);
+        } else {
+            deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.FAILED,
+                Arrays.asList(device.getDeviceId()));
         }
+    }
+    
+    @Override
+    public boolean isCancellable(CollectionAction action) {
+        return action == CollectionAction.CONFIGURE_DATA_STREAMING || action == CollectionAction.REMOVE_DATA_STREAMING;
+    }
 
-        @Override
-        public void complete() {
-            if (!result.isComplete()) {
-                result.complete();
-                log.info("Command Complete");
-                completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
-                
-                logService.completedResults(result.getResultsId(), result.getTotalItems(), result.getSuccessCount(),
-                    result.getFailureCount(), result.getUnsupportedCount());
-            }
-        }
+    @Override
+    public void cancel(int key, LiteYukonUser user) {
+        CollectionActionResult result = collectionActionService.getCachedResult(key);
+        if (result != null) {
+            logService.cancelAttempted(user, String.valueOf(result.getCacheKey()));
 
-        @Override
-        public boolean isComplete() {
-            return result.isComplete();
-        }
-
-        @Override
-        public void processingExceptionOccured(String reason) {
-            result.complete();
-            completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.FAILED);
-            result.setExceptionReason(reason);
-        }
-
-        @Override
-        public void cancel(LiteYukonUser user) {
-            if (!result.isComplete()) {
-                result.complete();
-                result.getCommandCompletionCallback().cancel();
-                log.info("Command Canceled");
-                Set<SimpleDevice> canceledDevices = new HashSet<>();
-                canceledDevices.addAll(deviceList);
-                canceledDevices.removeAll(result.getSuccessDeviceCollection().getDeviceList());
-                canceledDevices.removeAll(result.getFailureDeviceCollection().getDeviceList());
-                canceledDevices.removeAll(result.getUnsupportedDeviceCollection().getDeviceList());
-                
-                completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.CANCELING);
-                commandRequestExecutionResultDao.saveUnsupported(canceledDevices, execution.getId(),
-                    CommandRequestUnsupportedType.CANCELED);
-                deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.CANCELED, 
-                    asDeviceIds(canceledDevices));
-                deviceGroupMemberEditorDao.addDevices(cancelGroup, canceledDevices);
-                updateRequestCount(execution, result.getFailureCount() + result.getSuccessCount());
-                
-                logService.cancelCompleted(result.getResultsId(), result.getTotalItems(), result.getSuccessCount(),
-                    result.getFailureCount(), result.getUnsupportedCount(), String.valueOf(result.getCanceledCount()));
-            }
+            result.setCanceled(true);
+            collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
+            result.getCancellationCallbacks(StrategyType.PORTER).forEach(callback -> {
+                commandExecutionService.cancelExecution(callback.getCommandCompletionCallback(), user, false);
+            });
+            deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.CANCELED, 
+                asDeviceIds(result.getCancelableDevices()));
+            updateRequestCount(result.getExecution(), result.getCounts().getSuccessCount() + result.getCounts().getFailedCount());
+            collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELLED);
+          /*  logService.cancelCompleted(result.getCacheKey(), result.getCounts().getTotalCount(), result.getSuccessCount(),
+                result.getFailureCount(), result.getUnsupportedCount(), String.valueOf(result.getCanceledCount()));*/
         }
     }
 }

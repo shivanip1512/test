@@ -2,7 +2,6 @@ package com.cannontech.web.rfn.dataStreaming;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,71 +14,53 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
-import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 
 /**
  * Abstraction of the Porter connection for data streaming purposes. This class handles the actual data streaming config
  * messages sent to Porter, which then sends configuration messages to the devices.
  */
 public class DataStreamingPorterConnection {
-    public enum CommandType{
-       READ,
-       SEND
-    }
     private static final Logger log = YukonLogManager.getLogger(DataStreamingPorterConnection.class);
     private static final String sendCommand = "putconfig behavior rfndatastreaming";
-    private static final String readCommand = "getconfig behavior rfndatastreaming";
     private static final String porterJsonTag = "json";
     private static final String porterJsonPrefix = porterJsonTag + "{";
 
 
-    @Autowired private DataStreamingDevSettings devSettings;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandExecutionService commandExecutionService;
 
     /**
      * Build a list of data streaming configuration commands for the specified devices. Porter will use the
      * configurations currently in the database for those devices.
      */
-    public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices, CommandType commandType) {
+    public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices) {
         List<CommandRequestDevice> commands = devices.stream().map(device -> {
-            CommandRequestDevice command = null;
-            if (CommandType.READ == commandType) {
-                command = new CommandRequestDevice(readCommand, device);
-            } else if (CommandType.SEND == commandType) {
-                command = new CommandRequestDevice(sendCommand, device);
-            } else {
-                throw new UnsupportedOperationException(commandType + " is not supported.");
-            }
-            return command;
+            return new CommandRequestDevice(sendCommand, device);
         }).collect(Collectors.toList());
 
         return commands;
     }
-
+    
     /**
      * Send porter a list of devices to configure data streaming. Porter will use the configurations currently in the
      * database for those devices. All responses will be routed to the callback, which is responsible for updating the
      * reported configuration values in the database.
      */
-    public void sendConfiguration(List<CommandRequestDevice> commands, DataStreamingConfigResult result,
+    public void sendConfiguration(List<CommandRequestDevice> commands, CollectionActionResult result, DataStreamingConfigCallback callback,
             LiteYukonUser user) {
-        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback =
-            buildCallbackProxy(result.getConfigCallback());
-        result.setCommandCompletionCallback(commandCompletionCallback);
+        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback = buildCallbackProxy(callback);
+        result.addCancellationCallback(new CollectionActionCancellationCallback(StrategyType.PORTER, null, commandCompletionCallback));
         log.info("Sending data streaming configuration to Porter. " + commands);
         commandExecutionService.execute(commands, commandCompletionCallback, result.getExecution(), true, user);
     }
@@ -154,16 +135,5 @@ public class DataStreamingPorterConnection {
         };
         
         return callback;
-    }
-
-    public void cancel(DataStreamingConfigResult result, LiteYukonUser user) {
-        if (devSettings.isSimulatePorterConfigResponse()) {
-            CommandRequestExecution cre = result.getExecution();
-            cre.setStopTime(new Date());
-            cre.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELLED);
-            commandRequestExecutionDao.saveOrUpdate(cre);
-        }else{
-            commandExecutionService.cancelExecution(result.getCommandCompletionCallback(), user, true);
-        }
     }
 }
