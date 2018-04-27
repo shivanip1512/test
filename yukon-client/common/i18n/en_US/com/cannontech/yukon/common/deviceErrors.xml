@@ -578,8 +578,8 @@
     <entry key="yukon.web.error.code.83.porter">Operation Attempted on Inhibited Port</entry>
     <entry key="yukon.web.error.code.83.description">The targeted port is disabled or inhibited in the
         Yukon System.</entry>
-    <entry key="yukon.web.error.code.83.troubleshooting">This is a Yukon system message, the port is flagged as
-        disabled in the Device Setup.</entry>
+    <entry key="yukon.web.error.code.83.troubleshooting"><![CDATA[This is a Yukon system message, the port is flagged as
+        disabled in the Device Setup.]]></entry>
     
     <entry key="yukon.web.error.code.84.porter">Device Does Not Support Accumulators</entry>
     <entry key="yukon.web.error.code.84.description">Device Does Not Support Accumulators</entry>
@@ -588,8 +588,8 @@
     <entry key="yukon.web.error.code.85.porter">Operation Attempted on Inhibited Device</entry>
     <entry key="yukon.web.error.code.85.description">The targeted device is disabled or inhibited in the
         Yukon System.</entry>
-    <entry key="yukon.web.error.code.85.troubleshooting">This is a Yukon system message, the device is flagged
-        as disabled in the Device Setup.</entry>
+    <entry key="yukon.web.error.code.85.troubleshooting"><![CDATA[This is a Yukon system message, the device is flagged
+        as disabled in the Device Setup.]]></entry>
 
     <entry key="yukon.web.error.code.87.porter">Error Dialing Up Remote</entry>
     <entry key="yukon.web.error.code.87.description">The master station was unable to communicate with the
@@ -794,7 +794,7 @@
 
     <entry key="yukon.web.error.code.220.porter">Config is current</entry>
     <entry key="yukon.web.error.code.220.description">The configuration on the device matches its assigned config.</entry>
-    <entry key="yukon.web.error.code.220.troubleshooting">Confirm that the intended configuration is assigned to the device.</entry>
+    <entry key="yukon.web.error.code.220.troubleshooting"><![CDATA[Confirm that the intended configuration is assigned to the device.]]></entry>
     
     <entry key="yukon.web.error.code.221.porter">No Route for Group Dev.</entry>
     <entry key="yukon.web.error.code.221.description">No Route for Group Dev.</entry>
@@ -830,7 +830,7 @@
 
     <entry key="yukon.web.error.code.227.porter">Request timed out.</entry>
     <entry key="yukon.web.error.code.227.description">Request timed out.</entry>
-    <entry key="yukon.web.error.code.227.troubleshooting">Check Yukon Logs for errors.</entry>
+    <entry key="yukon.web.error.code.227.troubleshooting"><![CDATA[Check Yukon Logs for errors.]]></entry>
     
     <entry key="yukon.web.error.code.228.porter">Requested operation expired due to time</entry>
     <entry key="yukon.web.error.code.228.description">Requested operation expired due to time</entry>
@@ -1057,72 +1057,72 @@
 
     <entry key="yukon.web.error.code.279.porter">Command requires a valid date.</entry>
     <entry key="yukon.web.error.code.279.description">In order to execute, the command must be provided a valid date.</entry>
-    <entry key="yukon.web.error.code.279.troubleshooting">Verify that the date provided for the command is valid and submit the request again.</entry>
+    <entry key="yukon.web.error.code.279.troubleshooting"><![CDATA[Verify that the date provided for the command is valid and submit the request again.]]></entry>
         
     <entry key="yukon.web.error.code.280.porter">Failed to resolve an IP for the given DNS name.</entry>
     <entry key="yukon.web.error.code.280.description">The system attempted to look up a network name, but the operating system 
             returned an error.</entry>
-    <entry key="yukon.web.error.code.280.troubleshooting">Verify that the DNS name is correct and that your networking settings are valid.</entry>
+    <entry key="yukon.web.error.code.280.troubleshooting"><![CDATA[Verify that the DNS name is correct and that your networking settings are valid.]]></entry>
         
     <entry key="yukon.web.error.code.281.porter">Failed to find a point for the given device.</entry>
     <entry key="yukon.web.error.code.281.description">Point is missing.</entry>
-    <entry key="yukon.web.error.code.281.troubleshooting">Add missing point.</entry>
+    <entry key="yukon.web.error.code.281.troubleshooting"><![CDATA[Add missing point.]]></entry>
         
     <entry key="yukon.web.error.code.282.porter">The device's date range must be reset to continue.</entry>
     <entry key="yukon.web.error.code.282.description">The action failed, the timestamp was not received.</entry>
-    <entry key="yukon.web.error.code.282.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.282.troubleshooting"><![CDATA[]]></entry>
        
     <entry key="yukon.web.error.code.283.porter">Not enough data received from the device.</entry>
     <entry key="yukon.web.error.code.283.description">The action failed, the timestamp is outside of the expected range.</entry>
-    <entry key="yukon.web.error.code.283.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.283.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.284.porter">Configuration data is invalid.</entry>
     <entry key="yukon.web.error.code.284.description">The Device Configuration has entries that are invalid or missing for the device.</entry>
-    <entry key="yukon.web.error.code.284.troubleshooting">Try different values in the command or Device Configuration.</entry>
+    <entry key="yukon.web.error.code.284.troubleshooting"><![CDATA[Try different values in the command or Device Configuration.]]></entry>
         
     <entry key="yukon.web.error.code.285.porter">Device address is unknown.</entry>
     <entry key="yukon.web.error.code.285.description">Network Manager does not have a record of a device with that address.</entry>
-    <entry key="yukon.web.error.code.285.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.285.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.286.porter">Network is unavailable.</entry>
     <entry key="yukon.web.error.code.286.description">Network Manager indicated that the network could not be reached.</entry>
-    <entry key="yukon.web.error.code.286.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.286.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.287.porter">Request packet is too large.</entry>
     <entry key="yukon.web.error.code.287.description">Yukon attempted to send an oversized request to the RF network.</entry>
-    <entry key="yukon.web.error.code.287.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.287.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.288.porter">Protocol is unsupported.</entry>
     <entry key="yukon.web.error.code.288.description">Yukon attempted to send an unsupported protocol to the RF network.</entry>
-    <entry key="yukon.web.error.code.288.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.288.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.289.porter">Network server ID is invalid.</entry>
     <entry key="yukon.web.error.code.289.description">Yukon's Network Manager server registration is not correct.</entry>
-    <entry key="yukon.web.error.code.289.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.289.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.290.porter">Application service ID is invalid.</entry>
     <entry key="yukon.web.error.code.290.description">Yukon attempted to send to an invalid service in the end device.</entry>
-    <entry key="yukon.web.error.code.290.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.290.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.291.porter">Network traffic limiting.</entry>
     <entry key="yukon.web.error.code.291.description">Network Manager indicated that the message could not be sent because the network is being throttled.</entry>
-    <entry key="yukon.web.error.code.291.troubleshooting"></entry>                                                                                                
+    <entry key="yukon.web.error.code.291.troubleshooting"><![CDATA[]]></entry>                                                                                                
 
     <entry key="yukon.web.error.code.292.porter">Did not receive a response from the device.</entry>
     <entry key="yukon.web.error.code.292.description">Network Manager sent the request, but the device did not respond in time.</entry>
-    <entry key="yukon.web.error.code.292.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.292.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.293.porter">Did not receive a response from Network Manager.</entry>
     <entry key="yukon.web.error.code.293.description">Network Manager did not acknowledge the request.</entry>
-    <entry key="yukon.web.error.code.293.troubleshooting">Check Network Manager server logs to identify the root cause of the failure.</entry>
+    <entry key="yukon.web.error.code.293.troubleshooting"><![CDATA[Check Network Manager server logs to identify the root cause of the failure.]]></entry>
         
     <entry key="yukon.web.error.code.294.porter">E2E request payload too large.</entry>
     <entry key="yukon.web.error.code.294.description">Yukon attempted to form an oversized request packet.</entry>
-    <entry key="yukon.web.error.code.294.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.294.troubleshooting"><![CDATA[]]></entry>
         
     <entry key="yukon.web.error.code.295.porter">Endpoint indicated request not acceptable.</entry>
     <entry key="yukon.web.error.code.295.description">The end device rejected the request.</entry>
-    <entry key="yukon.web.error.code.295.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.295.troubleshooting"><![CDATA[]]></entry>
     
     <entry key="yukon.web.error.code.296.porter">The device has no points attached.</entry>
     <entry key="yukon.web.error.code.296.description">The device has no points attached.</entry>
@@ -1130,7 +1130,7 @@
         
     <entry key="yukon.web.error.code.297.porter">Network service failure.</entry>
     <entry key="yukon.web.error.code.297.description">Network Manager indicated that the network could not send the request.</entry>
-    <entry key="yukon.web.error.code.297.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.297.troubleshooting"><![CDATA[]]></entry>
     
     <entry key="yukon.web.error.code.298.porter">Channel not enabled in RF node.</entry>
     <entry key="yukon.web.error.code.298.description">Channel not enabled in RF node.</entry>
@@ -1179,46 +1179,46 @@
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
         currently associated with this device in Yukon.</entry>
-    <entry key="yukon.web.error.code.1024.troubleshooting">Use Network Manager to see if this meter exists and is
-        known to be paired with any RF nodes.</entry>
+    <entry key="yukon.web.error.code.1024.troubleshooting"><![CDATA[Use Network Manager to see if this meter exists and is
+        known to be paired with any RF nodes.]]></entry>
 
     <entry key="yukon.web.error.code.1025.porter">There is no RF gateway associated with the RF node.</entry>
     <entry key="yukon.web.error.code.1025.description">There isn't a gateway in Network Manager which is
         currently associated with this node.</entry>
-    <entry key="yukon.web.error.code.1025.troubleshooting">Use Network Manager to see which RF gateway is
-        associated with the RF node in question, if any.</entry>
+    <entry key="yukon.web.error.code.1025.troubleshooting"><![CDATA[Use Network Manager to see which RF gateway is
+        associated with the RF node in question, if any.]]></entry>
 
     <entry key="yukon.web.error.code.1026.porter">There was an error while processing the request.</entry>
     <entry key="yukon.web.error.code.1026.description">An unexpected Network Manager error has occurred.</entry>
-    <entry key="yukon.web.error.code.1026.troubleshooting">Check Network Manager server logs to identify the root
-        cause of the failure.</entry>
+    <entry key="yukon.web.error.code.1026.troubleshooting"><![CDATA[Check Network Manager server logs to identify the root
+        cause of the failure.]]></entry>
 
     <entry key="yukon.web.error.code.1027.porter">Timeout</entry>
     <entry key="yukon.web.error.code.1027.description">Request timed out</entry>
-    <entry key="yukon.web.error.code.1027.troubleshooting">Check Yukon Logs for errors</entry>
+    <entry key="yukon.web.error.code.1027.troubleshooting"><![CDATA[Check Yukon Logs for errors]]></entry>
 
     <entry key="yukon.web.error.code.1028.porter">Load side voltage detected while disconnected.</entry>
     <entry key="yukon.web.error.code.1028.description">Load side voltage detected while disconnected.</entry>
-    <entry key="yukon.web.error.code.1028.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.1028.troubleshooting"><![CDATA[]]></entry>
 
     <entry key="yukon.web.error.code.1029.porter">No load side voltage detected while connected.</entry>
     <entry key="yukon.web.error.code.1029.description">No load side voltage detected while connected.</entry>
-    <entry key="yukon.web.error.code.1029.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.1029.troubleshooting"><![CDATA[]]></entry>
 
     <entry key="yukon.web.error.code.1030.porter">No load side voltage detected while connected.</entry>
     <entry key="yukon.web.error.code.1030.description">Load side voltage higher than the configurable threshold prevented the switch from closing.</entry>
-    <entry key="yukon.web.error.code.1030.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.1030.troubleshooting"><![CDATA[]]></entry>
             
     <entry key="yukon.web.error.code.2000.porter">Invalid Action for Device Type.</entry>
     <entry key="yukon.web.error.code.2000.description">This action cannot be performed on this device type.</entry>
-    <entry key="yukon.web.error.code.2000.troubleshooting"></entry>
+    <entry key="yukon.web.error.code.2000.troubleshooting"><![CDATA[]]></entry>
 
     <entry key="yukon.web.error.code.0.porter">Normal (Success) Return</entry>
     <entry key="yukon.web.error.code.0.description">Successful Read</entry>
-    <entry key="yukon.web.error.code.0.troubleshooting">N/A</entry>
+    <entry key="yukon.web.error.code.0.troubleshooting"><![CDATA[N/A]]></entry>
 
     <entry key="yukon.web.error.code.-1.porter">A porter error string is not available for this error code at this time</entry>
     <entry key="yukon.web.error.code.-1.description">A description for this error code is not available at this time</entry>
-    <entry key="yukon.web.error.code.-1.troubleshooting">Troubleshooting tips for this error code are not available at this time</entry>
+    <entry key="yukon.web.error.code.-1.troubleshooting"><![CDATA[Troubleshooting tips for this error code are not available at this time]]></entry>
 
 </properties>
