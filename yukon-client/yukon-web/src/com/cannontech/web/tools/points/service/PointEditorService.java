@@ -5,9 +5,9 @@ import java.util.Map;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
@@ -125,12 +125,18 @@ public interface PointEditorService {
     int create(int pointType, int paoId, YukonUserContext userContext);
     
     /**
-     * Copies the point specified by pointId and assigns the point to pao object specified by paoId. 
+     * Copies the point and assigns the point to pao object specified by paoId in the LitePointModel. 
      * 
-     * @param pointId - point id of the point to copy.
-     * @param pointType - point type
-     * @param paoId - pao id to which the the point is assigned
-     * @return
+     * @param pointBase - pointBase object whose field data needs to be copied.
+     * @return the id of the new point copied.
      */
-    int copy(PointModel<? extends PointBase> pointBase);
+    int copy(LitePointModel pointToCopy);
+    
+    /**
+     * Returns LitePointModel for the pointId passed as a parameter.
+     * 
+     * @param pointId
+     * @return LitePointModel
+     */
+    LitePointModel getLitePointModel(Integer pointId);
 }

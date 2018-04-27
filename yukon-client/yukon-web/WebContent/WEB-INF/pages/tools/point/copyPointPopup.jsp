@@ -9,16 +9,16 @@
     <cti:url var="copyPointUrl" value="/tools/points/copy-point"/>
     <form:form id="copy-point-form" action="${copyPointUrl}" method="post" commandName="copyPointModel">
         <cti:csrfToken/>
-        <form:hidden path="pointBase.point.pointID"/>
-        <form:hidden path="pointBase.point.pointType" id="copy-point-pointType"/>
+        <form:hidden path="pointId"/>
+        <form:hidden path="pointType" id="copy-point-pointType"/>
 
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
-                <tags:input path="pointBase.point.pointName"/>
+                <tags:input path="pointName"/>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".device">
-                <form:hidden id="paoId" path="pointBase.point.paoID"/>
+                <form:hidden id="paoId" path="paoId"/>
                 <tags:pickerDialog endAction="yukon.tools.point.getNextValidPointOffset"
                                    extraArgs="${paoType}" 
                                    id="dbPaoPicker" 
@@ -26,19 +26,19 @@
                                    linkType="selection"
                                    immediateSelectMode="true" 
                                    selectionProperty="paoName" 
-                                   initialId="${copyPointModel.pointBase.point.paoID}"
+                                   initialId="${copyPointModel.paoId}"
                                    destinationFieldId="paoId"
                                    allowEmptySelection="false"/>
             </tags:nameValue2>
             
-            <input type="hidden" id="isPhysicalOffset" value="${copyPointModel.pointBase.point.physicalOffset}"/>
+            <input type="hidden" id="isPhysicalOffset" value="${copyPointModel.physicalOffset}"/>
             <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
-                <tags:switchButton path="pointBase.point.physicalOffset" offClasses="M0"
+                <tags:switchButton path="physicalOffset" offClasses="M0"
                                    toggleGroup="copy-point-physicalOffset" toggleAction="hide" 
                                    offNameKey=".physicalOffset.pseudo" id="copy-point-physicalOffset-toggle"/>
 
                 <%-- The physical offset value within the current device or parent this point belongs to --%>
-                <tags:input path="pointBase.point.pointOffset" size="6" toggleGroup="copy-point-physicalOffset"
+                <tags:input path="pointOffset" size="6" toggleGroup="copy-point-physicalOffset"
                             id="copy-point-physicalOffset-txt" displayValidationToRight="true"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>

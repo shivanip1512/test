@@ -69,8 +69,6 @@ public class PointModel<T extends PointBase> {
         Integer id = getId();
         PointBase base = getPointBase();
         
-        base.getPoint().setPointName(StringUtils.trim(base.getPoint().getPointName()));
-
         /* Remove unused translations and fill in the point id on used ones */
         List<FDRTranslation> newFdrs = new ArrayList<>();
 

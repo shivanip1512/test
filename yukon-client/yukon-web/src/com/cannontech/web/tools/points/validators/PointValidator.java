@@ -1,7 +1,6 @@
 package com.cannontech.web.tools.points.validators;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,8 +12,6 @@ import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
@@ -24,13 +21,13 @@ import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
+import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
-import com.google.common.collect.ImmutableList;
 
 @Service
 public class PointValidator extends SimpleValidator<PointModel> {
 
-    @Autowired PointDao pointDao;
+    @Autowired private PointValidationUtil pointValidationUtil; 
     
     private static final String baseKey = "yukon.web.modules.tools.point.error";
 
@@ -95,15 +92,15 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         PointBase base = pointModel.getPointBase();
         
-        validatePointName(pointModel, errors, false);
-        validatePointOffset(pointModel, errors, false);
+        LitePointModel litePointModel = LitePointModel.of(base);
+
+        pointValidationUtil.validatePointName(litePointModel, "pointBase.point.pointName", errors, false);
+        pointValidationUtil.validatePointOffset(litePointModel, "pointBase.point.pointOffset", errors, false);
         
         doScalarValidation(pointModel, errors);
         doAnalogValidation(base, errors);
         doAccumulatorValidation(base, errors);
         doStatusValidation(pointModel, errors);
-
-        
 
         Set<FdrUniquenessKey> usedTypes = new HashSet<>();
 
@@ -122,48 +119,6 @@ public class PointValidator extends SimpleValidator<PointModel> {
             index++;
         }
 
-    }
-    
-    protected void validatePointOffset(PointModel pointModel, Errors errors, boolean isCopyOperation) {
-        PointBase base = pointModel.getPointBase();
-        
-        if(base.getPoint().isPhysicalOffset()) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "pointBase.point.pointOffset", "yukon.web.error.isBlank");
-        }
-        
-        int parentId = base.getPoint().getPaoID();
-        List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
-        
-        if (base.getPoint().getPointOffset() != null) {
-            for (LitePoint pointOnPao : pointsOnPao) {
-
-                if (base.getPoint().getPointOffset() != 0
-                    && (pointOnPao.getPointOffset() == base.getPoint().getPointOffset() && pointOnPao.getPointTypeEnum() == base.getPoint().getPointTypeEnum())) {
-
-                    if (isCopyOperation || (pointOnPao.getPointID() != base.getPoint().getPointID())) {
-                        List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());
-                        errors.rejectValue("pointBase.point.pointOffset", baseKey + ".pointOffset", arguments.toArray(), 
-                            "Invalid point offset");
-                    }
-                }
-            }
-        }
-    }
-
-    protected void validatePointName(PointModel model, Errors errors, boolean isCopyOperation) {
-        PointBase base = model.getPointBase();
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "pointBase.point.pointName", "yukon.web.error.isBlank");
-        
-        int parentId = base.getPoint().getPaoID();
-        List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
-        
-        for (LitePoint pointOnPao : pointsOnPao) {
-            if (pointOnPao.getPointName().trim().equalsIgnoreCase(base.getPoint().getPointName().trim())) {
-                if (isCopyOperation || (pointOnPao.getPointID() != base.getPoint().getPointID())) {
-                    errors.rejectValue("pointBase.point.pointName", "yukon.web.error.nameConflict");
-                }
-            }
-        }
     }
     
     private void doScalarValidation(PointModel model, Errors errors) {

@@ -74,6 +74,12 @@ public class LitePoint extends LiteBase {
         setUofmID(uomId);
         setTags(tag);
     }
+    
+    public LitePoint(int id, String name, PointType pointType) {
+        this(id);
+        setPointName(name);
+        setPointType(pointType.getPointTypeId());
+    }
 
     public int getPointID() {
         return getLiteID();

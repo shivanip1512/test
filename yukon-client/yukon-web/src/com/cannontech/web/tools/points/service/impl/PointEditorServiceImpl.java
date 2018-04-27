@@ -27,11 +27,11 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
@@ -42,9 +42,9 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
-import com.cannontech.web.tools.points.service.helper.PointEdiorServiceHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
@@ -414,49 +414,53 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public int copy(PointModel<? extends PointBase> pointModel) {
-        PointBase pointBaseToCopy = PointFactory.retrievePoint(pointModel.getPointBase().getPoint().getPointID());
+    public int copy(LitePointModel pointModel) {
+        LitePoint litePoint = new LitePoint(pointModel.getPointId(), 
+                                            pointModel.getPointName(),
+                                            pointModel.getPointType());
         
-        int pointType = pointBaseToCopy.getPoint().getPointTypeEnum().getPointTypeId();
-        
-        PointBase newPoint = null;
-        switch (pointType) {
-            case PointTypes.ANALOG_POINT:
-                newPoint = PointEdiorServiceHelper.populateAnalogPointToCopy(pointModel, pointBaseToCopy);
-                break;
-                
-            case PointTypes.STATUS_POINT:
-                newPoint = PointEdiorServiceHelper.populateBankStatusPtToCopy(pointModel, pointBaseToCopy);
-                break;
-                
-            case PointTypes.PULSE_ACCUMULATOR_POINT:
-            case PointTypes.DEMAND_ACCUMULATOR_POINT:
-                newPoint = PointEdiorServiceHelper.populateAccumulatorPointToCopy(pointModel, pointBaseToCopy);
-                break;
-                
-            case PointTypes.CALCULATED_STATUS_POINT:
-                newPoint = PointEdiorServiceHelper.populateCalculatedStatusPoint(pointModel, pointBaseToCopy);
-                break;
-                
-            case PointTypes.CALCULATED_POINT:
-                newPoint = PointEdiorServiceHelper.populateCalculatedPoint(pointModel, pointBaseToCopy);
-                break;
+        PointBase newPoint = (PointBase) dBPersistentDao.retrieveDBPersistent(litePoint);
+        newPoint.setPointID(pointDao.getNextPointId());
 
-            default:
-                throw new Error("PointEditorServiceImpl::copy - Unrecognized point type");
+        if (pointModel.isPhysicalOffset()) {
+            newPoint.getPoint().setPointOffset(pointModel.getPointOffset());
+        } else {
+            newPoint.getPoint().setPhysicalOffset(false);
+            newPoint.getPoint().setPointOffset(0);
         }
 
-        // Insert the point into DB.
-        MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
-        dbPersistentVector.getDBPersistentVector().add(newPoint);
-        PointUtil.insertIntoDB(dbPersistentVector);
-        
-        //copy the StaleData
-        StaleData stateDataToCopy = getStaleData(pointModel.getPointBase().getPoint().getPointID());
-        StaleData newStaleData = PointEdiorServiceHelper.populateStaleDataObjectToCopy(stateDataToCopy);
+        newPoint.getPoint().setPointName(pointModel.getPointName());
+        newPoint.getPoint().setPaoID(pointModel.getPaoId());
+        PointUtil.insertIntoDB(newPoint);
+
+        // copy the StaleData
+        StaleData stateDataToCopy = getStaleData(pointModel.getPointId());
+        StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
         saveStaleData(newPoint.getPoint().getPointID(), newStaleData);
-        
+
         return newPoint.getPoint().getPointID();
+    }
+    
+    private StaleData populateStaleDataObjectToCopy(StaleData stateDataToCopy) {
+        StaleData staleData = new StaleData();
+        staleData.setEnabled(stateDataToCopy.isEnabled());
+        staleData.setTime(stateDataToCopy.getTime());
+        staleData.setUpdateStyle(stateDataToCopy.getUpdateStyle());
+        return staleData;
+    }
+
+    @Override
+    public LitePointModel getLitePointModel(Integer pointId) {
+        PointBase base = pointDao.get(pointId);
+        
+        LitePointModel copyPointModel = new LitePointModel(base.getPoint().getPointName(), 
+                                                           base.getPoint().getPointID(), 
+                                                           base.getPoint().isPhysicalOffset(), 
+                                                           base.getPoint().getPointOffset(),
+                                                           PointType.valueOf(base.getPoint().getPointType()),
+                                                           base.getPoint().getPaoID());
+        
+        return copyPointModel;
     }
 
 }

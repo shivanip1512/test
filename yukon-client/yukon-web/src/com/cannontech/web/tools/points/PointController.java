@@ -90,6 +90,7 @@ import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.rtu.service.RtuService;
+import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -138,57 +139,48 @@ public class PointController {
         return retrievePointAndModel(model, userContext, flashScope, id, request);
     }
     
-    @RequestMapping(value = "/points/{id}/render-copy-point", method = RequestMethod.GET)
-    public String renderCopyPoint(ModelMap model, FlashScope flashScope, @PathVariable Integer id,
+    @RequestMapping(value = "/points/{pointId}/render-copy-point", method = RequestMethod.GET)
+    public String renderCopyPoint(ModelMap model, FlashScope flashScope, @PathVariable Integer pointId,
             YukonUserContext userContext, HttpServletRequest request) {
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
-        PointModel<? extends PointBase> pointModel = null;
+        LitePointModel copyPointModel = null;
         if (model.containsAttribute("copyPointModel")) {
-            pointModel = (PointModel) model.get("copyPointModel");
+            copyPointModel = (LitePointModel) model.get("copyPointModel");
         } else {
             try {
-                pointModel = pointEditorService.getModelForId(id);
+                copyPointModel = pointEditorService.getLitePointModel(pointId);
                 
                 // set copy point name
                 MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
                 String newPointName = accessor.getMessage(YukonMessageSourceResolvable.createSingleCodeWithArguments(
-                    "yukon.common.copyof", pointModel.getPointBase().getPoint().getPointName()));
-                pointModel.getPointBase().getPoint().setPointName(newPointName);
-                
-                if (!(pointModel.getPointBase() instanceof SystemPoint)
-                    && pointModel.getPointBase().getPoint().getPseudoFlag().equals(Point.PSEUDOFLAG_PSEUDO)) {
-                    pointModel.getPointBase().getPoint().setPhysicalOffset(false);
-                }
+                    "yukon.common.copyof", copyPointModel.getPointName()));
+                copyPointModel.setPointName(newPointName);
                 
                 // set next valid physical offset.
-                int pointOffset = PointOffsetUtils.getValidPointOffset(pointModel.getPointBase().getPoint().getPaoID(),
-                    pointModel.getPointBase().getPoint().getPointTypeEnum());
-                pointModel.getPointBase().getPoint().setPointOffset(pointOffset);
+                int pointOffset = PointOffsetUtils.getValidPointOffset(copyPointModel.getPaoId(), copyPointModel.getPointType());
+                copyPointModel.setPointOffset(pointOffset);
                 
-                model.addAttribute("copyPointModel", pointModel);
+                model.addAttribute("copyPointModel", copyPointModel);
                 
                 // Add paoType to model
-                model.addAttribute("paoType",
-                    dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID()).getPaoType());
+                model.addAttribute("paoType", dbCache.getAllPaosMap().get(copyPointModel.getPaoId()).getPaoType());
             } catch (NotFoundException e) {
                 Log.error(e);
-                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
+                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", pointId));
             }
         }
         return "point/copyPointPopup.jsp";
     }
     
     @RequestMapping(value = "/points/copy-point", method = RequestMethod.POST)
-    public String copyPoint(@ModelAttribute("copyPointModel") PointModel<? extends PointBase> pointModel,
-            BindingResult result, ModelMap model, FlashScope flashScope,
-            YukonUserContext userContext, HttpServletResponse response)
+    public String copyPoint(@ModelAttribute("copyPointModel") LitePointModel pointModel, BindingResult result,
+            ModelMap model, FlashScope flashScope, YukonUserContext userContext, HttpServletResponse response)
             throws JsonGenerationException, JsonMappingException, IOException {
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
         copyPointValidator.validate(pointModel, result);
 
         if (result.hasErrors()) {
-            model.addAttribute("paoType",
-                dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID()).getPaoType());
+            model.addAttribute("paoType", dbCache.getAllPaosMap().get(pointModel.getPaoId()).getPaoType());
             model.addAttribute("copyPointModel", pointModel);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "point/copyPointPopup.jsp";
@@ -199,7 +191,8 @@ public class PointController {
         json.put("pointId", pointId);
         response.setContentType("application/json");
         JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
-        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".copyPoint.success"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".copyPoint.success",
+            pointModel.getPointName(), dbCache.getAllPaosMap().get(pointModel.getPaoId()).getPaoName()));
         return null;
     }
     

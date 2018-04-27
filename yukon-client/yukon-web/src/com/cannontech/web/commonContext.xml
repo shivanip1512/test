@@ -390,4 +390,6 @@
             <bean class="com.cannontech.web.search.lucene.criteria.DnpRtuCriteria"/>
         </property>
     </bean>
+    
+    <bean name="pointValidationUtil" class="com.cannontech.web.tools.points.validators.PointValidationUtil"/>
 </beans>

@@ -436,7 +436,7 @@ yukon.tools.point = (function () {
             
             if ($("#copy-point-physicalOffset-txt").hasClass('error')) {
                 $("#copy-point-physicalOffset-txt").removeClass('error');
-                $('#pointBase\\.point\\.pointOffset\\.errors').text('');
+                $('#pointOffset\\.errors').text('');
             }
             
         },
@@ -559,9 +559,9 @@ yukon.tools.point = (function () {
             
             $(document).on('click', '#copy-point-physicalOffset-toggle', function () {
                 if ($("#copy-point-physicalOffset-txt").hasClass('dn')) {
-                    $('#pointBase\\.point\\.pointOffset\\.errors').addClass('dn');
+                    $('#pointOffset\\.errors').addClass('dn');
                 } else {
-                    $('#pointBase\\.point\\.pointOffset\\.errors').removeClass('dn');
+                    $('#pointOffset\\.errors').removeClass('dn');
                 }
             });
         }

@@ -307,7 +307,7 @@
     <entry key="yukon.web.modules.tools.point.physicalOffset.pseudo">Pseudo</entry>
     
     <entry key="yukon.web.modules.tools.point.copyPoint.title">Copy Point</entry>
-    <entry key="yukon.web.modules.tools.point.copyPoint.success">Point copied successfully.</entry>
+    <entry key="yukon.web.modules.tools.point.copyPoint.success">Point "{0}" created for device "{1}" successfully.</entry>
 
     <entry key="yukon.web.modules.tools.search.pageName">Search</entry>
     <entry key="yukon.web.modules.tools.search.emptySearch">Please enter some text to search for.</entry>
