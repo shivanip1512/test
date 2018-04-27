@@ -27,13 +27,14 @@
 </cti:checkRolesAndProperties>
 
 <div class="js-page-additional-actions dn">
-    <cti:displayForPageEditModes modes="VIEW">
-        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-            <li class="divider" />
-        </cti:checkRolesAndProperties>
-    </cti:displayForPageEditModes>
 
     <cti:displayForPageEditModes modes="VIEW,EDIT">
+        <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <li class="divider" />
+            </cti:checkRolesAndProperties>
+        </cti:checkRolesAndProperties>
+
         <c:if test="${!orphan}">
             <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
                 <cm:dropdownOption linkId="feederState_${feeder.id}" key=".substation.feeder.actions" icon="icon-cog" href="javascript:void(0);" />

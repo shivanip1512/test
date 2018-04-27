@@ -33,13 +33,13 @@
 </cti:checkRolesAndProperties>
 
 <div class="js-page-additional-actions dn">
-    <cti:displayForPageEditModes modes="VIEW">
-        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-            <li class="divider" />
-        </cti:checkRolesAndProperties>
-    </cti:displayForPageEditModes>
-
     <cti:displayForPageEditModes modes="VIEW,EDIT">
+        <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <li class="divider" />
+            </cti:checkRolesAndProperties>
+        </cti:checkRolesAndProperties>
+
         <c:if test="${showAnalysis}">
             <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
                 <%@ include file="../tier/analysisTrendsOptions.jspf" %>

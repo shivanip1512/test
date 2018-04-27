@@ -54,8 +54,13 @@
 <cti:url var="editUrl" value="/capcontrol/regulators/${regulator.id}/edit"/>
 <%-- Page Actions --%>
 <div class="js-page-additional-actions dn">
+    <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <li class="divider" />
+        </cti:checkRolesAndProperties>
+
+    </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <li class="divider" />
         <cm:dropdownOption icon="icon-pencil" key="yukon.common.edit" href="${editUrl}"/>
     </cti:checkRolesAndProperties>
     <li class="divider"></li>

@@ -44,13 +44,13 @@ $(function() {
 </script>
 
 <div class="js-page-additional-actions dn">
-    <cti:displayForPageEditModes modes="VIEW">
-        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-            <li class="divider" />
-        </cti:checkRolesAndProperties>
-    </cti:displayForPageEditModes>
-
     <cti:displayForPageEditModes modes="VIEW,EDIT">
+        <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <li class="divider" />
+            </cti:checkRolesAndProperties>
+        </cti:checkRolesAndProperties>
+
         <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
             <cti:param name="value" value="${substationId}" />
         </cti:url>

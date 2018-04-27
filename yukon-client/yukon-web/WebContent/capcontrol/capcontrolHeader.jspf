@@ -52,21 +52,24 @@
      <dt:date name="date"/>
 </div>
 
-    <c:set var="showCreateMenuItem" value="false"/>
     <c:if test="${empty mode || mode == 'VIEW'}">
-        <c:set var="showCreateMenuItem" value="true"/>
-    </c:if>
-
-    <c:if test="${showCreateMenuItem}">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <cm:dropdownOption classes="js-cc-create" icon="icon-plus-green" key="yukon.web.components.button.create.label"/>
         </cti:checkRolesAndProperties>
     </c:if>
 
+    <c:if test="${mode == 'VIEW'}">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <li class="divider"></li>
+        </cti:checkRolesAndProperties>
+    </c:if>
+
     <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        
-            <li class="divider"></li>
+            <c:if test="${empty mode}">
+                <li class="divider"></li>
+            </c:if>
+
             <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
                 <tags:dynamicChooseOption optionId="enabled">
                     <cm:dropdownOption id="systemOn" icon="icon-delete" href="javascript:doSystemCommand('28')" key=".disableSystem.label"/>

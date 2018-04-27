@@ -13,8 +13,13 @@
     <tags:setFormEditMode mode="${mode}" />
     <cti:displayForPageEditModes modes="VIEW">
         <div class="js-page-additional-actions dn">
+            <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                    <li class="divider" />
+                </cti:checkRolesAndProperties>
+            </cti:checkRolesAndProperties>
+
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <li class="divider" />
                 <cti:url var="editUrl"
                     value="/capcontrol/dmvTest/${dmvTest.dmvTestId}/edit" />
                 <cm:dropdownOption key="components.button.edit.label"
