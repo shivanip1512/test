@@ -71,4 +71,36 @@ public class PqrConfigResult {
         }
         return counts;
     }
+    
+    /**
+     * Checks if the result has at least one successful device, and is complete.
+     */
+    public boolean hasSuccessAndIsComplete() {
+        return getCounts().getSuccess() > 0 && isComplete();
+    }
+    
+    /**
+     * Checks if the result has at least one unsupported device, and is complete.
+     */
+    public boolean hasUnsupportedAndIsComplete() {
+        return getCounts().getUnsupported() > 0 && isComplete();
+    }
+    
+    /**
+     * Checks if the result has at least one failed device, and is complete.
+     */
+    public boolean hasFailedAndIsComplete() {
+        return getCounts().getFailed() > 0 && isComplete();
+    }
+    
+    /**
+     * Returns a list of inventory ids for all inventory with a given status.
+     */
+    public List<Integer> getInventoryIdsForStatus(PqrConfigCommandStatus status) {
+        return inventoryResults.entrySet()
+                               .stream()
+                               .filter(entry -> entry.getValue().getOverallStatus() == status)
+                               .map(entry -> entry.getKey())
+                               .collect(Collectors.toList());
+    }
 }

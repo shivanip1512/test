@@ -302,6 +302,9 @@
                 <entry key="ECOBEE_READ">
                     <ref bean="ecobeeReadBackingService"/>
                 </entry>
+                <entry key="PQR_CONFIG">
+                    <ref bean="pqrConfigBackingService"/>
+                </entry>
             </map>
         </property>
         <property name="bulkBacks">
@@ -1323,4 +1326,6 @@
      <bean class="com.cannontech.web.stars.rtu.service.impl.RtuServiceImpl"/>
      
      <bean class="com.cannontech.web.capcontrol.IvvcHelper"/>
+     
+     <bean id="pqrConfigBackingService" class="com.cannontech.web.updater.pqrConfig.PqrConfigBackingService"/>
 </beans>

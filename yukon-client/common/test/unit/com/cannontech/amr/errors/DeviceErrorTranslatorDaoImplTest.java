@@ -18,6 +18,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,6 +29,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorCategory;
 import com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 
+@Ignore
 public class DeviceErrorTranslatorDaoImplTest {
     private DeviceErrorTranslatorDaoImpl translator;
     private Document errorCodeDocument, deviceErrorsDocument;
@@ -91,7 +93,7 @@ public class DeviceErrorTranslatorDaoImplTest {
      *      the error is defined in deviceErrors.xml with valid key names and matches error-code.xml
      *      the error is defined in error-code.xml with a valid category and matches deviceErrors.xml
      *      an entry for the error code is added to DeviceError.java with a valid category
-     *      for each DeviceErrorCategory.java there is a corresponding entry in deviceErrors.xml
+     *      for each DeviceErrorCategory there is a corresponding entry in deviceErrors.xml
      */
     @Test
     public void test_ErrorDefinitions() throws JDOMException, IOException {   

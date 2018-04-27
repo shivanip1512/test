@@ -1,12 +1,12 @@
 package com.cannontech.dr.rfn.service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.dr.rfn.model.PqrConfigResult;
-import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 
 /**
  * Service to send Power Quality Response configuration messages to PQR-enabled devices.
@@ -19,7 +19,7 @@ public interface PqrConfigService {
      * WARNING: The messaging is not throttled by Yukon.
      * @return The result identifier, for retrieving the results of the operation.
      */
-    public String sendConfigs(List<LiteLmHardwareBase> hardware, PqrConfig config, LiteYukonUser user);
+    public String sendConfigs(Collection<InventoryIdentifier> inventory, PqrConfig config, LiteYukonUser user);
     
     /**
      * Retrieve the results of a PQR configuration operation by its identifier. The results will be updated as the

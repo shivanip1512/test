@@ -1,6 +1,7 @@
 package com.cannontech.dr.rfn.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.PqrEventLogService;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -24,6 +26,7 @@ import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.dr.rfn.model.PqrConfigCommandStatus;
 import com.cannontech.dr.rfn.model.PqrConfigResult;
 import com.cannontech.dr.rfn.service.PqrConfigService;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
@@ -40,6 +43,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
     
     @Autowired private AttributeService attributeService;
     @Autowired @Qualifier("main") private Executor executor;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private PqrEventLogService pqrEventLogService;
     @Autowired private RfCommandStrategy rfCommandStrategy;
@@ -50,7 +54,13 @@ public class PqrConfigServiceImpl implements PqrConfigService {
     }
     
     @Override
-    public String sendConfigs(List<LiteLmHardwareBase> hardware, PqrConfig config, LiteYukonUser user) {
+    public String sendConfigs(Collection<InventoryIdentifier> inventory, PqrConfig config, LiteYukonUser user) {
+        
+        List<LiteLmHardwareBase> hardware = 
+                inventoryBaseDao.getLMHardwareForIds(inventory.stream()
+                                                              .map(InventoryIdentifier::getInventoryId)
+                                                              .collect(Collectors.toList()));
+        
         pqrEventLogService.sendConfig(user, hardware.size(), config.toString());
         log.info("Initiating Power Quality Response configuration for " + hardware.size() + " inventory. "
                  + config.toString());

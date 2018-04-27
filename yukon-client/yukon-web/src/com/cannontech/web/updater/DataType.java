@@ -48,6 +48,7 @@ public enum DataType {
     DISCONNECT,
     ECOBEE_READ,
     DEMAND_RESET,
-    DATA_STREAMING
+    DATA_STREAMING,
+    PQR_CONFIG,
     ;
 }

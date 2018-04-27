@@ -20,50 +20,69 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.rfn.dao.PqrEventDao;
 import com.cannontech.dr.rfn.model.PqrConfig;
+import com.cannontech.dr.rfn.model.PqrConfigCommandStatus;
 import com.cannontech.dr.rfn.model.PqrConfigResult;
 import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.service.PqrConfigService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.util.WebFileUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 
 @Controller
 @CheckCparm(MasterConfigBoolean.ENABLE_POWER_QUALITY_RESPONSE)
+@RequestMapping("/operator/inventory/*")
 public class PowerQualityResponseActionsController {
     private static final Logger log = YukonLogManager.getLogger(PowerQualityResponseActionsController.class);
-    private static final String messagePrefix = "yukon.web.modules.operator.pqrReport.";
+    private static final String reportKeyPrefix = "yukon.web.modules.operator.pqrReport.";
     
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private MemoryCollectionProducer collectionProducer;
     @Autowired private PqrConfigService pqrConfigService;
     @Autowired private PqrConfigValidator pqrConfigValidator;
     @Autowired private PqrEventDao pqrEventDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    @RequestMapping(value="/operator/inventory/pqrReport/setup", method=RequestMethod.GET)
+    private enum NewAction implements DisplayableEnum {
+        SUCCESSFUL(PqrConfigCommandStatus.SUCCESS),
+        UNSUPPORTED(PqrConfigCommandStatus.UNSUPPORTED),
+        FAILED(PqrConfigCommandStatus.FAILED),
+        ;
+        private String keyBase = "yukon.web.modules.operator.pqrConfigResult.newAction.";
+        private PqrConfigCommandStatus equivalentConfigStatus;
+        
+        private NewAction(PqrConfigCommandStatus status) {
+            equivalentConfigStatus = status;
+        }
+        
+        @Override
+        public String getFormatKey() {
+            return keyBase + name();
+        }
+    }
+    
+    @RequestMapping(value="pqrReport/setup", method=RequestMethod.GET)
     public String pqrReportSetup(HttpServletRequest req, ModelMap model) {
         inventoryCollectionFactory.addCollectionToModelMap(req, model);
         
@@ -74,7 +93,7 @@ public class PowerQualityResponseActionsController {
         return "operator/inventory/pqrReport/setup.jsp";
     }
     
-    @RequestMapping(value="/operator/inventory/pqrReport/export", method=RequestMethod.POST)
+    @RequestMapping(value="pqrReport/export", method=RequestMethod.POST)
     public void pqrReportExport(HttpServletResponse resp, YukonUserContext userContext, InventoryCollection collection, 
                                 String reportStart, String reportEnd) throws IOException {
         
@@ -103,7 +122,7 @@ public class PowerQualityResponseActionsController {
         log.info("PQR event report complete: " + exportFileName);
     }
     
-    @RequestMapping(value="/operator/inventory/pqrConfig/setup", method={RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value="pqrConfig/setup", method={RequestMethod.GET, RequestMethod.POST})
     public String pqrConfigSetup(HttpServletRequest req, ModelMap model, @ModelAttribute("config") PqrConfig config) {
         
         inventoryCollectionFactory.addCollectionToModelMap(req, model);
@@ -112,7 +131,7 @@ public class PowerQualityResponseActionsController {
         return "operator/inventory/pqrConfig/pqrConfigSetup.jsp";
     }
     
-    @RequestMapping(value="/operator/inventory/pqrConfig/confirm", method=RequestMethod.POST)
+    @RequestMapping(value="pqrConfig/confirm", method=RequestMethod.POST)
     public String pqrConfigConfirm(ModelMap model, InventoryCollection inventoryCollection, 
                                   @ModelAttribute("config") PqrConfig config, BindingResult result, LiteYukonUser user, 
                                   HttpServletRequest req, FlashScope flash) {
@@ -130,41 +149,50 @@ public class PowerQualityResponseActionsController {
         return "operator/inventory/pqrConfig/pqrConfigConfirm.jsp";
     }
     
-    @RequestMapping(value="/operator/inventory/pqrConfig/submit", method=RequestMethod.POST)
+    @RequestMapping(value="pqrConfig/submit", method=RequestMethod.POST)
     public String pqrConfigSubmit(ModelMap model, InventoryCollection inventoryCollection, 
                                   @ModelAttribute("config") PqrConfig config, BindingResult result, LiteYukonUser user) {
         
-        //TODO: does this inventory -> hw conversion belong in the config service?
-        List<LiteLmHardwareBase> hardware = 
-                inventoryBaseDao.getLMHardwareForIds(inventoryCollection.getList()
-                                                                        .stream()
-                                                                        .map(InventoryIdentifier::getInventoryId)
-                                                                        .collect(Collectors.toList()));
-        
-        String resultId = "";//pqrConfigService.sendConfigs(hardware, config, user);
+        String resultId = pqrConfigService.sendConfigs(inventoryCollection.getList(), config, user);
         
         return "redirect:result/" + resultId;
     }
     
-    @RequestMapping(value="/operator/inventory/pqrConfig/result/{resultId}", method=RequestMethod.GET)
+    @RequestMapping(value="pqrConfig/result/{resultId}", method=RequestMethod.GET)
     public String pqrConfigResult(ModelMap model, @PathVariable("resultId") String resultId) {
         
         PqrConfigResult result = pqrConfigService.getResult(resultId)
                                                  .orElseThrow(() -> new IllegalArgumentException("Invalid result id: " 
                                                                                                  + resultId));
+        model.addAttribute("resultId", resultId);
         model.addAttribute("result", result);
         
         return "operator/inventory/pqrConfig/pqrConfigResult.jsp";
     }
     
-    @ResponseBody
-    @RequestMapping(value="/operator/inventory/pqrConfig/resultProgress/{resultId}", method=RequestMethod.POST)
-    public String pqrResultProgress(@PathVariable("resultId") String resultId) throws JsonProcessingException {
+    @RequestMapping(value="pqrConfig/newAction", method=RequestMethod.GET)
+    public String newAction(ModelMap model, String resultId, NewAction action, YukonUserContext userContext) {
         PqrConfigResult result = pqrConfigService.getResult(resultId)
                                                  .orElseThrow(() -> new IllegalArgumentException("Invalid result id: " 
                                                                                                  + resultId));
         
-        return JsonUtils.toJson(result);
+        String description = messageSourceResolver.getMessageSourceAccessor(userContext)
+                                                  .getMessage(action);
+        Iterable<InventoryIdentifier> inventory = getInventoryForNewAction(result, action);
+        
+        InventoryCollection collection = collectionProducer.createCollection(inventory.iterator(), description);
+        model.addAttribute("inventoryCollection", collection);
+        model.addAllAttributes(collection.getCollectionParameters());
+        
+        return "redirect:/stars/operator/inventory/inventoryActions";
+    }
+    
+    /**
+     * Get InventoryIdentifiers of the appropriate inventory from the specified result, for a new action.
+     */
+    private Iterable<InventoryIdentifier> getInventoryForNewAction(PqrConfigResult result, NewAction action) {
+        List<Integer> inventoryIds = result.getInventoryIdsForStatus(action.equivalentConfigStatus);
+        return inventoryDao.getYukonInventory(inventoryIds);
     }
     
     /**
@@ -183,11 +211,11 @@ public class PowerQualityResponseActionsController {
      * Build a header row (as a String array) from i18n values.
      */
     private String[] buildHeaderRow(MessageSourceAccessor accessor) {
-        String serialNumberHeader = accessor.getMessage(messagePrefix + "serialNumber");
-        String timestampHeader = accessor.getMessage(messagePrefix + "timestamp");
-        String eventTypeHeader = accessor.getMessage(messagePrefix + "eventType");
-        String responseTypeHeader = accessor.getMessage(messagePrefix + "responseType");
-        String valueHeader = accessor.getMessage(messagePrefix + "value");
+        String serialNumberHeader = accessor.getMessage(reportKeyPrefix + "serialNumber");
+        String timestampHeader = accessor.getMessage(reportKeyPrefix + "timestamp");
+        String eventTypeHeader = accessor.getMessage(reportKeyPrefix + "eventType");
+        String responseTypeHeader = accessor.getMessage(reportKeyPrefix + "responseType");
+        String valueHeader = accessor.getMessage(reportKeyPrefix + "value");
         return new String[] {serialNumberHeader, timestampHeader, eventTypeHeader, responseTypeHeader, valueHeader};
     }
     

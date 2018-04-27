@@ -33,4 +33,12 @@ public class PqrConfigCounts {
     public int getSuccess() {
         return success;
     }
+    
+    public int getTotal() {
+        return inProgress + unsupported + failed + success;
+    }
+    
+    public int getProcessed() {
+        return unsupported + failed + success;
+    }
 }
