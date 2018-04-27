@@ -1503,11 +1503,11 @@ BOOST_AUTO_TEST_CASE( test_getconfig_install_all_aggregate )
             const std::string exp =
                 "Device Configuration Request:"
                 "\nInterval recording configuration:"
-                "\nRecording interval : 7200 seconds"
-                "\nReporting interval : 86400 seconds"
-                "\nInterval metrics   : 1, 2, 3, 4"
+                "\n    Recording interval : 7200 seconds"
+                "\n    Reporting interval : 86400 seconds"
+                "\n    Interval metrics   : 1, 2, 3, 4"
                 "\nChannel selection configuration:"
-                "\nMetric IDs: 5, 6, 7, 8";
+                "\n    Metric IDs: 5, 6, 7, 8";
 
             BOOST_CHECK_EQUAL(result.description, exp);
         }

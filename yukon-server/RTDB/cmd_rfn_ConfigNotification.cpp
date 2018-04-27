@@ -8,6 +8,7 @@
 #include <boost/range/numeric.hpp>
 
 using namespace std;
+using namespace std::string_literals;
 
 namespace Cti {
 namespace Devices {
@@ -108,6 +109,12 @@ std::string RfnConfigNotificationCommand::decodeTlvs(const std::vector<TLV> tlvs
         }
     }
 
+    for( auto & s : results )
+    {
+        //  indent the results
+        boost::replace_all(s, "\n", "\n    ");
+    }
+
     return boost::join(results, "\n");
 }
 
@@ -118,9 +125,10 @@ std::string RfnConfigNotificationCommand::decodeTouEnableDisable(Bytes payload)
         ? RfnTouConfigurationCommand::TouEnable
         : RfnTouConfigurationCommand::TouDisable;
 
-    return touEnabled == RfnTouConfigurationCommand::TouEnable
-        ? "TOU enabled"
-        : "TOU disabled";
+    return "TOU enable configuration:\n"s + 
+        (touEnabled == RfnTouConfigurationCommand::TouEnable
+            ? "TOU enabled"
+            : "TOU disabled");
 }
 
 std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
@@ -136,7 +144,7 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
 
     FormattedList l;
 
-    l.add("Day table");
+    std::vector<int> schedules;
 
     for( auto day = 0; day < 8; day++ )
     {
@@ -144,15 +152,15 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
 
         s._dayTable.push_back(Prefix + std::to_string(scheduleNumber + 1));
 
-        l << scheduleNumber + 1;
+        schedules.push_back(scheduleNumber + 1);
     }
+
+    l.add("Day table") << boost::join(schedules | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
 
     size_t pos = 3;
 
     for( auto schedule : { T::Schedule1, T::Schedule2, T::Schedule3, T::Schedule4 } )
     {
-        l.add("Schedule " + std::to_string(schedule + 1) + " switch times");
-
         T::DailyTimes switchTimes;
 
         for( auto switchTime = 0; switchTime < 5; switchTime++ )
@@ -164,15 +172,13 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
             switchTimes.emplace_back(CtiNumStr(minutes / 60).zpad(2) + ":" + CtiNumStr(minutes % 60).zpad(2));
         }
 
-        l << boost::join(switchTimes, ", ");
+        l.add("Schedule " + std::to_string(schedule + 1) + " switch times") << boost::join(switchTimes, ", ");
 
         s._times.emplace(schedule, std::move(switchTimes));
     }
 
     for( auto schedule : { T::Schedule1, T::Schedule2, T::Schedule3, T::Schedule4 } )
     {
-        l.add("Schedule " + std::to_string(schedule + 1) + " rates");
-
         T::DailyRates rates;
 
         for( auto timeRate = 0; timeRate < 6; timeRate++ )
@@ -184,7 +190,7 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
 
         pos += 3;
 
-        l << boost::join(rates, ", ");
+        l.add("Schedule " + std::to_string(schedule + 1) + " rates") << boost::join(rates, ", ");
 
         s._rates.emplace(schedule, std::move(rates));
     }
@@ -229,7 +235,7 @@ std::string RfnConfigNotificationCommand::decodeDemandFreezeDay(Bytes payload)
 {
     demandFreezeDay = payload[0];
 
-    return "Freeze day: " + std::to_string(*demandFreezeDay);
+    return "Demand freeze configuration:\nDemand freeze day: " + std::to_string(*demandFreezeDay);
 }
 
 std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes payload)
