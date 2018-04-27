@@ -64,11 +64,11 @@ public enum RfnManufacturerModel {
     RFN_410FD_D(PaoType.RFN410FD, "LGYR", "FocusAXR-SD"),
     RFN_410FD_R(PaoType.RFN410FD, "LGYR", "FocusAXD-SD"),
     
-    RFN_430SL0(PaoType.RFN430SL0, "SCH", "SENTINEL-L0"),
-    RFN_430SL1(PaoType.RFN430SL1, "SCH", "SENTINEL-L1"),
-    RFN_430SL2(PaoType.RFN430SL2, "SCH", "SENTINEL-L2"),
-    RFN_430SL3(PaoType.RFN430SL3, "SCH", "SENTINEL-L3"),
-    RFN_430SL4(PaoType.RFN430SL4, "SCH", "SENTINEL-L4"),
+    RFN_430SL0(PaoType.RFN430SL0, "SCH", "Sentinel-L0"),
+    RFN_430SL1(PaoType.RFN430SL1, "SCH", "Sentinel-L1"),
+    RFN_430SL2(PaoType.RFN430SL2, "SCH", "Sentinel-L2"),
+    RFN_430SL3(PaoType.RFN430SL3, "SCH", "Sentinel-L3"),
+    RFN_430SL4(PaoType.RFN430SL4, "SCH", "Sentinel-L4"),
     
     /* For the RFN_520 and RFN_530 meters below, there are cases where multiple manufacturer/model combinations
      * map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAXR'.
@@ -115,10 +115,9 @@ public enum RfnManufacturerModel {
     static {
         //  These have model strings that were reused for the RFN-420 Focus models.
         Set<RfnManufacturerModel> duplicateLgyrModels = Sets.immutableEnumSet(RFN_410FL, RFN_410FX_D, RFN_410FD_D);
-        
         Stream.of(values())
             .filter(mm -> !duplicateLgyrModels.contains(mm))
-            .forEach(mm -> lookup.put(mm.manufacturer, mm.model, mm));
+            .forEach(mm -> lookup.put(mm.manufacturer.toLowerCase(), mm.model.toLowerCase(), mm));
     }
     
     public static List<RfnManufacturerModel> getForType(PaoType type) {
@@ -135,7 +134,7 @@ public enum RfnManufacturerModel {
      * Will return the RFN-420 versions of the reused LGYR Focus manufacturer+model strings.
      */
     public static RfnManufacturerModel of(RfnIdentifier rfnIdentifier) {
-        return lookup.get(rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel());
+        return lookup.get(rfnIdentifier.getSensorManufacturer().toLowerCase(), rfnIdentifier.getSensorModel().toLowerCase());
     }
     
     public PaoType getType() {

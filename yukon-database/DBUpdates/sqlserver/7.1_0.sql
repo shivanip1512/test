@@ -98,6 +98,23 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-18122', '7.1.0', GETDATE());
 /* @end YUK-18122 */
 
+/* @start YUK-18164 */
+UPDATE RfnAddress SET Model='Sentinel-L0' WHERE Model='SENTINEL-L0';
+UPDATE RfnAddress SET Model='Sentinel-L1' WHERE Model='SENTINEL-L1';
+UPDATE RfnAddress SET Model='Sentinel-L2' WHERE Model='SENTINEL-L2';
+UPDATE RfnAddress SET Model='Sentinel-L3' WHERE Model='SENTINEL-L3';
+UPDATE RfnAddress SET Model='Sentinel-L4' WHERE Model='SENTINEL-L4';
+
+UPDATE YukonPAObject SET PAOName='*RfnTemplate_SCH_Sentinel-L0' WHERE PAOName='*RfnTemplate_SCH_SENTINEL-L0';
+UPDATE YukonPAObject SET PAOName='*RfnTemplate_SCH_Sentinel-L1' WHERE PAOName='*RfnTemplate_SCH_SENTINEL-L1';
+UPDATE YukonPAObject SET PAOName='*RfnTemplate_SCH_Sentinel-L2' WHERE PAOName='*RfnTemplate_SCH_SENTINEL-L2';
+UPDATE YukonPAObject SET PAOName='*RfnTemplate_SCH_Sentinel-L3' WHERE PAOName='*RfnTemplate_SCH_SENTINEL-L3';
+UPDATE YukonPAObject SET PAOName='*RfnTemplate_SCH_Sentinel-L4' WHERE PAOName='*RfnTemplate_SCH_SENTINEL-L4';
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-18164', '7.1.0', GETDATE());
+/* @end YUK-18164 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
