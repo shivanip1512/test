@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 #include "cparms.h"
-#include "dsm2err.h"
+#include "error.h"
 #include "dev_rtc.h"
 
 #include "msg_cmd.h"
@@ -213,7 +213,7 @@ YukonError_t CtiDeviceRTC::ResultDecode(const INMESS &InMessage, const CtiTime T
     }
     else
     {
-        const string error_str = GetErrorString(ErrReturn);
+        const string error_str = CtiError::GetErrorString(ErrReturn);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 

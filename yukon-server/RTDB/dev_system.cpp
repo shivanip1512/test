@@ -107,7 +107,7 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
                             if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
                             {
-                                string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + GetErrorString(nRet) + ") performing command on route " + Route->getName().data();
+                                string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + CtiError::GetErrorString(nRet) + ") performing command on route " + Route->getName().data();
                                 pRet->setResultString(resultString);
                                 pRet->setStatus(nRet);
                                 retList.push_back(pRet);
@@ -456,7 +456,7 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
             case ProtocolVersacomType:
                 {
                     BOOL        error = TRUE;
-                    string   problem(parse.getCommandStr() + ": " + GetErrorString(ClientErrors::InvalidRequest));
+                    string   problem(parse.getCommandStr() + ": " + CtiError::GetErrorString(ClientErrors::InvalidRequest));
 
                     memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
 

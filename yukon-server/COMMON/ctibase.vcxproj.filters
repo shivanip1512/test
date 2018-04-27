@@ -267,7 +267,7 @@
     <ClCompile Include="db_connection_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ERROR.cpp">
+    <ClCompile Include="error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -387,9 +387,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dsm2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\DSM2ERR.H">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Elogger.h">
@@ -651,6 +648,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\db_connection_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

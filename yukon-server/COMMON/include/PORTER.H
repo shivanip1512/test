@@ -7,7 +7,6 @@ class CtiDeviceBase;
 
 /* Include the btrieve error defines */
 #include "dsm2.h"
-#include "dsm2err.h"
 #include "devicetypes.h"
 #include "queues.h"
 

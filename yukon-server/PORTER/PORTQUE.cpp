@@ -3,7 +3,7 @@
 #include "cparms.h"
 #include "queues.h"
 #include "dsm2.h"
-#include "dsm2err.h"
+#include "error.h"
 #include "porter.h"
 #include "elogger.h"
 #include "thread_monitor.h"
@@ -1677,7 +1677,7 @@ YukonError_t DeQueue (const INMESS &InMessage)
         list.add("Device ID")           << InMessage.DeviceID;
         list.add("InMessage sequence")  << InMessage.Sequence;
         list.add("Error code")          << InMessage.ErrorCode;
-        list.add("Error text")  << GetErrorString(InMessage.ErrorCode);
+        list.add("Error text")  << CtiError::GetErrorString(InMessage.ErrorCode);
 
         CTILOG_DEBUG(dout, "Flushing CCU queue entries" << list);
 

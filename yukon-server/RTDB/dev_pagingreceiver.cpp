@@ -5,7 +5,6 @@
 
 #include "cparms.h"
 #include "dsm2.h"
-#include "dsm2err.h"
 #include "dev_rtm.h"
 #include "logger.h"
 #include "porter.h"

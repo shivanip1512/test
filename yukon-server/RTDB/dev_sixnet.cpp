@@ -1684,7 +1684,7 @@ YukonError_t CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTim
     YukonError_t retCode = ClientErrors::None;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
-                                            GetErrorString(InMessage.ErrorCode),
+                                            CtiError::GetErrorString(InMessage.ErrorCode),
                                             InMessage.ErrorCode,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.RetryMacroOffset,

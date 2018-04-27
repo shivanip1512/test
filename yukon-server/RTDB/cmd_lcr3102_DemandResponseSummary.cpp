@@ -2,8 +2,6 @@
 
 #include "cmd_lcr3102_DemandResponseSummary.h"
 
-#include "dsm2err.h"
-
 namespace Cti {
 namespace Devices {
 namespace Commands {

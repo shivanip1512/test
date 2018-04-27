@@ -4,7 +4,7 @@
 #include "dev_mct410.h"
 
 #include "ctidate.h"
-#include "dsm2err.h"
+#include "error.h"
 
 using std::vector;
 
@@ -336,7 +336,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const 
 {
     if( description.empty() )
     {
-        description = GetErrorString(error_code);
+        description = CtiError::GetErrorString(error_code);
     }
 
     description += "\n";

@@ -737,12 +737,12 @@ YukonError_t CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiComm
     {
         status = ClientErrors::BadParameter;
         xmore = false;
-        resultString = "Route " + getName() + " did not transmit Expresscom commands. Error " + CtiNumStr(status) + " - " + GetErrorString(status);
+        resultString = "Route " + getName() + " did not transmit Expresscom commands. Error " + CtiNumStr(status) + " - " + CtiError::GetErrorString(status);
 
         string desc, actn;
 
         desc = "Route: " + getName();
-        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(status) + " - " + GetErrorString(status);
+        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(status) + " - " + CtiError::GetErrorString(status);
 
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }

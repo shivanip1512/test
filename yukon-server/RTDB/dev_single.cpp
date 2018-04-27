@@ -456,7 +456,7 @@ YukonError_t CtiDeviceSingle::initiateGeneralScan( OutMessageList &outList, INT 
                     }
                     else     // Error occured
                     {
-                        CTILOG_ERROR( dout, "Error " << GetErrorString( nRet ) << " sending general scan to " << getName() );
+                        CTILOG_ERROR( dout, "Error " << CtiError::GetErrorString( nRet ) << " sending general scan to " << getName() );
 
                         // Report the comm error and plug any points!
                         // FIX FIX FIX CGP 082999
@@ -773,7 +773,7 @@ YukonError_t CtiDeviceSingle::ProcessResult( const INMESS   &InMessage,
                 std::ostringstream msg;
 
                 msg << "Macro offset " << *InMessage.Return.RetryMacroOffset - 1 << " failed. Attempting next offset."
-                    << "\nError " << nRet << ": " << GetErrorString( nRet );
+                    << "\nError " << nRet << ": " << CtiError::GetErrorString( nRet );
 
                 if( nRet == ClientErrors::EWordReceived && InMessage.Buffer.RepeaterError.ESt )
                 {
@@ -796,7 +796,7 @@ YukonError_t CtiDeviceSingle::ProcessResult( const INMESS   &InMessage,
 
             if( status = beginExecuteRequestFromTemplate( &pReq, CtiCommandParser( pReq.CommandString() ), vgList, retList, outList, OutTemplate ) )
             {
-                CTILOG_ERROR( dout, "beginExecuteRequestFromTemplate return error = " << status << ": " << GetErrorString( status ) );
+                CTILOG_ERROR( dout, "beginExecuteRequestFromTemplate return error = " << status << ": " << CtiError::GetErrorString( status ) );
             }
 
             if( cnt == outList.size() && status )
@@ -829,12 +829,12 @@ YukonError_t CtiDeviceSingle::ProcessResult( const INMESS   &InMessage,
             /* something went wrong so start by printing error */
             if( InMessage.ErrorCode != ClientErrors::PortSimulated )
             {
-                CTILOG_ERROR( dout, "Error (" << InMessage.ErrorCode << ") to Remote: " << getName() << ": " << GetErrorString( nRet ) );
+                CTILOG_ERROR( dout, "Error (" << InMessage.ErrorCode << ") to Remote: " << getName() << ": " << CtiError::GetErrorString( nRet ) );
             }
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(),
                 CmdStr,
-                GetErrorString( nRet ),
+                CtiError::GetErrorString( nRet ),
                 nRet,
                 InMessage.Return.RouteID,
                 InMessage.Return.RetryMacroOffset,

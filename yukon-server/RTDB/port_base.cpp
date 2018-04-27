@@ -3,7 +3,7 @@
 #include "cparms.h"
 #include "port_base.h"
 #include "prot_emetcon.h"
-#include "dsm2err.h"
+#include "error.h"
 #include "color.h"
 #include "porter.h"
 #include "logger.h"
@@ -120,7 +120,7 @@ YukonError_t CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, Cti
                     if(ErrorCode && ErrorCode != ClientErrors::PortSimulated)
                     {
                         trace.setBrightRed();
-                        trace.setTrace( GetErrorString(ErrorCode) );
+                        trace.setTrace( CtiError::GetErrorString(ErrorCode) );
                         trace.setEnd(true);
                         traceList.push_back(trace.replicateMessage());
                         trace.setNormal();

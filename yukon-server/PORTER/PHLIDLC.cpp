@@ -6,7 +6,6 @@
 
 #include "queues.h"
 #include "dsm2.h"
-#include "dsm2err.h"
 #include "porter.h"
 #include "portdecl.h"
 #include "StatisticsManager.h"

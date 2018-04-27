@@ -1,6 +1,7 @@
-#include <dsm2err.h>
+#include <error.h>
 
 #include "yukon.h"
+#include "resolvers.h"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
@@ -262,13 +263,23 @@ BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
     BOOST_REQUIRE_EQUAL(ClientErrors::None, 0);
 }
 
+BOOST_AUTO_TEST_CASE(test_unknownErrors)
+{
+    const auto unknownErrors = CtiError::GetUnknownErrors();
+
+    for (const auto & unknownError : unknownErrors)
+    {
+        BOOST_ERROR("Unknown error with error type " << unknownError.type << " and description " << unknownError.description << " found.");
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_GetErrorString)
 {
     std::vector<std::string> results;
 
     for( int i = 0; i < 350; i++ )
     {
-        results.push_back(GetErrorString(static_cast<YukonError_t>(i)));
+        results.push_back(CtiError::GetErrorString(static_cast<YukonError_t>(i)));
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -327,7 +338,7 @@ BOOST_AUTO_TEST_CASE(test_GetErrorType)
 
     for( int i = 0; i < 350; i++ )
     {
-        results.push_back(GetErrorType(static_cast<YukonError_t>(i)));
+        results.push_back(CtiError::GetErrorType(static_cast<YukonError_t>(i)));
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(

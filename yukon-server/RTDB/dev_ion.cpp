@@ -676,7 +676,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
             ErrReturn = ClientErrors::Abnormal;
         }
 
-        const string error_str = GetErrorString(ErrReturn);
+        const string error_str = CtiError::GetErrorString(ErrReturn);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
@@ -880,7 +880,7 @@ YukonError_t CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime Ti
             }
         }
 
-        const string error_str = GetErrorString(ErrReturn);
+        const string error_str = CtiError::GetErrorString(ErrReturn);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 

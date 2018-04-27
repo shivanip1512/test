@@ -8,7 +8,7 @@
 #include "resource_ids.h"
 #include "resource_helper.h"
 #include "xml_parsers.h"
-#include "dsm2err.h"
+#include "error.h"
 #include "resolvers.h"
 
 #include <shlwapi.h>
@@ -395,15 +395,24 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
             YukonError_t currentErrorCode;
             ErrorTypes currentErrorType;
             std::string currentErrorDescription;
-            void addErrorInfo( YukonError_t code, ErrorTypes type, std::string description );
 
             for( auto currentError = errorCodes.begin(); currentError != errorCodes.end(); currentError++ )
             {
-                currentErrorCode = static_cast<YukonError_t>( * currentError->errorCode );
-                currentErrorType = resolveErrorType( currentError->typeString );
-                currentErrorDescription = currentError->porterString;
+                if( ! currentError->errorCode )
+                {
+                    currentErrorType = resolveErrorType( currentError->typeString );
+                    currentErrorDescription = currentError->porterString;
 
-                addErrorInfo( currentErrorCode, currentErrorType, currentErrorDescription );
+                    CtiError::AddUnknownError( currentErrorType, currentErrorDescription );
+                }
+                else
+                {
+                    currentErrorCode = static_cast<YukonError_t>( * currentError->errorCode );
+                    currentErrorType = resolveErrorType( currentError->typeString );
+                    currentErrorDescription = currentError->porterString;
+
+                    CtiError::AddErrorInfo( currentErrorCode, currentErrorType, currentErrorDescription );
+                }
             }
         }
     }

@@ -2725,7 +2725,7 @@ YukonError_t CheckAndRetryMessage(YukonError_t CommResult, CtiPortSPtr Port, INM
     {
         bool portwasquestionable = Port->isQuestionable();      // true if this is not his first time...
 
-        if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && CommResult && GetErrorType( CommResult ) == ERRTYPECOMM)
+        if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && CommResult && CtiError::GetErrorType( CommResult ) == ERRTYPECOMM)
         {
             CTILOG_ERROR(dout, "Port "<< Port->getName() <<" has a COMM category error ("<< CommResult <<")");
         }
@@ -3514,7 +3514,7 @@ YukonError_t PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, c
 
             if( status )
             {
-                CTILOG_ERROR(dout, aIED->getName() <<" status = "<< status <<" "<< GetErrorString( status ));
+                CTILOG_ERROR(dout, aIED->getName() <<" status = "<< status <<" "<< CtiError::GetErrorString( status ));
             }
 
             if(!(++infLoopPrevention % INF_LOOP_COUNT))  // If we go INF_LOOP_COUNT loops we're considering this infinite...

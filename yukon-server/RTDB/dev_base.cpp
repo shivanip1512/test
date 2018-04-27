@@ -201,7 +201,7 @@ YukonError_t CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                              string(OutMessage->Request.CommandStr),
-                                                             getName() + string(": ") + GetErrorString(status),
+                                                             getName() + string(": ") + CtiError::GetErrorString(status),
                                                              status,
                                                              OutMessage->Request.RouteID,
                                                              OutMessage->Request.RetryMacroOffset,
@@ -746,7 +746,7 @@ YukonError_t CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, con
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,          // 20050922 CGP.  TargetId should be used in case the target is an MCT, not the CCU. // getID(),
                                                      string(OutMessage->Request.CommandStr),
-                                                     getName() + string(": ") + GetErrorString(status),
+                                                     getName() + string(": ") + CtiError::GetErrorString(status),
                                                      status,
                                                      OutMessage->Request.RouteID,
                                                      OutMessage->Request.RetryMacroOffset,

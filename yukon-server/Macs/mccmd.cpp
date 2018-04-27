@@ -27,7 +27,7 @@
 #include "pointtypes.h"
 #include "numstr.h"
 #include "mgr_holiday.h"
-#include "dsm2err.h"
+#include "error.h"
 
 #include "wpsc.h"
 #include "xcel.h"
@@ -1397,7 +1397,7 @@ int formatError(ClientData clientData, Tcl_Interp* interp, int argc, const char*
     }
 
   int id = atoi(argv[1]);
-  string err_str = GetErrorString(static_cast<YukonError_t>(id));
+  string err_str = CtiError::GetErrorString(static_cast<YukonError_t>(id));
   Tcl_Obj* tcl_str = Tcl_NewStringObj(err_str.c_str(),-1);
   Tcl_SetObjResult(interp, tcl_str);
   return TCL_OK;

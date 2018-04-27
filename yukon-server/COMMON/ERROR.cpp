@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "dsm2err.h"
+#include "error.h"
 #include "yukon.h"
 #include "constants.h"
 #include "numstr.h"
@@ -8,25 +8,26 @@
 
 #include "std_helper.h"
 
-struct error_info
-{
-    ErrorTypes type;
-    std::string description;
-};
 
-std::map<YukonError_t, error_info> CtiErrors;
+std::vector<CtiError::error_info> CtiError::_unknownErrors;
+std::map<YukonError_t, CtiError::error_info> CtiError::CtiErrors;
 
-void addErrorInfo( YukonError_t code, ErrorTypes type, std::string description )
+void CtiError::AddErrorInfo(YukonError_t code, ErrorTypes type, std::string description)
 {
-    error_info infoStruct{ type, description };
-    CtiErrors.emplace( code, infoStruct );
+    CtiError::error_info errorInfo{ type, description };
+    CtiErrors.emplace( code, errorInfo );
 }
 
+void CtiError::AddUnknownError(const ErrorTypes type, const std::string description)
+{
+    CtiError::error_info unknownErrorInfo{ type, description };
+    CtiError::_unknownErrors.push_back( unknownErrorInfo );
+}
 
 //  Returns the error's description
-IM_EX_CTIBASE std::string GetErrorString(YukonError_t errorNumber)
+std::string CtiError::GetErrorString(YukonError_t errorNumber)
 {
-    if( const boost::optional<error_info> info = Cti::mapFind(CtiErrors, errorNumber) )
+    if (const boost::optional<CtiError::error_info> info = Cti::mapFind(CtiError::CtiErrors, errorNumber))
     {
         return info->description;
     }
@@ -34,11 +35,10 @@ IM_EX_CTIBASE std::string GetErrorString(YukonError_t errorNumber)
     return "Unknown Error Code (" + CtiNumStr(errorNumber) + ")";
 }
 
-
 //  Returns the error's type
-IM_EX_CTIBASE ErrorTypes GetErrorType(YukonError_t errorNumber)
+ErrorTypes CtiError::GetErrorType(YukonError_t errorNumber)
 {
-    if( const boost::optional<error_info> info = Cti::mapFind(CtiErrors, errorNumber) )
+    if (const boost::optional<CtiError::error_info> info = Cti::mapFind(CtiError::CtiErrors, errorNumber))
     {
         return info->type;
     }
@@ -46,3 +46,7 @@ IM_EX_CTIBASE ErrorTypes GetErrorType(YukonError_t errorNumber)
     return ERRTYPESYSTEM;
 }
 
+std::vector<CtiError::error_info> CtiError::GetUnknownErrors()
+{
+    return CtiError::_unknownErrors;
+}

@@ -7,7 +7,7 @@
 #include "NetworkManagerRequest.h"
 
 #include "cparms.h"
-#include "dsm2err.h"
+#include "error.h"
 
 #include "std_helper.h"
 
@@ -291,7 +291,7 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 
             if( itr != _awaitingConfirms.end() )
             {
-                CTILOG_DEBUG(dout, "Confirm message received for message ID " << messageId << " with status " << yukonErrorCode << ", " << GetErrorString(yukonErrorCode));
+                CTILOG_DEBUG(dout, "Confirm message received for message ID " << messageId << " with status " << yukonErrorCode << ", " << CtiError::GetErrorString(yukonErrorCode));
 
                 confirmCallback = itr->second.confirmCallback;
 
@@ -299,7 +299,7 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
             }
             else
             {
-                CTILOG_WARN(dout, "Confirm message received for unknown message ID " << messageId << " with status " << yukonErrorCode << ", " << GetErrorString(yukonErrorCode));
+                CTILOG_WARN(dout, "Confirm message received for unknown message ID " << messageId << " with status " << yukonErrorCode << ", " << CtiError::GetErrorString(yukonErrorCode));
             }
         }
 

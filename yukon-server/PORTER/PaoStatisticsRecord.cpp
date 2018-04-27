@@ -7,7 +7,7 @@
 #include "database_exceptions.h"
 #include "ctidate.h"
 
-#include "dsm2err.h"  //  for GetErrorType, please fix me
+#include "error.h"
 
 using std::endl;
 
@@ -139,7 +139,7 @@ void PaoStatisticsRecord::incrementAttempts(const YukonError_t attempt_status)
 
     if( attempt_status )
     {
-        switch( GetErrorType(attempt_status) )
+        switch( CtiError::GetErrorType(attempt_status) )
         {
             default:
             case ERRTYPESYSTEM:

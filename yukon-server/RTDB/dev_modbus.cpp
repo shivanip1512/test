@@ -511,7 +511,7 @@ YukonError_t ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime T
     {
         string resultString;
 
-        const string error_str = GetErrorString(ErrReturn);
+        const string error_str = CtiError::GetErrorString(ErrReturn);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 

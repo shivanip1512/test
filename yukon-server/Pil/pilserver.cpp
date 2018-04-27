@@ -234,7 +234,7 @@ void PilServer::mainThread()
                                 std::make_unique<CtiReturnMsg>(
                                         req->DeviceId(),
                                         req->CommandString(),
-                                        GetErrorString(ClientErrors::RequestExpired),
+                                        CtiError::GetErrorString(ClientErrors::RequestExpired),
                                         ClientErrors::RequestExpired,
                                         req->RouteId(),
                                         req->MacroOffset(),
@@ -626,7 +626,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
             std::make_unique<CtiReturnMsg>(
                     InMessage.DeviceID,
                     InMessage.Return.CommandStr,
-                    GetErrorString(error) + " / ID = " + CtiNumStr(InMessage.DeviceID),
+                    CtiError::GetErrorString(error) + " / ID = " + CtiNumStr(InMessage.DeviceID),
                     error,
                     InMessage.Return.RouteID,
                     InMessage.Return.RetryMacroOffset,
@@ -1042,7 +1042,7 @@ struct RequestExecuter : Devices::DeviceHandler
             retList.push_back(new CtiReturnMsg(
                 dev.getID(),
                 pReq->CommandString(),
-                dev.getName() + ": " + GetErrorString(ClientErrors::DeviceInhibited),
+                dev.getName() + ": " + CtiError::GetErrorString(ClientErrors::DeviceInhibited),
                 ClientErrors::DeviceInhibited,
                 0,
                 MacroOffset::none,
@@ -1237,7 +1237,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                     FormattedList logItems;
                     logItems.add("Device")  << Dev.getName();
                     logItems.add("Command") << pExecReq->CommandString();
-                    logItems.add("Status")  << status <<" -> "<< GetErrorString(status);
+                    logItems.add("Status")  << status <<" -> "<< CtiError::GetErrorString(status);
 
                     CTILOG_ERROR(dout, "Execute has failed"<<
                             logItems);
@@ -1253,7 +1253,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 const auto error = DeviceManager->isPaoId(pExecReq->DeviceId()) ? ClientErrors::UnsupportedDevice : ClientErrors::IdNotFound;
                 
-                CTILOG_ERROR(dout, GetErrorString(error) <<
+                CTILOG_ERROR(dout, CtiError::GetErrorString(error) <<
                         logItems);
 
                 if( CtiServer::ptr_type ptr = findConnectionManager(pExecReq->getConnectionHandle()) )
@@ -1261,7 +1261,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                     CtiConnectionManager *CM = (CtiConnectionManager *)ptr.get();
                     CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
                                                                   pExecReq->CommandString(),
-                                                                  GetErrorString(error) + " / ID = " + CtiNumStr(pExecReq->DeviceId()),
+                                                                  CtiError::GetErrorString(error) + " / ID = " + CtiNumStr(pExecReq->DeviceId()),
                                                                   error,
                                                                   pExecReq->RouteId(),
                                                                   pExecReq->MacroOffset(),

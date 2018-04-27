@@ -2,7 +2,7 @@
 
 #include "dbaccess.h"
 #include "dsm2.h"
-#include "dsm2err.h"
+#include "error.h"
 #include "queues.h"
 #include "porter.h"
 #include "scanner.h"
@@ -251,7 +251,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
             CtiDeviceBase::OutMessageList scanOMs;
             if((nRet = DeviceRecord->initiateGeneralScan(scanOMs)) > 0)
             {
-                CTILOG_ERROR(dout, "General Scan Failed to Device: "<< DeviceRecord->getName() <<". Error "<< nRet <<": "<< GetErrorString(nRet));
+                CTILOG_ERROR(dout, "General Scan Failed to Device: "<< DeviceRecord->getName() <<". Error "<< nRet <<": "<< CtiError::GetErrorString(nRet));
             }
             else
             {
@@ -301,7 +301,7 @@ static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
         {
             if((nRet = pMCT->initiateLoadProfileScan(outList)) > 0)
             {
-                CTILOG_ERROR(dout, "Load Profile Scan Failed to Device: "<< pBase->getName() <<". Error "<< nRet <<": "<< GetErrorString(nRet));
+                CTILOG_ERROR(dout, "Load Profile Scan Failed to Device: "<< pBase->getName() <<". Error "<< nRet <<": "<< CtiError::GetErrorString(nRet));
             }
             else
             {
@@ -791,7 +791,7 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
 
                 if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
                 {
-                    CTILOG_DEBUG(dout, "InMessage from "<< pBase->getName() <<" "<< GetErrorString(InMessage.ErrorCode));
+                    CTILOG_DEBUG(dout, "InMessage from "<< pBase->getName() <<" "<< CtiError::GetErrorString(InMessage.ErrorCode));
                 }
 
                 if(pBase && pBase->isSingle())

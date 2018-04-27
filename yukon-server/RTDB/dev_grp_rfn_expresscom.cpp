@@ -114,7 +114,7 @@ YukonError_t CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, Ct
                 nRet = ClientErrors::BadParameter;
             }
 
-            resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + GetErrorString(nRet);
+            resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + CtiError::GetErrorString(nRet);
             retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                                       string(OutMessage->Request.CommandStr),
                                                       resultString,
@@ -128,7 +128,7 @@ YukonError_t CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, Ct
                                                       CtiMultiMsg_vec()));
 
             string desc = "Route: RF Network";
-            string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(nRet) + " - " + GetErrorString(nRet);
+            string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(nRet) + " - " + CtiError::GetErrorString(nRet);
             vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
 
             return nRet;

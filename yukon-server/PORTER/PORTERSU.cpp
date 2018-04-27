@@ -14,7 +14,7 @@
 #include "color.h"
 #include "queues.h"
 #include "dsm2.h"
-#include "dsm2err.h"
+#include "error.h"
 #include "porter.h"
 #include "master.h"
 #include "elogger.h"
@@ -165,7 +165,7 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
 
     if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
     {
-        CTILOG_DEBUG(dout, "DeviceID / TargetID "<< OutMessage->DeviceID <<" / "<< OutMessage->TargetID <<", Error "<< ErrorCode <<" -> "<< GetErrorString(ErrorCode));
+        CTILOG_DEBUG(dout, "DeviceID / TargetID "<< OutMessage->DeviceID <<" / "<< OutMessage->TargetID <<", Error "<< ErrorCode <<" -> "<< CtiError::GetErrorString(ErrorCode));
     }
 
     //If using statistics, send an error attempt.

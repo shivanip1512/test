@@ -6,7 +6,7 @@
 #include "db_entry_defines.h"
 #include "devicetypes.h"
 #include "yukon.h"
-#include "DSM2ERR.H"
+#include "error.h"
 
 
 namespace Cti {

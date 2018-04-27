@@ -233,7 +233,7 @@ YukonError_t CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandP
                 {
                     resultString = "ERROR " + CtiNumStr(nRet) + string(" performing command on route ");
                     resultString += Route->getName();
-                    resultString += "\n" + GetErrorString(nRet);
+                    resultString += "\n" + CtiError::GetErrorString(nRet);
                     pRet->setResultString(resultString);
                     pRet->setStatus( nRet );
                 }

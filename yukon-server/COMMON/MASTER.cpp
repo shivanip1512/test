@@ -34,7 +34,6 @@
 #include "cti_asmc.h"
 #include "queues.h"
 #include "dsm2.h"
-#include "dsm2err.h"
 #include "master.h"
 //#include "porter.h"
 

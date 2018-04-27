@@ -84,7 +84,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
             if( errorCode )
             {
-                errorDescription = GetErrorString(errorCode);
+                errorDescription = CtiError::GetErrorString(errorCode);
             }
         }
         catch( const YukonErrorException &ce )

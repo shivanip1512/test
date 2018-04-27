@@ -5,7 +5,7 @@
 #include "mutex.h"
 #include "guard.h"
 #include "dlldefs.h"
-#include "dsm2err.h"
+#include "error.h"
 #include "words.h"
 #include "macro_offset.h"
 #include "constants.h"

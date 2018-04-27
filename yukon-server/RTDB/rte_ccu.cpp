@@ -924,7 +924,7 @@ YukonError_t CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq
     else
     {
         status = ClientErrors::BadParameter;
-        resultString = "Bad parameter in Expresscom command: \"" + parse.getCommandStr()+ "\" failed. Error " + CtiNumStr(status) + " - " + GetErrorString(status);
+        resultString = "Bad parameter in Expresscom command: \"" + parse.getCommandStr()+ "\" failed. Error " + CtiNumStr(status) + " - " + CtiError::GetErrorString(status);
 
         CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
                                                           string(OutMessage->Request.CommandStr),

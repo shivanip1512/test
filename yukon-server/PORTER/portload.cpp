@@ -49,7 +49,6 @@
 
 #include "queues.h"
 #include "dsm2.h"
-#include "dsm2err.h"
 #include "porter.h"
 
 #include "portglob.h"

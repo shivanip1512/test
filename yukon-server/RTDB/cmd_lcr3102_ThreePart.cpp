@@ -2,7 +2,7 @@
 
 #include "cmd_lcr3102_ThreePart.h"
 
-#include "dsm2err.h"
+#include "error.h"
 
 namespace Cti {
 namespace Devices {
@@ -51,7 +51,7 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::error(const CtiTime now, const 
 {
     if( description.empty() )
     {
-        description = GetErrorString(error_code);
+        description = CtiError::GetErrorString(error_code);
     }
 
     description += "\n";

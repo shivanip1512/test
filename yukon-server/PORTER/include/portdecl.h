@@ -1,6 +1,5 @@
 #pragma once
 
-#include "dsm2err.h"
 #include "rte_base.h"      // For CtiRoute
 #include "port_base.h"
 #include "porter.h"

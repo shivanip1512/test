@@ -357,7 +357,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
                 //  Provide an interim error so they know the comms channel is stalled.
                 const YukonError_t error = ClientErrors::PortNotInitialized;
 
-                string error_string = "Error " + CtiNumStr(error) + ": " + GetErrorString(error);
+                string error_string = "Error " + CtiNumStr(error) + ": " + CtiError::GetErrorString(error);
 
                 const long error_id = OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID;
 
@@ -677,7 +677,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
             Cti::FormattedList logItems;
             logItems.add("Device")  << Dev->getName();
             logItems.add("Command") << pReq.CommandString();
-            logItems.add("Status")  << status <<": "<< GetErrorString(status);
+            logItems.add("Status")  << status <<": "<< CtiError::GetErrorString(status);
 
             CTILOG_ERROR(dout, "Execute failed "<<
                     logItems);

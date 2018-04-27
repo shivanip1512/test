@@ -226,7 +226,7 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
                 std::make_unique<CtiReturnMsg>(
                     pReq->DeviceId(),
                     pReq->CommandString(),
-                    getName() + ": " + GetErrorString( replyCode ),
+                    getName() + ": " + CtiError::GetErrorString( replyCode ),
                     replyCode,
                     0,
                     MacroOffset::none,

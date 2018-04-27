@@ -2,7 +2,7 @@
 
 #include "cmd_lcr3102_hourlyDataLog.h"
 
-#include "dsm2err.h"
+#include "error.h"
 
 using std::string;
 using std::vector;
@@ -167,7 +167,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::error(const CtiTime now, co
 {
     if( description.empty() )
     {
-        description = GetErrorString(error_code);
+        description = CtiError::GetErrorString(error_code);
     }
 
     description += "\n";

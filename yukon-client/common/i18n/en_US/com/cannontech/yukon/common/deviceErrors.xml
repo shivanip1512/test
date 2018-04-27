@@ -14,11 +14,11 @@
     
     <entry key="yukon.web.error.code.1.porter">Not Normal (Unsuccessful) Return</entry>
     <entry key="yukon.web.error.code.1.description">Not Normal (Unsuccessful) Return</entry>
-    <entry key="yukon.web.error.code.1.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.1.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.2.porter">Route has no associated transmitter</entry>
     <entry key="yukon.web.error.code.2.description">Route has no associated transmitter</entry>
-    <entry key="yukon.web.error.code.2.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.2.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.3.porter">Bad Message Type</entry>
     <entry key="yukon.web.error.code.3.description">The master station has received an unexpected response from the CCU.</entry>
@@ -40,25 +40,25 @@
     
     <entry key="yukon.web.error.code.8.porter">Bad ID Specification</entry>
     <entry key="yukon.web.error.code.8.description">Bad ID Specification</entry>
-    <entry key="yukon.web.error.code.8.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.8.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.9.porter">Parameter Out of Range</entry>
     <entry key="yukon.web.error.code.9.description">A parameter supplied in the command string is outside
         of its valid range.</entry>
-    <entry key="yukon.web.error.code.9.troubleshooting"><![CDATA[A parameter supplied in the command string is outside of its valid range.
-            Correct the invalid parameter and attempt the command again.]]></entry>
+    <entry key="yukon.web.error.code.9.troubleshooting">A parameter supplied in the command string is outside of its valid range.
+            Correct the invalid parameter and attempt the command again.</entry>
 
     <entry key="yukon.web.error.code.10.porter">Missing Parameter</entry>
     <entry key="yukon.web.error.code.10.description">The command is missing a required parameter.</entry>
-    <entry key="yukon.web.error.code.10.troubleshooting"><![CDATA[Confirm the command syntax.]]></entry>
+    <entry key="yukon.web.error.code.10.troubleshooting">Confirm the command syntax.</entry>
 
     <entry key="yukon.web.error.code.11.porter">Syntax Error</entry>
     <entry key="yukon.web.error.code.11.description">Syntax Error</entry>
-    <entry key="yukon.web.error.code.11.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.11.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.14.porter">Bad State Specification</entry>
     <entry key="yukon.web.error.code.14.description">Bad State Specification</entry>
-    <entry key="yukon.web.error.code.14.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.14.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.15.porter">Parity Error</entry>
     <entry key="yukon.web.error.code.15.description">Checksum verification failed on communication between
@@ -246,23 +246,23 @@
     
     <entry key="yukon.web.error.code.24.porter">No Requests for CCU Queue</entry>
     <entry key="yukon.web.error.code.24.description">No Requests for CCU Queue</entry>
-    <entry key="yukon.web.error.code.24.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.24.troubleshooting">No troubleshooting is available for this error.</entry>
             
     <entry key="yukon.web.error.code.26.porter">Bad Parameter</entry>
     <entry key="yukon.web.error.code.26.description">An invalid parameter was specified for the command.</entry>
-    <entry key="yukon.web.error.code.26.troubleshooting"><![CDATA[Try different values in the command or Device Configuration.]]></entry>
+    <entry key="yukon.web.error.code.26.troubleshooting">Try different values in the command or Device Configuration.</entry>
     
     <entry key="yukon.web.error.code.27.porter">Bad Route Specification</entry>
     <entry key="yukon.web.error.code.27.description">Bad Route Specification</entry>
-    <entry key="yukon.web.error.code.27.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.27.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.28.porter">Bad Bus Specification</entry>
     <entry key="yukon.web.error.code.28.description">Bad Bus Specification</entry>
-    <entry key="yukon.web.error.code.28.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.28.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.30.porter">Read Error</entry>
     <entry key="yukon.web.error.code.30.description">Read Error</entry>
-    <entry key="yukon.web.error.code.30.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.30.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.31.porter">Timeout Reading from Port</entry>
     <entry key="yukon.web.error.code.31.description">The master station did not receive a response from the
@@ -358,7 +358,7 @@
     
     <entry key="yukon.web.error.code.35.porter">Bad Length Specification</entry>
     <entry key="yukon.web.error.code.35.description">Bad Length Specification</entry>
-    <entry key="yukon.web.error.code.35.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.35.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.36.porter">Bad HDLC UA Frame</entry>
     <entry key="yukon.web.error.code.36.description">The CCU did not respond correctly to a reset request.</entry>
@@ -369,11 +369,11 @@
             
     <entry key="yukon.web.error.code.37.porter">Unknown Error</entry>
     <entry key="yukon.web.error.code.37.description">An unclassified error occurred in Porter.</entry>
-    <entry key="yukon.web.error.code.37.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.37.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.38.porter">Unknown Command Received</entry>
     <entry key="yukon.web.error.code.38.description">Unknown Command Received</entry>
-    <entry key="yukon.web.error.code.38.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.38.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.46.porter">REQACK Flag set-- Frame Unexecutable</entry>
     <entry key="yukon.web.error.code.46.description">The CCU has rejected a request from the master
@@ -390,21 +390,21 @@
     
     <entry key="yukon.web.error.code.49.porter">Route Not Found</entry>
     <entry key="yukon.web.error.code.49.description">Route Not Found</entry>
-    <entry key="yukon.web.error.code.49.troubleshooting"><![CDATA[ No troubleshooting is available for this error. ]]></entry>
+    <entry key="yukon.web.error.code.49.troubleshooting"> No troubleshooting is available for this error. </entry>
 
     <entry key="yukon.web.error.code.54.porter">Device ID Not Found</entry>
     <entry key="yukon.web.error.code.54.description">The device ID requested does not exist or is not
         loaded yet.</entry>
-    <entry key="yukon.web.error.code.54.troubleshooting"><![CDATA[The devices may still be in process of being loaded by the servers, wait a few minutes
-            and attempt the command again.]]></entry>
+    <entry key="yukon.web.error.code.54.troubleshooting">The devices may still be in process of being loaded by the servers, wait a few minutes
+            and attempt the command again.</entry>
     
     <entry key="yukon.web.error.code.55.porter">Child Device Unknown</entry>
     <entry key="yukon.web.error.code.55.description">Child Device Unknown</entry>
-    <entry key="yukon.web.error.code.55.troubleshooting"><![CDATA[ No troubleshooting is available for this error. ]]></entry>
+    <entry key="yukon.web.error.code.55.troubleshooting"> No troubleshooting is available for this error. </entry>
     
     <entry key="yukon.web.error.code.56.porter">Function and/or Type Not Found</entry>
     <entry key="yukon.web.error.code.56.description">Function and/or Type Not Found</entry>
-    <entry key="yukon.web.error.code.56.troubleshooting"><![CDATA[ No troubleshooting is available for this error. ]]></entry>
+    <entry key="yukon.web.error.code.56.troubleshooting"> No troubleshooting is available for this error. </entry>
 
     <entry key="yukon.web.error.code.57.porter">E-Word Received in Returned Message</entry>
     <entry key="yukon.web.error.code.57.description">The repeater did not receive a response from the end
@@ -441,23 +441,23 @@
     
     <entry key="yukon.web.error.code.59.porter">OS or System Error</entry>
     <entry key="yukon.web.error.code.59.description">OS or System Error</entry>
-    <entry key="yukon.web.error.code.59.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.59.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.60.porter">Bad Port Specification</entry>
     <entry key="yukon.web.error.code.60.description">Bad Port Specification</entry>
-    <entry key="yukon.web.error.code.60.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.60.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.61.porter">Error Reading Queue</entry>
     <entry key="yukon.web.error.code.61.description">Error Reading Queue</entry>
-    <entry key="yukon.web.error.code.61.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.61.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.62.porter">Error Writing Queue</entry>
     <entry key="yukon.web.error.code.62.description">Error Writing Queue</entry>
-    <entry key="yukon.web.error.code.62.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.62.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.63.porter">Error Allocating or Manipulating Memory</entry>
     <entry key="yukon.web.error.code.63.description">Error Allocating or Manipulating Memory</entry>
-    <entry key="yukon.web.error.code.63.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.63.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.65.porter">No DCD on Return Message</entry>
     <entry key="yukon.web.error.code.65.description">The master station timed out while waiting for carrier
@@ -513,7 +513,7 @@
 
     <entry key="yukon.web.error.code.71.porter">Error Executing CCU Queue Entry</entry>
     <entry key="yukon.web.error.code.71.description">Error Executing CCU Queue Entry</entry>
-    <entry key="yukon.web.error.code.71.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.71.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.72.porter">DLC Read Timeout on CCU Queue Entry</entry>
     <entry key="yukon.web.error.code.72.description">The CCU did not receive a response from the targeted
@@ -542,7 +542,7 @@
     
     <entry key="yukon.web.error.code.73.porter">No Attempt Made on CCU Queue Entry</entry>
     <entry key="yukon.web.error.code.73.description">No Attempt Made on CCU Queue Entry</entry>
-    <entry key="yukon.web.error.code.73.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.73.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.74.porter">Route Failed on CCU Queue Entry</entry>
     <entry key="yukon.web.error.code.74.description">The CCU received a partial response from the targeted
@@ -565,15 +565,15 @@
     
     <entry key="yukon.web.error.code.75.porter">Transponder Communication Failed on CCU Queue Entry</entry>
     <entry key="yukon.web.error.code.75.description">Transponder Communication Failed on CCU Queue Entry</entry>
-    <entry key="yukon.web.error.code.75.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.75.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.78.porter">Communications Attempted With Inhibited Remote</entry>
     <entry key="yukon.web.error.code.78.description">Communications Attempted With Inhibited Remote</entry>
-    <entry key="yukon.web.error.code.78.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.78.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.79.porter">CCU Queue was Flushed... Entries Lost in Drain</entry>
     <entry key="yukon.web.error.code.79.description">CCU Queue was Flushed... Entries Lost in Drain</entry>
-    <entry key="yukon.web.error.code.79.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.79.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.83.porter">Operation Attempted on Inhibited Port</entry>
     <entry key="yukon.web.error.code.83.description">The targeted port is disabled or inhibited in the
@@ -583,7 +583,7 @@
     
     <entry key="yukon.web.error.code.84.porter">Device Does Not Support Accumulators</entry>
     <entry key="yukon.web.error.code.84.description">Device Does Not Support Accumulators</entry>
-    <entry key="yukon.web.error.code.84.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.84.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.85.porter">Operation Attempted on Inhibited Device</entry>
     <entry key="yukon.web.error.code.85.description">The targeted device is disabled or inhibited in the
@@ -730,7 +730,7 @@
     
     <entry key="yukon.web.error.code.201.porter">Memory Error</entry>
     <entry key="yukon.web.error.code.201.description">Memory Error</entry>
-    <entry key="yukon.web.error.code.201.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.201.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.202.porter">No Method or Invalid Command.</entry>
     <entry key="yukon.web.error.code.202.description">The command is incorrect or not supported by this
@@ -742,55 +742,55 @@
     
     <entry key="yukon.web.error.code.204.porter">No General Scan Method</entry>
     <entry key="yukon.web.error.code.204.description">No General Scan Method</entry>
-    <entry key="yukon.web.error.code.204.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.204.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.205.porter">No Integrity Scan Method</entry>
     <entry key="yukon.web.error.code.205.description">No Integrity Scan Method</entry>
-    <entry key="yukon.web.error.code.205.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.205.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.206.porter">No Accum Scan Method</entry>
     <entry key="yukon.web.error.code.206.description">No Accum Scan Method</entry>
-    <entry key="yukon.web.error.code.206.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.206.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.208.porter">No Process Result Method</entry>
     <entry key="yukon.web.error.code.208.description">No Process Result Method</entry>
-    <entry key="yukon.web.error.code.208.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.208.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.209.porter">No Exec. Req. Method</entry>
     <entry key="yukon.web.error.code.209.description">No Exec. Req. Method</entry>
-    <entry key="yukon.web.error.code.209.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.209.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.210.porter">No Result Decode Method</entry>
     <entry key="yukon.web.error.code.210.description">No Result Decode Method</entry>
-    <entry key="yukon.web.error.code.210.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.210.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.211.porter">No ErrorDecode Method</entry>
     <entry key="yukon.web.error.code.211.description">No ErrorDecode Method</entry>
-    <entry key="yukon.web.error.code.211.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.211.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.212.porter">No Handshake Method</entry>
     <entry key="yukon.web.error.code.212.description">No Handshake Method</entry>
-    <entry key="yukon.web.error.code.212.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.212.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.213.porter">No Generate Command Method</entry>
     <entry key="yukon.web.error.code.213.description">No Generate Command Method</entry>
-    <entry key="yukon.web.error.code.213.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.213.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.214.porter">No DecodeResponse Method</entry>
     <entry key="yukon.web.error.code.214.description">No DecodeResponse Method</entry>
-    <entry key="yukon.web.error.code.214.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.214.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.215.porter">No Data Copy Method</entry>
     <entry key="yukon.web.error.code.215.description">No Data Copy Method</entry>
-    <entry key="yukon.web.error.code.215.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.215.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.218.porter">No Config Data Found</entry>
     <entry key="yukon.web.error.code.218.description">The device is missing required configuration entries.</entry>
-    <entry key="yukon.web.error.code.218.troubleshooting"><![CDATA[Confirm that the Device Configuration assigned to the device has all required categories populated.]]></entry>
+    <entry key="yukon.web.error.code.218.troubleshooting">Confirm that the Device Configuration assigned to the device has all required categories populated.</entry>
 
     <entry key="yukon.web.error.code.219.porter">Config is not current</entry>
     <entry key="yukon.web.error.code.219.description">The configuration on the device does not match its assigned Device Configuration.</entry>
-    <entry key="yukon.web.error.code.219.troubleshooting"><![CDATA[Send the Device Configuration to the device.]]></entry>
+    <entry key="yukon.web.error.code.219.troubleshooting">Send the Device Configuration to the device.</entry>
 
     <entry key="yukon.web.error.code.220.porter">Config is current</entry>
     <entry key="yukon.web.error.code.220.description">The configuration on the device matches its assigned config.</entry>
@@ -798,23 +798,23 @@
     
     <entry key="yukon.web.error.code.221.porter">No Route for Group Dev.</entry>
     <entry key="yukon.web.error.code.221.description">No Route for Group Dev.</entry>
-    <entry key="yukon.web.error.code.221.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.221.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.222.porter">No Routes for Macro Rte</entry>
     <entry key="yukon.web.error.code.222.description">No Routes for Macro Rte</entry>
-    <entry key="yukon.web.error.code.222.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.222.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.223.porter">Macro Offset does not exist in Macro Rte</entry>
     <entry key="yukon.web.error.code.223.description">Macro Offset does not exist in Macro Rte</entry>
-    <entry key="yukon.web.error.code.223.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.223.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.224.porter">Macro Offset refers to a macro sub-rte</entry>
     <entry key="yukon.web.error.code.224.description">Macro Offset refers to a macro sub-rte</entry>
-    <entry key="yukon.web.error.code.224.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.224.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.225.porter">Device is control disabled</entry>
     <entry key="yukon.web.error.code.225.description">Device is control disabled</entry>
-    <entry key="yukon.web.error.code.225.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.225.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.226.porter">Control is currently inhibited for the point.</entry>
     <entry key="yukon.web.error.code.226.description">Control is currently inhibited for the point.</entry>
@@ -834,95 +834,95 @@
     
     <entry key="yukon.web.error.code.228.porter">Requested operation expired due to time</entry>
     <entry key="yukon.web.error.code.228.description">Requested operation expired due to time</entry>
-    <entry key="yukon.web.error.code.228.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.228.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.229.porter">Point has no control configuration</entry>
     <entry key="yukon.web.error.code.229.description">Point has no control configuration</entry>
-    <entry key="yukon.web.error.code.229.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.229.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.234.porter">Retry Resubmitted</entry>
     <entry key="yukon.web.error.code.234.description">Retry Resubmitted</entry>
-    <entry key="yukon.web.error.code.234.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.234.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.237.porter">Scanned device is inhibited</entry>
     <entry key="yukon.web.error.code.237.description">Scanned device is inhibited</entry>
-    <entry key="yukon.web.error.code.237.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.237.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.238.porter">Illegal scan of global device</entry>
     <entry key="yukon.web.error.code.238.description">Illegal scan of global device</entry>
-    <entry key="yukon.web.error.code.238.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.238.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.239.porter">Device window is closed</entry>
     <entry key="yukon.web.error.code.239.description">Device window is closed</entry>
-    <entry key="yukon.web.error.code.239.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.239.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.241.porter">Dialup connection failed. Port in error</entry>
     <entry key="yukon.web.error.code.241.description">Dialup connection failed. Port in error</entry>
-    <entry key="yukon.web.error.code.241.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.241.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.242.porter">Dialup connection failed. Device in error</entry>
     <entry key="yukon.web.error.code.242.description">Dialup connection failed. Device in error</entry>
-    <entry key="yukon.web.error.code.242.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.242.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.243.porter">Port is simulated, no inbound data available</entry>
     <entry key="yukon.web.error.code.243.description">Port is simulated, no inbound data available</entry>
-    <entry key="yukon.web.error.code.243.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.243.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.244.porter">Port echoed request bytes</entry>
     <entry key="yukon.web.error.code.244.description">Port echoed request bytes</entry>
-    <entry key="yukon.web.error.code.244.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.244.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.245.porter">Invalid transaction, typ. bad pager id or password</entry>
     <entry key="yukon.web.error.code.245.description">Invalid transaction, typ. bad pager id or password</entry>
-    <entry key="yukon.web.error.code.245.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.245.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.246.porter">TAP Repeat Requested, but retries exhausted</entry>
     <entry key="yukon.web.error.code.246.description">TAP Repeat Requested, but retries exhausted</entry>
-    <entry key="yukon.web.error.code.246.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.246.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.247.porter">No response from TAP terminal</entry>
     <entry key="yukon.web.error.code.247.description">No response from TAP terminal</entry>
-    <entry key="yukon.web.error.code.247.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.247.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.248.porter">Invalid/Incomplete Request</entry>
     <entry key="yukon.web.error.code.248.description">Invalid/Incomplete Request</entry>
-    <entry key="yukon.web.error.code.248.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.248.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.250.porter">Invalid or unsuccessful HTTP response</entry>
     <entry key="yukon.web.error.code.250.description">Invalid or unsuccessful HTTP response</entry>
-    <entry key="yukon.web.error.code.250.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.250.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.251.porter">XML parser initialization failed</entry>
     <entry key="yukon.web.error.code.251.description">XML parser initialization failed</entry>
-    <entry key="yukon.web.error.code.251.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.251.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.252.porter">Invalid WCTP response format</entry>
     <entry key="yukon.web.error.code.252.description">Invalid WCTP response format</entry>
-    <entry key="yukon.web.error.code.252.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.252.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.253.porter">Time out when receiving WCTP response</entry>
     <entry key="yukon.web.error.code.253.description">Time out when receiving WCTP response</entry>
-    <entry key="yukon.web.error.code.253.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.253.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.254.porter">Protocol Error 300 Series</entry>
     <entry key="yukon.web.error.code.254.description">Protocol Error 300 Series</entry>
-    <entry key="yukon.web.error.code.254.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.254.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.255.porter">Protocol Error 400 Series</entry>
     <entry key="yukon.web.error.code.255.description">Protocol Error 400 Series</entry>
-    <entry key="yukon.web.error.code.255.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.255.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.256.porter">Protocol Error 500 Series</entry>
     <entry key="yukon.web.error.code.256.description">Protocol Error 500 Series</entry>
-    <entry key="yukon.web.error.code.256.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.256.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.257.porter">Protocol Error 600 Series</entry>
     <entry key="yukon.web.error.code.257.description">Protocol Error 600 Series</entry>
-    <entry key="yukon.web.error.code.257.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.257.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.258.porter">Queue purged to limit memory usage</entry>
     <entry key="yukon.web.error.code.258.description">Queue purged to limit memory usage</entry>
-    <entry key="yukon.web.error.code.258.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.258.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.260.porter">MACS timed out on this message</entry>
     <entry key="yukon.web.error.code.260.description">MACS timed out on this message.</entry>
@@ -971,35 +971,35 @@
     <entry key="yukon.web.error.code.263.description">Verification of the freeze counter has failed. Device
         did not receive one or
         more of the last Freeze commands.</entry>
-    <entry key="yukon.web.error.code.263.troubleshooting"><![CDATA[The last recorded freeze count (in Yukon) for the device does not match the current
+    <entry key="yukon.web.error.code.263.troubleshooting">The last recorded freeze count (in Yukon) for the device does not match the current
             count returned from the device. This indicates a
-            freeze command was not received by the device.]]></entry>
+            freeze command was not received by the device.</entry>
 
     <entry key="yukon.web.error.code.264.porter">Invalid data was received for one or more data points.</entry>
     <entry key="yukon.web.error.code.264.description">Invalid data was received for one or more data points.</entry>
-    <entry key="yukon.web.error.code.264.troubleshooting"><![CDATA[]]></entry>
+    <entry key="yukon.web.error.code.264.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.265.porter">There is no record of the last freeze sent to this
         device.</entry>
     <entry key="yukon.web.error.code.265.description">There is no record of the last freeze sent to this
         device.</entry>
-    <entry key="yukon.web.error.code.265.troubleshooting"><![CDATA[]]></entry>
+    <entry key="yukon.web.error.code.265.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.266.porter">Request was cancelled</entry>
     <entry key="yukon.web.error.code.266.description">Request was cancelled</entry>
-    <entry key="yukon.web.error.code.266.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.266.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.267.porter">Invalid time returned OR time outside of requested range.</entry>
     <entry key="yukon.web.error.code.267.description">The setup validation data returned by the meter did
         not match the expected
         value. The device did not hear the setup command.</entry>
-    <entry key="yukon.web.error.code.267.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.]]></entry>
+    <entry key="yukon.web.error.code.267.troubleshooting">The meter did not receive the setup command for the read. Attempt the read again.</entry>
 
     <entry key="yukon.web.error.code.268.porter">Invalid channel returned by daily read.</entry>
     <entry key="yukon.web.error.code.268.description">The setup validation data returned by the meter did
         not match the expected
         value. The device did not hear the setup command.</entry>
-    <entry key="yukon.web.error.code.268.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.]]></entry>
+    <entry key="yukon.web.error.code.268.troubleshooting">The meter did not receive the setup command for the read. Attempt the read again.</entry>
 
     <entry key="yukon.web.error.code.269.porter">Invalid or insufficient device SSPEC revision.</entry>
     <entry key="yukon.web.error.code.269.description">The meter does not support the requested command.</entry>
@@ -1012,48 +1012,48 @@
 
     <entry key="yukon.web.error.code.271.porter">Invalid future data rejected</entry>
     <entry key="yukon.web.error.code.271.description">Data was rejected because its timestamp was more than a year in the future.</entry>
-    <entry key="yukon.web.error.code.271.troubleshooting"><![CDATA[Verify the time settings in the remote device.]]></entry>
+    <entry key="yukon.web.error.code.271.troubleshooting">Verify the time settings in the remote device.</entry>
 
     <entry key="yukon.web.error.code.272.porter">Device not supported by Porter</entry>
     <entry key="yukon.web.error.code.272.description">Device type does not support Commander requests.</entry>
-    <entry key="yukon.web.error.code.272.troubleshooting"><![CDATA[Confirm that the command is supported by the device type.]]></entry>
+    <entry key="yukon.web.error.code.272.troubleshooting">Confirm that the command is supported by the device type.</entry>
 
     <entry key="yukon.web.error.code.273.porter">Port not initialized</entry>
     <entry key="yukon.web.error.code.273.description">The request has been received, but may be delayed
         because the port is not initialized. Bulk communication channel may be
         experiencing connection difficulties.</entry>
-    <entry key="yukon.web.error.code.273.troubleshooting"><![CDATA[Verify the bulk communication channel is functioning properly.]]></entry>
+    <entry key="yukon.web.error.code.273.troubleshooting">Verify the bulk communication channel is functioning properly.</entry>
 
     <entry key="yukon.web.error.code.274.porter">Command already in progress</entry>
     <entry key="yukon.web.error.code.274.description">Command is already in progress.</entry>
-    <entry key="yukon.web.error.code.274.troubleshooting"><![CDATA[            
+    <entry key="yukon.web.error.code.274.troubleshooting">            
         Only one instance of this command can be in progress at a time. Wait 
-            for a moment and attempt the command again.]]></entry>
+            for a moment and attempt the command again.</entry>
 
     <entry key="yukon.web.error.code.275.porter">No connection to device</entry>
     <entry key="yukon.web.error.code.275.description">Yukon is unable to establish a connection with the
         device.</entry>
-    <entry key="yukon.web.error.code.275.troubleshooting"><![CDATA[Verify the device's connection parameters.]]></entry>
+    <entry key="yukon.web.error.code.275.troubleshooting">Verify the device's connection parameters.</entry>
 
     <entry key="yukon.web.error.code.276.porter">No disconnect configured on this device</entry>
     <entry key="yukon.web.error.code.276.description">The device does not have a disconnect to be operated
         on.</entry>
-    <entry key="yukon.web.error.code.276.troubleshooting"><![CDATA[Verify there is a disconnect configured in the Device Setup.]]></entry>
+    <entry key="yukon.web.error.code.276.troubleshooting">Verify there is a disconnect configured in the Device Setup.</entry>
 
     <entry key="yukon.web.error.code.277.porter">Transmitter is overheating</entry>
     <entry key="yukon.web.error.code.277.description">The request was denied because the PLC transmitter is
         overheating.</entry>
-    <entry key="yukon.web.error.code.277.troubleshooting"><![CDATA[
-            Hardware Protection Mode.]]></entry>
+    <entry key="yukon.web.error.code.277.troubleshooting">
+            Hardware Protection Mode.</entry>
 
     <entry key="yukon.web.error.code.278.porter">Command requires channel configuration to continue.</entry>
     <entry key="yukon.web.error.code.278.description">In order to collect load profile, the system needs to
         retrieve the channel
         setup information.</entry>
-    <entry key="yukon.web.error.code.278.troubleshooting"><![CDATA[
+    <entry key="yukon.web.error.code.278.troubleshooting">
             The system will attempt to collect the required configuration data automatically. Retry
             the command.
-            ]]></entry>
+            </entry>
 
     <entry key="yukon.web.error.code.279.porter">Command requires a valid date.</entry>
     <entry key="yukon.web.error.code.279.description">In order to execute, the command must be provided a valid date.</entry>
@@ -1126,7 +1126,7 @@
     
     <entry key="yukon.web.error.code.296.porter">The device has no points attached.</entry>
     <entry key="yukon.web.error.code.296.description">The device has no points attached.</entry>
-    <entry key="yukon.web.error.code.296.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.296.troubleshooting">No troubleshooting is available for this error.</entry>
         
     <entry key="yukon.web.error.code.297.porter">Network service failure.</entry>
     <entry key="yukon.web.error.code.297.description">Network Manager indicated that the network could not send the request.</entry>
@@ -1134,47 +1134,47 @@
     
     <entry key="yukon.web.error.code.298.porter">Channel not enabled in RF node.</entry>
     <entry key="yukon.web.error.code.298.description">Channel not enabled in RF node.</entry>
-    <entry key="yukon.web.error.code.298.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.298.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.299.porter">Channel not supported by meter.</entry>
     <entry key="yukon.web.error.code.299.description">Channel not supported by meter.</entry>
-    <entry key="yukon.web.error.code.299.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.299.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.300.porter">Invalid water node device.</entry>
     <entry key="yukon.web.error.code.300.description">Invalid water node device.</entry>
-    <entry key="yukon.web.error.code.300.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.300.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.301.porter">Unknown water node.</entry>
     <entry key="yukon.web.error.code.301.description">Unknown water node.</entry>
-    <entry key="yukon.web.error.code.301.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.301.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.302.porter">Unknown gateway.</entry>
     <entry key="yukon.web.error.code.302.description">Unknown gateway.</entry>
-    <entry key="yukon.web.error.code.302.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.302.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.303.porter">Unspecified water node failure.</entry>
     <entry key="yukon.web.error.code.303.description">Unspecified water node failure.</entry>
-    <entry key="yukon.web.error.code.303.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.303.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.304.porter">Function code not supported.</entry>
     <entry key="yukon.web.error.code.304.description">Function code not supported.</entry>
-    <entry key="yukon.web.error.code.304.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.304.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.305.porter">Unknown object.</entry>
     <entry key="yukon.web.error.code.305.description">Unknown object.</entry>
-    <entry key="yukon.web.error.code.305.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.305.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.306.porter">Parameter error, not all points in the index range or object index prefixes exist.</entry>
     <entry key="yukon.web.error.code.306.description">Parameter error, not all points in the index range or object index prefixes exist.</entry>
-    <entry key="yukon.web.error.code.306.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.306.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.307.porter">Requested operation is already executing.</entry>
     <entry key="yukon.web.error.code.307.description">Requested operation is already executing.</entry>
-    <entry key="yukon.web.error.code.307.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.307.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.308.porter">Aggregate response did not include an entry for the command.</entry>
     <entry key="yukon.web.error.code.308.description">Aggregate response did not include an entry for the command.</entry>
-    <entry key="yukon.web.error.code.308.troubleshooting"><![CDATA[No troubleshooting is available for this error.]]></entry>
+    <entry key="yukon.web.error.code.308.troubleshooting">No troubleshooting is available for this error.</entry>
                                                                                                             
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is

@@ -667,7 +667,7 @@ YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
                         new CtiReturnMsg(
                                 getID(),
                                 pOut->Request,
-                                getName() + ": ERROR " + CtiNumStr(nRet) + " (" + GetErrorString(nRet) + ") performing command on route " + Route->getName(),
+                                getName() + ": ERROR " + CtiNumStr(nRet) + " (" + CtiError::GetErrorString(nRet) + ") performing command on route " + Route->getName(),
                                 nRet));
             }
         }

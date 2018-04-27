@@ -896,7 +896,7 @@ void UnsolicitedHandler::traceInbound( string address, YukonError_t status, cons
     if( status && status != ClientErrors::PortSimulated )
     {
         mTrace.setBrightRed();
-        mTrace.setTrace( GetErrorString(status) );
+        mTrace.setTrace( CtiError::GetErrorString(status) );
         mTrace.setEnd(true);
         _traceList.push_back(mTrace.replicateMessage());
         mTrace.setNormal();

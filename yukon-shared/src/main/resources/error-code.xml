@@ -1393,16 +1393,14 @@
         <category>Data Validation</category>
         <porter>Invalid data was received for one or more data points.</porter>
         <description>Invalid data was received for one or more data points.</description>
-        <troubleshooting>
-        </troubleshooting>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     
     <error code="265" type="PROTOCOL">
         <category>Data Validation</category>
         <porter>There is no record of the last freeze sent to this device.</porter>
         <description>There is no record of the last freeze sent to this device.</description>
-        <troubleshooting>
-        </troubleshooting>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     
     <error code="266" type="SYSTEM">

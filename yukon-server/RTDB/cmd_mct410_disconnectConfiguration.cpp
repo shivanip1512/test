@@ -153,7 +153,7 @@ boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> Mct410Disc
 
 DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTime now, const YukonError_t error_code, std::string &description)
 {
-    throw CommandException(error_code, GetErrorString(error_code));
+    throw CommandException(error_code, CtiError::GetErrorString(error_code));
 }
 
 DlcCommand::emetcon_request_ptr Mct410DisconnectConfigurationCommand::doCommand()

@@ -1037,7 +1037,7 @@ YukonError_t DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime Time
     }
     else
     {
-        const string error_str = GetErrorString(InMessage.ErrorCode);
+        const string error_str = CtiError::GetErrorString(InMessage.ErrorCode);
 
         string resultString;
 
