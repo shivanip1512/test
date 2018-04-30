@@ -961,9 +961,9 @@ public final class JmsApiDirectory {
     //Used by SmartNotificationWatchdogDecider (smartNotificationContext.xml)
     public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
-                  .name("Smart Notifications Device Data Monitor Event")
-                  .description("Sent by the Device Data Monitor service, to the Smart Notification Device Data Monitor "
-                          + "decider, when a DDM event occurs. The decider then determines when "
+                  .name("Smart Notifications Yukon Watchdog Event")
+                  .description("Sent by the yukon watchdog service, to the Smart Notification Yukon Watchdog "
+                          + "decider, when a event occurs. The decider then determines when "
                           + "to send a notification, who to send it to, and what form it should take.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.yukonWatchdog"))
