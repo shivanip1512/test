@@ -377,6 +377,13 @@ public static int differenceMinutes(Date from, Date to) {
     public static boolean isXMinutesBeforeNow(int minutes, ReadableInstant value) {
         return value.isBefore(Instant.now().minus(Duration.standardMinutes(minutes)));
     }
+    
+    /**
+     * @return True if the value is at least the specified number of seconds before now.
+     */
+    public static boolean isXSecondsBeforeNow(int seconds, ReadableInstant value) {
+        return value.isBefore(Instant.now().minus(Duration.standardSeconds(seconds)));
+    }
 
     /**
      * @return Cron expression for the given time and selected days.
@@ -403,7 +410,7 @@ public static int differenceMinutes(Date from, Date to) {
         if (cronOption == CronExprOption.EVERYDAY) {
             parts[5] = "*";
         } else {
-            List<String> selectedDays = new ArrayList<String>();
+            List<String> selectedDays = new ArrayList<>();
 
             for (int i = 0; i < days.length(); i++) {
                 if (days.charAt(i) == checkChar) {

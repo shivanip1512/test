@@ -16,7 +16,8 @@ public class SimulatorSettings implements Serializable {
     private int lcr6600serialTo;
     private int lcr6700serialFrom;
     private int lcr6700serialTo;
-
+    private int tlvVersion;
+    
     // meter data simulator
     private String paoType;
 
@@ -57,7 +58,7 @@ public class SimulatorSettings implements Serializable {
         }
     }
 
-    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int lcr6700serialFrom, int lcr6700serialTo, int percentOfDuplicates, ReportingInterval reportingInterval) {
+    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int lcr6700serialFrom, int lcr6700serialTo, int percentOfDuplicates, ReportingInterval reportingInterval, int tlvVersion) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
@@ -66,6 +67,7 @@ public class SimulatorSettings implements Serializable {
         this.lcr6700serialTo = lcr6700serialTo;
         this.percentOfDuplicates = percentOfDuplicates;
         this.reportingInterval = reportingInterval;
+        this.tlvVersion = tlvVersion;
     }
 
     public SimulatorSettings(String paoType, int percentOfDuplicates, ReportingInterval reportingInterval) {
@@ -75,7 +77,7 @@ public class SimulatorSettings implements Serializable {
     }
 
     public SimulatorSettings(int deviceId) {
-        this.setDeviceId(deviceId);
+        setDeviceId(deviceId);
     }
 
     public SimulatorSettings() {
@@ -131,6 +133,14 @@ public class SimulatorSettings implements Serializable {
 
     public void setLcr6700serialTo(int lcr6700serialTo) {
         this.lcr6700serialTo = lcr6700serialTo;
+    }
+
+    public int getTlvVersion() {
+        return tlvVersion;
+    }
+
+    public void setTlvVersion(int tlvVersion) {
+        this.tlvVersion = tlvVersion;
     }
 
     public void setPercentOfDuplicates(int percentOfDuplicates) {

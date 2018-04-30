@@ -96,36 +96,51 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
         CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
         //Power Quality Response fields:
-        LOV_TRIGGER((byte)0x44, 2, 1),
-        LOV_RESTORE((byte)0x45, 2, 1),
-        LOV_TRIGGER_TIME((byte)0x46, 2, 1),
-        LOV_RESTORE_TIME((byte)0x47, 2, 1),
-        LOV_EVENT_COUNT((byte)0x48, 2, 1),
-        LOF_TRIGGER((byte)0x49, 2, 1),
-        LOF_RESTORE((byte)0x4a, 2, 1),
-        LOF_TRIGGER_TIME((byte)0x4b, 2, 1),
-        LOF_RESTORE_TIME((byte)0x4c, 2, 1),
-        LOF_EVENT_COUNT((byte)0x4d, 2, 1),
-        LOF_START_RANDOM_TIME((byte)0x4e, 2, 1),
-        LOF_END_RANDOM_TIME((byte)0x4f, 2, 1),
-        LOV_START_RANDOM_TIME((byte)0x50, 2, 1),
-        LOV_END_RANDOM_TIME((byte)0x51, 2, 1),
-        LOF_MIN_EVENT_DURATION((byte)0x52, 2, 1),
-        LOV_MIN_EVENT_DURATION((byte)0x53, 2, 1),
-        LOF_MAX_EVENT_DURATION((byte)0x54, 2, 1),
-        LOV_MAX_EVENT_DURATION((byte)0x55, 2, 1),
-        MINIMUM_EVENT_SEPARATION((byte)0x56, 2, 1),
-        POWER_QUALITY_RESPONSE_ENABLED((byte)0x58, 1, 1),
+        LOV_TRIGGER((byte)0x44, 2, 1, 5),
+        LOV_RESTORE((byte)0x45, 2, 1, 5),
+        LOV_TRIGGER_TIME((byte)0x46, 2, 1, 5),
+        LOV_RESTORE_TIME((byte)0x47, 2, 1, 5),
+        LOV_EVENT_COUNT((byte)0x48, 2, 1, 5),
+        LOF_TRIGGER((byte)0x49, 2, 1, 5),
+        LOF_RESTORE((byte)0x4a, 2, 1, 5),
+        LOF_TRIGGER_TIME((byte)0x4b, 2, 1, 5),
+        LOF_RESTORE_TIME((byte)0x4c, 2, 1, 5),
+        LOF_EVENT_COUNT((byte)0x4d, 2, 1, 5),
+        LOF_START_RANDOM_TIME((byte)0x4e, 2, 1, 5),
+        LOF_END_RANDOM_TIME((byte)0x4f, 2, 1, 5),
+        LOV_START_RANDOM_TIME((byte)0x50, 2, 1, 5),
+        LOV_END_RANDOM_TIME((byte)0x51, 2, 1, 5),
+        LOF_MIN_EVENT_DURATION((byte)0x52, 2, 1, 5),
+        LOV_MIN_EVENT_DURATION((byte)0x53, 2, 1, 5),
+        LOF_MAX_EVENT_DURATION((byte)0x54, 2, 1, 5),
+        LOV_MAX_EVENT_DURATION((byte)0x55, 2, 1, 5),
+        MINIMUM_EVENT_SEPARATION((byte)0x56, 2, 1, 5),
+        POWER_QUALITY_RESPONSE_ENABLED((byte)0x58, 1, 1, 5),
 		;
 
         private final byte type;
         private final int length;
         private final int frequency;
-
+        private final int version;
+        
         private TLVField(byte type, int length, int frequency) {
             this.type = type;
             this.length = length;
             this.frequency = frequency;
+            version = 4;
+        }
+        
+        private TLVField(byte type, int length, int frequency, int version) {
+            this.type = type;
+            this.length = length;
+            this.frequency = frequency;
+            this.version = version;
+        }
+        
+        public static List<TLVField> getValuesForVersion(int tlvVersion) {
+            return Arrays.stream(values())
+                         .filter(field -> field.version <= tlvVersion)
+                         .collect(Collectors.toList());
         }
     }
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
@@ -188,11 +203,11 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
      *
      * @param devices - minute of the day to send a request at/list of devices to send a read request to
      */
-    private void addDevice(RfnIdentifier rfnIdentifier, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices, PaoType paoType){
+    private void addDevice(RfnIdentifier rfnIdentifier, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices, PaoType paoType, int tlvVersion){
         int minuteOfTheDay = getMinuteOfTheDay(rfnIdentifier.getSensorSerialNumber());
                 
         RfnLcrReadSimulatorDeviceParameters parameters =
-                new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60, paoType);
+                new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60, paoType, tlvVersion);
         devices.put(minuteOfTheDay,  parameters);
     }
     
@@ -208,7 +223,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             }
             List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfLcrTypes());
             for (RfnDevice device : devices) {
-                addDevice(device.getRfnIdentifier(), allDevices, device.getPaoIdentifier().getPaoType());
+                addDevice(device.getRfnIdentifier(), allDevices, device.getPaoIdentifier().getPaoType(), settings.getTlvVersion());
             }
             //check if execution was canceled
             if (!allDevices.isEmpty() && allDevicesStatus.isRunning().get()) {
@@ -232,11 +247,11 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 this.settings = settings;
             }
             createDevicesByRange(settings.getLcr6200serialFrom(), settings.getLcr6200serialTo(),
-                RfnManufacturerModel.RFN_LCR_6200);
+                RfnManufacturerModel.RFN_LCR_6200, 0);
             createDevicesByRange(settings.getLcr6600serialFrom(), settings.getLcr6600serialTo(),
-                RfnManufacturerModel.RFN_LCR_6600);
+                RfnManufacturerModel.RFN_LCR_6600, 0);
             createDevicesByRange(settings.getLcr6700serialFrom(), settings.getLcr6700serialTo(),
-                RfnManufacturerModel.RFN_LCR_6700);
+                RfnManufacturerModel.RFN_LCR_6700, settings.getTlvVersion());
             //check if execution was canceled
             if (!rangeDevices.isEmpty() && rangeDevicesStatus.isRunning().get()) {
                 logDebugInjectionTime(rangeDevices);
@@ -247,12 +262,12 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         }
     }
 
-    private void createDevicesByRange(int from, int to, RfnManufacturerModel model) {
+    private void createDevicesByRange(int from, int to, RfnManufacturerModel model, int tlvVersion) {
         while (from <= to) {
             RfnIdentifier rfnIdentifier =
                 new RfnIdentifier(String.valueOf(from), model.getManufacturer(), model.getModel());
             log.debug("createDevicesByRange="+rfnIdentifier);
-            addDevice(rfnIdentifier, rangeDevices, model.getType());
+            addDevice(rfnIdentifier, rangeDevices, model.getType(), tlvVersion);
             from++;
         }
     }
@@ -317,6 +332,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             simulatorSettings.setLcr6700serialFrom(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_FROM));
             simulatorSettings.setLcr6700serialTo(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_TO));
             simulatorSettings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE));
+            simulatorSettings.setTlvVersion(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_TLV_VERSION));
             settings = simulatorSettings;
         }
         return settings;
@@ -331,6 +347,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_FROM, settings.getLcr6700serialFrom());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_TO, settings.getLcr6700serialTo());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_TLV_VERSION, settings.getTlvVersion());
     }
 
     /**
@@ -370,10 +387,11 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         if (deviceParameters.getPaoType().isTlvReporting()) {
             try {
                 //TODO: This stuff should be configurable to more easily support future device types and TLV fields
+                //TODO: TLV version handling will need to be more complicated if/when major/minor version ever changes
                 String expresscomHeader = "E20170";
                 String deviceTypeId = "043E"; //0x043E = 1086 (LCR-6700)
                 String tlvMajorMinor = "00"; //TLV version = major.minor.revision. Major/minor in first byte...
-                String tlvRevision = "05"; //...revision in next byte
+                String tlvRevision = "0" + deviceParameters.getTlvVersion(); //...revision in next byte
                 String headerCountTypeAndLength = "000002"; //"TLV Count" - TypeId: 0, Length: 2 bytes
                 String headerCountValue = "0059"; //TLV type IDs supported by device. 
                                                   //For 0.0.4: 0x49 = 73. For 0.0.5: 0x59 = 89.
@@ -386,12 +404,14 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 writeUTC(outputStream, reportTime);
                 
                 // Generate TLV values that translate to point data
-                byte[] data = generateTlvPointData();
+                byte[] data = generateTlvPointData(deviceParameters.getTlvVersion());
                 outputStream.write(data);
                 
                 //Add PQR event log blob
-                byte[] pqrEvents = generatePqrEvents(reportTime);
-                outputStream.write(pqrEvents);
+                if (deviceParameters.getTlvVersion() > 4) {
+                    byte[] pqrEvents = generatePqrEvents(reportTime);
+                    outputStream.write(pqrEvents);
+                }
                 
                 // Add verification messages
                 outputStream.write((0x16 >> 4) & 0x0f); // Upper nibble of first byte
@@ -546,9 +566,9 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     /**
      * Generate byte Array (part of TLV report) from TLVField enum and generate values for each field.
      */
-    private byte[] generateTlvPointData() {
+    private byte[] generateTlvPointData(int tlvVersion) {
         ByteArrayOutputStream data = new ByteArrayOutputStream();
-        for (TLVField field : TLVField.values()) {
+        for (TLVField field : TLVField.getValuesForVersion(tlvVersion)) {
             int fieldCount = 0;
             while (fieldCount < field.frequency) {
                 int valueIndex = 0;

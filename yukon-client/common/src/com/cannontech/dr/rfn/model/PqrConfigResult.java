@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.joda.time.Instant;
+
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 
 /**
@@ -11,7 +13,8 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
  * The results will be updated as the configurations are sent.
  */
 public class PqrConfigResult {
-    private Map<Integer, PqrDeviceConfigResult> inventoryResults;
+    private final Map<Integer, PqrDeviceConfigResult> inventoryResults;
+    private final Instant startTime;
     
     /**
      * Create a new result for the specified supported and unsupported devices. The supported devices will have their
@@ -26,6 +29,8 @@ public class PqrConfigResult {
                                   .collect(Collectors.toMap(inv -> inv.getInventoryID(), 
                                                             inv -> PqrDeviceConfigResult.unsupportedResult(inv)));
         inventoryResults.putAll(unsupportedResults);
+        
+        startTime = Instant.now();
     }
     
     /**
@@ -102,5 +107,12 @@ public class PqrConfigResult {
                                .filter(entry -> entry.getValue().getOverallStatus() == status)
                                .map(entry -> entry.getKey())
                                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Returns the time when this result was created.
+     */
+    public Instant getStartTime() {
+        return startTime;
     }
 }

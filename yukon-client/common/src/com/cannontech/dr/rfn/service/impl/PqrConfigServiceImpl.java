@@ -20,6 +20,7 @@ import com.cannontech.common.events.loggers.PqrEventLogService;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.rfn.model.PqrConfig;
@@ -39,6 +40,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class PqrConfigServiceImpl implements PqrConfigService {
     private static final Logger log = YukonLogManager.getLogger(PqrConfigServiceImpl.class);
+    private static final int resultTimeoutSeconds = 120;
     private final Cache<String, PqrConfigResult> results = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS).build();
     
     @Autowired private AttributeService attributeService;
@@ -50,7 +52,19 @@ public class PqrConfigServiceImpl implements PqrConfigService {
     
     @Override
     public Optional<PqrConfigResult> getResult(String resultId) {
-        return Optional.ofNullable(results.getIfPresent(resultId));
+        Optional<PqrConfigResult> oResult = Optional.ofNullable(results.getIfPresent(resultId));
+        // If, for any reason, a response hasn't been received for all commands within the timeout period, mark the
+        // result as complete (causing any "in progress" commands to change to "failed").
+        oResult.filter(result -> {
+            return result.isComplete() == false
+                   && TimeUtil.isXSecondsBeforeNow(resultTimeoutSeconds, result.getStartTime());
+        })
+        .ifPresent(result -> {
+            log.warn(resultTimeoutSeconds + " seconds have elapsed and result is incomplete. Timing out. ResultId=" 
+                     + resultId + ", Devices=" + result.getCounts().getTotal());
+            result.complete();
+        });
+        return oResult;
     }
     
     @Override
@@ -181,7 +195,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
         command.setUser(user);
         ImmutableMap.Builder<LmHardwareCommandParam, Object> builder = new ImmutableMap.Builder<>();
         Map<LmHardwareCommandParam, Object> parameters = builder.put(LmHardwareCommandParam.WAITABLE, true)
-                                                                .put(LmHardwareCommandParam.EXPIRATION_DURATION, 60 * 1000)
+                                                                .put(LmHardwareCommandParam.EXPIRATION_DURATION, (long) 60 * 1000)
                                                                 .putAll(additionalParameters)
                                                                 .build();
         command.setParams(parameters);

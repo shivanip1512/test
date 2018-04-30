@@ -12,9 +12,10 @@ public final class RfnLcrReadSimulatorDeviceParameters {
     private final int recordingInterval;
     private final int reportingInterval;
     private final PaoType paoType;
+    private final int tlvVersion;
 
     public RfnLcrReadSimulatorDeviceParameters(RfnIdentifier rfnIdentifier, int majorVersion, int minorVersion,
-            int revision, int recordingInterval, int reportingInterval, PaoType paoType) {
+            int revision, int recordingInterval, int reportingInterval, PaoType paoType, int tlvVersion) {
         super();
         this.rfnIdentifier = rfnIdentifier;
         this.majorVersion = majorVersion;
@@ -23,6 +24,7 @@ public final class RfnLcrReadSimulatorDeviceParameters {
         this.recordingInterval = recordingInterval;
         this.reportingInterval = reportingInterval;
         this.paoType = paoType;
+        this.tlvVersion = tlvVersion;
     }
 
     public RfnIdentifier getRfnIdentifier() {
@@ -51,5 +53,9 @@ public final class RfnLcrReadSimulatorDeviceParameters {
 
     public PaoType getPaoType() {
         return paoType;
+    }
+    
+    public int getTlvVersion() {
+        return tlvVersion;
     }
 }
