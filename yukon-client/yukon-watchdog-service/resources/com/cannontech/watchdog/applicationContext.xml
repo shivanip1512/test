@@ -26,4 +26,8 @@
          </property>
     </bean>
        <bean class="com.cannontech.watchdog.WatchdogService"/>
+       
+       <bean class="com.cannontech.watchdogs.impl.ServiceStatusWatchdogImpl"/>
+       <bean class="com.cannontech.watchdog.notification.WatchdogNotificationServiceImpl"/>
+       
 </beans>
