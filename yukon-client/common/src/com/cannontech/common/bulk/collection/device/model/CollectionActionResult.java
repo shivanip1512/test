@@ -23,6 +23,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.util.CollectionUtils;
 
+import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -63,22 +64,37 @@ public class CollectionActionResult {
     private boolean isCached = true;
     private YukonUserContext context;
     private Logger logger;
+    private DeviceMemoryCollectionProducer producer;
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
             DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
-            DeviceGroupCollectionHelper groupHelper, CollectionActionLogDetailService logService,
+            DeviceGroupCollectionHelper groupHelper, 
+            DeviceMemoryCollectionProducer producer, 
+            CollectionActionLogDetailService logService,
             YukonUserContext context) {
-        StoredDeviceGroup tempGroup = tempGroupService.createTempGroup();
-        editorDao.addDevices(tempGroup, allDevices);
-        DeviceCollection allDeviceCollection = groupHelper.buildDeviceCollection(tempGroup);
-        this.inputs = new CollectionActionInputs(allDeviceCollection, inputs);
+        if(context == null) {
+            isCached = false;
+        }
+        
+        if(action == CollectionAction.MASS_DELETE && isCached()) {
+            // deleted devices - in order for the devices to be visible the "in memory" collection
+            // is created
+            DeviceCollection allDeviceCollection = producer.createDeviceCollection(allDevices);
+            this.inputs = new CollectionActionInputs(allDeviceCollection, null);
+        } else {
+            StoredDeviceGroup tempGroup = tempGroupService.createTempGroup();
+            editorDao.addDevices(tempGroup, allDevices);
+            DeviceCollection allDeviceCollection = groupHelper.buildDeviceCollection(tempGroup);
+            this.inputs = new CollectionActionInputs(allDeviceCollection, inputs);
+        }
         this.setStartTime(new Instant());
         this.editorDao = editorDao;
         this.execution = execution;
         this.action = action;
         this.logService = logService;
         this.context = context;
+        this.producer = producer;
         counts = new CollectionActionCounts(this);
         action.getDetails().forEach(detail -> {
             StoredDeviceGroup group = tempGroupService.createTempGroup();
@@ -95,7 +111,7 @@ public class CollectionActionResult {
             startTime = new Instant();
         }
         
-        if(context != null) {
+        if(!isCached) {
            //result is cached
             logService.loadPointNames(this);
         }
@@ -104,8 +120,9 @@ public class CollectionActionResult {
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, DeviceGroupMemberEditorDao editorDao,
             TemporaryDeviceGroupService tempGroupService, DeviceGroupCollectionHelper groupHelper,
+            DeviceMemoryCollectionProducer producer, 
             CollectionActionLogDetailService logService, YukonUserContext context) {
-        this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper, logService, context);
+        this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper, producer, logService, context);
     }
 
     public boolean isCancelable() {
@@ -135,8 +152,25 @@ public class CollectionActionResult {
     public void addDevicesToGroup(CollectionActionDetail detail, List<? extends YukonPao> paos,
             List<CollectionActionLogDetail> log) {
         if (!CollectionUtils.isEmpty(paos)) {
-            editorDao.addDevices(details.get(detail).getGroup(), paos);
             appendToLogWithoutAddingToGroup(log);
+            // "in memory" collection is used for deleted devices
+            if(detail == CollectionActionDetail.SUCCESS && action == CollectionAction.MASS_DELETE) {
+                //SUCCESS for MASS_DELETE means that device no longer exists
+                if(details.get(detail).getGroup() != null) {
+                    details.put(detail, new CollectionActionDetailGroup(producer.createDeviceCollection(paos), null));
+                } else {
+                    // after creating a collection the collection can't be modified
+                    DeviceCollection collection = details.get(detail).getDevices();
+                    List<YukonPao> newList = new ArrayList<>(collection.getDeviceList());
+                    newList.addAll(paos);
+                    // each time the device is deleted, the new collection is created
+                    details.put(detail, new CollectionActionDetailGroup(producer.createDeviceCollection(newList), null));
+                    // the original collection is removed from cache
+                    producer.invalidate(collection);
+                }
+            } else {
+                editorDao.addDevices(details.get(detail).getGroup(), paos);
+            }
         }
     }
     
@@ -256,10 +290,6 @@ public class CollectionActionResult {
     
     public boolean isCached() {
         return isCached;
-    }
-
-    public void setCached(boolean isCached) {
-        this.isCached = isCached;
     }
 
     public YukonUserContext getContext() {

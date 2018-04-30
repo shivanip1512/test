@@ -1,8 +1,8 @@
 package com.cannontech.common.bulk.collection.device.dao.impl;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
@@ -70,7 +70,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     @Autowired private DeviceGroupMemberEditorDao editorDao;
     @Autowired private DeviceGroupCollectionHelper groupHelper;
     @Autowired private CollectionActionLogDetailService logService;
-    
+   
     private static final Logger log = YukonLogManager.getLogger(CollectionActionDao.class);
     
     @Override
@@ -266,7 +266,6 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                     result = buildDbResult(action, key);
                 }
                 result.setCacheKey(key);
-                result.setCached(false);
                 result.setStatus(rs.getEnum("Status", CommandRequestExecutionStatus.class));
                 result.setStartTime(rs.getInstant("StartTime"));
                 result.setStopTime(rs.getInstant("StopTime"));
@@ -321,7 +320,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             }
         });
         CollectionActionResult result = new CollectionActionResult(action, allDevices, loadInputs(key),
-            null, editorDao, tempGroupService, groupHelper, logService, null);
+            null, editorDao, tempGroupService, groupHelper, null, logService, null);
         //failure bucket
         result.addDevicesToGroup(FAILURE, failed, null);
         //success bucket
@@ -337,7 +336,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 type -> crerDao.getUnsupportedDeviceIdsByExecutionId(exec.getId(), type)));
         unsupported.values().forEach(values -> allDevices.addAll(values));
         CollectionActionResult result = new CollectionActionResult(action, Lists.newArrayList(allDevices),
-            loadInputs(key), exec, editorDao, tempGroupService, groupHelper, logService, null);
+            loadInputs(key), exec, editorDao, tempGroupService, groupHelper, null, logService, null);
         
         List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());
         List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());

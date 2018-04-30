@@ -43,6 +43,11 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
     private final static String keyBase = "yukon.common.device.bulk.bulkAction.collection.group";
     
     @Override
+    public void invalidate(DeviceCollection collection) {
+        cache.invalidate(collection.getCollectionParameters().get(getParameterName("key")));
+    }
+    
+    @Override
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.memory;
     }
@@ -127,7 +132,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             @Override
             public Map<String, String> getCollectionParameters() {
                 
-                Map<String, String> paramMap = new HashMap<String, String>();
+                Map<String, String> paramMap = new HashMap<>();
                 
                 paramMap.put("collectionType", getSupportedType().name());
                 paramMap.put(getParameterName("key"), key);
@@ -168,7 +173,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             @Override
             public Map<String, String> getCollectionParameters() {
                 
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 
                 params.put("collectionType", DeviceCollectionType.groups.name());
                 params.put(getParameterName("key"), key);
@@ -179,7 +184,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             @Override
             public List<SimpleDevice> getDeviceList() {
                 
-                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
+                List<SimpleDevice> deviceList = new ArrayList<>();
                 
                 Set<SimpleDevice> devices = deviceGroupService.getDevices(groups);
                 deviceList.addAll(devices);
@@ -195,7 +200,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
                 
                 Set<SimpleDevice> deviceSet = deviceGroupService.getDevices(groups, retrieveCount);
                 
-                List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>(deviceSet);
+                List<SimpleDevice> deviceList = new ArrayList<>(deviceSet);
                  
                 return deviceList.subList(start, Math.min(retrieveCount, deviceList.size()));
             }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -48,6 +49,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Autowired private CollectionActionLogDetailService logService;
     @Autowired private List<CollectionActionCancellationService> cancellationService;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private DeviceMemoryCollectionProducer deviceMemoryCollectionProducer;
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionServiceImpl.class);
     
@@ -62,7 +64,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         CommandRequestExecution execution =
             executionDao.createStartedExecution(commandRequestType, deviceRequestType, 0, context.getYukonUser());
         CollectionActionResult result = new CollectionActionResult(action, collection.getDeviceList(), inputs,
-            execution, editorDao, tempGroupService, groupHelper, logService, context);
+            execution, editorDao, tempGroupService, groupHelper, deviceMemoryCollectionProducer, logService, context);
         result.setExecution(execution);
         saveAndLogResult(result, context.getYukonUser());
         return result;
@@ -73,7 +75,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     public CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, YukonUserContext context) {
         CollectionActionResult result = new CollectionActionResult(action, collection.getDeviceList(), inputs,
-            editorDao, tempGroupService, groupHelper, logService, context);
+            editorDao, tempGroupService, groupHelper, deviceMemoryCollectionProducer, logService, context);
         saveAndLogResult(result, context.getYukonUser());
         return result;
     }

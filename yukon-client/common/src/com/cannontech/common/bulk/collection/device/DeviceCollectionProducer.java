@@ -26,4 +26,11 @@ public interface DeviceCollectionProducer extends DeviceCollectionFactory {
      */
     public DeviceCollection getCollectionFromBase(DeviceCollectionBase persistable);
 
+    /**
+     * Removes collection from cache
+     */
+    default void invalidate(DeviceCollection collection) {
+        
+    }
+
 }
