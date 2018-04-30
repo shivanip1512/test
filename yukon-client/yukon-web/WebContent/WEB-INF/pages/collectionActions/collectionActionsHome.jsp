@@ -30,6 +30,9 @@
                         <c:if test="${redirectUrl != null}">
                             <cti:param name="redirectUrl" value="${redirectUrl}" />
                         </c:if>
+                        <c:if test="${actionString != null}">
+                            <cti:param name="actionString" value="${actionString}"/>
+                        </c:if>
                     </cti:url>
                     <tags:deviceSelection action="${actionUrl}" groupDataJson="${groupDataJson}"
                         pickerType="devicePicker" eventAfterSubmit="true" />
@@ -68,9 +71,10 @@
 
     <cti:includeScript link="/resources/js/pages/yukon.collection.actions.js" />
     <cti:includeScript link="HIGH_STOCK"/>
-    <cti:includeScript link="/resources/js/pages/yukon.collection.actions.progress.report.js"/>
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.collection.actions.progress.report.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.device.configs.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.point.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.masschange.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.bulk.dataStreaming.js"/>
 </cti:standardPage>

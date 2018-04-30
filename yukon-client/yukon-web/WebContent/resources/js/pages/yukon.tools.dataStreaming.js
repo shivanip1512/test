@@ -144,39 +144,11 @@ yukon.tools.dataStreaming = (function () {
                 window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/read?' + $.param(params));            
             });
             
-            $(document).on('yukon:tools:dataStreaming:resend', function (ev) {
+            $(document).on('yukon:tools:dataStreaming:submitForm', function (ev) {
                 var container = $(ev.target),
-                deviceId = container.data('deviceId'),
-                params = {};
-                yukon.ui.getSortingPagingParameters(params);
-                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/resend?' + $.param(params));
-            });
-            
-            $(document).on('yukon:tools:dataStreaming:accept', function (ev) {
-                var container = $(ev.target),
-                deviceId = container.data('deviceId');
-                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/accept');
-            });
-            
-            $(document).on('yukon:tools:dataStreaming:remove', function (ev) {
-                var container = $(ev.target),
-                deviceId = container.data('deviceId');
-                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/remove');
-            });
-            
-            $(document).on('yukon:tools:dataStreaming:resendAll', function (ev) {
-                var form = $('#resendAll'),
-                url = form.attr('action'),
-                params = {};
-                yukon.ui.getSortingPagingParameters(params);
-                form.attr('action', url + "?" + $.param(params));
-                form.submit();
-            });
-            
-            $(document).on('yukon:tools:dataStreaming:acceptAll', function (ev) {
-                var form = $('#acceptAll'),
-                url = form.attr('action'),
-                params = {};
+                    form = container.closest('form'),
+                    url = form.attr('action'),
+                    params = {};
                 yukon.ui.getSortingPagingParameters(params);
                 form.attr('action', url + "?" + $.param(params));
                 form.submit();

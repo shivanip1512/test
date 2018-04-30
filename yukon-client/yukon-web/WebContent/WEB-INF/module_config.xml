@@ -325,27 +325,6 @@
             <page name="bulk.archivedValueExporterScheduleSetup" type="BASIC">
                 <link>/tools/data-exporterscheduleReport</link>
             </page>
-            <page name="bulk.dataStreaming.configure" type="BASIC">
-                <link>/bulk/dataStreaming/configure?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                <pages>
-                    <page name="bulk.dataStreaming.verification" type="BASIC" />
-                </pages>
-            </page>
-            <page name="bulk.dataStreaming.remove" type="BASIC">
-                <link>/bulk/dataStreaming/remove?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                <pages>
-                    <page name="bulk.dataStreaming.verification" type="BASIC" />
-                </pages>
-            </page>
-            <page name="bulk.dataStreaming.verification" type="BASIC">
-                <link>/bulk/dataStreaming/verification?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                <pages>
-                    <page name="bulk.dataStreaming.results" type="BASIC" />
-                </pages>
-            </page>
-            <page name="bulk.dataStreaming.results" type="BASIC">
-                <link>/bulk/dataStreaming/results?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-            </page>
         </pages>
       </page>
       <page name="schedules.all" type="BASIC">

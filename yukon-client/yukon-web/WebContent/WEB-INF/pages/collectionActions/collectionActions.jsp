@@ -14,6 +14,13 @@
             <cti:mapParam value="${deviceCollection.collectionParameters}"/>
         </cti:url>
         <input type="hidden" id="refreshLink" value="${refreshLink}"/>
+        <c:if test="${!empty redirectUrl}">
+            <cti:url value="${redirectUrl}" var="redirectLink">
+                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+            </cti:url>
+            <input type="hidden" id="redirectUrl" value="${redirectLink}"/>
+            <input type="hidden" id="actionString" value="${actionString}"/>
+        </c:if>
     
         <%-- THE GRID --%>
         <cti:dataGrid cols="3">
@@ -72,12 +79,12 @@
                                     <%-- CONFIGURE DATA STREAMING --%>
                                     <tags:collectionActionTr linkKey=".configureDataStreamingLabel" 
                                         descriptionKey=".configureDataStreamingDescription" icon="icon-app icon-app-32-datastreaming-configure" 
-                                        action="/bulk/dataStreaming/configure"  deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/dataStreaming/configureInputs"  deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
                                         
                                     <%-- REMOVE DATA STREAMING --%>
                                     <tags:collectionActionTr linkKey=".removeDataStreamingLabel" 
                                         descriptionKey=".removeDataStreamingDescription" icon="icon-app icon-app-32-datastreaming-remove"
-                                        action="/bulk/dataStreaming/remove" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/dataStreaming/removeInputs" deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
                                 </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
                             

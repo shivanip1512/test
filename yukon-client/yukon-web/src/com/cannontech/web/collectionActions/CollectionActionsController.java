@@ -44,6 +44,8 @@ public class CollectionActionsController {
         String redirectUrl = ServletRequestUtils.getStringParameter(request, "redirectUrl", null);
         if (!StringUtils.isBlank(redirectUrl)) {
             model.addAttribute("redirectUrl", redirectUrl);
+            String action = ServletRequestUtils.getStringParameter(request, "action", null);
+            model.addAttribute("actionString", action);
         }
         
         //check for device collection
@@ -62,15 +64,14 @@ public class CollectionActionsController {
             @RequestParam(defaultValue = "false") boolean isFileUpload, FlashScope flashScope)
             throws ServletRequestBindingException {
         String redirectUrl = ServletRequestUtils.getStringParameter(request, "redirectUrl", null);
+        String action = ServletRequestUtils.getStringParameter(request, "actionString", null);
         try {
             String view = collectionActions(model, request, isFileUpload, flashScope);
             if (!StringUtils.isBlank(redirectUrl)) {
-                DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
-                redirectAtts.addAllAttributes(collection.getCollectionParameters());
-                return "redirect:" + redirectUrl;
-            } else {
-                return view;
-            }
+                model.addAttribute("redirectUrl", redirectUrl);
+                model.addAttribute("actionString", action);
+            } 
+            return view;
         } catch (DeviceCollectionCreationException e) {
             model.addAttribute("errorMsg", e.getMessage());
             return "collectionActionsHome.jsp";

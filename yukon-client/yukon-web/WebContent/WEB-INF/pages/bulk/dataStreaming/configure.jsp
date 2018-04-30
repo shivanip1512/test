@@ -2,10 +2,9 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<cti:standardPage module="tools" page="bulk.dataStreaming.configure">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.dataStreaming.configure,yukon.web.modules.tools.bulk.dataStreaming">
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.configure" deviceCollection="${deviceCollection}">
         <div class="page-action-area">
@@ -65,12 +64,12 @@
                 </c:choose>
                                     
                 <div class="page-action-area">
-                    <cti:button nameKey="next" name="nextButton" disabled="${dataStreamingNotSupported}" classes="primary action js-next-button" busy="true"/>
+                    <cti:button nameKey="send" disabled="${dataStreamingNotSupported}" classes="primary action js-send-button" busy="true"/>
                 </div>
                         
             </form:form>
         </div>
+        <div id="verificationDialog" data-dialog data-title="<cti:msg2 key=".verification.header"/>" class="dn"></div>
     </tags:bulkActionContainer>
-    <cti:includeScript link="/resources/js/pages/yukon.bulk.dataStreaming.js"/>
     
-</cti:standardPage>
+</cti:msgScope>

@@ -176,9 +176,7 @@ yukon.collection.actions.progress.report = (function () {
         
         /** Initialize this module. */
         init : function () {
-            
-            //if (_initialized) return;
-            
+                        
             _key = $('#key').val();
             var resultsJson = $('#resultsjson');
             var resultsData;

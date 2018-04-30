@@ -23,7 +23,11 @@ yukon.collection.actions = (function () {
                     $('#progressReportDiv').html(data);
                     $('#collectionActionsAccordion').accordion("option", "active", 3);
                     yukon.collection.actions.progress.report.init();
-                }
+                },
+                error: function (xhr, status, error, $form) {
+                    yukon.ui.unbusy(btn);
+                    $('#actionInputsDiv').html(xhr.responseText);
+                },
             });
         },
         

@@ -220,8 +220,6 @@
     <!-- ******************************************************************************************************************** -->
         
     <!-- configure.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.pageName">Configure Data Streaming</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.contextualPageName">Configure Data Streaming</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.header">Configure Data Streaming:</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.noteText">Select the data streaming configuration you wish to start using for the selected devices or create a new configuration.</entry>
@@ -251,8 +249,6 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- remove.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.remove.pageName">Remove Data Streaming</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.remove.contextualPageName">Remove Data Streaming</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.remove.header">Remove Data Streaming:</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.remove.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.remove.noteText">The selected devices will have their data streaming configuration removed.</entry>
@@ -260,9 +256,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.remove.message">Are you sure you want to remove data streaming from these devices?  After clicking Remove, network loading will be reduced.</entry>
     
     <!-- verification.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.pageName">Data Streaming Verification</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.contextualPageName">Data Streaming Verification</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.header">Data Streaming Verification:</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.header">Data Streaming Verification</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteLabel"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.noteText"></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.message">Are you sure you want to make these changes?  After clicking Send, messages will be sent, changing the network loading.</entry>
@@ -303,22 +297,6 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_SEQUENCE_NUMBER">There was an error in the messaging format (null sequence number).</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.OTHER_ERROR">Device "{0}" had an unknown error in Network Manager.</entry>  
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.failed">{0} devices failed Network Manager verification and will not be configured. Check Webserver logs for details.</entry>
-       
-    <!-- results.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.pageName">Data Streaming Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.contextualPageName">Data Streaming Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.header">Data Streaming Results:</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.noteLabel">Note: </entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.noteText"><![CDATA[
-        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
-    ]]></entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.progressLabel">Progress</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.successLabel">Success</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.failedLabel">Failed</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.unsupportedLabel">Unsupported</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.cancelledLabel">Canceled</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.view">View Results Detail</entry>
     
     <!-- SEND COMMAND -->
     <!-- ******************************************************************************************************************** -->

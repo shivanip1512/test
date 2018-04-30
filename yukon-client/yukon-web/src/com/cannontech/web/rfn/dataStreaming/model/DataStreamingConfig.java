@@ -94,6 +94,15 @@ public class DataStreamingConfig implements Cloneable {
         return commaDelimitedAttributes;
     }
     
+    /**
+     * Returns comma delimited list of attributes that are turned on
+     */
+    public String getCommaDelimitedOnAttributes() {
+        List<String> attList = new ArrayList<>();
+        getOnAttributes().forEach(att -> attList.add(accessor.getMessage(att.getAttribute())));
+        return String.join(", ",  attList);
+    }
+    
     public String getCommaDelimitedAttributesOnOff() {
         if (attributes.isEmpty()) {
             commaDelimitedAttributesOnOff = "None";

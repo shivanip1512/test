@@ -62,12 +62,8 @@ yukon.bulk.dataStreaming = (function () {
                 validConfig = true;
             }
         }
-
-        if (validConfig) {
-            $('.js-next-button').prop('disabled', false);
-        } else {
-            $('.js-next-button').prop('disabled', true);
-        }
+        
+        $('.js-send-button').prop('disabled', !validConfig);
     };
 
     'use strict';
@@ -107,8 +103,38 @@ yukon.bulk.dataStreaming = (function () {
                     checkForValidConfig();
                 });
               
-                $(document).on('click', '.js-next-button', function () {
-                    $('#configureForm').submit();
+                $(document).on('click', '.js-send-button', function () {
+                    var btn = $(this),
+                        popup = $('#verificationDialog');
+                    $('#configureForm').ajaxSubmit({
+                        success: function(data, status, xhr, $form) {
+                            popup.html(data);
+                            yukon.ui.unbusy(btn);
+                            var isSendDisabled = $('#verificationPassed').val() == 'false';
+                            popup.dialog({
+                                title: popup.data('title'),
+                                modal: true,
+                                width: 900,
+                                buttons: yukon.ui.buttons({ okText: yg.text.send, event: 'yukon.bulk.dataStreaming.send', okDisabled : isSendDisabled }),
+                            });
+                        }
+                    });
+                });
+                
+                $(document).on('yukon.bulk.dataStreaming.send', function (ev) {
+                    var dialog = $(ev.target);
+                    $('#verificationForm').ajaxSubmit({
+                        success: function(data, status, xhr, $form) {
+                            dialog.dialog('destroy');
+                            $('#progressReportDiv').html(data);
+                            $('#collectionActionsAccordion').accordion("option", "active", 3);
+                            yukon.collection.actions.progress.report.init();
+                        },
+                        error: function (xhr, status, error, $form) {
+                            dialog.html(xhr.responseText);
+                        },
+                    
+                    });
                 });
                 
                 //  display table showing full data streaming configuration

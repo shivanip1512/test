@@ -17,7 +17,7 @@
         <cti:url var="collectionActionsUrl" value="/collectionActions/home"/>
         <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
         <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
-            <cti:url var="configureOthersUrl" value="/collectionActions/home?redirectUrl=/bulk/dataStreaming/configure"/>
+            <cti:url var="configureOthersUrl" value="/collectionActions/home?redirectUrl=/bulk/dataStreaming/configureInputs&action=Configure Data Streaming"/>
             <cm:dropdownOption key=".configureOtherDevices" href="${configureOthersUrl}" icon="icon-cog-add"/>
         </cti:checkRolesAndProperties>
     </div>

@@ -46,6 +46,24 @@ yukon.ui.bulk.device.selection = (function () {
             $('#collectionActionsAccordion').accordion("option", "active", 1);
             var refreshUrl = $('#refreshLink').val();
             window.history.pushState({path:refreshUrl}, '', refreshUrl);
+            var redirectUrl = $('#redirectUrl').val();
+            if (redirectUrl) {
+                var action = $('#actionString').val();
+                $.ajax({ 
+                    url: redirectUrl
+                }).done(function (data) {
+                    $('#actionInputsDiv').html(data);
+                    yukon.ui.initContent(actionInputsDiv);
+                    if (action == 'Device Configs') {
+                        yukon.bulk.device.configs.init();
+                    } else if (action == 'Mass Change') {
+                        yukon.bulk.masschange.init();
+                    }
+                    $('.js-action-separator').removeClass('dn');
+                    $('.js-action').html(action);
+                    $('#collectionActionsAccordion').accordion("option", "active", 2);
+                });
+            }
         },
 
         updateFileNote : function (id) {

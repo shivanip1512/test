@@ -62,11 +62,12 @@
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendConfirmation.message">This will re-send the Yukon configuration for device {0}.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.removeConfirmation.title">Remove Data Streaming Configuration</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.removeConfirmation.message">This will remove the data streaming configuration for device {0}</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.removeSuccess">Data Streaming configuration has been removed for device {0}.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllConfirmation.title">Accept All Device Configurations</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllConfirmation.message">This will change the Yukon Configuration for this page of devices to match what each device has reported.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.title">Re-send All Yukon Configurations</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.message">This will re-send the Yukon Configuration to this page of devices.</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptSuccess">The Yukon Configuration has been updated.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptSuccess">The Yukon Configuration has been updated for device {0}.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllSuccess">Current page of Yukon Configurations have been updated.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllResend">The Yukon Configuration has been updated for {0} devices, for {1} of these devices the Yukon Configuration was also re-sent.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptedWithError">This operation may have increased gateway data streaming load beyond the recommended amount.</entry>

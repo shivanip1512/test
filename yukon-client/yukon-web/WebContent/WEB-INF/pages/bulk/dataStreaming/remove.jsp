@@ -1,14 +1,14 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="tools" page="bulk.dataStreaming.remove">
+<cti:msgScope paths="yukon.web.modules.tools.bulk.dataStreaming.remove">
+
+    <cti:flashScopeMessages/>
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.remove" deviceCollection="${deviceCollection}">
     
-        <form id="unassignConfigForm" method="post" action="<cti:url value="/bulk/dataStreaming/remove" />">
+        <form method="post" action="<cti:url value="/bulk/dataStreaming/remove" />">
             <cti:csrfToken/>
             
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
@@ -18,10 +18,10 @@
             </b></div>
                 
             <div class="page-action-area">
-                <cti:button nameKey="remove" type="submit" name="removeButton" value="${unassign}" classes="primary action"/>
+                <cti:button nameKey="remove" classes="primary action js-action-submit"/>
             </div>
         </form>
             
     </tags:bulkActionContainer>
     
-</cti:standardPage>
+</cti:msgScope>

@@ -71,6 +71,7 @@ var yg = {
         no: '<cti:msg2 key="yukon.common.no"/>',
         ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',
+        send: '<cti:msg2 key="yukon.web.components.button.send.label"/>',
         successful: '<cti:msg2 key="yukon.common.successful"/>',
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
         yes: '<cti:msg2 key="yukon.common.yes"/>',

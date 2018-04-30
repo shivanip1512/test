@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -51,8 +54,21 @@ public class DataStreamingController {
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
 
-    @RequestMapping("configure")
+    @RequestMapping(value="configure", method=RequestMethod.GET)
     public String configure(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        setupModel(deviceCollection, model, userContext);
+        model.addAttribute("action", CollectionAction.CONFIGURE_DATA_STREAMING);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/dataStreaming/configure.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value="configureInputs", method=RequestMethod.GET)
+    public String configureInputs(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        setupModel(deviceCollection, model, userContext);
+        return "dataStreaming/configure.jsp";
+    }
+    
+    private void setupModel(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("deviceCollection", deviceCollection);
 
@@ -99,11 +115,11 @@ public class DataStreamingController {
         model.addAttribute("configuration", newConfig);
         model.addAttribute("intervals", intervals);
         dataStreamingAttributeHelper.buildMatrixModel(model);
-        return "dataStreaming/configure.jsp";
     }
 
     @RequestMapping(value="configure", method=RequestMethod.POST)
-    public String configureSubmit(@ModelAttribute("configuration") DataStreamingConfig configuration, ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+    public String configureSubmit(@ModelAttribute("configuration") DataStreamingConfig configuration, ModelMap model, 
+                                  HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
 
@@ -124,36 +140,43 @@ public class DataStreamingController {
         verifyInfo.getGatewayLoadingInfo().forEach(gateway -> gateway.setAccessor(accessor));
 
         model.addAttribute("verificationInfo", verifyInfo);
-
+        
         return "dataStreaming/verification.jsp";
     }
 
-    @RequestMapping("remove")
-    public String remove(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+    @RequestMapping(value="remove", method=RequestMethod.GET)
+    public String remove(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
-
+        model.addAttribute("action", CollectionAction.REMOVE_DATA_STREAMING);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/dataStreaming/remove.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
+    
+    @RequestMapping(value="removeInputs", method=RequestMethod.GET)
+    public String removeInputs(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+        model.addAttribute("deviceCollection", deviceCollection);
         return "dataStreaming/remove.jsp";
     }
 
     @RequestMapping(value="remove", method=RequestMethod.POST)
-    public String removeSubmit(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-            FlashScope flash) throws ServletException {
+    public String removeSubmit(ModelMap model, HttpServletRequest request, HttpServletResponse resp,
+                               YukonUserContext userContext, FlashScope flash) throws ServletException {
 
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         try {
             int cacheKey = dataStreamingService.unassignDataStreamingConfig(deviceCollection,  userContext);
-            return "redirect:/collectionActions/progressReport/view?key=" + cacheKey;
+            return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         } catch (DataStreamingConfigException e) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
             flash.setError(e.getMessageSourceResolvable());
-            model.addAttribute("deviceCollection", deviceCollection);
             return "dataStreaming/remove.jsp";
         }
     }
 
     @RequestMapping(value="verification", method=RequestMethod.POST)
     public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, 
-            ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+            ModelMap model, HttpServletRequest request, HttpServletResponse resp, YukonUserContext userContext,
             FlashScope flash) throws ServletException {
 
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -168,11 +191,11 @@ public class DataStreamingController {
             List<Integer> failedVerificationDevices = verificationInfo.getFailedVerificationDevices();
             int cacheKey = dataStreamingService.assignDataStreamingConfig(config, deviceCollection,
                 failedVerificationDevices, userContext);
-            return "redirect:/collectionActions/progressReport/view?key=" + cacheKey;
+            return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         } catch (DataStreamingConfigException e) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
             flash.setError(e.getMessageSourceResolvable());
             model.addAttribute("configuration", config);
-            model.addAttribute("deviceCollection", deviceCollection);
             return "dataStreaming/verification.jsp";
         }
     }

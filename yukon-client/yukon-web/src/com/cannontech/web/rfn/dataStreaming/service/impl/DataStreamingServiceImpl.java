@@ -827,7 +827,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             }
         }
 
-        CollectionActionResult result = sendConfiguration(CollectionAction.REMOVE_DATA_STREAMING,
+        CollectionActionResult result = sendConfiguration(CollectionAction.REMOVE_DATA_STREAMING, null,
             new DeviceSummary(deviceCollection, deviceIds, unsupportedDeviceIds), requestSeqNumber,
             context);
         if (!devicesIdsWithoutBehavior.isEmpty()) {
@@ -927,8 +927,10 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(configDeviceIds);
             saveBehaviorReports(deviceIdToBehaviorReport);
         });
-
-        return sendConfiguration(CollectionAction.CONFIGURE_DATA_STREAMING,
+        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+        userInputs.put("Attributes",  config.getCommaDelimitedOnAttributes());
+        userInputs.put("Interval", new Integer(config.getSelectedInterval()).toString());
+        return sendConfiguration(CollectionAction.CONFIGURE_DATA_STREAMING, userInputs,
             new DeviceSummary(deviceCollection, devicesSupportingNoAttributes), requestSeqNumber,
             context).getCacheKey();
     }
@@ -1084,9 +1086,9 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     }
 
 
-    private CollectionActionResult sendConfiguration(CollectionAction action, DeviceSummary summary,
+    private CollectionActionResult sendConfiguration(CollectionAction action, LinkedHashMap<String, String> userInputs, DeviceSummary summary,
             int requestSeqNumber, YukonUserContext context) {
-        CollectionActionResult result = collectionActionService.createResult(action, null, summary.deviceCollection,
+        CollectionActionResult result = collectionActionService.createResult(action, userInputs, summary.deviceCollection,
             CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, context);
         return sendConfiguration(result, summary, requestSeqNumber);
     }

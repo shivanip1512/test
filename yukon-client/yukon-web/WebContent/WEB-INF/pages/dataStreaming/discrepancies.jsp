@@ -116,18 +116,30 @@
                                                         data-device-id="${discrepancy.deviceId}" classes="js-read-configuration"/>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue"
-                                                        data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:resend" />
+                                                    <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend" />
+                                                    <form:form action="${resendUrl}" method="POST">
+                                                        <cti:csrfToken />
+                                                        <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue"
+                                                            data-ok-event="yukon:tools:dataStreaming:submitForm" />
+                                                    </form:form>
                                                 </c:otherwise>
                                             </c:choose>
                                             <d:confirm on="#resendConfiguration_${discrepancy.deviceId}" nameKey="resendConfirmation" argument="${discrepancy.paoName}" />
-                                            <cm:dropdownOption id="acceptConfiguration_${discrepancy.deviceId}" key=".accept" icon="icon-accept"
-                                                data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:accept" />
-                                            <d:confirm on="#acceptConfiguration_${discrepancy.deviceId}" nameKey="acceptConfirmation" argument="${discrepancy.paoName}" />
+                                            <cti:url var="acceptUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/accept" />
+                                            <form:form action="${acceptUrl}" method="POST">
+                                                <cti:csrfToken />
+                                                <cm:dropdownOption id="acceptConfiguration_${discrepancy.deviceId}" key=".accept" icon="icon-accept"
+                                                    data-ok-event="yukon:tools:dataStreaming:submitForm" />
+                                                <d:confirm on="#acceptConfiguration_${discrepancy.deviceId}" nameKey="acceptConfirmation" argument="${discrepancy.paoName}" />
+                                            </form:form>
                                             <c:if test="${discrepancy.displayRemove()}">
-                                                <cm:dropdownOption id="removeConfiguration_${discrepancy.deviceId}" key=".remove" icon="icon-cross"
-                                                    data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:remove" />
-                                                <d:confirm on="#removeConfiguration_${discrepancy.deviceId}" nameKey="removeConfirmation" argument="${discrepancy.paoName}" />
+                                                <cti:url var="removeUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/remove" />
+                                                <form:form action="${removeUrl}" method="POST">
+                                                    <cti:csrfToken />
+                                                    <cm:dropdownOption id="removeConfiguration_${discrepancy.deviceId}" key=".remove" icon="icon-cross"
+                                                        data-ok-event="yukon:tools:dataStreaming:submitForm" />
+                                                    <d:confirm on="#removeConfiguration_${discrepancy.deviceId}" nameKey="removeConfirmation" argument="${discrepancy.paoName}" />
+                                                </form:form>
                                             </c:if>
                                         </cm:dropdown>
                                     </cti:checkRolesAndProperties>
@@ -155,20 +167,20 @@
             <c:set var="disableButtons" value="${discrepancies.resultList.size() == 0}" />
 
             <cti:url var="resendAllUrl" value="/tools/dataStreaming/discrepancies/resendAll" />
-            <form:form id="resendAll" action="${resendAllUrl}" method="POST">
+            <form:form action="${resendAllUrl}" method="POST">
                 <cti:csrfToken />
                 <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}" />
                 <cti:button id="resendAllConfigurations" nameKey="resendAll"
-                    disabled="${disableButtons}" data-ok-event="yukon:tools:dataStreaming:resendAll" />
+                    disabled="${disableButtons}" data-ok-event="yukon:tools:dataStreaming:submitForm" />
                 <d:confirm on="#resendAllConfigurations" nameKey="resendAllConfirmation" />
             </form:form>
 
             <cti:url var="acceptAllUrl" value="/tools/dataStreaming/discrepancies/acceptAll" />
-            <form:form id="acceptAll" action="${acceptAllUrl}" method="POST">
+            <form:form action="${acceptAllUrl}" method="POST">
                 <cti:csrfToken />
                 <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}" />
                 <cti:button id="acceptAllConfigurations" nameKey="acceptAll"
-                    disabled="${disableButtons}" data-ok-event="yukon:tools:dataStreaming:acceptAll" />
+                    disabled="${disableButtons}" data-ok-event="yukon:tools:dataStreaming:submitForm" />
                 <d:confirm on="#acceptAllConfigurations" nameKey="acceptAllConfirmation" />
             </form:form>
 
