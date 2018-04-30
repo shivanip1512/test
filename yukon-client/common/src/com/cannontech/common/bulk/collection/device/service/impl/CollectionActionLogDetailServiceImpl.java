@@ -41,6 +41,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
@@ -122,9 +123,13 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 cache.getIfPresent(result.getCacheKey()).add(detail);
                 List<String> fields = new ArrayList<>();
 
-                if (detail.getDevice() != null
-                    && dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()) != null) {
-                    fields.add(dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()).getPaoName());
+                if (detail.getDevice() != null) {
+                    LiteYukonPAObject pao = dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId());
+                    if (pao != null) {
+                        fields.add(pao.getPaoName());
+                    } else {
+                        fields.add("");
+                    }
                 } else {
                     fields.add("");
                 }
