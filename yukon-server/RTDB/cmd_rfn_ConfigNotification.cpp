@@ -109,13 +109,11 @@ std::string RfnConfigNotificationCommand::decodeTlvs(const std::vector<TLV> tlvs
         }
     }
 
-    for( auto & s : results )
-    {
-        //  indent the results
-        boost::replace_all(s, "\n", "\n    ");
-    }
-
-    return boost::join(results, "\n");
+    return boost::join(
+        results 
+            | boost::adaptors::transformed([](std::string s) {
+                    return boost::replace_all_copy(s, "\n", "\n    "); }), 
+        "\n");
 }
 
 
