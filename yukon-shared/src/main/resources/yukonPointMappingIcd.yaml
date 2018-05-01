@@ -1,43 +1,45 @@
 ﻿Meter models:
-    Centron:
-        - &c1sx Centron C1SX
-        - &c2sx Centron C2SX
+    Itron Centron:
+        - &c1sx ITRN C1SX
+        - &c2sx ITRN C2SX
     Landis and Gyr:
-        - &focus_kWh Landis and Gyr Focus kWh
-        - &focus_ax Landis and Gyr Focus AX
-        - &focus_rx Landis and Gyr Focus RX
-        - &axd-500 Landis and Gyr FocusAXD-500  
-        - &axt-500 Landis and Gyr FocusAXT-500  
-        - &axr-500 Landis and Gyr FocusAXR-500  
-        - &axd-sd-500 Landis and Gyr FocusAXD-SD-500  
-        - &axt-sd-500 Landis and Gyr FocusAXT-SD-500  
-        - &axr-sd-500 Landis and Gyr FocusAXR-SD-500  
-        - &rxd-500 Landis and Gyr FocusRXD-500
-        - &rxt-500 Landis and Gyr FocusRXT-500
-        - &rxr-500 Landis and Gyr FocusRXR-500
-        - &rxd-sd-500 Landis and Gyr FocusRXD-SD-500
-        - &rxt-sd-500 Landis and Gyr FocusRXT-SD-500
-        - &rxr-sd-500 Landis and Gyr FocusRXR-SD-500
-        - &s4e_ad Landis and Gyr S4-AD
-        - &s4e_at Landis and Gyr S4-AT
-        - &s4e_ar Landis and Gyr S4-AR
-        - &s4e_rd Landis and Gyr S4-RD
-        - &s4e_rt Landis and Gyr S4-RT
-        - &s4e_rr Landis and Gyr S4-RR
-        - &s4x Landis and Gyr S4x E650
+        # not used in tables
+        #- &focus_kWh LGYR Focus kWh 
+        #- &focus_ax LGYR Focus AX
+        #- &focus_rx LGYR Focus RX
+        - &axd-500 LGYR FocusAXD-500
+        - &axt-500 LGYR FocusAXT-500
+        - &axr-500 LGYR FocusAXR-500
+        - &axd-sd-500 LGYR FocusAXD-SD-500
+        - &axt-sd-500 LGYR FocusAXT-SD-500
+        - &axr-sd-500 LGYR FocusAXR-SD-500
+        - &rxd-500 LGYR FocusRXD-500
+        - &rxt-500 LGYR FocusRXT-500
+        - &rxr-500 LGYR FocusRXR-500
+        - &rxd-sd-500 LGYR FocusRXD-SD-500
+        - &rxt-sd-500 LGYR FocusRXT-SD-500
+        - &rxr-sd-500 LGYR FocusRXR-SD-500
+        - &s4e_ad LGYR S4-AD
+        - &s4e_at LGYR S4-AT
+        - &s4e_ar LGYR S4-AR
+        - &s4e_rd LGYR S4-RD
+        - &s4e_rt LGYR S4-RT
+        - &s4e_rr LGYR S4-RR
+        - &s4x LGYR E650
     Elster:
-        - &a3d Elster A3D
-        - &a3t Elster A3T
-        - &a3k Elster A3K
-        - &a3r Elster A3R
-    ELO:
-        - &213t ELO 213T
-    Itron:
-        - &sl0 Itron SENTINEL-L0
-        - &sl1 Itron SENTINEL-L1
-        - &sl2 Itron SENTINEL-L2
-        - &sl3 Itron SENTINEL-L3
-        - &sl4 Itron SENTINEL-L4
+        - &a3d EE A3D
+        - &a3t EE A3T
+        - &a3k EE A3K
+        - &a3r EE A3R
+    # not used in tables
+    #ELO:
+        #- &213t ELO 213T
+    Itron Sentinel:
+        - &sl0 SCH Sentinel-L0
+        - &sl1 SCH Sentinel-L1
+        - &sl2 SCH Sentinel-L2
+        - &sl3 SCH Sentinel-L3
+        - &sl4 SCH Sentinel-L4
 
 Meter combinations:
     - &DTKR [ *a3d, *a3t, *a3k, *a3r ]
