@@ -12,6 +12,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ui.ModelMap;
 
+import com.cannontech.common.config.dao.RfnPointMappingDao;
+
 public class PointMappingIcdControllerTest {
 
     @Test
@@ -20,6 +22,16 @@ public class PointMappingIcdControllerTest {
         PointMappingIcdController controller = new PointMappingIcdController();
 
         ReflectionTestUtils.setField(controller, "inputFile", new ClassPathResource("yukonPointMappingIcd.yaml"));
+        ReflectionTestUtils.setField(controller, "rfnPointMappingDao", new RfnPointMappingDao() {
+            @Override
+            public InputStream getPointMappingFile() {
+                try {
+                    return new ClassPathResource("rfnPointMapping.xml").getInputStream();
+                } catch (IOException e) {
+                    return null;
+                }
+            }
+        });
         
         ModelMap model = new ModelMap();
         controller.view(model);
