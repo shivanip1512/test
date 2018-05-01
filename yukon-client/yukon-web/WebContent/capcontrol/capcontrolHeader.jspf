@@ -44,13 +44,13 @@
 <!-- Popup for menus -->
 <div id="menuPopup" class="dn menuPopup"></div>
 
-<!-- Page Dropdown Actions -->
-<div id="page-actions" class="dn">
-
 <!-- Needed for date tags to work in popups (create schedule)-->
 <div class="dn">
      <dt:date name="date"/>
 </div>
+
+<!-- Page Dropdown Actions -->
+<div id="page-actions" class="dn">
 
     <c:if test="${empty mode || mode == 'VIEW'}">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
