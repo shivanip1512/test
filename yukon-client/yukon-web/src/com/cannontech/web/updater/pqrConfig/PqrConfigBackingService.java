@@ -19,7 +19,7 @@ public class PqrConfigBackingService implements UpdateBackingService {
         UNSUPPORTED_COUNT(result -> result.getCounts().getUnsupported()),
         FAILED_COUNT(result -> result.getCounts().getFailed()),
         NEW_OPERATION_FOR_SUCCESS(result -> result.hasSuccessAndIsComplete() ? "" : "dn"),
-        NEW_OPERATION_FOR_UNSUPPORTED(result -> result.hasSuccessAndIsComplete() ? "" : "dn"),
+        NEW_OPERATION_FOR_UNSUPPORTED(result -> result.hasUnsupportedAndIsComplete() ? "" : "dn"),
         NEW_OPERATION_FOR_FAILED(result -> result.hasFailedAndIsComplete() ? "" : "dn"),
         ;
         
