@@ -9,7 +9,7 @@
 
 <cti:standardPage module="tools" page="collectionActions.recentResults">
 
-    <c:set var="urlPath" value="/bulk/filter"/>
+    <c:set var="urlPath" value="/collectionActions/filter"/>
     <cti:url var="detailUrl" value="${urlPath}"/>
     <hr>
     <div><i:inline key=".filterBy"/></div>
