@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -40,8 +39,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
 
 public class RouteLocationServiceImpl implements RouteLocationService, CollectionActionCancellationService {
 
@@ -51,6 +52,7 @@ public class RouteLocationServiceImpl implements RouteLocationService, Collectio
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private CollectionActionService collectionActionService;
+    @Autowired private ConnPool connPool;
     
     private final Logger log = YukonLogManager.getLogger(RouteLocationServiceImpl.class);
     
@@ -75,6 +77,13 @@ public class RouteLocationServiceImpl implements RouteLocationService, Collectio
             collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
             return result.getCacheKey();
         }
+        
+        if(!connPool.getDefPorterConn().isValid()) {
+            result.setExecutionExceptionText("No porter connection.");
+            collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
+            return result.getCacheKey();
+        }
+        ArrayList<SimpleDevice> allDevices = Lists.newArrayList(supportedDevices);
         
         for (SimpleDevice device : supportedDevices) {
 
@@ -131,16 +140,15 @@ public class RouteLocationServiceImpl implements RouteLocationService, Collectio
                     complete(device);
                 }
                 
-                private void complete(SimpleDevice device) {
-                    if ((result.containsDevice(CollectionActionDetail.SUCCESS, device)
-                        || result.containsDevice(CollectionActionDetail.FAILURE, device)) && !result.isComplete()) {
+                private synchronized void complete(SimpleDevice device) {
+                    allDevices.remove(device);
+                    if (allDevices.isEmpty() && !result.isComplete()) {
                         collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
-                    }
-
-                    try {
-                        alertCallback.handle(result);
-                    } catch (Exception e) {
-                        log.error(e);
+                        try {
+                            alertCallback.handle(result);
+                        } catch (Exception e) {
+                            log.error(e);
+                        }
                     }
                 }
             };
