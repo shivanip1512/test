@@ -340,6 +340,12 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         
         List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());
         List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
+        
+        if (action == CollectionAction.LOCATE_ROUTE) {
+            // If device failed and succeeded, do not show device as failed.
+            failed.removeAll(succeeded);
+        }
+        
         //failure bucket
         result.addDevicesToGroup(FAILURE, failed, null);
         //unsupported buckets
