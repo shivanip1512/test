@@ -19,7 +19,7 @@
             <cti:dataUpdaterValue type="PQR_CONFIG" identifier="${resultId}/SUCCESS_COUNT" styleClass="success fwb"/>
             <cti:classUpdater type="PQR_CONFIG" identifier="${resultId}/NEW_OPERATION_FOR_SUCCESS" initialClassName="dn">
                 <cti:url var="successNewAction" value="${newAction}">
-                    <cti:param name="type" value="SUCCESSFUL"/>
+                    <cti:param name="action" value="SUCCESSFUL"/>
                     <cti:param name="resultId" value="${resultId}"/>
                 </cti:url>
                 <a href="${successNewAction}"><i:inline key=".newAction"/></a>
@@ -32,7 +32,7 @@
             <cti:dataUpdaterValue type="PQR_CONFIG" identifier="${resultId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>
             <cti:classUpdater type="PQR_CONFIG" identifier="${resultId}/NEW_OPERATION_FOR_UNSUPPORTED" initialClassName="dn">
                 <cti:url var="unsupportedNewAction" value="${newAction}">
-                    <cti:param name="type" value="UNSUPPORTED"/>
+                    <cti:param name="action" value="UNSUPPORTED"/>
                     <cti:param name="resultId" value="${resultId}"/>
                 </cti:url>
                 <a href="${unsupportedNewAction}"><i:inline key=".newAction"/></a>
@@ -45,7 +45,7 @@
             <cti:dataUpdaterValue type="PQR_CONFIG" identifier="${resultId}/FAILED_COUNT" styleClass="error fwb"/>
             <cti:classUpdater type="PQR_CONFIG" identifier="${resultId}/NEW_OPERATION_FOR_FAILED" initialClassName="dn">
                 <cti:url var="failedNewAction" value="${newAction}">
-                    <cti:param name="type" value="FAILED"/>
+                    <cti:param name="action" value="FAILED"/>
                     <cti:param name="resultId" value="${resultId}"/>
                 </cti:url>
                 <a href="${failedNewAction}"><i:inline key=".newAction"/></a>
