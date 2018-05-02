@@ -9,11 +9,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfigException;
+import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
-import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
