@@ -122,7 +122,10 @@ yukon.bulk.dataStreaming = (function () {
                 });
                 
                 $(document).on('yukon.bulk.dataStreaming.send', function (ev) {
-                    var dialog = $(ev.target);
+                    var dialog = $(ev.target),
+                        btns = dialog.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                        primary = btns.find('.js-primary-action');
+                    yukon.ui.busy(primary);
                     $('#verificationForm').ajaxSubmit({
                         success: function(data, status, xhr, $form) {
                             dialog.dialog('destroy');
@@ -132,6 +135,7 @@ yukon.bulk.dataStreaming = (function () {
                         },
                         error: function (xhr, status, error, $form) {
                             dialog.html(xhr.responseText);
+                            yukon.ui.unbusy(primary);
                         },
                     
                     });
