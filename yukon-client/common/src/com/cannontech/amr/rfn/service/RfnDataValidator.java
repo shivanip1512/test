@@ -19,15 +19,31 @@ public final class RfnDataValidator {
     /**
      * Checks that the timestamp is between 1-Jan-2000 or calculated date and 1 year from now
      * Calculated date depends on the months value set in global setting.
+     * Use this method only for checking for a "reasonable" timestamp.
+     * Expectation is that when "not valid" the timestamp and quality may be adjusted. 
+     * Examples of "unreasonable" would be the year 1970 or 2106).
      * @param timestamp The timestamp to validate
      * @param now The current time
      */
     public static boolean isTimestampValid(Instant timestamp, Instant now) {
+        return timestamp.isAfter(y2k) && timestamp.isBefore(now.plus(year));
+    }
+
+    /**
+     * Checks {@link #isTimestampValid(Instant, Instant)}
+     * Then, checks to see if timestamp is within "recent" threshold such that we should process is.
+     * Calculated date/threshold depends on the months value set in global setting.
+     * Use this method for checking for a "reasonable" AND "recent" timestamp to consume.
+     * Expectation is that when "not valid" AND "not recent" that data is thrown away.
+     * @param timestamp The timestamp to validate
+     * @param now The current time
+     */
+    public static boolean isTimestampRecent(Instant timestamp, Instant now) {
         int monthsToSubstact =
                 globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
 
         if (monthsToSubstact == 0) {
-            return timestamp.isAfter(y2k) && timestamp.isBefore(now.plus(year));
+            return isTimestampValid(timestamp, now);
         }
         Duration monthInDuration = Period.months(monthsToSubstact).toDurationTo(now);
         return timestamp.isAfter(now.minus(monthInDuration)) && timestamp.isBefore(now.plus(year));

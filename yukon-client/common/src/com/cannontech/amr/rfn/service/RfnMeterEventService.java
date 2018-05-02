@@ -129,10 +129,10 @@ public class RfnMeterEventService {
         pointData.setValue(pointValue);
         pointData.setTagsPointMustArchive(true);
 
-        if (RfnDataValidator.isTimestampValid(timestamp, now)) {
+        if (RfnDataValidator.isTimestampRecent(timestamp, now)) {
             pointDatas.add(pointData);
         } else {
-            log.trace("Timestamp invalid, discarding pointdata for " + rfnDevice + " " + attr + ": " + pointData);
+            log.trace("Timestamp invalid or old, discarding pointdata for " + rfnDevice + " " + attr + ": " + pointData);
         }        
     }
 }

@@ -187,8 +187,8 @@ public class RfnChannelDataConverter {
             log.debug("PointData converted: " + pointData);
         }
         
-        if( !RfnDataValidator.isTimestampValid(readingInstant, Instant.now()) ) {
-            log.warn("Discarding invalid pointdata for device " + rfnDevice + " : " + pointData);
+        if( !RfnDataValidator.isTimestampRecent(readingInstant, Instant.now()) ) {
+            log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " : " + pointData);
             return null;
         }
         
