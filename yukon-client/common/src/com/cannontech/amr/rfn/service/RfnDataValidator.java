@@ -39,13 +39,13 @@ public final class RfnDataValidator {
      * @param now The current time
      */
     public static boolean isTimestampRecent(Instant timestamp, Instant now) {
-        int monthsToSubstact =
+        int monthsToSubstract =
                 globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
 
-        if (monthsToSubstact == 0) {
+        if (monthsToSubstract == 0) {
             return isTimestampValid(timestamp, now);
         }
-        Duration monthInDuration = Period.months(monthsToSubstact).toDurationTo(now);
+        Duration monthInDuration = Period.months(monthsToSubstract).toDurationTo(now);
         return timestamp.isAfter(now.minus(monthInDuration)) && timestamp.isBefore(now.plus(year));
     }
 }
