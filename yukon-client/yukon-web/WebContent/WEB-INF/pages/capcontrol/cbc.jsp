@@ -32,8 +32,10 @@
         </cti:displayForPageEditModes>
 
         <cti:displayForPageEditModes modes="VIEW">
-            <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit" />
-            <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit" />
+                <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+            </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
     </div>
 
