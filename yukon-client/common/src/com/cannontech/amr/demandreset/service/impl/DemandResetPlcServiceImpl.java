@@ -45,8 +45,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Sets;
 
-public class PlcDemandResetServiceImpl implements DemandResetStrategyService {
-    private final static Logger log = YukonLogManager.getLogger(PlcDemandResetServiceImpl.class);
+public class DemandResetPlcServiceImpl implements DemandResetStrategyService {
+    private final static Logger log = YukonLogManager.getLogger(DemandResetPlcServiceImpl.class);
 
     private final static String DEMAND_RESET_COMMAND = "putvalue ied reset";
     private final static String LAST_RESET_TIME_COMMAND = "getconfig ied time";

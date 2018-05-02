@@ -61,8 +61,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class RfnDemandResetServiceImpl implements DemandResetStrategyService, PointDataListener {
-    private static final Logger log = YukonLogManager.getLogger(RfnDemandResetServiceImpl.class);
+public class DemandResetRfnServiceImpl implements DemandResetStrategyService, PointDataListener {
+    private static final Logger log = YukonLogManager.getLogger(DemandResetRfnServiceImpl.class);
 
     private final static String configurationName = "RFN_METER_DEMAND_RESET";
     private final static String queueName = "yukon.qr.obj.amr.rfn.MeterDemandResetRequest";
@@ -113,8 +113,8 @@ public class RfnDemandResetServiceImpl implements DemandResetStrategyService, Po
             return pointToDevice.keySet();
         }
 
-        private RfnDemandResetServiceImpl getOuterType() {
-            return RfnDemandResetServiceImpl.this;
+        private DemandResetRfnServiceImpl getOuterType() {
+            return DemandResetRfnServiceImpl.this;
         }
         
         @Override
@@ -169,7 +169,7 @@ public class RfnDemandResetServiceImpl implements DemandResetStrategyService, Po
                     //mark devices as canceled
                     log.debug("Proccessing cancellations for RFN meters:" + verificationInfo.pointToDevice.values());             
                     //unregister devices
-                    asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
+                    asyncDynamicDataSource.unRegisterForPointData(DemandResetRfnServiceImpl.this,
                         verificationInfo.pointToDevice.keySet());
                     //complete execution
                     log.debug("RF Cancel Complete");
@@ -210,7 +210,7 @@ public class RfnDemandResetServiceImpl implements DemandResetStrategyService, Po
                                 
                                 callback.cannotVerify(device, getError(DeviceError.NM_TIMEOUT));
                                 deviceIterator.remove();
-                                asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
+                                asyncDynamicDataSource.unRegisterForPointData(DemandResetRfnServiceImpl.this,
                                                                               ImmutableSet.of(pointId));
                                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(
                                     verificationInfo.verificationExecution, device.getDeviceId(), DeviceError.NM_TIMEOUT.getCode());
@@ -359,7 +359,7 @@ public class RfnDemandResetServiceImpl implements DemandResetStrategyService, Po
                                     if (entry.getValue().getDeviceId() == device.getDeviceId()) {
                                         int pointId = entry.getKey();
                                         deviceIterator.remove();
-                                        asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
+                                        asyncDynamicDataSource.unRegisterForPointData(DemandResetRfnServiceImpl.this,
                                                                                       ImmutableSet.of(pointId));
                                         commandRequestExecutionResultDao.saveCommandRequestExecutionResult(
                                             verificationInfo.verificationExecution, device.getDeviceId(), errorCode);

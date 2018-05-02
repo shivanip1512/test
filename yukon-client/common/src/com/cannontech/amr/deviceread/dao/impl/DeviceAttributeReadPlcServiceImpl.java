@@ -29,9 +29,9 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
-public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrategy {
+public class DeviceAttributeReadPlcServiceImpl implements DeviceAttributeReadStrategy {
 
-    private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadPlcStrategy.class);
+    private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadPlcServiceImpl.class);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private MeterReadCommandGeneratorService meterReadCommandGeneratorService;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;

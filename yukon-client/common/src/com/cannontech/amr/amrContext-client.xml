@@ -98,15 +98,19 @@
     <bean class="com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMappingParser"/>
     
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadServiceImpl"/>
-    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadRfnStrategy"/>
-    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadPlcStrategy"/>
-    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadEcobeeStrategy"/>
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadRfnServiceImpl"/>
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadPlcServiceImpl"/>
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadEcobeeServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceCommandServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.CommandHelper"/>
 
-    <bean class="com.cannontech.amr.demandreset.service.impl.PlcDemandResetServiceImpl"/>
-    <bean class="com.cannontech.amr.demandreset.service.impl.RfnDemandResetServiceImpl"/>
+    <bean class="com.cannontech.amr.demandreset.service.impl.DemandResetPlcServiceImpl"/>
+    <bean class="com.cannontech.amr.demandreset.service.impl.DemandResetRfnServiceImpl"/>
     <bean class="com.cannontech.amr.demandreset.service.impl.DemandResetServiceImpl"/>
+    
+    <bean class="com.cannontech.amr.rfn.dataStreaming.service.DataStreamingPorterConnection"/>
+    <bean class="com.cannontech.amr.rfn.dataStreaming.service.impl.DataStreamingServiceImpl"/>
+    <bean class="com.cannontech.amr.rfn.dataStreaming.service.impl.DataStreamingCommunicationServiceImpl"/>
     
     <!-- RFN Meter Disconnect Service -->
     <bean id="rfnMeterDisconnectService" class="com.cannontech.amr.rfn.service.RfnMeterDisconnectService"/>

@@ -39,8 +39,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 
-public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStrategy {
-    private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadEcobeeStrategy.class);
+public class DeviceAttributeReadEcobeeServiceImpl implements DeviceAttributeReadStrategy {
+    private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadEcobeeServiceImpl.class);
 
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;

@@ -51,9 +51,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrategy {
+public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStrategy {
     
-    private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadRfnStrategy.class);
+    private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadRfnServiceImpl.class);
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RfnMeterReadService rfnMeterReadService;
