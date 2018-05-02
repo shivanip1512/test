@@ -18,7 +18,7 @@
             </b></div>
                 
             <div class="page-action-area">
-                <cti:button nameKey="remove" classes="primary action js-action-submit"/>
+                <cti:button nameKey="remove" classes="primary action js-action-submit" busy="true"/>
             </div>
         </form>
             
