@@ -111,7 +111,7 @@ public class CollectionActionResult {
             startTime = new Instant();
         }
         
-        if(!isCached) {
+        if(context != null) {
            //result is cached
             logService.loadPointNames(this);
         }
