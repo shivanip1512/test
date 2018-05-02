@@ -3,7 +3,6 @@ package com.cannontech.web.tools.dataViewer;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -38,10 +36,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.chart.model.ChartInterval;
-import com.cannontech.common.chart.model.ChartPeriod;
-import com.cannontech.common.chart.model.ConverterType;
-import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
@@ -61,7 +55,6 @@ import com.cannontech.common.tdc.model.DisplayType;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.util.EnabledStatus;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
@@ -80,7 +73,6 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -415,41 +407,6 @@ public class TdcDisplayController {
         YukonMessageSourceResolvable successMsg =
             new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.ack.success", alarms);
         return getJSONSuccess(successMsg, userContext);
-    }
-
-    @RequestMapping(value = "data-viewer/trend", method = RequestMethod.POST)
-    public String trend(YukonUserContext userContext, ModelMap model, int pointId) {
-
-        LitePoint litePoint = pointDao.getLitePoint(pointId);
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
-        model.addAttribute("deviceId", liteYukonPAO.getPaoIdentifier().getPaoId());
-        YukonMessageSourceResolvable title =
-            new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.trend.description",
-                                             litePoint.getPointName());
-        MessageSourceAccessor messageSourceAccessor =
-            messageSourceResolver.getMessageSourceAccessor(userContext);
-        model.addAttribute("title", messageSourceAccessor.getMessage(title));
-        model.addAttribute("pointId", litePoint.getLiteID());
-        Date endDate = new Date();
-        Date startDate = endDate;
-        startDate = DateUtils.addDays(startDate, -30);
-        startDate = DateUtils.truncate(startDate, Calendar.DATE);
-        ChartPeriod chartPeriod = ChartPeriod.MONTH;
-        ChartInterval chartInterval = chartPeriod.getChartUnit(Range.inclusive(startDate, endDate));
-        model.addAttribute("interval", chartInterval);
-        if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.KWH) {
-            // "Usage" data can be "normalized" delta, since it is an ever increasing number
-            model.addAttribute("converterType", ConverterType.NORMALIZED_DELTA);
-        } else if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.GALLONS) {
-            // water usage can be delta also.
-            model.addAttribute("converterType", ConverterType.DELTA_WATER);
-        } else { // everything is raw
-            model.addAttribute("converterType", ConverterType.RAW);
-        }
-        model.addAttribute("graphType", GraphType.LINE);
-        model.addAttribute("startDateMillis", startDate.getTime());
-        model.addAttribute("endDateMillis", endDate.getTime());
-        return "data-viewer/trendPopup.jsp";
     }
 
     @RequestMapping(value = "data-viewer/manual-control", method = RequestMethod.POST)

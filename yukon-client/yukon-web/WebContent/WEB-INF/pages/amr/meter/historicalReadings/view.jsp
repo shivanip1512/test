@@ -9,14 +9,11 @@
 <cti:msgScope paths="modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings">
 
 <script>
-function setUrl(id) {
-    var duration = '#duration_'+id;
-    var url = $(duration+' :selected').val();
-    $('#download_'+id).attr('data-href', yukon.url(url));
-}
+    yukon.historical.readings.setDownloadUrl(${pointId});
 </script>
 
 <cti:msg2 key=".download.tooltip" var="download"/>
+<cti:msg2 key=".trend.tooltip" var="trendToolTip"/>
 <input class="js-popup-title" type="hidden" value="${fn:escapeXml(title)}"> 
 
 <div class="form-control clearfix">
@@ -24,15 +21,33 @@ function setUrl(id) {
         <span class="detail">${resultLimit}</span>
     </c:if>
     <div class="fr">
-    <tags:nameValueContainer2>
-        <select id="duration_${pointId}" name="duration">
-            <c:forEach var="duration" items="${duration}">
-                <option value="${duration.value}">${duration.key}</option>
-            </c:forEach>
-        </select>
-        <cti:button id="download_${pointId}" title = "${download}" classes="fr left" renderMode="buttonImage" icon="icon-page-white-excel" onClick="javascript:setUrl('${pointId}');"/>
-    </tags:nameValueContainer2>
+        <tags:nameValueContainer2>
+            <select id="duration_${pointId}" name="duration">
+                <c:forEach var="duration" items="${duration}">
+                    <option value="${duration.key}" data-download-url="${duration.value}">
+                        <i:inline key=".${duration.key}"/>
+                    </option>
+                </c:forEach>
+            </select>
+            <div class="button-group">
+                <cti:button id="download_${pointId}" title = "${download}" renderMode="buttonImage" 
+                            icon="icon-page-white-excel" data-point-id="${pointId}"/>
+                <cti:button id="trend_${pointId}" renderMode="buttonImage" icon="icon-chart-line" data-point-id="${pointId}"
+                            title="${trendToolTip}"/>
+            </div>
+        </tags:nameValueContainer2>
     </div>
+</div>
+
+<div class="js-trend-container_${pointId} dn">
+    <br>
+    <br>
+    <div class="filter-container">
+        <span class="fr cp close js-close-trend-btn"><cti:icon icon="icon-close-x"/></span>
+        <div id="trend-graph_${pointId}"/>
+    </div>
+    <br>
+    <br>
 </div>
 
 <c:choose>

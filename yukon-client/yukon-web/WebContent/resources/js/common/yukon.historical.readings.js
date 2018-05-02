@@ -81,7 +81,42 @@ yukon.historical.readings = (function () {
                 });
             });
             
+            $(document).on('click', "button[id^='trend_']", function () {
+                var pointId = $(this).data('point-id'),
+                    duration = $("#duration_" + pointId).val(),
+                    url = yukon.url('/meter/historicalReadings/trend'),
+                    parameters = { pointId : pointId, duration :  duration};
+                
+                $.post(url, parameters, function (response) {
+                    $(".js-trend-container_" + pointId).removeClass("dn");
+                    $("#trend-graph_" + pointId).html("");
+                    $("#trend-graph_" + pointId).html(response);
+                    $("#duration_" + pointId).closest(".ui-widget-content").dialog({
+                        width : 800,
+                        height : 500
+                    });
+                });
+            });
+            
+            $(document).on('click', '.js-close-trend-btn', function (event) {
+                $(this).closest(".ui-widget-content").dialog({
+                    width : 500,
+                    height : 400
+                });
+                $(this).closest("div[class^='js-trend-container_']").addClass("dn");
+            });
+            
+            $(document).on('click', "button[id^='download_']", function () {
+                yukon.historical.readings.setDownloadUrl($(this).data('point-id'));
+            });
+            
             _initialized = true;
+        },
+        
+        setDownloadUrl : function (pointId) {
+            var duration = '#duration_' + pointId,
+                url = $(duration + ' :selected').data('download-url');
+            $('#download_' + pointId).attr('data-href', yukon.url(url));
         }
         
     };

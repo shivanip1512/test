@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -20,9 +21,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.joda.time.Months;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -35,8 +38,14 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.chart.model.ChartPeriod;
+import com.cannontech.common.chart.model.ConverterType;
+import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.model.Direction;
@@ -51,6 +60,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -61,16 +71,19 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -94,11 +107,13 @@ public class HistoricalReadingsController {
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private CachedPointDataCorrelationService cachedPointDataCorrelationService;
     @Autowired private PointService pointService;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     private Logger log = YukonLogManager.getLogger(HistoricalReadingsController.class);
@@ -118,11 +133,16 @@ public class HistoricalReadingsController {
             "timestamp", OrderBy.TIMESTAMP, 
             "value", OrderBy.VALUE);
 
-    private enum Duration {
+    private enum Duration implements DisplayableEnum {
         ONE_MONTH,
         THREE_MONTH,
         ONE_YEAR,
         ALL;
+        
+        @Override
+        public String getFormatKey() {
+            return baseKey + name();
+        }
     }
     
     @RequestMapping("view")
@@ -150,11 +170,11 @@ public class HistoricalReadingsController {
         model.addAttribute("resultLimit", accessor.getMessage(baseKey + "resultLimit", MAX_ROWS_DISPLAY));
         model.addAttribute("maxRowsDisplay", MAX_ROWS_DISPLAY);
         
-        Map<String, String> duration = new LinkedHashMap<>();
-        duration.put(accessor.getMessage(baseKey + Duration.ONE_MONTH), getDownloadUrl(Duration.ONE_MONTH, pointId));
-        duration.put(accessor.getMessage(baseKey + Duration.THREE_MONTH), getDownloadUrl(Duration.THREE_MONTH, pointId));
-        duration.put(accessor.getMessage(baseKey + Duration.ONE_YEAR), getDownloadUrl(Duration.ONE_YEAR, pointId));
-        duration.put(accessor.getMessage(baseKey + Duration.ALL), getDownloadUrl(Duration.ALL, pointId));
+        Map<Duration, String> duration = new LinkedHashMap<>();
+        duration.put(Duration.ONE_MONTH, getDownloadUrl(Duration.ONE_MONTH, pointId));
+        duration.put(Duration.THREE_MONTH, getDownloadUrl(Duration.THREE_MONTH, pointId));
+        duration.put(Duration.ONE_YEAR, getDownloadUrl(Duration.ONE_YEAR, pointId));
+        duration.put(Duration.ALL, getDownloadUrl(Duration.ALL, pointId));
        
         model.addAttribute("duration", duration);
         model.addAttribute("title", title);
@@ -332,6 +352,66 @@ public class HistoricalReadingsController {
             log.error("Error while downloading " + e);
         }
         return null;
+    }
+    
+    @RequestMapping(value = "trend", method = RequestMethod.POST)
+    public String trend(YukonUserContext userContext, ModelMap model, @RequestParam int pointId,
+            @RequestParam(defaultValue = "ONE_MONTH") Duration duration) {
+
+        LitePoint litePoint = pointDao.getLitePoint(pointId);
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+        model.addAttribute("deviceId", liteYukonPAO.getPaoIdentifier().getPaoId());
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        model.addAttribute("pointId", litePoint.getLiteID());
+        int monthsToSubtract = 0;
+        StringBuilder durationMessage = new StringBuilder();
+        switch (duration) {
+        case ONE_MONTH:
+            monthsToSubtract = Months.ONE.getMonths();
+            durationMessage.append(messageSourceAccessor.getMessage(Duration.ONE_MONTH.getFormatKey()));
+            break;
+        case THREE_MONTH:
+            monthsToSubtract = Months.THREE.getMonths();
+            durationMessage.append(messageSourceAccessor.getMessage(Duration.THREE_MONTH.getFormatKey()));
+            break;
+        case ONE_YEAR:
+            monthsToSubtract = Months.TWELVE.getMonths();
+            durationMessage.append(messageSourceAccessor.getMessage(Duration.ONE_YEAR.getFormatKey()));
+            break;
+        case ALL:
+            Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.TRENDS_HISTORICAL_MONTHS));
+            monthsToSubtract = months.getMonths();
+            durationMessage.append(monthsToSubtract);
+            durationMessage.append(" ");
+            durationMessage.append(messageSourceAccessor.getMessage("yukon.common.month"));
+            break;
+        }
+        Date endDate = new Date();
+        Date startDate = endDate;
+        startDate = DateUtils.addMonths(startDate, -monthsToSubtract);
+        startDate = DateUtils.truncate(startDate, Calendar.DATE);
+        ChartPeriod chartPeriod = ChartPeriod.MONTH;
+        ChartInterval chartInterval = chartPeriod.getChartUnit(Range.inclusive(startDate, endDate));
+        model.addAttribute("interval", chartInterval);
+        if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.KWH) {
+            // "Usage" data can be "normalized" delta, since it is an ever increasing number
+            model.addAttribute("converterType", ConverterType.NORMALIZED_DELTA);
+        } else if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.GALLONS) {
+            // water usage can be delta also.
+            model.addAttribute("converterType", ConverterType.DELTA_WATER);
+        } else { // everything is raw
+            model.addAttribute("converterType", ConverterType.RAW);
+        }
+        model.addAttribute("graphType", GraphType.LINE);
+        model.addAttribute("startDateMillis", startDate.getTime());
+        model.addAttribute("endDateMillis", endDate.getTime());
+
+        YukonMessageSourceResolvable title =
+            new YukonMessageSourceResolvable(baseKey + "trend.description",
+                durationMessage.toString(), litePoint.getPointName());
+        model.addAttribute("title", messageSourceAccessor.getMessage(title));
+
+        return "historicalReadings/trendPopup.jsp";
     }
     
     private void setupTable(ModelMap model, YukonUserContext context, Order order, OrderBy orderBy, int pointId) {

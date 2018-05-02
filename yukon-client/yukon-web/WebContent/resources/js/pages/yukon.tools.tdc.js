@@ -93,7 +93,7 @@ yukon.tools.tdc = (function () {
                 var option = $(this),
                     popupTitle = option.data('popupTitle'),
                     pointId = option.data('pointId'),
-                    url = yukon.url('/tools/data-viewer/trend'),
+                    url = yukon.url('/meter/historicalReadings/trend'),
                     data = { pointId : pointId };
                 
                 $('#tdc-popup').load(url, data, function () {

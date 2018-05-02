@@ -160,7 +160,6 @@
     <entry key="yukon.web.modules.tools.tdc.activeAlarms.title">Active Alarms ({0})</entry>
     <entry key="yukon.web.modules.tools.tdc.alarm.acknowledgeAll.label">Acknowledge All</entry>
     <entry key="yukon.web.modules.tools.tdc.trend.title">Trend</entry>
-    <entry key="yukon.web.modules.tools.tdc.trend.description">30 Day Trend Snapshot for {0}</entry>
     <entry key="yukon.web.modules.tools.tdc.altScan.title">Alternate Scan Rate</entry>
     <entry key="yukon.web.modules.tools.tdc.unack.title">Acknowledge Alarms for {0} : {1}</entry>
     <entry key="yukon.web.modules.tools.tdc.ack.success">Acknowledged {0} alarms</entry>
