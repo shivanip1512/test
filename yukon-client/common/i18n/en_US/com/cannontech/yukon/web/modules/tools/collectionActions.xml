@@ -44,7 +44,7 @@
 
     <entry key="yukon.web.modules.tools.collectionActions.header.editing.title">Editing</entry>
     <entry key="yukon.web.modules.tools.collectionActions.massChangeLabel">Mass Change</entry>
-    <entry key="yukon.web.modules.tools.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.massChangeDescription">Change same value on multiple devices (example: status or route).</entry>
     <entry key="yukon.web.modules.tools.collectionActions.changeDeviceTypeLabel">Change Type</entry>
     <entry key="yukon.web.modules.tools.collectionActions.changeDeviceTypeDescription">Change the device type of devices.</entry>
     <entry key="yukon.web.modules.tools.collectionActions.massDeleteLabel">Mass Delete</entry>
