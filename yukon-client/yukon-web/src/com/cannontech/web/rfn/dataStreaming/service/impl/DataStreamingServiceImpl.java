@@ -884,6 +884,8 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             List<Integer> failedVerificationDevices, YukonUserContext context) throws DataStreamingConfigException {
         if (config.getId() != 0) {
             config = findDataStreamingConfiguration(config.getId());
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+            config.setAccessor(accessor);
         }
 
         // logService.assignAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey()),
