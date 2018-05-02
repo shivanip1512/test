@@ -12,14 +12,18 @@ import com.cannontech.watchdog.notification.WatchdogNotificationService;
 public abstract class WatchdogBase implements Watchdog {
 
     @Autowired WatchdogNotificationService watchDogNotif;
-
-    @Override
-    public void sendNotification(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
+    
+    /**
+     * This method will send message to watch dog notification service.
+     */
+    private void sendNotification(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
         watchDogNotif.sendNotification(type, events);
     }
 
-    @Override
-    public List<SmartNotificationEvent> assemble(List<WatchdogWarnings> warnings) {
+    /**
+     * This will convert WatchdogWarnings to SmartNotificationEvent
+     */
+    private List<SmartNotificationEvent> assemble(List<WatchdogWarnings> warnings) {
         return watchDogNotif.assemble(warnings);
     }
 
