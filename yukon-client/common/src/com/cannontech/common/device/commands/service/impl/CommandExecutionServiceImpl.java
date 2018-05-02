@@ -186,20 +186,21 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user)
             throws CommandCompletionException {
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
-        WaitableCommandCompletionCallback<?> waitableCallback =
+        WaitableCommandCompletionCallback<? extends CommandRequestBase> waitableCallback =
             waitableFactory.createWaitable(callback, command.getPaoType());
         ExecutionParameters params = createExecParams(type, user, false);
         CommandRequestExecution execution = createAndSaveExecution(params, Lists.newArrayList(command));
         CommandRequestExecutionIdentifier identifier =
-            sendToPorter(Lists.newArrayList(command), callback, params, execution);
+            sendToPorter(Lists.newArrayList(command), waitableCallback, params, execution);
         callback.setCommandRequestExecutionIdentifier(identifier);
         try {
             waitableCallback.waitForCompletion();
             log.debug("Execution " + execution + "for command " + command + " is complete.");
             return callback;
         } catch (InterruptedException | TimeoutException e) {
-            throw new CommandCompletionException("Execution " + execution + "for command " + command + " timed out.",
-                e);
+            String error = "Execution " + execution + "for command " + command + " timed out.";
+            callback.processingExceptionOccured(error);
+            throw new CommandCompletionException(error, e);
         }
     }
 
