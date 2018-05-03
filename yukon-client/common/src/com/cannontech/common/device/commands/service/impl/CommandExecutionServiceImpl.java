@@ -195,10 +195,10 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
         callback.setCommandRequestExecutionIdentifier(identifier);
         try {
             waitableCallback.waitForCompletion();
-            log.debug("Execution " + execution + "for command " + command + " is complete.");
+            log.debug("Execution " + execution.getId() + " for command " + command + " is complete.");
             return callback;
         } catch (InterruptedException | TimeoutException e) {
-            String error = "Execution " + execution + "for command " + command + " timed out.";
+            String error = "Execution " + execution.getId() + "for command " + command + " timed out.";
             callback.processingExceptionOccured(error);
             throw new CommandCompletionException(error, e);
         }
