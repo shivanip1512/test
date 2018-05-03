@@ -12,6 +12,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface CollectionActionDao {
 
@@ -46,7 +47,7 @@ public interface CollectionActionDao {
     void updateCollectionActionStatus(int collectionActionId, CommandRequestExecutionStatus newStatus, Date stopTime);
 
     SearchResults<CollectionActionFilteredResult> getCollectionActionFilteredResults(CollectionActionFilter filter,
-            PagingParameters paging, SortBy sortBy, Direction direction);
+            PagingParameters paging, SortBy sortBy, Direction direction, YukonUserContext userContext);
     /**
      * @returns null if CollectionActionId doesn't exist for the creId provided otherwise returns creId.
      */

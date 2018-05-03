@@ -132,9 +132,9 @@ yukon.collection.actions.progress.report = (function () {
         var chart = $('.js-pie-chart');
         if (data != null) {
             //update progress bar
-            var percent = yukon.percent(data.counts.percentCompleted, 100, 2);
-            var progress = $('.js-progress');
-            var progressText = $('.js-percent-text');
+            var percent = yukon.percent(data.counts.percentCompleted, 100, 2),
+                progress = $('.js-progress'),
+                progressText = $('.js-percent-text');
             
             progress.find('.progress-bar').css({ width: percent })
             .toggleClass('progress-bar-striped', data.counts.percentCompleted < 100);
@@ -178,8 +178,8 @@ yukon.collection.actions.progress.report = (function () {
         init : function () {
                         
             _key = $('#key').val();
-            var resultsJson = $('#resultsjson');
-            var resultsData;
+            var resultsJson = $('#resultsjson'),
+                resultsData;
             if (resultsJson.length > 0) {
                 resultsData = yukon.fromJson('#resultsjson');
                 _updatePage(resultsData);

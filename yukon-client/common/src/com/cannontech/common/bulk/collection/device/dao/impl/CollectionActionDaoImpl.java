@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -59,6 +60,7 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class CollectionActionDaoImpl implements CollectionActionDao {
@@ -118,10 +120,10 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     
     @Override
     public SearchResults<CollectionActionFilteredResult> getCollectionActionFilteredResults(
-            CollectionActionFilter filter, PagingParameters paging, SortBy sortBy, Direction direction) {
+            CollectionActionFilter filter, PagingParameters paging, SortBy sortBy, Direction direction, YukonUserContext userContext) {
 
-        SqlStatementBuilder allRowsSql = buildResultSelect(filter, sortBy, direction);
-        SqlStatementBuilder countSql = buildResultSelect(filter, null, null);
+        SqlStatementBuilder allRowsSql = buildResultSelect(filter, sortBy, direction, userContext);
+        SqlStatementBuilder countSql = buildResultSelect(filter, null, null, userContext);
 
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
@@ -157,7 +159,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     /**
      * If sortBy is not returns count sql, otherwise returns all the fields
      */
-    private SqlStatementBuilder buildResultSelect(CollectionActionFilter filter, SortBy sortBy, Direction direction) {
+    private SqlStatementBuilder buildResultSelect(CollectionActionFilter filter, SortBy sortBy, Direction direction, YukonUserContext userContext) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("WITH Successes AS");
@@ -218,12 +220,14 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 filter.getStatuses().add(CommandRequestExecutionStatus.CANCELING);
             }
             sql.append("AND ca.Status").in_k(filter.getStatuses());
+            filter.getStatuses().remove(CommandRequestExecutionStatus.CANCELING);
         }
         if (filter.getUserNames() != null && !filter.getUserNames().isEmpty()) {
             sql.append("AND ca.UserName").in(filter.getUserNames());
         }
-        
-        Range<Instant> dateRange = Range.inclusiveExclusive(new Instant(filter.getStartDate()), new Instant(filter.getEndDate()));
+        DateTime start = new DateTime(filter.getStartDate()).withTimeAtStartOfDay().withZone(userContext.getJodaTimeZone());
+        DateTime end = new DateTime(filter.getEndDate()).plusDays(1).withTimeAtStartOfDay().withZone(userContext.getJodaTimeZone());
+        Range<Instant> dateRange = Range.inclusive(new Instant(start), new Instant(end));
         Instant startDate = dateRange == null ? null : dateRange.getMin();
         if (startDate != null) {
             if (dateRange.isIncludesMinValue()) {

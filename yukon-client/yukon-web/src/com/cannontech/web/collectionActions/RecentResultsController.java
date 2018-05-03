@@ -69,7 +69,7 @@ public class RecentResultsController {
             allTypesSelected = true;
             filter.setActions(Arrays.asList(CollectionAction.values()));
         }
-        SearchResults<CollectionActionFilteredResult> results = collectionActionDao.getCollectionActionFilteredResults(filter, paging, sortBy.getValue(), dir);
+        SearchResults<CollectionActionFilteredResult> results = collectionActionDao.getCollectionActionFilteredResults(filter, paging, sortBy.getValue(), dir, userContext);
         if (allTypesSelected) {
             filter.setActions(null);
         }
