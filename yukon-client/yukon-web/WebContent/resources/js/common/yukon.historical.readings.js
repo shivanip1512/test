@@ -13,6 +13,24 @@ yukon.historical.readings = (function () {
     var
     _initialized = false,
     
+    _loadTrend = function (pointId) {
+        var duration = $("#duration_" + pointId).val(),
+            url = yukon.url('/meter/historicalReadings/trend'),
+            parameters = { pointId : pointId, duration :  duration};
+
+        $.post(url, parameters, function (response) {
+            $(".js-trend-container_" + pointId).removeClass("dn");
+            $("#trend-graph_" + pointId).html("");
+            $("#trend-graph_" + pointId).html(response);
+            $("#duration_" + pointId).closest(".ui-widget-content").dialog({
+                width : 800,
+                height : 500
+            });
+        }).always(function () {
+            yukon.ui.unblock($(".js-trend-container_" + pointId));
+        });
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -50,7 +68,7 @@ yukon.historical.readings = (function () {
                     container.dialog('destroy');
                     valuesTable.html(details);
                     valuesDialog.scrollTop(0);
-                });             
+                });
             });
 
             $(document).on('yukon:historical:readings:editValue', function(ev) {
@@ -82,20 +100,7 @@ yukon.historical.readings = (function () {
             });
             
             $(document).on('click', "button[id^='trend_']", function () {
-                var pointId = $(this).data('point-id'),
-                    duration = $("#duration_" + pointId).val(),
-                    url = yukon.url('/meter/historicalReadings/trend'),
-                    parameters = { pointId : pointId, duration :  duration};
-                
-                $.post(url, parameters, function (response) {
-                    $(".js-trend-container_" + pointId).removeClass("dn");
-                    $("#trend-graph_" + pointId).html("");
-                    $("#trend-graph_" + pointId).html(response);
-                    $("#duration_" + pointId).closest(".ui-widget-content").dialog({
-                        width : 800,
-                        height : 500
-                    });
-                });
+                _loadTrend($(this).data('point-id'));
             });
             
             $(document).on('click', '.js-close-trend-btn', function (event) {
@@ -110,6 +115,16 @@ yukon.historical.readings = (function () {
                 yukon.historical.readings.setDownloadUrl($(this).data('point-id'));
             });
             
+            $(document).on('change', "select[id^='duration_']", function () {
+                var pointId = $(this).data('point-id'),
+                    trendContainer = $(".js-trend-container_" + pointId);
+                if (!trendContainer.hasClass("dn")) {
+                    yukon.ui.block(trendContainer);
+                    _loadTrend(pointId);
+                }
+                
+            });
+            
             _initialized = true;
         },
         
@@ -118,7 +133,7 @@ yukon.historical.readings = (function () {
                 url = $(duration + ' :selected').data('download-url');
             $('#download_' + pointId).attr('data-href', yukon.url(url));
         }
-        
+
     };
     
     return mod;

@@ -22,7 +22,7 @@
     </c:if>
     <div class="fr">
         <tags:nameValueContainer2>
-            <select id="duration_${pointId}" name="duration">
+            <select id="duration_${pointId}" name="duration" data-point-id="${pointId}">
                 <c:forEach var="duration" items="${duration}">
                     <option value="${duration.key}" data-download-url="${duration.value}">
                         <i:inline key=".${duration.key}"/>
@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<div class="js-trend-container_${pointId} dn">
+<div class="js-trend-container_${pointId} dn js-block-this">
     <br>
     <br>
     <div class="filter-container">
