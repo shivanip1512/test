@@ -11,6 +11,9 @@
         <input type="hidden" id="action" value="${actionText}"/>
     </c:if>
     
+    <cti:msg2 var="noDevicesSelectedMsg" key=".noDevicesSelected"/>
+    <input type="hidden" id="noDevicesSelectedMessage" value="${noDevicesSelectedMsg}"/>
+    
     <cti:msg2 var="noActionExecutedMsg" key=".noActionExecuted"/>
     <input type="hidden" id="progressReportMessage" value="${noActionExecutedMsg}"/>
 
@@ -48,7 +51,7 @@
         <div id="collectionActionsDiv">
             <c:choose>
                 <c:when test="${empty deviceCollection}">
-                    <cti:msg2 key=".noDevicesSelected"/>
+                    ${noDevicesSelectedMsg}
                 </c:when>
                 <c:otherwise>
                     <jsp:include page="collectionActions.jsp"/>

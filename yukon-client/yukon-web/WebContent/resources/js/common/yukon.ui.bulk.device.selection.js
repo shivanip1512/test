@@ -40,9 +40,15 @@ yukon.ui.bulk.device.selection = (function () {
         
         updateCollectionActions : function (data) {
             $('#collectionActionsDiv').html(data);
+            var numDevices = $('#deviceCollectionCount').val();
             $('.js-device-separator').removeClass('dn');
-            $('.js-count').html($('#deviceCollectionCount').val());
+            $('.js-count').html(numDevices);
             $('.js-device-description').html($('#deviceCollectionDescription').val());
+            //if no devices were selected, show message
+            if (numDevices == 0) {
+                var noDevicesSelectedMsg = $('#noDevicesSelectedMessage').val();
+                $('#collectionActionsDiv').html(noDevicesSelectedMsg);
+            }
             $('#collectionActionsAccordion').accordion("option", "active", 1);
             //clear out any old progress reports
             var progressReportMsg = $('#progressReportMessage').val();
@@ -209,6 +215,8 @@ yukon.ui.bulk.device.selection = (function () {
                     if (_eventAfterSubmit) {
                         form.ajaxSubmit({
                             success: function(data, status, xhr, $form) {
+                                yukon.ui.unbusy(e.currentTarget);
+                                mod.toggleByAddrPopup('byAddrPopup');
                                 mod.updateCollectionActions(data);
                             }
                         });
