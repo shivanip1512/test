@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -33,6 +35,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 @Controller
 @RequestMapping("/progressReport/*")
 public class ProgressReportController {
+    private static final Logger log = YukonLogManager.getLogger(ProgressReportController.class);
 
     @Autowired private CollectionActionService collectionActionService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -90,8 +93,10 @@ public class ProgressReportController {
             response.setHeader("Content-Disposition", "attachment; filename=\"CollectionActionLog-" + key + "_" + now + ".csv\"");
             IOUtils.copy(input, output);
         } catch (FileNotFoundException e) {
+            log.error("Collection Actions log file with key: " + key + " was not found.", e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "logFileNotFoundError"));
         } catch (IOException e) {
+            log.error("There was an issue accessing the Collection Actions log file with key: " + key + ".", e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "logIOError"));
         }
         return null;

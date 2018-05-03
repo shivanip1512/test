@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -27,6 +29,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 @Controller
 @RequestMapping("/*")
 public class CollectionActionsController {
+    private static final Logger log = YukonLogManager.getLogger(CollectionActionsController.class);
     
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
@@ -53,7 +56,7 @@ public class CollectionActionsController {
             DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
             model.addAttribute("deviceCollection", collection);
         } catch (IllegalArgumentException exception) {
-            //device collection has not been picked yet
+            //device collection has not been picked yet, not an error
         }
 
         return "collectionActionsHome.jsp";
@@ -73,6 +76,7 @@ public class CollectionActionsController {
             } 
             return view;
         } catch (DeviceCollectionCreationException e) {
+            log.error("There was an issue creating a device collection.", e);
             model.addAttribute("errorMsg", e.getMessage());
             return "collectionActionsHome.jsp";
         }
@@ -101,8 +105,10 @@ public class CollectionActionsController {
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".deviceUploadFailed", totalErrors));
             }
         } catch (ObjectMappingException | UnsupportedOperationException e) {
+            log.error("There was an issue creating a device collection.", e);
             model.addAttribute("errorMsg", e.getMessage());
         } catch (IllegalArgumentException exception) {
+            log.error("There was an issue creating a device collection.", exception);
             flashScope.setError(new YukonMessageSourceResolvable(exception.getMessage()));
         }
         
