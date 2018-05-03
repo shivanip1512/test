@@ -1379,8 +1379,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::IVVC_WAIT:
         {
-            {   // shim for the bump test...
-                if ( state->hasDmvTestState() )
+            {   // shim for the bump test... we have test data and are not currently verifying any banks
+                if ( state->hasDmvTestState() && ! subbus->getVerificationFlag() )
                 {
                     state->setState( IVVCState::DMV_TEST_SETUP );                    
                     break;

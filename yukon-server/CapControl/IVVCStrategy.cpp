@@ -555,3 +555,14 @@ bool IVVCStrategy::setDmvTestExecution( long busID, std::unique_ptr<DmvTestData>
     // There is already a DMV test executing
     return false;
 }
+
+bool IVVCStrategy::hasPendingDmvTest( const long busID )
+{
+    if ( const auto result = Cti::mapFind( _paoStateMap, busID ) )
+    {
+        return result->second->hasDmvTestState();
+    }
+
+    return false;
+}
+

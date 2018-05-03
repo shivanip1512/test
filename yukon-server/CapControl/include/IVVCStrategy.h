@@ -83,6 +83,9 @@ public:
     //Queue a DMV Test for execution
     bool setDmvTestExecution(long busID, std::unique_ptr<DmvTestData> dmvTestData);
 
+    // Does a bus have a pending DMV test
+    bool hasPendingDmvTest( const long busID );
+
 private:
 
     void setPeakTargetPowerFactor( double value );

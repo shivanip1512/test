@@ -6156,7 +6156,7 @@ void TriggerDmvTestExecutor::execute()
 
         if( ! ivvcStrat )
         {
-            CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Substation Bus " << bus->getPaoName() << " does not have an IVVC Strategy assigned." );
+            CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Substation Bus: " << bus->getPaoName() << " does not have an IVVC Strategy assigned." );
             return;
         }
 
@@ -6188,7 +6188,6 @@ void TriggerDmvTestExecutor::execute()
         testData = std::make_unique<DmvTestData>();
 
         testData->TestId                = rdr["TestId"].as<long>();
-        testData->TestId                = rdr["TestId"].as<long>();
         testData->TestName              = rdr["TestName"].as<string>();
         testData->PollingInterval       = rdr["PollingInterval"].as<long>();
         testData->DataGatheringDuration = rdr["DataGatheringDuration"].as<long>();
@@ -6199,7 +6198,7 @@ void TriggerDmvTestExecutor::execute()
 
         if( testRunning )
         {
-            CTILOG_ERROR( dout, "Could not schedule DMV Test on bus: " << busID << ".  A DMV Test is already being executed." );
+            CTILOG_ERROR( dout, "Could not schedule DMV Test on Substation Bus: " << bus->getPaoName() << ".  A DMV Test is already being executed." );
         }
     }
     else

@@ -9,6 +9,7 @@
 #include "ccfeeder.h"
 #include "ccutil.h"
 #include "ExecutorFactory.h"
+#include "IVVCStrategy.h"
 
 extern unsigned long _CC_DEBUG;
 extern bool _LOG_MAPID_INFO;
@@ -100,16 +101,14 @@ void VerificationExecutor::startVerification()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-    long subID = _deviceId;
-    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
-    CtiCCAreaPtr currentArea = NULL;
-    CtiCCSubstationPtr currentStation = NULL;
+    long busID = _deviceId;
+    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(busID);
 
     if (currentSubstationBus == NULL)
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CTILOG_DEBUG(dout, "Verification Not Enabled. SubBus not found with Id: " << subID);
+            CTILOG_DEBUG(dout, "Verification Not Enabled. SubBus not found with Id: " << busID);
         }
         return;
     }
@@ -136,7 +135,24 @@ void VerificationExecutor::startVerification()
         return;
     }
 
-    currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+    // We want to abort the verification if the bus has a pending or is currently running a DMV test
+    //
+    if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+    {
+        IVVCStrategy * ivvc = dynamic_cast<IVVCStrategy *>( currentSubstationBus->getStrategy().get() );
+
+        if ( ivvc && ivvc->hasPendingDmvTest( busID ) )
+        {
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CTILOG_DEBUG( dout, "Verification Not Enabled on SubBus: " << currentSubstationBus->getPaoName()
+                                    << " due to pending or running DMV test.");
+            }
+            return;
+        }
+    }
+
+    CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
     if (currentStation == NULL)
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
@@ -146,7 +162,6 @@ void VerificationExecutor::startVerification()
                 << " due to missing parent Substation.");
         }
         return;
-
     }
 
     if (currentStation->getDisableFlag())
@@ -162,7 +177,7 @@ void VerificationExecutor::startVerification()
         return;
     }
 
-    currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+    CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
     if (currentArea == NULL)
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
