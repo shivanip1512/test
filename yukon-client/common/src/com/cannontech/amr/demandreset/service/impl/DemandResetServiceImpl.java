@@ -114,6 +114,11 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
         demandResetEventLogService.demandResetAttempted(summary.devicesToSend.size(), summary.unsupportedDevices.size(),
             summary.devicesToVerify.size(), summary.unverifiableDevices.size(), String.valueOf(result.getCacheKey()), user);
         collectionActionService.addUnsupportedToResult(UNSUPPORTED, result, new ArrayList<>(summary.unsupportedDevices));
+        
+        if(summary.devicesToSend.isEmpty()) {
+            collectionActionService.updateResult(result, COMPLETE);
+            return result.getCacheKey();
+        }
 
         CommandRequestExecution verifExecution =
             createVerificationExecution(result.getExecution().getContextId(), summary, user);
@@ -332,12 +337,19 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             createVerificationExecution(initExecution.getContextId(), summary, user);
 
         DemandResetCallback verifCallback = new DemandResetCallback() {
-            List<StrategyType> pendingStrategies = Collections.synchronizedList(
-                strategies.stream().map(strategy -> strategy.getStrategy()).collect(Collectors.toList()));
+            List<StrategyType> pendingInitStrategies = Collections.synchronizedList(summary.validDevices.keySet()
+                .stream().filter( s -> summary.getValidDevices(s.getStrategy()) != null)
+                .map(strategy -> strategy.getStrategy())
+                .collect(Collectors.toList()));
+            List<StrategyType> pendingVerifStrategies = Collections.synchronizedList(summary.verifiableDevices.keySet()
+                .stream().map(strategy -> strategy.getStrategy())
+                .collect(Collectors.toList()));
+            
             Results initiationResults;
 
             @Override
             public void initiated(Results results, StrategyType strategyType) {
+                pendingInitStrategies.remove(strategyType);
                 log.debug("StrategyType=" + strategyType + " Demand reset is initiated for:"
                     + summary.getValidDevices(strategyType).size());
                 if (initiationResults == null) {
@@ -345,11 +357,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
                 } else {
                     initiationResults.append(results);
                 }
-
-                // If there are no devices to verify the strategy is complete.
-                if (summary.getVerifiableDevices(strategyType) == null) {
-                    complete(strategyType);
-                }
+                completeExecutions(strategyType);
             }
 
             @Override
@@ -364,13 +372,8 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
 
             @Override
             public void complete(StrategyType strategyType) {
-                pendingStrategies.remove(strategyType);
-                log.debug("Completing " + strategyType + " strategy. Remaining strategies:" + pendingStrategies);
-                if (pendingStrategies.isEmpty()) {
-                    log.debug("Demand Reset Verification Completed for all strategies.");
-                    completeExecutions(COMPLETE);
-                    demandResetEventLogService.demandResetCompleted(user);
-                }
+                pendingVerifStrategies.remove(strategyType);
+                completeExecutions(strategyType);
             }
 
             @Override
@@ -384,6 +387,15 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
                 callback.verified(device, value);
             }
 
+            private void completeExecutions(StrategyType strategyType) {
+                if (pendingInitStrategies.isEmpty() && pendingVerifStrategies.isEmpty()) {
+                    log.debug("Completing " + strategyType + " verification strategy. Remaining verification strategies:" + pendingVerifStrategies);
+                    log.debug("Demand Reset Verification Completed for all strategies.");
+                    completeExecutions(COMPLETE);
+                    demandResetEventLogService.demandResetCompleted(user);
+                }
+            }
+            
             private void completeExecutions(CommandRequestExecutionStatus newStatus) {
                 if (initExecution.getCommandRequestExecutionStatus() != COMPLETE) {
                     log.debug("Completing execution:" + initExecution.getId() + " status=" + newStatus + " for "
