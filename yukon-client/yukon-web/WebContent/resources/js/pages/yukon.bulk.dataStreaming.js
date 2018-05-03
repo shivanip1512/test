@@ -74,8 +74,6 @@ yukon.bulk.dataStreaming = (function () {
 
             /** Initialize this module. */
             init: function () {
-
-                if (initialized) return;
                 
                 $('#cancel-btn').click(function(ev) {
                     var btn = $(this),

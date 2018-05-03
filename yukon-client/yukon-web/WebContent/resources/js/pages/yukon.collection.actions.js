@@ -79,6 +79,8 @@ yukon.collection.actions = (function () {
                         yukon.bulk.masschange.init();
                     } else if (action == 'Add Points' || action == 'Update Points' || action == 'Remove Points') {
                         yukon.bulk.point.init();
+                    } else if (action == 'Configure Data Streaming') {
+                        yukon.bulk.dataStreaming.init();
                     }
                     $('.js-action-separator').removeClass('dn');
                     $('.js-action').html(action);
