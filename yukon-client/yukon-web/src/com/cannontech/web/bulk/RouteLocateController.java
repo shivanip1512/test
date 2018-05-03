@@ -9,9 +9,11 @@ import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -113,16 +115,18 @@ public class RouteLocateController {
     // EXECUTE
     @RequestMapping(value = "executeRouteLocation", method = RequestMethod.POST)
     public String executeRouteLocation(ModelMap model, HttpServletRequest request, String commandFromDropdown, String commandSelectValue, 
-                                       String commandString, boolean autoUpdateRoute, int[] routesSelect) throws ServletException {
-        
+                                       String commandString, boolean autoUpdateRoute, int[] routesSelect, HttpServletResponse resp) throws ServletException {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
                 
         List<Integer> selectedRouteIds = new ArrayList<>();
-        for (int routeId : routesSelect) {
-            selectedRouteIds.add(routeId);
+        if (routesSelect != null) {
+            for (int routeId : routesSelect) {
+                selectedRouteIds.add(routeId);
+            }
         }
         
         // AUTO UPDATE ROUTE OPTION
@@ -138,11 +142,19 @@ public class RouteLocateController {
                 model.addAttribute(param, deviceCollection.getCollectionParameters().get(param));
             }
             
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String errorMsg = messageSourceAccessor.getMessage(baseKey + "noRoutesSelectedError");
             model.addAttribute("errorMsg", errorMsg);
-            
-            return "redirect:/bulk/routeLocate/home";
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupModel(model, request, userContext, commandString, commandSelectValue, errorMsg, autoUpdateRoute);
+            return "routeLocate/routeLocateHome.jsp";
+        }
+        
+        if (StringUtils.isBlank(commandString)) {
+            String errorMsg = messageSourceAccessor.getMessage(baseKey + "noCommandSpecified");
+            model.addAttribute("errorMsg", errorMsg);
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupModel(model, request, userContext, commandString, commandSelectValue, errorMsg, autoUpdateRoute);
+            return "routeLocate/routeLocateHome.jsp";
         }
         
         //check if authorized to execute command
@@ -150,10 +162,11 @@ public class RouteLocateController {
             for (String param : deviceCollection.getCollectionParameters().keySet()) {
                 model.addAttribute(param, deviceCollection.getCollectionParameters().get(param));
             }
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String errorMsg = messageSourceAccessor.getMessage(baseKey + "commandNotAuthorizedError");
             model.addAttribute("errorMsg", errorMsg);
-            return "redirect:/bulk/routeLocate/home";
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupModel(model, request, userContext, commandString, commandSelectValue, errorMsg, autoUpdateRoute);
+            return "routeLocate/routeLocateHome.jsp";
         } else {
             SimpleCallback<CollectionActionResult> alertCallback = CollectionActionAlertHelper.createAlert(
                 AlertType.LOCATE_ROUTE, alertService, messageResolver.getMessageSourceAccessor(userContext), request);
@@ -173,6 +186,7 @@ public class RouteLocateController {
                 commandString, alertCallback, userContext);
             return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         }
+        
     }
     
     // VIEW ROUTES

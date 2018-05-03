@@ -14,10 +14,12 @@ import java.util.TreeMap;
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -50,6 +52,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -84,12 +87,13 @@ public abstract class AddRemovePointsControllerBase {
     
     // ABSTRACT
     public abstract String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException;
-    public abstract String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException, Exception;
+    public abstract String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext, HttpServletResponse resp) throws ServletException, Exception;
     
-    protected String redirectWithError(ModelMap model, String errorMsg, DeviceCollection deviceCollection) {
+    protected String redirectWithError(ModelMap model, String errorMsg, DeviceCollection deviceCollection, String view, HttpServletResponse resp) {
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("errorMsg", errorMsg);
-        return "redirect:home";
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        return view;
     }
     
     // START BULK PROCESSOR

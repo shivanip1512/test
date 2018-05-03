@@ -216,6 +216,10 @@ yukon.collection.actions.progress.report = (function () {
         
         buildChart : function (chart, data) {
             _buildChart(chart, data);
+        },
+        
+        cancelUpdating : function () {
+            clearTimeout(_updateTimeout);
         }
         
     };

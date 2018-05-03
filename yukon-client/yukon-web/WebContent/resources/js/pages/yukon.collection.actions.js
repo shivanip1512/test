@@ -27,6 +27,7 @@ yukon.collection.actions = (function () {
                 error: function (xhr, status, error, $form) {
                     yukon.ui.unbusy(btn);
                     $('#actionInputsDiv').html(xhr.responseText);
+                    $(document).scrollTop(0);
                 },
             });
         },
@@ -51,6 +52,7 @@ yukon.collection.actions = (function () {
 
             $('#collectionActionsAccordion').accordion({
                 heightStyle: "content",
+                collapsible: true,
                 active: selectedHeader,
                 beforeActivate: function(e, ui){
                     //hide content in action inputs (this was causing an issue because of overflow visible)
@@ -75,10 +77,16 @@ yukon.collection.actions = (function () {
                         yukon.bulk.device.configs.init();
                     } else if (action == 'Mass Change') {
                         yukon.bulk.masschange.init();
+                    } else if (action == 'Add Points' || action == 'Update Points' || action == 'Remove Points') {
+                        yukon.bulk.point.init();
                     }
                     $('.js-action-separator').removeClass('dn');
                     $('.js-action').html(action);
                     $('#collectionActionsAccordion').accordion("option", "active", 2);
+                    //clear out any old progress reports
+                    var progressReportMsg = $('#progressReportMessage').val();
+                    $('#progressReportDiv').html(progressReportMsg);
+                    yukon.collection.actions.progress.report.cancelUpdating();
                 });
             });
             

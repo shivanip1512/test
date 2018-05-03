@@ -6,8 +6,10 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,16 +23,15 @@ import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.CollectionActionAlertHelper;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.util.AttributeSelectorHelperService;
 
 @RequestMapping("/groupMeterRead/*")
@@ -75,19 +76,20 @@ public class GroupMeterReadController {
     }
 	
 	@RequestMapping(value = "readCollection", method = RequestMethod.POST)
-	public String readCollection(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) throws ServletException {
+	public String readCollection(ModelMap model, HttpServletRequest request, YukonUserContext userContext, HttpServletResponse resp) throws ServletException {
 	    DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-	    
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+
         Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
         if (selectedAttributes.size() == 0) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "noAttributesSelected"));
-            model.addAttribute("deviceCollection", deviceCollection);
-            model.addAllAttributes(deviceCollection.getCollectionParameters());
-            return "redirect:homeCollection";
+            model.addAttribute("errorMsg", messageSourceAccessor.getMessage(baseKey + "noAttributesSelected"));
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupModel(model, userContext, request);
+            return "groupMeterRead/groupMeterReadHomeCollection.jsp";
         }
         
         SimpleCallback<CollectionActionResult> alertCallback = CollectionActionAlertHelper.createAlert(AlertType.GROUP_METER_READ_COMPLETION, alertService,
-                    messageResolver.getMessageSourceAccessor(userContext), request);
+                    messageSourceAccessor, request);
 
         int resultKey =  deviceAttributeReadService.initiateRead(deviceCollection, selectedAttributes,
                                       DeviceRequestType.GROUP_ATTRIBUTE_READ, alertCallback, userContext);

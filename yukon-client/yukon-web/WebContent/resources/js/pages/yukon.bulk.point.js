@@ -20,15 +20,20 @@ yukon.bulk.point = (function () {
             $('#allPointsDiv').removeClass('dn');
         }
    },
+   
+   enableDisableActionButton = function () {
+       var inputsDiv = $('#actionInputsDiv'),
+           numPointsChecked = $('.js-point-checkbox:checked').length;
+       inputsDiv.find('.js-action-submit').prop("disabled", numPointsChecked == 0);
+   }
 
     mod = {
 
             /** Initialize this module. */
             init: function () {
-
-                if (initialized) return;
                 
                 showHideAllPoints();
+                enableDisableActionButton();
                 
                 //check any preselectedPointIdentifiers (used when coming from Device Data Monitors)
                 $("[name='preselectedPointIdentifiers']").each(function () {
@@ -40,6 +45,10 @@ yukon.bulk.point = (function () {
                 
                 $(document).on('change', '#sharedPoints', function () {
                     showHideAllPoints();
+                });
+                
+                $(document).on('click', '.js-point-checkbox', function () {
+                    enableDisableActionButton();
                 });
                 
                 initialized = true;

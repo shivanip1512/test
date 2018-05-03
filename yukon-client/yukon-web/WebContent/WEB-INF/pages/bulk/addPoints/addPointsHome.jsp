@@ -10,6 +10,11 @@
     
             <tags:bulkActionContainer key="yukon.common.device.bulk.addPointsHome" deviceCollection="${deviceCollection}">
             
+                <%-- ERROR MSG --%>
+                <c:if test="${not empty errorMsg}">
+                    <div class="user-message error stacked">${errorMsg}</div>
+                </c:if>
+            
                 <form action="<cti:url value="/bulk/addPoints/execute" />" method="POST">
                     <c:forEach var="pointTypeOffset" items="${preselectedPointIdentifiers}">
                         <input type="hidden" name="preselectedPointIdentifiers" value="${pointTypeOffset}"/>
@@ -124,7 +129,7 @@
                     </div>
                             
                     <%-- ADD POINTS BUTTON --%>
-                    <cti:button nameKey="add" classes="action primary js-action-submit"/>
+                    <cti:button nameKey="add" classes="action primary js-action-submit" busy="true"/>
                     
                 </form>
         

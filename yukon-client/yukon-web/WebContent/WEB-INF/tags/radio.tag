@@ -23,6 +23,7 @@
 <%@ attribute name="label" description="Text used for the button. Html escaped internally." %>
 
 <%@ attribute name="inputClass" description="CSS class names applied to the input." %>
+<%@ attribute name="buttonTextClass" description="CSS class names applied to the label for the button." %>
 <%@ attribute name="classes" description="CSS class names applied to the button element." %>
 <%@ attribute name="id" description="The html id attribute of the radio input." %>
 
@@ -79,7 +80,7 @@
             </c:otherwise>
         </c:choose>
         <span class="button ${pageScope.classes}">
-            <span class="b-label">
+            <span class="b-label ${pageScope.buttonTextClass}">
                 <c:choose>
                     <c:when test="${not empty pageScope.key}">
                         <cti:msgScope paths=", yukon.web.components.button, yukon.common">

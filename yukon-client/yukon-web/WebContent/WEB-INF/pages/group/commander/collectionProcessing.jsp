@@ -6,6 +6,11 @@
 <cti:msgScope paths="yukon.web.modules.tools.bulk.sendCommand,yukon.common">
     
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.sendCommand" deviceCollection="${deviceCollection}">
+    
+        <%-- ERROR MSG --%>
+        <c:if test="${not empty errorMsg}">
+            <div class="user-message error stacked">${errorMsg}</div>
+        </c:if>
         
         <form id="collectionProcessingForm" action="<cti:url value="/group/commander/executeCollectionCommand"/>" method="post">
             <cti:csrfToken />

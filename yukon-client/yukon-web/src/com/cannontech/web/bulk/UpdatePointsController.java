@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,14 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.Processor;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.bulk.model.UpdatePointsFieldType;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -38,6 +39,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private UpdatePointsProcessorFactory updatePointsProcessorFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     // HOME
     @Override
@@ -65,13 +67,6 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         model.addAttribute("sharedPoints", sharedPoints);
         model.addAttribute("maskExistingPoints", maskExistingPoints);
 
-        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-        if (StringUtils.isNotBlank(errorMsg)) {
-            FlashScope flashScope = new FlashScope(request);
-            flashScope.setError(
-                new YukonMessageSourceResolvable("yukon.common.device.bulk.updatePointsHome." + errorMsg));
-        }
-
         List<UpdatePointsFieldType> pointFields = Lists.newArrayList(UpdatePointsFieldType.values());
         model.addAttribute("pointFields", pointFields);
 
@@ -98,10 +93,11 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     // EXECUTE ADD
     @Override
     @RequestMapping(value = "execute", method = RequestMethod.POST)
-    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException, Exception {
+    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext, HttpServletResponse resp) throws ServletException, Exception {
         
         // device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
         // options
         boolean sharedPoints = ServletRequestUtils.getRequiredBooleanParameter(request, "sharedPoints");
@@ -113,7 +109,6 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         String maskExistingPointsSubmitButton =
             ServletRequestUtils.getStringParameter(request, "maskExistingPointsSubmitButton");
         if (maskExistingPointsSubmitButton != null) {
-
             model.addAllAttributes(deviceCollection.getCollectionParameters());
             model.addAttribute("maskExistingPoints", !maskExistingPoints); // toggle it!
             return "redirect:home";
@@ -127,11 +122,15 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
             extractPointTemplatesMapFromParameters(request, deviceCollection, sharedPoints);
 
         if (pointTemplatesMap.isEmpty()) {
-            return redirectWithError(model, "noPointsSuppliedMsg", deviceCollection);
+            String errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg");
+            setupModel(model, request);
+            return redirectWithError(model, errorMsg, deviceCollection, "updatePoints/updatePointsHome.jsp", resp);
         } else {
-            String errorMsg = validateInput(updateField, setValue, userContext);
-            if (StringUtils.isNotBlank(errorMsg)) {
-                return redirectWithError(model, errorMsg, deviceCollection);
+            String errorKey = validateInput(updateField, setValue, userContext);
+            if (StringUtils.isNotBlank(errorKey)) {
+                String errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.updatePointsHome." + errorKey);
+                setupModel(model, request);
+                return redirectWithError(model, errorMsg, deviceCollection, "updatePoints/updatePointsHome.jsp", resp);
             }
         }
 

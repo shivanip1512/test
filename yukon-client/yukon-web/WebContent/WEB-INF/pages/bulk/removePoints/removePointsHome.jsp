@@ -8,6 +8,11 @@
     <cti:msgScope paths="yukon.common.device.bulk.removePointsHome"> 
 
         <tags:bulkActionContainer key="yukon.common.device.bulk.removePointsHome" deviceCollection="${deviceCollection}">
+        
+            <%-- ERROR MSG --%>
+            <c:if test="${not empty errorMsg}">
+                <div class="user-message error stacked">${errorMsg}</div>
+            </c:if>
             
             <form action="<cti:url value="/bulk/removePoints/execute" />" method="POST">
                 <cti:csrfToken/>
@@ -98,7 +103,7 @@
                 </div>
                         
                 <%-- REMOVE POINTS BUTTON --%>
-                <cti:button nameKey="remove" classes="action primary js-action-submit"/>
+                <cti:button nameKey="remove" classes="action primary js-action-submit" busy="true"/>
     
             </form>
             

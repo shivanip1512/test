@@ -8,8 +8,8 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +26,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
@@ -33,10 +34,9 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.HashMultimap;
 
 @Controller
@@ -45,6 +45,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
 
     private Logger log = YukonLogManager.getLogger(AddPointsController.class);
     @Autowired DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     // HOME
     @Override
@@ -71,13 +72,6 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         boolean maskMissingPoints = ServletRequestUtils.getBooleanParameter(request, "maskMissingPoints", true);
         model.addAttribute("sharedPoints", sharedPoints);
         model.addAttribute("maskMissingPoints", maskMissingPoints);
-
-        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-        if (StringUtils.isNotBlank(errorMsg)) {
-            FlashScope flashScope = new FlashScope(request);
-            flashScope.setError(
-                new YukonMessageSourceResolvable("yukon.common.device.bulk.removePointsHome." + errorMsg));
-        }
 
         // device types set
         Set<PaoType> deviceTypeSet = getDeviceTypesSet(deviceCollection);
@@ -128,10 +122,11 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     // EXECUTE REMOVE
     @Override
     @RequestMapping(value = "execute", method = RequestMethod.POST)
-    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException, Exception {
+    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext, HttpServletResponse resp) throws ServletException, Exception {
 
         // device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
         // options
         boolean sharedPoints = ServletRequestUtils.getRequiredBooleanParameter(request, "sharedPoints");
@@ -143,10 +138,9 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         String maskMissingPointsSubmitButton =
             ServletRequestUtils.getStringParameter(request, "maskMissingPointsSubmitButton");
         if (maskMissingPointsSubmitButton != null) {
-
             model.addAllAttributes(deviceCollection.getCollectionParameters());
             model.addAttribute("maskMissingPoints", !maskMissingPoints); // toggle it!
-            return "redirect:home";
+            return "redirect:home";      
         }
 
         // create processor
@@ -155,8 +149,9 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         SingleProcessor<YukonDevice> addPointsProcessor = getRemovePointsProcessor(pointTemplatesMap);
 
         if (pointTemplatesMap.isEmpty()) {
-            String noPointsSuppliedMsg = "noPointsSuppliedMsg";
-            return redirectWithError(model, noPointsSuppliedMsg, deviceCollection);
+            setupModel(model, request);
+            String errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.removePointsHome.noPointsSuppliedMsg");
+            return redirectWithError(model, errorMsg, deviceCollection, "removePoints/removePointsHome.jsp", resp);
         }
 
         // start processor

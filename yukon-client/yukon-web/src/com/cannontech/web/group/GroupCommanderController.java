@@ -9,10 +9,12 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +41,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteCommand;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -49,7 +50,6 @@ import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.CollectionActionAlertHelper;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -102,13 +102,15 @@ public class GroupCommanderController {
     @RequestMapping(value = "executeCollectionCommand", method = RequestMethod.POST)
     public String executeCollectionCommand(HttpServletRequest request, DeviceCollection collection,
             String commandFromDropdown, String commandSelectValue, String commandString, final String emailAddress, boolean sendEmail,
-            final YukonUserContext context, ModelMap model, FlashScope flash) {
-        
+            final YukonUserContext context, ModelMap model, HttpServletResponse resp) {
         model.addAttribute("deviceCollection", collection);
         model.addAllAttributes(collection.getCollectionParameters());
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(context);
         if (StringUtils.isBlank(commandString)) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "noCommandSpecified"));
-            return "redirect:collectionProcessing";
+            model.addAttribute("errorMsg", messageSourceAccessor.getMessage(baseKey + "noCommandSpecified"));
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupModel(collection, context, model);
+            return "commander/collectionProcessing.jsp";
         }
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
@@ -135,15 +137,17 @@ public class GroupCommanderController {
             };
             SimpleCallback<CollectionActionResult> alertCallback =
                 CollectionActionAlertHelper.createAlert(AlertType.GROUP_COMMAND_COMPLETION, alertService,
-                    messageResolver.getMessageSourceAccessor(context), emailCallback, request);
+                    messageSourceAccessor, emailCallback, request);
             int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, userInputs, collection,
                 commandString, CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, alertCallback, context);
             commanderEventLogService.groupCommandInitiated(collection.getDeviceCount(), commandString,
                 String.valueOf(cacheKey), context.getYukonUser());
             return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "notAuthorized"));
-            return "redirect:collectionProcessing";
+            model.addAttribute("errorMsg", messageSourceAccessor.getMessage(baseKey + "notAuthorized"));
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupModel(collection, context, model);
+            return "commander/collectionProcessing.jsp";
         }
     }
 

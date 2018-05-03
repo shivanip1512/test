@@ -10,7 +10,7 @@
             <form method="post" action="${massDeleteUrl}">
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                <cti:button nameKey="delete" classes="primary action js-action-submit"/>
+                <cti:button nameKey="delete" classes="primary action js-action-submit" busy="true"/>
             </form>
         </div>
     

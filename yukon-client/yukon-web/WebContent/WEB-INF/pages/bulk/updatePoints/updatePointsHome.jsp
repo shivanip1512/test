@@ -8,6 +8,11 @@
     <cti:msgScope paths="yukon.common.device.bulk.updatePointsHome"> 
 
         <tags:bulkActionContainer key="yukon.common.device.bulk.updatePointsHome" deviceCollection="${deviceCollection}">
+        
+            <%-- ERROR MSG --%>
+            <c:if test="${not empty errorMsg}">
+                <div class="user-message error stacked">${errorMsg}</div>
+            </c:if>
             
             <form action="<cti:url value="/bulk/updatePoints/execute" />" method="POST">
                 <cti:csrfToken/>
@@ -106,7 +111,7 @@
                     </select>
                     <span class="fl" style="margin-left: 10px;"><i:inline key=".value"/></span>
                     <input type="text" name="setValue" class="fl" style="margin-left: 10px;">
-                    <cti:button nameKey="update" classes="action primary js-action-submit"/>
+                    <cti:button nameKey="update" classes="action primary js-action-submit" busy="true"/>
                 </div>
             </form>
     

@@ -24,7 +24,7 @@
                 <cti:button renderMode="appButton" icon="${icon}" title="${descriptionText}" classes="js-collection-action" data-url="${actionUrl}" data-action="${linkText}"/>
             </c:when>
             <c:otherwise>
-                <a href="${actionUrl}" target="_blank"><cti:button renderMode="appButton" icon="${icon}" title="${descriptionText}"/></a>
+                <a href="${actionUrl}"><cti:button renderMode="appButton" icon="${icon}" title="${descriptionText}"/></a>
             </c:otherwise>
         </c:choose>
     </td>
@@ -35,7 +35,7 @@
                     <div><a href="#" class="title js-collection-action" data-url="${actionUrl}" data-action="${linkText}">${linkText}</a></div>
                 </c:when>
                 <c:otherwise>
-                    <div><a class="title" href="${actionUrl}" target="_blank">${linkText}</a></div> 
+                    <div><a class="title" href="${actionUrl}">${linkText}</a></div> 
                 </c:otherwise>
             </c:choose>
             <div class="detail">${descriptionText}</div>

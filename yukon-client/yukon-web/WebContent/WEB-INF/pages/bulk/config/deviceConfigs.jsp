@@ -18,8 +18,8 @@
             <cti:csrfToken/>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
-            <tags:nameValueContainer2 tableClass="with-form-controls">
-                <tags:nameValue2 nameKey=".action">
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".action" nameClass="mw100">
                     <div class="button-group stacked">
                         <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                             <c:if test="${empty configAction}">
@@ -42,7 +42,7 @@
                     </div>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 nameKey=".assignConfig.label" rowClass="js-assign-config">
+                <tags:nameValue2 nameKey=".assignConfig.label" rowClass="js-assign-config" nameClass="mw100">
                     <c:choose>
                         <c:when test="${fn:length(existingConfigs) > 0}">
                             <select name="configuration" class="fl" style="margin-left:5px;">

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +27,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
@@ -37,10 +39,9 @@ import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
-import com.cannontech.web.common.flashScope.FlashScope;
 
 @Controller
 @RequestMapping("addPoints/*")
@@ -49,6 +50,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 
     private static final Logger log = YukonLogManager.getLogger(AddPointsController.class);
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     // HOME
     @Override
@@ -86,12 +88,6 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         model.addAttribute("updatePoints", updatePoints);
         model.addAttribute("maskExistingPoints", maskExistingPoints);
 
-        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-        if (StringUtils.isNotBlank(errorMsg)) {
-            FlashScope flashScope = new FlashScope(request);
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.common.device.bulk.addPointsHome." + errorMsg));
-        }
-
         // device types set
         Set<PaoType> deviceTypeSet = getDeviceTypesSet(deviceCollection);
         model.addAttribute("deviceTypeEnumSet", deviceTypeSet);
@@ -116,10 +112,11 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     // EXECUTE ADD
     @Override
     @RequestMapping(value = "execute", method = RequestMethod.POST)
-    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException, Exception {
+    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext, HttpServletResponse resp) throws ServletException, Exception {
 
         // device collection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
         // options
         boolean sharedPoints = ServletRequestUtils.getRequiredBooleanParameter(request, "sharedPoints");
@@ -133,7 +130,6 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         String maskExistingPointsSubmitButton =
             ServletRequestUtils.getStringParameter(request, "maskExistingPointsSubmitButton");
         if (maskExistingPointsSubmitButton != null) {
-
             model.addAllAttributes(deviceCollection.getCollectionParameters());
             model.addAttribute("maskExistingPoints", !maskExistingPoints); // toggle it!
             return "redirect:home";
@@ -145,7 +141,9 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         SingleProcessor<YukonDevice> addPointsProcessor = getAddPointsProcessor(pointTemplatesMap, updatePoints);
 
         if (pointTemplatesMap.isEmpty()) {
-            return redirectWithError(model, "noPointsSuppliedMsg", deviceCollection);
+            setupModel(model, request);
+            String errorMsg = messageSourceAccessor.getMessage("yukon.common.device.bulk.addPointsHome.noPointsSuppliedMsg");
+            return redirectWithError(model, errorMsg, deviceCollection, "addPoints/addPointsHome.jsp", resp);
         }
         
         // start processor

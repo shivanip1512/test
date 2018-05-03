@@ -2,9 +2,8 @@
 <%@ attribute name="pointTemplates" required="true" type="java.util.List"%>
 <%@ attribute name="columnCount" required="true" type="java.lang.Integer"%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <c:set var="columnPercentage" value="${100 / columnCount}"/>
 			
@@ -16,8 +15,9 @@
 			<c:set var="className" value="${pointTemplateMask.masked ? 'subtle' : ''}"/>
 		
 			<label>
-				<input type="checkbox" ${disabled} name="PT:${deviceType}:${pointTemplateMask.pointTemplate.pointIdentifier.type}:${pointTemplateMask.pointTemplate.pointIdentifier.offset}">
-					<span class="${className}">${pointTemplateMask.pointTemplate.name} [#${pointTemplateMask.pointTemplate.pointIdentifier.offset}]</span>
+				<input type="checkbox" ${disabled} class="js-point-checkbox"
+                    name="PT:${deviceType}:${pointTemplateMask.pointTemplate.pointIdentifier.type}:${pointTemplateMask.pointTemplate.pointIdentifier.offset}">
+			    <span class="${className}">${pointTemplateMask.pointTemplate.name} [#${pointTemplateMask.pointTemplate.pointIdentifier.offset}]</span>
 			</label>
         </cti:dataGridCell>    
         

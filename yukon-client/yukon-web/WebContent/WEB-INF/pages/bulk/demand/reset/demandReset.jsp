@@ -12,7 +12,7 @@
         <form:form action="${commandUrl}" method="post" >
             <cti:csrfToken/>
             <div class="page-action-area">
-                <cti:button nameKey="start" classes="primary action js-action-submit"/>
+                <cti:button nameKey="start" classes="primary action js-action-submit" busy="true"/>
             </div>
         </form:form>
     

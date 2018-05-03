@@ -10,7 +10,7 @@
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">
-            <div class="error stacked">${errorMsg}</div>
+            <div class="user-message error stacked">${errorMsg}</div>
         </c:if>
         
         <form id="executeLocateForm" action="<cti:url value="/bulk/routeLocate/executeRouteLocation"/>" method = "POST">

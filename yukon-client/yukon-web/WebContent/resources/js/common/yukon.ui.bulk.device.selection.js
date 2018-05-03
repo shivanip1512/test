@@ -44,6 +44,10 @@ yukon.ui.bulk.device.selection = (function () {
             $('.js-count').html($('#deviceCollectionCount').val());
             $('.js-device-description').html($('#deviceCollectionDescription').val());
             $('#collectionActionsAccordion').accordion("option", "active", 1);
+            //clear out any old progress reports
+            var progressReportMsg = $('#progressReportMessage').val();
+            $('#progressReportDiv').html(progressReportMsg);
+            yukon.collection.actions.progress.report.cancelUpdating();
             var refreshUrl = $('#refreshLink').val();
             window.history.pushState({path:refreshUrl}, '', refreshUrl);
             var redirectUrl = $('#redirectUrl').val();
