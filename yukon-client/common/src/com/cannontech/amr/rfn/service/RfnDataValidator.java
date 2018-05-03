@@ -18,7 +18,6 @@ public final class RfnDataValidator {
 
     /**
      * Checks that the timestamp is between 1-Jan-2000 or calculated date and 1 year from now
-     * Calculated date depends on the months value set in global setting.
      * Use this method only for checking for a "reasonable" timestamp.
      * Expectation is that when "not valid" the timestamp and quality may be adjusted. 
      * Examples of "unreasonable" would be the year 1970 or 2106).
