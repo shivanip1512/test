@@ -25,6 +25,7 @@ import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
@@ -115,9 +116,9 @@ public class GroupCommanderController {
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
         if (!StringUtils.isBlank(commandSelectValue)) {
-            userInputs.put("Selected Command", commandFromDropdown);
+            userInputs.put(CollectionActionInput.SELECTED_COMMAND.name(), commandFromDropdown);
         }
-        userInputs.put("Command", commandString);
+        userInputs.put(CollectionActionInput.COMMAND.name(), commandString);
         final URL hostURL = ServletUtil.getHostURL(request);
         final String partialUrl = ServletUtil.createSafeUrl(request, "/collectionActions/progressReport/view");
 

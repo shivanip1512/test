@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -157,7 +158,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
             });
             userInputs.put(entry.getKey().getDbString(), String.join(", ", points));
         }
-        userInputs.put("Update Field", updateField.getDisplayValue() + ": " + setValue);
+        userInputs.put(CollectionActionInput.UPDATE_FIELD.name(), updateField.getDisplayValue() + ": " + setValue);
         int key  =
             startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, userContext, userInputs);
 

@@ -20,6 +20,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -116,7 +117,7 @@ public class DeviceConfigController {
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(deviceConfig, userContext.getYukonUser());
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
-        userInputs.put("Configuration", deviceConfig.getName());
+        userInputs.put(CollectionActionInput.CONFIGURATION.name(), deviceConfig.getName());
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.ASSIGN_CONFIG, userInputs,
             deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();

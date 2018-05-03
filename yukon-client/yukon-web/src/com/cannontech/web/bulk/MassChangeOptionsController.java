@@ -29,6 +29,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -111,7 +112,7 @@ public class MassChangeOptionsController {
         if (value == null) {
             value = yukonDeviceDtoObj.getEnable() ? "Enable" : "Disable";
         }
-        userInputs.put("Change", bulkField.getInputSource().getDisplayName() + ": " + value);
+        userInputs.put(CollectionActionInput.CHANGE.name(), bulkField.getInputSource().getDisplayName() + ": " + value);
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.MASS_CHANGE, userInputs,
             deviceCollection, context);
 

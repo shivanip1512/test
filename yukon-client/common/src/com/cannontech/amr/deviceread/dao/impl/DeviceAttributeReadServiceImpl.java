@@ -28,6 +28,7 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -275,7 +276,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         List<String> attributeStrings =
             attributes.stream().map(attribute -> accessor.getMessage(attribute)).collect(Collectors.toList());
         LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
-        inputs.put("Attributes", String.join(", ", attributeStrings));
+        inputs.put(CollectionActionInput.ATTRIBUTES.name(), String.join(", ", attributeStrings));
         return inputs;
     }
     

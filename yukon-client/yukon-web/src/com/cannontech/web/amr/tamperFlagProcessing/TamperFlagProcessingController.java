@@ -22,6 +22,7 @@ import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -138,7 +139,7 @@ public class TamperFlagProcessingController {
         }
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
-        userInputs.put("Command", RESET_FLAGS_COMMAND);
+        userInputs.put(CollectionActionInput.COMMAND.name(), RESET_FLAGS_COMMAND);
         int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, userInputs, tamperFlagGroupDeviceCollection,
                                                        RESET_FLAGS_COMMAND, CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, null, userContext);
 		monitorToRecentResetKeysCache.put(tamperFlagMonitorId, cacheKey);

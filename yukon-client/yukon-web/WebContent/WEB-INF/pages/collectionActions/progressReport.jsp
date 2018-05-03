@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.tools.collectionActions.progressReport">
+<cti:msgScope paths="yukon.web.modules.tools.collectionActions.progressReport,yukon.web.modules.tools.collectionActions">
 
     <table class="stacked">
         <tr>
@@ -34,7 +34,9 @@
             </tags:nameValue2>
             <c:forEach var="input" items="${result.inputs.inputs}">
                 <tr>
-                    <td class="name">${input.key}:</td>
+                    <cti:msg2 var="inputNameKey" key=".collectionActionInput.${input.key}" blankIfMissing="true"/>
+                    <c:set var="inputName" value="${!empty inputNameKey ?  inputNameKey : input.key}"/>
+                    <td class="name">${inputName}:</td>
                     <td class="value">${input.value}</td>
                 </tr>
             </c:forEach>

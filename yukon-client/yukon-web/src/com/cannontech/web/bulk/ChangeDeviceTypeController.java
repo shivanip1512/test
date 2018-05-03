@@ -19,6 +19,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -110,7 +111,7 @@ public class ChangeDeviceTypeController {
         
         final PaoType selectedDeviceType = ServletRequestEnumUtils.getRequiredEnumParameter(request, PaoType.class, "deviceTypes"); 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
-        userInputs.put("Device Type",  selectedDeviceType.getDbString());
+        userInputs.put(CollectionActionInput.DEVICE_TYPE.name(),  selectedDeviceType.getDbString());
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.CHANGE_TYPE, userInputs,
             deviceCollection, context);
         

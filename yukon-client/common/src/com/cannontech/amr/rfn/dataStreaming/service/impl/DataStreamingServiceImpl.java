@@ -50,6 +50,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -695,7 +696,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         // logService.readAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey())
         DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
         LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
-        inputs.put("Selected Command", "Read Data Streaming Configuration");
+        inputs.put(CollectionActionInput.SELECTED_COMMAND.name(), "Read Data Streaming Configuration");
         int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, inputs, deviceCollection,
             "getconfig behavior rfndatastreaming", CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, null, context);
         return cacheKey;
@@ -928,8 +929,8 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             saveBehaviorReports(deviceIdToBehaviorReport);
         });
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
-        userInputs.put("Attributes",  config.getCommaDelimitedOnAttributes());
-        userInputs.put("Interval", new Integer(config.getSelectedInterval()).toString());
+        userInputs.put(CollectionActionInput.ATTRIBUTES.name(),  config.getCommaDelimitedOnAttributes());
+        userInputs.put(CollectionActionInput.INTERVAL.name(), new Integer(config.getSelectedInterval()).toString());
         return sendConfiguration(CollectionAction.CONFIGURE_DATA_STREAMING, userInputs,
             new DeviceSummary(deviceCollection, devicesSupportingNoAttributes), requestSeqNumber,
             context).getCacheKey();

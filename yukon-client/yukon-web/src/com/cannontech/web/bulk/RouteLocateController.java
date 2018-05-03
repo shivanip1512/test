@@ -25,6 +25,7 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -178,10 +179,10 @@ public class RouteLocateController {
                     selectedRouteNames.add(route.getPaoName());
                 }
             });  
-            userInputs.put("Selected Routes",  StringUtils.join(selectedRouteNames, ", "));
-            userInputs.put("Automatically Update Route", Boolean.valueOf(autoUpdateRoute).toString());
-            userInputs.put("Selected Command", commandFromDropdown);
-            userInputs.put("Command", commandString);
+            userInputs.put(CollectionActionInput.SELECTED_ROUTES.name(),  StringUtils.join(selectedRouteNames, ", "));
+            userInputs.put(CollectionActionInput.AUTOMATICALLY_UPDATE_ROUTE.name(), Boolean.valueOf(autoUpdateRoute).toString());
+            userInputs.put(CollectionActionInput.SELECTED_COMMAND.name(), commandFromDropdown);
+            userInputs.put(CollectionActionInput.COMMAND.name(), commandString);
             int cacheKey = routeLocationService.locate(userInputs, deviceCollection, selectedRouteIds, autoUpdateRoute,
                 commandString, alertCallback, userContext);
             return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
