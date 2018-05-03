@@ -4,8 +4,8 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.CANCELLED;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
 
 import java.util.ArrayList;
@@ -125,7 +125,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
                 .stream().filter( s -> summary.getValidDevices(s.getStrategy()) != null)
                 .map(strategy -> strategy.getStrategy())
                 .collect(Collectors.toList()));
-            List<StrategyType> pendingVerifStrategies = Collections.synchronizedList(strategies
+            List<StrategyType> pendingVerifStrategies = Collections.synchronizedList(summary.verifiableDevices.keySet()
                 .stream().map(strategy -> strategy.getStrategy())
                 .collect(Collectors.toList()));
             @Override
@@ -136,63 +136,52 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
                 Set<SimpleDevice> validDevices = summary.getValidDevices(strategyType);
                 validDevices.forEach(device -> {
                     SpecificDeviceErrorDescription error = results.getErrors().get(device);
-                    if (results.getErrors().get(device) == null) {
-                        if (!summary.getVerifiableDevices(strategyType).contains(device)) {
-                            CollectionActionLogDetail detail = new CollectionActionLogDetail(device, UNCONFIRMED);
-                            detail.setLastValue(DeviceRequestType.DEMAND_RESET_COMMAND.getShortName());
-                            result.addDeviceToGroup(UNCONFIRMED, device, detail);
-                        }
-                    } else {
+                    if (error != null) {
                         CollectionActionLogDetail detail = new CollectionActionLogDetail(device, FAILURE);
                         detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
                         detail.setLastValue(DeviceRequestType.DEMAND_RESET_COMMAND.getShortName());
                         result.addDeviceToGroup(FAILURE, device, detail);
                     }
                 });
-                // If there are no devices to verify the strategy is complete.
-                if (summary.getVerifiableDevices(strategyType) == null) {
-                    complete(strategyType);
-                }
-
-                if (pendingInitStrategies.isEmpty()) {
-                    completeExecution(result.getExecution(), COMPLETE);
-                }
+                completeExecutions(strategyType);
             }
 
             @Override
             public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
-                CollectionActionLogDetail unconfirmedDetail = new CollectionActionLogDetail(device, UNCONFIRMED);
-                unconfirmedDetail.setLastValue(DeviceRequestType.DEMAND_RESET_COMMAND.getShortName());
-                result.addDeviceToGroup(UNCONFIRMED, device, unconfirmedDetail);
-                
                 CollectionActionLogDetail detail = new CollectionActionLogDetail(device, FAILURE);
                 detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
                 detail.setLastValue(DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY.getShortName());
-                result.addDeviceToGroup(FAILURE, device, detail);  
+                result.addDeviceToGroup(FAILURE, device, detail);
             }
-
+            
             @Override
             public void cannotVerify(SimpleDevice device, SpecificDeviceErrorDescription error) {
-                failed(device, error);
+                CollectionActionLogDetail detail = new CollectionActionLogDetail(device, UNCONFIRMED);
+                detail.setLastValue(DeviceRequestType.DEMAND_RESET_COMMAND.getShortName());
+                detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
+                result.addDeviceToGroup(UNCONFIRMED, device, detail);
             }
 
             @Override
             public void complete(StrategyType strategyType) {
                 if (!result.isComplete()) {
                     pendingVerifStrategies.remove(strategyType);
-                    pendingInitStrategies.remove(strategyType);
+                    completeExecutions(strategyType);
+                }
+            }
+            
+            private void completeExecutions(StrategyType strategyType) {
+                if (pendingInitStrategies.isEmpty() && pendingVerifStrategies.isEmpty()) {
                     log.debug("Completing " + strategyType + " verification strategy. Remaining verification strategies:" + pendingVerifStrategies);
-                    if (pendingVerifStrategies.isEmpty()) {
-                        completeExecution(verifExecution, !result.isCanceled() ? COMPLETE : CANCELLED);
-                        collectionActionService.updateResult(result, !result.isCanceled() ? COMPLETE : CANCELLED);
-                        demandResetEventLogService.demandResetCompletedResults(String.valueOf(result.getCacheKey()),
-                            result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
-                            result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
-                        try {
-                            alertCallback.handle(result);
-                        } catch (Exception e) {
-                            log.error(e);
-                        }
+                    completeExecution(verifExecution, !result.isCanceled() ? COMPLETE : CANCELLED);
+                    collectionActionService.updateResult(result, !result.isCanceled() ? COMPLETE : CANCELLED);
+                    demandResetEventLogService.demandResetCompletedResults(String.valueOf(result.getCacheKey()),
+                        result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
+                        result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
+                    try {
+                        alertCallback.handle(result);
+                    } catch (Exception e) {
+                        log.error(e);
                     }
                 }
             }
