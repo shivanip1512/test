@@ -14,7 +14,7 @@ yukon.bulk.masschange = (function () {
         var selectMassChangeField = $('input[name=field]:checked').val();
         $('#massChangeBulkFieldName').val(selectMassChangeField);
         $('#massChangeSelectForm').ajaxSubmit({
-            success: function(data, status, xhr, $form) {
+            success : function(data, status, xhr, $form) {
                 $('#actionInputsDiv2').html(data);
             }
         });

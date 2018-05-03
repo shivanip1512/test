@@ -54,12 +54,12 @@ yukon.collection.actions = (function () {
                 heightStyle: "content",
                 collapsible: true,
                 active: selectedHeader,
-                beforeActivate: function(e, ui){
-                    //hide content in action inputs (this was causing an issue because of overflow visible)
+                beforeActivate : function(e, ui) {
+                    // hide content in action inputs (this was causing an issue because of overflow visible)
                     $('#collectionActionsContainer').addClass('dn');
                 },
-                activate: function(e, ui){
-                    //redisplay content in action inputs (this was causing an issue because of overflow visible)
+                activate : function(e, ui) {
+                    // redisplay content in action inputs (this was causing an issue because of overflow visible)
                     $('#collectionActionsContainer').removeClass('dn');
                 }
             });
