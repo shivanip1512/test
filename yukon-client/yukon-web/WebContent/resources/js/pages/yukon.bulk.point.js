@@ -23,8 +23,11 @@ yukon.bulk.point = (function () {
    
    enableDisableActionButton = function () {
        var inputsDiv = $('#actionInputsDiv'),
+           pointsVisible = $('.js-point-checkbox').length,
            numPointsChecked = $('.js-point-checkbox:checked').length;
-       inputsDiv.find('.js-action-submit').prop("disabled", numPointsChecked == 0);
+       if (pointsVisible > 0) {
+           inputsDiv.find('.js-action-submit').prop("disabled", numPointsChecked == 0);
+       }
    }
 
     mod = {
