@@ -34,7 +34,7 @@ yukon.collection.actions.progress.report = (function () {
                 //change the urls for the menu to be the correct devices
                 cogMenu.find('a').each(function() {
                     //disable the cog for successful deletions
-                    if (data.action = 'MASS_DELETE' && key == 'SUCCESS') {
+                    if (data.action == 'MASS_DELETE' && key == 'SUCCESS') {
                         $(this).addClass('disabled-look');
                     }
                     var href = $(this).attr('href');
