@@ -16,11 +16,10 @@ yukon.historical.readings = (function () {
     _loadTrend = function (pointId) {
         var duration = $("#duration_" + pointId).val(),
             url = yukon.url('/meter/historicalReadings/trend'),
-            parameters = { pointId : pointId, duration :  duration};
+            parameters = {pointId : pointId, duration :  duration};
 
         $.post(url, parameters, function (response) {
             $(".js-trend-container_" + pointId).removeClass("dn");
-            $("#trend-graph_" + pointId).html("");
             $("#trend-graph_" + pointId).html(response);
             $("#duration_" + pointId).closest(".ui-widget-content").dialog({
                 width : 800,
@@ -122,7 +121,6 @@ yukon.historical.readings = (function () {
                     yukon.ui.block(trendContainer);
                     _loadTrend(pointId);
                 }
-                
             });
             
             _initialized = true;
