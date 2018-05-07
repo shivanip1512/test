@@ -23,9 +23,12 @@ import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfigException;
 import com.cannontech.amr.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -33,6 +36,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -52,6 +56,7 @@ public class DataStreamingController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
+    @Autowired private AlertService alertService;
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
 
     @RequestMapping(value="configure", method=RequestMethod.GET)
@@ -165,7 +170,10 @@ public class DataStreamingController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         try {
-            int cacheKey = dataStreamingService.unassignDataStreamingConfig(deviceCollection,  userContext);
+            SimpleCallback<CollectionActionResult> alertCallback =
+                    CollectionActionAlertHelper.createAlert(AlertType.DATA_STREAMING, alertService,
+                    messageSourceResolver.getMessageSourceAccessor(userContext), request);
+            int cacheKey = dataStreamingService.unassignDataStreamingConfig(deviceCollection, alertCallback, userContext);
             return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         } catch (DataStreamingConfigException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -188,9 +196,12 @@ public class DataStreamingController {
         config.setAccessor(accessor);
 
         try {
+            SimpleCallback<CollectionActionResult> alertCallback =
+                    CollectionActionAlertHelper.createAlert(AlertType.DATA_STREAMING, alertService,
+                        messageSourceResolver.getMessageSourceAccessor(userContext), request);
             List<Integer> failedVerificationDevices = verificationInfo.getFailedVerificationDevices();
             int cacheKey = dataStreamingService.assignDataStreamingConfig(config, deviceCollection,
-                failedVerificationDevices, userContext);
+                failedVerificationDevices, alertCallback, userContext);
             return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         } catch (DataStreamingConfigException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());

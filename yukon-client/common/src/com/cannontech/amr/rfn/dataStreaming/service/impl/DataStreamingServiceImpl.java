@@ -94,6 +94,7 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -703,7 +704,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     }
         
     @Override
-    public CollectionActionResult resend(List<Integer> deviceIds, YukonUserContext context) throws DataStreamingConfigException{
+    public CollectionActionResult resend(List<Integer> deviceIds, SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) throws DataStreamingConfigException{
         log.info("Re-sending configuration for devices=" + deviceIds);
         DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.CONFIGURE_DATA_STREAMING, null,
@@ -750,7 +751,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         configToDeviceIds = getConfigToDeviceIds(deviceIdToBehaviorReport);
 
         saveBehaviorReports(deviceIdToBehaviorReport);
-        return sendConfiguration(result, new DeviceSummary(devicesToResend), requestSeqNumber);
+        return sendConfiguration(result, new DeviceSummary(devicesToResend), requestSeqNumber, alertCallback);
 
     }
     
@@ -786,7 +787,8 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     }
 
     @Override
-    public int unassignDataStreamingConfig(DeviceCollection deviceCollection, YukonUserContext context)
+    public int unassignDataStreamingConfig(DeviceCollection deviceCollection,
+            SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context)
             throws DataStreamingConfigException {
 
         int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
@@ -829,7 +831,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         }
 
         CollectionActionResult result = sendConfiguration(CollectionAction.REMOVE_DATA_STREAMING, null,
-            new DeviceSummary(deviceCollection, deviceIds, unsupportedDeviceIds), requestSeqNumber,
+            new DeviceSummary(deviceCollection, deviceIds, unsupportedDeviceIds), requestSeqNumber, alertCallback,
             context);
         if (!devicesIdsWithoutBehavior.isEmpty()) {
             // mark devices without behavior as "not configured".
@@ -882,7 +884,8 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
 
     @Override
     public int assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection,
-            List<Integer> failedVerificationDevices, YukonUserContext context) throws DataStreamingConfigException {
+            List<Integer> failedVerificationDevices, SimpleCallback<CollectionActionResult> alertCallback,
+            YukonUserContext context) throws DataStreamingConfigException {
         if (config.getId() != 0) {
             config = findDataStreamingConfiguration(config.getId());
         }
@@ -933,7 +936,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         userInputs.put(CollectionActionInput.INTERVAL.name(), new Integer(config.getSelectedInterval()).toString());
         return sendConfiguration(CollectionAction.CONFIGURE_DATA_STREAMING, userInputs,
             new DeviceSummary(deviceCollection, devicesSupportingNoAttributes), requestSeqNumber,
-            context).getCacheKey();
+            alertCallback, context).getCacheKey();
     }
 
     @Override
@@ -1000,7 +1003,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         deviceBehaviorDao.deleteUnusedBehaviors();
 
         if (!devicesIdsToUnassign.isEmpty()) {
-            unassignDataStreamingConfig(createDeviceCollectionForIds(devicesIdsToUnassign), context);
+            unassignDataStreamingConfig(createDeviceCollectionForIds(devicesIdsToUnassign), null, context);
         }
 
         // logService.acceptCompleted(String.valueOf(result.getCacheKey()), allDeviceIds.size(),
@@ -1008,7 +1011,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
 
         if (!devicesToResend.isEmpty()) {
             log.debug("Re-sending devices=" + devicesToResend);
-            resend(devicesToResend, context);
+            resend(devicesToResend, null, context);
         }
     }
 
@@ -1088,12 +1091,12 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
 
 
     private CollectionActionResult sendConfiguration(CollectionAction action, LinkedHashMap<String, String> userInputs, DeviceSummary summary,
-            int requestSeqNumber, YukonUserContext context) {
+            int requestSeqNumber,  SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) {
         CollectionActionResult result = collectionActionService.createResult(action, userInputs, summary.deviceCollection,
             CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, context);
-        return sendConfiguration(result, summary, requestSeqNumber);
+        return sendConfiguration(result, summary, requestSeqNumber, alertCallback);
     }
-    private CollectionActionResult sendConfiguration(CollectionActionResult result, DeviceSummary summary, int requestSeqNumber) {
+    private CollectionActionResult sendConfiguration(CollectionActionResult result, DeviceSummary summary, int requestSeqNumber , SimpleCallback<CollectionActionResult> alertCallback) {
         List<SimpleDevice> unsupportedDevices = summary.unsupportedDevices;
         List<SimpleDevice> supportedDevices = summary.supportedDevices;
         DeviceCollection deviceCollection = summary.deviceCollection;
@@ -1137,6 +1140,13 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
                 if (!result.isComplete()) {
                     collectionActionService.updateResult(result, !result.isCanceled()
                         ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                    if (alertCallback != null) {
+                        try {
+                            alertCallback.handle(result);
+                        } catch (Exception e) {
+                            log.error(e);
+                        }
+                    }
                 }
             }
         };

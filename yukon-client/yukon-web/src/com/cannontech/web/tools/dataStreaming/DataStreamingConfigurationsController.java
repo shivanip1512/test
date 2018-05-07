@@ -31,6 +31,8 @@ import com.cannontech.amr.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.amr.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.amr.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -50,12 +52,14 @@ import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.CollectionActionAlertHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -79,6 +83,7 @@ public class DataStreamingConfigurationsController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private AlertService alertService;
 
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
     private final static String baseKey = "yukon.web.modules.tools.dataStreaming.";
@@ -434,7 +439,7 @@ public class DataStreamingConfigurationsController {
             FlashScope flash, PagingParameters paging, SortingParameters sorting) {
 
         try {
-            CollectionActionResult result= dataStreamingService.resend(Arrays.asList(deviceId), userContext);
+            CollectionActionResult result= dataStreamingService.resend(Arrays.asList(deviceId), null, userContext);
             if(result.getInfoText() != null){
                 flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getInfoText()));
             }
@@ -490,7 +495,10 @@ public class DataStreamingConfigurationsController {
         }
 
         try {
-            CollectionActionResult result = dataStreamingService.resend(deviceList, userContext);
+            SimpleCallback<CollectionActionResult> alertCallback =
+                    CollectionActionAlertHelper.createAlert(AlertType.DATA_STREAMING, alertService,
+                    messageSourceResolver.getMessageSourceAccessor(userContext), request);
+            CollectionActionResult result = dataStreamingService.resend(deviceList, alertCallback, userContext);
             return "redirect:/collectionActions/progressReport/view?key=" + result.getCacheKey();
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());

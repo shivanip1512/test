@@ -14,6 +14,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorStrings;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 
@@ -45,7 +46,7 @@ public interface DataStreamingService extends DeviceBehaviorStrings{
      * @ If the configuration is disallowed or there is an error.
      */
     int assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection, 
-                                                               List<Integer> failedVerificationDevices, YukonUserContext context) throws DataStreamingConfigException;
+                                                               List<Integer> failedVerificationDevices, SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) throws DataStreamingConfigException;
     
     /**
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 
@@ -54,7 +55,7 @@ public interface DataStreamingService extends DeviceBehaviorStrings{
      * @ when there is an error communicating to Network Manager, or Network Manager
      * rejects the configuration request.
      */
-    int unassignDataStreamingConfig(DeviceCollection deviceCollection, YukonUserContext context) throws DataStreamingConfigException;
+    int unassignDataStreamingConfig(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) throws DataStreamingConfigException;
     
     /**
      * Returns map of configurations to device collection that contains all assigned devices.
@@ -116,8 +117,9 @@ public interface DataStreamingService extends DeviceBehaviorStrings{
      * Resends config
      * 
      * @param deviceIds - to re-send config to
+     * @param alertCallback 
      * @throws DataStreamingConfigException 
      */
-    CollectionActionResult resend(List<Integer> deviceIds, YukonUserContext context) throws DataStreamingConfigException;
+    CollectionActionResult resend(List<Integer> deviceIds, SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) throws DataStreamingConfigException;
 
 }
