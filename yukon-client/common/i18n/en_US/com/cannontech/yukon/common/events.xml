@@ -793,7 +793,7 @@
     <entry key="yukon.common.events.system.notifications.subscriptionsRemoved.3">Identifier</entry>
     
     <!-- Power Quality Response -->
-    <entry key="yukon.common.events.dr.powerQualityResponse.sendConfig">Power Quality Response configuration sent to {7} {7,choice,0#devices|1#device|1&lt;devices} by {1}: {3}.</entry>
+    <entry key="yukon.common.events.dr.powerQualityResponse.sendConfig">Power Quality Response configuration sent to {7} {7,choice,0#devices|1#device|1&lt;devices} by {1}: {2}.</entry>
     <entry key="yukon.common.events.dr.powerQualityResponse.sendConfig.2">Configuration</entry>
 </properties>
 
