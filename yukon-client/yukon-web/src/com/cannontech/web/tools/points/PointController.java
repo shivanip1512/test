@@ -294,7 +294,8 @@ public class PointController {
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());
         model.addAttribute("unitMeasures", unitMeasureDao.getLiteUnitMeasures());
-        model.addAttribute("decimalDigits", ImmutableList.of(0, 1, 2, 3, 4, 5, 6, 7, 8));
+        model.addAttribute("decimalPlaces", ImmutableList.of(0, 1, 2, 3, 4, 5, 6, 7, 8));
+        model.addAttribute("meterDials", ImmutableList.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         model.addAttribute("stateGroups", stateGroupDao.getAllStateGroups());
         model.addAttribute("initialStates", statesForGroup(pointModel.getPointBase().getPoint().getStateGroupID()));
         model.addAttribute("statusArchiveTypes", ImmutableList.of(PointArchiveType.NONE, PointArchiveType.ON_CHANGE));

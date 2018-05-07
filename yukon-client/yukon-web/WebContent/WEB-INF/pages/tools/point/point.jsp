@@ -110,8 +110,12 @@
                                 itemValue="liteID" itemLabel="unitMeasureName" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
                         </tags:nameValue2>
 
-                        <tags:nameValue2 nameKey=".digits">
-                            <tags:selectWithItems items="${decimalDigits}" path="pointBase.pointUnit.decimalPlaces"/>
+                        <tags:nameValue2 nameKey=".decimalPlaces">
+                            <tags:selectWithItems items="${decimalPlaces}" path="pointBase.pointUnit.decimalPlaces"/>
+                        </tags:nameValue2>
+            
+                        <tags:nameValue2 nameKey=".meterDials">
+                            <tags:selectWithItems items="${meterDials}" path="pointBase.pointUnit.meterDials"/>
                         </tags:nameValue2>
             
                         <tags:nameValue2 nameKey=".stateGroup">
