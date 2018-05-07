@@ -94,12 +94,6 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
                 strategy -> strategy.getStrategy() == strategyType).findFirst().get();
             return validDevices.get(service);
         }
-        
-        public Set<SimpleDevice> getVerifiableDevices(StrategyType strategyType) {
-            DemandResetStrategyService service = verifiableDevices.keySet().stream().filter(
-                strategy -> strategy.getStrategy() == strategyType).findFirst().get();
-            return verifiableDevices.get(service);
-        }
     }
     
     @Override
