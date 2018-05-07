@@ -228,6 +228,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
             dbChangeManager.processPaoDbChange(yukonDevice, DbChangeType.ADD);
             
+            log.debug("Created device " + yukonDevice);
+
             return yukonDevice;
         } catch (PersistenceException e) {
             throw new DeviceCreationException("Could not create new device.", "invalidNewDevice", e);
@@ -253,6 +255,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
             // db change msg. Process Device dbChange AFTER device AND points have been inserted into DB.
             dbChangeManager.processPaoDbChange(newYukonDevice, DbChangeType.ADD);
+            
+            log.debug("Created device " + newYukonDevice);
 
             SimpleDevice templateYukonDevice = new SimpleDevice(templateIdentifier);
 

@@ -108,9 +108,11 @@ class RfnIdentifierCache implements DBChangeListener {
      * @return the associated paoId, or null if not found.
      */
     public Integer getPaoIdFor(RfnManufacturerModel mm, String serial) {
+        log.trace("Entering getPaoIdFor " + mm + " " + serial);
         Integer paoId = null;
         Long numericSerial = tryParseSerialAsLong(serial);
         Lock readLock = cacheLock.readLock(); 
+        log.trace("Read lock acquired for " + mm + " " + serial);
         try {
             readLock.lock();
             paoId = getPaoIdForSerial(mm, serial, numericSerial);
@@ -119,13 +121,19 @@ class RfnIdentifierCache implements DBChangeListener {
         }
 
         if (paoId == null) {
+            log.trace("pao ID null for " + mm + " " + serial);
             Lock writeLock = cacheLock.writeLock(); 
             try {
                 writeLock.lock();
+
+                log.trace("write lock acquired for " + mm + " " + serial);
+                
                 //  check the cache again in case another writer has filled it in
                 paoId = getPaoIdForSerial(mm, serial, numericSerial);
 
                 if (paoId == null) {
+                    log.trace("pao ID still null for " + mm + " " + serial);
+
                     //  If still not found in cache, try to populate the cache with a chunk of similar devices
                     List<RfnSerialPaoId> paoIdsToSerials = loadSerials(mm, serial);
 
@@ -135,6 +143,7 @@ class RfnIdentifierCache implements DBChangeListener {
                 writeLock.unlock();
             }
         }
+        log.trace("returning " + paoId + " for " + mm + " " + serial);
         return paoId;
     }
 
@@ -235,10 +244,10 @@ class RfnIdentifierCache implements DBChangeListener {
         sql.append("and Model").eq(mm.getModel());
         if (!similarSerials.isEmpty()) {
             sql.append("and SerialNumber").in(similarSerials);
-            log.debug("Ranged load [" + similarSerials.get(0) + "-" + similarSerials.get(similarSerials.size() - 1) + "] for " + mm + serial);
+            log.debug("Ranged load [" + similarSerials.get(0) + "-" + similarSerials.get(similarSerials.size() - 1) + "] for " + mm + " " + serial);
         } else {
             sql.append("and SerialNumber").eq(serial);
-            log.debug("Directed load for " + mm + serial);
+            log.debug("Directed load for " + mm + " " + serial);
         }
 
         try {
