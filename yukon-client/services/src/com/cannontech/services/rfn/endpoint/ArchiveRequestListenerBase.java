@@ -20,6 +20,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.rfn.Acknowledgeable;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -166,10 +167,17 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             } catch (IgnoredTemplateException e) {
                 throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
             } catch (BadTemplateDeviceCreationException e) {
-                log.warn("Creation failed for " + identifier + ". Manufacture, Model and Serial Number combination do "
-                    + "not match the template. This could be caused by an existing device with the same serial and "
-                    + "manufacturer as the new device.", e);
+                log.warn("Creation failed for " + identifier + ". Manufacturer, Model and Serial Number combination do "
+                    + "not match any templates.", e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
+            } catch (DeviceCreationException e) {
+                log.warn("Creation failed for " + identifier + ", possible race condition.  Trying another lookup.");
+                //  Try another lookup in case someone else beat us to it
+                try {
+                    return rfnDeviceLookupService.getDevice(identifier);
+                } catch (NotFoundException e1) {
+                    throw new RuntimeException("Creation failed for " + identifier, e);
+                }
             } catch (Exception e) {
                 if (log.isTraceEnabled()) {
                     // Only log full exception when trace is on so lots of failed creations don't kill performance.
