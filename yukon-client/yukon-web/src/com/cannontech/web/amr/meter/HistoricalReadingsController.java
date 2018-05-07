@@ -115,7 +115,7 @@ public class HistoricalReadingsController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private GlobalSettingDao globalSettingDao;
     
-    private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
+    private static final String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     private Logger log = YukonLogManager.getLogger(HistoricalReadingsController.class);
     
     private static int MAX_ROWS_DISPLAY = 1536;
@@ -383,7 +383,7 @@ public class HistoricalReadingsController {
             monthsToSubtract = months.getMonths();
             durationMessage.append(monthsToSubtract);
             durationMessage.append(" ");
-            durationMessage.append(messageSourceAccessor.getMessage("yukon.common.month"));
+            durationMessage.append(messageSourceAccessor.getMessage(baseKey + "months"));
             break;
         }
         Date endDate = new Date();
