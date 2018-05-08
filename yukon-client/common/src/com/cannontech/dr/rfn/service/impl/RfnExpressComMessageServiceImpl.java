@@ -7,12 +7,13 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
-import org.joda.time.Duration;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnMessageClass;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -35,7 +36,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
-import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.google.common.collect.Sets;
 
@@ -45,6 +45,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RawExpressComCommandBuilder commandBuilder;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    private final static Logger log = YukonLogManager.getLogger(RfnExpressComMessageServiceImpl.class);
     
     private JmsTemplate jmsTemplate;
     private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastWithDataTemplate;
@@ -143,11 +144,13 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleTimeout1() {
+                log.debug(request.getRfnIdentifier() + " - unicast request timed out");
                 callback.receivedStatusError(RfnExpressComUnicastReplyType.TIMEOUT);
             }
 
             @Override
             public void handleTimeout2() {
+                log.debug(request.getRfnIdentifier() + " - unicast request timed out");
                 callback.receivedDataError(RfnExpressComUnicastDataReplyType.TIMEOUT);
             }
         };
@@ -172,11 +175,11 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     
     @PostConstruct
     public void initialize() {
-        unicastWithDataTemplate = new RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply>(
+        unicastWithDataTemplate = new RequestReplyReplyTemplate<>(
                 "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
                 "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
         
-        unicastTemplate = new RequestReplyTemplateImpl<RfnExpressComUnicastReply>(
+        unicastTemplate = new RequestReplyTemplateImpl<>(
                 "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
                 "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
     }

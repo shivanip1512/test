@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -15,6 +16,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
@@ -28,6 +30,7 @@ public class RfnMeterReadService {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnChannelDataConverter rfnChannelDataConverter;
+    private final static Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
 
     private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> rrrTemplate;
     
@@ -108,11 +111,13 @@ public class RfnMeterReadService {
 
             @Override
             public void handleTimeout1() {
+                log.debug(rfnMeter+ " - meter read request timed out");
                 callback.receivedStatusError(RfnMeterReadingReplyType.TIMEOUT);
             }
 
             @Override
             public void handleTimeout2() {
+                log.debug(rfnMeter + " - meter read request timed out");
                 callback.receivedDataError(RfnMeterReadingDataReplyType.TIMEOUT);
             }
         };
@@ -122,9 +127,8 @@ public class RfnMeterReadService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply>(
-                "RFN_METER_READ", configurationSource, connectionFactory,
-                "yukon.qr.obj.amr.rfn.MeterReadRequest", false);
+        rrrTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, connectionFactory,
+            "yukon.qr.obj.amr.rfn.MeterReadRequest", false);
     }
     
 }

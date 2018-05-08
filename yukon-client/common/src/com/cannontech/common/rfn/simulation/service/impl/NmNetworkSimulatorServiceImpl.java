@@ -189,6 +189,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             metadata.put(RfnMetadata.PRIMARY_NEIGHBOR_LINK_COST, settings.getNeighborData().getNeighborLinkCost().toString());
                             metadata.put(RfnMetadata.PRODUCT_NUMBER, "123456789 (Sim)");
                             metadata.put(RfnMetadata.SUB_MODULE_FIRMWARE_VERSION, "1.1.1 (Sim)");
+                            metadata.put(RfnMetadata.HOSTNAME, "Hostname");
                             reply.setMetadata(metadata);
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
