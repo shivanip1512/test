@@ -116,7 +116,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
         }
         else
         {
-            if( changedID != ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc) )
+            if( changedID != ThreadMonitor.getProcessPointID() )
             {
                 CTILOG_ERROR(dout, "Unable to find point id from offset "<< ThreadMonitor.Calc);
             }
@@ -284,8 +284,6 @@ void CtiCalculateThread::periodicThread( void )
 
 void CtiCalculateThread::onUpdateThread( void )
 {
-    ThreadMonitor.start();
-
     try
     {
         bool calcValid;

@@ -479,7 +479,7 @@ void CtiCapController::controlLoop()
 
         CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( CtiTime(),  900);
 
-        long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControl);
+        long pointID = ThreadMonitor.getProcessPointID();
         long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CapControlCPU);
         long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CapControlMemory);
 

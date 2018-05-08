@@ -744,20 +744,25 @@ LONG GetPAOIdOfPoint(long pid)
 
 INT GetPIDFromDeviceAndOffset(int device, int offset)
 {
-    string sql("SELECT POINTID FROM POINT WHERE PAOBJECTID = ");
-    INT id = 0;
-
-    sql += CtiNumStr(device);
-    sql += " AND POINTOFFSET = ";
-    sql += CtiNumStr(offset);
+    string sql =
+        "SELECT"
+            " POINTID"
+        " FROM"
+            " POINT"
+        " WHERE"
+            " PAOBJECTID = ?"
+            " AND POINTOFFSET = ?";
 
     DatabaseConnection conn;
     DatabaseReader rdr(conn, sql);
+
+    rdr << device << offset;
+
     rdr.execute();
 
-    if(rdr())
+    if( rdr() )
     {
-        rdr >> id;
+        return rdr.as<int>();
     }
     else if( ! rdr.isValid() )
     {
@@ -768,7 +773,7 @@ INT GetPIDFromDeviceAndOffset(int device, int offset)
         CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
-    return id;
+    return 0;
 }
 
 INT GetPIDFromDeviceAndControlOffset(int device, int offset)

@@ -97,7 +97,7 @@ void CtiCCService::Init()
     doutManager.setToStdOut     (true);
     doutManager.start();     // fire up the logger thread
 
-    ThreadMonitor.start();
+    ThreadMonitor.start(CtiThreadMonitor::CapControl);
 
     refreshGlobalCParms();
 

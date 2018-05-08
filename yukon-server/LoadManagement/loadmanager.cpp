@@ -212,7 +212,7 @@ void CtiLoadManager::controlLoop()
 
         CtiLMExecutorFactory executorFactory;
 
-        long pointID = ThreadMonitor.getPointIDFromOffset( CtiThreadMonitor::LoadManager );
+        long pointID = ThreadMonitor.getProcessPointID();
         long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::LoadManagerCPU );
         long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::LoadManagerMemory );
 

@@ -185,13 +185,13 @@ void CtiCalcLogicService::Run( )
         }
     }
 
-    ThreadMonitor.start(); //ecs 1/4/2005
+    ThreadMonitor.start(CtiThreadMonitor::Calc);
     CtiTime NextThreadMonitorReportTime;
     CtiTime nextCPULoadReportTime;
 
     CtiThreadMonitor::State previous;
 
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
+    long pointID = ThreadMonitor.getProcessPointID();
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CalcCPU );
     long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CalcMemory);
 
@@ -1205,7 +1205,7 @@ void CtiCalcLogicService::_registerForPoints()
 
         auto msgPtReg = std::make_unique<CtiPointRegistrationMsg>(REG_NO_UPLOAD);  //  First one registers for the thread monitor point, then we register in chunks
         
-        msgPtReg->insert(ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc));
+        msgPtReg->insert(ThreadMonitor.getProcessPointID());
 
         dispatchConnection->WriteConnQue(msgPtReg.release(), CALLSITE);
 

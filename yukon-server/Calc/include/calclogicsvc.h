@@ -5,8 +5,6 @@
 
 #include "calcthread.h"
 
-#include "thread_monitor.h"
-#include "thread_register_data.h"
 #include "CalcWorkerThread.h"
 
 #include "msg_dbchg.h"

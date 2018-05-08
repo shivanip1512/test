@@ -94,7 +94,7 @@ void CtiMCServer::run()
 
         if( init() )
         {
-            const long threadMonitorPointId = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Macs);
+            const long threadMonitorPointId = ThreadMonitor.getProcessPointID();
             long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::MacsCPU);
             long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::MacsMemory);
 

@@ -105,7 +105,7 @@ void CtiFDRService::Init( )
 
     try
     {
-        ThreadMonitor.start();
+        ThreadMonitor.start(CtiThreadMonitor::FDR);
 
         if ( !(gConfigParms.isOpt(CPARM_NAME_FDR_INTERFACES)) )
         {
@@ -236,7 +236,7 @@ void CtiFDRService::Run( )
         }
     }
 
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
+    long pointID = ThreadMonitor.getProcessPointID();
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::FDRCPU);
     long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::FDRMemory);
 

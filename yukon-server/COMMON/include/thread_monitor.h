@@ -14,7 +14,7 @@ class IM_EX_CTIBASE CtiThreadMonitor : public CtiThread
 public:
 
    typedef CtiSmartMap<CtiThreadRegData> ThreadData;
-   typedef std::map < int, int > PointIDList;
+   typedef std::vector<int> PointIDList;
 
    CtiThreadMonitor();
    virtual ~CtiThreadMonitor();
@@ -52,9 +52,11 @@ public:
        ExtendedMonitorTime = 330
    };
 
+   void start(PointOffsets pointOffset);
+
    State getState(void);
-   PointIDList getPointIDList();
-   int getPointIDFromOffset(int offset);
+   PointIDList getAllProcessPointIDs();
+   int getProcessPointID();
 
 protected:
 
@@ -73,8 +75,9 @@ private:
    mutable CtiMutex                                              _vectorMux;//for the pointID list
    CtiQueue < CtiThreadRegData, std::less< CtiThreadRegData > >  _queue;
    ThreadData                                                    _threadData;
-   PointIDList                                                   _pointIDList;
    std::string                                                   _output;
+   std::atomic_long _processPointId = 0;
+   int              _pointOffset    = 0;
 
 };
 

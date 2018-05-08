@@ -104,6 +104,14 @@ CtiThreadMonitor::~CtiThreadMonitor()
     _queue.clearAndDestroy();
 }
 
+
+void CtiThreadMonitor::start(PointOffsets offset)
+{
+    _pointOffset = offset;
+
+    CtiThread::start();
+}
+
 //===========================================================================================================
 //===========================================================================================================
 
@@ -438,14 +446,14 @@ std::string CtiThreadMonitor::getString( void)
     return _output;
 }
 
-//===========================================================================================================
-// Return point ID associated with given offset
-//===========================================================================================================
-int CtiThreadMonitor::getPointIDFromOffset(int offset)
+int CtiThreadMonitor::getProcessPointID()
 {
-    getPointIDList();
+    if( auto id = _processPointId.load() )
+    {
+        return id;
+    }
 
-    return _pointIDList[offset]; //return by value.
+    return _processPointId = GetPIDFromDeviceAndOffset( 0, _pointOffset );
 }
 
 const long threadPoints[] = {
@@ -459,22 +467,20 @@ const long threadPoints[] = {
     CtiThreadMonitor::LoadManager
 };
 
-//===========================================================================================================
-// Return all point ID's
-// The Point ID will == 0 if the point does not exist. If this is so, do not use this point!
-//===========================================================================================================
-CtiThreadMonitor::PointIDList CtiThreadMonitor::getPointIDList(void)
+auto CtiThreadMonitor::getAllProcessPointIDs() -> PointIDList 
 {
-    if(_pointIDList.empty())
+    PointIDList pointIds;
+
+    pointIds.reserve(std::size(threadPoints));
+
+    for( int pointOffset : threadPoints )
     {
-        PointIDList tempList;
-        for( int i : threadPoints )
+        if( const auto pointId = GetPIDFromDeviceAndOffset( 0, pointOffset ) )
         {
-            tempList[i] = GetPIDFromDeviceAndOffset( 0, i );
+            pointIds.push_back(pointId);
         }
-        CtiLockGuard<CtiMutex> guard(_vectorMux);
-        _pointIDList = tempList;
     }
-    return _pointIDList; //return by value.
+    
+    return pointIds;
 }
 

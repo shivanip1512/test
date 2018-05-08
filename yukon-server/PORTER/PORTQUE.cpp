@@ -6,8 +6,6 @@
 #include "error.h"
 #include "porter.h"
 #include "elogger.h"
-#include "thread_monitor.h"
-#include "ThreadStatusKeeper.h"
 
 #include "portglob.h"
 #include "portdecl.h"

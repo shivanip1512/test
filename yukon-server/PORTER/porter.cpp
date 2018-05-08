@@ -830,7 +830,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         PorterVerificationThread.start();
     }
 
-    ThreadMonitor.start();//Start the thread monitor thread!
+    ThreadMonitor.start(CtiThreadMonitor::Porter);
 
     /*
      *  Now start up the ports' thread

@@ -44,7 +44,7 @@ void DispatchMsgHandlerThread()
 
     MessageCounter mc("Dispatch->Porter");
 
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
+    long pointID = ThreadMonitor.getProcessPointID();
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::PorterCPU );
     long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::PorterMemory );
 

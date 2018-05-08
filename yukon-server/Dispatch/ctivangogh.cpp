@@ -281,7 +281,7 @@ void CtiVanGogh::VGMainThread()
         CTILOG_INFO(dout, "Requesting control point state verification");
         MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiCommandMsg(CtiCommandMsg::ControlStatusVerification, 15));
 
-        ThreadMonitor.start();
+        ThreadMonitor.start(CtiThreadMonitor::Dispatch);
 
         _pendingOpThread.setMainQueue( &MainQueue_ );
         _pendingOpThread.setSignalManager( &_signalManager );
@@ -4434,7 +4434,7 @@ void CtiVanGogh::VGAppMonitorThread()
 
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     CtiPointDataMsg vgStatusPoint;
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
+    long pointID = ThreadMonitor.getProcessPointID();
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchCPU );
     long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchMemory );
 
@@ -4474,8 +4474,7 @@ void CtiVanGogh::VGAppMonitorThread()
 
     if(!bGCtrlC)
     {
-        //First find all of my point ID's so I dont ever have to look them up again.
-        CtiThreadMonitor::PointIDList pointIDList = ThreadMonitor.getPointIDList();
+        const auto pointIDList = ThreadMonitor.getAllProcessPointIDs();
         CtiTime compareTime;
 
         while(!bGCtrlC)
@@ -4483,22 +4482,19 @@ void CtiVanGogh::VGAppMonitorThread()
             compareTime = CtiTime::now();
             compareTime -= 600;//take away 10 minutes
 
-            for(auto pointListWalker: pointIDList)
+            for(auto pointId : pointIDList)
             {
-                if(pointListWalker.second != 0)
+                // This call probably hits the database.
+                if( auto pPt = PointMgr.getPoint(pointId) )
                 {
-                    // This call probably hits the database.
-                    if( CtiPointSPtr pPt = PointMgr.getPoint(pointListWalker.second) )
+                    if( auto pDynPt = PointMgr.getDynamic(*pPt) )
                     {
-                        if( CtiDynamicPointDispatchSPtr pDynPt = PointMgr.getDynamic(*pPt) )
+                        if((pDynPt->getTimeStamp()).seconds()<(compareTime))
                         {
-                            if((pDynPt->getTimeStamp()).seconds()<(compareTime))
-                            {
-                                //its been more than 15 minutes, set the alarms!!!
-                                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointListWalker.second, CtiThreadMonitor::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes.");
-                                pData->setSource(DISPATCH_APPLICATION_NAME);
-                                MainQueue_.putQueue(pData);
-                            }
+                            //its been more than 15 minutes, set the alarms!!!
+                            auto pData = std::make_unique<CtiPointDataMsg>(pointId, CtiThreadMonitor::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes.");
+                            pData->setSource(DISPATCH_APPLICATION_NAME);
+                            MainQueue_.putQueue(pData.release());
                         }
                     }
                 }

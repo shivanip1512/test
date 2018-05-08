@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
    doutManager.setToStdOut      ( true );
    doutManager.start(); // fire up the logger thread
 
-   ThreadMonitor.start();
+   ThreadMonitor.start(CtiThreadMonitor::Scanner);
 
    Cti::Scanner::CreateSyncEvents();
 

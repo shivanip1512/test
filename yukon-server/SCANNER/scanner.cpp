@@ -397,7 +397,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerOutMessages,
         Cti::Messaging::ActiveMQ::Queues::InboundQueue::ScannerInMessages);
 
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
+    long pointID = ThreadMonitor.getProcessPointID();
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::ScannerCPU);
     long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::ScannerMemory);
 

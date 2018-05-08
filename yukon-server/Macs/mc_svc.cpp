@@ -145,7 +145,7 @@ void CtiMCService::Run()
         }
     }
 
-    ThreadMonitor.start();
+    ThreadMonitor.start(CtiThreadMonitor::Macs);
 
     _mc_server = new CtiMCServer();
     _mc_server->start();
