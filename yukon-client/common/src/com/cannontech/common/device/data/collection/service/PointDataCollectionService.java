@@ -41,6 +41,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class PointDataCollectionService implements MessageListener {
 
     public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION = Duration.standardMinutes(15);
+    public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_CALCULATION = Duration.standardMinutes(60);
     private static final String recalculationQueueName = "yukon.qr.obj.data.collection.RecalculationRequest";
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private RawPointHistoryDao rphDao;
@@ -55,7 +56,7 @@ public class PointDataCollectionService implements MessageListener {
     public void init() {
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             try {
-                collect();
+                collect(false);
             } catch (Exception e) {
                 log.error("Failed to start collection", e);
             }
@@ -68,7 +69,8 @@ public class PointDataCollectionService implements MessageListener {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 if (objMessage.getObject() instanceof CollectionRequest) {
-                    collect();
+                    //User clicked "refresh" button, collect data and always send message to WS to recalculate the widget info.
+                    collect(true);
                 }
             } catch (Exception e) {
                 log.error("Unable to process message", e);
@@ -78,8 +80,10 @@ public class PointDataCollectionService implements MessageListener {
 
     /**
      * If data collection is not running inserts the recent point data in RecentPointValue.
+     * 
+     * @param forceRecalculation - if true sends message to WS to start calculation without waiting 60 minutes in between calculations
      */
-    private void collect() {
+    private void collect(boolean forceRecalculation) {
         if (collectingData) {
             log.debug("Data collection already running.");
             return;
@@ -110,7 +114,20 @@ public class PointDataCollectionService implements MessageListener {
                 addRecentValues(recentValues, lcrs, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, changeIdRange);
 
                 log.debug("Got " + recentValues.size() + " rows of new data from RPH");
-                if (!recentValues.isEmpty()) {
+                if (recentValues.isEmpty()) {
+                    Instant lastCalculationTime =
+                        persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_RECALC_TIME);
+                    if (forceRecalculation || lastCalculationTime == null
+                        || now().isAfter(lastCalculationTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_CALCULATION))) {
+                        if (forceRecalculation) {
+                            log.debug("No new data to collect, user requested data collection, sending message to WS to start recalculation.");
+                        } else {
+                            log.debug("No new data to collect and 60 minutes have past, sending message to WS to start recalculation.");
+                        }
+                        jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest());
+                    }
+                } else {
+                    log.debug("Data collection started.");
                     recentPointValueDao.collectData(recentValues);
                     persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID,
                         changeIdRange.getMax());

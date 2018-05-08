@@ -114,6 +114,8 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         }
         try {
             calculating = true;
+            persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_RECALC_TIME, new Instant());
+            log.debug("Recalculation started.");
             Instant lastCollectionTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
             Map<RangeType, Range<Instant>> ranges = getRanges();
             enabledDeviceSummary.keySet().forEach(key -> {
