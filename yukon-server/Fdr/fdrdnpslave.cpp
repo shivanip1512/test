@@ -21,6 +21,7 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/range/adaptor/map.hpp>
 
 #include <regex>
 #include <memory>
@@ -84,6 +85,36 @@ void DnpSlave::startup()
     _porterConnection.start();
     _porterConnection.WriteConnQue(
         new CtiRegistrationMsg("FDR (DNP Slave)", 0, true), CALLSITE);
+}
+
+CtiPointRegistrationMsg* DnpSlave::buildRegistrationPointList()
+{
+    CtiFDRDestination pFdrPoint;
+    auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_MARKMOA);
+
+    // do outbounds
+    {
+        CTILOCKGUARD( CtiMutex, guard, _sendMux );
+
+        for( auto & kvPair : _sendMap )
+        {
+            // add this point ID to register
+            ptRegMsg->insert( kvPair.first.getParentPointId() );
+        }
+    }
+
+    // do inbounds
+    {
+        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+
+        for( auto & kvPair : _receiveMap )
+        {
+            // add this point ID to register
+            ptRegMsg->insert( kvPair.first.getParentPointId() );
+        }
+    }
+
+    return ptRegMsg.release();
 }
 
 /*************************************************

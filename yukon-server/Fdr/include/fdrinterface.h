@@ -35,7 +35,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiCommandMsg* createScanDeviceMessage(long paoId, std::string translationName);
 
         bool                sendPointRegistration();
-        CtiPointRegistrationMsg* buildRegistrationPointList();
+        virtual CtiPointRegistrationMsg* buildRegistrationPointList();
 
 
         std::string              getCparmValueAsString(std::string key);
