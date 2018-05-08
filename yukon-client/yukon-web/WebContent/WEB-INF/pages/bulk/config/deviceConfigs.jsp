@@ -57,7 +57,7 @@
                     </c:choose>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 nameKey=".sendConfig.selectLabel" rowClass="js-send-config">
+                <tags:nameValue2 nameKey=".sendConfig.selectLabel" rowClass="js-send-config" nameClass="mw100">
                     <select name="method" class="fl" style="margin-left:5px;">
                         <option value="Standard"><cti:msg2 key=".sendConfig.standard"/></option>
                         <c:if test="${!someRF}">

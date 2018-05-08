@@ -25,8 +25,10 @@ yukon.collection.actions = (function () {
                     yukon.collection.actions.progress.report.init();
                 },
                 error: function (xhr, status, error, $form) {
+                    var actionInputsDiv = $('#actionInputsDiv');
                     yukon.ui.unbusy(btn);
-                    $('#actionInputsDiv').html(xhr.responseText);
+                    actionInputsDiv.html(xhr.responseText);
+                    yukon.ui.initContent(actionInputsDiv);
                     $(document).scrollTop(0);
                 },
             });
@@ -67,10 +69,19 @@ yukon.collection.actions = (function () {
             $(document).on('click', '.js-collection-action', function () {
                 var href = $(this).data('url'),
                     action = $(this).data('action'),
-                    actionInputsDiv = $('#actionInputsDiv');
+                    actionInputsDiv = $('#actionInputsDiv'),
+                    collectionActionsDiv = $('#collectionActionsDiv');
+                yukon.ui.block(collectionActionsDiv);
+                collectionActionsDiv.find('button, a').each(function() {
+                   $(this).css('pointer-events', 'none');
+                });
                 $.ajax({ 
                     url: href
                 }).done(function (data) {
+                    yukon.ui.unblock(collectionActionsDiv);
+                    collectionActionsDiv.find('button, a').each(function() {
+                        $(this).css('pointer-events', 'auto');
+                     });
                     actionInputsDiv.html(data);
                     yukon.ui.initContent(actionInputsDiv);
                     if (action == 'Device Configs') {

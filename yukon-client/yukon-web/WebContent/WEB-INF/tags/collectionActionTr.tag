@@ -29,7 +29,7 @@
         </c:choose>
     </td>
     <td class="vam PL0 PR0">
-        <div class="box fl meta">
+        <div class="fl meta">
             <c:choose>
                 <c:when test="${ajaxSubmit}">
                     <div><a href="#" class="title js-collection-action" data-url="${actionUrl}" data-action="${linkText}">${linkText}</a></div>

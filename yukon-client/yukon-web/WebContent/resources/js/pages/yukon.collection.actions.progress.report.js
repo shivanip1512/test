@@ -18,7 +18,8 @@ yukon.collection.actions.progress.report = (function () {
     _updateTimeout = null,
     
     _getData = function (data) {
-        var legendItems = [];
+        var legendItems = [],
+            massDeletionSuccessful = false;
         Object.keys(data.details).forEach(function(key) {
             var item = {},
                 value = data.details[key],
@@ -36,6 +37,7 @@ yukon.collection.actions.progress.report = (function () {
                     //disable the cog for successful deletions
                     if (data.action == 'MASS_DELETE' && key == 'SUCCESS') {
                         $(this).addClass('disabled-look');
+                        massDeletionSuccessful = true;
                     }
                     var href = $(this).attr('href');
                     if (href) {
@@ -48,6 +50,12 @@ yukon.collection.actions.progress.report = (function () {
                 legendItems.push(item);
             }
         });
+        if (massDeletionSuccessful) {
+            //disable the devices cog (no other operations can be performed on deleted devices
+            $('.js-cog-menu').find('a').each(function() {
+                $(this).addClass('disabled-look');
+            });
+        }
         return legendItems;
     },
     

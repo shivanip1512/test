@@ -59,7 +59,8 @@ public class MassDeleteController {
         setupModel(model, request);
         model.addAttribute("action", CollectionAction.MASS_DELETE);
         model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/massDelete/massDeleteConfirm.jsp");
-        return "../collectionActions/collectionActionsHome.jsp";    }
+        return "../collectionActions/collectionActionsHome.jsp";    
+    }
     
     @RequestMapping(value = "massDeleteInputs", method = RequestMethod.GET)
     public String massDeleteInputs(ModelMap model, HttpServletRequest request) throws ServletException {
@@ -98,7 +99,7 @@ public class MassDeleteController {
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
             new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
    
-        return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
+        return "redirect:/collectionActions/progressReport/view?key=" + result.getCacheKey();
     }
     
     private void processDeviceDelete(SimpleDevice device, boolean isFileUpload) {

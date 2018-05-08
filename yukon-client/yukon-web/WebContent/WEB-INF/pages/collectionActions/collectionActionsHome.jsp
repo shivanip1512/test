@@ -7,7 +7,7 @@
     
     <c:if test="${!empty deviceCollection}"><cti:toJson id="collectionjson" object="${deviceCollection}"/></c:if>
     <c:if test="${!empty action}">
-        <cti:msg2 var="actionText" key="${action.formatKey}"/>
+        <cti:msg2 var="actionText" key="yukon.web.modules.tools.collectionActions.collectionAction.${action}" blankIfMissing="true"/>
         <input type="hidden" id="action" value="${actionText}"/>
     </c:if>
     
@@ -48,7 +48,7 @@
         <h3><i:inline key=".selectActionHeader"/><span class="js-action-separator ${displaySeparator}">:</span>
             <span class="js-action"></span>
         </h3>
-        <div id="collectionActionsDiv">
+        <div id="collectionActionsDiv" class="js-block-this">
             <c:choose>
                 <c:when test="${empty deviceCollection}">
                     ${noDevicesSelectedMsg}
