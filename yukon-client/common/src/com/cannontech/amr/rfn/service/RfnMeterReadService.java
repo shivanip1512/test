@@ -75,12 +75,14 @@ public class RfnMeterReadService {
 
             @Override
             public void handleException(Exception e) {
+                log.error(rfnMeter + " - meter read failed", e);
                 MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.exception", e.getMessage());
                 callback.processingExceptionOccured(summary);
             }
 
             @Override
             public boolean handleReply1(RfnMeterReadReply statusReply) {
+                log.info(rfnMeter + " - received reply(" + statusReply.getReplyType() + ") from NM ");
                 if (!statusReply.isSuccess()) {
                     /* Request failed */
                     callback.receivedStatusError(statusReply.getReplyType());
@@ -94,6 +96,7 @@ public class RfnMeterReadService {
 
             @Override
             public void handleReply2(RfnMeterReadDataReply dataReplyMessage) {
+                log.info(rfnMeter + " - received reply(" + dataReplyMessage.getReplyType() + ") from NM ");
                 if (!dataReplyMessage.isSuccess()) {
                     /* Data response failed */
                     callback.receivedDataError(dataReplyMessage.getReplyType());
@@ -111,13 +114,13 @@ public class RfnMeterReadService {
 
             @Override
             public void handleTimeout1() {
-                log.debug(rfnMeter+ " - meter read request timed out");
+                log.info(rfnMeter+ " - meter read request timed out.");
                 callback.receivedStatusError(RfnMeterReadingReplyType.TIMEOUT);
             }
 
             @Override
             public void handleTimeout2() {
-                log.debug(rfnMeter + " - meter read request timed out");
+                log.info(rfnMeter + " - meter read request timed out,");
                 callback.receivedDataError(RfnMeterReadingDataReplyType.TIMEOUT);
             }
         };

@@ -63,6 +63,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleException(Exception e) {
+                log.error(request.getRfnIdentifier() + " - unicast request failed", e);
                 MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.rfnExpressComMessage.error", e.toString());
                 callback.processingExceptionOccured(message);
@@ -70,11 +71,13 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleTimeout() {
+                log.info(request.getRfnIdentifier() + " - unicast request timed out.");
                 callback.receivedStatusError(RfnExpressComUnicastReplyType.TIMEOUT);
             }
 
             @Override
             public void handleReply(RfnExpressComUnicastReply t) {
+                log.info(request.getRfnIdentifier() + " - received reply(" + t.getReplyType() + ") from NM ");
                 callback.receivedStatus(t.getReplyType());
             }
 
@@ -108,6 +111,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleException(Exception e) {
+                log.error(request.getRfnIdentifier() + " - unicast request failed", e);
                 MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.rfnExpressComMessage.error", e.toString());
                 callback.processingExceptionOccured(message);
@@ -115,6 +119,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public boolean handleReply1(RfnExpressComUnicastReply statusReply) {
+                log.info(request.getRfnIdentifier() + " - received reply(" + statusReply.getReplyType() + ") from NM ");
                 if (!statusReply.isSuccess()) {
                     /* Request failed */
                     callback.receivedStatusError(statusReply.getReplyType());
@@ -128,6 +133,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleReply2(RfnExpressComUnicastDataReply dataReplyMessage) {
+                log.info(request.getRfnIdentifier() + " - received reply(" + dataReplyMessage.getReplyType() + ") from NM ");
                 if (!dataReplyMessage.isSuccess()) {
                     /* Data response failed */
                     callback.receivedDataError(dataReplyMessage.getReplyType());
@@ -144,13 +150,13 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleTimeout1() {
-                log.debug(request.getRfnIdentifier() + " - unicast request timed out");
+                log.info(request.getRfnIdentifier() + " - unicast request timed out.");
                 callback.receivedStatusError(RfnExpressComUnicastReplyType.TIMEOUT);
             }
 
             @Override
             public void handleTimeout2() {
-                log.debug(request.getRfnIdentifier() + " - unicast request timed out");
+                log.info(request.getRfnIdentifier() + " - unicast request timed out.");
                 callback.receivedDataError(RfnExpressComUnicastDataReplyType.TIMEOUT);
             }
         };
