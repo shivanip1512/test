@@ -89,28 +89,27 @@ void DnpSlave::startup()
 
 CtiPointRegistrationMsg* DnpSlave::buildRegistrationPointList()
 {
-    CtiFDRDestination pFdrPoint;
     auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_MARKMOA);
 
     // do outbounds
     {
-        CTILOCKGUARD( CtiMutex, guard, _sendMux );
+        auto & sendToMap = getSendToList().getPointList()->getMap();
 
-        for( auto & kvPair : _sendMap )
+        for( auto kv : sendToMap )
         {
             // add this point ID to register
-            ptRegMsg->insert( kvPair.first.getParentPointId() );
+            ptRegMsg->insert( kv.first );
         }
     }
 
     // do inbounds
     {
-        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+        auto & receiveFromMap = getReceiveFromList().getPointList()->getMap();
 
-        for( auto & kvPair : _receiveMap )
+        for ( auto kv : receiveFromMap)
         {
             // add this point ID to register
-            ptRegMsg->insert( kvPair.first.getParentPointId() );
+            ptRegMsg->insert( kv.first );
         }
     }
 

@@ -97,14 +97,13 @@ BOOL CtiFDRSocketServer::init( void )
 
 BOOL CtiFDRSocketServer::run( void )
 {
-
-    // crank up the base class
-    CtiFDRInterface::run();
-
     // load translation lists (This used to
     // be done in init() but it caused problems
     // because the class wasn't fully constructed.)
     loadTranslationLists();
+
+    // crank up the base class
+    CtiFDRInterface::run();
 
     // start up the socket layer
     if (_singleListeningPort)
