@@ -556,7 +556,7 @@ bool CtiFDRInterface::connectWithDispatch()
         {
             std::auto_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
-            multiMsg->insert( buildRegistrationPointList() );
+            multiMsg->insert( buildRegistrationPointList().release() );
 
             if(iDispatchConn->WriteConnQue(multiMsg.release(), CALLSITE) != ClientErrors::None)
             {
@@ -715,7 +715,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
         {
             std::auto_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
-            multiMsg->insert( buildRegistrationPointList() );
+            multiMsg->insert( buildRegistrationPointList().release() );
 
             sendMessageToDispatch( multiMsg.release() );
         }
@@ -729,7 +729,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
 }
 
 
-CtiPointRegistrationMsg* CtiFDRInterface::buildRegistrationPointList()
+std::unique_ptr<CtiPointRegistrationMsg> CtiFDRInterface::buildRegistrationPointList()
 {
     CtiFDRPointSPtr pFdrPoint;
     auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_MARKMOA);
@@ -746,7 +746,7 @@ CtiPointRegistrationMsg* CtiFDRInterface::buildRegistrationPointList()
         ptRegMsg->insert( pFdrPoint->getPointID());
     }
 
-    return ptRegMsg.release();
+    return std::move( ptRegMsg );
 }
 /************************************************************************
 * Function Name: CtiFDRInterface::disconnect(  )

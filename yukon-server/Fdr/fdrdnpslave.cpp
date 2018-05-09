@@ -21,7 +21,6 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/range/adaptor/map.hpp>
 
 #include <regex>
 #include <memory>
@@ -87,7 +86,7 @@ void DnpSlave::startup()
         new CtiRegistrationMsg("FDR (DNP Slave)", 0, true), CALLSITE);
 }
 
-CtiPointRegistrationMsg* DnpSlave::buildRegistrationPointList()
+std::unique_ptr<CtiPointRegistrationMsg> DnpSlave::buildRegistrationPointList()
 {
     auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_MARKMOA);
 
@@ -113,7 +112,7 @@ CtiPointRegistrationMsg* DnpSlave::buildRegistrationPointList()
         }
     }
 
-    return ptRegMsg.release();
+    return std::move( ptRegMsg );
 }
 
 /*************************************************
