@@ -12,6 +12,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
+import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
 import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationServiceImpl;
 import com.cannontech.amr.monitors.impl.DeviceDataMonitorProcessorFactoryImpl;
@@ -483,9 +484,12 @@ public class DeviceDataMonitorTest {
     }
     
     private DeviceDataMonitorProcessor getProcessor(Attribute attribute, LiteStateGroup stateGroup, LiteState state) {
-        return new DeviceDataMonitorProcessor(null, null, attribute, stateGroup, state);
+        DeviceDataMonitorProcessor ddmp = new DeviceDataMonitorProcessor(null, ProcessorType.STATE, null, attribute);
+        ddmp.setState(state);
+        ddmp.setStateGroup(stateGroup);
+        return ddmp;
     }
-    
+
     private RichPointData getRPD(int id, double value, PaoPointIdentifier paoPointIdentifier) {
         PointValue pointValue = new PointValue(id, value);
         RichPointData richPointData = new RichPointData(pointValue, paoPointIdentifier);

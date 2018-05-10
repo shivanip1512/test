@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
@@ -72,7 +73,15 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     public List<DeviceDataMonitorProcessor> getProcessors() {
         return processors;
     }
+    
+    public List<DeviceDataMonitorProcessor> getStateProcessors() {
+        return processors.stream().filter(p -> p.getStateGroup() != null).collect(Collectors.toList());
+    }
 
+    public List<DeviceDataMonitorProcessor> getValueProcessors() {
+        return processors.stream().filter(p -> p.getStateGroup() == null).collect(Collectors.toList());
+    }
+    
     public void setProcessors(List<DeviceDataMonitorProcessor> processors) {
         this.processors = processors;
     }

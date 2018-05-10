@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
+import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -75,20 +76,37 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         }
     };
 
-    private final YukonRowMapper<DeviceDataMonitorProcessor> processorRowMapper = new YukonRowMapper<DeviceDataMonitorProcessor>() {
-        @Override
-        public DeviceDataMonitorProcessor mapRow(YukonResultSet rs) throws SQLException {
-            LiteStateGroup stateGroup = stateGroupDao.getStateGroup(rs.getInt("stateGroupId"));
-            int rawState = rs.getInt("state");
-            LiteState liteState = stateGroupDao.findLiteState(stateGroup.getStateGroupID(), rawState);
-            if (liteState == null) throw new RuntimeException("could not find matching state of " + rawState + " within state group " + stateGroup.getStateGroupName());
-            return new DeviceDataMonitorProcessor(rs.getInt("processorId"),
-                                                  rs.getInt("monitorId"),
-                                                  attributeService.resolveAttributeName(rs.getString("attribute")),
-                                                  stateGroup,
-                                                  liteState);
-        }
-    };
+    private final YukonRowMapper<DeviceDataMonitorProcessor> processorRowMapper =
+        new YukonRowMapper<DeviceDataMonitorProcessor>() {
+            @Override
+            public DeviceDataMonitorProcessor mapRow(YukonResultSet rs) throws SQLException {
+
+                DeviceDataMonitorProcessor processor = new DeviceDataMonitorProcessor(rs.getInt("processorId"),
+                    rs.getEnum("ProcessorType", ProcessorType.class), rs.getInt("monitorId"),
+                    attributeService.resolveAttributeName(rs.getString("attribute")));
+
+                if (processor.getType().isStateBased()) {
+                    LiteStateGroup stateGroup = stateGroupDao.getStateGroup(rs.getInt("stateGroupId"));
+                    int rawState = rs.getInt("ProcessorValue");
+                    LiteState liteState = stateGroupDao.findLiteState(stateGroup.getStateGroupID(), rawState);
+                    if (liteState == null) {
+                        throw new RuntimeException("could not find matching state of " + rawState
+                            + " within state group " + stateGroup.getStateGroupName());
+                    }
+                    processor.setState(liteState);
+                    processor.setStateGroup(stateGroup);
+                }
+                if (processor.getType().isValueBased()) {
+                    if (processor.getType() == ProcessorType.RANGE) {
+                        processor.setRangeMin(rs.getDouble("RangeMin"));
+                        processor.setRangeMax(rs.getDouble("RangeMax"));
+                    } else {
+                        processor.setProccesorValue(rs.getDouble("ProcessorValue"));
+                    }
+                }
+                return processor;
+            }
+        };
 
     @Override
     public List<DeviceDataMonitor> getAllMonitors() {
@@ -131,10 +149,10 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
     private List<DeviceDataMonitorProcessor> getProcessorsByMonitorId(int monitorId) {
         SqlStatementBuilder ruleSql = new SqlStatementBuilder();
-        ruleSql.append("SELECT ProcessorId, MonitorId, Attribute, StateGroupId, State");
+        ruleSql.append("SELECT ProcessorId, ProcessorType, MonitorId, ProcessorValue, RangeMin, RangeMax, Attribute, StateGroupId");
         ruleSql.append("FROM DeviceDataMonitorProcessor");
         ruleSql.append("WHERE monitorId").eq(monitorId);
-        ruleSql.append("ORDER BY Attribute, StateGroupId, State");
+        ruleSql.append("ORDER BY Attribute");
 
         List<DeviceDataMonitorProcessor> processorList = yukonJdbcTemplate.query(ruleSql, processorRowMapper);
         return processorList;
@@ -162,7 +180,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Override
     @Transactional
     public void save(DeviceDataMonitor monitor) {
-        try {
+        try {      
             monitorTemplate.save(monitor);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save Device Data Monitor.", e);
@@ -200,8 +218,18 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         @Override
         public void extractValues(SqlParameterChildSink p, DeviceDataMonitorProcessor processor) {
             p.addValue("Attribute", processor.getAttribute());
-            p.addValue("StateGroupId", processor.getStateGroup().getStateGroupID());
-            p.addValue("State", processor.getState().getLiteID());
+            p.addValue("ProcessorType", processor.getType().name());
+            if(processor.getType().isStateBased()) {
+                p.addValue("StateGroupId", processor.getStateGroup().getStateGroupID());
+                p.addValue("ProcessorValue", processor.getState().getLiteID());
+            } else if (processor.getType().isValueBased()) {
+                if (processor.getType() == ProcessorType.RANGE) {
+                    p.addValue("RangeMin", processor.getRangeMin());
+                    p.addValue("RangeMax", processor.getRangeMax());
+                } else {
+                    p.addValue("ProcessorValue", processor.getProccesorValue());
+                }
+            }
         }
 
         @Override

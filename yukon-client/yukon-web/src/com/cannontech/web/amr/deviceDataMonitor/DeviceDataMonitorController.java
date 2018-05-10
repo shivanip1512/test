@@ -1,6 +1,8 @@
 package com.cannontech.web.amr.deviceDataMonitor;
 
-import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.*;
+import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.ATTRIBUTE;
+import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.POINT;
+import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.STATE_GROUP;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
+import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
@@ -134,7 +137,10 @@ public class DeviceDataMonitorController {
         
         List<DeviceDataMonitorProcessor> remaining = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remaining);
-        
+        monitor.getProcessors().forEach(p-> {
+            p.setType(ProcessorType.STATE);
+        });
+                
         if (result.hasErrors()) {
             
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
@@ -180,6 +186,9 @@ public class DeviceDataMonitorController {
         
         List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remainingProcessors);
+        monitor.getProcessors().forEach(p-> {
+            p.setType(ProcessorType.STATE);
+        });
         
         try {
             monitorService.update(monitor);

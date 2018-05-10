@@ -113,7 +113,7 @@
         
         <span id="str_na" class="dn"><i:inline key="yukon.common.na"/></span>
         <tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
-            <tags:dynamicTable items="${monitor.processors}" 
+            <tags:dynamicTable items="${monitor.getStateProcessors()}" 
                 nameKey="dynamicTable"
                 id="processorsTable" 
                 addButtonClass="js-add_processor" 
@@ -133,6 +133,7 @@
                     <tr class="js-new-row-model" style="display: none;">
                         <input type="hidden" data-name="processors[0].processorId"/>
                         <input type="hidden" data-name="processors[0].monitorId"/>
+                        <input type="hidden" data-name="processors[0].type"/>
                         <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
                         <td>
                             <select class="js-attribute" data-name="processors[0].attribute">
@@ -163,10 +164,11 @@
                         </td>
                     </tr>
                     <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
-                    <c:forEach var="processor" items="${monitor.processors}" varStatus="status">
+                    <c:forEach var="processor" items="${monitor.getStateProcessors()}" varStatus="status">
                         <tr class="processor">
                             <form:hidden path="processors[${status.index}].processorId" />
                             <form:hidden path="processors[${status.index}].monitorId" />
+                            <form:hidden path="processors[${status.index}].type" />
                             <form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
                             <td>
                                 <form:select path="processors[${status.index}].attribute" cssClass="js-attribute">

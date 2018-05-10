@@ -17,19 +17,21 @@ public class DeviceDataMonitorProcessor implements Serializable {
     private Attribute attribute;
     private LiteStateGroup stateGroup;
     private LiteState state;
+    private ProcessorType type;
+    private Double proccesorValue;
+    private Double rangeMin;
+    private Double rangeMax;
     
     /* not stored in the db */
     private boolean deletion = false;
     
     public DeviceDataMonitorProcessor() {}
     
-    public DeviceDataMonitorProcessor(Integer processorId, Integer monitorId, Attribute attribute,
-                                      LiteStateGroup stateGroup, LiteState state) {
+    public DeviceDataMonitorProcessor(Integer processorId, ProcessorType type, Integer monitorId, Attribute attribute) {
         this.processorId = processorId;
         this.monitorId = monitorId;
         this.attribute = attribute;
-        this.stateGroup = stateGroup;
-        this.state = state;
+        this.type = type;
     }
 
     public Integer getProcessorId() {
@@ -80,6 +82,38 @@ public class DeviceDataMonitorProcessor implements Serializable {
         this.deletion = deletion;
     }
     
+    public ProcessorType getType() {
+        return type;
+    }
+
+    public void setType(ProcessorType type) {
+        this.type = type;
+    }
+    
+    public Double getProccesorValue() {
+        return proccesorValue;
+    }
+
+    public void setProccesorValue(Double proccesorValue) {
+        this.proccesorValue = proccesorValue;
+    }
+
+    public Double getRangeMin() {
+        return rangeMin;
+    }
+
+    public Double getRangeMax() {
+        return rangeMax;
+    }
+
+    public void setRangeMax(Double rangeMax) {
+        this.rangeMax = rangeMax;
+    }
+
+    public void setRangeMin(Double rangeMin) {
+        this.rangeMin = rangeMin;
+    }
+
     /**
      * Comparator that orders by attribute, then state group, then state. Sorting
      * is for equality comparison reasons and not for display reasons
@@ -127,40 +161,54 @@ public class DeviceDataMonitorProcessor implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         DeviceDataMonitorProcessor other = (DeviceDataMonitorProcessor) obj;
         if (attribute == null) {
-            if (other.attribute != null)
+            if (other.attribute != null) {
                 return false;
-        } else if (!attribute.equals(other.attribute))
+            }
+        } else if (!attribute.equals(other.attribute)) {
             return false;
-        if (deletion != other.deletion)
+        }
+        if (deletion != other.deletion) {
             return false;
+        }
         if (monitorId == null) {
-            if (other.monitorId != null)
+            if (other.monitorId != null) {
                 return false;
-        } else if (!monitorId.equals(other.monitorId))
+            }
+        } else if (!monitorId.equals(other.monitorId)) {
             return false;
+        }
         if (processorId == null) {
-            if (other.processorId != null)
+            if (other.processorId != null) {
                 return false;
-        } else if (!processorId.equals(other.processorId))
+            }
+        } else if (!processorId.equals(other.processorId)) {
             return false;
+        }
         if (state == null) {
-            if (other.state != null)
+            if (other.state != null) {
                 return false;
-        } else if (!state.equals(other.state))
+            }
+        } else if (!state.equals(other.state)) {
             return false;
+        }
         if (stateGroup == null) {
-            if (other.stateGroup != null)
+            if (other.stateGroup != null) {
                 return false;
-        } else if (!stateGroup.equals(other.stateGroup))
+            }
+        } else if (!stateGroup.equals(other.stateGroup)) {
             return false;
+        }
         return true;
     }
 }
