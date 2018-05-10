@@ -826,6 +826,8 @@ void VoltageRegulator::executeEnableRemoteControl( const std::string & user )
                                      user );
 
         _lastCommandedOperatingMode = RemoteMode;
+
+        CTILOG_DEBUG( dout, "Enabling Remote mode for regulator: " << getPaoName() );
     }
     catch ( FailedAttributeLookup & missingAttribute )
     {
@@ -848,6 +850,8 @@ void VoltageRegulator::executeDisableRemoteControl( const std::string & user )
                                      user );
 
         _lastCommandedOperatingMode = LocalMode;
+
+        CTILOG_DEBUG( dout, "Disabling Remote mode for regulator: " << getPaoName() );
     }
     catch ( FailedAttributeLookup & missingAttribute )
     {
@@ -885,7 +889,11 @@ void VoltageRegulator::submitRemoteControlCommands( Policy::Actions             
 long VoltageRegulator::executeEnableKeepAlive( const std::string & user )
 try
 {
-    return submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue ) );
+    long delay = submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue ) );
+
+    CTILOG_DEBUG( dout, "Sending KeepAlive for regulator: " << getPaoName() );
+
+    return delay;
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
@@ -900,6 +908,8 @@ void VoltageRegulator::executeDisableKeepAlive( const std::string & user )
 try
 {
     submitKeepAliveCommands( _keepAlivePolicy->StopKeepAlive() );
+
+    CTILOG_DEBUG( dout, "Stopping KeepAlive for regulator: " << getPaoName() );
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {

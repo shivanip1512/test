@@ -2161,14 +2161,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser ) )
-                    {
-                        if( _CC_DEBUG & CC_DEBUG_IVVC )
-                        {
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                                              << subbus->getPaoName());
-                        }
-                    }
+                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2200,14 +2193,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser ) )
-                    {
-                        if( _CC_DEBUG & CC_DEBUG_IVVC )
-                        {
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                                              << subbus->getPaoName());
-                        }
-                    }
+                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2239,14 +2225,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if ( regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser ) )
-                    {
-                        if( _CC_DEBUG & CC_DEBUG_IVVC )
-                        {
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                                              << subbus->getPaoName());
-                        }
-                    }
+                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -3570,11 +3549,6 @@ bool IVVCAlgorithm::checkForMultiTapOperation( const PointValueMap & voltages,
 void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-
-    if (_CC_DEBUG & CC_DEBUG_IVVC)
-    {
-        CTILOG_DEBUG(dout, "IVVC Algorithm: "<< subbus->getPaoName() << " - Sending remote control disable. ");
-    }
 
     ZoneManager & zoneManager = store->getZoneManager();
     Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
