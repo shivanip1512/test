@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/10/2018 12:37:49 AM                        */
+/* Created on:     5/10/2018 1:30:54 PM                         */
 /*==============================================================*/
 
 
@@ -3290,7 +3290,10 @@ create table DeviceDataMonitorProcessor (
    MonitorId            numeric              not null,
    Attribute            varchar(255)         not null,
    StateGroupId         numeric              not null,
-   State                numeric              not null,
+   ProcessorType        varchar(25)          not null,
+   ProcessorValue       float                null,
+   RangeMin             float                null,
+   RangeMax             float                null,
    constraint PK_DeviceDataMonitorProcessor primary key (ProcessorId)
 )
 go

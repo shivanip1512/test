@@ -111,6 +111,28 @@ UPDATE YukonPAObject SET PAOName='*RfnTemplate_SCH_Sentinel-L4' WHERE PAOName='*
 INSERT INTO DBUpdates VALUES ('YUK-18164', '7.1.0', SYSDATE);
 /* @end YUK-18164 */
 
+/* @start YUK-18280 */
+ALTER TABLE DeviceDataMonitorProcessor
+    ADD ( ProcessorType VARCHAR(25),
+          ProcessorValue FLOAT,
+          RangeMin FLOAT,
+          RangeMax FLOAT );
+
+UPDATE DeviceDataMonitorProcessor
+SET ProcessorValue = State;
+
+ALTER TABLE DeviceDataMonitorProcessor
+DROP COLUMN State;
+
+UPDATE DeviceDataMonitorProcessor
+SET ProcessorType = 'STATE';
+
+ALTER TABLE DeviceDataMonitorProcessor
+    MODIFY ( ProcessorType VARCHAR2(25) NOT NULL );
+
+INSERT INTO DBUpdates VALUES ('YUK-18280', '7.1.0', SYSDATE);
+/* @end YUk-18280 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

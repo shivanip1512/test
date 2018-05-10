@@ -115,6 +115,33 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-18164', '7.1.0', GETDATE());
 /* @end YUK-18164 */
 
+/* @start YUK-18280 */
+ALTER TABLE DeviceDataMonitorProcessor
+    ADD ProcessorType VARCHAR(25) NULL,
+        ProcessorValue FLOAT NULL,
+        RangeMin FLOAT NULL,
+        RangeMax FLOAT NULL;
+GO
+
+UPDATE DeviceDataMonitorProcessor
+SET ProcessorValue = State;
+GO
+
+ALTER TABLE DeviceDataMonitorProcessor
+DROP COLUMN State;
+GO
+
+UPDATE DeviceDataMonitorProcessor
+SET ProcessorType = 'STATE';
+GO
+
+ALTER TABLE DeviceDataMonitorProcessor
+    ALTER COLUMN ProcessorType VARCHAR(25) NOT NULL;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-18280', '7.1.0', GETDATE());
+/* @end YUk-18280 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

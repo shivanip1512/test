@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/10/2018 12:40:20 AM                        */
+/* Created on:     5/10/2018 1:30:01 PM                         */
 /*==============================================================*/
 
 
@@ -3083,7 +3083,10 @@ create table DeviceDataMonitorProcessor  (
    MonitorId            NUMBER                          not null,
    Attribute            VARCHAR2(255)                   not null,
    StateGroupId         NUMBER                          not null,
-   State                NUMBER                          not null,
+   ProcessorType        VARCHAR2(25)                    not null,
+   ProcessorValue       FLOAT,
+   RangeMin             FLOAT,
+   RangeMax             FLOAT,
    constraint PK_DeviceDataMonitorProcessor primary key (ProcessorId)
 );
 
