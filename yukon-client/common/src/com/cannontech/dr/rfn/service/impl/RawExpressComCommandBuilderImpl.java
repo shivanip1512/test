@@ -79,6 +79,9 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         // Write serial number as a 4-byte Integer. 
         outputBuffer.putInt(serialNumber);
         
+        // Buffer for config data.
+        ByteBuffer dataBuffer;
+        
         // Add command-type specific payload type & message data.
         LmHardwareCommandType type = command.getType();
         switch(type) {
@@ -155,71 +158,91 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 outputBuffer.put(ctrlFlags);
                 break;
             case PQR_ENABLE:
-                outputBuffer.put((byte) 0x66);
                 boolean enable = command.findParam(LmHardwareCommandParam.PQR_ENABLE, Boolean.class);
                 byte enableVal = enable ? (byte) 1 : (byte) 0;
-                outputBuffer.put(enableVal);
+                outputConfigMessage(outputBuffer, type, enableVal);
                 break;
             case PQR_LOV_PARAMETERS:
-                outputBuffer.put((byte) 0x61);
+                dataBuffer = ByteBuffer.allocate(type.getDataLength());
+                // Build the message data
                 double triggerVolts = command.findParam(LmHardwareCommandParam.PQR_LOV_TRIGGER, Double.class);
                 short triggerTenthsOfVolt = (short) (triggerVolts * 10);
-                outputBuffer.putShort(triggerTenthsOfVolt);
+                dataBuffer.putShort(triggerTenthsOfVolt);
                 double restoreVolts = command.findParam(LmHardwareCommandParam.PQR_LOV_RESTORE, Double.class);
                 short restoreTenthsOfVolt = (short) (restoreVolts * 10);
-                outputBuffer.putShort(restoreTenthsOfVolt);
+                dataBuffer.putShort(restoreTenthsOfVolt);
                 short lovTriggerTime = command.findParam(LmHardwareCommandParam.PQR_LOV_TRIGGER_TIME, Short.class);
-                outputBuffer.putShort(lovTriggerTime);
+                dataBuffer.putShort(lovTriggerTime);
                 short lovRestoreTime = command.findParam(LmHardwareCommandParam.PQR_LOV_RESTORE_TIME, Short.class);
-                outputBuffer.putShort(lovRestoreTime);
+                dataBuffer.putShort(lovRestoreTime);
+                // Output the config message to the output buffer in appropriate format
+                outputConfigMessage(outputBuffer, type, dataBuffer.array());
                 break;
             case PQR_LOV_EVENT_DURATION:
-                outputBuffer.put((byte) 0x67);
-                outputBuffer.put(PqrResponseType.OVER_VOLTAGE.getValue());
+                dataBuffer = ByteBuffer.allocate(type.getDataLength());
+                // Build the message data
+                dataBuffer.put(PqrResponseType.OVER_VOLTAGE.getValue());
                 short minLovDuration = command.findParam(LmHardwareCommandParam.PQR_LOV_MIN_EVENT_DURATION, Short.class);
-                outputBuffer.putShort(minLovDuration);
+                dataBuffer.putShort(minLovDuration);
                 short maxLovDuration = command.findParam(LmHardwareCommandParam.PQR_LOV_MAX_EVENT_DURATION, Short.class);
-                outputBuffer.putShort(maxLovDuration);
+                dataBuffer.putShort(maxLovDuration);
+                // Output the config message to the output buffer in appropriate format
+                outputConfigMessage(outputBuffer, type, dataBuffer.array());
                 break;
             case PQR_LOV_DELAY_DURATION:
-                outputBuffer.put((byte) 0x68);
-                outputBuffer.put(PqrResponseType.OVER_VOLTAGE.getValue());
+                dataBuffer = ByteBuffer.allocate(type.getDataLength());
+                // Build the message data
+                dataBuffer.put(PqrResponseType.OVER_VOLTAGE.getValue());
                 short lovStartRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOV_START_RANDOM_TIME, Short.class);
-                outputBuffer.putShort(lovStartRandomTime);
+                dataBuffer.putShort(lovStartRandomTime);
                 short lovEndRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOV_END_RANDOM_TIME, Short.class);
-                outputBuffer.putShort(lovEndRandomTime);
+                dataBuffer.putShort(lovEndRandomTime);
+                // Output the config message to the output buffer in appropriate format
+                outputConfigMessage(outputBuffer, type, dataBuffer.array());
                 break;
             case PQR_LOF_PARAMETERS:
-                outputBuffer.put((byte) 0x65);
-                short triggerMillis = command.findParam(LmHardwareCommandParam.PQR_LOF_TRIGGER, Short.class);
-                outputBuffer.putShort(triggerMillis);
-                short restoreMillis = command.findParam(LmHardwareCommandParam.PQR_LOF_RESTORE, Short.class);
-                outputBuffer.putShort(restoreMillis);
+                dataBuffer = ByteBuffer.allocate(type.getDataLength());
+                // Build the message data
+                short triggerMicroseconds = command.findParam(LmHardwareCommandParam.PQR_LOF_TRIGGER, Short.class);
+                dataBuffer.putShort(triggerMicroseconds);
+                short restoreMicroseconds = command.findParam(LmHardwareCommandParam.PQR_LOF_RESTORE, Short.class);
+                dataBuffer.putShort(restoreMicroseconds);
                 short lofTriggerTime = command.findParam(LmHardwareCommandParam.PQR_LOF_TRIGGER_TIME, Short.class);
-                outputBuffer.putShort(lofTriggerTime);
+                dataBuffer.putShort(lofTriggerTime);
                 short lofRestoreTime = command.findParam(LmHardwareCommandParam.PQR_LOF_RESTORE_TIME, Short.class);
-                outputBuffer.putShort(lofRestoreTime);
+                dataBuffer.putShort(lofRestoreTime);
+                // Output the config message to the output buffer in appropriate format
+                outputConfigMessage(outputBuffer, type, dataBuffer.array());
                 break;
             case PQR_LOF_EVENT_DURATION:
-                outputBuffer.put((byte) 0x67);
-                outputBuffer.put(PqrResponseType.OVER_FREQUENCY.getValue());
+                dataBuffer = ByteBuffer.allocate(type.getDataLength());
+                // Build the message data
+                dataBuffer.put(PqrResponseType.OVER_FREQUENCY.getValue());
                 short minLofDuration = command.findParam(LmHardwareCommandParam.PQR_LOF_MIN_EVENT_DURATION, Short.class);
-                outputBuffer.putShort(minLofDuration);
+                dataBuffer.putShort(minLofDuration);
                 short maxLofDuration = command.findParam(LmHardwareCommandParam.PQR_LOF_MAX_EVENT_DURATION, Short.class);
-                outputBuffer.putShort(maxLofDuration);
+                dataBuffer.putShort(maxLofDuration);
+                // Output the config message to the output buffer in appropriate format
+                outputConfigMessage(outputBuffer, type, dataBuffer.array());
                 break;
             case PQR_LOF_DELAY_DURATION:
-                outputBuffer.put((byte) 0x68);
-                outputBuffer.put(PqrResponseType.OVER_FREQUENCY.getValue());
+                dataBuffer = ByteBuffer.allocate(type.getDataLength());
+                // Build the message data
+                dataBuffer.put(PqrResponseType.OVER_FREQUENCY.getValue());
                 short lofStartRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOF_START_RANDOM_TIME, Short.class);
-                outputBuffer.putShort(lofStartRandomTime);
+                dataBuffer.putShort(lofStartRandomTime);
                 short lofEndRandomTime = command.findParam(LmHardwareCommandParam.PQR_LOF_END_RANDOM_TIME, Short.class);
-                outputBuffer.putShort(lofEndRandomTime);
+                dataBuffer.putShort(lofEndRandomTime);
+                // Output the config message to the output buffer in appropriate format
+                outputConfigMessage(outputBuffer, type, dataBuffer.array());
                 break;
             case PQR_EVENT_SEPARATION:
-                outputBuffer.put((byte) 0x69);
+                dataBuffer = ByteBuffer.allocate(type.getDataLength());
+                // Build the message data
                 short minimumEventSeparation = command.findParam(LmHardwareCommandParam.PQR_EVENT_SEPARATION, Short.class);
-                outputBuffer.putShort(minimumEventSeparation);
+                dataBuffer.putShort(minimumEventSeparation);
+                // Output the config message to the output buffer in appropriate format
+                outputConfigMessage(outputBuffer, type, dataBuffer.array());
                 break; 
             default:
                 throw new IllegalArgumentException("Command Type: " + type + " not implemented");
@@ -232,6 +255,23 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         return trimmedOutput;
     }
 
+    /**
+     * Builds an expresscom configuration message as specified in the ExpressCom Protocol 2.0 spec, section 5.15.
+     */
+    private void outputConfigMessage(ByteBuffer outputBuffer, LmHardwareCommandType type, byte... dataBytes) {
+        //Denotes a Configuration Message
+        outputBuffer.put((byte) 0x10);
+        
+        //Denotes the type of configuration
+        outputBuffer.put(type.getConfigNumber());
+        
+        //Specifies data length
+        outputBuffer.put(type.getDataLength());
+        
+        //Data bytes
+        outputBuffer.put(dataBytes);
+    }
+    
     @Override
     public byte[] getBroadcastCancelAllTempOutOfServiceCommand(int spid) {
         ByteBuffer outputBuffer = ByteBuffer.allocate(32);

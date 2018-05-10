@@ -17,6 +17,7 @@
     </div>
     
     <cti:msg2 var="volts" key="yukon.common.units.VOLTS"/>
+    <cti:msg2 var="microsec" key="yukon.common.units.MICROSECONDS"/>
     <cti:msg2 var="millis" key="yukon.common.units.MILLIS"/>
     <cti:msg2 var="secs" key="yukon.common.units.SECONDS"/>
     
@@ -25,15 +26,17 @@
         <cti:csrfToken/>
         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
         
-        
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="enable">
                     <tags:nameValueContainer2>
                         <div class="button-group button-group-toggle">
-                            <cti:button nameKey="enableButton" data-input="#pqr-enable" data-value="true" classes="yes"/>
-                            <cti:button nameKey="doNotSendButton" data-input="#pqr-enable" data-value="" classes="on"/>
-                            <cti:button nameKey="disableButton" data-input="#pqr-enable" data-value="false" classes="no"/>
+                            <c:set var="enableSelected" value="${config.pqrEnable eq 'true' ? 'on' : ''}"/>
+                            <c:set var="doNotSendSelected" value="${empty config.pqrEnable ? 'on' : ''}"/>
+                            <c:set var="disableSelected" value="${config.pqrEnable eq 'false' ? 'on' : ''}"/>
+                            <cti:button nameKey="enableButton" data-input="#pqr-enable" data-value="true" classes="yes ${enableSelected}"/>
+                            <cti:button nameKey="doNotSendButton" data-input="#pqr-enable" data-value="" classes="${doNotSendSelected}"/>
+                            <cti:button nameKey="disableButton" data-input="#pqr-enable" data-value="false" classes="no ${disableSelected}"/>
                             <form:hidden id="pqr-enable" path="pqrEnable"/>
                         </div>
                     </tags:nameValueContainer2>
@@ -87,10 +90,10 @@
                 <tags:sectionContainer2 nameKey="ofTriggers">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ofTrigger">
-                            <tags:input path="lofTrigger" units="${millis}" inputClass="skinny"/>
+                            <tags:input path="lofTrigger" units="${microsec}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ofRestore">
-                            <tags:input path="lofRestore" units="${millis}" inputClass="skinny"/>
+                            <tags:input path="lofRestore" units="${microsec}" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovTriggerTime">
                             <tags:input path="lofTriggerTime" units="${millis}" inputClass="skinny"/>

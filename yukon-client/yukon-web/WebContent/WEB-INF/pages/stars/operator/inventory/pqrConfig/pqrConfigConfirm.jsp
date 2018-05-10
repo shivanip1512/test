@@ -17,6 +17,7 @@
     </div>
     
     <cti:msg2 var="volts" key="yukon.common.units.VOLTS"/>
+    <cti:msg2 var="microsec" key="yukon.common.units.MICROSECONDS"/>
     <cti:msg2 var="millis" key="yukon.common.units.MILLIS"/>
     <cti:msg2 var="secs" key="yukon.common.units.SECONDS"/>
     
@@ -128,11 +129,11 @@
                     <c:if test="${config.hasLofParams()}">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".ofTrigger">
-                                ${config.lofTrigger} ${millis}
+                                ${config.lofTrigger} ${microsec}
                                 <form:hidden path="lofTrigger"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".ofRestore">
-                                ${config.lofTrigger} ${millis}
+                                ${config.lofTrigger} ${microsec}
                                 <form:hidden path="lofRestore"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".ovTriggerTime">
@@ -176,7 +177,8 @@
                                 <form:hidden path="lofStartRandomTime"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".ofEndRandomTime">
-                                <tags:input path="lofEndRandomTime" units="${millis}" inputClass="skinny"/>
+                                ${config.lofEndRandomTime} ${millis}
+                                <form:hidden path="lofEndRandomTime"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </c:if>

@@ -314,6 +314,7 @@
 <entry key="yukon.common.units.SECONDS">Seconds</entry>
 <entry key="yukon.common.units.MINUTES">Minutes</entry>
 <entry key="yukon.common.units.MILLIS">Millis</entry>
+<entry key="yukon.common.units.MICROSECONDS">Microseconds</entry>
 <entry key="yukon.common.unsupported">Unsupported</entry>
 <entry key="yukon.common.user">User</entry>
 <entry key="yukon.common.user.editor">User Editor</entry>
