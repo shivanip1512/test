@@ -133,7 +133,7 @@
                                 <form:hidden path="lofTrigger"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".ofRestore">
-                                ${config.lofTrigger} ${microsec}
+                                ${config.lofRestore} ${microsec}
                                 <form:hidden path="lofRestore"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".ovTriggerTime">

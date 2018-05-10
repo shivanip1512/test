@@ -2,6 +2,7 @@ package com.cannontech.dr.rfn.service.impl;
 
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
@@ -250,7 +251,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
         trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());
         
-        log.debug("Inner payload: " + trimmedOutput.toString());
+        log.debug("Inner payload: " + Arrays.toString(trimmedOutput.array()));
         
         return trimmedOutput;
     }
