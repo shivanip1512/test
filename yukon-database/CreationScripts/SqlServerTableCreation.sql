@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/10/2018 1:30:54 PM                         */
+/* Created on:     5/11/2018 11:12:34 AM                        */
 /*==============================================================*/
 
 
@@ -3289,7 +3289,7 @@ create table DeviceDataMonitorProcessor (
    ProcessorId          numeric              not null,
    MonitorId            numeric              not null,
    Attribute            varchar(255)         not null,
-   StateGroupId         numeric              not null,
+   StateGroupId         numeric              null,
    ProcessorType        varchar(25)          not null,
    ProcessorValue       float                null,
    RangeMin             float                null,
