@@ -103,7 +103,7 @@
     
     <tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
         <c:choose>
-            <c:when test="${fn:length(monitor.processors) == 0}">
+            <c:when test="${fn:length(monitor.getStateProcessors()) == 0}">
                 <span class="empty-list"><i:inline key=".noProcessors" /></span>
             </c:when>
             <c:otherwise>
@@ -117,11 +117,48 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach var="processor" items="${monitor.processors}">
+                            <c:forEach var="processor" items="${monitor.getStateProcessors()}">
                                 <tr>
                                     <td><i:inline key="${processor.attribute}"/></td>
                                     <td>${processor.stateGroup}</td>
                                     <td>${processor.state.stateText}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </tags:sectionContainer2>
+    
+    <tags:sectionContainer2 nameKey="valueProcessors">
+        <c:choose>
+            <c:when test="${fn:length(monitor.getValueProcessors()) == 0}">
+                <span class="empty-list"><i:inline key=".noProcessors" /></span>
+            </c:when>
+            <c:otherwise>
+                <div class="scroll-sm">
+                    <table class="compact-results-table dashed with-form-controls">
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".processors.attribute" /></th>
+                                <th><i:inline key=".processors.rule" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="processor" items="${monitor.getValueProcessors()}">
+                                <tr>
+                                    <td><i:inline key="${processor.attribute}"/></td>
+                                    <td><i:inline key="${processor.type.formatKey}"/>&nbsp;
+                                        <c:choose>
+                                            <c:when test="${processor.type == 'RANGE'}">
+                                                <i:inline key=".min"/>: ${processor.rangeMin}&nbsp;<i:inline key=".max"/>: ${processor.rangeMax}
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${processor.processorValue}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </tbody>

@@ -37,9 +37,16 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.monitoringEnable">Enable</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.monitoringDisable">Disable</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.settings.title">Settings</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.title">Processors</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.title">Status Processors</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.valueProcessors.title">Value Processors</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.valueProcessors.helpText"><![CDATA[
+        Test
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.value">Value</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.min">Min</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.max">Max</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.settings.helpDialog.title">Monitor Settings Help</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.helpDialog.title">Monitor Processors Help</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.helpDialog.title">Monitor Status Processors Help</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.whatDoesThisMean.title">What does this mean?</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.whatDoesThisMeanBody"><![CDATA[
         Points contained in this list either do not have the point created for a given device or the point is created, however it has a different state group than what is assigned in your monitor's processor.  For example, say the following is displayed in your list:
@@ -69,6 +76,7 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.stateGroup">State Group</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.state">State</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.rule">Rule</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.addPoints.label">Add Points</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.calculating">Calculating...</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.calculatingWarning">Update functionality is disabled while calculating.</entry>
@@ -141,5 +149,11 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.updated">Device Data Monitor Updated: {0}</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.deleted">Device Data Monitor Deleted: {0}</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.violationsFound">Found {0} violating devices</entry>
+    
+    <!-- Processor Types -->
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.processorType.STATE">State</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.processorType.LESS">&lt;</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.processorType.GREATER">&gt;</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.processorType.RANGE">Range</entry>
 
 </properties>

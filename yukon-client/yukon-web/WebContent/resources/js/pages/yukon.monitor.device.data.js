@@ -173,7 +173,7 @@ yukon.ami.ddm = (function () {
                         '<a class="js-show-too-many-device-for-point-help" href="javascript:void(0);"'
                         + ' target-id="point-unknown-number-help"'
                         + ' target-title="'+ pt_help_title +'">'
-                            + '<i class="icon icon-warning">&nbsp;</i>'
+                            + '<i class="icon icon-error">&nbsp;</i>'
                         + '</a>';
                 }
                 
@@ -281,23 +281,39 @@ yukon.ami.ddm = (function () {
         },
         
         /** Add a processor */
-        _processor_add = function () {
+        _processor_add = function (tableClass) {
             
             _waiting_to_finish_N_before_doing_counts = 0;
             
-            var template_row = $('.js-processors-table .js-new-row-model');
-            var new_row = template_row.clone();
-            var new_undo_row = template_row.next('tr').clone();
+            var template_row = $(tableClass + ' .js-new-row-model'),
+                new_row = template_row.clone(),
+                new_undo_row = template_row.next('tr').clone(),
+                last_index = 0,
+                statusProcessorsTableLength = $('.js-processors-table tbody tr').length,
+                valueProcessorsTableLength = $('.js-value-processors-table tbody tr').length;
             
             new_row.removeClass('js-new-row-model');
             new_row.addClass('processor');
             
-            var last_index;
-            if ($('.js-processors-table tbody tr').length === 2) {
+            if ($(tableClass + ' tbody tr').length === 2) {
+                $(tableClass).closest('.dynamicTableWrapper').find('.js-no-items-message').remove();
+            }
+
+            if (statusProcessorsTableLength === 2 && valueProcessorsTableLength === 2) {
                 last_index = 0;
-                $('.js-no-items-message').remove();
             } else {
-                last_index  = 1+ _get_proc_row_id_from_elem_name($('.js-processors-table tbody tr select:last'));
+                var nextRowIdFromStatusProcessors = 0,
+                    nextRowIdFromValueProcessors = 0;
+                if (statusProcessorsTableLength > 2) {
+                    nextRowIdFromStatusProcessors = _get_proc_row_id_from_elem_name($('.js-processors-table tbody tr select:last'));
+                }
+                if (valueProcessorsTableLength > 2) {
+                    nextRowIdFromValueProcessors = _get_proc_row_id_from_elem_name($('.js-value-processors-table tbody tr select:last'));
+                }
+                last_index = nextRowIdFromStatusProcessors + 1;
+                if (nextRowIdFromValueProcessors > nextRowIdFromStatusProcessors) {
+                    last_index = nextRowIdFromValueProcessors + 1;
+                }
             }
             
             new_row.find('[data-name]').each(function () {
@@ -317,8 +333,8 @@ yukon.ami.ddm = (function () {
             // set our new row's attribute select to that of the last row in the table
             new_row.find('select')[0].selectedIndex = 0;	//last_row_selects[0].selectedIndex;
             
-            $('.js-processors-table tbody').append(new_row);
-            $('.js-processors-table tbody').append(new_undo_row);
+            $(tableClass + ' tbody').append(new_row);
+            $(tableClass + ' tbody').append(new_undo_row);
             new_row.show()
             .find('select').first().focus();
         },
@@ -528,17 +544,20 @@ yukon.ami.ddm = (function () {
         _validate_processors = function () {
             
             var missingCount = 0;
-            var procs = $('.processor').filter(":visible");
-            procs.each(function (idx, row) {
+            //TODO: Do we need to check anything for value processors?
+            var statusProcs = $('.js-processors-table .processor').filter(":visible");
+            statusProcs.each(function (idx, row) {
                 var ctrl = _get_state_group_value($(row));   // for IE8
                 if (ctrl == null || ctrl.length < 1) {
                     missingCount++;
                 }
             });
+            var valueProcs = $('.js-value-processors-table .processor').filter(":visible");
+            var allProcs = statusProcs.length + valueProcs.length;
 
             //only enable if not calculating
             var enable = $('.js-calculating-warning').hasClass('dn') ? false : true;
-            $('.js-save-monitor').prop('disabled', missingCount > 0 || procs.length < 1 ? true : enable);
+            $('.js-save-monitor').prop('disabled', missingCount > 0 || allProcs < 1 ? true : enable);
         },
         
         mod;
@@ -587,6 +606,7 @@ yukon.ami.ddm = (function () {
                     $('.js-device-group-count').text(data.count).show()
                     .prev().hide();
                     $('.js-monitor-form .js-add_processor').prop('disabled', data.count > 0 ? false : true);
+                    $('.js-monitor-form .js-add-value-processor').prop('disabled', data.count > 0 ? false : true);
                 });
                 
                 // Update supported count
@@ -615,10 +635,24 @@ yukon.ami.ddm = (function () {
             
             $('.js-processors-table').on('change', '.js-attribute', _attribute_changed);
             
+            $('.js-value-processors-table').on('change', '.js-value-attribute', _get_supported_counts);
+            
             $('.js-processors-table').on('change', '.js-state-group', _state_group_changed);
             
-            $('.js-add_processor').on('click', _processor_add);
+            $(document).on('click', '.js-add_processor', function () {
+                _processor_add('.js-processors-table')
+            });
             
+            $(document).on('click', '.js-add-value-processor', function () {
+                _processor_add('.js-value-processors-table')
+            });
+            
+            $(document).on('change', '.js-processor-type', function () {
+                var selectedValue = $(this).val();
+                $(this).closest('.processor').find('.js-range-values').toggleClass('dn', selectedValue != 'RANGE');
+                $(this).closest('.processor').find('.js-processor-value').toggleClass('dn', selectedValue == 'RANGE');
+            });
+                        
             $('.js-save-monitor').on('click', _show_update_dialog);
             
             

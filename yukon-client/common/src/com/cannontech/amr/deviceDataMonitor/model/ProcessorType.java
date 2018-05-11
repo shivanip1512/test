@@ -1,6 +1,8 @@
 package com.cannontech.amr.deviceDataMonitor.model;
 
-public enum ProcessorType {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum ProcessorType implements DisplayableEnum {
     STATE,
     RANGE,
     LESS,
@@ -12,5 +14,10 @@ public enum ProcessorType {
     
     public boolean isValueBased() {
         return this != STATE;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.amr.deviceDataMonitor.processorType." + this;
     }
 }

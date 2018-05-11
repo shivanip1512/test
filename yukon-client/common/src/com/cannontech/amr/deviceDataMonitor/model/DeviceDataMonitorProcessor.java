@@ -18,7 +18,7 @@ public class DeviceDataMonitorProcessor implements Serializable {
     private LiteStateGroup stateGroup;
     private LiteState state;
     private ProcessorType type;
-    private Double proccesorValue;
+    private Double processorValue;
     private Double rangeMin;
     private Double rangeMax;
     
@@ -90,12 +90,12 @@ public class DeviceDataMonitorProcessor implements Serializable {
         this.type = type;
     }
     
-    public Double getProccesorValue() {
-        return proccesorValue;
+    public Double getProcessorValue() {
+        return processorValue;
     }
 
-    public void setProccesorValue(Double proccesorValue) {
-        this.proccesorValue = proccesorValue;
+    public void setProcessorValue(Double processorValue) {
+        this.processorValue = processorValue;
     }
 
     public Double getRangeMin() {

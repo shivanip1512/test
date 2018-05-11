@@ -120,7 +120,7 @@
                 noBlockOnAdd="true" 
                 disableAddButton="${disableAddProcessAtStart}">
             <div>
-            <table class="compact-results-table js-processors-table device_data_processors full-width dashed with-form-controls">
+            <table class="compact-results-table js-processors-table full-width dashed with-form-controls">
                 <thead>
                     <tr>
                         <th><i:inline key=".processors.attribute" /></th>
@@ -133,7 +133,7 @@
                     <tr class="js-new-row-model" style="display: none;">
                         <input type="hidden" data-name="processors[0].processorId"/>
                         <input type="hidden" data-name="processors[0].monitorId"/>
-                        <input type="hidden" data-name="processors[0].type"/>
+                        <input type="hidden" data-name="processors[0].type" value="STATE"/>
                         <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
                         <td>
                             <select class="js-attribute" data-name="processors[0].attribute">
@@ -164,67 +164,144 @@
                         </td>
                     </tr>
                     <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
-                    <c:forEach var="processor" items="${monitor.getStateProcessors()}" varStatus="status">
-                        <tr class="processor">
-                            <form:hidden path="processors[${status.index}].processorId" />
-                            <form:hidden path="processors[${status.index}].monitorId" />
-                            <form:hidden path="processors[${status.index}].type" />
-                            <form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
-                            <td>
-                                <form:select path="processors[${status.index}].attribute" cssClass="js-attribute">
-                                    <c:forEach items="${allGroupedReadableAttributes}" var="group">
-                                        <optgroup label="<cti:msg2 key="${group.key}"/>">
-                                            <c:forEach items="${group.value}" var="item">
-                                               <c:set var="selected" value=""/>
-                                                <c:if test="${processor.attribute == item}">
-                                                    <c:set var="selected" value="selected"/>
-                                                    <c:set var="attributeKey" value="${item.key}"/>
-                                                </c:if>
-                                                <option value="${item.key}" ${selected}>
-                                                    <cti:formatObject value="${item}"/>
-                                                </option>
-                                            </c:forEach>
-                                        </optgroup>
-                                    </c:forEach>
-                                </form:select>
-                            </td>
-                            <td>
-                            <c:set var="stateGroups" value="${mapAttributeKeyToStateGroupList.get(attributeKey)}"/>
-                            <c:set var="ctrlName" value="processors[${status.index}].stateGroup"/>
-                            <c:choose>
-                                <c:when test="${stateGroups.size() > 1}">
-                                <form:select path="${ctrlName}" cssClass="js-state-group">
-                                    <c:forEach items="${stateGroups}" var="stateGroup">
-                                        <c:set var="selected" value=""/>
-                                        <c:if test="${processor.stateGroup == stateGroup}">
-                                            <c:set var="selected" value="selected"/>
-                                        </c:if>
-                                        <option value="${stateGroup.liteID}" ${selected}>${stateGroup.stateGroupName}</option>
-                                    </c:forEach>
-                                </form:select>
-                                </c:when><c:otherwise>
-                                    <div class="js-state-group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
-                                </c:otherwise>
-                            </c:choose>
-                            <span class="dn js-calc-indicator">
-                                <cti:icon icon="icon-spinner"/>
-                                <span class="b-label"><i:inline key=".calculating"/></span>
+                    <c:forEach var="processor" items="${monitor.processors}" varStatus="status">
+                        <c:if test="${processor.type == 'STATE'}">
+                            <tr class="processor">
+                                <form:hidden path="processors[${status.index}].processorId" />
+                                <form:hidden path="processors[${status.index}].monitorId" />
+                                <form:hidden path="processors[${status.index}].type" />
+                                <form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
+                                <td>
+                                    <tags:selectWithItems path="processors[${status.index}].attribute" items="${allGroupedReadableAttributes}"
+                                        groupItems="true" inputClass="js-attribute"/>
+                                </td>
+                                <td>
+                                <c:set var="stateGroups" value="${mapAttributeKeyToStateGroupList.get(attributeKey)}"/>
+                                <c:set var="ctrlName" value="processors[${status.index}].stateGroup"/>
+                                <c:choose>
+                                    <c:when test="${stateGroups.size() > 1}">
+                                    <form:select path="${ctrlName}" cssClass="js-state-group">
+                                        <c:forEach items="${stateGroups}" var="stateGroup">
+                                            <c:set var="selected" value=""/>
+                                            <c:if test="${processor.stateGroup == stateGroup}">
+                                                <c:set var="selected" value="selected"/>
+                                            </c:if>
+                                            <option value="${stateGroup.liteID}" ${selected}>${stateGroup.stateGroupName}</option>
+                                        </c:forEach>
+                                    </form:select>
+                                    </c:when><c:otherwise>
+                                        <div class="js-state-group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
+                                    </c:otherwise>
+                                </c:choose>
+                                <span class="dn js-calc-indicator">
+                                    <cti:icon icon="icon-spinner"/>
+                                    <span class="b-label"><i:inline key=".calculating"/></span>
+                                </span>
+                                </td>
+                                <td>
+                                    <form:select path="processors[${status.index}].state" cssClass="js-states">
+                                        <c:forEach items="${processor.stateGroup.statesList}" var="state">
+                                            <c:set var="selected" value=""/>
+                                            <c:if test="${processor.state.stateRawState == state.liteID}">
+                                                <c:set var="selected" value="selected"/>
+                                            </c:if>
+                                            <option value="${processor.stateGroup.liteID}:${state.liteID}" ${selected}>${state.stateText}</option>
+                                        </c:forEach>
+                                    </form:select>
+                                </td>
+                                <tags:dynamicTableActionsCell tableId="processorsTable"
+                                    isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
+                            </tr>
+                        </c:if>
+                        <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
+                    </c:forEach>
+                </tbody>
+            </table>
+            </div>
+            </tags:dynamicTable>
+        </tags:sectionContainer2>
+        
+        <tags:sectionContainer2 nameKey="valueProcessors">
+            <tags:dynamicTable items="${monitor.getValueProcessors()}" 
+                nameKey="dynamicTable"
+                id="valueProcessorsTable" 
+                addButtonClass="js-add-value-processor" 
+                noBlockOnAdd="true" 
+                disableAddButton="${disableAddProcessAtStart}">
+            <div>
+            <table class="compact-results-table js-value-processors-table full-width dashed with-form-controls">
+                <thead>
+                    <tr>
+                        <th><i:inline key=".processors.attribute" /></th>
+                        <th><i:inline key=".processors.rule" /></th>
+                        <th class="remove-column"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="js-new-row-model" style="display: none;">
+                        <input type="hidden" data-name="processors[0].processorId"/>
+                        <input type="hidden" data-name="processors[0].monitorId"/>
+                        <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
+                        <td>
+                            <select class="js-value-attribute" data-name="processors[0].attribute">
+                                <option value="-1"><i:inline key="yukon.common.selector.selectOne" /></option>
+                                <c:forEach items="${allGroupedValueAttributes}" var="group">
+                                    <optgroup label="<cti:msg2 key="${group.key}"/>">
+                                        <c:forEach items="${group.value}" var="item">
+                                            <option value="${item.key}" ${selected}>
+                                                <cti:formatObject value="${item}"/>
+                                            </option>
+                                        </c:forEach>
+                                    </optgroup>
+                                </c:forEach>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="js-processor-type" data-name="processors[0].type">
+                                <c:forEach items="${processorTypes}" var="type">
+                                    <option value="${type}"><i:inline key="${type.formatKey}"/></option>
+                                </c:forEach>
+                            </select>
+                            <span class="js-processor-value">
+                                <i:inline key=".value"/>: <input type="text" size="8" class="js-processor-input-value" data-name="processors[0].processorValue"/>
                             </span>
-                            </td>
-                            <td>
-                                <form:select path="processors[${status.index}].state" cssClass="js-states">
-                                    <c:forEach items="${processor.stateGroup.statesList}" var="state">
-                                        <c:set var="selected" value=""/>
-                                        <c:if test="${processor.state.stateRawState == state.liteID}">
-                                            <c:set var="selected" value="selected"/>
-                                        </c:if>
-                                        <option value="${processor.stateGroup.liteID}:${state.liteID}" ${selected}>${state.stateText}</option>
-                                    </c:forEach>
-                                </form:select>
-                            </td>
-                            <tags:dynamicTableActionsCell tableId="processorsTable"
-                                isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
-                        </tr>
+                            <span class="js-range-values dn">
+                                <i:inline key=".min"/>: <input type="text" size="8" class="js-range-min" data-name="processors[0].rangeMin"/>
+                                <i:inline key=".max"/>: <input type="text" size="8" class="js-range-max" data-name="processors[0].rangeMax"/>
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-cross"/>
+                        </td>
+                    </tr>
+                    <tags:dynamicTableUndoRow columnSpan="3" nameKey="dynamicTable.undoRow"/>
+                    <c:forEach var="processor" items="${monitor.processors}" varStatus="status">
+                        <c:if test="${processor.type != 'STATE'}">
+                            <tr class="processor">
+                                <form:hidden path="processors[${status.index}].processorId" />
+                                <form:hidden path="processors[${status.index}].monitorId" />
+                                <form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
+                                <td>
+                                    <tags:selectWithItems path="processors[${status.index}].attribute" items="${allGroupedValueAttributes}"
+                                        groupItems="true" inputClass="js-value-attribute"/>
+                                </td>
+                                <td>
+                                    <tags:selectWithItems inputClass="js-processor-type" path="processors[${status.index}].type" items="${processorTypes}"/>
+                                    <c:set var="rangeClass" value="${processor.type != 'RANGE' ? 'dn' : ''}"/>
+                                    <c:set var="notRangeClass" value="${processor.type == 'RANGE' ? 'dn' : ''}"/>
+                                    <span class="js-processor-value ${notRangeClass}">
+                                        <i:inline key=".value"/>: 
+                                        <tags:input size="8" inputClass="js-processor-input-value" path="processors[${status.index}].processorValue"/>
+                                    </span>
+                                    <span class="js-range-values ${rangeClass}">
+                                        <i:inline key=".min"/>: <tags:input size="8" inputClass="js-range-min" path="processors[${status.index}].rangeMin"/>
+                                        <i:inline key=".max"/>: <tags:input size="8" inputClass="js-range-max" path="processors[${status.index}].rangeMax" />
+                                    </span>
+                                </td>
+                                <tags:dynamicTableActionsCell tableId="valueProcessorsTable"
+                                    isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
+                            </tr>
+                        </c:if>
                         <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
                     </c:forEach>
                 </tbody>

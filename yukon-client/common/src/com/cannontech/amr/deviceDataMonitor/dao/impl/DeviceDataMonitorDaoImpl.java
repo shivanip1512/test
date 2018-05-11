@@ -101,7 +101,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
                         processor.setRangeMin(rs.getDouble("RangeMin"));
                         processor.setRangeMax(rs.getDouble("RangeMax"));
                     } else {
-                        processor.setProccesorValue(rs.getDouble("ProcessorValue"));
+                        processor.setProcessorValue(rs.getDouble("ProcessorValue"));
                     }
                 }
                 return processor;
@@ -227,7 +227,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
                     p.addValue("RangeMin", processor.getRangeMin());
                     p.addValue("RangeMax", processor.getRangeMax());
                 } else {
-                    p.addValue("ProcessorValue", processor.getProccesorValue());
+                    p.addValue("ProcessorValue", processor.getProcessorValue());
                 }
             }
         }

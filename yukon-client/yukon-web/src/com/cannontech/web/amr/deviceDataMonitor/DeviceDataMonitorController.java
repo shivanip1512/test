@@ -137,9 +137,6 @@ public class DeviceDataMonitorController {
         
         List<DeviceDataMonitorProcessor> remaining = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remaining);
-        monitor.getProcessors().forEach(p-> {
-            p.setType(ProcessorType.STATE);
-        });
                 
         if (result.hasErrors()) {
             
@@ -186,9 +183,6 @@ public class DeviceDataMonitorController {
         
         List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remainingProcessors);
-        monitor.getProcessors().forEach(p-> {
-            p.setType(ProcessorType.STATE);
-        });
         
         try {
             monitorService.update(monitor);
@@ -302,7 +296,7 @@ public class DeviceDataMonitorController {
         model.addAttribute("monitoringCount", monitoringCount);
         model.addAttribute("mode", PageEditMode.CREATE);
         setupAttributes(model, userContext);
-        
+        setupProcessorTypes(model);
     }
     
     private void setupAttributes(ModelMap model, YukonUserContext userContext) {
@@ -313,6 +307,17 @@ public class DeviceDataMonitorController {
                 attributeService.getGroupedAttributeMapFromCollection(allAttributes, userContext);
         
         model.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
+        
+        //value attributes
+        model.addAttribute("allGroupedValueAttributes", BuiltInAttribute.getStandardGroupedAttributes());
+    }
+    
+    private void setupProcessorTypes(ModelMap model) {
+        List<ProcessorType> selectableTypes = new ArrayList<>();
+        selectableTypes.add(ProcessorType.GREATER);
+        selectableTypes.add(ProcessorType.LESS);
+        selectableTypes.add(ProcessorType.RANGE);
+        model.addAttribute("processorTypes", selectableTypes);
     }
     
     private void setupCommonEditViewModelMap(DeviceDataMonitor monitor, ModelMap model) {
@@ -346,7 +351,7 @@ public class DeviceDataMonitorController {
                     .findStateGroups(monitor.getGroupName(), attribute);
             lookups.put(attribute.getKey(), stateGroupList);
         }
-        
+        setupProcessorTypes(model);
         model.addAttribute("mapAttributeKeyToStateGroupList", lookups);
     }
     
