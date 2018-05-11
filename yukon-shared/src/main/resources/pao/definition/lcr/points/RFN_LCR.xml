@@ -107,15 +107,15 @@
     <!-- Power Quality Response (GridBallast) Points -->
     <point offset="900" type="Analog">
         <name>LOF Trigger Period</name>
-        <multiplier value="1"/>
+        <multiplier value=".001"/>
         <unitofmeasure value="MS"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="901" type="Analog">
         <name>LOF Restore Period</name>
-        <multiplier value="1"/>
+        <multiplier value=".001"/>
         <unitofmeasure value="MS"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="3"/>
     </point>
     <point offset="902" type="Analog">
         <name>LOF Trigger Time</name>

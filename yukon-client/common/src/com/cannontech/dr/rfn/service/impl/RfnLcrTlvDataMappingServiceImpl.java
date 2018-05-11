@@ -124,7 +124,13 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                     
                     Double multiplier = point.getMultiplier();
                     if (multiplier != null) {
-                        value *= multiplier;
+                        double modifiedValue = value * multiplier;
+                        if (log.isDebugEnabled() && multiplier != 1.0) {
+                            log.debug("Applying multiplier to point value. Device=" + device.getName() 
+                                      + ". Original value=" + value + ". Multiplier=" + multiplier + "."
+                                      + ". Modified value=" + modifiedValue);
+                        }
+                        value = modifiedValue;
                     }
                     
                     PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, point.getPointID(), timeOfReading.toDate());
