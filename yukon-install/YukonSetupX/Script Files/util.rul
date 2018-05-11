@@ -182,6 +182,55 @@ begin
    
 end;
 
+//----------------------------------------------------------------------------------------
+// Helper function to determine the comparison of product versions
+// Return true if installed version is lesser than compared version otherwise return false
+//----------------------------------------------------------------------------------------
+export prototype BOOL IsInstalledVersionLesser(STRING);
+function BOOL IsInstalledVersionLesser(version)
+string sOldVersion, sTemp;
+number nV1, nV2, nV3, nVer1, nVer2, nVer3;
+LIST listID1, listID2;
+begin
+    sOldVersion = IFX_INSTALLED_VERSION;
+    listID1 = ListCreate(STRINGLIST);
+    listID2 = ListCreate(STRINGLIST);
+    //split version into three version components
+    StrGetTokens(listID1, sOldVersion, ".");
+    ListGetFirstString(listID1, sTemp);
+    StrToNum(nV1, sTemp);
+    ListGetNextString(listID1, sTemp);
+    StrToNum(nV2, sTemp);
+    ListGetNextString(listID1, sTemp);
+    StrToNum(nV3, sTemp);
+    
+    StrGetTokens(listID2, version, ".");
+    ListGetFirstString(listID2, sTemp);
+    StrToNum(nVer1, sTemp);
+    ListGetNextString(listID2, sTemp);
+    StrToNum(nVer2, sTemp);
+    ListGetNextString(listID2, sTemp);
+    StrToNum(nVer3, sTemp);
+
+    if(nV1 < nVer1) then
+        return TRUE;
+    elseif(nV1 > nVer1) then
+        return FALSE;
+    endif;
+
+    if(nV2 < nVer2) then
+        return TRUE;
+    elseif(nV2 > nVer2) then
+        return FALSE;
+    endif;
+
+    if(nV3 < nVer3) then
+        return TRUE;
+    else
+       return FALSE;
+    endif;
+end;
+
 //-------------------------------------------------------
 // Helper function to determine if the user is attempting
 // an upgrade on a version that does not support it. 
@@ -193,18 +242,6 @@ function BOOL IsUpgradeSupported()
 begin
     return IsInstalledVersionGreater("5.1.3");
 end;
-
-//-------------------------------------------------------
-// Helper function to determine the deletion of activeMQ index
-// Only delete index if installed Yukon version is less than 6.6.0 
-// due to incompatibilty of activeMQ index in higher version(5.13.4)
-//-------------------------------------------------------
-export prototype BOOL IsActiveMQIndexDeletionRequired();
-function BOOL IsActiveMQIndexDeletionRequired()
-begin
-    return IsInstalledVersionGreater("6.6.0");
-end;
-
 
 //-------------------------------------------------------
 // Helper function to determine if the installed version

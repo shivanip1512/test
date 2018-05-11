@@ -19,7 +19,7 @@ prototype LONG kernel32.GetEnvironmentVariable(BYVAL STRING, BYREF STRING, BYREF
 //---------------------------------------------------------------------------
 function OnFirstUIBefore()
 number nResult, nSize;
-string sDir, sDirLow, sDestWarn;
+string sDir, sDirLow, sDestWarn, sDateString;
 
 begin
 	//set the string shown on the installer windows' title bars
@@ -63,6 +63,9 @@ begin
 		sDir = sDir ^ "Yukon";
 	endif;
 	
+    GetSystemInfo(DATE, nResult, sDateString);
+    RenameFile ( TARGETDIR ^ "\\Server\\Config\\yukonLogging.xml", TARGETDIR ^ "\\Server\\Config\\yukonLogging_"+ sDateString +".xml" );
+    RenameFile ( TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml", TARGETDIR ^ "\\Server\\Config\\remoteLogging_"+ sDateString +".xml" );
 	//make sure we have enough space for the selected features
 	TARGETDIR = sDir;
 	FeatureCompareSizeRequired(MEDIA, TARGETDIR, nSize);
@@ -340,7 +343,11 @@ begin
     
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
-	
+    // Take backup of logging config files if installedVersion < "7.1.0"
+    if(IsInstalledVersionLesser("7.1.0")) then 
+        RenameFile ( TARGETDIR ^ "\\Server\\Config\\yukonLogging.xml", TARGETDIR ^ "\\Server\\Config\\yukonLogging_"+ sOldVersion +".xml" );
+        RenameFile ( TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml", TARGETDIR ^ "\\Server\\Config\\remoteLogging_"+ sOldVersion +".xml" );
+    endif;
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
 	sCMD = SYS32 ^ "sc.exe";
