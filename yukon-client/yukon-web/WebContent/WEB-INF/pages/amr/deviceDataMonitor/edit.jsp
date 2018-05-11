@@ -212,8 +212,8 @@
                                 <tags:dynamicTableActionsCell tableId="processorsTable"
                                     isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
                             </tr>
+                            <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
                         </c:if>
-                        <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
                     </c:forEach>
                 </tbody>
             </table>
@@ -291,18 +291,21 @@
                                     <c:set var="notRangeClass" value="${processor.type == 'RANGE' ? 'dn' : ''}"/>
                                     <span class="js-processor-value ${notRangeClass}">
                                         <i:inline key=".value"/>: 
-                                        <tags:input size="8" inputClass="js-processor-input-value" path="processors[${status.index}].processorValue"/>
+                                        <tags:input size="8" inputClass="js-processor-input-value" 
+                                            path="processors[${status.index}].processorValue" displayValidationToRight="true"/>
                                     </span>
                                     <span class="js-range-values ${rangeClass}">
-                                        <i:inline key=".min"/>: <tags:input size="8" inputClass="js-range-min" path="processors[${status.index}].rangeMin"/>
-                                        <i:inline key=".max"/>: <tags:input size="8" inputClass="js-range-max" path="processors[${status.index}].rangeMax" />
+                                        <i:inline key=".min"/>: <tags:input size="8" inputClass="js-range-min" 
+                                            path="processors[${status.index}].rangeMin" displayValidationToRight="true"/>
+                                        <i:inline key=".max"/>: <tags:input size="8" inputClass="js-range-max" 
+                                            path="processors[${status.index}].rangeMax" displayValidationToRight="true"/>
                                     </span>
                                 </td>
                                 <tags:dynamicTableActionsCell tableId="valueProcessorsTable"
                                     isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
                             </tr>
+                            <tags:dynamicTableUndoRow columnSpan="3" nameKey="dynamicTable.undoRow"/>
                         </c:if>
-                        <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
                     </c:forEach>
                 </tbody>
             </table>
