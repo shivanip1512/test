@@ -64,9 +64,9 @@ yukon.ami.ddm = (function () {
                 _supported_counts_xhr.abort();
             }
             
-            var data;
-            var url;
-            var doValidate = false;
+            var data,
+                url,
+                doValidate = false;
             
             if ($('.js-monitor-form').length === 0) {
                 // view.jsp
@@ -128,8 +128,8 @@ yukon.ami.ddm = (function () {
                 return;
             }
             
-            var ctrl_refresh = $('#refresh-violations');
-            var refresh_key = null;
+            var ctrl_refresh = $('#refresh-violations'),
+                refresh_key = null;
             
             if (ctrl_refresh.length > 0) {
                 
@@ -147,22 +147,19 @@ yukon.ami.ddm = (function () {
             newTable = $(countSel).html("<table><tbody></tbody></table>");
             
             data.missingPointList.forEach(function (violation) {
-                
-                var attribute = violation.attribute;
-                
-                var url_params = $.param({
-                    violationType: violation.fieldType,
-                    groupName: $('.js-monitor-group input').val(),
-                    attribute: attribute,
-                    stateGroup: violation.stateGroupId
-                });
-                
-                var url = 'violating-devices?' + url_params;
-                var output = '<tr id="violation-row-' + violation.fieldType + '-' + violation.rowId + '">';
-                var popupListId = 'violation-list-popup-' + violation.fieldType + '-' + violation.rowId;
-                var popupHelpId = 'violation-help-popup-' + violation.fieldType + '-' + violation.rowId;
-                var countText = '' + violation.missingCount;
-                var postHref = '';
+                var attribute = violation.attribute,
+                    url_params = $.param({
+                        violationType: violation.fieldType,
+                        groupName: $('.js-monitor-group input').val(),
+                        attribute: attribute,
+                        stateGroup: violation.stateGroupId
+                    }),
+                    url = 'violating-devices?' + url_params,
+                    output = '<tr id="violation-row-' + violation.fieldType + '-' + violation.rowId + '">',
+                    popupListId = 'violation-list-popup-' + violation.fieldType + '-' + violation.rowId,
+                    popupHelpId = 'violation-help-popup-' + violation.fieldType + '-' + violation.rowId,
+                    countText = '' + violation.missingCount,
+                    postHref = '';
                 
                 // If the device list is too large, show a warning instead of inaccurate numbers:
                 if (violation.useLimitedQuery && '' + violation.useLimitedQuery === 'true') {
@@ -272,11 +269,11 @@ yukon.ami.ddm = (function () {
          * @param {Object} jqueryElement - Jquery element.
          */
         _get_proc_row_id_from_elem_name = function (jqueryElement) {
-            var str     = jqueryElement.attr('name');
-            var iStart  = str.indexOf("[")+1;
-            var iEnd    = str.indexOf("]");
-            var sInt    = str.substring(iStart,iEnd);
-            var iInt    = parseInt(sInt, 10);
+            var str     = jqueryElement.attr('name'),
+                iStart  = str.indexOf("[") + 1,
+                iEnd    = str.indexOf("]"),
+                sInt    = str.substring(iStart, iEnd),
+                iInt    = parseInt(sInt, 10);
             return iInt;
         },
         
@@ -337,6 +334,13 @@ yukon.ami.ddm = (function () {
             $(tableClass + ' tbody').append(new_undo_row);
             new_row.show()
             .find('select').first().focus();
+            
+            //make attribute selector chosen selector
+            var attributeSelector = new_row.find('.js-attribute');
+            attributeSelector.addClass('js-init-chosen');
+            var attributeSelector = new_row.find('.js-value-attribute');
+            attributeSelector.addClass('js-init-chosen');
+            yukon.ui.initContent(new_row);
         },
         
         /** Change the state of processors.
@@ -406,16 +410,13 @@ yukon.ami.ddm = (function () {
          * @param {Object} containingRow - Jquery element
          */
         _blankout_states = function (row) {
-            
-            var select_state = row.find('select.js-states');
-            var input_state = row.find('.js-states input');
-            
-            var ctrl_name = select_state.length > 0 ? select_state.attr("name") : input_state.attr("name");
-            var html = 
-                '<div class="js-states">'
-                    + '<input type="hidden" name="' + ctrl_name +'" value="' + "null" +'"/>'
-                    + $('#str_na').text()
-                + '</div>';
+            var select_state = row.find('select.js-states'),
+                input_state = row.find('.js-states input'),
+                ctrl_name = select_state.length > 0 ? select_state.attr("name") : input_state.attr("name"),
+                html = '<div class="js-states">'
+                        + '<input type="hidden" name="' + ctrl_name +'" value="' + "null" +'"/>'
+                        + $('#str_na').text()
+                    + '</div>';
             
             row.find('.js-states').replaceWith(html);
         },
@@ -440,19 +441,19 @@ yukon.ami.ddm = (function () {
          */
         _update_state_groups_worker = function (ev) {
             
-            var row = $(ev.target).closest('tr');
-            var attributeSelect = row.find('select.js-attribute');
-            var attr_val = row.find('select.js-attribute').find(':selected').val();
-            var DOM_stategroups = row.find('.js-state-group');
-            var select_sg = row.find('select.js-state-group');
-            var input_sg = row.find('.js-state-group input');
-            var ctrl_name = select_sg.length > 0 ? select_sg.attr('name') : input_sg.attr('name');
-            var foundOpt;
-            var selectEl;
-            var selectParent;
-            var savedSelect;
-            var calculatingIndicator = row.find('.js-calc-indicator');
-            var row_id = _get_proc_row_id_from_elem_name(row.find('select.js-attribute'));
+            var row = $(ev.target).closest('tr'),
+                attributeSelect = row.find('select.js-attribute'),
+                attr_val = row.find('select.js-attribute').find(':selected').val(),
+                DOM_stategroups = row.find('.js-state-group'),
+                select_sg = row.find('select.js-state-group'),
+                input_sg = row.find('.js-state-group input'),
+                ctrl_name = select_sg.length > 0 ? select_sg.attr('name') : input_sg.attr('name'),
+                foundOpt,
+                selectEl,
+                selectParent,
+                savedSelect,
+                calculatingIndicator = row.find('.js-calc-indicator'),
+                row_id = _get_proc_row_id_from_elem_name(row.find('select.js-attribute'));
             
             attributeSelect.prop('disabled', true);
             
@@ -533,9 +534,9 @@ yukon.ami.ddm = (function () {
          */
         _get_state_group_value = function (row) {
             
-            var state_group_select = row.find('select.js-state-group');
-            var state_group_input = row.find('.js-state-group input:hidden');
-            var state_group_id = state_group_select.length > 0 ? state_group_select.val() : state_group_input.val();
+            var state_group_select = row.find('select.js-state-group'),
+                state_group_input = row.find('.js-state-group input:hidden'),
+                state_group_id = state_group_select.length > 0 ? state_group_select.val() : state_group_input.val();
             
             return state_group_id;
         },
@@ -655,7 +656,6 @@ yukon.ami.ddm = (function () {
                         
             $('.js-save-monitor').on('click', _show_update_dialog);
             
-            
             $(document).on('yukon:ami:ddm:save', _monitor_save);
             
             $(document).on('click', '.js-undo-remove-btn, .js-remove-btn', _get_supported_counts);
@@ -689,29 +689,27 @@ yukon.ami.ddm = (function () {
         },
         
         violationUpdater: function (data) {
-            $(function () {
-                var value = data.value;
-                var count = +value;
-                $('.js-violations').addClass('dn');
-                $('.js-calculating-disable').removeAttr('disabled');
-                $('.js-calculating-warning').toggleClass('dn', true);
-                if (value === undefined || value === 'NA') {
-                    $('.js-violations-na').removeClass('dn');
-                    _validate_processors();
+            var value = data.value,
+                count = +value;
+            $('.js-violations').addClass('dn');
+            $('.js-calculating-disable').removeAttr('disabled');
+            $('.js-calculating-warning').toggleClass('dn', true);
+            if (value === undefined || value === 'NA') {
+                $('.js-violations-na').removeClass('dn');
+                _validate_processors();
+            }
+            else if (value === 'CALCULATING') {
+                $('.js-violations-calculating').removeClass('dn');
+                $('.js-calculating-disable').attr('disabled', true);
+                $('.js-calculating-warning').toggleClass('dn', false);
+            }
+            else {
+                $('.js-violations-count').removeClass('dn').text(count);
+                if (count > 0) {
+                    $('.js-violations-exist').removeClass('dn');
                 }
-                else if (value === 'CALCULATING') {
-                    $('.js-violations-calculating').removeClass('dn');
-                    $('.js-calculating-disable').attr('disabled', true);
-                    $('.js-calculating-warning').toggleClass('dn', false);
-                }
-                else {
-                    $('.js-violations-count').removeClass('dn').text(count);
-                    if (count > 0) {
-                        $('.js-violations-exist').removeClass('dn');
-                    }
-                    _validate_processors();
-                }
-            });
+                _validate_processors();
+            }
         }
         
     };

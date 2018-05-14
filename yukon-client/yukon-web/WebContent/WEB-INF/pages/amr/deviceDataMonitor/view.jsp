@@ -142,7 +142,7 @@
                         <thead>
                             <tr>
                                 <th><i:inline key=".processors.attribute" /></th>
-                                <th><i:inline key=".processors.rule" /></th>
+                                <th style="width:60%;"><i:inline key=".processors.rule" /></th>
                             </tr>
                         </thead>
                         <tbody>

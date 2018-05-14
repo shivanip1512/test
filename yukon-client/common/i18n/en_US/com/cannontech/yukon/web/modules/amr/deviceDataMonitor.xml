@@ -40,11 +40,18 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.title">Status Processors</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.valueProcessors.title">Value Processors</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.valueProcessors.helpText"><![CDATA[
-        Test
+        <b>Finding Violating Devices</b>
+        <br/>
+        These processors are what this monitor will use for finding devices that have points with matching current values to these (aka violating devices). The monitor will add a device to the violation group when one or more processors match the devices current value. In order for a value processor to match a device, the device must have an assigned point with a matching attribute and a value that is withing the rule that has been set up.
+        <br/><br/>
+        <b>Adding and removing from the Violations Group</b>
+        <br/>
+        When this monitor finds a violating device it will place it into the violation device group. When that device goes OUT of violation (no longer matches any of the monitor's processors) it will immediately be removed from the violation device group.
     ]]></entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.value">Value</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.min">Min</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.max">Max</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.validationError.minGreaterThanMax">Min must be less than Max.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.settings.helpDialog.title">Monitor Settings Help</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.helpDialog.title">Monitor Status Processors Help</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.whatDoesThisMean.title">What does this mean?</entry>

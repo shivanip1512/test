@@ -173,7 +173,7 @@
                                 <form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
                                 <td>
                                     <tags:selectWithItems path="processors[${status.index}].attribute" items="${allGroupedReadableAttributes}"
-                                        groupItems="true" inputClass="js-attribute"/>
+                                        groupItems="true" inputClass="js-attribute js-init-chosen"/>
                                 </td>
                                 <td>
                                 <c:set var="stateGroups" value="${mapAttributeKeyToStateGroupList.get(attributeKey)}"/>
@@ -233,7 +233,7 @@
                 <thead>
                     <tr>
                         <th><i:inline key=".processors.attribute" /></th>
-                        <th><i:inline key=".processors.rule" /></th>
+                        <th style="width:60%;"><i:inline key=".processors.rule" /></th>
                         <th class="remove-column"></th>
                     </tr>
                 </thead>
@@ -263,11 +263,11 @@
                                 </c:forEach>
                             </select>
                             <span class="js-processor-value">
-                                <i:inline key=".value"/>: <input type="text" size="8" class="js-processor-input-value" data-name="processors[0].processorValue"/>
+                                <i:inline key=".value"/>: <input type="text" size="8" data-name="processors[0].processorValue"/>
                             </span>
                             <span class="js-range-values dn">
-                                <i:inline key=".min"/>: <input type="text" size="8" class="js-range-min" data-name="processors[0].rangeMin"/>
-                                <i:inline key=".max"/>: <input type="text" size="8" class="js-range-max" data-name="processors[0].rangeMax"/>
+                                <i:inline key=".min"/>: <input type="text" size="8" data-name="processors[0].rangeMin"/>
+                                <i:inline key=".max"/>: <input type="text" size="8" data-name="processors[0].rangeMax"/>
                             </span>
                         </td>
                         <td class="actions">
@@ -283,22 +283,21 @@
                                 <form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
                                 <td>
                                     <tags:selectWithItems path="processors[${status.index}].attribute" items="${allGroupedValueAttributes}"
-                                        groupItems="true" inputClass="js-value-attribute"/>
+                                        groupItems="true" inputClass="js-value-attribute js-init-chosen"/>
                                 </td>
                                 <td>
                                     <tags:selectWithItems inputClass="js-processor-type" path="processors[${status.index}].type" items="${processorTypes}"/>
                                     <c:set var="rangeClass" value="${processor.type != 'RANGE' ? 'dn' : ''}"/>
                                     <c:set var="notRangeClass" value="${processor.type == 'RANGE' ? 'dn' : ''}"/>
                                     <span class="js-processor-value ${notRangeClass}">
-                                        <i:inline key=".value"/>: 
-                                        <tags:input size="8" inputClass="js-processor-input-value" 
-                                            path="processors[${status.index}].processorValue" displayValidationToRight="true"/>
+                                        <i:inline key=".value"/>:
+                                        <tags:input size="8" path="processors[${status.index}].processorValue" displayValidationToRight="true"/>
                                     </span>
                                     <span class="js-range-values ${rangeClass}">
-                                        <i:inline key=".min"/>: <tags:input size="8" inputClass="js-range-min" 
-                                            path="processors[${status.index}].rangeMin" displayValidationToRight="true"/>
-                                        <i:inline key=".max"/>: <tags:input size="8" inputClass="js-range-max" 
-                                            path="processors[${status.index}].rangeMax" displayValidationToRight="true"/>
+                                        <i:inline key=".min"/>: <tags:input size="8" path="processors[${status.index}].rangeMin" 
+                                            displayValidationToRight="true"/>
+                                        <i:inline key=".max"/>: <tags:input size="8" path="processors[${status.index}].rangeMax" 
+                                            displayValidationToRight="true"/>
                                     </span>
                                 </td>
                                 <tags:dynamicTableActionsCell tableId="valueProcessorsTable"

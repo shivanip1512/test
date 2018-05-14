@@ -1,11 +1,15 @@
 package com.cannontech.web.amr.monitor.validators;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
+import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
+import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.validator.SimpleValidator;
@@ -27,6 +31,7 @@ public class DeviceDataMonitorValidator extends SimpleValidator<DeviceDataMonito
             && (monitor.getGroupName() == null || deviceGroupService.findGroupName(monitor.getGroupName()) == null)) {
             errors.reject("yukon.web.modules.amr.invalidGroupName");
         }
+        validateProcessors(monitor.getProcessors(), errors);
     }
 
     private void validateName(DeviceDataMonitor monitor, Errors errors) {
@@ -56,5 +61,24 @@ public class DeviceDataMonitorValidator extends SimpleValidator<DeviceDataMonito
                 }
             }
         }
+    }
+    
+    private void validateProcessors(List<DeviceDataMonitorProcessor> processors, Errors errors) {
+        int index = 0;
+        for (DeviceDataMonitorProcessor processor : processors) {
+            if (processor.getType() != ProcessorType.STATE) {
+                if (processor.getType() == ProcessorType.RANGE) {
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "processors[" + index + "].rangeMin", "yukon.web.error.isBlank");
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "processors[" + index + "].rangeMax", "yukon.web.error.isBlank");
+                    if (!errors.hasErrors() && processor.getRangeMin() >= processor.getRangeMax()) {
+                        errors.rejectValue("processors[" + index + "].rangeMin", "yukon.web.modules.amr.deviceDataMonitor.validationError.minGreaterThanMax");
+                    }
+                } else {
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "processors[" + index + "].processorValue", "yukon.web.error.isBlank");
+                }
+            }
+            index++;
+        }
+        
     }
 }
