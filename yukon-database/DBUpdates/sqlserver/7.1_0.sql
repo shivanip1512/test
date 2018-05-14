@@ -140,7 +140,7 @@ ALTER TABLE DeviceDataMonitorProcessor
 GO
 
 ALTER TABLE DeviceDataMonitorProcessor
-    ALTER COLUMN StateGroupId NUMERIC NOT NULL;
+    ALTER COLUMN StateGroupId NUMERIC NULL;
 GO
 
 INSERT INTO DBUpdates VALUES ('YUK-18280', '7.1.0', GETDATE());
