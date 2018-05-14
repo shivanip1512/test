@@ -10,12 +10,18 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.springframework.util.Assert;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -191,20 +197,46 @@ public final class FileUtil {
      * Returns a FileFilter which will filter files based on the date range supplied. 
      */
     public static FileFilter creationDateFilter(final Instant from, final Instant to, final boolean filterDirectories) {
-    	return new FileFilter() {
-    		@Override
-    		public boolean accept(File file) {
-    			if (!filterDirectories && file.isDirectory()) {
-    				return true;
-    			}
-    			try {
-					Instant creation = new Instant(getCreationDate(file));
-					return !(from.isAfter(creation) || to.isBefore(creation));
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-    		}
-    	};
+        return new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                if (!filterDirectories && file.isDirectory()) {
+                    return true;
+                }
+                try {
+                    Instant creation = new Instant(getFileDate(file));
+                    return !(from.isAfter(creation) || to.isBefore(creation));
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * This method will return the file date based upon the pattern of the file.
+     */
+    public static Date getFileDate(File file) throws IOException, ParseException {
+
+        Pattern nameDatePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)");
+        Matcher nameDatePatternMatcher = nameDatePattern.matcher(file.getName());
+        if (nameDatePatternMatcher.matches() && file.getName().endsWith("log")) {
+            return new SimpleDateFormat("yyyyMMdd").parse(nameDatePatternMatcher.group(2).replaceFirst("_",""));
+        }
+
+        Pattern nameDateFilePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)");
+        Matcher nameDateFilePatternMatcher = nameDateFilePattern.matcher(file.getName());
+        if (nameDateFilePatternMatcher.matches() && file.getName().endsWith("zip")) {
+            return new SimpleDateFormat("yyyyMMdd").parse(nameDateFilePatternMatcher.group(2).replaceFirst("_",""));
+       }
+
+        Pattern namePattern = Pattern.compile("(.+?)(\\.[^.]+$)");
+        Matcher namePatternMatcher = namePattern.matcher(file.getName());
+        if (namePatternMatcher.matches() && file.getName().endsWith("log")) {
+            return LocalDate.now(DateTimeZone.getDefault()).toDate();
+        }
+
+        return getCreationDate(file);
     }
 
     /**

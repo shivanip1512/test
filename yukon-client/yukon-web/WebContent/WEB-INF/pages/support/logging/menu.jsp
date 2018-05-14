@@ -62,11 +62,27 @@
             <tags:sectionContainer title="${logSection.key}" hideEnabled="true">
                 <table class="contentTable row-highlighting">
                     <c:forEach var="logFile" items="${logSection.value}" varStatus="logFileIndex">
-                        <cti:url value="view" var="url"><cti:param name="file" value="${file}${logFile.name}"/></cti:url>
-                        <tr title="${logFile.name}">
-                            <td><a href="${url}">${logFile.identifier}</a></td>
-                            <td><cti:msg2 key="${logFile.size}"/></td>
-                        </tr>
+                        <c:set var = "fileName" value = "${file}${logFile.name}"/>
+                        <c:choose>
+                            <c:when test = "${fn:containsIgnoreCase(fileName, '.zip')}">
+                                <cti:url value="downloadzip" var="url">
+                                    <cti:param name="file" value="${file}${logFile.name}"/>
+                                </cti:url>
+                                <tr title="${logFile.name}">
+                                    <td><a href="${url}">${logFile.identifier}</a></td>
+                                    <td><cti:msg2 key="${logFile.size}"/></td>
+                                </tr>
+                            </c:when>
+                            <c:otherwise>
+                                <cti:url value="view" var="url">
+                                    <cti:param name="file" value="${file}${logFile.name}"/>
+                                </cti:url>
+                                <tr title="${logFile.name}">
+                                    <td><a href="${url}">${logFile.identifier}</a></td>
+                                    <td><cti:msg2 key="${logFile.size}"/></td>
+                                </tr>
+                            </c:otherwise>
+                        </c:choose>
                     </c:forEach>
                 </table>
             </tags:sectionContainer>

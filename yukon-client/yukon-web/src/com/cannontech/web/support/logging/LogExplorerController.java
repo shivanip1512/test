@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,7 +94,7 @@ public class LogExplorerController {
             @RequestParam(required = false, defaultValue = "today") String show,
             @RequestParam(required = false, defaultValue = "date") String sortBy,
             @RequestParam(required = false) LocalDate customStart, @RequestParam(required = false) LocalDate customEnd,
-            HttpServletRequest request, FlashScope flashScope, YukonUserContext userContext) throws IOException {
+            HttpServletRequest request, FlashScope flashScope, YukonUserContext userContext) throws IOException, ParseException {
 
         File logDir = sanitizeAndVerify(new File(localDir, file));
         Validate.isTrue(logDir.isDirectory());
@@ -297,6 +298,26 @@ public class LogExplorerController {
     }
 
     /**
+     * Downloads the zipped log file.
+     */    
+    @RequestMapping(value = "/logging/downloadzip", method = RequestMethod.GET)
+    public String downloadZip(ModelMap map, @RequestParam(required = false, defaultValue = "/") String file,
+            HttpServletResponse response) throws IOException {
+
+        File logFile = sanitizeAndVerify(new File(localDir, file));
+        Validate.isTrue(logFile.isFile());
+        response.setContentType("text/plain");
+        response.setHeader("Content-Disposition",
+            "attachment; filename=\"" + ServletUtil.urlEncode(logFile.getName()) + "\"");
+        response.setHeader("Content-Length", Long.toString(logFile.length()));
+
+        // Download the file thru the response object
+        FileCopyUtils.copy(new FileInputStream(logFile), response.getOutputStream());
+        return null;
+
+    }
+    
+    /**
      * Iterates through everything in the given directory and sort into files and directories.
      * 
      * Filters the files by creation date. If a file's creation date falls between the instants (inclusive)
@@ -324,8 +345,8 @@ public class LogExplorerController {
         @Override
         public String apply(File from) {
             try {
-                return df.format(FileUtil.getCreationDate(from));
-            } catch (IOException e) {
+                return df.format(FileUtil.getFileDate(from));
+            } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -352,17 +373,18 @@ public class LogExplorerController {
     }
 
     private LinkedHashMultimap<String, LogFile> sortLogs(List<File> logs, boolean sortByDate,
-            YukonUserContext userContext) throws IOException {
+            YukonUserContext userContext) throws IOException, ParseException {
         Collections.sort(logs, getLogOrdering(userContext, sortByDate));
         LinkedHashMultimap<String, LogFile> result = LinkedHashMultimap.create();
         for (File log : logs) {
             String applicationName = fileToApplicationNameFunction.apply(log);
             String dateHeading =
-                dateFormattingService.format(FileUtil.getCreationDate(log), DateFormatEnum.LONG_DATE, userContext);
+                dateFormattingService.format(FileUtil.getFileDate(log), DateFormatEnum.LONG_DATE, userContext);
 
             if (sortByDate) {
                 result.put(dateHeading, new LogFile(log, applicationName));
             } else {
+                applicationName = applicationName.replaceFirst(".zip", "");
                 result.put(applicationName, new LogFile(log, dateHeading));
             }
         }
@@ -374,7 +396,7 @@ public class LogExplorerController {
      * This method checks to see if the file extension is the right type
      */
     public static boolean isLog(String logName) {
-        return logName.endsWith("log") || logName.endsWith("xml");
+        return logName.endsWith("log") || logName.endsWith("xml") || logName.endsWith("zip");
     }
 
     private File sanitizeAndVerify(File file) throws IOException {
@@ -422,18 +444,38 @@ public class LogExplorerController {
     }
 
     public static final Function<File, String> fileToApplicationNameFunction = new Function<File, String>() {
-        // The following pattern looks for a base file name (group 1) that is the
-        // leading part of the file name minus an optional underscore, a 1-8
-        // digit number, and the extension.
-        Pattern dayNumberPattern = Pattern.compile("(.+?)_?\\d{1,8}\\.[^.]+$");
 
         @Override
         public String apply(File file) {
             String fileName = file.getName();
 
-            Matcher patternMatches = dayNumberPattern.matcher(fileName);
-            if (patternMatches.matches()) {
-                return StringUtils.capitalize(patternMatches.group(1));
+            // The following pattern looks for a base file name (group 1) that is the
+            // leading part of the file name minus an optional underscore, a 1-8
+            // digit number, and the extension. e.g. abc_20180428.log or abc20180428.zip
+
+            Pattern nameDatePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)");
+            Matcher nameDatePatternMatcher = nameDatePattern.matcher(fileName);
+            if (nameDatePatternMatcher.matches() && fileName.endsWith("log")) {
+                return StringUtils.capitalize(nameDatePatternMatcher.group(1));
+            }
+
+            // The following pattern looks for a base file name (group 1) that is the 
+            // leading part of the file name with an optional underscore, a 1-8 digit number, 
+            // the type of file and the extension. e.g. abc_20180428.log.zip or abc20180428.log.zip
+
+            Pattern nameDateFilePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)");
+            Matcher nameDateFilePatternMatcher = nameDateFilePattern.matcher(fileName);
+            if (nameDateFilePatternMatcher.matches() && fileName.endsWith("zip")) {
+                return StringUtils.capitalize(nameDateFilePatternMatcher.group(1)+nameDateFilePatternMatcher.group(4));
+            }
+
+            // The following pattern looks for a base file name (group 1) that is the 
+            // leading part of the file name and the extension. e.g. abc.log
+
+            Pattern namePattern = Pattern.compile("(.+?)(\\.[^.]+$)");
+            Matcher namePatternMatcher = namePattern.matcher(fileName);
+            if (namePatternMatcher.matches() && fileName.endsWith("log")) {
+                return StringUtils.capitalize(namePatternMatcher.group(1));
             }
 
             return fileName;
