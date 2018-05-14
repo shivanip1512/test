@@ -214,7 +214,8 @@
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.standard">Standard</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.force">Force</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.rfnWarning">One or more devices selected are identified as RF. These devices cannot currently use the Force operation. All devices in group will only be run on the standard command.</entry>
-        
+    <entry key="yukon.common.device.bulk.verifyConfigResults.failureResult">Some attributes did not match:</entry>
+    
     <!-- DATA STREAMING CONFIGURATION-->
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->

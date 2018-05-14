@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -59,7 +60,6 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDa
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
-import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -183,8 +183,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     }
 
     @Override
-    public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user)
-            throws CommandCompletionException {
+    public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user) {
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
         WaitableCommandCompletionCallback<? extends CommandRequestBase> waitableCallback =
             waitableFactory.createWaitable(callback, command.getPaoType());
@@ -196,12 +195,18 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
         try {
             waitableCallback.waitForCompletion();
             log.debug("Execution " + execution.getId() + " for command " + command + " is complete.");
-            return callback;
         } catch (InterruptedException | TimeoutException e) {
             String error = "Execution " + execution.getId() + "for command " + command + " timed out.";
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
+            MessageSourceResolvable detail =
+                YukonMessageSourceResolvable.createSingleCode("yukon.common.device.attributeRead.general.timeout");
+            SpecificDeviceErrorDescription errorDesc = new SpecificDeviceErrorDescription(errorDescription, detail);
+            callback.getErrors().add(errorDesc);
             callback.processingExceptionOccured(error);
-            throw new CommandCompletionException(error, e);
+            log.error(error, e);
         }
+        return callback;
+
     }
 
     @Override

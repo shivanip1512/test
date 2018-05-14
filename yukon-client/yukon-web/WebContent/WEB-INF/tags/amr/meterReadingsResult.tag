@@ -10,16 +10,22 @@
 
 <c:if test="${result.anyErrorOrException}">
     <div class="scroll-md">
-        <c:if test="${not empty pageScope.errorMsg}">
-            <div class="error stacked">${pageScope.errorMsg}</div>
-        </c:if>
-        <c:forEach items="${result.errors}" var="error">
-            <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
-                ${error.porter}<br>
-                ${error.troubleshooting}<br>
-            </tags:hideReveal>
-        </c:forEach>
-        <c:if test="${not empty result.exceptionReason}"><div>${result.exceptionReason}</div></c:if>
+        <c:choose>
+            <c:when test="${not empty pageScope.errorMsg}">
+                <div class="error stacked">${pageScope.errorMsg}</div>
+            </c:when>
+            <c:otherwise>
+                <div class="error"><i:inline key="yukon.common.device.attributeRead.general.errorHeading"/></div>
+                <c:forEach items="${result.errors}" var="error">
+                    <c:if test="${not empty error.detail}">
+                        <tags:hideReveal2 titleKey="${error.summary}" showInitially="false"><i:inline key="${error.detail}"/></tags:hideReveal2>
+                    </c:if>  
+                    <c:if test="${empty error.detail}">
+                        <div><i:inline key="${error.summary}"/></div>
+                    </c:if>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
     </div>
 </c:if>
 
