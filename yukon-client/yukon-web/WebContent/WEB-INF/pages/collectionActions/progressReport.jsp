@@ -103,7 +103,8 @@
         <cti:button renderMode="image" icon="icon-script" title="${logText}" href="${logLink}" classes="js-log-icon ${logClass}"/>
     </c:set>
     
-    <tags:sectionContainer2 nameKey="results" controls="${controls}">
+    <cti:msg2 var="helpText" key=".results.helpText"/>
+    <tags:sectionContainer2 nameKey="results" helpText="${helpText}" controls="${controls}">
         <div class="buffered progress-lg">
             <span class="name"><i:inline key="yukon.common.progress"/>:&nbsp;</span>
             <div class="progress dib vam js-progress">
