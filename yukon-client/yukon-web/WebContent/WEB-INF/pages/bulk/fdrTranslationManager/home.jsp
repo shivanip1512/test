@@ -4,6 +4,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="tools" page="bulk.fdrTranslationManagement">
+
+    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
+    <div class="fr"><a href="${recentResultsLink}"><i:inline key="yukon.common.device.bulk.recentResults"/></a></div><br/>
     
     <script>
     $(document).ready(function(){

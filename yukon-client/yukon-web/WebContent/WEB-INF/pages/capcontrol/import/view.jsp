@@ -5,7 +5,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="import">
-<cti:includeScript link="/resources/js/pages/yukon.da.import.js"/>
+
+    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
+    <div class="fr"><a href="${recentResultsLink}"><i:inline key="yukon.common.device.bulk.recentResults"/></a></div><br/>
 
 <div class="stacked-lg">
     <cti:url var="url" value="/capcontrol/import/cbcFile"/>
@@ -70,5 +72,7 @@
         </table>
     </div>
 </c:forEach>
+
+    <cti:includeScript link="/resources/js/pages/yukon.da.import.js"/>
 
 </cti:standardPage>

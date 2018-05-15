@@ -7,8 +7,10 @@
 <%-- MODULE, MENU --%>
 <cti:standardPage page="bulk.bulkImporter" module="tools">
 
+    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
+    <div class="fr"><a href="${recentResultsLink}"><i:inline key="yukon.common.device.bulk.recentResults"/></a></div><br/>
+
 <cti:url var="refreshUrl" value="/amr/bulkimporter/refreshResults" />
-<cti:includeScript link="/resources/js/pages/yukon.ami.bulk.import.js"/>
 
 <script type="text/javascript">
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
@@ -17,8 +19,8 @@
     });
 </script>
 
-<cti:url var="bulkHomeUrl" value="/bulk/bulkHome"/>
-<div class="warning stacked"><i:inline key=".header" arguments="${bulkHomeUrl}"/></div>
+<cti:url var="bulkImportUrl" value="/bulk/import/upload"/>
+<div class="warning stacked"><i:inline key=".header" arguments="${bulkImportUrl}"/></div>
 
 <cti:url var="uploadUrl" value="/amr/bulkimporter/upload"/>
 <form id="actionsForm" method="post" action="${uploadUrl}" enctype="multipart/form-data">
@@ -177,5 +179,7 @@
     </div>    
 </tags:boxContainer>
 </form>
+
+    <cti:includeScript link="/resources/js/pages/yukon.ami.bulk.import.js"/>
 
 </cti:standardPage>

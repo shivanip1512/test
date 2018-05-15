@@ -22,6 +22,9 @@
 <entry key="yukon.web.menu.ami">AMI</entry>
 <entry key="yukon.web.menu.ami.dashboard">Dashboard</entry>
 <entry key="yukon.web.menu.ami.billing">Billing</entry>
+<entry key="yukon.web.menu.ami.import">Bulk Import</entry>
+<entry key="yukon.web.menu.ami.update">Bulk Update</entry>
+<entry key="yukon.web.menu.ami.legacyImport">Legacy Importer</entry>
 
 <!-- Demand Response -->
 <entry key="yukon.web.menu.dr">Demand Response</entry>
@@ -43,6 +46,8 @@
 <entry key="yukon.web.menu.vv.orphans">Orphans</entry>
 <entry key="yukon.web.menu.vv.regulatorSetup">Regulator Setup</entry>
 <entry key="yukon.web.menu.vv.dmvTest">DMV Test</entry>
+<entry key="yukon.web.menu.vv.pointImport">Point Import</entry>
+<entry key="yukon.web.menu.vv.fdrTranslations">Manage FDR Translations</entry>
 
 <!-- Admin -->
 <entry key="yukon.web.menu.admin">Admin</entry>
@@ -57,7 +62,6 @@
 
 <!-- Tools -->
 <entry key="yukon.web.menu.tools">Tools</entry>
-<entry key="yukon.web.menu.tools.bulkOperations">Bulk Operations</entry>
 <entry key="yukon.web.menu.tools.collectionActions">Collection Actions</entry>
 <entry key="yukon.web.menu.tools.commander">Commander</entry>
 <entry key="yukon.web.menu.tools.dataExport">Data Export</entry>

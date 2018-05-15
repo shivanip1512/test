@@ -6,6 +6,9 @@
 
 <cti:standardPage module="operator" page="accountImport">
 
+    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
+    <div class="fr"><a href="${recentResultsLink}"><i:inline key="yukon.common.device.bulk.recentResults"/></a></div><br/>
+
     <cti:checkEnergyCompanyOperator showError="true">
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
         

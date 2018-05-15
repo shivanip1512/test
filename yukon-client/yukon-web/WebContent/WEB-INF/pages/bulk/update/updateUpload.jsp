@@ -6,6 +6,9 @@
 
 <cti:standardPage module="tools" page="bulk.updateUpload">
 
+    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
+    <div class="fr"><a href="${recentResultsLink}"><i:inline key="yukon.common.device.bulk.recentResults"/></a></div><br/>
+
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateUpload.header"/>
     <cti:url var="parseUploadUrl" value="/bulk/update/parseUpload"/>
     <form id="uploadForm" method="post" action="${parseUploadUrl}" enctype="multipart/form-data">

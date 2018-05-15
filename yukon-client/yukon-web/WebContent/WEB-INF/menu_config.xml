@@ -36,6 +36,18 @@
         </permissions>
         <link>/bulk/import/upload</link>
       </option>
+      <option name="update">
+        <permissions>
+          <roleProperty name="BULK_UPDATE_OPERATION" />
+        </permissions>
+        <link>/bulk/update/upload</link>
+      </option>
+      <option name="legacyImport">
+        <permissions>
+          <roleProperty name="IMPORTER_ENABLED" />
+        </permissions>
+        <link>/amr/bulkimporter/home</link>
+      </option>
       <option name="reports">
         <permissions>
           <roleProperty name="AMR_REPORTS_GROUP" />
@@ -139,6 +151,18 @@
         </permissions>
         <link>/capcontrol/import/view</link>
       </option>
+      <option name="pointImport">
+        <permissions>
+          <roleProperty name="ADD_REMOVE_POINTS" />
+        </permissions>
+        <link>/bulk/pointImport/upload</link>
+      </option>
+      <option name="fdrTranslations">
+        <permissions>
+          <roleProperty name="FDR_TRANSLATION_MANAGER" />
+        </permissions>
+        <link>/bulk/fdrTranslationManager/home</link>
+      </option>
       <option name="reports">
         <permissions>
           <roleProperty name="CAP_CONTROL_REPORTS_GROUP" />
@@ -228,19 +252,6 @@
   </menu>
   <menu name="tools">
     <options>
-      <option name="bulkOperations">
-        <permissions>
-            <or>
-              <roleProperty name="BULK_IMPORT_OPERATION" />
-              <roleProperty name="ADD_REMOVE_POINTS" />
-              <roleProperty name="FDR_TRANSLATION_MANAGER" />
-              <roleProperty name="IMPORTER_ENABLED" />
-              <roleProperty name="CAP_CONTROL_IMPORTER" />
-              <roleProperty name="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
-            </or>
-        </permissions>
-        <link>/bulk/bulkHome</link>
-      </option>
       <option name="collectionActions">
         <permissions>
             <role name="DEVICE_ACTIONS"/>

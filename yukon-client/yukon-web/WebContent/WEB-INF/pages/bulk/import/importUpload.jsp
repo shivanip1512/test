@@ -7,7 +7,8 @@
 <cti:standardPage module="tools" page="bulk.importUpload">
 <cti:msgScope paths=", yukon.common.device.bulk">
 
-<cti:includeScript link="/resources/js/pages/yukon.tools.import.upload.js"/>
+    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
+    <div class="fr"><a href="${recentResultsLink}"><i:inline key=".recentResults"/></a></div><br/><br/>
 
 <div class="stacked">
     <strong class="label label-info"><i:inline key=".importUpload.noteLabel"/></strong>
@@ -153,6 +154,8 @@
         
     </div>
 </form>
+
+<cti:includeScript link="/resources/js/pages/yukon.tools.import.upload.js"/>
 
 </cti:msgScope>
  </cti:standardPage>

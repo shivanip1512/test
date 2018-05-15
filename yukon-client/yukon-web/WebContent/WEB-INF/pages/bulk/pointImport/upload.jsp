@@ -4,7 +4,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="tools" page="bulk.pointImport">
-    <cti:includeScript link="/resources/js/pages/yukon.import.point.js"/>
+
+    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
+    <div class="fr"><a href="${recentResultsLink}"><i:inline key="yukon.common.device.bulk.recentResults"/></a></div><br/>
     
         <div class="column-12-12">
                 <div class="column one">
@@ -74,4 +76,5 @@
                     </tags:sectionContainer>
                 </div>
         </div>
+    <cti:includeScript link="/resources/js/pages/yukon.import.point.js"/>
 </cti:standardPage>

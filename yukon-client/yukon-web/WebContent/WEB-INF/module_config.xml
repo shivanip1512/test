@@ -252,37 +252,34 @@
           <page name="configs.summary" type="BASIC"/>
         </pages>
       </page>
-      <page name="bulk.home" type="BASIC">
-        <link>/bulk/bulkHome</link>
+      <page name="bulk.fdrTranslationManagement" type="BASIC">
         <pages>
-          <page name="bulk.fdrTranslationManagement" type="BASIC">
-            <pages>
-              <page name="bulk.fdrTranslationManagement.import" type="BASIC"/>
-            </pages>
-          </page>
-          <page name="bulk.updateUpload" type="BASIC">
-            <link>/bulk/update/upload</link>
-            <pages>
-              <page name="bulk.updateConfirm" type="BASIC"/>
-              <page name="bulk.updateResults" type="BASIC"/>
-            </pages>
-          </page>
-          <page name="bulk.importUpload" type="BASIC">
-            <link>/bulk/import/upload</link>
-            <pages>
-              <page name="bulk.importConfirm" type="BASIC"/>
-              <page name="bulk.importResults" type="BASIC"/>
-            </pages>
-          </page>
-          <page name="bulk.pointImport" type="BASIC">
-            <link>/bulk/pointImport/upload</link>
-            <pages>
-              <page name="bulk.pointImport.results" type="DETAIL"/>
-            </pages>
-          </page>
-          <page name="bulk.bulkImporter" type="BASIC">
-          </page>
+          <page name="bulk.fdrTranslationManagement.import" type="BASIC"/>
         </pages>
+      </page>
+      <page name="bulk.updateUpload" type="BASIC">
+        <link>/bulk/update/upload</link>
+        <pages>
+          <page name="bulk.updateConfirm" type="BASIC"/>
+          <page name="bulk.updateResults" type="BASIC"/>
+        </pages>
+      </page>
+      <page name="bulk.importUpload" type="BASIC">
+        <link>/bulk/import/upload</link>
+        <pages>
+          <page name="bulk.importConfirm" type="BASIC"/>
+          <page name="bulk.importResults" type="BASIC"/>
+        </pages>
+      </page>
+      <page name="bulk.pointImport" type="BASIC">
+        <link>/bulk/pointImport/upload</link>
+        <pages>
+          <page name="bulk.pointImport.results" type="DETAIL"/>
+        </pages>
+      </page>
+      <page name="bulk.bulkImporter" type="BASIC">
+      </page>
+      <page name="bulk.results" type="BASIC">
       </page>
       <page name="collectionActions.home" type="BASIC">
         <link>/collectionActions/home</link>

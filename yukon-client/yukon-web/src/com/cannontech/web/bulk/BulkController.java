@@ -70,9 +70,9 @@ public class BulkController {
     @Autowired private PaoPopupHelper paoPopupHelper;
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
-    // BULK HOME
-    @RequestMapping("bulkHome")
-    public String bulkHome(ModelMap model, LiteYukonUser user) {
+    // BULK RESULTS
+    @RequestMapping("recentResults")
+    public String recentResults(ModelMap model, LiteYukonUser user) {
 
         // INIT RESULT LISTS
         //------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ public class BulkController {
         model.addAttribute("hasMassDeleteRP", hasMassDeleteRP);
         model.addAttribute("resultsList", resultsList);
         
-        return "bulkHome.jsp";
+        return "bulkResults.jsp";
     }
     
     // COLLECTION ACTIONS
