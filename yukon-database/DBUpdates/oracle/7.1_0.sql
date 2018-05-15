@@ -134,7 +134,49 @@ ALTER TABLE DeviceDataMonitorProcessor
     MODIFY ( StateGroupId NUMBER );
 
 INSERT INTO DBUpdates VALUES ('YUK-18280', '7.1.0', SYSDATE);
-/* @end YUk-18280 */
+/* @end YUK-18280 */
+
+/* @start YUK-18091 */
+UPDATE UserPage
+SET 
+    PagePath = '/collectionActions/recentResults', 
+    Module   = 'tools', 
+    PageName = 'collectionActions.recentResults'
+WHERE PagePath IN ('/common/commandRequestExecutionResults/list',
+                   '/group/commander/resultList',
+                   '/bulk/disconnect/recentResults',
+                   '/group/groupMeterRead/resultsList',
+                   '/bulk/demand-reset/recent-results');
+
+UPDATE UserPage
+SET 
+    PagePath = '/collectionActions/home', 
+    Module   = 'tools', 
+    PageName = 'collectionActions.home'
+WHERE PagePath IN ('/bulk/deviceSelection', 
+                   '/bulk/deviceSelectionGetDevices');
+
+DELETE FROM UserPage
+WHERE PageName IN (
+    'bulk.addPointsResults',
+    'bulk.changeDeviceTypeResults',
+    'bulk.connect.results',
+    'bulk.disconnect.results',
+    'bulk.arm.results',
+    'bulk.massChangeResults',
+    'bulk.massDeleteResults',
+    'bulk.removePointsResults',
+    'bulk.updatePointsResults',
+    'bulk.assignConfigResults',
+    'bulk.unassignConfigResults',
+    'groupMeterRead.resultDetail',
+    'groupCommand.details',
+    'bulk.demandReset.results',
+    'bulk.routeLocateResults',
+    'bulk.home');
+
+INSERT INTO DBUpdates VALUES ('YUK-18091', '7.1.0', SYSDATE);
+/* @end YUK-18091 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
