@@ -1,5 +1,6 @@
 package com.cannontech.database.data.point;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
@@ -8,6 +9,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
@@ -74,6 +76,13 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public boolean isStatus() {
         return statusPoints.contains(this);
+    }
+    
+    public boolean isValuePoint() {
+       List<PointType> types = Lists.newArrayList(PointType.values());
+       types.removeAll(statusPoints);
+       types.remove(PointType.System);
+       return types.contains(this);
     }
     
     public boolean hasUnitMeasure() {

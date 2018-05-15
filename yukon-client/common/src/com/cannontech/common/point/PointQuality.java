@@ -64,4 +64,8 @@ public enum PointQuality implements DatabaseRepresentationSource {
 		}
     	throw new IllegalArgumentException();
     }
+    
+    public boolean isInvalid() {
+       return this == PointQuality.Invalid || this == PointQuality.Uninitialized || this == PointQuality.Unknown; 
+    }
 }

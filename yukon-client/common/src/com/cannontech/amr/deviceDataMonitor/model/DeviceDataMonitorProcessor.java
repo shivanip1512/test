@@ -3,7 +3,11 @@ package com.cannontech.amr.deviceDataMonitor.model;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.google.common.base.Function;
@@ -14,7 +18,7 @@ public class DeviceDataMonitorProcessor implements Serializable {
 
     private Integer processorId;
     private Integer monitorId;
-    private Attribute attribute;
+    private BuiltInAttribute attribute;
     private LiteStateGroup stateGroup;
     private LiteState state;
     private ProcessorType type;
@@ -27,7 +31,7 @@ public class DeviceDataMonitorProcessor implements Serializable {
     
     public DeviceDataMonitorProcessor() {}
     
-    public DeviceDataMonitorProcessor(Integer processorId, ProcessorType type, Integer monitorId, Attribute attribute) {
+    public DeviceDataMonitorProcessor(Integer processorId, ProcessorType type, Integer monitorId, BuiltInAttribute attribute) {
         this.processorId = processorId;
         this.monitorId = monitorId;
         this.attribute = attribute;
@@ -54,7 +58,7 @@ public class DeviceDataMonitorProcessor implements Serializable {
         return attribute;
     }
 
-    public void setAttribute(Attribute attribute) {
+    public void setAttribute(BuiltInAttribute attribute) {
         this.attribute = attribute;
     }
 
@@ -114,6 +118,96 @@ public class DeviceDataMonitorProcessor implements Serializable {
         this.rangeMin = rangeMin;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((attribute == null) ? 0 : attribute.hashCode());
+        result = prime * result + (deletion ? 1231 : 1237);
+        result = prime * result + ((monitorId == null) ? 0 : monitorId.hashCode());
+        result = prime * result + ((processorId == null) ? 0 : processorId.hashCode());
+        result = prime * result + ((processorValue == null) ? 0 : processorValue.hashCode());
+        result = prime * result + ((rangeMax == null) ? 0 : rangeMax.hashCode());
+        result = prime * result + ((rangeMin == null) ? 0 : rangeMin.hashCode());
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
+        result = prime * result + ((stateGroup == null) ? 0 : stateGroup.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DeviceDataMonitorProcessor other = (DeviceDataMonitorProcessor) obj;
+        if (attribute != other.attribute) {
+            return false;
+        }
+        if (deletion != other.deletion) {
+            return false;
+        }
+        if (monitorId == null) {
+            if (other.monitorId != null) {
+                return false;
+            }
+        } else if (!monitorId.equals(other.monitorId)) {
+            return false;
+        }
+        if (processorId == null) {
+            if (other.processorId != null) {
+                return false;
+            }
+        } else if (!processorId.equals(other.processorId)) {
+            return false;
+        }
+        if (processorValue == null) {
+            if (other.processorValue != null) {
+                return false;
+            }
+        } else if (!processorValue.equals(other.processorValue)) {
+            return false;
+        }
+        if (rangeMax == null) {
+            if (other.rangeMax != null) {
+                return false;
+            }
+        } else if (!rangeMax.equals(other.rangeMax)) {
+            return false;
+        }
+        if (rangeMin == null) {
+            if (other.rangeMin != null) {
+                return false;
+            }
+        } else if (!rangeMin.equals(other.rangeMin)) {
+            return false;
+        }
+        if (state == null) {
+            if (other.state != null) {
+                return false;
+            }
+        } else if (!state.equals(other.state)) {
+            return false;
+        }
+        if (stateGroup == null) {
+            if (other.stateGroup != null) {
+                return false;
+            }
+        } else if (!stateGroup.equals(other.stateGroup)) {
+            return false;
+        }
+        if (type != other.type) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Comparator that orders by attribute, then state group, then state. Sorting
      * is for equality comparison reasons and not for display reasons
@@ -147,68 +241,26 @@ public class DeviceDataMonitorProcessor implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((attribute == null) ? 0 : attribute.hashCode());
-        result = prime * result + (deletion ? 1231 : 1237);
-        result = prime * result + ((monitorId == null) ? 0 : monitorId.hashCode());
-        result = prime * result + ((processorId == null) ? 0 : processorId.hashCode());
-        result = prime * result + ((state == null) ? 0 : state.hashCode());
-        result = prime * result + ((stateGroup == null) ? 0 : stateGroup.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
+    public String toString() {
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("processorId", processorId);
+        tsb.append("monitorId", monitorId);
+        tsb.append("attribute", attribute);
+        if (stateGroup != null) {
+            tsb.append("state group id", stateGroup.getStateGroupID());
+            tsb.append("state group name", stateGroup.getStateGroupName());
         }
-        if (obj == null) {
-            return false;
+        if (state != null) {
+            tsb.append("raw state", state.getStateRawState());
         }
-        if (getClass() != obj.getClass()) {
-            return false;
+        tsb.append("processor type", type);
+        if (processorValue != null) {
+            tsb.append("processor value", processorValue);
         }
-        DeviceDataMonitorProcessor other = (DeviceDataMonitorProcessor) obj;
-        if (attribute == null) {
-            if (other.attribute != null) {
-                return false;
-            }
-        } else if (!attribute.equals(other.attribute)) {
-            return false;
+        if (rangeMin != null && rangeMax != null) {
+            tsb.append("range", rangeMin + "-" + rangeMax);
         }
-        if (deletion != other.deletion) {
-            return false;
-        }
-        if (monitorId == null) {
-            if (other.monitorId != null) {
-                return false;
-            }
-        } else if (!monitorId.equals(other.monitorId)) {
-            return false;
-        }
-        if (processorId == null) {
-            if (other.processorId != null) {
-                return false;
-            }
-        } else if (!processorId.equals(other.processorId)) {
-            return false;
-        }
-        if (state == null) {
-            if (other.state != null) {
-                return false;
-            }
-        } else if (!state.equals(other.state)) {
-            return false;
-        }
-        if (stateGroup == null) {
-            if (other.stateGroup != null) {
-                return false;
-            }
-        } else if (!stateGroup.equals(other.stateGroup)) {
-            return false;
-        }
-        return true;
+        return tsb.toString();
     }
 }

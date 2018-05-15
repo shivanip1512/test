@@ -22,7 +22,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -40,7 +40,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
-    @Autowired private AttributeService attributeService;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private StateGroupDao stateGroupDao;
@@ -83,7 +82,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
                 DeviceDataMonitorProcessor processor = new DeviceDataMonitorProcessor(rs.getInt("processorId"),
                     rs.getEnum("ProcessorType", ProcessorType.class), rs.getInt("monitorId"),
-                    attributeService.resolveAttributeName(rs.getString("attribute")));
+                    rs.getEnum("Attribute", BuiltInAttribute.class));
 
                 if (processor.getType().isStateBased()) {
                     LiteStateGroup stateGroup = stateGroupDao.getStateGroup(rs.getInt("stateGroupId"));

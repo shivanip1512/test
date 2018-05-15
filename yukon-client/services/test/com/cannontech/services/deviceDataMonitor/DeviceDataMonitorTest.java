@@ -36,6 +36,7 @@ import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.impl.PointDaoImpl;
@@ -63,14 +64,22 @@ public class DeviceDataMonitorTest {
     private DeviceGroupProviderDao deviceGroupDao;
     private PointDao pointDao;
     
-    private final static LitePoint point1 = new LitePoint(1, "point1", 0, 0, 0, 1);
-    private final static LitePoint point2 = new LitePoint(2, "point2", 0, 0, 0, 2);
-    private final static LitePoint point3 = new LitePoint(3, "point3", 0, 0, 0, 3);
-    private final static LitePoint point4 = new LitePoint(4, "point4", 0, 0, 0, 4);
+    private final static PaoIdentifier PAO_IDENTIFIER_1 = new PaoIdentifier(1, PaoType.MCT410CL);
+    private final static PaoIdentifier PAO_IDENTIFIER_2 = new PaoIdentifier(2, PaoType.MCT410CL);
+    private final static PaoIdentifier PAO_IDENTIFIER_3 = new PaoIdentifier(3, PaoType.MCT410CL);
+    private final static PaoIdentifier PAO_IDENTIFIER_4 = new PaoIdentifier(4, PaoType.MCT410CL);
+    
+    private final static LitePoint point1 = new LitePoint(1, "point1", PointType.Status.getPointTypeId(), PAO_IDENTIFIER_1.getPaoId(), 1, 1);
+    private final static LitePoint point2 = new LitePoint(2, "point2", PointType.Status.getPointTypeId(), PAO_IDENTIFIER_2.getPaoId(), 2, 2);
+    private final static LitePoint point3 = new LitePoint(3, "point3", PointType.Status.getPointTypeId(), PAO_IDENTIFIER_3.getPaoId(), 3, 3);
+    private final static LitePoint point4 = new LitePoint(4, "point4", PointType.Status.getPointTypeId(), PAO_IDENTIFIER_4.getPaoId(), 4, 4);
     private final static Map<Integer, LitePoint> pointIdToLitePointMap = ImmutableMap.of(1, point1,
                                                                                          2, point2,
                                                                                          3, point3,
                                                                                          4, point4);
+    
+    private final static LitePoint point5 = new LitePoint(5, "point5", PointType.DemandAccumulator.getPointTypeId(), 0, 5, 0);
+    
     private DeviceDataMonitor monitor1;
     private DeviceDataMonitor monitor2;
 
@@ -82,17 +91,21 @@ public class DeviceDataMonitorTest {
     private final static LiteState STATE_2 = new LiteState(2, null, 0, 0, 0);
     private final static LiteState STATE_3 = new LiteState(3, null, 0, 0, 0);
     
-    private final static PaoIdentifier PAO_IDENTIFIER_1 = new PaoIdentifier(1, PaoType.MCT410CL);
-    private final static PaoIdentifier PAO_IDENTIFIER_2 = new PaoIdentifier(2, PaoType.MCT410CL);
-    private final static PaoIdentifier PAO_IDENTIFIER_3 = new PaoIdentifier(3, PaoType.MCT410CL);
     
-    private final static PointIdentifier POINT_IDENTIFIER_1 = new PointIdentifier(PointType.Status, 1);
-    private final static PointIdentifier POINT_IDENTIFIER_2 = new PointIdentifier(PointType.Status, 2);
-    private final static PointIdentifier POINT_IDENTIFIER_3 = new PointIdentifier(PointType.Status, 3);
+    private final static PointIdentifier POINT_IDENTIFIER_1 = new PointIdentifier(PointType.Status, point1.getPointOffset());
+    private final static PointIdentifier POINT_IDENTIFIER_2 = new PointIdentifier(PointType.Status, point2.getPointOffset());
+    private final static PointIdentifier POINT_IDENTIFIER_3 = new PointIdentifier(PointType.Status, point3.getPointOffset());
+    private final static PointIdentifier POINT_IDENTIFIER_4 = new PointIdentifier(PointType.Status, point4.getPointOffset());
+    
+    private final static PointIdentifier POINT_IDENTIFIER_5 = new PointIdentifier(PointType.getForId(point5.getPointType()), point5.getPointOffset());
     
     private final static PaoPointIdentifier PAO_POINT_IDENTIFIER_1 = new PaoPointIdentifier(PAO_IDENTIFIER_1, POINT_IDENTIFIER_1);
     private final static PaoPointIdentifier PAO_POINT_IDENTIFIER_2 = new PaoPointIdentifier(PAO_IDENTIFIER_2, POINT_IDENTIFIER_2);
     private final static PaoPointIdentifier PAO_POINT_IDENTIFIER_3 = new PaoPointIdentifier(PAO_IDENTIFIER_3, POINT_IDENTIFIER_3);
+    private final static PaoPointIdentifier PAO_POINT_IDENTIFIER_4 = new PaoPointIdentifier(PAO_IDENTIFIER_4, POINT_IDENTIFIER_4);
+    
+    
+    private final static PaoPointIdentifier PAO_POINT_IDENTIFIER_5 = new PaoPointIdentifier(PAO_IDENTIFIER_1, POINT_IDENTIFIER_5);
     
     private final DeviceGroupTest MONITORING_GROUP_1 = new DeviceGroupTest("monitoring_1");
     private final DeviceGroupTest MONITORING_GROUP_2 = new DeviceGroupTest("monitoring_2");
@@ -112,7 +125,9 @@ public class DeviceDataMonitorTest {
     private Map<PaoPointIdentifier, ? extends Attribute> paoPointToAttributeMap = ImmutableMap
         .of(PAO_POINT_IDENTIFIER_1, BuiltInAttribute.OUTAGE_STATUS,
             PAO_POINT_IDENTIFIER_2, BuiltInAttribute.BLINK_COUNT,
-            PAO_POINT_IDENTIFIER_3, BuiltInAttribute.CLOCK_ERROR);
+            PAO_POINT_IDENTIFIER_3, BuiltInAttribute.CLOCK_ERROR,
+            PAO_POINT_IDENTIFIER_4, BuiltInAttribute.OUTAGE_STATUS,
+            PAO_POINT_IDENTIFIER_5, BuiltInAttribute.DELIVERED_KWH);
     
     @Before
     public void setup() {
@@ -192,20 +207,42 @@ public class DeviceDataMonitorTest {
                 return hashSet.size();
             }
         };
+        
         pointDao = new PointDaoImpl() {
             @Override
             public LitePoint getLitePoint(int pointId) {
                 return pointIdToLitePointMap.get(pointId);
             }
-        };
+            
+            @Override
+            public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier) {
 
-        deviceDataMonitorCalculationService = new DeviceDataMonitorCalculationServiceImpl();
+                int paoId = paoPointIdentifier.getPaoIdentifier().getPaoId();
+                int offset = paoPointIdentifier.getPointIdentifier().getOffset();
+                PointType pointType = paoPointIdentifier.getPointIdentifier().getPointType();
+
+                return pointIdToLitePointMap.values().stream()
+                        .filter(p -> p.getPaobjectID() == paoId && p.getPointOffset() == offset && p.getPointTypeEnum() == pointType)
+                        .findFirst().get();
+            }
+
+        };
+        
+
+        deviceDataMonitorCalculationService = new DeviceDataMonitorCalculationServiceImpl() {
+
+            @Override
+            public void sendSmartNotificationEvent(DeviceDataMonitor monitor, int deviceId, MonitorState state) {
+            }
+
+        };
+        ReflectionTestUtils.setField(deviceDataMonitorCalculationService, "attributeService", attributeService);
+        ReflectionTestUtils.setField(deviceDataMonitorCalculationService, "deviceGroupEditorDao", deviceGroupEditorDao);
+        ReflectionTestUtils.setField(deviceDataMonitorCalculationService, "deviceGroupMemberEditorDao", deviceGroupMemberEditorDao);
+        ReflectionTestUtils.setField(deviceDataMonitorCalculationService, "pointDao", pointDao);
+        ReflectionTestUtils.setField(deviceDataMonitorCalculationService, "deviceGroupService", deviceGroupService);
         deviceDataMonitorProcessorFactory = new DeviceDataMonitorProcessorFactoryImpl();
-        ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "attributeService", attributeService);
-        ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceGroupEditorDao", deviceGroupEditorDao);
-        ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceGroupMemberEditorDao", deviceGroupMemberEditorDao);
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceGroupService", deviceGroupService);
-        ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "pointDao", pointDao);
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceDataMonitorCalculationService", deviceDataMonitorCalculationService);
         
         deviceGroupPaos = Maps.newHashMap();
@@ -224,7 +261,7 @@ public class DeviceDataMonitorTest {
         monitor1 = new DeviceDataMonitor(null, VIOLATIONS_GROUP_1.testName, MONITORING_GROUP_1.testName, true, processors1);
         monitor2 = new DeviceDataMonitor(null, VIOLATIONS_GROUP_2.testName, MONITORING_GROUP_2.testName, true, processors2);
     }
-
+    
     @Test
     public void should_add_pao_to_violations_group_when_match_one() {
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -315,8 +352,6 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-        
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -338,8 +373,6 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -361,8 +394,6 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-        
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -384,8 +415,6 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-        
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -407,8 +436,6 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 5.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertFalse(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-        
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -430,8 +457,6 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertNotSame(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-        
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -453,8 +478,6 @@ public class DeviceDataMonitorTest {
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertNotSame(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
         Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-        
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
@@ -475,15 +498,115 @@ public class DeviceDataMonitorTest {
         
         RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_1);
         Assert.assertEquals(processor.getAttribute(), paoPointToAttributeMap.get(PAO_POINT_IDENTIFIER_1));
-        Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());
-        Assert.assertTrue(deviceDataMonitorCalculationService.isPointValueMatch(processor, rpd.getPointValue()));
-        
+        Assert.assertEquals(processor.getStateGroup().getStateGroupID(), pointIdToLitePointMap.get(rpd.getPointValue().getId()).getStateGroupID());        
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
         deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
         Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 1);
     }
     
-    private DeviceDataMonitorProcessor getProcessor(Attribute attribute, LiteStateGroup stateGroup, LiteState state) {
+   @Test
+    public void value_based_less_in_violation() {
+        List<DeviceDataMonitorProcessor> processors = Lists.newArrayList();
+        DeviceDataMonitorProcessor processor = getValueBasedProcessor(BuiltInAttribute.DELIVERED_KWH, ProcessorType.LESS, 100.00);
+        processors.add(processor);
+        monitor1.setProcessors(processors);
+        
+        RichPointData rpd = getRPD(1, 1.0, PAO_POINT_IDENTIFIER_5);
+        deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
+        Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 1);
+    }
+   
+    @Test
+    public void value_based_less_out_of_violation() {
+        List<DeviceDataMonitorProcessor> processors = Lists.newArrayList();
+        DeviceDataMonitorProcessor processor =
+            getValueBasedProcessor(BuiltInAttribute.DELIVERED_KWH, ProcessorType.LESS, 100.00);
+        processors.add(processor);
+        monitor1.setProcessors(processors);
+
+        RichPointData rpd = getRPD(1, 200, PAO_POINT_IDENTIFIER_5);
+        deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
+        Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
+    }
+
+    @Test
+    public void value_based_greater_in_violation() {
+        List<DeviceDataMonitorProcessor> processors = Lists.newArrayList();
+        DeviceDataMonitorProcessor processor =
+            getValueBasedProcessor(BuiltInAttribute.DELIVERED_KWH, ProcessorType.GREATER, 100.00);
+        processors.add(processor);
+        monitor1.setProcessors(processors);
+
+        RichPointData rpd = getRPD(1, 200.0, PAO_POINT_IDENTIFIER_5);
+        deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
+        Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 1);
+    }
+
+    @Test
+    public void value_based_greater_out_of_violation() {
+        List<DeviceDataMonitorProcessor> processors = Lists.newArrayList();
+        DeviceDataMonitorProcessor processor =
+            getValueBasedProcessor(BuiltInAttribute.DELIVERED_KWH, ProcessorType.GREATER, 100.00);
+        processors.add(processor);
+        monitor1.setProcessors(processors);
+
+        RichPointData rpd = getRPD(1, 1, PAO_POINT_IDENTIFIER_5);
+        deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
+        Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
+    }
+    
+    @Test
+    public void value_based_range_in_violation() {
+        List<DeviceDataMonitorProcessor> processors = Lists.newArrayList();
+        DeviceDataMonitorProcessor processor =
+            getValueBasedProcessor(BuiltInAttribute.DELIVERED_KWH, 100.00, 1000.00);
+        processors.add(processor);
+        monitor1.setProcessors(processors);
+
+        RichPointData rpd = getRPD(1, 101, PAO_POINT_IDENTIFIER_5);
+        deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
+        Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 1);
+    }
+    
+    @Test
+    public void value_based_range_out_of_violation() {
+        List<DeviceDataMonitorProcessor> processors = Lists.newArrayList();
+        DeviceDataMonitorProcessor processor =
+            getValueBasedProcessor(BuiltInAttribute.DELIVERED_KWH, 100.00, 1000.00);
+        processors.add(processor);
+        monitor1.setProcessors(processors);
+
+        RichPointData rpd = getRPD(1, 99, PAO_POINT_IDENTIFIER_5);
+        deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
+        Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
+    }
+    
+    @Test
+    public void value_based_and_state_based_in_violation() {
+        List<DeviceDataMonitorProcessor> processors = Lists.newArrayList();
+        processors.add(getProcessor(BuiltInAttribute.OUTAGE_STATUS, STATE_GROUP_1, STATE_1));
+        processors.add(getValueBasedProcessor(BuiltInAttribute.DELIVERED_KWH, 100.00, 1000.00));
+        monitor1.setProcessors(processors);
+
+        RichPointData rpd = getRPD(1, 1001, PAO_POINT_IDENTIFIER_5);
+        deviceDataMonitorProcessorFactory.handlePointDataReceived(monitor1, rpd);
+        Assert.assertEquals(deviceGroupDao.getDeviceCount(VIOLATIONS_GROUP_1), 0);
+    }
+    
+    private DeviceDataMonitorProcessor getValueBasedProcessor(BuiltInAttribute attribute, ProcessorType type, Double value) {
+        DeviceDataMonitorProcessor ddmp = new DeviceDataMonitorProcessor(null, type, null, attribute);
+        ddmp.setProcessorValue(value);
+        return ddmp;
+    }
+    
+    private DeviceDataMonitorProcessor getValueBasedProcessor(BuiltInAttribute attribute, Double min, Double max) {
+        DeviceDataMonitorProcessor ddmp = new DeviceDataMonitorProcessor(null,  ProcessorType.RANGE, null, attribute);
+        ddmp.setRangeMin(min);
+        ddmp.setRangeMax(max);
+        return ddmp;
+    }
+    
+    private DeviceDataMonitorProcessor getProcessor(BuiltInAttribute attribute, LiteStateGroup stateGroup, LiteState state) {
         DeviceDataMonitorProcessor ddmp = new DeviceDataMonitorProcessor(null, ProcessorType.STATE, null, attribute);
         ddmp.setState(state);
         ddmp.setStateGroup(stateGroup);
@@ -491,7 +614,7 @@ public class DeviceDataMonitorTest {
     }
 
     private RichPointData getRPD(int id, double value, PaoPointIdentifier paoPointIdentifier) {
-        PointValue pointValue = new PointValue(id, value);
+        PointValue pointValue = new PointValue(id, value, paoPointIdentifier.getPointIdentifier().getPointType());
         RichPointData richPointData = new RichPointData(pointValue, paoPointIdentifier);
         return richPointData;
     }
@@ -544,10 +667,11 @@ public class DeviceDataMonitorTest {
     }
     
     private class PointValue extends PointData {
-        public PointValue(int id, double value) {
+        public PointValue(int id, double value, PointType type) {
             super();
             setId(id);
             setValue(value);
+            setType(type.getPointTypeId());
             setPointQuality(PointQuality.Normal);
         }
     }
