@@ -307,9 +307,9 @@ public class DeviceDataMonitorController {
                 attributeService.getGroupedAttributeMapFromCollection(allAttributes, userContext);
         
         model.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
-        
-        //value attributes
-        model.addAttribute("allGroupedValueAttributes", BuiltInAttribute.getStandardGroupedAttributes());
+
+        // value attributes
+        model.addAttribute("allGroupedValueAttributes", BuiltInAttribute.getValueGroupedAttributes());
     }
     
     private void setupProcessorTypes(ModelMap model) {
@@ -493,8 +493,13 @@ public class DeviceDataMonitorController {
         LiteStateGroup stateGroup = asg.getStateGroup();
 
         // First: see how many support all 3 parts - attribute, point, and stateGroup
-        List<Integer> supportAll = 
-                pointService.findDeviceIdsInGroupWithAttributePointStateGroup(monitoringGroup, attribute, stateGroup);
+        List<Integer> supportAll;
+        BuiltInAttribute bia = BuiltInAttribute.valueOf(attribute.getKey());
+        if (bia.isStatusType()) {
+            supportAll = pointService.findDeviceIdsInGroupWithAttributePointStateGroup(monitoringGroup, attribute, stateGroup);
+        } else {
+            supportAll = pointService.findDeviceIdsInGroupWithAttributePoint(monitoringGroup, attribute);
+        }
         long numSupportAll = supportAll.size();
 
         if (numSupportAll == numTotal) {

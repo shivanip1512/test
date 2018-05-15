@@ -567,6 +567,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     private static Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedStatusTypeAttributes;
     
+    private static Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedValueAttributes;
+    
     
     static {
 
@@ -620,6 +622,20 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedDataAttributesBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
 
         groupedDataAttributes = groupedDataAttributesBuilder.build();
+        
+        // This map is used for Device Data Monitor Value Processors.
+        ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> groupedValueAttributesBuilder =
+                ImmutableMap.builder();
+
+        groupedValueAttributesBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, lookupByGroup.get(AttributeGroup.BLINK_AND_OUTAGE));
+        groupedValueAttributesBuilder.put(AttributeGroup.CURRENT, lookupByGroup.get(AttributeGroup.CURRENT));
+        groupedValueAttributesBuilder.put(AttributeGroup.DEMAND, lookupByGroup.get(AttributeGroup.DEMAND));
+        groupedValueAttributesBuilder.put(AttributeGroup.PROFILE, lookupByGroup.get(AttributeGroup.PROFILE));
+        groupedValueAttributesBuilder.put(AttributeGroup.REACTIVE, lookupByGroup.get(AttributeGroup.REACTIVE));
+        groupedValueAttributesBuilder.put(AttributeGroup.USAGE, lookupByGroup.get(AttributeGroup.USAGE));
+        groupedValueAttributesBuilder.put(AttributeGroup.VOLTAGE, lookupByGroup.get(AttributeGroup.VOLTAGE));
+
+        allGroupedValueAttributes = groupedValueAttributesBuilder.build();
     }
 
     /**
@@ -816,6 +832,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     public static Map<AttributeGroup, Set<BuiltInAttribute>> getStandardGroupedAttributes() {
         return groupedDataAttributes;
+    }
+    
+    public static Map<AttributeGroup, Set<BuiltInAttribute>> getValueGroupedAttributes() {
+        return allGroupedValueAttributes;
     }
 
     public static Map<AttributeGroup, Set<BuiltInAttribute>> getRfnEventGroupedAttributes() {
