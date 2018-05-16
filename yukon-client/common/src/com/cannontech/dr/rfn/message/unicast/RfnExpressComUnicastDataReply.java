@@ -33,7 +33,7 @@ public class RfnExpressComUnicastDataReply implements Serializable, RfnIdentifyi
     
     @Override
     public RfnIdentifier getRfnIdentifier() {
-        return null;
+        return rfnIdentifier;
     }
     
     public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
