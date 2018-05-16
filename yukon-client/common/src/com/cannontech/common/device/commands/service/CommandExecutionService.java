@@ -26,8 +26,7 @@ public interface CommandExecutionService extends CollectionActionCancellationSer
      * 
      * @throws CommandCompletionException
      */
-    CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user)
-            throws CommandCompletionException;
+    CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user);
 
 
     /**
