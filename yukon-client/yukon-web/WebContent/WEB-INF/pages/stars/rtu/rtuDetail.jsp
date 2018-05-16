@@ -123,7 +123,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".winTimeRange" valueClass="full-width" data-toggle-group="scanWindow">
                             <tags:timeSlider dataToggleGroup="scanWindow" startPath="deviceWindow.winOpen" endPath="deviceWindow.winClose"
-                                viewOnlyMode="${mode == 'VIEW'}" rangeEnabled="true" timeFormat="SECONDS"/>
+                                viewOnlyMode="${mode == 'VIEW'}" rangeEnabled="true" timeFormat="SECONDS" maxValue="2880"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
