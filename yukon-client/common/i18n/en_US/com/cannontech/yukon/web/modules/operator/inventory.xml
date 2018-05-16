@@ -162,6 +162,7 @@
     <entry key="yukon.web.modules.operator.pqrConfig.validation.valueEmpty">Value cannot be empty if other values in section are specified.</entry>
     <entry key="yukon.web.modules.operator.pqrConfig.validation.triggerGtRestore">Trigger must be greater than Restore</entry>
     <entry key="yukon.web.modules.operator.pqrConfig.validation.triggerLtRestore">Trigger must be less than Restore</entry>
+    <entry key="yukon.web.modules.operator.pqrConfig.validation.minLtMax">Minimum must be less than Maximum.</entry>
     
     <!-- /inventory/pqrConfig/pqrConfigResult.jsp -->
     <entry key="yukon.web.modules.operator.pqrConfigResult.pageTitle">PQR Configuration Results</entry>
