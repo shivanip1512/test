@@ -545,7 +545,6 @@ yukon.ami.ddm = (function () {
         _validate_processors = function () {
             
             var missingCount = 0;
-            //TODO: Do we need to check anything for value processors?
             var statusProcs = $('.js-processors-table .processor').filter(":visible");
             statusProcs.each(function (idx, row) {
                 var ctrl = _get_state_group_value($(row));   // for IE8
