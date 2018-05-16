@@ -345,9 +345,12 @@ public class CommanderController {
 
         Map<String, Object> result = new HashMap<>();
 
-        if (!CommandPriority.isCommandPriorityValid(params.getPriority())) {
-            params.setPriority(CommandPriority.maxPriority);
+        Integer priority =
+            Integer.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
+        if (!CommandPriority.isCommandPriorityValid(priority)) {
+            priority = CommandPriority.maxPriority;
         }
+        params.setPriority(priority);
 
         List<CommandRequest> commands = null;
         List<String> authorizedCommand = new ArrayList<>();
