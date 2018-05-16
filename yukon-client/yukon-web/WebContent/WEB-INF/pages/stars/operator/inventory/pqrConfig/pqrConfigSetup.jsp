@@ -95,10 +95,10 @@
                         <tags:nameValue2 nameKey=".ofRestore">
                             <tags:input path="lofRestore" units="${microsec}" inputClass="skinny"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".ovTriggerTime">
+                        <tags:nameValue2 nameKey=".ofTriggerTime">
                             <tags:input path="lofTriggerTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".ovRestoreTime">
+                        <tags:nameValue2 nameKey=".ofRestoreTime">
                             <tags:input path="lofRestoreTime" units="${millis}" inputClass="skinny"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
