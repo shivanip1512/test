@@ -163,13 +163,13 @@
         <name>LOV Trigger</name>
         <multiplier value="0.1"/>
         <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="1"/>
     </point>
     <point offset="910" type="Analog">
         <name>LOV Restore</name>
         <multiplier value="0.1"/>
         <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="0"/>
+        <decimalplaces value="1"/>
     </point>
     <point offset="911" type="Analog">
         <name>LOV Trigger Time</name>
