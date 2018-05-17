@@ -218,7 +218,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
     
     private void sendTogglePqrEnable(boolean enable, LiteLmHardwareBase hardware, String resultId, LiteYukonUser user) {
         LmHardwareCommandType command = LmHardwareCommandType.PQR_ENABLE;
-        Map<LmHardwareCommandParam, Object> params = ImmutableMap.of(LmHardwareCommandParam.PQR_ENABLE, true);
+        Map<LmHardwareCommandParam, Object> params = ImmutableMap.of(LmHardwareCommandParam.PQR_ENABLE, enable);
         
         sendCommand(hardware, command, resultId, user, params);
     }
