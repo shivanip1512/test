@@ -8,7 +8,7 @@ yukon.namespace('yukon.bulk.masschange');
 yukon.bulk.masschange = (function () {
 
     'use strict';
-    var initialized = false,
+    var _initialized = false,
     
     enableDisable = function () {
         var selectMassChangeField = $('input[name=field]:checked').val();
@@ -27,11 +27,13 @@ yukon.bulk.masschange = (function () {
 
             enableDisable();
             
+            if (_initialized) return;
+            
             $(document).on('click', '.js-mass-change', function () {
                 enableDisable();
             });
             
-            initialized = true;
+            _initialized = true;
             
         }
 

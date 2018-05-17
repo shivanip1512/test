@@ -67,14 +67,18 @@ yukon.bulk.dataStreaming = (function () {
     };
 
     'use strict';
-    var initialized = false,
+    var _initialized = false,
 
     mod = {
 
             /** Initialize this module. */
             init: function () {
-
-                $(document).ready(function() {enableDisable();});
+                
+                enableDisable();
+                checkForValidConfig();
+                showConfigurationTable();
+                
+                if (_initialized) return;
 
 //              show/hide information based on New or Existing Configuration selection
                 $(document).on('click', '.js-configuration-type', function () {
@@ -130,10 +134,8 @@ yukon.bulk.dataStreaming = (function () {
                 $(document).on('click', '.js-attribute', function () {
                     checkForValidConfig();
                 });
-                
-                checkForValidConfig();
-                showConfigurationTable();
-                initialized = true;
+
+                _initialized = true;
 
             }
 

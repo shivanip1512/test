@@ -29,6 +29,8 @@ yukon.bulk.device.configs = (function () {
                         
             enableDisable();
             
+            if (_initialized) return;
+            
             $(document).on('change', 'input[name=action]', function() {
                 enableDisable();
             });

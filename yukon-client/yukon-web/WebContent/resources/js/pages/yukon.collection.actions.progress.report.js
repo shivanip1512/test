@@ -200,6 +200,8 @@ yukon.collection.actions.progress.report = (function () {
                 }
             }
             
+            if (_initialized) return;
+            
             $(document).on('click', '.js-cancel', function() {
                 $.ajax({
                     url: yukon.url('/collectionActions/progressReport/cancel'),

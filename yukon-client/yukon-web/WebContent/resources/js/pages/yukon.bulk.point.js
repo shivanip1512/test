@@ -8,7 +8,7 @@ yukon.namespace('yukon.bulk.point');
 yukon.bulk.point = (function () {
 
     'use strict';
-    var initialized = false,
+    var _initialized = false,
     
     showHideAllPoints = function () {
         var sharedPoints = $('#sharedPoints').val();
@@ -36,11 +36,13 @@ yukon.bulk.point = (function () {
                     checkboxes.closest('td').flash();
                 });
                 
+                if (_initialized) return;
+                
                 $(document).on('change', '#sharedPoints', function () {
                     showHideAllPoints();
                 });
                 
-                initialized = true;
+                _initialized = true;
                 
             }
 
