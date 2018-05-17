@@ -1674,7 +1674,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
                 else
                 {
-                    state->setState(IVVCState::IVVC_WAIT);
+                    state->setState( subbus->getVerificationFlag()
+                                        ? IVVCState::IVVC_ANALYZE_DATA
+                                        : IVVCState::IVVC_WAIT );
                 }
             }
             else
