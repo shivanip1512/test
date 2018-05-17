@@ -153,7 +153,7 @@ void CtiPortShareIP::inThread()
                         CTILOG_DEBUG(dout, getIDString() <<" - looking for a new SCADA connection. Loops = "<< loopsSinceRead);
                     }
 
-                    std::auto_ptr<StreamSocketConnection> newNexus = scadaListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::seconds(1), &_shutdownEvent);
+                    std::unique_ptr<StreamSocketConnection> newNexus = scadaListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::seconds(1), &_shutdownEvent);
 
                     if( newNexus.get() )
                     {

@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
     _SEND_TRIES = 1;
 
     CtiTime currentDateTime;
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
     _strategyManager.reloadAll();
 
     CtiCCAreaPtr area = create_object<CtiCCArea>(1, "Area-1");
@@ -341,13 +341,13 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
     CtiCCSubstationBusStore::setInstance(store);
 
-    std::auto_ptr<test_AttributeService> attributeService(new test_AttributeService);
-    store->setAttributeService(std::auto_ptr<AttributeService>(attributeService.release()));
+    std::unique_ptr<test_AttributeService> attributeService(new test_AttributeService);
+    store->setAttributeService(std::unique_ptr<AttributeService>(attributeService.release()));
 
     _MAX_KVAR = 20000;
     _SEND_TRIES = 1;
 
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
     _strategyManager.reloadAll();
 
     CtiTime currentDateTime;
@@ -623,7 +623,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_default_construction_with_strategy_ma
 {
     _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
 
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     test_CtiCCSubstationBus bus( &_strategyManager );
 

@@ -523,7 +523,7 @@ CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
         tlg.tryAcquire(5000);
     }
 
-    std::auto_ptr<CtiMultiMsg>  pMulti;
+    std::unique_ptr<CtiMultiMsg>  pMulti;
     SigMgrMap_t::const_iterator itr;
 
     try
@@ -536,7 +536,7 @@ CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
 
             if(pOriginalSig && (pOriginalSig->getTags() & MASK_ANY_ALARM))
             {
-                std::auto_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
+                std::unique_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
                 pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
                 if( ! pMulti.get() )
@@ -727,7 +727,7 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
         tlg.tryAcquire(5000);
     }
 
-    std::auto_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
+    std::unique_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
 
     SigMgrMap_t::const_iterator itr;
 
@@ -741,7 +741,7 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
 
             if( pOriginalSig->getSignalCategory() == category )
             {
-                std::auto_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
+                std::unique_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
                 pSig->setText( TrimAlarmTagText((string&)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
                 pMulti->insert(pSig.release()); // Insert into the multi.

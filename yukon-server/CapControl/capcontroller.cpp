@@ -1028,7 +1028,7 @@ void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCC
 void CtiCapController::readClientMsgQueue()
 {
     CtiTime tempTime;
-    std::auto_ptr<CtiMessage> clientMsg;
+    std::unique_ptr<CtiMessage> clientMsg;
 
     tempTime.now();
 
@@ -4005,7 +4005,7 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     }
 }
 
-void CtiCapController::sendCapBankRequestAndPoints( std::auto_ptr<CtiRequestMsg> pilRequest, CtiMultiMsg* multiMsg)
+void CtiCapController::sendCapBankRequestAndPoints( std::unique_ptr<CtiRequestMsg> pilRequest, CtiMultiMsg* multiMsg)
 {
     getInstance()->manualCapBankControl(pilRequest.release(), multiMsg);
 }

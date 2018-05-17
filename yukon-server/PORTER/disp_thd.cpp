@@ -83,13 +83,13 @@ void DispatchMsgHandlerThread()
             }
 
 
-            auto_ptr<const CtiMessage> MsgPtr(VanGoghConnection.ReadConnQue(2000L));
+            unique_ptr<const CtiMessage> MsgPtr(VanGoghConnection.ReadConnQue(2000L));
 
             TimeNow = CtiTime::now();
 
             mc.increment();
 
-            auto_ptr<const CtiDBChangeMsg> dbchg;
+            unique_ptr<const CtiDBChangeMsg> dbchg;
 
             if(MsgPtr.get() != NULL)
             {

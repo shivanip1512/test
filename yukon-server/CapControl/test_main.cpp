@@ -19,7 +19,7 @@ Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 namespace Cti {
 namespace Messaging {
 
-extern IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection;
+extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 }
 }

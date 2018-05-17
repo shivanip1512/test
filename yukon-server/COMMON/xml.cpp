@@ -56,9 +56,9 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
         // the call to Terminate()
 
         // types
-        typedef std::auto_ptr<xercesc::MemBufInputSource>   BufferPtr;
-        typedef std::auto_ptr<xercesc::SAX2XMLReader>       XmlReader;
-        typedef std::auto_ptr<xercesc::DefaultHandler>      EntityHandler;
+        typedef std::unique_ptr<xercesc::MemBufInputSource>   BufferPtr;
+        typedef std::unique_ptr<xercesc::SAX2XMLReader>       XmlReader;
+        typedef std::unique_ptr<xercesc::DefaultHandler>      EntityHandler;
 
         // read index
 

@@ -5,7 +5,7 @@
 
 using std::endl;
 using std::string;
-using std::auto_ptr;
+using std::unique_ptr;
 
 using boost::shared_ptr;
 

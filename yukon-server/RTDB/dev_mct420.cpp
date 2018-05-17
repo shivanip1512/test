@@ -774,7 +774,7 @@ YukonError_t Mct420Device::decodePutConfig( const INMESS &InMessage, const CtiTi
 
     // Handle the return message.
     {
-        std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+        std::unique_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
         ReturnMsg->setUserMessageId( InMessage.Return.UserID );
         ReturnMsg->setResultString ( resultString );
@@ -797,7 +797,7 @@ YukonError_t Mct420Device::decodePutConfigChannel2NetMetering( const INMESS &InM
 {
     // Execute a read to get the configuration data to be stored in dynamic pao info.
     {
-        std::auto_ptr<CtiRequestMsg> pReq(
+        std::unique_ptr<CtiRequestMsg> pReq(
             new CtiRequestMsg(
                 InMessage.TargetID,
                 "getconfig configuration",
@@ -999,7 +999,7 @@ YukonError_t Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMess
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(
         new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);

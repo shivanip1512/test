@@ -38,9 +38,6 @@
     <ClInclude Include="include\dispsvc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\dllvg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\exe_ptchg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -48,9 +45,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\id_vg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\id_vgdll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\mgr_ptclients.h">

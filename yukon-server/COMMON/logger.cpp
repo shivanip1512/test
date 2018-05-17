@@ -187,11 +187,11 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
             {
                 // no appenders are available, the logManager has not been started yet.
                 // save the logging event for later!
-                std::auto_ptr<LogEvent> logEvent(new LogEvent());
+                std::unique_ptr<LogEvent> logEvent(new LogEvent());
 
                 logEvent->event = event;
 
-                _preBufferedLogEvents.push_back(logEvent);
+                _preBufferedLogEvents.push_back(std::move(logEvent));
 
                 return;
             }

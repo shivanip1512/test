@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(test_priority_sort)
 {
     boost::ptr_multiset<priority_t, priority_sort<priority_t> > priority_test;
 
-    std::auto_ptr<priority_t> a, b, c;
+    std::unique_ptr<priority_t> a, b, c;
 
     a.reset(new priority_t);
     a->value    = 1;

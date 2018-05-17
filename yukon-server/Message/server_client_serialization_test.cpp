@@ -173,7 +173,7 @@ void main(int argc, char* argv[])
         // will wait here until a new client connection is accepted.
         if( listenerConn.acceptClient() )
         {
-            auto_ptr<CtiServerConnection> serverConn( new CtiServerConnection( listenerConn ));
+            unique_ptr<CtiServerConnection> serverConn( new CtiServerConnection( listenerConn ));
             serverConn->start();
 
             cout << CtiTime() << " New server connection established, Running test." << endl;

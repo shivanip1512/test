@@ -224,7 +224,7 @@ void CtiCCClientListener::_listen()
             if( _listenerConnection.acceptClient() )
             {
                 // Create new connection manager
-                std::auto_ptr<CtiCCClientConnection> new_conn( CTIDBG_new CtiCCClientConnection( _listenerConnection ));
+                std::unique_ptr<CtiCCClientConnection> new_conn( CTIDBG_new CtiCCClientConnection( _listenerConnection ));
 
                 // Kick off the connection's communication threads.
                 new_conn->start();

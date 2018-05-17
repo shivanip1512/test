@@ -64,6 +64,6 @@ public:
     virtual ~ConfigManager() = default;  //  for unit test override
 };
 
-extern IM_EX_CONFIG std::auto_ptr<ConfigManager> gConfigManager;
+extern IM_EX_CONFIG std::unique_ptr<ConfigManager> gConfigManager;
 
 }

@@ -1970,7 +1970,7 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
     YukonError_t status = ClientErrors::None;
     string resultString;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     switch( InMessage.Sequence )
     {

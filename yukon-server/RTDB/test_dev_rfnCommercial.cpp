@@ -17,7 +17,7 @@ struct test_RfnCommercialDevice : RfnCommercialDevice
 
 struct test_state_rfnCommercial
 {
-    std::auto_ptr<CtiRequestMsg> request;
+    std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 

@@ -713,7 +713,7 @@ YukonError_t MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime Time
     if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
         InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
     {
-        std::auto_ptr<CtiReturnMsg> retMsg(new CtiReturnMsg(getID()));
+        std::unique_ptr<CtiReturnMsg> retMsg(new CtiReturnMsg(getID()));
 
         point_info pi;
 
@@ -2398,7 +2398,7 @@ YukonError_t MctDevice::executeControl(CtiRequestMsg *pReq, CtiCommandParser &pa
             //  do not allow the disconnect command to be sent to a meter that has no disconnect address
             if( !_disconnectAddress )
             {
-                std::auto_ptr<CtiReturnMsg> ReturnMsg(
+                std::unique_ptr<CtiReturnMsg> ReturnMsg(
                         new CtiReturnMsg(getID(), OutMessage->Request.CommandStr));
 
                 ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
@@ -2892,7 +2892,7 @@ YukonError_t MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const
 
 YukonError_t MctDevice::decodeControl(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(
        new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2906,7 +2906,7 @@ YukonError_t MctDevice::decodeControl(const INMESS &InMessage, const CtiTime Tim
 
 YukonError_t MctDevice::decodeControlDisconnect(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(
        new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -2918,7 +2918,7 @@ YukonError_t MctDevice::decodeControlDisconnect(const INMESS &InMessage, const C
         ? "getstatus disconnect noqueue"
         : "getstatus disconnect";
 
-    std::auto_ptr<CtiRequestMsg> newReq(
+    std::unique_ptr<CtiRequestMsg> newReq(
         new CtiRequestMsg(
                 getID(),
                 getstatusDisconnect_commandString,
@@ -2965,7 +2965,7 @@ bool MctDevice::disconnectRequiresCollar() const
 
 YukonError_t MctDevice::decodePutValue(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(
         new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);

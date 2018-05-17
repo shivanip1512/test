@@ -19,7 +19,7 @@ public:
     virtual void stop();
 
     void BroadcastMessage(CtiMessage* msg);
-    void sendMessageToClient(std::auto_ptr<CtiMessage> msg);
+    void sendMessageToClient(std::unique_ptr<CtiMessage> msg);
 
     static CtiLMClientListener& getInstance();
 

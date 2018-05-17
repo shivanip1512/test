@@ -42,7 +42,7 @@ CtiMCServer::~CtiMCServer()
 
 void CtiMCServer::dispatchThreadFunc()
 {
-    auto_ptr<CtiMessage> msg;
+    unique_ptr<CtiMessage> msg;
 
     while( _dispatchConnection.isConnectionUsable() )
     {

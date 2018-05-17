@@ -1,5 +1,3 @@
-#include "precompiled.h"
-
 #include "cms/ConnectionFactory.h"
 #include "activemq/library/activemqcpp.h"
 #include "activemq/core/ActiveMQConnection.h"

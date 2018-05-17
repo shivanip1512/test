@@ -6,6 +6,7 @@
 #include <ostream>
 #include <time.h>
 #include <chrono>
+#include <functional>
 
 class CtiDate;
 

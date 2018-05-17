@@ -14,7 +14,7 @@ using namespace Cti::Config;
 
 struct test_state_rfDa
 {
-    std::auto_ptr<CtiRequestMsg> request;
+    std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 

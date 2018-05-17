@@ -313,7 +313,7 @@ void CtiCalcLogicService::Run( )
                     calcThread.reset();
                 }
 
-                auto_ptr<CtiCalculateThread> tempCalcThread( new CtiCalculateThread );
+                unique_ptr<CtiCalculateThread> tempCalcThread( new CtiCalculateThread );
 
                 if( ! readCalcPoints( tempCalcThread.get() ))
                 {

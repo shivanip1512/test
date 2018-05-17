@@ -1475,7 +1475,7 @@ void PilServer::vgConnThread()
     CTILOG_INFO(dout, "PIL vgConnThread - Terminating");
 }
 
-struct message_time_less : public binary_function< CtiMessage *, CtiMessage *, bool>
+struct message_time_less
 {
     bool operator()(CtiMessage *lhs, CtiMessage *rhs)
     {

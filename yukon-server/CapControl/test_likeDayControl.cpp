@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
     CtiCCSubstationBusStore::setInstance(testStore);
 
     // Initialize the Strategy Manager.
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
     _strategyManager.reloadAll();
 
     //Build up feeder

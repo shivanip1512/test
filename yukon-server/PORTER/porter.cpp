@@ -278,7 +278,7 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
     {
         try
         {
-            std::auto_ptr<CtiPortShareIP> newPortShareIP(new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size()));
+            std::unique_ptr<CtiPortShareIP> newPortShareIP(new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size()));
             newPortShareIP->setIPPort(ptPort->getSharedSocketNumber());
             newPortShareIP->start();
             PortShareManager.insert(std::make_pair(ptPort->getPortID(), newPortShareIP.release()));
@@ -326,7 +326,7 @@ void resumeMctLoadProfileRequests()
 
     for each( long paoid in request_with_channel_paos )
     {
-        std::auto_ptr<CtiRequestMsg> newReq(
+        std::unique_ptr<CtiRequestMsg> newReq(
                 new CtiRequestMsg(paoid, "getvalue lp resume"));
 
         newReq->setMessagePriority(6);  //  CtiDeviceSingle::ScanPriority_LoadProfile

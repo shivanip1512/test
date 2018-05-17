@@ -619,7 +619,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                     gotValue = getANSIProtocol().retrieveMeterTimeDiffStatus(x, &value);
                     if (gotValue)
                     {
-                        std::auto_ptr<CtiPointDataMsg> pData(new CtiPointDataMsg);
+                        std::unique_ptr<CtiPointDataMsg> pData(new CtiPointDataMsg);
                         pData->setId( pStatusPoint->getID() );
 
                         pData->setValue( value );
@@ -631,7 +631,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                         pData->setTime( CtiTime() );
                         pData->setType( pStatusPoint->getType() );
 
-                        std::auto_ptr<CtiReturnMsg> msgPtr(new CtiReturnMsg);
+                        std::unique_ptr<CtiReturnMsg> msgPtr(new CtiReturnMsg);
                         msgPtr->insert(pData.release());
 
                         retList.push_back(msgPtr.release());
@@ -675,7 +675,7 @@ void CtiDeviceAnsi::createPointData(const CtiPointAnalog &analogPoint, double va
        CTILOG_DEBUG(dout, _result_string);
     }
 
-    std::auto_ptr<CtiPointDataMsg> pData(
+    std::unique_ptr<CtiPointDataMsg> pData(
             new CtiPointDataMsg(
                     analogPoint.getID(),
                     value,
@@ -695,7 +695,7 @@ void CtiDeviceAnsi::createPointData(const CtiPointAnalog &analogPoint, double va
         pData->setTime( CtiTime() );
     }
 
-    std::auto_ptr<CtiReturnMsg> msgPtr(new CtiReturnMsg);
+    std::unique_ptr<CtiReturnMsg> msgPtr(new CtiReturnMsg);
 
     msgPtr->insert(pData.release());
 
@@ -708,7 +708,7 @@ void CtiDeviceAnsi::createLoadProfilePointData(const CtiPointAnalog &analogPoint
     const double ptOffset     = analogPoint.getDataOffset();
     CtiTime lastLoadProfileTime = CtiTime(getANSIProtocol().getlastLoadProfileTime());
 
-    std::auto_ptr<CtiReturnMsg> msgPtr(new CtiReturnMsg);
+    std::unique_ptr<CtiReturnMsg> msgPtr(new CtiReturnMsg);
 
     for (int y = getANSIProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--)
     {
@@ -718,7 +718,7 @@ void CtiDeviceAnsi::createLoadProfilePointData(const CtiPointAnalog &analogPoint
             lpValue *= ptMultiplier;
             lpValue += ptOffset;
 
-            std::auto_ptr<CtiPointDataMsg> pData(
+            std::unique_ptr<CtiPointDataMsg> pData(
                     new CtiPointDataMsg(
                             analogPoint.getID(),
                             lpValue,

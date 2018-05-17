@@ -780,7 +780,7 @@ YukonError_t CtiDeviceSingle::ProcessResult( const INMESS   &InMessage,
                     msg << "\n" << eWordReport( *( InMessage.Buffer.RepeaterError.ESt ), InMessage.Buffer.RepeaterError.Details );
                 }
 
-                std::auto_ptr<CtiReturnMsg> Ret(
+                std::unique_ptr<CtiReturnMsg> Ret(
                     new CtiReturnMsg(
                     getID(),
                     InMessage.Return,

@@ -96,14 +96,14 @@ bool StreamSocketListener::create(unsigned short nPort)
 //-----------------------------------------------------------------------------
 //  Waits on a socket for an incoming request, using optional abort handle
 //-----------------------------------------------------------------------------
-std::auto_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionModes mode, const Chrono &timeout, const HANDLE *hAbort)
+std::unique_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionModes mode, const Chrono &timeout, const HANDLE *hAbort)
 {
     try
     {
         SOCKET newSocket = listeningSockets.accept(timeout, hAbort);
         if( newSocket == INVALID_SOCKET )
         {
-            return std::auto_ptr<StreamSocketConnection>(); // timeout or aborted
+            return std::unique_ptr<StreamSocketConnection>(); // timeout or aborted
         }
 
         // Enable keep alive
@@ -112,7 +112,7 @@ std::auto_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionMod
         {
             CTILOG_ERROR(dout, getErrorMessage(newSocket, WSAGetLastError()));
             ::closesocket(newSocket);
-            return std::auto_ptr<StreamSocketConnection>();
+            return std::unique_ptr<StreamSocketConnection>();
         }
 
         // Set to non-blocking mode...
@@ -121,10 +121,10 @@ std::auto_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionMod
         {
             CTILOG_ERROR(dout, getErrorMessage(newSocket, WSAGetLastError()));
             ::closesocket(newSocket);
-            return std::auto_ptr<StreamSocketConnection>();
+            return std::unique_ptr<StreamSocketConnection>();
         }
 
-        std::auto_ptr<StreamSocketConnection> newConnection( new StreamSocketConnection );
+        std::unique_ptr<StreamSocketConnection> newConnection( new StreamSocketConnection );
 
         newConnection->_socket          = newSocket;
         newConnection->_connectionMode  = mode;
@@ -133,12 +133,12 @@ std::auto_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionMod
     }
     catch( const SocketAbortException & )
     {
-        return std::auto_ptr<StreamSocketConnection>();
+        return std::unique_ptr<StreamSocketConnection>();
     }
     catch( const SocketException &ex )
     {
         CTILOG_EXCEPTION_ERROR(dout, ex);
-        return std::auto_ptr<StreamSocketConnection>();
+        return std::unique_ptr<StreamSocketConnection>();
     }
 }
 

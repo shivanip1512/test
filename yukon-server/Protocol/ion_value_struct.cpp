@@ -20,7 +20,6 @@
 #include "ion_value_struct.h"
 #include "ion_value_struct_types.h"
 
-using std::mem_fun;
 using std::count_if;
 using std::endl;
 
@@ -70,7 +69,7 @@ void CtiIONStruct::init( vector< CtiIONValue * > &structValues )
 {
     if( !_numElements || _numElements == structValues.size() )
     {
-        setValid(structValues.size() == count_if(structValues.begin(), structValues.end(), mem_fun(&CtiIONValue::isValid)));
+        setValid(structValues.size() == count_if(structValues.begin(), structValues.end(), [](const auto &Val) { return Val->isValid(); }));
 
         copy(structValues.begin(), structValues.end(), back_inserter(_structElements));
     }

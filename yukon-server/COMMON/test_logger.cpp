@@ -163,66 +163,66 @@ BOOST_AUTO_TEST_CASE(test_logger_check_old_file_deletion)
         BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\YUKON\\SERVER\\LOG\\UNIT_TEST_20121030.LOG", cutOff ) );
     }
 
-    // re-test with format 'filename_YYYYDDMM.log.zip'
+    // re-test with format 'filename_YYYYDDMM.zip'
 
     {
         // Prefixes and suffixes
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved.unit_test_20121109.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved-unit_test_20121109.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved - unit_test_20121109.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved unit_test_20121109.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109.saved.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109-saved.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109 - saved.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109 saved.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_00000001.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_01_keep!.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20_save-.log.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved.unit_test_20121109.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved-unit_test_20121109.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved - unit_test_20121109.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved unit_test_20121109.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109.saved.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109-saved.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109 - saved.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121109 saved.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_00000001.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_01_keep!.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20_save-.zip", cutOff ) );
         BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121029xlog", cutOff ) );
 
         // Old style naming
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_01.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_10.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_31.log.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_01.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_10.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_31.zip", cutOff ) );
 
         // Range [ date < Jan 01, 2000 OR date > Dec 31, 2035 ]
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_19991231.log.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_19991231.zip", cutOff ) );
             // out of range -- older than 90 days from cut off date -- save
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20360101.log.zip",
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20360101.zip",
                                                       CtiDate(31, 12, 2036) ) );
             // in range -- older than 90 days from cut off date -- delete
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20351231.log.zip",
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20351231.zip",
                                                       CtiDate(31, 12, 2036) ) );
         // Invalid dates
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121131.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120231.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20130229.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20122201.log.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121131.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120231.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20130229.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20122201.zip", cutOff ) );
 
         // Leap year
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120229.log.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120229.zip", cutOff ) );
 
         // Valid date -- before cutoff -- delete
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20100330.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120330.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120730.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120930.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121027.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121028.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121029.log.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20100330.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120330.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120730.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20120930.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121027.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121028.zip", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121029.zip", cutOff ) );
 
         // Valid -- at or after cut off date -- save
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121030.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121101.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121102.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121103.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121230.log.zip", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20140130.log.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121030.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121101.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121102.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121103.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20121230.zip", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test_20140130.zip", cutOff ) );
 
         // Case-insensitivity
-        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\YUKON\\SERVER\\LOG\\UNIT_TEST_20121029.LOG.ZIP", cutOff ) );
-        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\YUKON\\SERVER\\LOG\\UNIT_TEST_20121030.LOG.ZIP", cutOff ) );
+        BOOST_CHECK_EQUAL(  true, fileInfo.shouldDeleteFile( "C:\\YUKON\\SERVER\\LOG\\UNIT_TEST_20121029.ZIP", cutOff ) );
+        BOOST_CHECK_EQUAL( false, fileInfo.shouldDeleteFile( "C:\\YUKON\\SERVER\\LOG\\UNIT_TEST_20121030.ZIP", cutOff ) );
     }
 
     // make sure name style 'filename.YYYYDDMM.log' wont be deleted

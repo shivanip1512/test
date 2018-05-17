@@ -120,7 +120,7 @@ void CtiLMClientListener::stop()
     CTILOG_DEBUG(dout, "LM Client Listener is stopped");
 }
 
-void CtiLMClientListener::sendMessageToClient(std::auto_ptr<CtiMessage> msg)
+void CtiLMClientListener::sendMessageToClient(std::unique_ptr<CtiMessage> msg)
 {
     CtiLockGuard<CtiCriticalSection> guard( _connmutex );
 

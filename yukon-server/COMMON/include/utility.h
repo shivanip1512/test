@@ -365,7 +365,7 @@ namespace Cti
 }
 
 template <class T>
-struct priority_sort : public std::binary_function<T, T, bool>
+struct priority_sort
 {
     bool operator()(const T &lhs, const T &rhs) const
     {

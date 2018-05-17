@@ -19,7 +19,7 @@ struct test_RfnMeterDevice : RfnMeterDevice
 
 struct test_state_rfnMeter
 {
-    std::auto_ptr<CtiRequestMsg> request;
+    std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 

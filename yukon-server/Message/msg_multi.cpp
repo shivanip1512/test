@@ -31,7 +31,7 @@ CtiMultiMsg&  CtiMultiMsg::setData(const CtiMultiMsg_vec& Data)
 {
    for(int i = 0; i < Data.size(); i++)
    {
-       auto_ptr<CtiMessage> pNew( Data[i]->replicateMessage() ); // CBM TODO: check if there a reason we should use replicate message?
+       unique_ptr<CtiMessage> pNew( Data[i]->replicateMessage() ); // CBM TODO: check if there a reason we should use replicate message?
 
        if( pNew.get() != NULL )
        {

@@ -61,7 +61,7 @@ struct simple_zone_setup
     ZoneManager zoneManager;
 
     simple_zone_setup()
-        :   zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) )
+        :   zoneManager( std::unique_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) )
     {
     }
 };
@@ -260,7 +260,7 @@ struct complex_zone_setup
     ZoneManager zoneManager;
 
     complex_zone_setup()
-        :   zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) )
+        :   zoneManager( std::unique_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) )
     {
         zoneManager.reloadAll();
 

@@ -623,7 +623,7 @@ struct TestCase<CtiServerRequestMsg> : public TestCase<CtiMessage>
 
     TestCaseItem<payload_t> _tc_payload;
 
-    std::auto_ptr<payload_t> imsg_payload, omsg_payload;
+    std::unique_ptr<payload_t> imsg_payload, omsg_payload;
 
     void Create()
     {

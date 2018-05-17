@@ -6,5 +6,5 @@
 class CtiCCExecutorFactory
 {
     public:
-        static std::auto_ptr<CtiCCExecutor> createExecutor(const CtiMessage* message);
+        static std::unique_ptr<CtiCCExecutor> createExecutor(const CtiMessage* message);
 };

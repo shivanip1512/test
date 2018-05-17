@@ -111,7 +111,7 @@ int decodeTextCommandFile(const string& fileName,
                     *  ASCII command string built from the text line
                     ******************
                     */
-                    std::auto_ptr<std::string> decodedCommand(new std::string());
+                    std::unique_ptr<std::string> decodedCommand(new std::string());
 
                     if( true == validateAndDecodeLine(commandVector[lineCnt], aProtocolFlag, decodedCommand.get(), fileName))
                     {
@@ -1642,7 +1642,7 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<std::string *>* co
                     ******************
                     */
 
-                    std::auto_ptr<std::string> decodedCommand(new std::string());
+                    std::unique_ptr<std::string> decodedCommand(new std::string());
 
                     if( true == decodeDsm2Lines( commandVector[lineCnt],
                                                  commandVector[lineCnt+1],

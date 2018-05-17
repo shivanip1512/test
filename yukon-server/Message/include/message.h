@@ -8,6 +8,7 @@
 #include "connectionHandle.h"
 
 #include <string>
+#include <vector>
 
 class CtiMessage;    // Forward reference...
 

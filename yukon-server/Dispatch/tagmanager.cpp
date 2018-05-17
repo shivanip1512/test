@@ -128,7 +128,7 @@ CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
         tlg.tryAcquire(5000);
     }
 
-    std::auto_ptr<CtiTagMsg> pTagMsg;
+    std::unique_ptr<CtiTagMsg> pTagMsg;
 
     try
     {
@@ -574,7 +574,7 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
         tlg.tryAcquire(5000);
     }
 
-    std::auto_ptr<CtiMultiMsg> pMulti;
+    std::unique_ptr<CtiMultiMsg> pMulti;
     TagMgrMap_t::const_iterator itr;
 
     try
@@ -587,7 +587,7 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
 
             if(pOriginalTag && pOriginalTag->getPointID() == pointid)
             {
-                std::auto_ptr<CtiTagMsg> pTag((CtiTagMsg*)(pOriginalTag->replicateMessage()));
+                std::unique_ptr<CtiTagMsg> pTag((CtiTagMsg*)(pOriginalTag->replicateMessage()));
 
                 if( ! pMulti.get() )
                 {
@@ -615,7 +615,7 @@ CtiMultiMsg* CtiTagManager::getAllPointTags() const
         tlg.tryAcquire(5000);
     }
 
-    std::auto_ptr<CtiMultiMsg> pMulti;
+    std::unique_ptr<CtiMultiMsg> pMulti;
     TagMgrMap_t::const_iterator itr;
 
     try
@@ -628,7 +628,7 @@ CtiMultiMsg* CtiTagManager::getAllPointTags() const
 
             if( pOriginalTag )
             {
-                std::auto_ptr<CtiTagMsg> pTag((CtiTagMsg*)(pOriginalTag->replicateMessage()));
+                std::unique_ptr<CtiTagMsg> pTag((CtiTagMsg*)(pOriginalTag->replicateMessage()));
 
                 if( ! pMulti.get() )
                 {
@@ -664,7 +664,7 @@ int CtiTagManager::loadDynamicTags()
             CtiTableDynamicTag dynTag;
             dynTag.DecodeDatabaseReader(rdr);
 
-            std::auto_ptr<CtiTagMsg> pTag(new CtiTagMsg);
+            std::unique_ptr<CtiTagMsg> pTag(new CtiTagMsg);
 
             pTag->setInstanceID(dynTag.getInstanceId());
             pTag->setPointID(dynTag.getPointId());

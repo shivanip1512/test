@@ -25,7 +25,7 @@ struct test_RfnResidentialDevice : RfnResidentialDevice
 
 struct test_state_rfnResidential
 {
-    std::auto_ptr<CtiRequestMsg> request;
+    std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 

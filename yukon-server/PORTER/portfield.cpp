@@ -3240,7 +3240,7 @@ Cti::Optional<repeater_info> findRepeaterInRouteByAddress( int routeId, const Ma
                 details.route_position = rte_pos;
                 details.total_stages = repeaterIds.size();
 
-                return make_optional(details);
+                return Cti::make_optional(details);
             }
         }
     }

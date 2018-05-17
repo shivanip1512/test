@@ -634,7 +634,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    std::auto_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*capBank);
+    std::unique_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*capBank);
     reqMsg->setSOE(4);
 
     return reqMsg.release();
@@ -721,7 +721,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    std::auto_ptr<CtiRequestMsg> reqMsg;
+    std::unique_ptr<CtiRequestMsg> reqMsg;
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
@@ -817,7 +817,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    std::auto_ptr<CtiRequestMsg> reqMsg;
+    std::unique_ptr<CtiRequestMsg> reqMsg;
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
@@ -935,7 +935,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    std::auto_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*capBank);
+    std::unique_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*capBank);
     reqMsg->setSOE(4);
 
     return reqMsg.release();
@@ -1049,7 +1049,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    std::auto_ptr<CtiRequestMsg> reqMsg;
+    std::unique_ptr<CtiRequestMsg> reqMsg;
 
     if (capBank->getControlStatus() == CtiCCCapBank::Close )
     {

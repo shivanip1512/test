@@ -152,7 +152,7 @@ void _MessageThrFunc()
             {
                 mc.increment();
 
-                std::auto_ptr<CtiMessage> inboundMessage(in_ptr);
+                std::unique_ptr<CtiMessage> inboundMessage(in_ptr);
 
                 unsigned int msgid = 0;
 
@@ -1604,13 +1604,13 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     do
     {
         {
-            std::auto_ptr<CtiMessage> msg(requestQueue->getQueue(100));
+            std::unique_ptr<CtiMessage> msg(requestQueue->getQueue(100));
 
             if( msg.get() )
             {
                 if( msg->isA() == MSG_PCRETURN )
                 {
-                    std::auto_ptr<CtiReturnMsg> ret_msg(static_cast<CtiReturnMsg*>(msg.release()));
+                    std::unique_ptr<CtiReturnMsg> ret_msg(static_cast<CtiReturnMsg*>(msg.release()));
                     CTILOG_INFO(dout, DumpReturnMessage(*ret_msg));
                     const bool allowExitOnError = isBreakStatus(ret_msg->Status());
                     HandleReturnMessage(ret_msg.release(), good_map, bad_map, device_map, bad_names, resultQueue);

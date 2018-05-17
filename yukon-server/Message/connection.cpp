@@ -1,4 +1,8 @@
-#include "precompiled.h"
+#define _WIN32_WINNT 0x0501  //  Windows XP, Server 2003.  No service packs.
+#define WIN32_LEAN_AND_MEAN
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 #include "collectable.h"
 #include "connection.h"

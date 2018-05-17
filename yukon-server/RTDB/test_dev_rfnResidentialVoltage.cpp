@@ -17,7 +17,7 @@ struct test_RfnResidentialVoltageDevice : RfnResidentialVoltageDevice
 
 struct test_state_rfnResidentialVoltage
 {
-    std::auto_ptr<CtiRequestMsg> request;
+    std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 

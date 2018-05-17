@@ -37,7 +37,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 namespace Cti {
 namespace Messaging {
 
-IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection(
+IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection(
    new ActiveMQConnectionManager( ActiveMQ::Broker::defaultURI ));
 
 }

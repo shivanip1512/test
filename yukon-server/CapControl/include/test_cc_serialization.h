@@ -504,7 +504,7 @@ class TestStrategyManager : public StrategyManager
 {
 public:
 
-    TestStrategyManager() : StrategyManager( std::auto_ptr<StrategyLoader>( new TestStrategyLoader ))
+    TestStrategyManager() : StrategyManager( std::unique_ptr<StrategyLoader>( new TestStrategyLoader ))
     {
         reloadAll();
     }

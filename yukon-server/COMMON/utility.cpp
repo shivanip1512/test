@@ -22,6 +22,8 @@
 
 #include <atomic>
 
+#include <intrin.h>
+
 using namespace std;
 
 using Cti::Database::DatabaseConnection;

@@ -362,7 +362,7 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, str
         return;
     }
 
-    auto_ptr<CtiReturnMsg> vgMsg(CTIDBG_new CtiReturnMsg(0));
+    unique_ptr<CtiReturnMsg> vgMsg(CTIDBG_new CtiReturnMsg(0));
     CtiPointSPtr point;
 
     if( point = device->getDevicePointOffsetTypeEqual(CtiDeviceSingle::PointOffset_Analog_IPAddress, AnalogPointType) )

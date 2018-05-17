@@ -524,7 +524,7 @@ private:
     void dumpAllDynamicDataImpl();
 
     CapControlPointDataHandler _pointDataHandler;
-    std::auto_ptr<AttributeService> _attributeService;
+    std::unique_ptr<AttributeService> _attributeService;
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;
@@ -568,7 +568,7 @@ private:
 protected:
     std::unique_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
 
-    void setAttributeService( std::auto_ptr<AttributeService> service );
+    void setAttributeService( std::unique_ptr<AttributeService> service );
     void setStrategyManager ( std::unique_ptr<StrategyManager> strategyManager );
 
 private:

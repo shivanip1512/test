@@ -153,7 +153,7 @@ void CtiMCClientListener::run()
             if( _listenerConnection.acceptClient() )
             {
                 // Create and add new connection manager
-                std::auto_ptr<CtiMCConnection> new_connection( new CtiMCConnection( _listenerConnection, _conn_in_queue ));
+                std::unique_ptr<CtiMCConnection> new_connection( new CtiMCConnection( _listenerConnection, _conn_in_queue ));
 
                 new_connection->start(); // Kick off the connection's communication threads.
 

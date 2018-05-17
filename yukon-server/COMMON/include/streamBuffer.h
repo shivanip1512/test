@@ -12,6 +12,7 @@
 #include <chrono>
 #include <map>
 #include <set>
+#include <vector>
 
 class CtiNumStr;
 class CtiDate;

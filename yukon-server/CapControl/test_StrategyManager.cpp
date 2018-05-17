@@ -16,7 +16,7 @@ using Cti::Test::CapControl::StrategyUnitTestLoader;
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_default_initialization)
 {
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     // Check them - would expect that they all return NoStrategy
 
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_default_initialization)
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll)
 {
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     _strategyManager.reloadAll();
 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll)
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_get_nonexistent_strategy)
 {
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     _strategyManager.reloadAll();
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_get_nonexistent_strategy)
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unloadAll)
 {
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     _strategyManager.reloadAll();
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unloadAll)
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unload_single)
 {
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     _strategyManager.reloadAll();
 
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reloadAll_then_unload_single)
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_reload_single)
 {
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     _strategyManager.reload(125);
 
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(test_StrategyManager_reload_single)
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_reload_single_weak_pointer_invalidation_check)
 {
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     _strategyManager.reloadAll();
 

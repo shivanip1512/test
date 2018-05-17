@@ -825,7 +825,7 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
                 int  setmask  = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.
 
-                std::auto_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
+                std::unique_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
 
                 pMulti->setSource(DISPATCH_APPLICATION_NAME);
                 pMulti->setUser(Cmd->getUser());
@@ -2497,7 +2497,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                 {
                     while( justdoit || (panicCounter++ < 500) )
                     {
-                        std::auto_ptr<CtiSignalMsg> sigMsg(_signalMsgQueue.getQueue(0));
+                        std::unique_ptr<CtiSignalMsg> sigMsg(_signalMsgQueue.getQueue(0));
 
                         if( ! sigMsg.get() )
                         {
@@ -2514,7 +2514,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
                         if( ! (sigMsg->getTags() & TAG_DO_NOT_SEND_SIGNAL_AS_EMAIL) )
                         {
-                            postList.push_back(sigMsg);
+                            postList.push_back(std::move(sigMsg));
                         }
                     }
                 }
@@ -4662,7 +4662,7 @@ bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, const Ct
 
     cmdstr += string(" select pointid " + CtiNumStr(statusPt.getPointID()));
 
-    std::auto_ptr<CtiRequestMsg> pReq(
+    std::unique_ptr<CtiRequestMsg> pReq(
         new CtiRequestMsg(deviceid, cmdstr));
 
     pReq->setUser( Cmd->getUser() );
@@ -4683,7 +4683,7 @@ void CtiVanGogh::writeAnalogOutputMessageToPIL(long deviceid, long pointid, long
     cmdstr += " select pointid ";
     cmdstr += CtiNumStr(pointid);
 
-    std::auto_ptr<CtiRequestMsg> pReq(
+    std::unique_ptr<CtiRequestMsg> pReq(
         new CtiRequestMsg(deviceid, cmdstr));
 
     pReq->setUser( Cmd->getUser() );
@@ -4734,7 +4734,7 @@ void CtiVanGogh::bumpDeviceToAlternateRate(const CtiPointBase &point)
 {
     if( ! point.isPseudoPoint() )
     {
-        std::auto_ptr<CtiCommandMsg> pAltRate(
+        std::unique_ptr<CtiCommandMsg> pAltRate(
            new CtiCommandMsg(CtiCommandMsg::AlternateScanRate));
 
         int controlTimeout = DefaultControlExpirationTime;
@@ -4764,7 +4764,7 @@ void CtiVanGogh::bumpDeviceFromAlternateRate(const CtiPointBase &point)
 {
     if( ! point.isPseudoPoint() )
     {
-        std::auto_ptr<CtiCommandMsg> pAltRate(
+        std::unique_ptr<CtiCommandMsg> pAltRate(
            new CtiCommandMsg( CtiCommandMsg::AlternateScanRate));
 
         pAltRate->insert(-1); // token

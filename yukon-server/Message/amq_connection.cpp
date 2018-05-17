@@ -1,4 +1,7 @@
-#include "precompiled.h"
+#define _WIN32_WINNT 0x0501  //  Windows XP, Server 2003.  No service packs.
+#define WIN32_LEAN_AND_MEAN
+
+#include <ws2tcpip.h>
 
 #include "amq_connection.h"
 
@@ -32,7 +35,7 @@ using Cti::Logging::Vector::Hex::operator<<;
 namespace Cti {
 namespace Messaging {
 
-extern IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection;
+extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 std::atomic_size_t ActiveMQConnectionManager::SessionCallback::globalId;
 
@@ -912,6 +915,9 @@ const IM_EX_MSG OutboundQueue
 const IM_EX_MSG OutboundQueue
         OutboundQueue::SetWaterChannelConfigRequest
                 ("com.eaton.eas.yukon.networkmanager.waternode.SetChannelConfiguration");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::DeviceCreationRequest
+                ("yukon.notif.stream.DeviceCreation");
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 

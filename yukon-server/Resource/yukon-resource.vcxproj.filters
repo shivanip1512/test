@@ -42,6 +42,771 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml" />
+    <Xml Include="..\..\yukon-shared\src\main\resources\error-code.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\pao.xsd">

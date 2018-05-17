@@ -449,7 +449,7 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
         if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
         {
             //  we need to set it to the requested interval
-            std::auto_ptr<CtiOutMessage> sspec_om(CTIDBG_new CtiOutMessage(*OutMessage));
+            std::unique_ptr<CtiOutMessage> sspec_om(CTIDBG_new CtiOutMessage(*OutMessage));
 
             if( !getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt) )
             {
@@ -777,7 +777,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueInstantLineData(const INMESS    &
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
@@ -880,7 +880,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
@@ -1044,7 +1044,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMess
         resultString += resolvedArgument + "\n";
     }
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg( CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr ));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg( CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr ));
 
     ReturnMsg->setUserMessageId( InMessage.Return.UserID );
     ReturnMsg->setResultString( resultString );
@@ -1582,7 +1582,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &
 
     const DSTRUCT * const DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     int channel = 1;
     int month   = DSt->Message[9] & 0x0f;
@@ -2035,7 +2035,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusInternal( const INMESS &InMessag
 
     string resultString;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
@@ -2064,7 +2064,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusInternal( const INMESS &InMessag
     {
         int pointoffset;
         boost::shared_ptr<CtiPointStatus> point;
-        std::auto_ptr<CtiPointDataMsg> p_data;
+        std::unique_ptr<CtiPointDataMsg> p_data;
         string pointResult;
 
         if( byteoffset == 0 )  pointoffset = 30;
@@ -2105,7 +2105,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(const INMESS 
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString;
 
@@ -2258,7 +2258,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
 
     string resultString;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
     if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection ))
@@ -2515,7 +2515,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigModel(const INMESS   &InMessage,
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     const unsigned revision = DSt.Message[0];
     const unsigned sspec    = DSt.Message[1] << 8 |
@@ -2548,7 +2548,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusFreeze(const INMESS    &InMessag
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString = getName() + " / Freeze status:\n";
 
@@ -2593,7 +2593,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigIntervals(const INMESS    &InMes
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString;
 
@@ -2657,7 +2657,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigAlarmMask(const INMESS    &InMes
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultString;
 
@@ -2693,7 +2693,7 @@ void Mct440_213xBDevice::createTOUScheduleConfig(const long     (&daySchedule)[8
 {
 
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 1 ---------- */
-    auto_ptr<OUTMESS> TOU_OutMessage( CTIDBG_new OUTMESS(*OutMessage) );
+    unique_ptr<OUTMESS> TOU_OutMessage( CTIDBG_new OUTMESS(*OutMessage) );
 
     TOU_OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
@@ -2836,7 +2836,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt  = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
@@ -2973,7 +2973,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusDisconnect(const INMESS   &InMes
 
     string stateName;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
@@ -3022,7 +3022,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigDisconnect(const INMESS   &InMes
 
     string resultStr, stateName;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     if( DSt->Message[0] & 0x01 )
     {
@@ -3098,7 +3098,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigAddressing(const INMESS  &InMess
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     long bronze     =  DSt->Message[0];
     long lead       = (DSt->Message[1] << 8) | DSt->Message[2];
@@ -3131,7 +3131,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigTimeAdjustTolerance(const INMESS
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultStr = getName() + " / Time Adjustment Tolerance: " + CtiNumStr(DSt->Message[0]) + " seconds\n\n";
 
@@ -3154,7 +3154,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessag
     YukonError_t status = ClientErrors::None;
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     string resultStr = getName() + " / MCT Configuration:\n";
 
@@ -3179,7 +3179,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessag
         }
 
         // create putconfig install request
-        std::auto_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
+        std::unique_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
                                                                      putconfig_cmd,
                                                                      InMessage.Return.UserID,
                                                                      InMessage.Return.GrpMsgID,
@@ -3575,7 +3575,7 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
     {
         string resultString;
 
-        std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+        std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
         CtiCommandParser parse(InMessage.Return.CommandStr);
 
@@ -3622,7 +3622,7 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
 
             string getconfig_cmd = string("getconfig install ") + config_part;
 
-            std::auto_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
+            std::unique_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
                                                                          getconfig_cmd,
                                                                          InMessage.Return.UserID,
                                                                          InMessage.Return.GrpMsgID,

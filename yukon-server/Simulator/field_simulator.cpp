@@ -288,7 +288,7 @@ void CcuPort(int portNumber, int strategy)
         Sleep(1000);
     }
 
-    std::auto_ptr<StreamSocketConnection> newSocket;
+    std::unique_ptr<StreamSocketConnection> newSocket;
 
     for( int loops = 0; ! newSocket.get() && ! gQuit; loops++ )
     {

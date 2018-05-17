@@ -214,29 +214,32 @@ void LogFileAppender::cleanupOldFiles() const
     // We expect:
     // '\filenameYYYYMMDD.log' or
     // '\filename_YYYYMMDD.log' or
-    // '\filename_YYYYMMDD.log.zip' or
+    // '\filename_YYYYMMDD.zip'
     // Files found are fully verified inside shouldDeleteFile()
 
-    const std::string fileName = _fileInfo.path + "\\" + _fileInfo.baseFileName + "*.log*";
-
-    WIN32_FIND_DATA fileInfoFound;
-    const HANDLE finderHandle = FindFirstFile(fileName.c_str(), &fileInfoFound);
-
-    if( finderHandle != INVALID_HANDLE_VALUE )
+    for ( auto extension : { "*.log", "*.zip" } )
     {
-        const CtiDate cutoffDate = CtiDate::now() - _fileInfo.logRetentionDays;
+        const std::string fileName = _fileInfo.path + "\\" + _fileInfo.baseFileName + extension;
 
-        do
+        WIN32_FIND_DATA fileInfoFound;
+        const HANDLE finderHandle = FindFirstFile(fileName.c_str(), &fileInfoFound);
+
+        if (finderHandle != INVALID_HANDLE_VALUE)
         {
-            const std::string fileNameFound = _fileInfo.path + "\\" + fileInfoFound.cFileName;
-            if( _fileInfo.shouldDeleteFile(fileNameFound, cutoffDate) )
+            const CtiDate cutoffDate = CtiDate::now() - _fileInfo.logRetentionDays;
+
+            do
             {
-                deleteOldFile(fileNameFound);
-            }
+                const std::string fileNameFound = _fileInfo.path + "\\" + fileInfoFound.cFileName;
+                if (_fileInfo.shouldDeleteFile(fileNameFound, cutoffDate))
+                {
+                    deleteOldFile(fileNameFound);
+                }
 
-        } while( FindNextFile(finderHandle, &fileInfoFound) );
+            } while (FindNextFile(finderHandle, &fileInfoFound));
 
-        FindClose(finderHandle);
+            FindClose(finderHandle);
+        }
     }
 }
 

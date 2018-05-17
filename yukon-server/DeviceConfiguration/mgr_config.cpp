@@ -52,7 +52,7 @@ static const std::string deviceSql =
 namespace Cti {
 
 
-IM_EX_CONFIG std::auto_ptr<ConfigManager> gConfigManager(new ConfigManager);
+IM_EX_CONFIG std::unique_ptr<ConfigManager> gConfigManager(new ConfigManager);
 
 
 void ConfigManager::initialize()

@@ -3145,7 +3145,7 @@ struct executePutConfig_helper : resetGlobals_helper
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;
 
-    std::auto_ptr<CtiRequestMsg> pRequest;
+    std::unique_ptr<CtiRequestMsg> pRequest;
 
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;

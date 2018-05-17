@@ -100,7 +100,7 @@ std::string getBankOperationCommand( const BankOperationType bankOperation, cons
     return getCommandStringForOperation(p, itr->second);
 }
 
-std::auto_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
+std::unique_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
 {
     auto operationCmd = getBankOperationCommand( bankOperation, capBank );
 
@@ -109,23 +109,23 @@ std::auto_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &cap
         operationCmd += " select pointid " + std::to_string( capBank.getControlPointId() );
     }
 
-    return std::auto_ptr<CtiRequestMsg>(
+    return std::unique_ptr<CtiRequestMsg>(
        createPorterRequestMsg(
           capBank.getControlDeviceId(),
           operationCmd ) );
 }
 
-std::auto_ptr<CtiRequestMsg> createBankOpenRequest(const CtiCCCapBank &capBank)
+std::unique_ptr<CtiRequestMsg> createBankOpenRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Open);
 }
 
-std::auto_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank)
+std::unique_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Close);
 }
 
-std::auto_ptr<CtiRequestMsg> createBankFlipRequest(const CtiCCCapBank &capBank)
+std::unique_ptr<CtiRequestMsg> createBankFlipRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Flip);
 }

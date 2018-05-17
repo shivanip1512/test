@@ -1015,7 +1015,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connect
         }
 
         //Put an InitiateScan command on Dispatch inQueue, this will cause the send thread to build up the points to send
-        std::auto_ptr<CtiCommandMsg> cmdMessage( new CtiCommandMsg(CtiCommandMsg::InitiateScan));
+        std::unique_ptr<CtiCommandMsg> cmdMessage( new CtiCommandMsg(CtiCommandMsg::InitiateScan));
         CtiCommandMsg::OpArgList ops;
         ops.push_back(connection->getPortNumber());
         cmdMessage->setOpArgList(ops);

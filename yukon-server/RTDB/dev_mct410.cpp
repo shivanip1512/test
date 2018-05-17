@@ -1853,7 +1853,7 @@ unsigned Mct410Device::getUsageReportDelay(const unsigned interval_length, const
 
 void Mct410Device::readSspec(const OUTMESS &OutMessage, OutMessageList &outList) const
 {
-    auto_ptr<CtiOutMessage> sspec_om(new CtiOutMessage(OutMessage));
+    unique_ptr<CtiOutMessage> sspec_om(new CtiOutMessage(OutMessage));
 
     //  we need to read the IED info byte out of the MCT
     if( getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt) )
@@ -2096,7 +2096,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
         if( parse.isKeyValid("daily_read_cancel") )
         {
-            std::auto_ptr<CtiReturnMsg> ReturnMsg(
+            std::unique_ptr<CtiReturnMsg> ReturnMsg(
                 new CtiReturnMsg(getID(), OutMessage->Request.CommandStr));
 
             ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
@@ -2310,7 +2310,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 }
 
                 //  we need to set it to the requested interval
-                auto_ptr<CtiOutMessage> interest_om(new CtiOutMessage(*OutMessage));
+                unique_ptr<CtiOutMessage> interest_om(new CtiOutMessage(*OutMessage));
 
                 interest_om->Sequence = EmetconProtocol::PutConfig_DailyReadInterest;
 
@@ -2339,7 +2339,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                     if( _daily_read_info.interest.needs_verification && _daily_read_info.request.channel == 1 )
                     {
                         //  we need to read the period of interest and validate it to prevent aliasing errors
-                        auto_ptr<CtiOutMessage> alias_check_om(new CtiOutMessage(*OutMessage));
+                        unique_ptr<CtiOutMessage> alias_check_om(new CtiOutMessage(*OutMessage));
 
                         alias_check_om->Sequence = EmetconProtocol::GetConfig_DailyReadInterest;
 
@@ -3106,7 +3106,7 @@ YukonError_t Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &
         new_date -= (new_range + 10);
         new_range = 1;
 
-        std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID()));
+        std::unique_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID()));
 
         ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
@@ -3298,7 +3298,7 @@ YukonError_t Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMess
 {
     const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
-    auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
+    unique_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 

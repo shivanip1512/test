@@ -52,6 +52,7 @@ struct IM_EX_MSG OutboundQueue
     static const OutboundQueue ScannerInMessages;
     static const OutboundQueue GetWaterChannelConfigRequest;
     static const OutboundQueue SetWaterChannelConfigRequest;
+    static const OutboundQueue DeviceCreationRequest;
 
 private:
     OutboundQueue(std::string name);

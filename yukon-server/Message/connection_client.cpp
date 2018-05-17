@@ -1,4 +1,5 @@
-#include "precompiled.h"
+#define _WIN32_WINNT 0x0501  //  Windows XP, Server 2003.  No service packs.
+#define WIN32_LEAN_AND_MEAN
 
 #include "connection_client.h"
 #include "dllbase.h"
@@ -7,6 +8,7 @@
 #include "GlobalSettings.h"
 
 #include <activemq/core/ActiveMQConnection.h>
+#include <decaf/lang/Thread.h>
 
 #include <atomic>
 
@@ -160,7 +162,7 @@ bool CtiClientConnection::establishConnection()
                 while( !_valid && canReconnect() && _connection->verifyConnection() )
                 {
                     // create an empty message for handshake
-                    auto_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
+                    unique_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
 
                     outMessage->setCMSReplyTo( _consumer->getDestination() );
                     outMessage->setCMSType( MessageType::clientInit );
@@ -173,7 +175,7 @@ bool CtiClientConnection::establishConnection()
                     }
 
                     // We should block here until the delay expires or until the connection is closed
-                    auto_ptr<cms::Message> inMessage( _consumer->receive( receiveMillis ));
+                    unique_ptr<cms::Message> inMessage( _consumer->receive( receiveMillis ));
 
                     if( inMessage.get() )
                     {
@@ -245,7 +247,7 @@ bool CtiClientConnection::establishConnection()
         _consumer->setMessageListener( _messageListener.get() );
 
         // create and send client acknowledge message
-        auto_ptr<cms::Message> ackMessage( _sessionOut->createMessage() );
+        unique_ptr<cms::Message> ackMessage( _sessionOut->createMessage() );
         ackMessage->setCMSReplyTo( _consumer->getDestination() );
         ackMessage->setCMSType( MessageType::clientAck );
 

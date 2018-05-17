@@ -49,20 +49,20 @@ struct test_ConfigManager : ConfigManager
 
 class Override_ConfigManager
 {
-    std::auto_ptr<ConfigManager> _oldConfigManager;
+    std::unique_ptr<ConfigManager> _oldConfigManager;
 
 public:
 
     Override_ConfigManager(Config::DeviceConfigSPtr config)
     {
-        _oldConfigManager = gConfigManager;
+        _oldConfigManager = std::move(gConfigManager);
 
         gConfigManager.reset(new test_ConfigManager(config));
     }
 
     ~Override_ConfigManager()
     {
-        gConfigManager = _oldConfigManager;
+        gConfigManager = std::move(_oldConfigManager);
     }
 };
 

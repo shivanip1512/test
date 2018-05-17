@@ -554,7 +554,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
         if( iOutBoundPoints && iOutBoundPoints->entries() > 0 )
         {
-            std::auto_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
+            std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
             multiMsg->insert( buildRegistrationPointList().release() );
 
@@ -713,7 +713,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
     {
         if (iOutBoundPoints->entries() > 0)
         {
-            std::auto_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
+            std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
             multiMsg->insert( buildRegistrationPointList().release() );
 
@@ -791,7 +791,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
         for( ; ; )
         {
-            std::auto_ptr<CtiMessage> incomingMsg;
+            std::unique_ptr<CtiMessage> incomingMsg;
 
             //  while i'm not getting anything
             while( ! incomingMsg.get() )
@@ -962,7 +962,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
             // no more than 500 at a time or 5 seconds, whichever comes first
             if( entries >= 500 || (entries && CtiTime() > checkTime) )
             {
-                std::auto_ptr<CtiMultiMsg> pMultiData( new CtiMultiMsg() );
+                std::unique_ptr<CtiMultiMsg> pMultiData( new CtiMultiMsg() );
 
                 for( int msgNbr=0; ; )
                 {
@@ -1144,7 +1144,7 @@ void CtiFDRInterface::threadFunctionReloadCparm( void )
 
 bool CtiFDRInterface::logEvent( const string &aDesc, const string &aAction, bool aSendImmediatelyFlag )
 {
-    std::auto_ptr<CtiSignalMsg> eventLog(
+    std::unique_ptr<CtiSignalMsg> eventLog(
             new CtiSignalMsg(
                     0,
                     0,
@@ -1165,7 +1165,7 @@ bool CtiFDRInterface::logEvent( const string &aDesc, const string &aAction, bool
 CtiCommandMsg* CtiFDRInterface::createAnalogOutputMessage(long pointId, string translationName, double value)
 {
     // build the command message and send the control
-    std::auto_ptr<CtiCommandMsg> cmdMsg( new CtiCommandMsg(CtiCommandMsg::AnalogOutput));
+    std::unique_ptr<CtiCommandMsg> cmdMsg( new CtiCommandMsg(CtiCommandMsg::AnalogOutput));
 
     cmdMsg->insert(pointId);  // point for control
     cmdMsg->insert(value);
@@ -1182,7 +1182,7 @@ CtiCommandMsg* CtiFDRInterface::createAnalogOutputMessage(long pointId, string t
 CtiCommandMsg* CtiFDRInterface::createScanDeviceMessage(long paoId, string translationName)
 {
     // build the command message and send the control
-    std::auto_ptr<CtiCommandMsg> cmdMsg( new CtiCommandMsg(CtiCommandMsg::InitiateScan));
+    std::unique_ptr<CtiCommandMsg> cmdMsg( new CtiCommandMsg(CtiCommandMsg::InitiateScan));
     cmdMsg->insert( paoId );  // This is the device id to scan
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -1196,7 +1196,7 @@ CtiCommandMsg* CtiFDRInterface::createScanDeviceMessage(long paoId, string trans
 bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
 {
     // take ownership of the message
-    std::auto_ptr<CtiMessage> msg(aMessage);
+    std::unique_ptr<CtiMessage> msg(aMessage);
 
     {
         ReaderGuard guard(iDispatchLock);
@@ -1271,7 +1271,7 @@ bool CtiFDRInterface::reRegisterWithDispatch()
 {
     bool retVal=true;
 
-    std::auto_ptr<CtiFDRManager> tmpList( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)));
+    std::unique_ptr<CtiFDRManager> tmpList( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)));
 
     // try and reload the outbound list
     if( tmpList->loadPointList() )

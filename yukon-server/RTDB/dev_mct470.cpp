@@ -699,7 +699,7 @@ void Mct470Device::sendIntervals( OUTMESS *&OutMessage, OutMessageList &outList 
 
 void Mct470Device::sendBackground(const OUTMESS &TemplateOutMessage, OutMessageList &outList) const
 {
-    std::auto_ptr<OUTMESS> OutMessage(new OUTMESS(TemplateOutMessage));
+    std::unique_ptr<OUTMESS> OutMessage(new OUTMESS(TemplateOutMessage));
 
     //  Set the connection to NULL so it doesn't make it back to the requesting client,
     //    but leave the GroupMsgID alone so it can still be canceled by MACS or the web
@@ -2610,7 +2610,7 @@ YukonError_t Mct470Device::executePutValue(CtiRequestMsg *pReq, CtiCommandParser
     bool found = false;
     int function;
 
-    std::auto_ptr<CtiReturnMsg> errRet(
+    std::unique_ptr<CtiReturnMsg> errRet(
         new CtiReturnMsg(
                 getID( ),
                 OutMessage->Request.CommandStr,

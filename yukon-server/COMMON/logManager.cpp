@@ -61,14 +61,15 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
 {
     const std::string lowercaseFileName = boost::algorithm::to_lower_copy(baseFileName);
     const std::string date_regex_spec = "2\\d{7}";
-    const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "\\.log(\\.zip)?$";
+    const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "(?:\\.log|\\.zip)$";
 
     std::string input(fileToDelete);
     CtiToLower(input);
 
     // Check if the filename portion is in the proper format
     // '\filenameYYYYMMDD.log' or
-    // '\filename_YYYYMMDD.log'
+    // '\filename_YYYYMMDD.log' or
+    // '\filename_YYYYMMDD.zip'
     std::string output = matchRegex(input, file_regex_spec );
 
     if( output.empty() )
@@ -194,7 +195,7 @@ void LogManager::start()
 
     if(_toStdout)
     {
-        std::auto_ptr<TruncatingConsoleAppender> consoleAppender(new TruncatingConsoleAppender(logLayout));
+        std::unique_ptr<TruncatingConsoleAppender> consoleAppender(new TruncatingConsoleAppender(logLayout));
         consoleAppender->setInterval(Timing::Chrono::seconds(gConfigParms.getValueAsULong("LOG_CONSOLE_BURST_INTERVAL_SECONDS", 1)));
         consoleAppender->setMaxBurstSize(gConfigParms.getValueAsULong("LOG_CONSOLE_BURST_SIZE", 120));
 

@@ -154,7 +154,7 @@ void CtiPortShare::createNexus(const string &nexusName)
    }
 
    // Blocking wait on the listening nexus.  Will return a new nexus for the connection
-   std::auto_ptr<StreamSocketConnection> newNexus = ListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::infinite, &_shutdownEvent);
+   std::unique_ptr<StreamSocketConnection> newNexus = ListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::infinite, &_shutdownEvent);
 
    if( ! newNexus.get() )
    {

@@ -27,7 +27,7 @@ public:
     bool create  (unsigned short nPort);
     void close   ();
 
-    std::auto_ptr<StreamSocketConnection> accept (ConnectionModes mode, const Chrono &timeout, const HANDLE *hAbort);
+    std::unique_ptr<StreamSocketConnection> accept (ConnectionModes mode, const Chrono &timeout, const HANDLE *hAbort);
 };
 
 } // namespace Cti

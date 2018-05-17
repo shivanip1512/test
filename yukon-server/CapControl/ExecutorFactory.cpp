@@ -9,9 +9,9 @@
 using std::endl;
 using Cti::CapControl::DynamicCommandExecutor;
 
-std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
+std::unique_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
 {
-    std::auto_ptr<CtiCCExecutor> ret_val;
+    std::unique_ptr<CtiCCExecutor> ret_val;
     long classId = message->isA();
 
     switch (classId)

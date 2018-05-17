@@ -6,7 +6,6 @@
 using std::string;
 using std::queue;
 using std::map;
-using std::binary_function;
 using std::deque;
 using std::pair;
 using std::make_pair;

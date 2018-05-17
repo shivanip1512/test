@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 
         BOOST_CHECK_EQUAL( bi.restoreBits(&buf, 0, 1), 1 );
 
-        std::auto_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 
         BOOST_CHECK_EQUAL( bi.restoreBits(&buf, 0, 1), 1 );
 
-        std::auto_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 
         BOOST_CHECK_EQUAL( bi.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 
         BOOST_CHECK_EQUAL( bi.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 
         BOOST_CHECK_EQUAL( bi.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 
         BOOST_CHECK_EQUAL( bi.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bi.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 
         BOOST_CHECK_EQUAL( bo.restoreBits(&buf, 0, 1), 1 );
 
-        std::auto_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 
         BOOST_CHECK_EQUAL( bo.restoreBits(&buf, 0, 1), 1 );
 
-        std::auto_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 
         BOOST_CHECK_EQUAL( bo.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 
         BOOST_CHECK_EQUAL( bo.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 
         BOOST_CHECK_EQUAL( bo.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -284,7 +284,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 
         BOOST_CHECK_EQUAL( bo.restore(&buf, 1), 1);
 
-        std::auto_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(bo.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf_offline, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf, 2), 2);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -348,7 +348,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf_offline, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -374,7 +374,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf, 4), 4);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf, 9), 9);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf_offline, 9), 9);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
         BOOST_CHECK_EQUAL( ai.restore(buf_offline, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ai.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -449,7 +449,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -461,7 +461,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf_offline, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -474,7 +474,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -486,7 +486,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf_offline, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -499,7 +499,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf, 9), 9);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -511,7 +511,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf_offline, 9), 9);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -524,7 +524,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -536,7 +536,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
         BOOST_CHECK_EQUAL( ao.restore(buf_offline, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(ao.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -561,7 +561,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -573,7 +573,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf_offline, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 2), 2);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -599,7 +599,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -611,7 +611,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf_offline, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -624,7 +624,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 4), 4);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -637,7 +637,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -649,7 +649,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf_offline, 3), 3);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -662,7 +662,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 2), 2);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -675,7 +675,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -687,7 +687,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf_offline, 5), 5);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 
@@ -700,7 +700,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 
         BOOST_CHECK_EQUAL( c.restore(buf, 4), 4);
 
-        std::auto_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
+        std::unique_ptr<CtiPointDataMsg> pData(c.getPoint(NoTimeCTO));
 
         BOOST_REQUIRE(pData.get());
 

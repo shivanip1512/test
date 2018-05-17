@@ -3,10 +3,10 @@
 #include "DeviceMemoryManager.h"
 #include "numstr.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+#include <fstream>
 
 using namespace std;
-using namespace boost;
 
 namespace Cti {
 namespace Simulator {
@@ -93,11 +93,9 @@ void DeviceMemoryManager::serializeMemoryMapToFile()
 void DeviceMemoryManager::initializeMemoryMapFromFile()
 {
     //filesystem::path dir_path( directoryName + "/" + CtiNumStr(_address) + ".bin" );
-    string dir_path( memoryMapDirectory + "/" + CtiNumStr(_address) + ".bin" );
+    experimental::filesystem::path dir_path( memoryMapDirectory + "/" + CtiNumStr(_address) + ".bin" );
 
-    wstring wide_dir_path(dir_path.begin(), dir_path.end());
-
-    if( filesystem::exists(wide_dir_path) )
+    if( experimental::filesystem::exists(dir_path) )
     {
         _memory_map.clear();
 

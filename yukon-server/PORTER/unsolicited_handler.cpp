@@ -1132,7 +1132,7 @@ void UnsolicitedHandler::processGpuffInbound(device_record &dr)
 
 void UnsolicitedHandler::sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection)
 {
-    auto_ptr<CtiMultiMsg> m(new CtiMultiMsg());
+    unique_ptr<CtiMultiMsg> m(new CtiMultiMsg());
 
     for each( CtiPointDataMsg *pd in points )
     {

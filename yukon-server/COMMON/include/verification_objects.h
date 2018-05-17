@@ -134,7 +134,7 @@ private:
 protected:
 public:
 
-    struct earlier : std::binary_function <const CtiVerificationWork *, const CtiVerificationWork *, bool>
+    struct earlier
     {
         bool operator()(const CtiVerificationWork *lhs, const CtiVerificationWork *rhs) const
         {
@@ -149,7 +149,7 @@ public:
         }
     };
 
-    struct later : std::binary_function<const CtiVerificationWork *, const CtiVerificationWork *, bool>
+    struct later
     {
         bool operator()(const CtiVerificationWork *lhs, const CtiVerificationWork *rhs) const
         {

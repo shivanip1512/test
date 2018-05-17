@@ -2561,11 +2561,11 @@ AttributeService &CtiCCSubstationBusStore::getAttributeService()
 }
 
 
-void CtiCCSubstationBusStore::setAttributeService(std::auto_ptr<AttributeService> service)
+void CtiCCSubstationBusStore::setAttributeService(std::unique_ptr<AttributeService> service)
 {
     if( service.get() )
     {
-        _attributeService = service;
+        _attributeService = std::move(service);
 
         _voltageRegulatorManager->setAttributeService( _attributeService.get() );
     }

@@ -202,8 +202,8 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
     else 
     {
         //  We have an assigned behavior, and we have a (complete) device state to compare against.
-        const auto getAttribute = transformed(std::bind(&Channel::attribute, std::placeholders::_1));
-        const auto getAttributeName = transformed(std::bind(&Attribute::getName, std::placeholders::_1));
+		const auto getAttribute = transformed([](const Channel& c) { return c.attribute; });
+        const auto getAttributeName = transformed([](const Attribute& a) { return a.getName(); }); 
 
         boost::range::sort(behavior->channels);
         boost::range::sort(deviceState->channels);

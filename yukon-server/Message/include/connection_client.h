@@ -6,8 +6,8 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 {
     const std::string _serverQueueName;
 
-    std::auto_ptr<CtiRegistrationMsg>      _regMsg;
-    std::auto_ptr<CtiPointRegistrationMsg> _ptRegMsg;
+    std::unique_ptr<CtiRegistrationMsg>      _regMsg;
+    std::unique_ptr<CtiPointRegistrationMsg> _ptRegMsg;
 
     CtiMutex _abortConnMux;
     bool     _canAbortConn;
@@ -21,7 +21,7 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
     virtual bool establishConnection ();
     virtual void abortConnection     ();
 
-    std::auto_ptr<cms::ExceptionListener> _exceptionListener;
+    std::unique_ptr<cms::ExceptionListener> _exceptionListener;
 
     void onException ( const cms::CMSException& ex );
 

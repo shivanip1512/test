@@ -482,7 +482,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
 
     while( reader() )
     {
-        std::auto_ptr<CtiDeviceBase> dev(DeviceFactory(reader));
+        std::unique_ptr<CtiDeviceBase> dev(DeviceFactory(reader));
 
         results.push_back(
             dev.get()
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE(test_lcuDeviceTypes)
 
     for ( const int type : lcuTypes )
     {
-        const std::auto_ptr<CtiDeviceBase> dev(createDeviceType(type));
+        const std::unique_ptr<CtiDeviceBase> dev(createDeviceType(type));
 
         const CtiDeviceLCU *lcuDev = dynamic_cast<const CtiDeviceLCU *>(dev.get());
 

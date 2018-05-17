@@ -26,11 +26,11 @@ DeviceConfigDescription::CategoryNames & DeviceConfigDescription::GetCategoryNam
 
 const ContainerHandle DeviceConfigDescription::AddCategory( const std::string &categoryName )
 {
-    std::auto_ptr<CategoryDescription> category(new CategoryDescription);
+    std::unique_ptr<CategoryDescription> category(new CategoryDescription);
 
     ContainerHandle h(*category);
 
-    _categories.insert(categoryName, category);
+    _categories.insert(categoryName, std::move(category));
 
     return h;
 }

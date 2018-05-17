@@ -2183,11 +2183,11 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
         // Send the activeMQ command.
         Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createOpenBankMessage( bankId, CtiTime() ) );
 
-        std::auto_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
+        std::unique_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 
-        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
+        CtiCapController::sendCapBankRequestAndPoints(std::move(reqMsg), multi);
 
         CtiCapController::submitEventLogEntries(ccEvents);
 
@@ -2488,11 +2488,11 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
         // Send the activeMQ command.
         Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createCloseBankMessage( bankId, CtiTime() ) );
 
-        std::auto_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
+        std::unique_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 
-        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
+        CtiCapController::sendCapBankRequestAndPoints(std::move(reqMsg), multi);
 
         CtiCapController::submitEventLogEntries(ccEvents);
 
@@ -3289,11 +3289,11 @@ void CtiCCCommandExecutor::Flip7010Device()
 
     if( controlID > 0 )
     {
-        std::auto_ptr<CtiRequestMsg> reqMsg = createBankFlipRequest(*currentCapBank);
+        std::unique_ptr<CtiRequestMsg> reqMsg = createBankFlipRequest(*currentCapBank);
 
         reqMsg->setSOE(5);
 
-        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
+        CtiCapController::sendCapBankRequestAndPoints(std::move(reqMsg), multi);
 
         CtiCapController::submitEventLogEntries(ccEvents);
 
@@ -3532,7 +3532,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
 
                             if( controlID > 0 )
                             {
-                                std::auto_ptr<CtiRequestMsg> reqMsg;
+                                std::unique_ptr<CtiRequestMsg> reqMsg;
 
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
@@ -3725,7 +3725,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
                 if( controlID > 0 )
                 {
-                    std::auto_ptr<CtiRequestMsg> reqMsg;
+                    std::unique_ptr<CtiRequestMsg> reqMsg;
 
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                     {
@@ -4243,11 +4243,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
     if( controlID > 0 )
     {
-        std::auto_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
+        std::unique_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 
-        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
+        CtiCapController::sendCapBankRequestAndPoints(std::move(reqMsg), multi);
 
         CtiCapController::submitEventLogEntries(ccEvents);
 
@@ -4528,11 +4528,11 @@ void CtiCCCommandExecutor::ConfirmClose()
 
     if( controlID > 0 )
     {
-        std::auto_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
+        std::unique_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 
-        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
+        CtiCapController::sendCapBankRequestAndPoints(std::move(reqMsg), multi);
 
         CtiCapController::submitEventLogEntries(ccEvents);
 

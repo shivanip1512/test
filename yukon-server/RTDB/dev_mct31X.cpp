@@ -858,7 +858,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
     YukonError_t status = ClientErrors::None;
     string resultString;
 
-    std::auto_ptr<DSTRUCT> DSt(
+    std::unique_ptr<DSTRUCT> DSt(
         new DSTRUCT(InMessage.Buffer.DSt));
 
     CtiCommandParser parse( InMessage.Return.CommandStr );
@@ -1106,7 +1106,7 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
     ULONG lValue;
 
-    std::auto_ptr<DSTRUCT> DSt(
+    std::unique_ptr<DSTRUCT> DSt(
         new DSTRUCT(InMessage.Buffer.DSt));
 
     CtiCommandParser parse( InMessage.Return.CommandStr );

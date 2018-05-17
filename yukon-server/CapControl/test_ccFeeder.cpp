@@ -500,7 +500,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     CtiMultiMsg_vec pointChanges;
 
     // Create the strategy manager and load the strategies.
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     _strategyManager.reloadAll();
 
@@ -1016,7 +1016,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_default_construction_with_strategy_manager )
 {
     _RATE_OF_CHANGE_DEPTH = 5;      // this shows up in the regressions: getRegDepth()
 
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
+    StrategyManager _strategyManager( std::unique_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
 
     test_CtiCCFeeder    feeder( &_strategyManager );
 

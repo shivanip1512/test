@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_flip, defaultGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::FLIP_7010_CAPBANK, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -160,7 +160,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_send_open, defaultGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_OPEN_CAPBANK, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_send_close, defaultGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_CLOSE_CAPBANK, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -192,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_confirm_close, defaultGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_CLOSE, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -208,7 +208,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_confirm_open, defaultGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_OPEN, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -226,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_feeder_control_open, defaultGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -252,7 +252,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_feeder_control_close, defaultGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -278,7 +278,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_subbus_control_open, defaultGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -304,7 +304,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_subbus_control_close, defaultGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -328,7 +328,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_flip, customGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::FLIP_7010_CAPBANK, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -344,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_send_open, customGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_OPEN_CAPBANK, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -360,7 +360,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_send_close, customGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_CLOSE_CAPBANK, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -376,7 +376,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_confirm_close, customGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_CLOSE, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -392,7 +392,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_confirm_open, customGlobals)
 {
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_OPEN, 5);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -410,7 +410,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_feeder_control_open, customGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -436,7 +436,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_feeder_control_close, customGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -462,7 +462,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_subbus_control_open, customGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
@@ -488,7 +488,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_subbus_control_close, customGlobals)
 
     ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::unique_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
     test_executor->execute();
 
