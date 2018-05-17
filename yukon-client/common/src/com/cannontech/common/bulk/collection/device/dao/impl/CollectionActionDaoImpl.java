@@ -4,6 +4,7 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
@@ -360,6 +361,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 e -> e.getCommandRequestExecutionType() == DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY).findFirst();
             if (optional.isPresent()) {
                 CommandRequestExecution verifExec = optional.get();
+                result.setVerificationExecution(verifExec);
                 List<PaoIdentifier> verified = crerDao.getSucessDeviceIdsByExecutionId(verifExec.getId());
                 //verified confirmed bucket
                 result.addDevicesToGroup(CONFIRMED, verified, null);
@@ -367,6 +369,11 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 
                 List<PaoIdentifier> verifFailed = crerDao.getFailDeviceIdsByExecutionId(verifExec.getId());
                 result.addDevicesToGroup(FAILURE, verifFailed, null);
+                succeeded.removeAll(verifFailed);
+                List<PaoIdentifier> canceled =
+                        crerDao.getUnsupportedDeviceIdsByExecutionId(verifExec.getId(), CommandRequestUnsupportedType.CANCELED);
+                result.addDevicesToGroup(CANCELED, canceled, null);
+                succeeded.removeAll(canceled);
             }
             result.addDevicesToGroup(UNCONFIRMED, succeeded, null);
         } else {

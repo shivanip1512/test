@@ -121,7 +121,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
         DemandResetCallback callback = new DemandResetCallback() {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
             List<StrategyType> pendingInitStrategies = Collections.synchronizedList(summary.validDevices.keySet()
-                .stream().filter( s -> summary.getValidDevices(s.getStrategy()) != null)
+                .stream().filter( s -> !summary.getValidDevices(s.getStrategy()).isEmpty())
                 .map(strategy -> strategy.getStrategy())
                 .collect(Collectors.toList()));
             List<StrategyType> pendingVerifStrategies = Collections.synchronizedList(summary.verifiableDevices.keySet()
@@ -165,6 +165,9 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             public void complete(StrategyType strategyType) {
                 if (!result.isComplete()) {
                     pendingVerifStrategies.remove(strategyType);
+                    if(result.getStatus() ==  CommandRequestExecutionStatus.CANCELING) {
+                        pendingInitStrategies.remove(strategyType);
+                    }
                     completeExecutions(strategyType);
                 }
             }
@@ -211,7 +214,8 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
     }
     
     private void completeExecution(CommandRequestExecution execution, CommandRequestExecutionStatus status) {
-        if (execution != null && execution.getCommandRequestExecutionStatus() != COMPLETE) {
+        if (execution != null && execution.getCommandRequestExecutionStatus() != COMPLETE
+            && execution.getCommandRequestExecutionStatus() != FAILED) {
             log.debug("Completing execution:" + execution.getId() + " status=" + status + " for "
                 + execution.getCommandRequestExecutionType());
             completeCommandRequestExecution(execution, status);
@@ -243,7 +247,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
     }
         
     private Map<DemandResetStrategyService, Set<SimpleDevice>> getValidDeviceMap(Set<SimpleDevice> allDevices) {
-        return strategies.stream() .collect(Collectors.toMap(s -> s, s -> s.filterDevices(allDevices)));
+        return strategies.stream().collect(Collectors.toMap(s -> s, s -> s.filterDevices(allDevices)));
     }
     
     private Map<DemandResetStrategyService, Set<SimpleDevice>> getVerifiableDeviceMap(Set<SimpleDevice> allDevices) {
@@ -332,7 +336,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
 
         DemandResetCallback verifCallback = new DemandResetCallback() {
             List<StrategyType> pendingInitStrategies = Collections.synchronizedList(summary.validDevices.keySet()
-                .stream().filter( s -> summary.getValidDevices(s.getStrategy()) != null)
+                .stream().filter( s -> !summary.getValidDevices(s.getStrategy()).isEmpty())
                 .map(strategy -> strategy.getStrategy())
                 .collect(Collectors.toList()));
             List<StrategyType> pendingVerifStrategies = Collections.synchronizedList(summary.verifiableDevices.keySet()
@@ -391,7 +395,8 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             }
             
             private void completeExecutions(CommandRequestExecutionStatus newStatus) {
-                if (initExecution.getCommandRequestExecutionStatus() != COMPLETE) {
+                if (initExecution.getCommandRequestExecutionStatus() != COMPLETE
+                    && initExecution.getCommandRequestExecutionStatus() != FAILED) {
                     log.debug("Completing execution:" + initExecution.getId() + " status=" + newStatus + " for "
                         + initExecution.getCommandRequestExecutionType());
                     completeCommandRequestExecution(initExecution, newStatus);
