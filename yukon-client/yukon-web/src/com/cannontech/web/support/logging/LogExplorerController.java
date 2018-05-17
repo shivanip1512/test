@@ -448,34 +448,27 @@ public class LogExplorerController {
         @Override
         public String apply(File file) {
             String fileName = file.getName();
+            try {
+                HashMap<String, Matcher> filePatternMap = FileUtil.getFilePattern(file);
+                for (HashMap.Entry<String, Matcher> patternMap : filePatternMap.entrySet()) {
 
-            // The following pattern looks for a base file name (group 1) that is the
-            // leading part of the file name minus an optional underscore, a 1-8
-            // digit number, and the extension. e.g. abc_20180428.log or abc20180428.zip
+                    String filePattern = patternMap.getKey();
+                    Matcher filePatternMatcher = patternMap.getValue();
 
-            Pattern nameDatePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)");
-            Matcher nameDatePatternMatcher = nameDatePattern.matcher(fileName);
-            if (nameDatePatternMatcher.matches() && fileName.endsWith("log")) {
-                return StringUtils.capitalize(nameDatePatternMatcher.group(1));
-            }
+                    switch (filePattern) {
+                    case "Pattern1":
+                        return StringUtils.capitalize(filePatternMatcher.group(1));
+                    case "Pattern2":
+                        return StringUtils.capitalize(filePatternMatcher.group(1) + filePatternMatcher.group(4));
+                    case "Pattern3":
+                        return StringUtils.capitalize(filePatternMatcher.group(1));
+                    default:
+                        return fileName;
+                    }
 
-            // The following pattern looks for a base file name (group 1) that is the 
-            // leading part of the file name with an optional underscore, a 1-8 digit number, 
-            // the type of file and the extension. e.g. abc_20180428.log.zip or abc20180428.log.zip
-
-            Pattern nameDateFilePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)");
-            Matcher nameDateFilePatternMatcher = nameDateFilePattern.matcher(fileName);
-            if (nameDateFilePatternMatcher.matches() && fileName.endsWith("zip")) {
-                return StringUtils.capitalize(nameDateFilePatternMatcher.group(1)+nameDateFilePatternMatcher.group(4));
-            }
-
-            // The following pattern looks for a base file name (group 1) that is the 
-            // leading part of the file name and the extension. e.g. abc.log
-
-            Pattern namePattern = Pattern.compile("(.+?)(\\.[^.]+$)");
-            Matcher namePatternMatcher = namePattern.matcher(fileName);
-            if (namePatternMatcher.matches() && fileName.endsWith("log")) {
-                return StringUtils.capitalize(namePatternMatcher.group(1));
+                }
+            } catch (IOException | ParseException e) {
+                throw new RuntimeException(e);
             }
 
             return fileName;

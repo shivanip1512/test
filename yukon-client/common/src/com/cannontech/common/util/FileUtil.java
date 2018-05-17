@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -218,25 +219,62 @@ public final class FileUtil {
      */
     public static Date getFileDate(File file) throws IOException, ParseException {
 
-        Pattern nameDatePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)");
-        Matcher nameDatePatternMatcher = nameDatePattern.matcher(file.getName());
-        if (nameDatePatternMatcher.matches() && file.getName().endsWith("log")) {
-            return new SimpleDateFormat("yyyyMMdd").parse(nameDatePatternMatcher.group(2).replaceFirst("_",""));
-        }
+        HashMap<String, Matcher> filePatternMap = getFilePattern(file);
+        for(HashMap.Entry<String, Matcher> patternMap : filePatternMap.entrySet()) {
 
-        Pattern nameDateFilePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)");
-        Matcher nameDateFilePatternMatcher = nameDateFilePattern.matcher(file.getName());
-        if (nameDateFilePatternMatcher.matches() && file.getName().endsWith("zip")) {
-            return new SimpleDateFormat("yyyyMMdd").parse(nameDateFilePatternMatcher.group(2).replaceFirst("_",""));
-       }
+            String filePattern = patternMap.getKey();
+            Matcher filePatternMatcher = patternMap.getValue();
 
-        Pattern namePattern = Pattern.compile("(.+?)(\\.[^.]+$)");
-        Matcher namePatternMatcher = namePattern.matcher(file.getName());
-        if (namePatternMatcher.matches() && file.getName().endsWith("log")) {
-            return LocalDate.now(DateTimeZone.getDefault()).toDate();
+            switch (filePattern) {
+            case "Pattern1":
+                return new SimpleDateFormat("yyyyMMdd").parse(filePatternMatcher.group(2).replaceFirst("_",""));
+            case "Pattern2":
+                return new SimpleDateFormat("yyyyMMdd").parse(filePatternMatcher.group(2).replaceFirst("_",""));
+            case "Pattern3":
+                return LocalDate.now(DateTimeZone.getDefault()).toDate();
+            default:
+                return getCreationDate(file);
+            }
+
         }
 
         return getCreationDate(file);
+    }
+
+    public static HashMap<String, Matcher> getFilePattern(File file) throws IOException, ParseException {
+
+        HashMap<String, Matcher> filePatternMap = new HashMap<String, Matcher>();
+
+        // The following pattern looks for a base file name (group 1) that is the
+        // leading part of the file name minus an optional underscore, a 1-8
+        // digit number, and the extension. e.g. calc_20180428.log or calc20180428.zip
+        Pattern nameDatePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)");
+        Matcher nameDatePatternMatcher = nameDatePattern.matcher(file.getName());
+        if (nameDatePatternMatcher.matches() && file.getName().endsWith("log")) {
+            filePatternMap.put("Pattern1", nameDatePatternMatcher);
+            return filePatternMap;
+        }
+
+        // The following pattern looks for a base file name (group 1) that is the 
+        // leading part of the file name with an optional underscore, a 1-8 digit number, 
+        // the type of file and the extension. e.g. calc_20180428.log.zip or calc20180428.log.zip
+        Pattern nameDateFilePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)");
+        Matcher nameDateFilePatternMatcher = nameDateFilePattern.matcher(file.getName());
+        if (nameDateFilePatternMatcher.matches() && file.getName().endsWith("zip")) {
+            filePatternMap.put("Pattern2", nameDateFilePatternMatcher);
+            return filePatternMap;
+        }
+
+        // The following pattern looks for a base file name (group 1) that is the 
+        // leading part of the file name and the extension. e.g. calc.log
+        Pattern namePattern = Pattern.compile("(.+?)(\\.[^.]+$)");
+        Matcher namePatternMatcher = namePattern.matcher(file.getName());
+        if (namePatternMatcher.matches() && file.getName().endsWith("log")) {
+            filePatternMap.put("Pattern3", namePatternMatcher);
+            return filePatternMap;
+        }
+
+        return filePatternMap;
     }
 
     /**
