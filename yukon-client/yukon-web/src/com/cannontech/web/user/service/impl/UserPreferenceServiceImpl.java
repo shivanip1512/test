@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.common.device.commands.CommandPriority;
 import com.cannontech.core.users.dao.UserPreferenceDao;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
@@ -49,6 +50,15 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
             return pref.getValue();
         }
         return null;
+    }
+
+    @Override
+    public Integer getCommanderPriority(LiteYukonUser user) {
+        Integer priority = Integer.valueOf(this.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
+        if (!CommandPriority.isCommandPriorityValid(priority)) {
+            return Integer.valueOf(UserPreferenceName.COMMANDER_PRIORITY.getDefaultValue());
+        }
+        return priority;
     }
 
     @Override

@@ -310,11 +310,7 @@ public class CommanderController {
 
     @RequestMapping("editSettingsPopup")
     public String editSettingsPopup(ModelMap model, HttpServletRequest req, LiteYukonUser user) {
-        Integer priority =
-            Integer.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
-        if (!CommandPriority.isCommandPriorityValid(priority)) {
-            priority = CommandPriority.maxPriority;
-        }
+        Integer priority = userPreferenceService.getCommanderPriority(user);
         model.addAttribute("priority", priority);
         Boolean queueCmd =
             Boolean.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_QUEUE_COMMAND));
@@ -345,11 +341,7 @@ public class CommanderController {
 
         Map<String, Object> result = new HashMap<>();
 
-        Integer priority =
-            Integer.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
-        if (!CommandPriority.isCommandPriorityValid(priority)) {
-            priority = CommandPriority.maxPriority;
-        }
+        Integer priority = userPreferenceService.getCommanderPriority(user);
         params.setPriority(priority);
 
         List<CommandRequest> commands = null;

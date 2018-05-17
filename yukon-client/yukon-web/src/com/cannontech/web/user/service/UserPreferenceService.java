@@ -29,6 +29,11 @@ public interface UserPreferenceService {
      */
     public String getPreference(LiteYukonUser user, UserPreferenceName category);
 
+    /**
+     * If the priority is not set or priority doesn't lies between the range (1-14) then return default priority
+     */
+    Integer getCommanderPriority(LiteYukonUser user);
+
     public PreferenceGraphVisualTypeOption getDefaultGraphType(LiteYukonUser user);
 
     public ChartPeriod getDefaultChartPeriod(LiteYukonUser user);
