@@ -64,9 +64,13 @@ yukon.dr.iconChooser = (function () {
                 var selected = $('#' + id + 'IconSelect').val();
                 _initSelected(id, selected);
             });
-            $('#' + id + 'IconPreviewImg')
-                .load(function() {return _afterImageLoad(id, true);})
-                .error(function() {return _afterImageLoad(id, false);});
+            $('#' + id + 'IconPreviewImg').on("error", function () {
+                return _afterImageLoad(id, false);
+            });
+            
+            $('#' + id + 'IconPreviewImg').on("load", function () {
+                return _afterImageLoad(id, false);
+            });
         },
     
         /**

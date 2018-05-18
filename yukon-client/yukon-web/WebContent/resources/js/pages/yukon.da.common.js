@@ -265,7 +265,7 @@ yukon.da.common = (function () {
             var feederFilter = $('.js-feeder-filter').eq(0),
                 busFilter = $('.js-bus-filter').eq(0);
             
-            busFilter.change(function (event) {
+            busFilter.on("change", function (event) {
                 
                 var rows = $("#subBusTable [data-bus-id]"),
                     busIds = new Array(),

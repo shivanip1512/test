@@ -360,10 +360,16 @@ span.dynatree-folder a {
                 padding: 4px 12px;
             }
             
+            button.delete:not([disabled]) {
+               color: @red;
+            }
+            
             button.primary {
                 background: @primary-button-color;
                 border: 1px solid @primary-button-color-border!important;
                 transition: border .20s;
+                text-shadow: 0 1px 0 #777777 !important;
+                color: #ffffff;
             }
         }
     }
@@ -373,7 +379,7 @@ span.dynatree-folder a {
 
 .ui-tabs {
     
-    border: 0;
+    border: none !important;
     
     .ui-tabs-nav {
         background: none;
@@ -488,6 +494,10 @@ span.dynatree-folder a {
         background-color: #f3f3f3;
         
         &:focus { box-shadow: 0 0 3px @primary-color; }
+    }
+    
+    .ui-widget.ui-widget-content {
+        border: 1px solid #c5c5c5 !important;
     }
 }
 .ui-datepicker { z-index: 1001 !important; }

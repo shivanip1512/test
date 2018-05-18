@@ -10,7 +10,7 @@ $.fn.getHiddenDimensions = function(includeMargin) {
     var $item = this,
         props = { position: 'absolute', visibility: 'hidden', display: 'block' },
         dim = { width:0, height:0, innerWidth: 0, innerHeight: 0,outerWidth: 0,outerHeight: 0 },
-        $hiddenParents = $item.parents().andSelf().not(':visible'),
+        $hiddenParents = $item.parents().addBack().not(':visible'),
         includeMargin = (includeMargin == null)? false : includeMargin;
 
     var oldProps = [];

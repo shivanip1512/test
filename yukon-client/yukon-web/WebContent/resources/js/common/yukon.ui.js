@@ -789,7 +789,9 @@ yukon.ui = (function () {
                     width: popup.is('[data-width]') ? popup.data('width') : 'auto',
                     height: popup.is('[data-height]') ? popup.data('height') : 'auto',
                     minHeight: popup.is('[data-min-height]') ? popup.data('minHeight') : '150',
-                    dialogClass: popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog',
+                    classes: {
+                        "ui-dialog": popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog'
+                    },
                     open: function () {
                         if (bigContent) {
                             popup.append(content);

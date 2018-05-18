@@ -102,7 +102,7 @@ yukon.dr.formula = (function () {
             var entry = $('#table-entries_' + tableId);
             entry.parent().scrollTop(entry.parent().height() + 20);
             
-            var numberEntries = $('.js-formula-table-entry-key_' + tableId).size();
+            var numberEntries = $('.js-formula-table-entry-key_' + tableId).length;
             entry.find('.js-formula-remove-entry').toggle(numberEntries !== 1);
         });
         
@@ -220,7 +220,7 @@ yukon.dr.formula = (function () {
                 
                 $('#table-entry_' + tableId + '_' + entryId).slideUp(150, function () {
                     this.remove();
-                    var numberEntries = $('.js-formula-table-entry-key_' + tableId).size();
+                    var numberEntries = $('.js-formula-table-entry-key_' + tableId).length;
                     if (numberEntries === 1) {
                         $('#table-entries_' + tableId).find('.js-formula-remove-entry').hide();
                     }

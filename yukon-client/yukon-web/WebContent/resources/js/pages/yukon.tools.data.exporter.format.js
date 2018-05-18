@@ -112,7 +112,9 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addAttribute,
                         width: '450px',
-                        dialogClass:'ov',
+                        classes: {
+                            "ui-dialog": 'ov'
+                        },
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.add', target: popup})
                     });
                 });
@@ -231,7 +233,9 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.editAttribute,
                         width: '450px',
-                        dialogClass:'ov',
+                        classes: {
+                            "ui-dialog": 'ov'
+                        },
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.edit', target: row})
                     });
                 });

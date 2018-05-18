@@ -77,7 +77,9 @@ yukon.ami.meterDetails = (function () {
                         width: 500,
                         minWidth: 500,
                         minHeight: 310,
-                        dialogClass: 'ov',
+                        classes: {
+                            "ui-dialog": 'ov'
+                        },
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
                         modal: true});
                 });
@@ -93,7 +95,9 @@ yukon.ami.meterDetails = (function () {
                         width: 500,
                         minWidth: 500,
                         minHeight: 310,
-                        dialogClass: 'ov',
+                        classes: {
+                            "ui-dialog": 'ov'
+                        },
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
                         modal: true});
                 });
