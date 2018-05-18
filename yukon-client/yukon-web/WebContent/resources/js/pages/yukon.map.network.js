@@ -44,7 +44,6 @@ yukon.map.network = (function () {
     _primaryRoutePreviousPoints,
     _deviceDragInteraction,
     _nearbyIcons = [],
-    _nearbyLines = [],
     _nearbyIconLayer,
     
     /** @type {ol.interaction.DoubleClickZoom} - The openlayers interaction object for zoom on double click. */
@@ -357,27 +356,6 @@ yukon.map.network = (function () {
             
             _nearbyIcons.push(icon);
             source.addFeature(icon);
-            
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            points.push(_devicePoints);
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: _parentColor, width: 1 })
-                })
-            });
-            
-            _nearbyLines.push(layerLines);
-            _map.addLayer(layerLines);
-            
         }
         
         var allIcons = [];
@@ -417,13 +395,8 @@ yukon.map.network = (function () {
             var source = _map.getLayers().getArray()[_tiles.length].getSource();
             source.removeFeature(nearby);
         }
-        for (x in _nearbyLines) {
-            var nearbyLine = _nearbyLines[x];
-            _map.removeLayer(nearbyLine);
-        }
         _map.removeLayer(_nearbyIconLayer);
         _nearbyIcons = [];
-        _nearbyLines = [];
         _updateZoom();
     },
     
