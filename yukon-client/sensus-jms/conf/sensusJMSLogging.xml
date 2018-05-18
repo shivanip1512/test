@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration shutdownHook="disable" status="info" monitorInterval="5">
+<Configuration status="info" monitorInterval="5">
     <Appenders>
         <Console name="consoleAppender" target="SYSTEM_OUT">
             <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
