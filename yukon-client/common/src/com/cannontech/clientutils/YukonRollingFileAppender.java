@@ -1,7 +1,9 @@
 package com.cannontech.clientutils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
@@ -27,6 +29,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.joda.time.DateTime;
 
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
@@ -138,7 +141,8 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             directory = BootstrapUtils.getServerLogDir();
         }
         String fileName = directory + applicationName + ".log";
-
+        // Check and rename if current file already exist with old creation date. 
+        renameLogFileIfExist(directory, applicationName);
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
         }
@@ -188,7 +192,9 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
 
                 // append a header including version info at the start of the new log file
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
-                    String header = "LOG CONTINUES (Running since " + startDate + ")\n" + systemInfoString + "\n";
+                    // Add log Creation date on top of log file. 
+                    String logCreationDate = "Log Creation Date : "+ new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+                    String header = logCreationDate + "\n" + "LOG CONTINUES (Running since " + startDate + ")\n" + systemInfoString + "\n";
                     fwriter.write(header);
                 } catch (IOException e) {
                     LOGGER.error("Unable to write header to new log file.");
@@ -295,5 +301,47 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         } catch (IOException e) {
             return new Date(file.lastModified());
         }
+    }
+
+    /**
+     * Rename current log file if creation date of log file is old.
+     * <p>
+     * This is used to identify actual log file creation date when sever is stopped for entire day or more.
+     * Restarting server next day will require rolling of old log file based on creation date.
+     * For Example : WebServer is running and stopped at 9PM on 1-1-2018 and current log file is Webserver.log.
+     * Restarting WebServer next day will continue logging to Webserver.log. 
+     * To prevent this logging on the same log file created on 1-1-2018, this method will first identify 
+     * the actual creation date of Webserver.log (1-1-2018 for our case) and rename this file to Webserver_20180101.log 
+     * and continue logging for next day (2-1-2018) on Webserver.log.
+     * </p>
+     */
+    protected static void renameLogFileIfExist(String directory, String applicationName) {
+        File tmpDir = new File(directory + applicationName + ".log");
+        // Check if file is already existing
+        if (tmpDir.exists()) {
+            try {
+                BufferedReader fileHeader = new BufferedReader(new FileReader(tmpDir));
+                DateTime fileDate = parseLogCreationDate(fileHeader.readLine());
+                fileHeader.close();
+                // Check if existing file is old (Try to get its creation date)
+                if (fileDate.isBefore(new DateTime().withTimeAtStartOfDay())) {
+                    String creationDate = new SimpleDateFormat(filenameDateFormat).format(fileDate.toDate());
+                    // Rename current file (append file creation date i.e. fileName_date.log)
+                    tmpDir.renameTo(new File(directory + applicationName + "_" + creationDate + ".log"));
+                }
+            } catch (Exception e) {
+                LOGGER.error("Unable to read file header from log file.");
+            }
+        }
+    }
+
+    /**
+     * Return file creation date after parsing header string.
+     * @throws ParseException 
+     */
+    private static DateTime parseLogCreationDate(String header) throws ParseException {
+        String[] output = header.split("\\:");
+        Date date = new SimpleDateFormat("MM/dd/yyyy").parse(output[1].trim());
+        return new DateTime(date);
     }
 }
