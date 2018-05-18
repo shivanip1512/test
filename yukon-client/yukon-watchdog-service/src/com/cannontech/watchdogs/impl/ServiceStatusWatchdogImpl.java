@@ -1,58 +1,83 @@
 package com.cannontech.watchdogs.impl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.watchdog.base.WatchdogBase;
 import com.cannontech.watchdog.base.Watchdogs;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 
-@Component
-public class ServiceStatusWatchdogImpl  extends WatchdogBase implements ServiceStatusWatchdog {
+public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements ServiceStatusWatchdog {
 
     Logger log = YukonLogManager.getLogger(ServiceStatusWatchdogImpl.class);
-    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
-    ScheduledFuture<?> scheduler;
 
     @Override
     public Watchdogs getName() {
         return Watchdogs.SERVICESTATUS;
     }
-    
+
     @Override
     public boolean isServiceRunning(YukonServices service) {
         return true;
     }
 
-    @Override
-    public void start() {
-        // TODO: This is temporary code, this will have to be replaced  
-        scheduler = executor.scheduleAtFixedRate(() -> {
-            watchAndNotify();
-        }, 0, 5, TimeUnit.MINUTES);
+    public enum ServiceStatus {
+        NOT_STARTED, 
+        STOPPED,
+        RUNNING,
+        UNKNOWN;
     }
 
-    @Override
-    public List<WatchdogWarnings> watch() {
-        // TODO: This is temporary code, this will have to be replaced  
+    public List<WatchdogWarnings>  generateWarning(WatchdogWarningType type, ServiceStatus connectionStatus) {
         List<WatchdogWarnings> warnings = new ArrayList<>();
-        List<Object> arguments = new ArrayList<>();
-        arguments.add("DISCONNECTED");
-        
-        WatchdogWarnings wd = new WatchdogWarnings(WatchdogWarningType.DB_CONNECTION_STATUS, arguments);
-        warnings.add(wd);
+        if (connectionStatus == ServiceStatus.STOPPED) {
+            List<Object> arguments = new ArrayList<>();
+            arguments.add(ServiceStatus.STOPPED);
+
+            WatchdogWarnings wd = new WatchdogWarnings(type, arguments);
+            warnings.add(wd);
+        }
+        // TODO This is temporary logging for POC - YUK-18207
+        warnings.stream().forEach(
+            e -> log.info("Warning generated " + e.getWarningType() + " Status " + e.getArguments().get(0)));
+
         return warnings;
     }
 
+    public ServiceStatus getStatusFromWindows(String serviceName) {
+        try {
+            Process process = new ProcessBuilder("sc.exe", "query", serviceName).start();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));) {
+                String line;
+                String scOutput = "";
+
+                // Append the buffer lines into one string
+                while ((line = reader.readLine()) != null) {
+                    scOutput += line + "\n";
+                }
+                log.debug("Status for service " + serviceName + " is " + scOutput);
+
+                if (scOutput.contains("STATE")) {
+                    if (scOutput.contains("RUNNING")) {
+                        return ServiceStatus.RUNNING;
+                    } else {
+                        return ServiceStatus.STOPPED;
+                    }
+                } else {
+                    return ServiceStatus.UNKNOWN;
+                }
+            }
+        } catch (IOException e) {
+            log.error(e);
+        }
+        return ServiceStatus.UNKNOWN;
+    }
 }

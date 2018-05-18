@@ -27,7 +27,11 @@
     </bean>
        <bean class="com.cannontech.watchdog.WatchdogService"/>
        
-       <bean class="com.cannontech.watchdogs.impl.ServiceStatusWatchdogImpl"/>
+       <bean class="com.cannontech.watchdogs.impl.NotificationServiceWatcher"/>
+       <bean class="com.cannontech.watchdogs.impl.ServiceManagerWatcher"/>
+       <bean class="com.cannontech.watchdogs.impl.WebServerWatcher"/>
+       <bean class="com.cannontech.watchdogs.impl.YukonMessageBrokerWatcher"/>
+       
        <bean class="com.cannontech.watchdog.notification.WatchdogNotificationServiceImpl"/>
        
 </beans>

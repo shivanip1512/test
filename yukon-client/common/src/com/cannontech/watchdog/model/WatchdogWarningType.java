@@ -5,6 +5,10 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum WatchdogWarningType implements DisplayableEnum {
     // TODO: This is temporary code, this will have to be replaced  
+    WEB_SERVER_CONNECTION_STATUS,
+    SERVICE_MANAGER_CONNECTION_STATUS,
+    NOTIFICATION_SERVICE_CONNECTION_STATUS,
+    YUKON_MESSAGE_BROKER_CONNECTION_STATUS,
     DISPATCH_CONNECTION_STATUS,
     PORTER_CONNECTION_STATUS,
     DB_CONNECTION_STATUS,
