@@ -22,7 +22,7 @@
             </div>
             <div class="fl MR10">
                 <dt:dateRange toText="to" toStyle="margin-right:4px;margin-top:1%;" wrapperClasses="fl" startPath="startDate" endPath="endDate" 
-                    startValue="${filter.startDate}" endValue="${filter.endDate}"/>
+                    startValue="${filter.startDate}" endValue="${filter.endDate}" displayValidationToRight="true"/>
             </div>
             <div class="button-group fl MR10">
                 <c:forEach var="status" items="${statuses}">
@@ -55,8 +55,10 @@
             <span class="badge">${recentActions.hitCount}</span>&nbsp;<i:inline key=".actions"/>
             
             <cti:url var="pagingUrl" value="${urlPath}">
-                <cti:param name="startDate" value="${filter.startDate}"/>
-                <cti:param name="endDate" value="${filter.endDate}"/>
+                <cti:formatDate type="DATE" value="${filter.startDate}" var="startMin"/>
+                <cti:formatDate type="DATE" value="${filter.endDate}" var="startMax"/>
+                <cti:param name="startDate" value="${startMin}"/>
+                <cti:param name="endDate" value="${startMax}"/>
                 <c:forEach var="status" items="${filter.statuses}">
                     <cti:param name="statuses" value="${status}"/>
                 </c:forEach>

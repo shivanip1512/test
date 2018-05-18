@@ -13,6 +13,7 @@
 <%@ attribute name="wrapperClasses" description="Classes added to the element wrapping the date pickers" %>
 <%@ attribute name="toText" description="text between date range" %>
 <%@ attribute name="toStyle" description="Classes added to the element wrapping the date pickers" %>
+<%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
 
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -24,7 +25,8 @@
              disabled="${pageScope.disabled}"
              cssClass="${pageScope.cssClass} js-dateStart"
              cssDialogClass="${pageScope.cssDialogClass}"
-             maxDate="${pageScope.endValue}"/>
+             maxDate="${pageScope.endValue}"
+             displayValidationToRight="${pageScope.displayValidationToRight}"/>
     <jsp:doBody/>
     <c:if test="${not empty pageScope.toText}">
         <span class="fl" style="${pageScope.toStyle}">${pageScope.toText}</span>
@@ -37,5 +39,6 @@
              cssClass="${pageScope.cssClass} js-dateEnd"
              cssDialogClass="${pageScope.cssDialogClass}"
              minDate="${pageScope.startValue}" 
-             maxDate="${pageScope.maxDate}" />
+             maxDate="${pageScope.maxDate}" 
+             displayValidationToRight="${pageScope.displayValidationToRight}"/>
 </div>

@@ -113,7 +113,7 @@
     <entry key="yukon.web.modules.tools.collectionActions.recentResults.failure">Failure</entry>
     <entry key="yukon.web.modules.tools.collectionActions.recentResults.notAttempted">Not Attempted</entry>
     <entry key="yukon.web.modules.tools.collectionActions.recentResults.detail">Detail</entry>
-    <entry key="yukon.web.modules.tools.collectionActions.recentResults.status">Status</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.recentResults.runStatus">Status</entry>
     <entry key="yukon.web.modules.tools.collectionActions.recentResults.userName">User Name</entry>
     
     <!-- Collection Action Types -->

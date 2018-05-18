@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,37 +45,44 @@ public class RecentResultsController {
     private final static String baseKey = "yukon.web.modules.tools.collectionActions.recentResults.";
     
     @RequestMapping(value = "recentResults", method = RequestMethod.GET)
-    public String view(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter,
-                       @DefaultSort(dir=Direction.desc, sort="startTime") SortingParameters sorting,
+    public String view(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter, 
+                       BindingResult result, @DefaultSort(dir=Direction.desc, sort="startTime") SortingParameters sorting,
                        @DefaultItemsPerPage(value=250) PagingParameters paging) {
-        
+        if (filter.getStartDate() == null || filter.getEndDate() == null) {
+            DateTime from = new DateTime(userContext.getJodaTimeZone()).withTimeAtStartOfDay().minusDays(6);
+            DateTime to = new DateTime(userContext.getJodaTimeZone()).plusDays(1);
+            filter.setStartDate(from.toDate());
+            filter.setEndDate(to.toDate());
+        }
         Direction dir = sorting.getDirection();
         ResultSortBy sortBy = ResultSortBy.valueOf(sorting.getSort());
         setupModel(userContext, model, filter, sorting, dir, sortBy);
-        filter(userContext, model, filter, sorting, paging);
+        filter(userContext, model, filter, result, sorting, paging);
         
         return "recentResults.jsp";
     }
     
     @RequestMapping(value = "filter", method = RequestMethod.GET)
-    public String filter(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter,
-                         @DefaultSort(dir=Direction.desc, sort="startTime") SortingParameters sorting,
+    public String filter(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter, 
+                         BindingResult result, @DefaultSort(dir=Direction.desc, sort="startTime") SortingParameters sorting,
                          @DefaultItemsPerPage(value=250) PagingParameters paging) {
         
         Direction dir = sorting.getDirection();
         ResultSortBy sortBy = ResultSortBy.valueOf(sorting.getSort());
+
         setupModel(userContext, model, filter, sorting, dir, sortBy);
         boolean allTypesSelected = false;
         if (filter.getActions() == null) {
             allTypesSelected = true;
             filter.setActions(Arrays.asList(CollectionAction.values()));
         }
-        SearchResults<CollectionActionFilteredResult> results = collectionActionDao.getCollectionActionFilteredResults(filter, paging, sortBy.getValue(), dir, userContext);
+        if (!result.hasErrors()) {
+            SearchResults<CollectionActionFilteredResult> results = collectionActionDao.getCollectionActionFilteredResults(filter, paging, sortBy.getValue(), dir, userContext);
+            model.addAttribute("recentActions", results);
+        }
         if (allTypesSelected) {
             filter.setActions(null);
         }
-        
-        model.addAttribute("recentActions", results);
         
         return "recentResults.jsp";
     }
@@ -91,13 +99,6 @@ public class RecentResultsController {
         
         if (filter.getStatuses() == null) {
             filter.setStatuses(statusList);
-        }
-        
-        if (filter.getStartDate() == null || filter.getEndDate() == null) {
-            DateTime from = new DateTime(userContext.getJodaTimeZone()).withTimeAtStartOfDay().minusDays(6);
-            DateTime to = new DateTime(userContext.getJodaTimeZone()).plusDays(1);
-            filter.setStartDate(from.toDate());
-            filter.setEndDate(to.toDate());
         }
         
         if (filter.getUserIds() != null && !filter.getUserIds().isEmpty()) {
@@ -129,7 +130,7 @@ public class RecentResultsController {
         success(SortBy.SUCCESS),
         failure(SortBy.FAILURE),
         notAttempted(SortBy.NOT_ATTEMPTED),
-        status(SortBy.STATUS),
+        runStatus(SortBy.STATUS),
         userName(SortBy.USER_NAME),
         ;
         
