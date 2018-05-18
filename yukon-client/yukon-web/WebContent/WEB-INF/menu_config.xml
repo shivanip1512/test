@@ -113,7 +113,13 @@
         </permissions>
         <link>/dr/cc/home</link>
       </option>
-      <option name="reports" section="true">
+      <option name="update" section="true">
+        <permissions>
+          <roleProperty name="BULK_UPDATE_OPERATION" />
+        </permissions>
+        <link>/bulk/update/upload</link>
+      </option>
+      <option name="reports">
         <permissions>
           <roleProperty name="LOAD_MANAGEMENT_REPORTS_GROUP" />
         </permissions>

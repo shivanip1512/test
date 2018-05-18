@@ -6,6 +6,7 @@
 <entry key="yukon.web.menu.import">Import</entry>
 <entry key="yukon.web.menu.reports">Reports</entry>
 <entry key="yukon.web.menu.pointImport">Point Import</entry>
+<entry key="yukon.web.menu.update">Bulk Update</entry>
 
 <!-- Assets (STARS) -->
 <entry key="yukon.web.menu.assets">Assets</entry>
@@ -24,7 +25,6 @@
 <entry key="yukon.web.menu.ami.dashboard">Dashboard</entry>
 <entry key="yukon.web.menu.ami.billing">Billing</entry>
 <entry key="yukon.web.menu.ami.import">Bulk Import</entry>
-<entry key="yukon.web.menu.ami.update">Bulk Update</entry>
 <entry key="yukon.web.menu.ami.legacyImport">Legacy Importer</entry>
 
 <!-- Demand Response -->
