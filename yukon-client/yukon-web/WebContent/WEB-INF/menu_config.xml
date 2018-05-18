@@ -48,6 +48,12 @@
         </permissions>
         <link>/amr/bulkimporter/home</link>
       </option>
+      <option name="pointImport">
+        <permissions>
+          <roleProperty name="ADD_REMOVE_POINTS" />
+        </permissions>
+        <link>/bulk/pointImport/upload</link>
+      </option>
       <option name="reports">
         <permissions>
           <roleProperty name="AMR_REPORTS_GROUP" />

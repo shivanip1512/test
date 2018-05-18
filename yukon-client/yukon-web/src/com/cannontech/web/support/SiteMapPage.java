@@ -37,6 +37,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.BULK_IMPORT_OPERATION),
     BULK_UPDATE(SiteMapCategory.AMI, "yukon.web.modules.tools.bulk.updateUpload.pageName", "/bulk/update/upload",
             MatchStyle.all, YukonRoleProperty.BULK_UPDATE_OPERATION),
+    AMI_POINT_IMPORT(SiteMapCategory.AMI, "yukon.web.modules.tools.bulk.pointImport.pageName", "/bulk/pointImport/upload",
+                 MatchStyle.all, YukonRoleProperty.ADD_REMOVE_POINTS),
 
     DR_DASHBOARD(SiteMapCategory.DR, "yukon.web.modules.dr.home.pageName", "/dr/home",
             MatchStyle.all, YukonRole.DEMAND_RESPONSE),

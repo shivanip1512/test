@@ -5,6 +5,7 @@
 <!-- NEW KEYS -->
 <entry key="yukon.web.menu.import">Import</entry>
 <entry key="yukon.web.menu.reports">Reports</entry>
+<entry key="yukon.web.menu.pointImport">Point Import</entry>
 
 <!-- Assets (STARS) -->
 <entry key="yukon.web.menu.assets">Assets</entry>
@@ -46,7 +47,6 @@
 <entry key="yukon.web.menu.vv.orphans">Orphans</entry>
 <entry key="yukon.web.menu.vv.regulatorSetup">Regulator Setup</entry>
 <entry key="yukon.web.menu.vv.dmvTest">DMV Test</entry>
-<entry key="yukon.web.menu.vv.pointImport">Point Import</entry>
 <entry key="yukon.web.menu.vv.fdrTranslations">Manage FDR Translations</entry>
 
 <!-- Admin -->
