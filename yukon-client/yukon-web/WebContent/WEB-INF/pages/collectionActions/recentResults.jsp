@@ -14,8 +14,7 @@
     <hr>
     <div><i:inline key=".filterBy"/></div>
     <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter" class="dib full-width push-down-4">
-        <div style="display: flex !important; align-items: flex-end;">
-        
+        <div>
             <div class="fl MR10">
                 <cti:msg2 var="actionLabel" key=".action"/>    
                 <tags:selectWithItems items="${actionsList}" path="actions" itemLabel="${formatKey}" dataPlaceholder="${actionLabel}" inputClass="js-chosen"/>
