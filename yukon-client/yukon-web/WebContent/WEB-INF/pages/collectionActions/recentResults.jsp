@@ -46,7 +46,7 @@
     <hr>    
     
     <c:choose>
-        <c:when test="${recentActions.hitCount == 0}">
+        <c:when test="${empty recentActions || recentActions.hitCount == 0}">
             <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
         </c:when>
         <c:otherwise>
