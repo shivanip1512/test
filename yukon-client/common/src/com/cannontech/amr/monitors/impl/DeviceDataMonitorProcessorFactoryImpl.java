@@ -64,7 +64,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         }
 
         if (!isDeviceInGroup) {
-         //   log.debug("Device {} not in monitoring group {} ", device, groupToMonitor);
+           //// log.debug("Device {} not in monitoring group {} ", device, groupToMonitor);
             return;
         }
         deviceDataMonitorCalculationService.recalculateViolation(monitor, richPointData);

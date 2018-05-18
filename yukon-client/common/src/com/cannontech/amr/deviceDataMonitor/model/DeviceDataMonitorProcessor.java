@@ -6,7 +6,6 @@ import java.util.Comparator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -54,7 +53,7 @@ public class DeviceDataMonitorProcessor implements Serializable {
         this.monitorId = monitorId;
     }
 
-    public Attribute getAttribute() {
+    public BuiltInAttribute getAttribute() {
         return attribute;
     }
 

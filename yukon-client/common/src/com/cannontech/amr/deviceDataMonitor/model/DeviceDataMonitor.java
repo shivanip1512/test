@@ -2,15 +2,12 @@ package com.cannontech.amr.deviceDataMonitor.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
 import com.cannontech.common.util.LazyList;
 
@@ -89,14 +86,6 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     @Override
     public MonitorEvaluatorStatus getEvaluatorStatus() {
         return enabled ? MonitorEvaluatorStatus.ENABLED : MonitorEvaluatorStatus.DISABLED;
-    }
-
-    public Set<Attribute> getProcessorAttributes() {
-        Set<Attribute> attributes = new HashSet<>();
-        for (DeviceDataMonitorProcessor processor : processors) {
-            attributes.add(processor.getAttribute());
-        }
-        return attributes;
     }
 
     public String getViolationsDeviceGroupName() {
