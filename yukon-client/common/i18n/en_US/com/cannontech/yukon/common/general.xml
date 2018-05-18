@@ -177,6 +177,7 @@
 <entry key="yukon.common.mailEncryptionType.NONE">None</entry>
 <entry key="yukon.common.mailEncryptionType.SSL">SSL</entry>
 <entry key="yukon.common.mailEncryptionType.TLS">TLS</entry>
+<entry key="yukon.common.max">Max</entry>
 <entry key="yukon.common.meterGroups.MCT">MCT</entry>
 <entry key="yukon.common.meterGroups.RF_MESH">RF Mesh</entry>
 <entry key="yukon.common.meterGroups.ELECTRONIC">Electronic Meters</entry>
