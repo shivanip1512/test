@@ -143,7 +143,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         }
         String fileName = directory + applicationName + ".log";
         // Check and rename if current file already exist with old creation date. 
-        renameLogFileIfExist(directory, applicationName);
+        checkForTimeBasedRollover(directory, applicationName);
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
         }
@@ -194,7 +194,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 // append a header including version info at the start of the new log file
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
                     // Add log Creation date on top of log file. 
-                    String logCreationDate = "Log Creation Date : "+ new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+                    String logCreationDate = "Log Creation Date : "+ new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                     String header = logCreationDate + "\n" + "LOG CONTINUES (Running since " + startDate + ")\n" + systemInfoString + "\n";
                     fwriter.write(header);
                 } catch (IOException e) {
@@ -305,7 +305,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     }
 
     /**
-     * Rename current log file if creation date of log file is old.
+     * Check and rename current log file if creation date of log file is old.
      * <p>
      * This is used to identify actual log file creation date when sever is stopped for entire day or more.
      * Restarting server next day will require rolling of old log file based on creation date.
@@ -316,7 +316,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * and continue logging for next day (2-1-2018) on Webserver.log.
      * </p>
      */
-    protected static void renameLogFileIfExist(String directory, String applicationName) {
+    protected static void checkForTimeBasedRollover(String directory, String applicationName) {
         File tmpDir = new File(directory + applicationName + ".log");
         // Check if file is already existing
         if (tmpDir.exists()) {
@@ -342,7 +342,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      */
     private static DateTime parseLogCreationDate(String header) throws ParseException {
         String[] output = header.split("\\:");
-        Date date = new SimpleDateFormat("MM/dd/yyyy").parse(output[1].trim());
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(output[1].trim());
         return new DateTime(date);
     }
 }
