@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -147,7 +147,7 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>1033</Culture>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -183,7 +183,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -198,7 +198,7 @@
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>1033</Culture>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -234,7 +234,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -250,7 +250,7 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>1033</Culture>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -291,7 +291,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -305,7 +305,7 @@
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>1033</Culture>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(CAJUN)\include;$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

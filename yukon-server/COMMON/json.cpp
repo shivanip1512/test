@@ -5,16 +5,17 @@
 #include "resource_helper.h"
 #include "resolvers.h"
 
-#include "cajun/reader.h"
+#include <json.hpp>
 
 #include <sstream>
 
 namespace Cti {
 
 using namespace std::string_literals;
+using namespace nlohmann; // JSON namespace
 
-void parseMetricMappings    (const json::Array& metricMappings);
-void parseAttributeOverrides(const json::Array& attributeOverrides);
+void parseMetricMappings    (const json::array_t& metricMappings);
+void parseAttributeOverrides(const json::array_t& attributeOverrides);
 
 void parseJsonFiles()
 {
@@ -22,13 +23,13 @@ void parseJsonFiles()
 
     std::istringstream stream(std::string(raw.begin(), raw.end()));
 
-    json::Object root;
+    json root;
 
     try
     {
-        json::Reader::Read(root, stream);
+        root = json::parse(stream);
     }
-    catch( json::Reader::ParseException & /*ex*/ )
+    catch( json::exception & /*ex*/ )
     {
     }
 
@@ -36,64 +37,63 @@ void parseJsonFiles()
     parseAttributeOverrides(root["attributeOverrides"]);
 }
 
-void parseMetricMappings(const json::Array& metricMappings)
+void parseMetricMappings(const json::array_t& metricMappings)
 {
-    for( auto metricItr = metricMappings.Begin(); metricItr != metricMappings.End(); ++metricItr )
+    json::string_t          attributeName;
+    json::number_integer_t  metricId;
+    int                     attributeMagnitude;
+
+    for( auto metricItr = metricMappings.begin(); metricItr != metricMappings.end(); ++metricItr )
     {
-        const json::Object& obj = *metricItr;
+        const json& obj = *metricItr;
 
         try
-        {
-            json::String attributeName = obj["attribute"];
-            json::Number metricId      = obj["metricId"];
-            int attributeMagnitude = 0;
-
-            auto itr = obj.Find("attributeMagnitude");
-
-            if( itr != obj.End() )
-            {
-                json::Number magnitude = itr->element;
-
-                attributeMagnitude = magnitude;
-            }
+        {   
+            attributeName      = obj.at("attribute").get<json::string_t>();
+            metricId           = obj.at("metricId").get<json::number_integer_t>();
+            attributeMagnitude = obj.value("attributeMagnitude", 0);
 
             try
             {
-                const Attribute &attribute = Attribute::Lookup(attributeName.Value());
+                const Attribute &attribute = Attribute::Lookup(attributeName);
 
                 //  Yukon's attributes have implicit scaling (DEMAND is kW instead of W, for example).  
                 //    attributeMagnitude describes the attribute's implicit scaling in powers of 10.
-                MetricIdLookup::AddMetricForAttribute({attribute, attributeMagnitude}, metricId.Value());
+                MetricIdLookup::AddMetricForAttribute({attribute, attributeMagnitude }, metricId);
             }
             catch (const AttributeNotFound&)
             {
-                MetricIdLookup::AddUnknownAttribute(attributeName.Value());
+                MetricIdLookup::AddUnknownAttribute(attributeName);
             }
         }
-        catch (const json::Exception& e)
+        catch (const json::exception& e)
         {
             std::cout << "Caught json::Exception: " << e.what() << std::endl << std::endl;
         }
     }
 }
 
-void parseAttributeOverrides(const json::Array& attributeOverrides)
+void parseAttributeOverrides(const json::array_t& attributeOverrides)
 {
-    for( auto itr = attributeOverrides.Begin(); itr != attributeOverrides.End(); ++itr )
+    json::string_t          attributeName;
+    json::number_integer_t  metricId;
+    json::array_t           paoTypeStrings;
+
+    for( auto itr = attributeOverrides.begin(); itr != attributeOverrides.end(); ++itr )
     {
-        const json::Object& obj = *itr;
+        const json::object_t& obj = *itr;
 
         try
         {
-            json::String attributeName  = obj["attribute"];
-            json::Number metricId       = obj["metricId"];
-            json::Array  paoTypeStrings = obj["paoTypes"];
+            attributeName  = obj.at("attribute").get<json::string_t>();
+            metricId       = obj.at("metricId") .get<json::number_integer_t>();
+            paoTypeStrings = obj.at("paoTypes") .get<json::array_t>();
 
             std::set<DeviceTypes> paoTypes;
 
-            for( auto paoTypeItr = paoTypeStrings.Begin(); paoTypeItr != paoTypeStrings.End(); ++paoTypeItr )
+            for( auto paoTypeItr = paoTypeStrings.begin(); paoTypeItr != paoTypeStrings.end(); ++paoTypeItr )
             {
-                const auto paoType = resolveDeviceType(static_cast<const json::String&>(*paoTypeItr));
+                const auto paoType = resolveDeviceType(static_cast<const json::string_t&>(*paoTypeItr));
 
                 if( paoType != TYPE_NONE )
                 {
@@ -103,7 +103,7 @@ void parseAttributeOverrides(const json::Array& attributeOverrides)
 
             try
             {
-                const Attribute &attribute = Attribute::Lookup(attributeName.Value());
+                const Attribute &attribute = Attribute::Lookup(attributeName);
 
                 //  Check to make sure the attribute has been added in the global list
                 const auto globalMetricId = MetricIdLookup::GetMetricId(attribute, TYPE_NONE);
@@ -111,7 +111,7 @@ void parseAttributeOverrides(const json::Array& attributeOverrides)
                 //  Add the override for each of the pao types
                 for( auto paoType : paoTypes )
                 {
-                    MetricIdLookup::AddAttributeOverride(attribute, metricId.Value(), paoType);
+                    MetricIdLookup::AddAttributeOverride(attribute, metricId, paoType);
                 }
             }
             catch (const AttributeNotFound& ex)
@@ -123,7 +123,7 @@ void parseAttributeOverrides(const json::Array& attributeOverrides)
                 MetricIdLookup::AddUnmappedAttribute(ex);
             }
         }
-        catch (const json::Exception& e)
+        catch (const json::exception& e)
         {
             std::cout << "Caught json::Exception: " << e.what() << std::endl << std::endl;
         }
