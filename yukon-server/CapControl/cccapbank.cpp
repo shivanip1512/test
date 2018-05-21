@@ -2285,7 +2285,16 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    CTILOG_EXCEPTION_ERROR( dout, missingAttribute, "Failed attribute lookup on bank: " << getPaoName() );
+    static CtiTime reportTime = CtiTime::neg_infin;
+
+    CtiTime now;
+
+    if ( reportTime <= now )
+    {
+        reportTime = now + 60;  // throttle the reporting to once a minute
+
+        CTILOG_EXCEPTION_ERROR(dout, missingAttribute, "Failed attribute lookup on bank: " << getPaoName());
+    }
 }
 
 void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
@@ -2308,7 +2317,16 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    CTILOG_EXCEPTION_ERROR( dout, missingAttribute, "Failed attribute lookup on bank: " << getPaoName() );
+    static CtiTime reportTime = CtiTime::neg_infin;
+
+    CtiTime now;
+
+    if ( reportTime <= now )
+    {
+        reportTime = now + 60;  // throttle the reporting to once a minute
+
+        CTILOG_EXCEPTION_ERROR(dout, missingAttribute, "Failed attribute lookup on bank: " << getPaoName());
+    }
 }
 
 void CtiCCCapBank::loadAttributes( AttributeService * service )
