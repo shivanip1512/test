@@ -14,14 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
@@ -444,34 +441,13 @@ public class LogExplorerController {
     }
 
     public static final Function<File, String> fileToApplicationNameFunction = new Function<File, String>() {
-
         @Override
         public String apply(File file) {
-            String fileName = file.getName();
             try {
-                HashMap<String, Matcher> filePatternMap = FileUtil.getFilePattern(file);
-                for (HashMap.Entry<String, Matcher> patternMap : filePatternMap.entrySet()) {
-
-                    String filePattern = patternMap.getKey();
-                    Matcher filePatternMatcher = patternMap.getValue();
-
-                    switch (filePattern) {
-                    case "Pattern1":
-                        return StringUtils.capitalize(filePatternMatcher.group(1));
-                    case "Pattern2":
-                        return StringUtils.capitalize(filePatternMatcher.group(1) + filePatternMatcher.group(4));
-                    case "Pattern3":
-                        return StringUtils.capitalize(filePatternMatcher.group(1));
-                    default:
-                        return fileName;
-                    }
-
-                }
-            } catch (IOException | ParseException e) {
+                return FileUtil.getApplicationName(file);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
-            return fileName;
         }
     };
 

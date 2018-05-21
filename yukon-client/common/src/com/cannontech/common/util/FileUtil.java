@@ -14,11 +14,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -28,7 +28,57 @@ import org.springframework.util.Assert;
 import com.cannontech.clientutils.YukonLogManager;
 
 public final class FileUtil {
-	private static Logger log = YukonLogManager.getLogger(FileUtil.class);
+    private static Logger log = YukonLogManager.getLogger(FileUtil.class);
+
+
+    public static enum LogFilePattern {
+        NAME_DATE_EXT(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)"), "log") {
+            @Override
+            protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
+                return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
+            }
+        },
+        NAME_DATE_EXT_EXT(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)"), "zip") {
+            @Override
+            protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
+                return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
+            }
+
+            @Override
+            public String getApplicationName(String fileNameWithExt, Matcher matcher) {
+                return StringUtils.capitalize(matcher.group(1) + matcher.group(4));
+            }
+        },
+        NAME_EXT(Pattern.compile("(.+?)(\\.[^.]+$)"), "log"){
+        };
+
+        private LogFilePattern(Pattern pattern, String ext) {
+            this.pattern = pattern;
+            this.ext = ext;
+        }
+
+        private Pattern pattern;
+        private String ext;
+
+        protected Matcher getMatcher(String fileNameWithExt) {
+            return this.pattern.matcher(fileNameWithExt);
+        }
+
+        /**
+         * Returns date from fileNameWithExt.
+         * Override per LogFilePattern for specific pattern parsing. 
+         */
+        protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
+            return LocalDate.now(DateTimeZone.getDefault()).toDate();
+        };
+
+        /**
+         * Returns applicationName from fileNameWithExt 
+         */
+        protected String getApplicationName(String fileNameWithExt, Matcher matcher) {
+            return StringUtils.capitalize(matcher.group(1));
+        }
+    }
 
     /**
      * FileUtil constructor comment.
@@ -215,66 +265,33 @@ public final class FileUtil {
     }
 
     /**
-     * This method will return the file date based upon the pattern of the file.
+     * Returns the application name based on the pattern of the filename.
+     * Most commonly used for parsing applicationname from log file name.
      */
-    public static Date getFileDate(File file) throws IOException, ParseException {
-
-        HashMap<String, Matcher> filePatternMap = getFilePattern(file);
-        for(HashMap.Entry<String, Matcher> patternMap : filePatternMap.entrySet()) {
-
-            String filePattern = patternMap.getKey();
-            Matcher filePatternMatcher = patternMap.getValue();
-
-            switch (filePattern) {
-            case "Pattern1":
-                return new SimpleDateFormat("yyyyMMdd").parse(filePatternMatcher.group(2).replaceFirst("_",""));
-            case "Pattern2":
-                return new SimpleDateFormat("yyyyMMdd").parse(filePatternMatcher.group(2).replaceFirst("_",""));
-            case "Pattern3":
-                return LocalDate.now(DateTimeZone.getDefault()).toDate();
-            default:
-                return getCreationDate(file);
+    public static String getApplicationName(File file) throws IOException {
+        String fileNameWithExt = file.getName();
+        for (LogFilePattern pattern : LogFilePattern.values()) {
+            Matcher matcher = pattern.getMatcher(fileNameWithExt);
+            if (matcher.matches() && fileNameWithExt.endsWith(pattern.ext)) {
+                return pattern.getApplicationName(fileNameWithExt, matcher);
             }
-
         }
-
-        return getCreationDate(file);
+        return fileNameWithExt;
     }
 
-    public static HashMap<String, Matcher> getFilePattern(File file) throws IOException, ParseException {
-
-        HashMap<String, Matcher> filePatternMap = new HashMap<String, Matcher>();
-
-        // The following pattern looks for a base file name (group 1) that is the
-        // leading part of the file name minus an optional underscore, a 1-8
-        // digit number, and the extension. e.g. calc_20180428.log or calc20180428.zip
-        Pattern nameDatePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)");
-        Matcher nameDatePatternMatcher = nameDatePattern.matcher(file.getName());
-        if (nameDatePatternMatcher.matches() && file.getName().endsWith("log")) {
-            filePatternMap.put("Pattern1", nameDatePatternMatcher);
-            return filePatternMap;
+    /**
+     * Returns a date based upon the pattern of the filename.
+     * Most commonly used for parsing date from log file name.
+     */
+    public static Date getFileDate(File file) throws IOException, ParseException {
+        String fileNameWithExt = file.getName();
+        for (LogFilePattern pattern : LogFilePattern.values()) {
+            Matcher matcher = pattern.getMatcher(fileNameWithExt);
+            if (matcher.matches() && fileNameWithExt.endsWith(pattern.ext)) {
+                return pattern.getFileDate(fileNameWithExt, matcher);
+            }
         }
-
-        // The following pattern looks for a base file name (group 1) that is the 
-        // leading part of the file name with an optional underscore, a 1-8 digit number, 
-        // the type of file and the extension. e.g. calc_20180428.log.zip or calc20180428.log.zip
-        Pattern nameDateFilePattern = Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)");
-        Matcher nameDateFilePatternMatcher = nameDateFilePattern.matcher(file.getName());
-        if (nameDateFilePatternMatcher.matches() && file.getName().endsWith("zip")) {
-            filePatternMap.put("Pattern2", nameDateFilePatternMatcher);
-            return filePatternMap;
-        }
-
-        // The following pattern looks for a base file name (group 1) that is the 
-        // leading part of the file name and the extension. e.g. calc.log
-        Pattern namePattern = Pattern.compile("(.+?)(\\.[^.]+$)");
-        Matcher namePatternMatcher = namePattern.matcher(file.getName());
-        if (namePatternMatcher.matches() && file.getName().endsWith("log")) {
-            filePatternMap.put("Pattern3", namePatternMatcher);
-            return filePatternMap;
-        }
-
-        return filePatternMap;
+        return getCreationDate(file);
     }
 
     /**
