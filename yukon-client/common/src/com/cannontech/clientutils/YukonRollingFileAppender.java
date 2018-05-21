@@ -31,6 +31,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.joda.time.DateTime;
 
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
@@ -135,7 +136,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
 
         String applicationName = BootstrapUtils.getApplicationName();
         String directory = null;
-        if (CtiUtilities.isRunningAsClient()) {
+        if (BootstrapUtils.isWebStartClient() && !MasterConfigHelper.isLocalConfigAvailable()) {
             directory = REMOTE_LOGGING_DIRECTORY;
         } else {
             directory = BootstrapUtils.getServerLogDir();

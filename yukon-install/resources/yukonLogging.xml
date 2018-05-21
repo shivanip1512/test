@@ -30,12 +30,12 @@
 
         <Logger name="org.springframework.ws.soap.server.endpoint.interceptor" level = "debug"/>
 
-        <!-- Controls rfn comms logging to the Server\Log\Comms directory -->
-        <Logger name="rfnCommsLogger" level="info">
+        <!-- Controls rfn comms logging to the Server\Log directory -->
+        <Logger name="rfnCommsLogger" level="info" additivity="false">
         <appender-ref ref="YukonRfnRollingFile" />
         </Logger>
 
-        <Root level="info" additivity="false">
+        <Root level="info">
             <appender-ref ref="console" />
             <appender-ref ref="yukonRollingFileAppender"/>
         </Root>

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import com.cannontech.common.config.RemoteLoginSession;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
 
@@ -77,7 +78,7 @@ public class YukonLogManager {
         } else if (path.canRead()) {
             getMyLogger().getContext().setConfigLocation(path.toURI());
             getMyLogger().info("The config file was found under " + path.toURI());
-        } else if (CtiUtilities.isRunningAsClient() && remoteLoggingFilePath.canRead()) {
+        } else if (BootstrapUtils.isWebStartClient() && remoteLoggingFilePath.canRead()) {
             getMyLogger().getContext().setConfigLocation(remoteLoggingFilePath.toURI());
             getMyLogger().info("The Remote Logging config file was found under " + remoteLoggingFilePath.toURI());
         } else {
@@ -113,17 +114,18 @@ public class YukonLogManager {
         }
         File remoteLoggingFile = new File(remoteLoggingFolder, REMOTE_LOGGING_XML);
         // try to configure logging
-        try (InputStream inputStream = remoteLoginSession.getInputStreamForUrl("/servlet/LoggingServlet", false);
-             FileOutputStream outputStream = new FileOutputStream(remoteLoggingFile);) {
-            IOUtils.copy(inputStream, outputStream);
-            getMyLogger().getContext().setConfigLocation(remoteLoggingFile.toURI());
-        } catch (FactoryConfigurationError | IOException e) {
+        if (!remoteLoggingFile.exists()) {
+           try (InputStream inputStream = remoteLoginSession.getInputStreamForUrl("/servlet/LoggingServlet", false);
+               FileOutputStream outputStream = new FileOutputStream(remoteLoggingFile);) {
+               IOUtils.copy(inputStream, outputStream);
+               getMyLogger().getContext().setConfigLocation(remoteLoggingFile.toURI());
+           } catch (FactoryConfigurationError | IOException e) {
             // If all else fails use BasicConfigurator, log to console
             getMyLogger().error("Unable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
             return;
-        }
-
+           }
         getMyLogger().info("The remote logging config file was found under: /servlet/LoggingServlet");
+        }
     }
     
     

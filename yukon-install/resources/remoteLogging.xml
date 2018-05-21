@@ -17,7 +17,7 @@
 
     <Logger name="org.springframework" level="warn" />
 
-        <Root level="info" additivity="false">
+        <Root level="info">
             <appender-ref ref="console" />
             <appender-ref ref="yukonRollingFileAppender"/>
         </Root>
