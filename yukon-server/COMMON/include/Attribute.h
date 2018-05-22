@@ -52,6 +52,8 @@ public:
     static const Attribute  ReceivedDemand;
     static const Attribute  DemandPeakkVACoin;
     static const Attribute  InstantaneouskW;
+    static const Attribute  SumkW;
+    static const Attribute  NetkW;
     static const Attribute  DisconnectStatus;
     static const Attribute  FaultStatus;
     static const Attribute  ForwardInductivekVArh;
@@ -128,6 +130,7 @@ public:
     static const Attribute  DeliveredkVA;
     static const Attribute  ReceivedkVA;
     static const Attribute  SumkVA;
+    static const Attribute  NetkVA;
     static const Attribute  KvaPeakDemandCoin;
     static const Attribute  PeakkVA;
     static const Attribute  PeakkVARateA;
@@ -145,6 +148,12 @@ public:
     static const Attribute  SumPeakkVARateB;
     static const Attribute  SumPeakkVARateC;
     static const Attribute  SumPeakkVARateD;
+    static const Attribute  kVAQ1Q2;
+    static const Attribute  kVAQ3Q4;
+    static const Attribute  kVAQ1Q3;
+    static const Attribute  kVAQ2Q4;
+    static const Attribute  SumkVAr;
+    static const Attribute  NetkVAr;
     static const Attribute  PeakkVAr;
     static const Attribute  PeakkVArCoincidental;
     static const Attribute  PeakkVArRateA;
@@ -161,12 +170,17 @@ public:
     static const Attribute  SumPeakkVArRateB;
     static const Attribute  SumPeakkVArRateC;
     static const Attribute  SumPeakkVArRateD;
+    static const Attribute  kVArQ1Q3;
+    static const Attribute  kVArQ2Q4;
+    static const Attribute  kVArQ1Q4;
+    static const Attribute  kVArQ2Q3;
     static const Attribute  PeakkVArh;
     static const Attribute  PeakkVArhCoincidental;
     static const Attribute  Phase;
     static const Attribute  PowerFactor;
     static const Attribute  PowerFactorCoincidental;
     static const Attribute  PowerFactorDelivered;
+    static const Attribute  PowerFactorSum;
     static const Attribute  PowerFactorReceived;
     static const Attribute  PowerFactorAnglePhaseA;
     static const Attribute  PowerFactorAnglePhaseB;

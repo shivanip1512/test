@@ -150,7 +150,24 @@ const MetricInfo metricInfos[] = {
         { 240,  TouRates,  "Peak Demand Daily"                     },
 
         { 256,  TouRates,  "Time in Seconds"                       },
-        { 257,  None,      "Temperature in Centigrade"             }};
+        { 257,  None,      "Temperature in Centigrade"             },
+
+        { 330,  None,      "Sum Watts" },
+        { 331,  None,      "Net Watts" },
+
+        { 340,  None,      "Vars Quadrant 1, Quadrant 3" },
+        { 341,  None,      "Vars Quadrant 2, Quadrant 4" },
+        { 342,  None,      "Vars Quadrant 1, Quadrant 4" },
+        { 343,  None,      "Vars Quadrant 2, Quadrant 3" },
+        { 344,  None,      "Sum Vars" },
+        { 345,  None,      "Net Vars" },
+
+        { 350,  None,      "VA Quadrant 1, Quadrant 2" },
+        { 351,  None,      "VA Quadrant 3, Quadrant 4" },
+        { 352,  None,      "VA Quadrant 1, Quadrant 3" },
+        { 353,  None,      "VA Quadrant 2, Quadrant 4" },
+        { 354,  None,      "Sum VA" },
+        { 355,  None,      "Net VA" }};
 
 struct MetricItem
 {
