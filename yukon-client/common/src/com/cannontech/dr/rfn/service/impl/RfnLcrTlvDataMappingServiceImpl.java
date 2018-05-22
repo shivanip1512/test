@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -44,6 +46,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImpl<ListMultimap<FieldType, byte[]>> {
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
@@ -109,12 +112,15 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                     continue;
                 }
                 
-                // If the point is missing, and it's PQR data, create the point automatically
-                boolean pointExists = attributeService.pointExistsForAttribute(device, entry.getAttribute());
-                if (!pointExists && entry.isPowerQualityResponse()) {
-                    log.debug("Creating point for PQR attribute (" + entry.getAttribute() + ") on device: " 
-                             + device.getName() + ".");
-                    attributeService.createPointForAttribute(device, entry.getAttribute());
+                // If PQR is enabled, and it's PQR data, and the point is missing, create the point automatically
+                boolean isPqrEnabled = configurationSource.getBoolean(MasterConfigBoolean.ENABLE_POWER_QUALITY_RESPONSE);
+                if (isPqrEnabled && entry.isPowerQualityResponse()) {
+                    boolean pointExists = attributeService.pointExistsForAttribute(device, entry.getAttribute());
+                    if (!pointExists) {
+                        log.debug("Creating point for PQR attribute (" + entry.getAttribute() + ") on device: " 
+                                 + device.getName() + ".");
+                        attributeService.createPointForAttribute(device, entry.getAttribute());
+                    }
                 }
                 
                 // Generate the point data
