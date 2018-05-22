@@ -34,8 +34,7 @@ yukon.support.logs = (function () {
      * @param {boolean} reload - If true, reload the logs.
      */
     _removeExtraLines = function (reload) {
-        
-        var numLogsCurrent = $('.logLine').size(),
+        var numLogsCurrent = $('.logLine').length,
             numLinesNew = $('#numLines').val(),
             linesToSlice = numLogsCurrent - numLinesNew;
         
