@@ -29,12 +29,20 @@
                     </option>
                 </c:forEach>
             </select>
-            <div class="button-group">
-                <cti:button id="download_${pointId}" title = "${download}" renderMode="buttonImage" 
-                            icon="icon-page-white-excel" data-point-id="${pointId}"/>
-                <cti:button id="trend_${pointId}" renderMode="buttonImage" icon="icon-chart-line" data-point-id="${pointId}"
-                            title="${trendToolTip}"/>
-            </div>
+            <c:choose>
+                <c:when test="${showTrend}">
+                    <div class="button-group">
+                        <cti:button id="download_${pointId}" title = "${download}" renderMode="buttonImage" 
+                                    icon="icon-page-white-excel" data-point-id="${pointId}"/>
+                        <cti:button id="trend_${pointId}" renderMode="buttonImage" icon="icon-chart-line" 
+                                    data-point-id="${pointId}" title="${trendToolTip}"/>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <cti:button id="download_${pointId}" title = "${download}" renderMode="buttonImage" 
+                                icon="icon-page-white-excel" data-point-id="${pointId}" classes="fr left"/>
+                </c:otherwise>
+            </c:choose>
         </tags:nameValueContainer2>
     </div>
 </div>

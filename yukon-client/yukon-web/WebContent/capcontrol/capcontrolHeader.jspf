@@ -8,7 +8,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %> <%-- Used in Trends --%>
 <!-- Check CapControl Role Access -->
 <cti:isPropertyFalse property="CAP_CONTROL_ACCESS">
     <jsp:forward page="/capcontrol/redirect.jsp">
@@ -25,6 +25,7 @@
 <cti:includeScript link="/resources/js/pages/yukon.da.comments.js"/>
 <!-- Needed for Create Schedule -->
 <cti:includeScript link="/resources/js/pages/yukon.da.schedules.js"/>
+<flot:defaultIncludes/>
 
 
 <!-- Beans -->

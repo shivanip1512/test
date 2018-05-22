@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %> <%-- Used in Trends --%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -17,8 +16,6 @@
 <cti:includeScript link="/resources/js/pages/yukon.da.area.js"/>
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 <tags:setFormEditMode mode="${mode}"/>
-
-<flot:defaultIncludes/>
 
 <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
     <script type="text/javascript">
@@ -325,7 +322,7 @@
                                     </a>
                                 </li>
                             </cm:dropdown>
-                        </cti:checkRolesAndProperties>                  
+                        </cti:checkRolesAndProperties>
                     </td>
                 </tr>
             </c:forEach>

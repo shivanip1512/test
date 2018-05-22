@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -16,4 +17,5 @@
         <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
     </div>
     <tags:simplePopup id="manual-entry-popup" title=""/>
+    <flot:defaultIncludes/>
 </cti:standardPage>
