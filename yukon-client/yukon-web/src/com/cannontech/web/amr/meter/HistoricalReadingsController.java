@@ -179,7 +179,7 @@ public class HistoricalReadingsController {
         model.addAttribute("duration", duration);
         model.addAttribute("title", title);
         LitePoint litePoint = pointDao.getLitePoint(pointId);
-        model.addAttribute("showTrend", litePoint.getUofmID() != -1 ? true : false);
+        model.addAttribute("showTrend", !litePoint.getPointTypeEnum().isStatus());
         cachedPointDataCorrelationService.correlateAndLog(pointId);
         
         return "historicalReadings/view.jsp";

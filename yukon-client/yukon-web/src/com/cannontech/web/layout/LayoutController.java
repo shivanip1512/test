@@ -102,6 +102,11 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_HIDDEN_DIMENSIONS.getPath(dev));
         b.add(JsLibrary.JQUERY_SCROLLTO.getPath(dev));
         b.add(JsLibrary.JQUERY_COOKIE.getPath(dev));
+        b.add(JsLibrary.JQUERY_FLOTCHARTS.getPath(dev));
+        b.add(JsLibrary.JQUERY_FLOTCHARTS_SELECTION.getPath(dev));
+        b.add(JsLibrary.JQUERY_FLOTCHARTS_AXIS_LABEL.getPath(dev));
+        b.add(JsLibrary.JQUERY_FLOTCHARTS_RESIZE.getPath(dev));
+        b.add(JsLibrary.JQUERY_FLOTCHARTS_TIME.getPath(dev));
         libraryScriptFiles = b.build();
         
         b = ImmutableList.builder();
@@ -119,6 +124,7 @@ public class LayoutController {
         b.add(JsLibrary.YUKON_TOOLTIP.getPath(dev));
         b.add(JsLibrary.YUKON_ANALYTICS.getPath(dev));
         b.add(JsLibrary.YUKON_FAVORITES.getPath(dev));
+        b.add(JsLibrary.YUKON_FLOTCHARTS.getPath(dev));
         b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath(dev));
         b.add(JsLibrary.YUKON_PICKER.getPath(dev));
         b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath(dev));
@@ -138,6 +144,7 @@ public class LayoutController {
         b.add(CssLibrary.TIPSY.getPath());
         b.add(CssLibrary.SPECTRUM.getPath());
         b.add(CssLibrary.CHOSEN.getPath());
+        b.add(CssLibrary.FLOTCHARTS.getPath());
         standardCssFiles = b.build();
     }
     

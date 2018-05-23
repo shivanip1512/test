@@ -3,7 +3,6 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -11,7 +10,6 @@
 
 <cti:standardPage module="tools" page="tdc.display.${mode}">
 
-    <flot:defaultIncludes />
     <div id="page-buttons" class="dn">
         <c:if test="${display.acknowledgable}">
             <tags:dynamicChoose updaterString="TDC/ALARM_DISPLAY/${display.displayId}" suffix="${display.displayId}">
