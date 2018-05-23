@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -111,7 +112,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
                                                              .collect(Collectors.toList());
         
         log.info("PQR configuration task found " + supportedHardware.size() + " supported devices and " 
-                 + unsupportedHardware.size() + "unsupported devices.");
+                 + unsupportedHardware.size() + " unsupported devices.");
         
         // Generate a new results object for this operation
         String id = UUID.randomUUID().toString();
@@ -194,8 +195,13 @@ public class PqrConfigServiceImpl implements PqrConfigService {
         command.setType(commandType);
         command.setUser(user);
         ImmutableMap.Builder<LmHardwareCommandParam, Object> builder = new ImmutableMap.Builder<>();
+        
+        //Set a long timeout to give the messages time to percolate through the gateway
+        //In a productized version of PQR, this should be done in a smarter way.
+        long timeoutMillis = Duration.standardHours(2).getMillis();
+        
         Map<LmHardwareCommandParam, Object> parameters = builder.put(LmHardwareCommandParam.WAITABLE, true)
-                                                                .put(LmHardwareCommandParam.EXPIRATION_DURATION, (long) 60 * 1000)
+                                                                .put(LmHardwareCommandParam.EXPIRATION_DURATION, timeoutMillis)
                                                                 .putAll(additionalParameters)
                                                                 .build();
         command.setParams(parameters);
