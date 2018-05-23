@@ -27,12 +27,23 @@ public class PqrEventParsingServiceImpl implements PqrEventParsingService {
                              // Response Type: byte 5
                              PqrResponseType responseType = PqrResponseType.of(rawEntry[5]);
                              // Value: bytes 6, 7
-                             double value = ByteUtil.getInteger(Arrays.copyOfRange(rawEntry, 6, 8));
+                             double value = parseValue(rawEntry[6], rawEntry[7]);
                              // Adjust value based on multiplier (e.g. OV values are in 10ths of a volt)
                              value = value * responseType.getMultiplier();
                              return new PqrEvent(inventoryId, timestamp, eventType, responseType, value);
                          })
                          .collect(Collectors.toList());
     }
-
+    
+    private double parseValue(byte firstByteUnsigned, byte secondByteUnsigned) {
+        // Convert to signed, since Java doesn't properly support unsigned.
+        int firstByteSigned = firstByteUnsigned & 0xFF;
+        int secondByteSigned = secondByteUnsigned & 0xFF;
+        
+        // Merge bytes into a single value. This is the raw transmitted int value, and still needs a multiplier 
+        // applied to get the appropriate resolution floating-point value.
+        int value = (firstByteSigned << 8) | secondByteSigned;
+        
+        return value;
+    }
 }

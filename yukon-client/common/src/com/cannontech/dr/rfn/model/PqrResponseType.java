@@ -12,17 +12,12 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum PqrResponseType implements DisplayableEnum {
     UNDER_VOLTAGE(0x00, 0.1),
     OVER_VOLTAGE(0x01, 0.1),
-    UNDER_FREQUENCY(0x02),
-    OVER_FREQUENCY(0x03),
+    UNDER_FREQUENCY(0x02, 0.001),
+    OVER_FREQUENCY(0x03, 0.001),
     ;
     
     private final byte value;
     private final double multiplier;
-    
-    private PqrResponseType(int value) {
-        this.value = (byte) value;
-        multiplier = 1;
-    }
     
     private PqrResponseType(int value, double multiplier) {
         this.value = (byte) value;
