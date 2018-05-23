@@ -198,7 +198,7 @@ public class PqrConfigServiceImpl implements PqrConfigService {
         
         //Set a long timeout to give the messages time to percolate through the gateway
         //In a productized version of PQR, this should be done in a smarter way.
-        long timeoutMillis = Duration.standardHours(2).getMillis();
+        long timeoutMillis = Duration.standardHours(24).getMillis();
         
         Map<LmHardwareCommandParam, Object> parameters = builder.put(LmHardwareCommandParam.WAITABLE, true)
                                                                 .put(LmHardwareCommandParam.EXPIRATION_DURATION, timeoutMillis)
