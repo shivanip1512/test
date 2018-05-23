@@ -1,8 +1,9 @@
 package com.cannontech.watchdogs.impl;
 
+import static com.cannontech.common.config.MasterConfigString.JMS_SERVER_BROKER_LISTEN_CONNECTION;
+
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
 
@@ -11,66 +12,86 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.transport.TransportListener;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 
 @Service
 public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
     private static final Logger log = YukonLogManager.getLogger(YukonMessageBrokerWatcher.class);
-    private ActiveMQConnection connection;
-    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired protected ConfigurationSource configurationSource;
 
     @Override
     public void start() {
-        executor.scheduleAtFixedRate(() -> {
-            if (connection == null) {
-                startMessageBrokerListener();
-            }
-        }, 0, 2, TimeUnit.MINUTES);
+        startMessageBrokerListener();
     }
-
+    
+    /**
+     * Starts listener for broker connection.
+     */
     private void startMessageBrokerListener() {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+        String brokerConnection = getBrokerConnection();
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerConnection);
+        ActiveMQConnection connection;
         try {
             connection = (ActiveMQConnection) factory.createConnection();
-            connection.addTransportListener(new ConnectionStateMonitor() {
-            });
+            connection.addTransportListener(new ConnectionStateMonitor());
+
+            log.info("Started listener on broker url: " + brokerConnection);
         } catch (JMSException e) {
-            log.info("Broker Not Started");
+            log.error("Could not start listener for broker " + brokerConnection);
         }
     }
 
     @Override
     public List<WatchdogWarnings> watch() {
-        connection = null;
         return generateWarning(WatchdogWarningType.YUKON_MESSAGE_BROKER_CONNECTION_STATUS, ServiceStatus.STOPPED);
+    }
+
+    /**
+     * Creates a failover connection string to Yukon message broker.
+     */
+    private String getBrokerConnection() {
+        String hostUri = "failover:tcp://" + globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
+        Integer port = globalSettingDao.getNullableInteger(GlobalSettingType.JMS_BROKER_PORT);
+
+        String maxInactivityDuration = "wireFormat.MaxInactivityDuration="
+            + (globalSettingDao.getInteger(GlobalSettingType.MAX_INACTIVITY_DURATION) * 1000);
+
+        String jmsHost = hostUri + (port == null ? ":61616" : ":" + port) + "?" + maxInactivityDuration;
+        String brokerConnection = configurationSource.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION, jmsHost);
+        log.debug("Broker connection url: ", brokerConnection);
+        return brokerConnection;
     }
 
     private class ConnectionStateMonitor implements TransportListener {
         @Override
         public void onCommand(Object command) {
-            log.info("Command detected");
+            log.debug("Command detected");
         }
 
         @Override
         public void onException(IOException exception) {
-            log.info("Exception detected: '" + exception + "'");
+            log.info("Exception, broker may be down", exception);
             watchAndNotify();
         }
 
         @Override
         public void transportInterupted() {
-            log.info("Transport Interupted detected");
+            log.info("Transport interupted, broker may be down.");
+            watchAndNotify();
         }
 
         @Override
         public void transportResumed() {
-            log.info("Transport Resumed detected");
+            log.debug("Connected to broker");
         }
     }
 }
