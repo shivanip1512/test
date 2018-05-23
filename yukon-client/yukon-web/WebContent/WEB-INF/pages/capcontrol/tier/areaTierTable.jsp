@@ -7,9 +7,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %> <%-- Used in Trends --%>
-
-<flot:defaultIncludes/>
 
 <cti:msgScope paths="modules.capcontrol.areas, modules.capcontrol">
 <c:if test="${empty areas}">

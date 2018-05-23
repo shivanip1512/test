@@ -2,7 +2,6 @@
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -19,7 +18,6 @@
 <tags:setFormEditMode mode="${mode}"/>
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
-<flot:defaultIncludes/>
 
 <c:set var="substationId" value="${substation.id}"/>
 
