@@ -24,6 +24,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -74,6 +75,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 public class AttributeServiceImpl implements AttributeService {
     private static final Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
@@ -294,7 +296,7 @@ public class AttributeServiceImpl implements AttributeService {
     public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins,
             final YukonUserContext context) {
         SortedMap<BuiltInAttribute, String> sortedAttributes =
-            new TreeMap<BuiltInAttribute, String>(getNameComparator(context));
+            new TreeMap<>(getNameComparator(context));
         for (BuiltInAttribute bin : bins) {
             sortedAttributes.put(bin, objectFormattingService.formatObjectAsString(bin, context));
         }
@@ -445,7 +447,7 @@ public class AttributeServiceImpl implements AttributeService {
         };
         chunkyTemplate.queryInto(generator, pointIds, TypeRowMapper.INTEGER, groupIds);
 
-        List<LiteStateGroup> groups = new ArrayList<LiteStateGroup>();
+        List<LiteStateGroup> groups = new ArrayList<>();
         for (Integer groupId : groupIds) {
             groups.add(stateGroupDao.getStateGroup(groupId));
         }
@@ -550,7 +552,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public List<PointIdentifier> findPointsForDevicesAndAttribute(Iterable<? extends YukonPao> devices,
             Attribute attribute) {
-        Map<PaoType, YukonPao> typeToDevice = new HashMap<PaoType, YukonPao>();
+        Map<PaoType, YukonPao> typeToDevice = new HashMap<>();
         for (YukonPao device : devices) {
             final PaoType theType = device.getPaoIdentifier().getPaoType();
             if (!typeToDevice.keySet().contains(theType)) {
@@ -625,5 +627,44 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         return new PaoMultiPointIdentifierWithUnsupported(devicesAndPoints, devicesWithoutPoint);
+    }
+    
+    @Override
+    public Multimap<SimpleDevice, Attribute> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
+            List<BuiltInAttribute> attributes, List<Integer> deviceIds) {
+
+        Multimap<Attribute, PaoType> attributeToPaoType = HashMultimap.create();
+        for (Entry<PaoType, Attribute> entry : paoDefinitionDao.getPaoTypeAttributesMultiMap().entries()) {
+            if (attributes.contains(entry.getValue())) {
+                attributeToPaoType.put(entry.getValue(), entry.getKey());
+            }
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YPO.paobjectid, YPO.type");
+        sql.append("FROM Device d");
+        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
+        sql.append("WHERE YPO.type").in(Sets.newHashSet(attributeToPaoType.values()));
+        sql.append("AND YPO.Category").eq_k(PaoCategory.DEVICE);
+        if (deviceIds != null) {
+            sql.append("AND YPO.paobjectid").in(deviceIds);
+        }
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
+
+        Multimap<PaoType, Attribute> paoTypeToAttribute = HashMultimap.create();
+        Multimaps.invertFrom(attributeToPaoType, paoTypeToAttribute);
+
+        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
+                
+        Multimap<SimpleDevice, Attribute> attributeToDevice = HashMultimap.create();
+        devices.forEach(device -> {
+            attributeToDevice.putAll(device, paoTypeToAttribute.get(device.getDeviceType()));
+        });
+
+        return attributeToDevice;
     }
 }

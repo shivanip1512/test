@@ -37,6 +37,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
@@ -49,6 +52,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     
     private SimpleTableAccessTemplate<DeviceDataMonitor> monitorTemplate;
     private SimpleTableAccessTemplate<DeviceDataMonitorProcessor> processorTemplate;
+    @Autowired private DbChangeManager dbChangeManager;
 
     @PostConstruct
     public void init() throws Exception {
@@ -67,11 +71,13 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     private final YukonRowMapper<DeviceDataMonitor> monitorRowMapper = new YukonRowMapper<DeviceDataMonitor>() {
         @Override
         public DeviceDataMonitor mapRow(YukonResultSet rs) throws SQLException {
-            return new DeviceDataMonitor(rs.getInt("monitorId"),
-                                         rs.getString("name"),
-                                         rs.getString("groupName"),
-                                         rs.getInt("enabled") == 1 ? true : false,
-                                                 null);
+            DeviceDataMonitor ddm = new DeviceDataMonitor(rs.getInt("monitorId"), rs.getString("name"),
+                rs.getString("groupName"), deviceGroupService.findGroupName(rs.getString("groupName")),
+                rs.getInt("enabled") == 1 ? true : false, null);
+            StoredDeviceGroup violationGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
+                ddm.getViolationsDeviceGroupName(), true);
+            ddm.setViolationGroup(violationGroup);
+            return ddm;
         }
     };
 
@@ -173,6 +179,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         int rowsAffected = yukonJdbcTemplate.update(sql);
         log.info("Deleted device data monitor: " + monitor.getName());
         
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         return rowsAffected > 0;
     }
 
@@ -180,7 +187,9 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Transactional
     public void save(DeviceDataMonitor monitor) {
         try {      
+            DbChangeType type = monitor.getId() == null ? DbChangeType.ADD : DbChangeType.UPDATE;
             monitorTemplate.save(monitor);
+            dbChangeManager.processDbChange(type, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save Device Data Monitor.", e);
         }

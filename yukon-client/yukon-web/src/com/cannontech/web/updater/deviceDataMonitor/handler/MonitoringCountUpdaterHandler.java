@@ -1,12 +1,13 @@
 package com.cannontech.web.updater.deviceDataMonitor.handler;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
+import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -15,24 +16,32 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceDataMonitor.DeviceDataMonitorUpdaterTypeEnum;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class MonitoringCountUpdaterHandler implements DeviceDataUpdaterHandler {
 
     private static final Logger log = YukonLogManager.getLogger(MonitoringCountUpdaterHandler.class);
 
-	@Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
 	@Autowired private DeviceGroupService deviceGroupService;
+	@Autowired private MonitorCacheService cacheService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    // monitorId / monitoring device count
+    private final Cache<Integer, Integer> monitorIdToDeviceCount =
+        CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
 	@Override
 	public String handle(int monitorId, YukonUserContext userContext) {
 		try {
-			DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-			String groupName = monitor.getGroupName();
-			
-			DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-			int deviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
-			return String.valueOf(deviceCount);
+		    Integer cachedCount = monitorIdToDeviceCount.getIfPresent(monitorId);
+            if (cachedCount == null) {
+                DeviceDataMonitor monitor = cacheService.getDeviceMonitor(monitorId);
+                DeviceGroup group = monitor.getGroup();
+                cachedCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
+                monitorIdToDeviceCount.put(monitorId, cachedCount);
+            }
+			return String.valueOf(cachedCount);
 		} catch (NotFoundException e) {
 			// no monitor by that id or no device group
 		    log.debug("no monitor found with id " + monitorId);

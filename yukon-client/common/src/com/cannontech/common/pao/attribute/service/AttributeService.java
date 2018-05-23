@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.Multimap;
 
 public interface AttributeService {
 
@@ -254,4 +255,10 @@ public interface AttributeService {
      */
     List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices,
             Set<? extends Attribute> attributes);
+
+    /**
+     * Returns list of devices and supported attributes
+     */
+    Multimap<SimpleDevice, Attribute> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
+            List<BuiltInAttribute> attributes, List<Integer> deviceIds);
 }

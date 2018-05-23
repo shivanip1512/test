@@ -1,9 +1,11 @@
 package com.cannontech.common.device.groups.editor.model;
 
+import java.io.Serializable;
+
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 
-public class StoredDeviceGroup extends MutableDeviceGroup {
+public class StoredDeviceGroup extends MutableDeviceGroup implements Serializable {
     private int id;
     private DeviceGroupPermission permission;
     

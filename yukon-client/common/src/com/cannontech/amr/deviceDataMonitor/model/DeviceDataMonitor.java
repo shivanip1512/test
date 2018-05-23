@@ -7,8 +7,11 @@ import java.util.stream.Collectors;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.LazyList;
 
 public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable<DeviceDataMonitor> {
@@ -20,19 +23,22 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     private Integer id;
     private String name;
     private boolean enabled = true;
+    private DeviceGroup group;
+    private StoredDeviceGroup violationGroup;
     private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
 
     public DeviceDataMonitor() {
         // Needed by Spring.
     }
 
-    public DeviceDataMonitor(Integer id, String name, String groupName, boolean enabled,
+    public DeviceDataMonitor(Integer id, String name, String groupName, DeviceGroup group, boolean enabled,
             List<DeviceDataMonitorProcessor> processors) {
         this.id = id;
         this.groupName = groupName;
         this.name = name.trim();
         this.enabled = enabled;
         this.processors = processors;
+        this.group = group;
     }
 
     public Integer getId() {
@@ -71,6 +77,10 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         return processors;
     }
     
+    public DeviceDataMonitorProcessor getProcessor(BuiltInAttribute attribute) {
+        return processors.stream().filter(p -> attribute == p.getAttribute()).findFirst().get();
+    }
+    
     public List<DeviceDataMonitorProcessor> getStateProcessors() {
         return processors.stream().filter(p -> p.getStateGroup() != null).collect(Collectors.toList());
     }
@@ -98,6 +108,26 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
             attributeStateGroup.add(new AttributeStateGroup(processor.getAttribute(), processor.getStateGroup()));
         }
         return attributeStateGroup;
+    }
+    
+    public List<BuiltInAttribute> getAttributes() {
+        return getProcessors().stream().map(p -> p.getAttribute()).collect(Collectors.toList());
+    }
+    
+    public StoredDeviceGroup getViolationGroup() {
+        return violationGroup;
+    }
+
+    public void setViolationGroup(StoredDeviceGroup violationGroup) {
+        this.violationGroup = violationGroup;
+    }
+
+    public DeviceGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(DeviceGroup group) {
+        this.group = group;
     }
 
     @Override
@@ -162,12 +192,11 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     public int compareTo(DeviceDataMonitor deviceDataMonitor) {
         return name.compareToIgnoreCase(deviceDataMonitor.name);
     }
-
+    
     @Override
     public String toString() {
         return String
                 .format("DeviceDataMonitor [id=%s, name=%s, groupName=%s, enabled=%s]",
                         id, name, groupName, enabled);
     }
-    
 }

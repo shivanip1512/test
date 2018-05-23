@@ -1,5 +1,7 @@
 package com.cannontech.common.device.groups.model;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.Validate;
 import org.springframework.core.style.ToStringCreator;
 
@@ -7,7 +9,7 @@ import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.util.NaturalOrderComparator;
 
-public abstract class DeviceGroup implements Comparable<DeviceGroup> {
+public abstract class DeviceGroup implements Comparable<DeviceGroup>, Serializable{
     private String cachedFullNameInternal = null;
 
     /**
@@ -99,26 +101,34 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (!getClass().isAssignableFrom(obj.getClass()))
+        }
+        if (!getClass().isAssignableFrom(obj.getClass())) {
             return false;
+        }
         final DeviceGroup other = (DeviceGroup) obj;
         if (getName() == null) {
-            if (other.getName() != null)
+            if (other.getName() != null) {
                 return false;
-        } else if (!getName().equals(other.getName()))
+            }
+        } else if (!getName().equals(other.getName())) {
             return false;
+        }
         if (getParent() == null) {
-            if (other.getParent() != null)
+            if (other.getParent() != null) {
                 return false;
-        } else if (!getParent().equals(other.getParent()))
+            }
+        } else if (!getParent().equals(other.getParent())) {
             return false;
+        }
         return true;
     }
 
+    @Override
     public int compareTo(DeviceGroup dg) {
         NaturalOrderComparator naturalOrderComparator = new NaturalOrderComparator();
         return naturalOrderComparator.compare(this.getFullName().toLowerCase(),dg.getFullName().toLowerCase());

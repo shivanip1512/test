@@ -1,13 +1,13 @@
 package com.cannontech.amr.deviceDataMonitor.service.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -41,11 +41,10 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
@@ -54,23 +53,27 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.DispatchClientConnection;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
 public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonitorCalculationService, MessageListener {
 
-    private static final int MINUTES_TO_WAIT_TO_START_CALCULATION = 5;
+    private static final int MINUTES_TO_WAIT_TO_START_CALCULATION = 1;
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private Executor executor = Executors.newCachedThreadPool();
@@ -81,14 +84,16 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private PointDao pointDao;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private JmsTemplate jmsTemplate;
     private DispatchClientConnection dispatchConnection;
 
     // monitors recalculating
     private Map<Integer, DeviceDataMonitor> pending = Collections.synchronizedMap(new HashMap<>());
+    // monitorId / violation count
+    private Map<Integer, Integer> monitorIdToViolationCount = Collections.synchronizedMap(new HashMap<>());
 
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorCalculationServiceImpl.class);
 
@@ -120,9 +125,10 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      * Start recalculating monitor
      */
     private void startWork(DeviceDataMonitor monitor) {
-        log.debug("Starting work " + monitor);
+
         executor.execute(() -> {
             try {
+                log.debug("Starting work " + monitor);
                 boolean isWorkingOnObject = pending.containsKey(monitor.getId());
                 if (!isWorkingOnObject) {
                     pending.put(monitor.getId(), monitor);
@@ -143,7 +149,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     }
                 }
             } catch (Exception e) {
-                log.error(monitor, e);
+                log.error(e);
             }
         });
     }
@@ -173,18 +179,24 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     Integer monitorId = ((DeviceDataMonitorStatusRequest) object).getMonitorId();
                     boolean isWorkingOnObject = pending.containsKey(monitorId);
                     String correlationId = message.getJMSCorrelationID();
-                    jmsTemplate.convertAndSend(message.getJMSReplyTo(),
-                        new DeviceDataMonitorStatusResponse(isWorkingOnObject),
-                        new CorrelationIdPostProcessor(correlationId));
+                    DeviceDataMonitorStatusResponse response;
+                    if (isWorkingOnObject) {
+                        response = new DeviceDataMonitorStatusResponse(isWorkingOnObject, null);
+                    } else {
+                        Integer violations = monitorIdToViolationCount.get(monitorId);
+                        response = new DeviceDataMonitorStatusResponse(isWorkingOnObject, violations);
+                    }
+                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), response, new CorrelationIdPostProcessor(correlationId));
                 } else if (object instanceof DeviceDataMonitorMessage) {
                     DeviceDataMonitorMessage monitorMessage = (DeviceDataMonitorMessage) object;
                     log.debug(monitorMessage);
                     switch (monitorMessage.getAction()) {
                     case CREATE:
                         createViolationGroup(monitorMessage.getUpdatedMonitor());
+                        cacheViolationGroupAndDeviceGroup(monitorMessage.getUpdatedMonitor());
                         startWork(monitorMessage.getUpdatedMonitor());
                     case DISABLE:
-                        clearViolationGroup(monitorMessage.getUpdatedMonitor());
+                        deviceGroupMemberEditorDao.removeAllChildDevices(monitorMessage.getUpdatedMonitor().getViolationGroup());
                         break;
                     case ENABLE:
                     case RECALCULATE:
@@ -192,6 +204,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                         break;
                     case UPDATE:
                         updateViolationGroup(monitorMessage);
+                        cacheViolationGroupAndDeviceGroup(monitorMessage.getUpdatedMonitor());
                         startWork(monitorMessage.getUpdatedMonitor());
                         break;
                     default:
@@ -206,15 +219,13 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         }
     }
     
-    /**
-     * Removes all devices from violation group
-     */
-    private void clearViolationGroup(DeviceDataMonitor monitor) {
-        StoredDeviceGroup violationsGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
+    private void cacheViolationGroupAndDeviceGroup(DeviceDataMonitor monitor) {
+        StoredDeviceGroup violationGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
             monitor.getViolationsDeviceGroupName(), false);
-        deviceGroupMemberEditorDao.removeAllChildDevices(violationsGroup);
+        monitor.setViolationGroup(violationGroup);
+        monitor.setGroup(deviceGroupService.findGroupName(monitor.getGroupName()));
     }
-
+    
     /**
      * Updates violation group
      * If the monitor's oldName is not equal to newName, then the device group's name is changed.
@@ -238,6 +249,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     message.getOldMonitor().getName(), false);
                 group.setName(newName);
                 deviceGroupEditorDao.updateGroup(group);
+                dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.DEVICE_DATA_MONITOR, message.getOldMonitor().getId());
             }
         }
     }
@@ -246,102 +258,94 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      * Creates violation group
      */
     private void createViolationGroup(DeviceDataMonitor monitor) {
-
         log.debug("Creating new device group " + monitor);
-        deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), true);
+        monitor.setViolationGroup(deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), true));
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
     }
 
     /**
      * Recalculates violations for monitor
      * This method does FULL recalculation of violations
      */
-    private void recalculateViolations(DeviceDataMonitor monitor) throws InterruptedException {
+    private void recalculateViolations(DeviceDataMonitor monitor) {
 
         log.info("{} recalculating violations", monitor);
 
-        Set<PaoIdentifier> devicesInViolation = findViolations(monitor);
+        Multimap<SimpleDevice, Attribute> devicesToEvaluate =
+            attributeService.getDevicesInGroupThatSupportAttribute(monitor.getGroup(), monitor.getAttributes(), null);
+        
+        List<SimpleDevice> devicesInViolationGroup =
+                deviceGroupMemberEditorDao.getChildDevices(monitor.getViolationGroup());
+        Set<Integer> inViolationGroup =
+                devicesInViolationGroup.stream().map(SimpleDevice::getDeviceId).collect(Collectors.toSet());
+        
+        Set<SimpleDevice> devicesInViolation = new HashSet<>();
+        if(!devicesToEvaluate.isEmpty()) {
+            devicesInViolation = findViolations(monitor, devicesToEvaluate);  
+        }
+
         log.info("{} recalculated violations, violations found {}", monitor, devicesInViolation.size());
 
-        StoredDeviceGroup violationsGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
-            monitor.getViolationsDeviceGroupName(), false);
-        List<SimpleDevice> devicesInViolationGroup = deviceGroupMemberEditorDao.getChildDevices(violationsGroup);
-
-        Set<Integer> inViolationGroup =
-            devicesInViolationGroup.stream().map(SimpleDevice::getDeviceId).collect(Collectors.toSet());
-        Set<Integer> violating = devicesInViolation.stream().map(PaoIdentifier::getPaoId).collect(Collectors.toSet());
+        Set<Integer> violating = devicesInViolation.stream().map(SimpleDevice::getDeviceId).collect(Collectors.toSet());
 
         if (!Sets.symmetricDifference(inViolationGroup, violating).isEmpty()) {
-            log.info("{} removing all devices from violation group {}", monitor, violationsGroup);
+            log.info("{} removing all devices from violation group {}", monitor, monitor.getViolationGroup());
 
-            deviceGroupMemberEditorDao.removeAllChildDevices(violationsGroup);
+            deviceGroupMemberEditorDao.removeAllChildDevices(monitor.getViolationGroup());
             if (!devicesInViolation.isEmpty()) {
                 log.info("{} adding {} devices to violation group {}", monitor, devicesInViolation.size(),
-                    violationsGroup);
-                deviceGroupMemberEditorDao.addDevices(violationsGroup, devicesInViolation);
+                    monitor.getViolationGroup());
+                deviceGroupMemberEditorDao.addDevices(monitor.getViolationGroup(), devicesInViolation);
             }
         }
         log.info("{} recaclulation is complete", monitor);
 
+        updateViolationCacheCount(monitor);
         sendSmartNotifications(inViolationGroup, violating, monitor);
-        
+
     }
     
     @Override
-    public void recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData) {
-       
-        log.info(" {} recalculating violation for {} point data {}",  monitor, richPointData.getPaoPointIdentifier(),
-            richPointData.getPointValue());
-        
-        PaoIdentifier pao = richPointData.getPaoPointIdentifier().getPaoIdentifier();
-        PointValueQualityHolder pointValue = richPointData.getPointValue();
-        
-        if (!monitor.isEnabled() && pao.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
+    public void recalculateViolation(DeviceDataMonitor monitor, Multimap<SimpleDevice, Attribute> devices){
+
+        if(devices.isEmpty()) {
             return;
         }
         
-        Integer stateGroupId = null;
-                
-        if (richPointData.getPaoPointIdentifier().getPointIdentifier().getPointType().isStatus()) {
-            stateGroupId = pointDao.getLitePoint(richPointData.getPaoPointIdentifier()).getStateGroupID();
-        }
-       
-        boolean foundViolation = false;
+        SimpleDevice device = devices.keySet().iterator().next();
+        log.info("{} recalculating violations for {} attributes {}", monitor, device, devices.values());
 
-        for (DeviceDataMonitorProcessor processor : monitor.getProcessors()) {
-            if (attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), processor.getAttribute())
-                && isViolating(processor, stateGroupId, pointValue)) {
-                log.info("Found violation for monitor:{} processor:{} point value:{}", monitor, processor, pointValue);
-                foundViolation = true;
-                break;
-            }
-        }
-        
-        if(!foundViolation) {
-            log.info("Didn't fine fiolations for monitor:{}", monitor);
-        }
-        
-        StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(
-            SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), true);
-        boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(violationsDeviceGroup, pao);
+        boolean foundViolation = !findViolations(monitor, devices).isEmpty();
+
+        boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(monitor.getViolationGroup(), device);
         
         //found violation and device is not in violation group
         if(foundViolation && !inViolationsGroup) {
             //add device to group
-            deviceGroupMemberEditorDao.addDevices(violationsDeviceGroup, pao);
-            sendSmartNotificationEvent(monitor, pao.getPaoId(), MonitorState.IN_VIOLATION);
+            deviceGroupMemberEditorDao.addDevices(monitor.getViolationGroup(), device);
+            sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
+            log.info("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
         }
         
-        //no violation found but device is in violation group
+        // no violation found but device is in violation group
         if (!foundViolation && inViolationsGroup) {
             // remove device from group
-            deviceGroupMemberEditorDao.removeDevicesById(violationsDeviceGroup,
-                Collections.singleton(pao.getPaoId()));
-            sendSmartNotificationEvent(monitor, pao.getPaoId(), MonitorState.OUT_OF_VIOLATION);
+            deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
+            sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
+            log.info("{} removing {} form violation group {}", monitor, device, monitor.getViolationGroup());
         }
         
-        log.info(" {} recalculation of violation for {} point data {} is complete",  monitor, richPointData.getPaoPointIdentifier(),
-            richPointData.getPointValue());
-      
+        updateViolationCacheCount(monitor);
+        log.info(" {} recalculation of violation for {} is complete",  monitor, device);
+    }
+    
+    /**
+     * Cache violations count to be used when data updaters send request to SM to get the count.
+     */
+    private void updateViolationCacheCount(DeviceDataMonitor monitor) {
+        StoredDeviceGroup violationsGroup = monitor.getViolationGroup();
+        int violationsCount = deviceGroupService.getDeviceCount(Collections.singleton(violationsGroup));
+        monitorIdToViolationCount.put(monitor.getId(), violationsCount);
     }
 
     /**
@@ -349,30 +353,27 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      * This method analyzes the individual point data from dynamicDataCache.
      * If the point data is not available in cache it will ask dispatch for it.
      */
-    private Set<PaoIdentifier> findViolations(DeviceDataMonitor monitor) throws InterruptedException {
+    private Set<SimpleDevice> findViolations(DeviceDataMonitor monitor,
+            Multimap<SimpleDevice, Attribute> devicesToAttribute) {
 
-        DeviceGroup monitorGroup = deviceGroupService.findGroupName(monitor.getGroupName());
-        Set<PaoIdentifier> violatingDevices = Sets.newHashSet();
-        
-        //find distinct attributes for monitor
-        List<BuiltInAttribute> attributes = monitor.getProcessors().stream().map(p -> p.getAttribute()).collect(Collectors.toList());
+        Set<SimpleDevice> violatingDevices = Sets.newHashSet();
+        Multimap<Attribute, SimpleDevice> attributeToDevice = HashMultimap.create();
+        Multimaps.invertFrom(devicesToAttribute, attributeToDevice);
 
-        for (BuiltInAttribute attribute : attributes) {
-            //for monitor group and attribute - find device
-            List<SimpleDevice> devices =
-                attributeService.getDevicesInGroupThatSupportAttribute(monitorGroup, attribute);
-            
-            //ignore system devices and devices already in violation
-            devices.removeIf(device -> device.getPaoIdentifier().getPaoType().getPaoCategory() != PaoCategory.DEVICE
-                || violatingDevices.contains(device.getPaoIdentifier()));
+        for (Attribute attribute : attributeToDevice.keySet()) {
+            // for monitor group and attribute - find device
+            Collection<SimpleDevice> devices = attributeToDevice.get(attribute);
+
+            // already in violation
+            devices.removeIf(d -> violatingDevices.contains(d));
 
             if (devices.isEmpty()) {
                 continue;
             }
-            BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, attribute);
+            BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, (BuiltInAttribute) attribute);
 
-            Map<Integer, PaoIdentifier> pointIdsToPao =
-                points.keySet().stream().collect(Collectors.toMap(p -> points.get(p).getLiteID(), p -> p));
+            Map<Integer, SimpleDevice> pointIdsToPao = points.keySet().stream().collect(
+                Collectors.toMap(p -> points.get(p).getLiteID(), p -> new SimpleDevice(p)));
 
             if (pointIdsToPao.isEmpty()) {
                 continue;
@@ -385,19 +386,18 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             Map<Integer, Integer> pointIdsToStateGroup =
                 points.values().stream().collect(Collectors.toMap(p -> p.getLiteID(), p -> p.getStateGroupID()));
 
-            //find processor for the attribute
-            Optional<DeviceDataMonitorProcessor> processor =
-                monitor.getProcessors().stream().filter(p -> attribute == p.getAttribute()).findFirst();
-            
-            if (processor.isPresent()) {
-                //check for violations
-                pointValues.forEach(value -> {
-                    if (!violatingDevices.contains(pointIdsToPao.get(value.getId()))
-                        && isViolating(processor.get(), pointIdsToStateGroup.get(value.getId()), value)) {
-                        log.debug("Found violation for processor:{} point value:{}", processor, value);
-                        violatingDevices.add(pointIdsToPao.get(value.getId()));
-                    }
-                });
+            // find processor for the attribute
+            DeviceDataMonitorProcessor processor = monitor.getProcessor((BuiltInAttribute) attribute);
+
+            for (PointValueQualityHolder value : pointValues) {
+                SimpleDevice pao = pointIdsToPao.get(value.getId());
+                if (violatingDevices.contains(pao)) {
+                    continue;
+                }
+                if (isViolating(processor, pointIdsToStateGroup.get(value.getId()), value)) {
+                    log.debug("Found violation for processor:{} point value:{}", processor, value);
+                    violatingDevices.add(pao);
+                }
             }
         }
 
@@ -409,6 +409,12 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      */
     private boolean isViolating(DeviceDataMonitorProcessor processor, Integer stateGroupId,
             PointValueQualityHolder pointValue) {
+        
+        if (pointValue != null && pointValue.getPointQuality().isInvalid()) {
+            log.debug("Point Quality is invalid - Attribute {} Processor type:{} Point value:{}.", processor.getAttribute(),
+                processor.getType(), pointValue);
+        }
+        
         if (pointValue != null && !pointValue.getPointQuality().isInvalid()) {
             PointType type = PointType.getForId(pointValue.getType());
             if (processor.getType() == ProcessorType.STATE
@@ -448,7 +454,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         log.debug("Sending event=" + events);
         smartNotificationEventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
     }
-    
+        
     /**
      * Creates smart notification events.
      */

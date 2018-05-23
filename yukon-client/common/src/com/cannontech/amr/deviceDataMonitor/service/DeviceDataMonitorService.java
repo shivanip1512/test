@@ -10,17 +10,13 @@ import com.cannontech.user.YukonUserContext;
 public interface DeviceDataMonitorService {
     
     /**
-     * Returns a boolean indicating whether or not a worker is currently "working"
-     * on calculating violations for a monitor
-     * @throws ExecutionException 
+     * Sends messages to SM to ask if violations are being calculated. Returns "CALCULATING" if calculation is in
+     * progress, "NA" if the processing didn't start yet or violations count if available.
+     * 
+     * @throws ExecutionException
      */
-    boolean areViolationsBeingCalculatedForMonitor(Integer monitorId) throws ExecutionException;
-    
-    /**
-     * Gets the count of the number of devices in the monitor's violations group
-     */
-    int getMonitorViolationCountById(int monitorId);
-
+    String getViolations(Integer monitorId) throws ExecutionException;
+   
     /**
      * Toggles monitor enabled status. If disabled, make enabled. If enabled,
      * make disabled. Returns new state of the monitor.

@@ -1,6 +1,5 @@
 package com.cannontech.amr.deviceDataMonitor.service.impl;
 
-import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.ConnectionFactory;
@@ -18,10 +17,6 @@ import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
@@ -30,16 +25,10 @@ import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.jms.RequestTemplateImpl;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 
 public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
-    
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
-    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
-    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private ConfigurationSource configSource;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private SmartNotificationSubscriptionService smartNotificationSubscriptionService;
@@ -50,13 +39,11 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     private static final String statusRequestQueueName = "yukon.qr.obj.amr.dataDeviceMonitor.RecalculateStatus";
     
     private RequestTemplateImpl<DeviceDataMonitorStatusResponse> statusRequestTemplate;
-    @Autowired private DbChangeManager dbChangeManager;
-        
+
     @Override
     public DeviceDataMonitor create(DeviceDataMonitor monitor) throws DuplicateException {
         deviceDataMonitorDao.save(monitor);
         jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, null, Action.CREATE));
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         return monitor;
     }
     
@@ -65,7 +52,6 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         DeviceDataMonitor existingMonitor = deviceDataMonitorDao.getMonitorById(monitor.getId());
         deviceDataMonitorDao.save(monitor);
         jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, existingMonitor,  Action.UPDATE));
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         return monitor;
     }
     
@@ -76,20 +62,11 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
                                                                  monitor.getId().toString(), 
                                                                  monitor.getName(), userContext);
         deviceDataMonitorDao.deleteMonitor(monitor);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
     }
     
     @Override
     public void recaclulate(DeviceDataMonitor monitor) {
         jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, null, Action.RECALCULATE));
-    }
-    
-    @Override
-    public int getMonitorViolationCountById(int monitorId) {
-        DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-        StoredDeviceGroup violationsGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), false);
-        int violationsCount = deviceGroupService.getDeviceCount(Collections.singleton(violationsGroup));
-        return violationsCount;
     }
 
     @Override
@@ -100,16 +77,15 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         Action action = monitor.isEnabled()? Action.ENABLE : Action.DISABLE;
         deviceDataMonitorDao.save(monitor);
         jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, action));
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
         log.info("Updated deviceDataMonitor enabled status: status=" + newStatus + ", deviceDataMonitor=" + monitor);
         return newStatus;
     }
 
     
     @Override
-    public boolean areViolationsBeingCalculatedForMonitor(Integer monitorId) throws ExecutionException {
+    public String getViolations(Integer monitorId) throws ExecutionException {
         log.debug("Check if violations being calculated for monitor id: " + monitorId);
-        boolean isWorkingOnObject = false;
+
         DeviceDataMonitorStatusRequest request = new DeviceDataMonitorStatusRequest(monitorId);
         BlockingJmsReplyHandler<DeviceDataMonitorStatusResponse> replyHandler =
             new BlockingJmsReplyHandler<>(DeviceDataMonitorStatusResponse.class);
@@ -117,9 +93,14 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     
         try {
             DeviceDataMonitorStatusResponse response = replyHandler.waitForCompletion();
-            isWorkingOnObject = response.isWorkingOnObject();
-            log.debug("monitor id: " + monitorId + " isWorkingOnObject=" + isWorkingOnObject);
-            return isWorkingOnObject;
+            if(response.isWorkingOnObject()){
+                return "CALCULATING";
+            }
+            if(response.getViolationCount() == null) {
+                return "NA"; 
+            }
+           
+            return String.valueOf(response.getViolationCount());
         } catch (ExecutionException e) {
             log.error("Error sending message to Service Manager", e);
             throw e;
