@@ -73,7 +73,7 @@ import com.google.common.collect.Sets;
 
 public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonitorCalculationService, MessageListener {
 
-    private static final int MINUTES_TO_WAIT_TO_START_CALCULATION = 1;
+    private static final int MINUTES_TO_WAIT_TO_START_CALCULATION = 5;
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private Executor executor = Executors.newCachedThreadPool();
