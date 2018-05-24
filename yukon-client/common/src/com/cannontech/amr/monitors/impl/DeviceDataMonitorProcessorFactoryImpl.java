@@ -20,6 +20,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -79,17 +80,24 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
     public void handlePointDataReceived(DeviceDataMonitor monitor, RichPointData richPointData) {
 
         if (richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType() == PaoType.SYSTEM
-            || richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType().getPaoCategory() != PaoCategory.DEVICE
-            || richPointData.getPointValue().getPointQuality().isInvalid() || !monitor.isEnabled()
+            || richPointData.getPointValue().getPointQuality().isInvalid() 
+            || !monitor.isEnabled()
             || monitor.getAttributes().isEmpty()) {
             if (richPointData.getPointValue().getPointQuality().isInvalid()) {
+                
                 log.debug("monitor {} discarded point data {} because point quality is invalid", monitor,
                     richPointData.getPointValue());
             }
             return;
         }
 
-        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        SimpleDevice device;
+        try {
+            device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        } catch (Exception e) {
+            // device type is invalid for this monitor
+            return;
+        }
         
         if (devicesToIgnore.getIfPresent(monitor.getId()) != null
             && devicesToIgnore.getIfPresent(monitor.getId()).contains(device.getDeviceId())) {
