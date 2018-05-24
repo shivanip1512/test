@@ -1,5 +1,6 @@
 package com.cannontech.services.smartNotification.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,10 +40,10 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
         if(allEvents.isEmpty()){
             return subscriptions;
         }
-        List<Object> monitorIds = allEvents.stream().map(e -> DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters())).collect(
-                Collectors.toList());         
+        Set<Object> monitorIds = allEvents.stream().map(e -> DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters())).collect(
+                Collectors.toSet());         
         List<SmartNotificationSubscription> allSubscriptions = subscriptionDao.getSubscriptions(eventType,
-            DeviceDataMonitorEventAssembler.MONITOR_ID, monitorIds, frequency);
+            DeviceDataMonitorEventAssembler.MONITOR_ID, new ArrayList<>(monitorIds), frequency);
         
         SetMultimap<Integer, SmartNotificationSubscription> monitorIdToSubscription = HashMultimap.create();
         allSubscriptions.forEach(s-> {
