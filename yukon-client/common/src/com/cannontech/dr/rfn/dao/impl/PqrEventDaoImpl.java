@@ -193,6 +193,7 @@ public class PqrEventDaoImpl implements PqrEventDao {
         sql.append("ALTER TABLE PqrEventLog");
         sql.append("ADD CONSTRAINT FK_PqrEvent_InventoryBase FOREIGN KEY (InventoryId)");
         sql.append("REFERENCES InventoryBase (InventoryId)");
+        sql.append("ON DELETE CASCADE");
         jdbcTemplate.update(sql);
     }
     
