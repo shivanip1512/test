@@ -278,17 +278,19 @@ yukon.ami.ddm = (function () {
         },
         
         /** Add a processor */
-        _processor_add = function (tableClass) {
+        _processor_add = function (btn) {
             
             _waiting_to_finish_N_before_doing_counts = 0;
             
-            var template_row = $(tableClass + ' .js-new-row-model'),
+            var tableClass = btn.hasClass('js-add-value-processor') ? '.js-value-processors-table' : '.js-processors-table',
+                isValueProcessor = btn.hasClass('js-add-value-processor') ? true : false;
+                template_row = $(tableClass + ' .js-new-row-model'),
                 new_row = template_row.clone(),
                 new_undo_row = template_row.next('tr').clone(),
                 last_index = 0,
                 statusProcessorsTableLength = $('.js-processors-table tbody tr').length,
-                valueProcessorsTableLength = $('.js-value-processors-table tbody tr').length;
-            
+                valueProcessorsTableLength = $('.js-value-processors-table tbody tr').length,
+
             new_row.removeClass('js-new-row-model');
             new_row.addClass('processor');
             
@@ -336,11 +338,17 @@ yukon.ami.ddm = (function () {
             .find('select').first().focus();
             
             //make attribute selector chosen selector
-            var attributeSelector = new_row.find('.js-attribute');
-            attributeSelector.addClass('js-init-chosen');
-            var attributeSelector = new_row.find('.js-value-attribute');
-            attributeSelector.addClass('js-init-chosen');
+            if (isValueProcessor) {
+                var valueAttributeSelector = new_row.find('.js-value-attribute');
+                valueAttributeSelector.addClass('js-init-chosen');
+            } else {
+                var attributeSelector = new_row.find('.js-attribute');
+                attributeSelector.addClass('js-init-chosen');
+            }
+
             yukon.ui.initContent(new_row);
+            
+            _validate_processors();
         },
         
         /** Change the state of processors.
@@ -544,19 +552,26 @@ yukon.ami.ddm = (function () {
         /** Validate the processors. */
         _validate_processors = function () {
             
-            var missingCount = 0;
-            var statusProcs = $('.js-processors-table .processor').filter(":visible");
+            var missingCount = 0,
+                statusProcs = $('.js-processors-table .processor').filter(":visible"),
+                valueProcs = $('.js-value-processors-table .processor').filter(":visible"),
+                allProcs = statusProcs.length + valueProcs.length,
+                enable = $('.js-calculating-warning').hasClass('dn') ? false : true;
+                
             statusProcs.each(function (idx, row) {
                 var ctrl = _get_state_group_value($(row));   // for IE8
                 if (ctrl == null || ctrl.length < 1) {
                     missingCount++;
                 }
             });
-            var valueProcs = $('.js-value-processors-table .processor').filter(":visible");
-            var allProcs = statusProcs.length + valueProcs.length;
+            valueProcs.each(function (idx, row) {
+                var attributeSelected = $(row).find('.js-value-attribute').val();
+                if (attributeSelected == null || attributeSelected == "-1") {
+                    missingCount++;
+                }
+            });
 
             //only enable if not calculating
-            var enable = $('.js-calculating-warning').hasClass('dn') ? false : true;
             $('.js-save-monitor').prop('disabled', missingCount > 0 || allProcs < 1 ? true : enable);
         },
         
@@ -640,11 +655,11 @@ yukon.ami.ddm = (function () {
             $('.js-processors-table').on('change', '.js-state-group', _state_group_changed);
             
             $(document).on('click', '.js-add_processor', function () {
-                _processor_add('.js-processors-table')
+                _processor_add($(this));
             });
             
             $(document).on('click', '.js-add-value-processor', function () {
-                _processor_add('.js-value-processors-table')
+                _processor_add($(this));
             });
             
             $(document).on('change', '.js-processor-type', function () {
@@ -688,8 +703,7 @@ yukon.ami.ddm = (function () {
         },
         
         violationUpdater: function (data) {
-            var value = data.value,
-                count = +value;
+            var value = data.value;
             $('.js-violations').addClass('dn');
             $('.js-calculating-disable').removeAttr('disabled');
             $('.js-calculating-warning').toggleClass('dn', true);
@@ -703,8 +717,8 @@ yukon.ami.ddm = (function () {
                 $('.js-calculating-warning').toggleClass('dn', false);
             }
             else {
-                $('.js-violations-count').removeClass('dn').text(count);
-                if (count > 0) {
+                $('.js-violations-count').removeClass('dn').text(value);
+                if (value > 0) {
                     $('.js-violations-exist').removeClass('dn');
                 }
                 _validate_processors();

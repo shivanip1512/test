@@ -26,7 +26,7 @@
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
 
-    <c:set var="disableAddProcessAtStart" value="true"/>
+    <c:set var="disableAddProcessAtStart" value="${empty monitor.groupName ? 'true' : 'false'}"/>
     <cti:displayForPageEditModes modes="EDIT">
         <cti:url value="/amr/deviceDataMonitor/update" var="action"/>
         <c:set var="disableAddProcessAtStart" value="false"/>
@@ -263,11 +263,11 @@
                                         </c:forEach>
                                     </select>
                                     <span class="js-processor-value">
-                                        <i:inline key=".value"/>: <input type="text" size="8" data-name="processors[0].processorValue"/>
+                                        <i:inline key=".value"/>: <input type="text" size="8" data-name="processors[0].processorValue" inputClass="MR10"/>
                                     </span>
                                     <span class="js-range-values dn">
-                                        <i:inline key="yukon.common.min"/>: <input type="text" size="8" data-name="processors[0].rangeMin"/>
-                                        <i:inline key="yukon.common.max"/>: <input type="text" size="8" data-name="processors[0].rangeMax"/>
+                                        <i:inline key="yukon.common.min"/>: <input type="text" size="8" data-name="processors[0].rangeMin" inputClass="MR10"/>
+                                        <i:inline key="yukon.common.max"/>: <input type="text" size="8" data-name="processors[0].rangeMax" inputClass="MR10"/>
                                     </span>
                                 </td>
                                 <td class="actions">
@@ -291,13 +291,14 @@
                                             <c:set var="notRangeClass" value="${processor.type == 'RANGE' ? 'dn' : ''}"/>
                                             <span class="js-processor-value ${notRangeClass}">
                                                 <i:inline key=".value"/>:
-                                                <tags:input size="8" path="processors[${status.index}].processorValue" displayValidationToRight="true"/>
+                                                <tags:input size="8" path="processors[${status.index}].processorValue" 
+                                                    displayValidationToRight="true" inputClass="MR10"/>
                                             </span>
                                             <span class="js-range-values ${rangeClass}">
                                                 <i:inline key="yukon.common.min"/>: <tags:input size="8" path="processors[${status.index}].rangeMin" 
-                                                    displayValidationToRight="true"/>
+                                                    displayValidationToRight="true" inputClass="MR10"/>
                                                 <i:inline key="yukon.common.max"/>: <tags:input size="8" path="processors[${status.index}].rangeMax" 
-                                                    displayValidationToRight="true"/>
+                                                    displayValidationToRight="true" inputClass="MR10"/>
                                             </span>
                                         </td>
                                         <tags:dynamicTableActionsCell tableId="valueProcessorsTable"
