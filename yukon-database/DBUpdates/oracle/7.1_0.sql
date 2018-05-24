@@ -178,6 +178,45 @@ WHERE PageName IN (
 INSERT INTO DBUpdates VALUES ('YUK-18091', '7.1.0', SYSDATE);
 /* @end YUK-18091 */
 
+/* @start YUK-18323 */
+/* First delete any non-favorites where duplicate favorites exist */
+DELETE UserPage P1
+WHERE P1.PagePath IN
+(
+    SELECT P2.PagePath
+    FROM UserPage P2
+    WHERE P1.PagePath = P2.PagePath
+    AND P1.UserId = P2.UserId
+    AND P1.UserPageId != P2.UserPageId
+    AND P1.Favorite = 0
+    AND P2.Favorite = 1
+);
+
+/* Then delete all remaining, older duplicates (or the lower UserPageId if LastAccess is equal) */
+DELETE UserPage P1
+WHERE P1.PagePath IN
+(
+    SELECT P2.PagePath
+    FROM UserPage P2
+    WHERE P1.PagePath = P2.PagePath
+    AND P1.UserId = P2.UserId
+    AND P1.UserPageId != P2.UserPageId
+    AND
+    (
+        ( 
+            P2.LastAccess > P1.LastAccess
+        ) 
+        OR
+        (
+            P2.LastAccess = P1.LastAccess
+            AND P2.UserPageId > P1.UserPageId
+        )
+    )
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-18323', '7.1.0', SYSDATE);
+/* @end YUK-18323 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
