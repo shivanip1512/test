@@ -32,7 +32,6 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.events.loggers.CommanderEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.WebserverUrlResolver;
@@ -61,7 +60,6 @@ public class GroupCommanderController {
     private static final Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
     
-    @Autowired private CommanderEventLogService commanderEventLogService;
     @Autowired private ContactDao contactDao;
     @Autowired private AlertService alertService;
     @Autowired private DeviceGroupService deviceGroupService;
@@ -129,11 +127,6 @@ public class GroupCommanderController {
                     if (sendEmail) {
                         sendEmail(emailAddress, hostURL, partialUrl, commandString, result, context, request);
                     }
-                    commanderEventLogService.groupCommandCompleted(
-                        result.getDetail(CollectionActionDetail.SUCCESS).getDevices().getDeviceCount(),
-                        result.getCounts().getFailedCount(),
-                        0,
-                        result.getExecutionExceptionText(), String.valueOf(result.getCacheKey()));
                 }
             };
             SimpleCallback<CollectionActionResult> alertCallback =
@@ -141,8 +134,6 @@ public class GroupCommanderController {
                     messageSourceAccessor, emailCallback, request);
             int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, userInputs, collection,
                 commandString, CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, alertCallback, context);
-            commanderEventLogService.groupCommandInitiated(collection.getDeviceCount(), commandString,
-                String.valueOf(cacheKey), context.getYukonUser());
             return "redirect:/collectionActions/progressReport/detail?key=" + cacheKey;
         } else {
             model.addAttribute("errorMsg", messageSourceAccessor.getMessage(baseKey + "notAuthorized"));

@@ -14,8 +14,8 @@ public interface DemandResetEventLogService {
                                             Integer unsupportedVerifyCount,
                                             @Arg(ArgEnum.resultKey) String resultKey,
                                             @Arg(ArgEnum.username) LiteYukonUser user);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset.deprecated")
     public void demandResetInitiated(@Arg(ArgEnum.username) LiteYukonUser user,
                                           @Arg(ArgEnum.deviceName) String deviceName,
                                           @Arg(ArgEnum.deviceRequestType) String deviceRequestType);
@@ -32,6 +32,26 @@ public interface DemandResetEventLogService {
                                             @Arg(ArgEnum.failureCount) Integer failure,
                                             @Arg(ArgEnum.notAttemptedCount) Integer notAttempted);
 
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
+    public void demandResetInitiated(String action,
+                                       String detail,
+                                       @Arg(ArgEnum.totalCount)Integer numDevices,
+                                       @Arg(ArgEnum.username)LiteYukonUser username,
+                                       @Arg(ArgEnum.resultKey)String key);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
+    public void demandResetCompleted(String action,
+                                    String detail,
+                                    String creStatus,
+                                    @Arg(ArgEnum.resultKey) String resultKey);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
+    public void demandResetCancelled(String action,
+                                      String detail,
+                                      @Arg(ArgEnum.username) LiteYukonUser user,
+                                      @Arg(ArgEnum.resultKey) String resultKey
+                                      );
+    
     /**
      * Do not use this method, only here for legacy demand reset functionality (multispeak and EIM callbacks)
      */

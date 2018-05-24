@@ -18,6 +18,7 @@
   
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionServiceImpl"/>
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionLogDetailServiceImpl"/>
+    <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionLoggingHelperServiceImpl"/>
     
     <bean id="commandRequestExecutionDao"
         class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl"/>

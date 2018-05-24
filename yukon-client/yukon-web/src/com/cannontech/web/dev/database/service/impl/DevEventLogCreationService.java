@@ -268,15 +268,10 @@ public class DevEventLogCreationService {
                 int newRouteId = 200;
                 
                 String command = "putvalue xyz";
-                String resultKey = "12345!@#$%";
                 
                 commandEventLogService.changeRoute(user, paoName, oldRouteName, newRouteName, paoId, oldRouteId, newRouteId);
                 commandEventLogService.executeOnPao(user, command, paoName, paoId);
                 commandEventLogService.executeOnSerial(user, command, serialNumber, oldRouteName, oldRouteId);
-
-                commandEventLogService.groupCommandInitiated(20, command, resultKey, user);
-                commandEventLogService.groupCommandCancelled(resultKey, user);
-                commandEventLogService.groupCommandCompleted(15, 2, 3, "exceptionMessage", resultKey);
             }
         });
         executables.put(LogType.COMMAND_REQUEST_EXECUTOR, new DevEventLogExecutable() {
@@ -406,6 +401,7 @@ public class DevEventLogCreationService {
             }
         });
         executables.put(LogType.DEVICE_CONFIG, new DevEventLogExecutable() {
+            @SuppressWarnings("deprecation")
             @Override
             public void execute(DevEventLog devEventLog) {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
@@ -414,9 +410,7 @@ public class DevEventLogCreationService {
                 String deviceConfig = "My Device Config";
                 String deviceName = "Device Name 123456";
                 
-                deviceConfigEventLogService.assignConfigInitiated(deviceConfig, 50, yukonUser);
                 deviceConfigEventLogService.assignConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
-                deviceConfigEventLogService.unassignConfigInitiated(50, yukonUser);
                 deviceConfigEventLogService.unassignConfigFromDeviceCompleted(deviceName, yukonUser, 0);
                 
                 deviceConfigEventLogService.readConfigInitiated(20, resultKey, yukonUser);
@@ -524,7 +518,6 @@ public class DevEventLogCreationService {
             public void execute(DevEventLog devEventLog) {
                 LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
                 String scheduleName = devEventLog.getIndicatorString() + "ScheduleName";
-                int paoId = 123;
                 
                 String meterNumber = devEventLog.getIndicatorString() + "meterNumber";
                 String deviceRequestType = DeviceRequestType.GROUP_ATTRIBUTE_READ.getShortName();
@@ -642,7 +635,6 @@ public class DevEventLogCreationService {
         executables.put(LogType.RFN_DEVICE, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
-                PaoIdentifier paoId = new PaoIdentifier(67,  PaoType.RFN420CD);
                 String templateName = devEventLog.getIndicatorString() + "TemplateName";
                 String sensorManufacturer = devEventLog.getIndicatorString() + "SensorManufacturer";
                 String sensorModel = devEventLog.getIndicatorString() + "SensorModel";
@@ -932,13 +924,13 @@ public class DevEventLogCreationService {
 
     public static enum LogType implements Displayable {
         ACCOUNT(AccountEventLogService.class, 59),
-        COMMAND(CommanderEventLogService.class, 6),
+        COMMAND(CommanderEventLogService.class, 3),
         COMMAND_REQUEST_EXECUTOR(CommandRequestExecutorEventLogService.class, 2),
         COMMAND_SCHEDULE(CommandScheduleEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 5),
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 37),
-        DEVICE_CONFIG(DeviceConfigEventLogService.class, 16),
+        DEVICE_CONFIG(DeviceConfigEventLogService.class, 14),
         DISCONNECT(DisconnectEventLogService.class, 7),
         ECOBEE(EcobeeEventLogService.class, 3),
         ENDPOINT(EndpointEventLogService.class, 2),

@@ -32,6 +32,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -286,6 +287,16 @@ public class CollectionActionResult {
     // used by JS
     public Map<CollectionActionDetail, CollectionActionDetailGroup> getDetails() {
         return details;
+    }
+    
+    public String getDetailsString(MessageSourceAccessor accessor) {
+        String retValue = "";
+        retValue = this.getInputs().getInputsString();
+        for(CollectionActionDetail key : details.keySet()){
+            retValue += accessor.getMessage(key) + ":" + details.get(key).getDevices().getDeviceCount() + "," + System.lineSeparator();
+        }
+        return retValue;
+        
     }
     
     public boolean isCached() {

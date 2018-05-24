@@ -32,7 +32,6 @@ import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -50,7 +49,6 @@ public class DeviceConfigController {
     @Autowired private ProcessorFactory processorFactory;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigService deviceConfigService;
-    @Autowired private DeviceConfigEventLogService eventLogService;
     @Autowired private AlertService alertService;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired protected CollectionActionService collectionActionService;
@@ -113,7 +111,6 @@ public class DeviceConfigController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
 
         DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
-        eventLogService.assignConfigInitiated(deviceConfig.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(deviceConfig, userContext.getYukonUser());
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
@@ -132,7 +129,6 @@ public class DeviceConfigController {
     public String doUnassignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
 
-        eventLogService.unassignConfigInitiated(deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor(userContext.getYukonUser());
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.UNASSIGN_CONFIG, null,
             deviceCollection, userContext);

@@ -23,6 +23,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionResult
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionLoggingHelperService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -50,6 +51,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Autowired private List<CollectionActionCancellationService> cancellationService;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceMemoryCollectionProducer deviceMemoryCollectionProducer;
+    @Autowired private CollectionActionLoggingHelperService logHelper;
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionServiceImpl.class);
     
@@ -130,6 +132,11 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             addUnsupportedToResult(CANCELED, result, result.getCancelableDevices());
         }
         result.setStopTime(new Instant(stopTime));
+        try {
+            logHelper.logActionCompletedCanceled(result);
+        } catch (ClassNotFoundException e) {
+            log.warn("CollectionAction needs to be added to CollectionActionLoggingHelperServiceImpl to be logged", e);
+        }
     }
 
     @Override
@@ -185,8 +192,14 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
         log.debug("Created new collecton action result:");
+        try {
+            logHelper.logActionInitiated(result);
+        } catch (ClassNotFoundException e) {
+            log.warn("CollectionAction needs to be added to CollectionActionLoggingHelperServiceImpl to be logged", e);
+        }
         result.setLogger(log);
         result.log();
         cache.put(result.getCacheKey(), result);
+        
     }
 }
