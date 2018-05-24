@@ -450,8 +450,8 @@ yukon.ami.ddm = (function () {
         _update_state_groups_worker = function (ev) {
             
             var row = $(ev.target).closest('tr'),
-                attributeSelect = row.find('select.js-attribute'),
-                attr_val = row.find('select.js-attribute').find(':selected').val(),
+                attributeSelect = row.find('.js-attribute'),
+                attr_val = row.find('.js-attribute').val(),
                 DOM_stategroups = row.find('.js-state-group'),
                 select_sg = row.find('select.js-state-group'),
                 input_sg = row.find('.js-state-group input'),
@@ -463,7 +463,7 @@ yukon.ami.ddm = (function () {
                 calculatingIndicator = row.find('.js-calc-indicator'),
                 row_id = _get_proc_row_id_from_elem_name(row.find('select.js-attribute'));
             
-            attributeSelect.prop('disabled', true);
+            attributeSelect.prop('disabled', true).trigger("chosen:updated");
             
             DOM_stategroups.hide();
             row.find('.js-states').hide();
@@ -485,7 +485,7 @@ yukon.ami.ddm = (function () {
             }).done(function (data, textStatus, jqXHR) {
                 
                 calculatingIndicator.hide();
-                attributeSelect.prop('disabled', false);
+                attributeSelect.prop('disabled', false).trigger("chosen:updated");
                 
                 if (data.stateGroups.length > 1) {
                     
