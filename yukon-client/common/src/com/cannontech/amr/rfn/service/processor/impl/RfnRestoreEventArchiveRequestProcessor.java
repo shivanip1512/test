@@ -7,7 +7,6 @@ import org.joda.time.Instant;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -34,18 +33,16 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
             pointQuality = PointQuality.Estimated;
         } else { 
             // only process Outage Log when actual eventTimestamp known.
-            Long durationInSeconds = RfnInvalidValues.OUTAGE_DURATION.getValue();
-            PointQuality outageLogPointQuality = PointQuality.Unknown;
             try {
                 Long start = getLongEventData(event, RfnConditionDataType.EVENT_START_TIME);
                 Long end = eventInstant.getMillis();
                 eventStart = new Instant(start);
-                durationInSeconds = (end - start) / 1000;
-                outageLogPointQuality = PointQuality.Normal;
+                Long durationInSeconds = (end - start) / 1000;
+                rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventStart, durationInSeconds, PointQuality.Normal, now);
             } catch (InvalidEventMessageException e) {
-                // Old firmware doesn't include the EVENT_START_TIME meta-data, so just use the invalid value set above for the duration if we get here
+                // Old firmware and "compact aggregated restoration alarms" don't include the EVENT_START_TIME 
+                // meta-data, so don't create the outage log if we get here
             }
-            rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventStart, durationInSeconds, outageLogPointQuality, now);
         }
         
         rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.GOOD.getRawState(), pointQuality, now);
