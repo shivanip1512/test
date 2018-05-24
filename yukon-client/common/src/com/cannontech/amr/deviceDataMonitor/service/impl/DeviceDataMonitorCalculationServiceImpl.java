@@ -306,14 +306,13 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     }
     
     @Override
-    public void recalculateViolation(DeviceDataMonitor monitor, Multimap<SimpleDevice, Attribute> devices){
+    public void recalculateViolation(DeviceDataMonitor monitor, int deviceId){
 
-        if(devices.isEmpty()) {
-            return;
-        }
+        Multimap<SimpleDevice, Attribute> devices = attributeService.getDevicesInGroupThatSupportAttribute(
+            monitor.getGroup(), monitor.getAttributes(), Lists.newArrayList(deviceId));
         
         SimpleDevice device = devices.keySet().iterator().next();
-        log.info("{} recalculating violations for {} attributes {}", monitor, device, devices.values());
+        log.info("{} recalculating violations for {} attributes {}", monitor, device, deviceId);
 
         boolean foundViolation = !findViolations(monitor, devices).isEmpty();
 
