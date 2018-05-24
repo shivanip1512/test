@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLoggingHelperService;
-import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
 import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
@@ -15,7 +14,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 
 public class CollectionActionLoggingHelperServiceImpl implements CollectionActionLoggingHelperService {
-    
+
     @Autowired private CommanderEventLogService commanderEventLogService;
     @Autowired private DemandResetEventLogService demandResetEventLogService;
     @Autowired private DeviceConfigEventLogService deviceConfigEventLogService;
@@ -25,352 +24,495 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    public void logActionInitiated(CollectionActionResult result) throws ClassNotFoundException {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+    public void log(CollectionActionResult result){
         switch (result.getAction()) {
         case SEND_COMMAND:
-            commanderEventLogService.groupCommandInitiated(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           result.getCounts().getTotalCount(), 
-                                                           result.getContext().getYukonUser(), 
-                                                           String.valueOf(result.getCacheKey()));
+            logSendCommand(result);
             break;
         case READ_ATTRIBUTE:
-            commanderEventLogService.attributeReadInitiated(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           result.getCounts().getTotalCount(), 
-                                                           result.getContext().getYukonUser(), 
-                                                           String.valueOf(result.getCacheKey()));
+            logReadAttribute(result);
             break;
         case LOCATE_ROUTE:
+            logLocateRoute(result);
+            break;
+        case CONNECT:
+        case DISCONNECT:
+        case ARM:
+            logDisconnect(result);
+            break;
+        case DEMAND_RESET:
+            logDemandReset(result);
+            break;
+        case SEND_CONFIG:
+            logSendConfig(result);
+            break;
+        case READ_CONFIG:
+            logReadConfig(result);
+            break;
+        case VERIFY_CONFIG:
+            logVerifyConfig(result);
+            break;
+        case MASS_CHANGE:
+            logMassChange(result);
+            break;
+        case CHANGE_TYPE:
+            logChangeType(result);
+            break;
+        case MASS_DELETE:
+            logMassDelete(result);
+            break;
+        case ADD_POINTS:
+            logAddPoints(result);
+            break;
+        case UPDATE_POINTS:
+            logUpdatePoints(result);
+            break;
+        case REMOVE_POINTS:
+            logRemovePoints(result);
+            break;
+        case ASSIGN_CONFIG:
+            logAssignConfig(result);
+        case UNASSIGN_CONFIG:
+            logUnassignConfig(result);
+            break;
+        default:
+            throw new UnsupportedOperationException("Add event logger for collection action="+result.getAction());
+        }
+    }
+
+    private void logLocateRoute(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
             commanderEventLogService.locateRouteInitiated(accessor.getMessage(result.getAction()), 
                                                           result.getDetailsString(accessor), 
                                                           result.getCounts().getTotalCount(), 
                                                           result.getContext().getYukonUser(), 
                                                           String.valueOf(result.getCacheKey()));
-        case CONNECT:
-        case DISCONNECT:
-        case ARM:
+            break;
+        case COMPLETE:
+            commanderEventLogService.locateRouteCompleted(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          accessor.getMessage(result.getStatus()), 
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            commanderEventLogService.locateRouteCancelled(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          result.getContext().getYukonUser(),
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logDisconnect(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
             disconnectEventLogService.disconnectInitiated(accessor.getMessage(result.getAction()), 
                                                           result.getDetailsString(accessor), 
                                                           result.getCounts().getTotalCount(), 
                                                           result.getContext().getYukonUser(), 
                                                           String.valueOf(result.getCacheKey()));
             break;
-        case DEMAND_RESET:
+        case COMPLETE:
+            disconnectEventLogService.disconnectCompleted(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          accessor.getMessage(result.getStatus()), 
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            disconnectEventLogService.disconnectCancelled(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          result.getContext().getYukonUser(),
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logDemandReset(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
             demandResetEventLogService.demandResetInitiated(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           result.getCounts().getTotalCount(), 
-                                                           result.getContext().getYukonUser(), 
-                                                           String.valueOf(result.getCacheKey()));
+                                                            result.getDetailsString(accessor), 
+                                                            result.getCounts().getTotalCount(), 
+                                                            result.getContext().getYukonUser(), 
+                                                            String.valueOf(result.getCacheKey()));
             break;
-        case SEND_CONFIG:
+        case COMPLETE:
+            demandResetEventLogService.demandResetCompleted(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            accessor.getMessage(result.getStatus()), 
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            demandResetEventLogService.demandResetCancelled(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            result.getContext().getYukonUser(),
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logSendConfig(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
             deviceConfigEventLogService.sendConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           result.getCounts().getTotalCount(), 
-                                                           result.getContext().getYukonUser(), 
-                                                           String.valueOf(result.getCacheKey()));
+                                                            result.getDetailsString(accessor), 
+                                                            result.getCounts().getTotalCount(), 
+                                                            result.getContext().getYukonUser(), 
+                                                            String.valueOf(result.getCacheKey()));
             break;
-        case READ_CONFIG:
+        case COMPLETE:
+            deviceConfigEventLogService.sendConfigCompleted(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            accessor.getMessage(result.getStatus()), 
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            deviceConfigEventLogService.sendConfigCancelled(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            result.getContext().getYukonUser(),
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logReadConfig(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
             deviceConfigEventLogService.readConfigInitiated(accessor.getMessage(result.getAction()), 
                                                             result.getDetailsString(accessor), 
                                                             result.getCounts().getTotalCount(), 
                                                             result.getContext().getYukonUser(), 
                                                             String.valueOf(result.getCacheKey()));
             break;
-        case VERIFY_CONFIG:
-            deviceConfigEventLogService.verifyConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case MASS_CHANGE:
-            endpointEventLogService.changeInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case CHANGE_TYPE:
-            endpointEventLogService.changeTypeInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case MASS_DELETE:
-            endpointEventLogService.deleteInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case ADD_POINTS:
-            pointEventLogService.pointsCreateInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case UPDATE_POINTS:
-            pointEventLogService.pointsUpdateInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case REMOVE_POINTS:
-            pointEventLogService.pointsDeleteInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case ASSIGN_CONFIG:
-            deviceConfigEventLogService.assignConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        case UNASSIGN_CONFIG:
-            deviceConfigEventLogService.unassignConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
-            break;
-        default:
-            throw new ClassNotFoundException();
-        }
-    }
-    
-    @Override
-    public void logActionCompletedCanceled(CollectionActionResult result) throws ClassNotFoundException {
-//        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-//        if (result.getStatus() == CommandRequestExecutionStatus.CANCELLED) {
-//            switch (result.getAction()) {
-//            case SEND_COMMAND:
-//                commanderEventLogService.groupCommandCancelled(accessor.getMessage(result.getAction()), 
-//                                                               result.getDetailsString(accessor), 
-//                                                               String.valueOf(result.getCacheKey()), 
-//                                                               result.getContext().getYukonUser());
-//                break;
-//            default:
-//                throw new ClassNotFoundException();
-//            }
-//        }
-//        else if (result.getStatus() == CommandRequestExecutionStatus.COMPLETE) {
-//            switch (result.getAction()) {
-//            case SEND_COMMAND:
-//                commanderEventLogService.groupCommandCompleted(accessor.getMessage(result.getAction()), 
-//                                                               result.getDetailsString(accessor), 
-//                                                               accessor.getMessage(result.getStatus()), 
-//                                                               String.valueOf(result.getCacheKey()));
-//                break;
-//            default:
-//                throw new ClassNotFoundException();
-//            }
-//        }
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-        if (result.getStatus() == CommandRequestExecutionStatus.CANCELLED) {
-            switch (result.getAction()) {
-            case SEND_COMMAND:
-                commanderEventLogService.groupCommandCancelled(accessor.getMessage(result.getAction()), 
-                                                             result.getDetailsString(accessor), 
-                                                             result.getContext().getYukonUser(),
-                                                             String.valueOf(result.getCacheKey()));
-                break;
-            case READ_ATTRIBUTE:
-                commanderEventLogService.attributeReadCancelled(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                result.getContext().getYukonUser(),
-                                                                String.valueOf(result.getCacheKey()));
-                break;
-            case LOCATE_ROUTE:
-                commanderEventLogService.locateRouteCancelled(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
-                                                              result.getContext().getYukonUser(),
-                                                              String.valueOf(result.getCacheKey()));
-            case CONNECT:
-            case DISCONNECT:
-            case ARM:
-                disconnectEventLogService.disconnectCancelled(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
-                                                              result.getContext().getYukonUser(),
-                                                              String.valueOf(result.getCacheKey()));
-                break;
-            case DEMAND_RESET:
-                demandResetEventLogService.demandResetCancelled(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                result.getContext().getYukonUser(),
-                                                                String.valueOf(result.getCacheKey()));
-                break;
-            case SEND_CONFIG:
-                deviceConfigEventLogService.sendConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                result.getContext().getYukonUser(),
-                                                                String.valueOf(result.getCacheKey()));
-                break;
-            case READ_CONFIG:
-                deviceConfigEventLogService.readConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                result.getContext().getYukonUser(),
-                                                                String.valueOf(result.getCacheKey()));
-                break;
-            case VERIFY_CONFIG:
-                deviceConfigEventLogService.verifyConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                                  result.getDetailsString(accessor), 
-                                                                  result.getContext().getYukonUser(),
-                                                                  String.valueOf(result.getCacheKey()));
-                break;
-            case MASS_CHANGE:
-                endpointEventLogService.changeCancelled(accessor.getMessage(result.getAction()), 
-                                                        result.getDetailsString(accessor), 
-                                                        result.getContext().getYukonUser(),
-                                                        String.valueOf(result.getCacheKey()));
-                break;
-            case CHANGE_TYPE:
-                endpointEventLogService.changeTypeCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
-                                                            result.getContext().getYukonUser(),
-                                                            String.valueOf(result.getCacheKey()));
-                break;
-            case MASS_DELETE:
-                endpointEventLogService.deleteCancelled(accessor.getMessage(result.getAction()), 
-                                                        result.getDetailsString(accessor), 
-                                                        result.getContext().getYukonUser(),
-                                                        String.valueOf(result.getCacheKey()));
-                break;
-            case ADD_POINTS:
-                pointEventLogService.pointsCreateCancelled(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           result.getContext().getYukonUser(),
-                                                           String.valueOf(result.getCacheKey()));
-                break;
-            case UPDATE_POINTS:
-                pointEventLogService.pointsUpdateCancelled(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           result.getContext().getYukonUser(),
-                                                           String.valueOf(result.getCacheKey()));
-                break;
-            case REMOVE_POINTS:
-                pointEventLogService.pointsDeleteCancelled(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           result.getContext().getYukonUser(),
-                                                           String.valueOf(result.getCacheKey()));
-                break;
-            case ASSIGN_CONFIG:
-            case UNASSIGN_CONFIG:
-                break;
-            default:
-                throw new ClassNotFoundException();
-            }
-        }
-        else if (result.getStatus() == CommandRequestExecutionStatus.COMPLETE) {
-            switch (result.getAction()) {
-            case SEND_COMMAND:
-                commanderEventLogService.groupCommandCompleted(accessor.getMessage(result.getAction()), 
-                                                             result.getDetailsString(accessor), 
-                                                             accessor.getMessage(result.getStatus()), 
-                                                             String.valueOf(result.getCacheKey()));
-                break;
-            case READ_ATTRIBUTE:
-                commanderEventLogService.attributeReadCompleted(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                accessor.getMessage(result.getStatus()), 
-                                                                String.valueOf(result.getCacheKey()));
-                break;
-            case LOCATE_ROUTE:
-                commanderEventLogService.locateRouteCompleted(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
-                                                              accessor.getMessage(result.getStatus()), 
-                                                              String.valueOf(result.getCacheKey()));
-            case CONNECT:
-            case DISCONNECT:
-            case ARM:
-                disconnectEventLogService.disconnectCompleted(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
-                                                              accessor.getMessage(result.getStatus()), 
-                                                              String.valueOf(result.getCacheKey()));
-                break;
-            case DEMAND_RESET:
-                demandResetEventLogService.demandResetCompleted(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                accessor.getMessage(result.getStatus()), 
-                                                                String.valueOf(result.getCacheKey()));
-                break;
-            case SEND_CONFIG:
-                deviceConfigEventLogService.sendConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                accessor.getMessage(result.getStatus()), 
-                                                                String.valueOf(result.getCacheKey()));
-            case READ_CONFIG:
-                deviceConfigEventLogService.readConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
-                                                                accessor.getMessage(result.getStatus()), 
-                                                                String.valueOf(result.getCacheKey()));
-                break;
-            case VERIFY_CONFIG:
-                deviceConfigEventLogService.verifyConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                                  result.getDetailsString(accessor), 
-                                                                  accessor.getMessage(result.getStatus()), 
-                                                                  String.valueOf(result.getCacheKey()));
-                break;
-            case MASS_CHANGE:
-                endpointEventLogService.changeCompleted(accessor.getMessage(result.getAction()), 
-                                                        result.getDetailsString(accessor), 
-                                                        accessor.getMessage(result.getStatus()), 
-                                                        String.valueOf(result.getCacheKey()));
-                break;
-            case CHANGE_TYPE:
-                endpointEventLogService.changeTypeCompleted(accessor.getMessage(result.getAction()), 
+        case COMPLETE:
+            deviceConfigEventLogService.readConfigCompleted(accessor.getMessage(result.getAction()), 
                                                             result.getDetailsString(accessor), 
                                                             accessor.getMessage(result.getStatus()), 
                                                             String.valueOf(result.getCacheKey()));
-                break;
-            case MASS_DELETE:
-                endpointEventLogService.deleteCompleted(accessor.getMessage(result.getAction()), 
+            break;
+        case CANCELLED:
+            deviceConfigEventLogService.readConfigCancelled(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            result.getContext().getYukonUser(),
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logVerifyConfig(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            deviceConfigEventLogService.verifyConfigInitiated(accessor.getMessage(result.getAction()), 
+                                                              result.getDetailsString(accessor), 
+                                                              result.getCounts().getTotalCount(), 
+                                                              result.getContext().getYukonUser(), 
+                                                              String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            deviceConfigEventLogService.verifyConfigCompleted(accessor.getMessage(result.getAction()), 
+                                                              result.getDetailsString(accessor), 
+                                                              accessor.getMessage(result.getStatus()), 
+                                                              String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            deviceConfigEventLogService.verifyConfigCancelled(accessor.getMessage(result.getAction()), 
+                                                              result.getDetailsString(accessor), 
+                                                              result.getContext().getYukonUser(),
+                                                              String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logMassChange(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            endpointEventLogService.changeInitiated(accessor.getMessage(result.getAction()), 
+                                                    result.getDetailsString(accessor), 
+                                                    result.getCounts().getTotalCount(), 
+                                                    result.getContext().getYukonUser(), 
+                                                    String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            endpointEventLogService.changeCompleted(accessor.getMessage(result.getAction()), 
+                                                    result.getDetailsString(accessor), 
+                                                    accessor.getMessage(result.getStatus()), 
+                                                    String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            endpointEventLogService.changeCancelled(accessor.getMessage(result.getAction()), 
+                                                    result.getDetailsString(accessor), 
+                                                    result.getContext().getYukonUser(),
+                                                    String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logChangeType(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            endpointEventLogService.changeTypeInitiated(accessor.getMessage(result.getAction()), 
+                                                        result.getDetailsString(accessor), 
+                                                        result.getCounts().getTotalCount(), 
+                                                        result.getContext().getYukonUser(), 
+                                                        String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            endpointEventLogService.changeTypeCompleted(accessor.getMessage(result.getAction()), 
                                                         result.getDetailsString(accessor), 
                                                         accessor.getMessage(result.getStatus()), 
                                                         String.valueOf(result.getCacheKey()));
-                break;
-            case ADD_POINTS:
-                pointEventLogService.pointsCreateCompleted(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           accessor.getMessage(result.getStatus()), 
-                                                           String.valueOf(result.getCacheKey()));
-                break;
-            case UPDATE_POINTS:
-                pointEventLogService.pointsUpdateCompleted(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           accessor.getMessage(result.getStatus()), 
-                                                           String.valueOf(result.getCacheKey()));
-                break;
-            case REMOVE_POINTS:
-                pointEventLogService.pointsDeleteCompleted(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
-                                                           accessor.getMessage(result.getStatus()), 
-                                                           String.valueOf(result.getCacheKey()));
-                break;
-            case ASSIGN_CONFIG:
-                deviceConfigEventLogService.assignConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                                  result.getDetailsString(accessor), 
-                                                                  accessor.getMessage(result.getStatus()), 
-                                                                  String.valueOf(result.getCacheKey()));
-                break;
-            case UNASSIGN_CONFIG:
-                deviceConfigEventLogService.unassignConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                                    result.getDetailsString(accessor), 
-                                                                    accessor.getMessage(result.getStatus()), 
-                                                                    String.valueOf(result.getCacheKey()));
-                break;
-            default:
-                throw new ClassNotFoundException();
-            }
+            break;
+        case CANCELLED:
+            endpointEventLogService.changeTypeCancelled(accessor.getMessage(result.getAction()), 
+                                                        result.getDetailsString(accessor), 
+                                                        result.getContext().getYukonUser(),
+                                                        String.valueOf(result.getCacheKey()));
+            break;
         }
-    
+
+    }
+
+    private void logMassDelete(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            endpointEventLogService.deleteInitiated(accessor.getMessage(result.getAction()), 
+                                                    result.getDetailsString(accessor), 
+                                                    result.getCounts().getTotalCount(), 
+                                                    result.getContext().getYukonUser(), 
+                                                    String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            endpointEventLogService.deleteCompleted(accessor.getMessage(result.getAction()), 
+                                                    result.getDetailsString(accessor), 
+                                                    accessor.getMessage(result.getStatus()), 
+                                                    String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            endpointEventLogService.deleteCancelled(accessor.getMessage(result.getAction()), 
+                                                    result.getDetailsString(accessor), 
+                                                    result.getContext().getYukonUser(),
+                                                    String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logAddPoints(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            pointEventLogService.pointsCreateInitiated(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       result.getCounts().getTotalCount(), 
+                                                       result.getContext().getYukonUser(), 
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            pointEventLogService.pointsCreateCompleted(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       accessor.getMessage(result.getStatus()), 
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            pointEventLogService.pointsCreateCancelled(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       result.getContext().getYukonUser(),
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logUpdatePoints(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            pointEventLogService.pointsUpdateInitiated(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       result.getCounts().getTotalCount(), 
+                                                       result.getContext().getYukonUser(), 
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            pointEventLogService.pointsUpdateCompleted(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       accessor.getMessage(result.getStatus()), 
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            pointEventLogService.pointsUpdateCancelled(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       result.getContext().getYukonUser(),
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logRemovePoints(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            pointEventLogService.pointsDeleteInitiated(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       result.getCounts().getTotalCount(), 
+                                                       result.getContext().getYukonUser(), 
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            pointEventLogService.pointsDeleteCompleted(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       accessor.getMessage(result.getStatus()), 
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            pointEventLogService.pointsDeleteCancelled(accessor.getMessage(result.getAction()), 
+                                                       result.getDetailsString(accessor), 
+                                                       result.getContext().getYukonUser(),
+                                                       String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logAssignConfig(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            deviceConfigEventLogService.assignConfigInitiated(accessor.getMessage(result.getAction()), 
+                                                              result.getDetailsString(accessor), 
+                                                              result.getCounts().getTotalCount(), 
+                                                              result.getContext().getYukonUser(), 
+                                                              String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            deviceConfigEventLogService.assignConfigCompleted(accessor.getMessage(result.getAction()), 
+                                                              result.getDetailsString(accessor), 
+                                                              accessor.getMessage(result.getStatus()), 
+                                                              String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logUnassignConfig(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            deviceConfigEventLogService.unassignConfigInitiated(accessor.getMessage(result.getAction()), 
+                                                                result.getDetailsString(accessor), 
+                                                                result.getCounts().getTotalCount(), 
+                                                                result.getContext().getYukonUser(), 
+                                                                String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            deviceConfigEventLogService.unassignConfigCompleted(accessor.getMessage(result.getAction()), 
+                                                                result.getDetailsString(accessor), 
+                                                                accessor.getMessage(result.getStatus()), 
+                                                                String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logReadAttribute(CollectionActionResult result) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            deviceConfigEventLogService.readConfigInitiated(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            result.getCounts().getTotalCount(), 
+                                                            result.getContext().getYukonUser(), 
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            deviceConfigEventLogService.readConfigCompleted(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            accessor.getMessage(result.getStatus()), 
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            deviceConfigEventLogService.readConfigCancelled(accessor.getMessage(result.getAction()), 
+                                                            result.getDetailsString(accessor), 
+                                                            result.getContext().getYukonUser(),
+                                                            String.valueOf(result.getCacheKey()));
+            break;
+        }
+
+    }
+
+    private void logSendCommand(CollectionActionResult result){
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            commanderEventLogService.groupCommandInitiated(accessor.getMessage(result.getAction()), 
+                                                           result.getDetailsString(accessor), 
+                                                           result.getCounts().getTotalCount(), 
+                                                           result.getContext().getYukonUser(), 
+                                                           String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            commanderEventLogService.groupCommandCompleted(accessor.getMessage(result.getAction()), 
+                                                           result.getDetailsString(accessor), 
+                                                           accessor.getMessage(result.getStatus()), 
+                                                           String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            commanderEventLogService.groupCommandCancelled(accessor.getMessage(result.getAction()), 
+                                                           result.getDetailsString(accessor), 
+                                                           result.getContext().getYukonUser(),
+                                                           String.valueOf(result.getCacheKey()));
+            break;
+        }
+
     }
 }

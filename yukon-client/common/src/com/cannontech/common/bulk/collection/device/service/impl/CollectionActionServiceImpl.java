@@ -51,7 +51,8 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Autowired private List<CollectionActionCancellationService> cancellationService;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceMemoryCollectionProducer deviceMemoryCollectionProducer;
-    @Autowired private CollectionActionLoggingHelperService logHelper;
+    
+    @Autowired private CollectionActionLoggingHelperService eventLogHelper;
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionServiceImpl.class);
     
@@ -132,11 +133,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             addUnsupportedToResult(CANCELED, result, result.getCancelableDevices());
         }
         result.setStopTime(new Instant(stopTime));
-        try {
-            logHelper.logActionCompletedCanceled(result);
-        } catch (ClassNotFoundException e) {
-            log.warn("CollectionAction needs to be added to CollectionActionLoggingHelperServiceImpl to be logged", e);
-        }
+        eventLogHelper.log(result);
     }
 
     @Override
@@ -192,11 +189,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
         log.debug("Created new collecton action result:");
-        try {
-            logHelper.logActionInitiated(result);
-        } catch (ClassNotFoundException e) {
-            log.warn("CollectionAction needs to be added to CollectionActionLoggingHelperServiceImpl to be logged", e);
-        }
+        eventLogHelper.log(result);
         result.setLogger(log);
         result.log();
         cache.put(result.getCacheKey(), result);
