@@ -371,8 +371,8 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             }
             BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, (BuiltInAttribute) attribute);
 
-            Map<Integer, SimpleDevice> pointIdsToPao = points.keySet().stream().collect(
-                Collectors.toMap(p -> points.get(p).getLiteID(), p -> new SimpleDevice(p)));
+            Map<Integer, SimpleDevice> pointIdsToPao = points.entrySet().stream().collect(
+                Collectors.toMap(p -> p.getValue().getPointID(), p -> new SimpleDevice(p.getKey())));
 
             if (pointIdsToPao.isEmpty()) {
                 continue;
