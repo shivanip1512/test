@@ -85,7 +85,7 @@ public class HoneywellWifiMessageListener {
             // Send restore to HoneywellWifi server
             Integer eventId = groupToEventIdMap.get(groupId);
             if (eventId != null) {
-                honeywellCommunicationService.cancelDREventForGroup(groupId, eventId, Boolean.TRUE);
+                honeywellCommunicationService.cancelDREventForGroup(groupId, eventId, true);
                 // Send control history message to dispatch
                 controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
             }

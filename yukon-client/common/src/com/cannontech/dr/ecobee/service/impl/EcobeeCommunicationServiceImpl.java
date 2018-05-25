@@ -148,7 +148,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         try {
             success = attemptMoveDeviceToSet(serialNumber, setPath);
         } catch (EcobeeSetDoesNotExistException e) {
-            log.debug("The specified does not exist. Attempting to create it.");
+            log.debug("The specified set does not exist. Attempting to create it.");
             createManagementSet(setPath);
             success = attemptMoveDeviceToSet(serialNumber, setPath);
         }

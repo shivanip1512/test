@@ -119,7 +119,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         if (isDeviceConfigured) {
             // Add device to honeywell group, if already configured/enrolled with a group in Yukon
             honeywellCommunicationService.addDevicesToGroup(
-                (List<Integer>) Collections.singletonList(honeywellThermostat.getThermostatId()), honeywellGroupId);
+                Collections.singletonList(honeywellThermostat.getThermostatId()), honeywellGroupId);
         }
     }
 
@@ -137,7 +137,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         if (isDeviceConfigured) {
             // Remove device from current group in honeywell, not in Yukon
             honeywellCommunicationService.removeDeviceFromDRGroup(
-                (List<Integer>) Collections.singletonList(honeywellThermostat.getThermostatId()),
+                Collections.singletonList(honeywellThermostat.getThermostatId()),
                 honeywellGroupId);
         }
         // Get current events for this device from Honeywell
@@ -148,7 +148,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
             // For devices which do not have any events, eventId is returned as null, don't send cancellation
             if (event.getEventId() != null) {
                 honeywellCommunicationService.cancelDREventForDevices(
-                    (List<Integer>) Collections.singletonList(honeywellThermostat.getThermostatId()),
+                    Collections.singletonList(honeywellThermostat.getThermostatId()),
                     event.getEventId(), true);
             }
         }
@@ -170,7 +170,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         for (Integer pastGroupId : pastEnrolledGroupIds) {
             if (currentGroupId != pastGroupId) {
                 honeywellCommunicationService.removeDeviceFromDRGroup(
-                    (List<Integer>) Collections.singletonList(honeywellThermostat.getThermostatId()), pastGroupId);
+                    Collections.singletonList(honeywellThermostat.getThermostatId()), pastGroupId);
             }
         }
     }
