@@ -45,13 +45,15 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
             WatchdogWarnings wd = new WatchdogWarnings(type, arguments);
             warnings.add(wd);
         }
-        // TODO This is temporary logging for POC - YUK-18207
         warnings.stream().forEach(
-            e -> log.info("Warning generated " + e.getWarningType() + " Status " + e.getArguments().get(0)));
+            e -> log.info("Warning generated " + e.getWarningType() + " is " + e.getArguments().get(0)));
 
         return warnings;
     }
 
+    /**
+     * Get the status of windows services for the passed service name. 
+     */
     public ServiceStatus getStatusFromWindows(String serviceName) {
         try {
             Process process = new ProcessBuilder("sc.exe", "query", serviceName).start();
@@ -76,7 +78,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
                 }
             }
         } catch (IOException e) {
-            log.error(e);
+            log.error("Exception when getting service status "+e);
         }
         return ServiceStatus.UNKNOWN;
     }
