@@ -284,21 +284,21 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             devicesInViolation = findViolations(monitor, devicesToEvaluate);  
         }
 
-        log.info("{} recalculated violations, violations found {}", monitor, devicesInViolation.size());
+        log.debug("{} recalculated violations, violations found {}", monitor, devicesInViolation.size());
 
         Set<Integer> violating = devicesInViolation.stream().map(SimpleDevice::getDeviceId).collect(Collectors.toSet());
 
         if (!Sets.symmetricDifference(inViolationGroup, violating).isEmpty()) {
-            log.info("{} removing all devices from violation group {}", monitor, monitor.getViolationGroup());
+            log.debug("{} removing all devices from violation group {}", monitor, monitor.getViolationGroup());
 
             deviceGroupMemberEditorDao.removeAllChildDevices(monitor.getViolationGroup());
             if (!devicesInViolation.isEmpty()) {
-                log.info("{} adding {} devices to violation group {}", monitor, devicesInViolation.size(),
+                log.debug("{} adding {} devices to violation group {}", monitor, devicesInViolation.size(),
                     monitor.getViolationGroup());
                 deviceGroupMemberEditorDao.addDevices(monitor.getViolationGroup(), devicesInViolation);
             }
         }
-        log.info("{} recaclulation is complete", monitor);
+        log.debug("{} recaclulation is complete", monitor);
 
         updateViolationCacheCount(monitor);
         sendSmartNotifications(inViolationGroup, violating, monitor);
@@ -312,7 +312,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             monitor.getGroup(), monitor.getAttributes(), Lists.newArrayList(deviceId));
         
         SimpleDevice device = devices.keySet().iterator().next();
-        log.info("{} recalculating violations for {} attributes {}", monitor, device, deviceId);
+        log.debug("{} recalculating violations for {} attributes {}", monitor, device, deviceId);
 
         boolean foundViolation = !findViolations(monitor, devices).isEmpty();
 
@@ -323,7 +323,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             //add device to group
             deviceGroupMemberEditorDao.addDevices(monitor.getViolationGroup(), device);
             sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
-            log.info("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
+            log.debug("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
         }
         
         // no violation found but device is in violation group
@@ -331,11 +331,11 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             // remove device from group
             deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
             sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
-            log.info("{} removing {} form violation group {}", monitor, device, monitor.getViolationGroup());
+            log.debug("{} removing {} form violation group {}", monitor, device, monitor.getViolationGroup());
         }
         
         updateViolationCacheCount(monitor);
-        log.info(" {} recalculation of violation for {} is complete",  monitor, device);
+        log.debug(" {} recalculation of violation for {} is complete",  monitor, device);
     }
     
     /**
