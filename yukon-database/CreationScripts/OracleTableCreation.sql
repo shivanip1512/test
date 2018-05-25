@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/11/2018 11:13:17 AM                        */
+/* Created on:     5/25/2018 9:38:29 AM                         */
 /*==============================================================*/
 
 
@@ -2195,6 +2195,13 @@ create table DEVICEGROUPMEMBER  (
    DeviceGroupID        NUMBER(18,0)                    not null,
    YukonPaoId           NUMBER(18,0)                    not null,
    constraint PK_DEVICEGROUPMEMBER primary key (DeviceGroupID, YukonPaoId)
+);
+
+/*==============================================================*/
+/* Index: INDX_DGMember_YukonPaoId                              */
+/*==============================================================*/
+create index INDX_DGMember_YukonPaoId on DEVICEGROUPMEMBER (
+   YukonPaoId ASC
 );
 
 /*==============================================================*/

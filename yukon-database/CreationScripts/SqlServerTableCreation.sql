@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/11/2018 11:12:34 AM                        */
+/* Created on:     5/25/2018 9:43:20 AM                         */
 /*==============================================================*/
 
 
@@ -2353,6 +2353,14 @@ create table DEVICEGROUPMEMBER (
    DeviceGroupID        numeric(18,0)        not null,
    YukonPaoId           numeric(18,0)        not null,
    constraint PK_DEVICEGROUPMEMBER primary key (DeviceGroupID, YukonPaoId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_DGMember_YukonPaoId                              */
+/*==============================================================*/
+create index INDX_DGMember_YukonPaoId on DEVICEGROUPMEMBER (
+YukonPaoId ASC
 )
 go
 

@@ -217,6 +217,12 @@ WHERE P1.PagePath IN
 INSERT INTO DBUpdates VALUES ('YUK-18323', '7.1.0', SYSDATE);
 /* @end YUK-18323 */
 
+/* @start YUK-18349 */
+CREATE INDEX INDX_DGMember_YukonPaoId ON DEVICEGROUPMEMBER ( YukonPaoId ASC );
+
+INSERT INTO DBUpdates VALUES ('YUK-18349', '7.1.0', SYSDATE);
+/* @end YUK-18349 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
