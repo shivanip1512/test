@@ -70,14 +70,14 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
         Pair<SimpleDevice, Integer> pair = Pair.of(device, monitor.getId());
         Boolean isValidDeviceForMonitor = devicesToMonitors.getIfPresent(pair);
-        if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
-            deviceDataMonitorCalculationService.recalculateViolation(monitor, device.getDeviceId());
-        } else if (isValidDeviceForMonitor == null) {
+        // Not cached, find the answer and cache it
+        if(isValidDeviceForMonitor == null) {
             isValidDeviceForMonitor = deviceGroupService.isDeviceInGroup(monitor.getGroup(), device);
             devicesToMonitors.put(pair, isValidDeviceForMonitor);
-            if (isValidDeviceForMonitor) {
-                deviceDataMonitorCalculationService.recalculateViolation(monitor, device.getDeviceId());
-            }
+        }
+        
+        if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
+            deviceDataMonitorCalculationService.recalculateViolation(monitor, device.getDeviceId());
         }
     }
 }
