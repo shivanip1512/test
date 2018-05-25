@@ -257,7 +257,11 @@ public interface AttributeService {
             Set<? extends Attribute> attributes);
 
     /**
-     * Returns list of devices and supported attributes
+     * Returns list of devices and supported attributes.
+     * 
+     * @param group - contains devices
+     * @param attributes - attributes to check
+     * @param deviceIds - If null checks all the devices in a group otherwise checks only devices listed.
      */
     Multimap<SimpleDevice, Attribute> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
             List<BuiltInAttribute> attributes, List<Integer> deviceIds);
