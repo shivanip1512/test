@@ -325,8 +325,6 @@
     <entry key="yukon.common.events.amr.disconnect.loadSideVoltageDetectedWhileDisconnected">Load side voltage detected on device {2} by {1}.</entry>
     
     <!--  Device Config -->
-    <entry key="yukon.common.events.device.configuration.assignConfigInitiated">Assign device configuration {1} to {7} device(s) initiated by {2}.</entry>
-	<entry key="yukon.common.events.device.configuration.unassignConfigInitiated">Unassign device configuration from {7} device(s) initiated by {1}.</entry>
     <entry key="yukon.common.events.device.configuration.assignConfigToDeviceInitiated">Assign device configuration {1} to {2} initiated by {3}.</entry>
     <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted">Assign device configuration {1} to {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
@@ -825,12 +823,12 @@
     <entry key="yukon.common.events.endpoint.point.pointsCreateCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsUpdateInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsUpdateCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.endpoint.point.pointDeleteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.endpoint.point.pointDeleteCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsDeleteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsDeleteCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
 
-    <entry key="yukon.common.events.device.configuration.assignConfigInitaited">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.assignConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.device.configuration.assignConfigCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigInitaited">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.unassignConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.device.configuration.unassignConfigCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
     
 </properties>
