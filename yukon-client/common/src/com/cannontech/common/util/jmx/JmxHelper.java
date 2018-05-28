@@ -9,11 +9,12 @@ public class JmxHelper {
     static {
         ImmutableMap.Builder<ApplicationId, Integer> builder = ImmutableMap.builder();
         
-        builder.put(ApplicationId.SERVICE_MANAGER,    1099);
-        builder.put(ApplicationId.WEBSERVER,          1098);
-        builder.put(ApplicationId.MESSAGE_BROKER,     1097);
+        builder.put(ApplicationId.SERVICE_MANAGER, 1099);
+        builder.put(ApplicationId.WEBSERVER, 1098);
+        builder.put(ApplicationId.MESSAGE_BROKER, 1097);
         builder.put(ApplicationId.SIMULATORS_SERVICE, 1096);
-        builder.put(ApplicationId.NOTIFICATION,       1095);
+        builder.put(ApplicationId.NOTIFICATION, 1095);
+        builder.put(ApplicationId.WATCHDOG, 1094);
 
         jmxPorts = builder.build();
     }
