@@ -3,6 +3,7 @@ package com.cannontech.clientutils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.tools.zip.ZipWriter;
 
 /**
  * YukonRollingFileAppender is a custom log4j2 appender that locates
@@ -149,7 +151,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         }
 
         if (pattern == null) {
-            pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log";
+            pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log.zip";
         }
 
         if (strategy == null) {
@@ -283,7 +285,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             retentionDate.setTime(calendar.getTime());
             retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
 
-            return file.getName().matches(regex) && getLogCreationDate(file).before(retentionDate.getTime());
+            return (file.getName().matches(regex) || file.getName().matches(regex + ".zip")) && getLogCreationDate(file).before(retentionDate.getTime());
         }
     }
 
@@ -305,33 +307,52 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     }
 
     /**
-     * Check and rename current log file if creation date of log file is old.
+     * Check and roll current log file if creation date of log file is old.
      * <p>
      * This is used to identify actual log file creation date when sever is stopped for entire day or more.
-     * Restarting server next day will require rolling of old log file based on creation date.
+     * Restarting server next day will require rolling and zipping of old log file based on creation date.
      * For Example : WebServer is running and stopped at 9PM on 1-1-2018 and current log file is Webserver.log.
      * Restarting WebServer next day will continue logging to Webserver.log. 
      * To prevent this logging on the same log file created on 1-1-2018, this method will first identify 
      * the actual creation date of Webserver.log (1-1-2018 for our case) and rename this file to Webserver_20180101.log 
-     * and continue logging for next day (2-1-2018) on Webserver.log.
+     * and zip it to Webserver_20180101.log.zip format.
+     * Current logging will continue for next day (2-1-2018) on Webserver.log.
      * </p>
      */
     protected static void checkForTimeBasedRollover(String directory, String applicationName) {
         File tmpDir = new File(directory + applicationName + ".log");
+        DateTime fileDate = null;
         // Check if file is already existing
         if (tmpDir.exists()) {
-            try {
-                BufferedReader fileHeader = new BufferedReader(new FileReader(tmpDir));
-                DateTime fileDate = parseLogCreationDate(fileHeader.readLine());
-                fileHeader.close();
-                // Check if existing file is old (Try to get its creation date)
-                if (fileDate.isBefore(new DateTime().withTimeAtStartOfDay())) {
-                    String creationDate = new SimpleDateFormat(filenameDateFormat).format(fileDate.toDate());
-                    // Rename current file (append file creation date i.e. fileName_date.log)
-                    tmpDir.renameTo(new File(directory + applicationName + "_" + creationDate + ".log"));
-                }
+            try (BufferedReader fileHeader = new BufferedReader(new FileReader(tmpDir))) {
+                fileDate = parseLogCreationDate(fileHeader.readLine());
             } catch (Exception e) {
                 LOGGER.error("Unable to read file header from log file.");
+            }
+            // Check if existing file is old (Try to get its creation date)
+            if (fileDate != null &&  fileDate.isBefore(new DateTime().withTimeAtStartOfDay())) {
+                String creationDate = new SimpleDateFormat(filenameDateFormat).format(fileDate.toDate());
+                // Rename current file (append file creation date i.e. fileName_date.log)
+                String datedFilePath = directory + applicationName + "_" + creationDate + ".log";
+                File newDatedFile = new File(datedFilePath);
+                if (tmpDir.renameTo(newDatedFile)) {
+                    try {
+                        File datedZipFile = new File(datedFilePath + ".zip");
+                        ZipWriter zipWriter = new ZipWriter(datedZipFile);
+                        FileInputStream fis = new FileInputStream(newDatedFile);
+                        zipWriter.writeRawInputStream(fis, newDatedFile.getName());
+                        zipWriter.close();
+                        // Check if zip file is created
+                        if (datedZipFile.exists()) {
+                            // Delete .log file (fileName_YYYYMMDD.log)
+                            newDatedFile.delete();
+                        }
+                    } catch (IOException e) {
+                        LOGGER.error("Unable to zip log file.");
+                    }
+                } else {
+                    LOGGER.error("Unable to rename existing log fileName.");
+                }
             }
         }
     }
