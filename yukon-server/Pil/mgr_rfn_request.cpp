@@ -101,15 +101,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             CTILOG_INFO(dout, "Indication message received for device "<< indication.rfnIdentifier <<
                     std::endl << "rfnId: " << indication.rfnIdentifier << ": " << indication.payload);
 
-            auto request = mapFindRef(_activeRequests, indication.rfnIdentifier);
-
-            if( ! request )
-            {
-                CTILOG_WARN(dout, "Indication message received for inactive device "<< indication.rfnIdentifier);
-                continue;
-            }
-
-            ActiveRfnRequest &activeRequest = *request;
+            auto optRequest = mapFindRef(_activeRequests, indication.rfnIdentifier);
 
             std::vector<RfnCommandResult> commandResults;
 
@@ -117,35 +109,35 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             {
                 const auto message = handleE2eDtIndication(indication.payload, indication.rfnIdentifier);
 
-                if( ! message.ack.empty() )
-                {
-                    sendE2eDataAck(
-                            message.ack,
-                            activeRequest.request.command->getApplicationServiceId(),
-                            indication.rfnIdentifier);
-
-                    stats.incrementAcks(indication.rfnIdentifier, Now);
-                }
-
                 if( message.nodeOriginated )
                 {
-                    if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, indication.payload) )
+                    CTILOG_INFO(dout, "Unsolicited report received for device " << indication.rfnIdentifier);
+
+                    if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
                     {
+						if( ! message.ack.empty() )
+						{
+							sendE2eDataAck(
+								message.ack,
+								command->getApplicationServiceId(),
+								indication.rfnIdentifier);
+
+							stats.incrementAcks(indication.rfnIdentifier, Now);
+						}
+                        
                         _unsolicitedReportsPerTick.emplace_back(indication.rfnIdentifier, std::move(command));
                     }
 
                     continue;
                 }
 
-                auto request = mapFindRef(_activeRequests, indication.rfnIdentifier);
-
-                if( ! request )
+                if( ! optRequest )
                 {
                     CTILOG_WARN(dout, "Indication message received for inactive device " << indication.rfnIdentifier);
                     continue;
                 }
 
-                ActiveRfnRequest &activeRequest = *request;
+                ActiveRfnRequest &activeRequest = *optRequest;
 
                 if( message.token != activeRequest.request.rfnRequestId )
                 {
@@ -196,16 +188,16 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             }
             catch( const Protocols::E2eDataTransferProtocol::RequestNotAcceptable &rne )
             {
-                CTILOG_ERROR(dout, "Endpoint indicated request not acceptable for device "<< activeRequest.request.parameters.rfnIdentifier);
+                CTILOG_ERROR(dout, "Endpoint indicated request not acceptable for device "<< indication.rfnIdentifier);
 
                 boost::insert(
                     commandResults,
                     commandResults.end(),
-                    activeRequest.request.command->handleError(Now, ClientErrors::E2eRequestNotAcceptable));
+                    optRequest->request.command->handleError(Now, ClientErrors::E2eRequestNotAcceptable));
             }
             catch( Protocols::E2eDataTransferProtocol::E2eException &ex )
             {
-                CTILOG_EXCEPTION_WARN(dout, ex, "device " << activeRequest.request.parameters.rfnIdentifier);
+                CTILOG_EXCEPTION_WARN(dout, ex, "device " << indication.rfnIdentifier);
 
                 continue;
             }
@@ -215,7 +207,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 CTILOG_INFO(dout, "Result ["<< commandResult.status <<", "<< commandResult.description <<"] for device "<< indication.rfnIdentifier);
             }
 
-            _resultsPerTick.emplace_back(std::move(activeRequest.request), std::move(commandResults));
+            _resultsPerTick.emplace_back(std::move(optRequest->request), std::move(commandResults));
 
             completedDevices.insert(indication.rfnIdentifier);
 
@@ -710,10 +702,18 @@ void RfnRequestManager::sendE2eDataAck(
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload       = e2eAck;
     msg.priority      = E2EDT_ACK_PRIORITY;
-    msg.expiration    = E2EDT_CON_RETX_TIMEOUT;
+    msg.expiration    = CtiTime::now() + E2EDT_CON_RETX_TIMEOUT;
 
     //  ignore the confirm and timeout callbacks - this is fire and forget, even if we don't hear back from NM
-    E2eMessenger::sendE2eDt(msg, asid);
+    E2eMessenger::sendE2eDt(msg, asid, 
+            [=](const E2eMessenger::Confirm &msg)
+            {
+                CTILOG_DEBUG(dout, "Confirm received for E2EDT ack for device " << rfnIdentifier << " with status " << msg.error);
+            }, 
+            [=](const YukonError_t error)
+            {
+                CTILOG_DEBUG(dout, "Timeout occurred for E2EDT ack for device " << rfnIdentifier << " with status " << error);
+            });
 }
 
 
