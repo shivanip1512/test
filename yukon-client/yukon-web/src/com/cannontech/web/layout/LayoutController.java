@@ -99,7 +99,7 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_TIPSY.getPath(dev));
         b.add(JsLibrary.JQUERY_SPECTRUM.getPath(dev));
         b.add(JsLibrary.JQUERY_CHOSEN.getPath(dev));
-        b.add(JsLibrary.JQUERY_HIDDEN_DIMENSIONS.getPath(dev));
+        b.add(JsLibrary.JQUERY_ACTUAL.getPath(dev));
         b.add(JsLibrary.JQUERY_SCROLLTO.getPath(dev));
         b.add(JsLibrary.JQUERY_COOKIE.getPath(dev));
         b.add(JsLibrary.JQUERY_FLOTCHARTS.getPath(dev));

@@ -106,7 +106,7 @@ yukon.ui = (function () {
     var initChosen = function (container) {
 
         $(container).find('.js-init-chosen').each(function () {
-            $(this).chosen({ 'width' : $(this).getHiddenDimensions().innerWidth + 11 + 'px' });
+            $(this).chosen({ 'width' : $(this).actual( 'innerWidth' ) + 11 + 'px' });
         }).removeClass('js-init-chosen');
 
         $(document).off('click.yukon.chosen', '.chosen-single');

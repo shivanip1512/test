@@ -35,7 +35,8 @@ public enum JsLibrary {
     JQUERY_TREE_HELPERS("/resources/js/tags/yukon.dynatree.js"), //in-house
     JQUERY_CHOSEN("/resources/js/lib/chosen/chosen.jquery.min.js",
                   "/resources/js/lib/chosen/chosen.jquery.src.js"), // https://github.com/harvesthq/chosen/releases
-    JQUERY_HIDDEN_DIMENSIONS("/resources/js/lib/hidden-dimensions/hidden-dimensions.js"), // https://github.com/brianfreud/greasemonkey-batchCAA/tree/master/jQuery.getHiddenDimensions
+    JQUERY_ACTUAL("/resources/js/lib/actual/jquery.actual.js",
+                  "/resources/js/lib/actual/jquery.actual.min.js"), // https://github.com/dreamerslab/jquery.actual
     
     JQUERY_UI("/resources/js/lib/jquery-ui/jquery-ui.min.js",
               "/resources/js/lib/jquery-ui/jquery-ui.js"), // http://www.jqueryui.com
