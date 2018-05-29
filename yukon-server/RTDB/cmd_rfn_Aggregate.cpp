@@ -36,12 +36,15 @@ RfnAggregateCommand::RfnAggregateCommand(RfnIndividualCommandList commands)
 
 void RfnAggregateCommand::prepareCommandData(const CtiTime now)
 {
+	_requests.reserve(_commands.size());
+
     boost::insert(
-        _messages, 
+        _requests, 
+        _requests.end(),
         _commands 
             | boost::adaptors::transformed(
                 [now](const CommandMap::value_type & kv) {
-                    return std::make_pair(kv.first, kv.second->executeCommand(now)); }));
+                    return Request { kv.first, kv.second->getApplicationServiceId(), kv.second->executeCommand(now) }; }));
 }
 
 auto RfnAggregateCommand::getApplicationServiceId() const -> ASID
@@ -62,13 +65,12 @@ unsigned char RfnAggregateCommand::getOperation() const
 size_t RfnAggregateCommand::getPayloadLength() const
 {
     return 
-        _messages.size() * SubMessageHeaderLength + 
+        _requests.size() * SubMessageHeaderLength + 
         boost::accumulate(
-            _messages 
-                | boost::adaptors::map_values 
+            _requests 
                 | boost::adaptors::transformed(
-                    [](const Bytes & payload) { 
-                        return payload.size(); }), 
+                    [](const Request & request) { 
+                        return request.message.size(); }), 
             0);
 }
 
@@ -83,8 +85,8 @@ auto RfnAggregateCommand::getCommandHeader() -> Bytes
 
     const auto payloadLength = getPayloadLength();
 
-    header.push_back(static_cast<uint8_t>(payloadLength));
     header.push_back(static_cast<uint8_t>(payloadLength >> 8));
+    header.push_back(static_cast<uint8_t>(payloadLength));
 
     return header;
 }
@@ -95,20 +97,19 @@ RfnCommand::Bytes RfnAggregateCommand::getCommandData()
 
     payload.reserve(getPayloadLength());
 
-    for( const auto & kv : _messages )
+    for( const auto & request : _requests )
     {
-        auto contextId = kv.first;
-        auto & message = kv.second;
+        payload.push_back(static_cast<uint8_t>(request.contextId >> 8));
+        payload.push_back(static_cast<uint8_t>(request.contextId));
 
-        payload.push_back(static_cast<uint8_t>(contextId));
-        payload.push_back(static_cast<uint8_t>(contextId >> 8));
+		payload.push_back(static_cast<uint8_t>(request.asid));
 
-        const auto messageLength = message.size();
+        const auto messageLength = request.message.size();
 
-        payload.push_back(static_cast<uint8_t>(messageLength));
         payload.push_back(static_cast<uint8_t>(messageLength >> 8));
+        payload.push_back(static_cast<uint8_t>(messageLength));
 
-        boost::insert(payload, payload.end(), message);
+        boost::insert(payload, payload.end(), request.message);
     }
 
     return payload;
@@ -124,7 +125,7 @@ try
         << "Command != 0x01, " << response[0]);
 
     auto messages = response[1];
-    auto payloadLength = response[2] | response[3] << 8;
+    auto payloadLength = response[2] << 8 | response[3];
 
     validate(Condition(response.size() >= payloadLength + HeaderLength, ClientErrors::DataMissing)
         << "Response size < payloadLength + HeaderLength, " << response.size() << " < " << payloadLength + HeaderLength);
@@ -137,9 +138,11 @@ try
 
     for( int msgIndex = 0; msgIndex < messages; ++msgIndex )
     {
-        auto contextId = response[pos] | response[pos + 1] << 8;
+        auto contextId = response[pos] << 8 | response[pos + 1];
         pos += 2;
-        auto length    = response[pos] | response[pos + 1] << 8;
+        auto asid      = response[pos];
+        pos += 1;
+        auto length    = response[pos] << 8 | response[pos + 1];
         pos += 2;
 
         if( response.size() < pos + length )

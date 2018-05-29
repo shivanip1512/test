@@ -54,10 +54,11 @@ BOOST_AUTO_TEST_CASE(test_send_one_command)
         const std::vector<unsigned> exp {
             0x01, //  Aggregate message
             0x01, //  1 message
-            0x07, 0x00, //  Payload length 7
+            0x00, 0x08, //  Payload length 7
             //  message 1
             0x44, 0x44, //  context ID 0x4444
-            0x03, 0x00, //  message length 3
+            0x02,       //  ASID 2
+            0x00, 0x03, //  message length 3
             0x70, 0x01, 0x00 };
 
         BOOST_CHECK_EQUAL_RANGES(req, exp);
@@ -68,10 +69,11 @@ BOOST_AUTO_TEST_CASE(test_send_one_command)
         std::vector<unsigned char> response {
             0x01, //  Aggregate message
             0x01, //  1 message
-            0x0d, 0x00, //  Payload length 13
+            0x00, 0x0e, //  Payload length 14
             //  message 1
             0x44, 0x44, //  context ID 0x4444
-            0x09, 0x00, //  message length 9
+            0x02,       //  ASID 2
+            0x00, 0x09, //  message length 9
             0x71, 0x00, 0x03, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02 };
 
         const auto & results = aggregate.handleResponse(execute_time, response);
@@ -127,10 +129,11 @@ BOOST_AUTO_TEST_CASE(test_invalid_command)
     std::vector<unsigned char> response{
         0xcd, //  invalid command type
         0x01, //  1 message
-        0x07, 0x00, //  Payload length 7
+        0x00, 0x08, //  Payload length 8
         //  message 1
         0x44, 0x44, //  context ID 0x4444
-        0x03, 0x00, //  message length 3
+        0x44,       //  ASID xx
+        0x00, 0x03, //  message length 3
         0x71, 0x00, 0x03 };
 
     const auto & results = aggregate.handleResponse(execute_time, response);
@@ -156,10 +159,11 @@ BOOST_AUTO_TEST_CASE(test_short_payload)
     std::vector<unsigned char> response{
         0x01, //  Aggregate message
         0x01, //  1 message
-        0x14, 0x00, //  Payload length 20, actual payload length 7
+        0x00, 0x14, //  Payload length 20, actual payload length 8
         //  message 1
         0x44, 0x44, //  context ID 0x4444
-        0x03, 0x00, //  message length 3
+        0x02,       //  ASID 2
+        0x00, 0x03, //  message length 3
         0x71, 0x00, 0x03 };
 
     const auto & results = aggregate.handleResponse(execute_time, response);
@@ -185,10 +189,11 @@ BOOST_AUTO_TEST_CASE(test_short_message)
     std::vector<unsigned char> response{
         0x01, //  Aggregate message
         0x01, //  1 message
-        0x07, 0x00, //  Payload length 7
+        0x00, 0x08, //  Payload length 8
         //  message 1
         0x44, 0x44, //  context ID 0x4444
-        0x09, 0x00, //  message length 9, actual message length only 3
+        0x02,       //  ASID 2
+        0x00, 0x09, //  message length 9, actual message length only 3
         0x71, 0x00, 0x03 };
 
     const auto & results = aggregate.handleResponse(execute_time, response);
@@ -214,10 +219,11 @@ BOOST_AUTO_TEST_CASE(test_error_response)
     std::vector<unsigned char> response{
         0x01, //  Aggregate message
         0x01, //  1 message
-        0x07, 0x00, //  Payload length 7
+        0x00, 0x08, //  Payload length 8
         //  message 1
         0x44, 0x44, //  context ID 0x4444
-        0x03, 0x00, //  message length 9
+        0x02,       //  ASID 2
+        0x00, 0x03, //  message length 3
         0x71, 0x00, 0x03 };
 
     const auto results = aggregate.handleResponse(execute_time, response);
@@ -247,10 +253,11 @@ BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
     std::vector<unsigned char> response{
         0x01, //  Aggregate message
         0x01, //  1 message
-        0x07, 0x00, //  Payload length 7
+        0x00, 0x08, //  Payload length 8
         //  message 1
         0x44, 0x44, //  context ID 0x4444
-        0x03, 0x00, //  message length 3
+        0x02,       //  ASID 2
+        0x00, 0x03, //  message length 3
         0x71, 0x00, 0x03 };
 
     const auto results = aggregate.handleResponse(execute_time, response);
@@ -289,14 +296,16 @@ BOOST_AUTO_TEST_CASE(test_error_response_bad_second_payload_length)
     std::vector<unsigned char> response{
         0x01, //  Aggregate message
         0x02, //  1 message
-        0x0b, 0x00, //  Payload length 11
+        0x00, 0x0d, //  Payload length 13
         //  message 1
         0x44, 0x44, //  context ID 0x4444
-        0x03, 0x00, //  message length 3
+        0x02,       //  ASID 2
+        0x00, 0x03, //  message length 3
         0x71, 0x00, 0x03,
         //  message 2
-        0x45, 0x44, //  context ID 0x4445
-        0x03, 0x00 };  //  message length 3, but missing
+        0x44, 0x45, //  context ID 0x4445
+        0x02,       //  ASID 2
+        0x00, 0x03 };  //  message length 3, but missing
 
     const auto results = aggregate.handleResponse(execute_time, response);
     BOOST_REQUIRE_EQUAL(results.size(), 2);
@@ -393,16 +402,18 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
         const std::vector<unsigned> exp{
             0x01, //  Aggregate message
             0x02, //  2 messages
-            0x1a, 0x00, //  Payload length 26
+            0x00, 0x1c, //  Payload length 28
             //  message 1
             0x44, 0x44, //  context ID 0x4444
-            0x03, 0x00, //  message length 3
+            0x02,       //  ASID 2
+            0x00, 0x03, //  message length 3
                 0x70, 
                 0x01, 
                 0x00,
             //  message 2
-            0x45, 0x44, //  context ID 0x4445
-            0x0f, 0x00, //  message length 15
+            0x44, 0x45, //  context ID 0x4445
+            0x02,       //  ASID 2
+            0x00, 0x0f, //  message length 15
                 0x70, 
                 0x00, 
                 0x06, 
@@ -421,10 +432,11 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
         std::vector<unsigned char> response{
             0x01, //  Aggregate message
             0x02, //  2 messages
-            0x14, 0x00, //  Payload length 20
+            0x00, 0x16, //  Payload length 22
             //  message 1
             0x44, 0x44, //  context ID 0x4444
-            0x09, 0x00, //  message length 9
+            0x02,       //  ASID 2
+            0x00, 0x09, //  message length 9
                 0x71, 
                 0x00, 
                 0x03, 
@@ -432,8 +444,9 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
                 0x01, 0x01, 
                 0x02, 0x02,
             //  message 2
-            0x45, 0x44, //  context ID 0x4445
-            0x03, 0x00,
+            0x44, 0x45, //  context ID 0x4445
+            0x02,       //  ASID 2
+            0x00, 0x03,
                 0x71, 
                 0x00, 
                 0x00 };

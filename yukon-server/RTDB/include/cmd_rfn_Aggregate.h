@@ -31,7 +31,7 @@ private:
         Command_AggregateMessage = 0x01,
 
         HeaderLength = 4,
-        SubMessageHeaderLength = 4
+        SubMessageHeaderLength = 5
     };
 
     unsigned char getCommandCode() const override;
@@ -45,8 +45,15 @@ private:
     using CommandMap = std::map<uint16_t, RfnIndividualCommandPtr>;
     CommandMap _commands;
 
-    using MessageMap = std::map<uint16_t, Bytes>;
-    MessageMap _messages;
+	struct Request
+	{
+		uint16_t contextId;
+		Messaging::Rfn::ApplicationServiceIdentifiers asid;
+		Bytes message;
+	};
+
+    using Requests = std::vector<Request>;
+    Requests _requests;
 
     using StatusMap = std::map<uint16_t, YukonError_t>;
     StatusMap _statuses;
