@@ -261,21 +261,21 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         //  TLV 5
         0x00, 0x05,  //  Interval recording
         0x00, 0x11,
-            0x20, 0x1c, 0x00, 0x00,  //  7200
-            0x80, 0x51, 0x01, 0x00,  //  86400
+            0x00, 0x00, 0x1c, 0x20,  //  7200
+            0x00, 0x01, 0x51, 0x80,  //  86400
             0x04,  //  4 metrics
-            0x01, 0x00,
-            0x02, 0x00,
-            0x03, 0x00,
-            0x04, 0x00,
+            0x00, 0x01,
+            0x00, 0x02,
+            0x00, 0x03,
+            0x00, 0x04,
             //  TLV 6
         0x00, 0x06,  // Channel selection
         0x00, 0x09,
             0x04,
-            0x05, 0x00, 
-            0x06, 0x00, 
-            0x07, 0x00, 
-            0x08, 0x00, 
+            0x00, 0x05,
+            0x00, 0x06,
+            0x00, 0x07,
+            0x00, 0x08,
         //  TLV 7
         0x00, 0x07,  //  Disconnect
         0x00, 0x06,
@@ -327,8 +327,8 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         0x00, 0x0c,  //  Temperature configuration
         0x00, 0x07,
             0x01,  //  Enable/disable
-            0x01, 0x17,  //  high temp threshold
-            0x01, 0x03,  //  low temp threshold
+            0x17, 0x01,  //  high temp threshold
+            0x03, 0x01,  //  low temp threshold
             0x07,  //  repeat interval
             0x0b,  //  Max repeats
     };
@@ -364,6 +364,27 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_HolidaySchedule,   "SCHEDULE_1" },
 
         { PI::Key_RFN_DefaultTOURate, "B" },
+
+        { PI::Key_RFN_Schedule1Time1, "00:03" },
+        { PI::Key_RFN_Schedule1Time2, "00:01" },
+        { PI::Key_RFN_Schedule1Time3, "00:04" },
+        { PI::Key_RFN_Schedule1Time4, "00:01" },
+        { PI::Key_RFN_Schedule1Time5, "00:05" },
+        { PI::Key_RFN_Schedule2Time1, "00:09" },
+        { PI::Key_RFN_Schedule2Time2, "00:02" },
+        { PI::Key_RFN_Schedule2Time3, "00:06" },
+        { PI::Key_RFN_Schedule2Time4, "00:05" },
+        { PI::Key_RFN_Schedule2Time5, "00:03" },
+        { PI::Key_RFN_Schedule3Time1, "00:05" },
+        { PI::Key_RFN_Schedule3Time2, "00:08" },
+        { PI::Key_RFN_Schedule3Time3, "00:09" },
+        { PI::Key_RFN_Schedule3Time4, "00:07" },
+        { PI::Key_RFN_Schedule3Time5, "00:09" },
+        { PI::Key_RFN_Schedule4Time1, "00:03" },
+        { PI::Key_RFN_Schedule4Time2, "00:02" },
+        { PI::Key_RFN_Schedule4Time3, "00:03" },
+        { PI::Key_RFN_Schedule4Time4, "00:08" },
+        { PI::Key_RFN_Schedule4Time5, "00:04" },
 
         { PI::Key_RFN_Schedule1Rate0, "B" },
         { PI::Key_RFN_Schedule1Rate1, "A" },
