@@ -236,6 +236,14 @@ CREATE INDEX INDX_DGMember_YukonPaoId ON DEVICEGROUPMEMBER ( YukonPaoId ASC );
 INSERT INTO DBUpdates VALUES ('YUK-18349', '7.1.0', GETDATE());
 /* @end YUK-18349 */
 
+/* @start YUK-18333 */
+UPDATE DmvTest
+SET PollingInterval = 15
+WHERE PollingInterval < 15;
+
+INSERT INTO DBUpdates VALUES ('YUK-18333', '7.1.0', GETDATE());
+/* @end YUK-18333 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
