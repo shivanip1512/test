@@ -1,9 +1,6 @@
 <%@ tag body-content="empty" description="Tag for adding a flotchart onto the page via ajax. See FlotChartServiceImpl.java for examples of what this expected JSON should look like"%>
 
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
-
 <%@ include file="defaultTagLibs.jspf" %>
-<flot:defaultIncludes/>
 <cti:includeScript link="JQUERY_FLOTCHARTS_PIE" />
 
 <%@ attribute name="chartId" %>
