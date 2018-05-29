@@ -67,6 +67,8 @@ protected:
     std::string decodeFocusAlDisplay    (Bytes payload);
     std::string decodeOvUvAlarm         (Bytes payload);
     std::string decodeTemperature       (Bytes payload);
+    std::string decodeDataStreaming     (Bytes payload);
+    std::string decodeDemandInterval    (Bytes payload);
 
 public:
     boost::optional<RfnTouConfigurationCommand::TouState> touEnabled;
@@ -153,6 +155,8 @@ public:
     boost::optional<RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration> ovuv;
 
     boost::optional<RfnTemperatureAlarmCommand::AlarmConfiguration> temperature;
+
+    std::optional<uint8_t> demandInterval;
 };
 
 }

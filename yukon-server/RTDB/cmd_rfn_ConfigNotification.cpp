@@ -40,7 +40,7 @@ RfnCommandResult RfnConfigNotificationCommand::decodeCommand(const CtiTime now, 
         constexpr auto TlvHeaderLength = 4;
 
         validate(Condition(pos + TlvHeaderLength <= response.size(), ClientErrors::DataMissing)
-            << "Incomplete TLV header (" << (pos + TlvHeaderLength) << " > " << response.size());
+            << "Incomplete TLV header (" << (pos + TlvHeaderLength) << " > " << response.size() << ")");
 
         TLV tlv {
             static_cast<uint16_t>(response[pos + 0] << 8 | response[pos + 1]),
@@ -49,7 +49,7 @@ RfnCommandResult RfnConfigNotificationCommand::decodeCommand(const CtiTime now, 
         pos += TlvHeaderLength;
 
         validate(Condition(pos + tlv.length <= response.size(), ClientErrors::DataMissing)
-            << "Incomplete TLV data (" << (pos + tlv.length) << " > " << response.size());
+            << "Incomplete TLV data (" << (pos + tlv.length) << " > " << response.size() << ")");
 
         const auto dataBegin = response.cbegin() + pos;
 
@@ -81,6 +81,8 @@ std::string RfnConfigNotificationCommand::decodeTlvs(const std::vector<TLV> tlvs
         &Self::decodeFocusAlDisplay,
         &Self::decodeOvUvAlarm,
         &Self::decodeTemperature,
+        &Self::decodeDataStreaming,
+        &Self::decodeDemandInterval
     };
     
     std::vector<std::string> results;
@@ -160,6 +162,8 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
     for( auto schedule : { T::Schedule1, T::Schedule2, T::Schedule3, T::Schedule4 } )
     {
         T::DailyTimes switchTimes;
+
+        switchTimes.emplace_back("00:00");
 
         for( auto switchTime = 0; switchTime < 5; switchTime++ )
         {
@@ -251,8 +255,8 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
 
     FormattedList l;
 
-    r.recordingInterval = payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24;
-    r.reportingInterval = payload[4] | payload[5] << 8 | payload[6] << 16 | payload[7] << 24;
+    r.recordingInterval = payload[0] << 24 | payload[1] << 16 | payload[2] << 8 | payload[3];
+    r.reportingInterval = payload[4] << 24 | payload[5] << 16 | payload[6] << 8 | payload[7];
 
     l.add("Recording interval") << std::chrono::seconds( r.recordingInterval );
     l.add("Reporting interval") << std::chrono::seconds( r.reportingInterval );
@@ -261,7 +265,7 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
 
     for( auto metric = 0; metric < intervalCount; metric++ )
     {
-        const auto metricId = payload[pos] | payload[pos + 1] << 8;
+        const auto metricId = payload[pos] << 8 | payload[pos + 1];
 
         if( ! r.intervalMetrics.insert(metricId).second )
         {
@@ -290,7 +294,7 @@ std::string RfnConfigNotificationCommand::decodeChannelSelection(Bytes payload)
 
     for( auto pos = 1; pos < channelSize; pos += 2 )
     {
-        const auto metricId = payload[pos] | payload[pos + 1] << 8;
+        const auto metricId = payload[pos] << 8 | payload[pos + 1];
 
         if( ! metrics.insert(metricId).second )
         {
@@ -362,8 +366,8 @@ std::string RfnConfigNotificationCommand::decodeDisconnect(Bytes payload)
 
         d.disconnectMode = RDCC::DisconnectMode_Cycling;
 
-        d.disconnectTime = payload[2] | payload[3] << 8;
-        d.connectTime    = payload[4] | payload[5] << 8;
+        d.disconnectTime = payload[2] << 8| payload[3];
+        d.connectTime    = payload[4] << 8| payload[5];
 
         l.add("Reconnect method") << payload[1];
         l.add("Disconnect time") << std::chrono::minutes(d.disconnectTime.value());
@@ -518,7 +522,7 @@ std::string RfnConfigNotificationCommand::decodeOvUvAlarm(Bytes payload)
     RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration a;
 
     const auto meterId = payload[0];
-    const auto eventId = payload[1] | payload[2] << 8;
+    const auto eventId = payload[1] << 8 | payload[2];
     a.ovuvEnabled                = payload[3];
     a.ovuvAlarmReportingInterval = payload[4];
     a.ovuvAlarmRepeatInterval    = payload[5];
@@ -526,14 +530,14 @@ std::string RfnConfigNotificationCommand::decodeOvUvAlarm(Bytes payload)
     const auto clearAlarmRepeatCount = payload[7];
     const auto severity          = payload[8];
     double setThresholdValue =
-        payload[9] |
-        payload[10]  << 8 |
-        payload[11] << 16 |
-        payload[12] << 24;
+        payload[9]  << 24 |
+        payload[10] << 16 |
+        payload[11] <<  8 |
+        payload[12];
     setThresholdValue /= 1000.0;
     const auto unitOfMeasure = payload[13];
-    const auto uomModifier1  = payload[14] | payload[15] << 8;
-    const auto uomModifier2  = payload[16] | payload[17] << 8;
+    const auto uomModifier1  = payload[14] << 8 | payload[15];
+    const auto uomModifier2  = payload[16] << 8 | payload[17];
 
     if( eventId == RfnOvUvConfigurationCommand::EventID::OverVoltage )
     {
@@ -572,8 +576,8 @@ std::string RfnConfigNotificationCommand::decodeTemperature(Bytes payload)
     RfnTemperatureAlarmCommand::AlarmConfiguration a;
 
     a.alarmEnabled               = payload[0];
-    a.alarmHighTempThreshold     = payload[1] | payload[2] << 8;
-    auto lowTemperatureThreshold = payload[3] | payload[4] << 8;
+    a.alarmHighTempThreshold     = payload[1] << 8 | payload[2];
+    auto lowTemperatureThreshold = payload[3] << 8 | payload[4];
     a.alarmRepeatInterval        = payload[5];
     a.alarmRepeatCount           = payload[6];
 
@@ -588,6 +592,26 @@ std::string RfnConfigNotificationCommand::decodeTemperature(Bytes payload)
     temperature = a;
 
     return "Temperature alarm configuration:" + l.toString();
+}
+
+std::string RfnConfigNotificationCommand::decodeDataStreaming(Bytes payload)
+{
+    return "Data Streaming configuration:"
+        "\nNot currently decoded";
+}
+
+std::string RfnConfigNotificationCommand::decodeDemandInterval(Bytes payload)
+{
+    validate(Condition(payload.size() >= 1, ClientErrors::DataMissing)
+        << "Demand Interval payload too small - (" << payload.size() << " < " << 1);
+
+    demandInterval = payload[0];
+
+    FormattedList l;
+
+    l.add("Demand Interval") << std::chrono::minutes(demandInterval.value());
+
+    return "Demand interval configuration:" + l.toString();
 }
 
 std::string RfnConfigNotificationCommand::getCommandName()

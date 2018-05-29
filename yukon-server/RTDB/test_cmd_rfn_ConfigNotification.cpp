@@ -27,27 +27,27 @@ BOOST_AUTO_TEST_CASE(test_request)
 
     // decode
     {
-        std::vector<unsigned char> response {
-            0x1e, 
-            0x00, 0x02, 
+        std::vector<unsigned char> response{
+            0x1e,
+            0x00, 0x02,
             //  TLV 5
             0x00, 0x05,  //  Interval recording
             0x00, 0x11,
-            0x20, 0x1c, 0x00, 0x00,  //  7200
-            0x80, 0x51, 0x01, 0x00,  //  86400
+            0x00, 0x00, 0x1c, 0x20, //  7200
+            0x00, 0x01, 0x51, 0x80, //  86400
             0x04,  //  4 metrics
-            0x01, 0x00,
-            0x02, 0x00,
-            0x03, 0x00,
-            0x04, 0x00,
+            0x00, 0x01,
+            0x00, 0x02,
+            0x00, 0x03,
+            0x00, 0x04,
             //  TLV 6
             0x00, 0x06,  // Channel selection
             0x00, 0x09,
             0x04,
-            0x05, 0x00, 
-            0x06, 0x00, 
-            0x07, 0x00, 
-            0x08, 0x00 };
+            0x00, 0x05,
+            0x00, 0x06,
+            0x00, 0x07,
+            0x00, 0x08 };
 
         const auto rcv = cmd.decodeCommand(execute_time, response);
 
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
 {
     const std::vector<uint8_t> payload { 
         0x1e, 
-        0x00, 0x0c, 
+        0x00, 0x0e,  //  14 TLVs
         //  TLV 1
         0x00, 0x01,  //  TOU Enable/Disable
         0x00, 0x01,
@@ -243,21 +243,21 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         //  TLV 5
         0x00, 0x05,  //  Interval recording
         0x00, 0x11,
-            0x20, 0x1c, 0x00, 0x00,  //  7200
-            0x80, 0x51, 0x01, 0x00,  //  86400
+            0x00, 0x00, 0x1c, 0x20,  //  7200
+            0x00, 0x01, 0x51, 0x80,  //  86400
             0x04,  //  4 metrics
-            0x01, 0x00,
-            0x02, 0x00,
-            0x03, 0x00,
-            0x04, 0x00,
+            0x00, 0x01,
+            0x00, 0x02,
+            0x00, 0x03,
+            0x00, 0x04,
         //  TLV 6
         0x00, 0x06,  // Channel selection
         0x00, 0x09,
             0x04,
-            0x05, 0x00, 
-            0x06, 0x00, 
-            0x07, 0x00, 
-            0x08, 0x00, 
+            0x00, 0x05,
+            0x00, 0x06,
+            0x00, 0x07,
+            0x00, 0x08,
         //  TLV 7
         0x00, 0x07,  //  Disconnect
         0x00, 0x06,
@@ -309,10 +309,20 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         0x00, 0x0c,  //  Temperature configuration
         0x00, 0x07,
             0x01,  //  Enable/disable
-            0x01, 0x17,  //  high temp threshold
-            0x01, 0x03,  //  low temp threshold
+            0x17, 0x01,  //  high temp threshold
+            0x03, 0x01,  //  low temp threshold
             0x07,  //  repeat interval
             0x0b,  //  Max repeats
+        //  TLV 13
+        0x00, 0x0d,  //  Data Streaming configuration
+        0x00, 0x0f,
+            0x01, 0x01, 0x01, 0x01, 0x01,  //  15 bytes of filler until we actually decode it
+            0x01, 0x01, 0x01, 0x01, 0x01, 
+            0x01, 0x01, 0x01, 0x01, 0x01,
+        //  TLV 14
+        0x00, 0x0e,  //  Demand Interval configuration
+        0x00, 0x01,
+            0x06,  //  6 minutes
     };
 
     const std::string expected = 
@@ -321,10 +331,10 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    TOU enabled"
         "\nTOU schedule configuration:"
         "\n    Day table               : 1, 2, 3, 4, 4, 3, 2, 1"
-        "\n    Schedule 1 switch times : 00:03, 00:01, 00:04, 00:01, 00:05"
-        "\n    Schedule 2 switch times : 00:09, 00:02, 00:06, 00:05, 00:03"
-        "\n    Schedule 3 switch times : 00:05, 00:08, 00:09, 00:07, 00:09"
-        "\n    Schedule 4 switch times : 00:03, 00:02, 00:03, 00:08, 00:04"
+        "\n    Schedule 1 switch times : 00:00, 00:03, 00:01, 00:04, 00:01, 00:05"
+        "\n    Schedule 2 switch times : 00:00, 00:09, 00:02, 00:06, 00:05, 00:03"
+        "\n    Schedule 3 switch times : 00:00, 00:05, 00:08, 00:09, 00:07, 00:09"
+        "\n    Schedule 4 switch times : 00:00, 00:03, 00:02, 00:03, 00:08, 00:04"
         "\n    Schedule 1 rates        : B, A, D, C, B, A"
         "\n    Schedule 2 rates        : D, C, B, A, D, C"
         "\n    Schedule 3 rates        : C, B, A, D, C, B"
@@ -365,7 +375,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Slot 2       : A *"
         "\nOV/UV configuration:"
         "\n    Meter ID                     : 127"
-        "\n    Event ID                     : 65281"
+        "\n    Event ID                     : 511"
         "\n    OV/UV alarming enabled       : true"
         "\n    New alarm reporting interval : 14 minutes"
         "\n    Alarm repeat interval        : 3 minutes"
@@ -381,7 +391,11 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    High temp threshold          : 5889"
         "\n    Low temp threshold           : 769"
         "\n    Repeat interval              : 7 minutes"
-        "\n    Max repeats                  : 11";
+        "\n    Max repeats                  : 11"
+        "\nData Streaming configuration:"
+        "\n    Not currently decoded"
+        "\nDemand interval configuration:"
+        "\n    Demand Interval : 6 minutes";
 
     RfnConfigNotificationCommand cmd;
 
@@ -478,10 +492,10 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     }
     {
         BOOST_REQUIRE_EQUAL(cmd.touSchedule->_times.size(), 4);
-        const auto times0 = { "00:03", "00:01", "00:04", "00:01", "00:05" };
-        const auto times1 = { "00:09", "00:02", "00:06", "00:05", "00:03" };
-        const auto times2 = { "00:05", "00:08", "00:09", "00:07", "00:09" };
-        const auto times3 = { "00:03", "00:02", "00:03", "00:08", "00:04" };
+        const auto times0 = { "00:00", "00:03", "00:01", "00:04", "00:01", "00:05" };
+        const auto times1 = { "00:00", "00:09", "00:02", "00:06", "00:05", "00:03" };
+        const auto times2 = { "00:00", "00:05", "00:08", "00:09", "00:07", "00:09" };
+        const auto times3 = { "00:00", "00:03", "00:02", "00:03", "00:08", "00:04" };
         auto itr = cmd.touSchedule->_times.cbegin();
         BOOST_CHECK_EQUAL(itr->first, 0);
         BOOST_CHECK_EQUAL_RANGES(itr->second, times0);
