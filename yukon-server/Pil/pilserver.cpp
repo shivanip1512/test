@@ -850,6 +850,8 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
 
 void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport report)
 {
+    CTILOG_INFO(dout, "Handling unsolicited report for " << report.rfnId);
+
     auto rfnDevice = DeviceManager->getDeviceByRfnIdentifier(report.rfnId);
 
     const auto invokeCommand = [report = std::move(report)](Devices::RfnDevice & rfnDev) {
@@ -862,6 +864,8 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
     }
     else
     {
+        CTILOG_INFO(dout, "Invoking command result handler for device " << rfnDevice->getName());
+
         invokeCommand(*rfnDevice);
     }
 }

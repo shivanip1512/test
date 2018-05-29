@@ -10,6 +10,7 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+using Logging::Vector::Hex::operator<<;
 
 // Construct a byte vector request
 RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
@@ -51,8 +52,12 @@ RfnCommandPtr RfnCommand::handleUnsolicitedReport(const CtiTime now, RfnResponse
 {
     validate( Condition( ! payload.empty(), ClientErrors::DataMissing ) << "Empty payload");
 
+    CTILOG_INFO(dout, "Handling unsolicited report, payload " << payload);
+
     if( payload[0] == RfnConfigNotificationCommand::getUnsolicitedCommandCode() )
     {
+        CTILOG_INFO(dout, "Creating config notification command");
+
         auto command = std::make_unique<RfnConfigNotificationCommand>();
 
         //  ignore command results
