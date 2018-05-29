@@ -60,7 +60,7 @@ public class YukonSpringHook {
             }
         }
         log.info("Creating context: " + factoryKey);
-        BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance();
+        BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance("classpath*:beanRefContext-*.xml");
         beanFactoryRef = bfl.useBeanFactory(factoryKey);
         applicationContext = (ApplicationContext) beanFactoryRef.getFactory();
     }
