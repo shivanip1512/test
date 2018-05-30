@@ -90,8 +90,8 @@ public:
 
     virtual DeviceQueueInterface *getDeviceQueueHandler();
 
-    virtual unsigned long getRequestCount(unsigned long requestID) const;
-    virtual void retrieveQueueEntries(bool( *myFindFunc)(void *, void *), void *findParameter, std::list<void *> &entries);
+    unsigned long getRequestCount(unsigned long requestID) const override;
+    OutMessagePtrVector retrieveQueueEntries(bool( *myFindFunc)(void *, void *), void *findParameter) override;
 
     virtual LONG getAddress() const;
 

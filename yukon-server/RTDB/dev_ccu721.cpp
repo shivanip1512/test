@@ -358,9 +358,11 @@ unsigned long Ccu721Device::getRequestCount(unsigned long requestID) const
 }
 
 
-void Ccu721Device::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void *> &entries)
+std::vector<OUTMESS*> Ccu721Device::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter)
 {
     writer_guard lock{ _queued_mux };
+
+    std::vector<OUTMESS*> entries;
 
     request_handles::iterator itr = _queued_outmessages.begin();
 
@@ -379,6 +381,8 @@ void Ccu721Device::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *
             ++itr;
         }
     }
+
+    return entries;
 }
 
 

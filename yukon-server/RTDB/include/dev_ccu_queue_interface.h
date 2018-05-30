@@ -15,8 +15,8 @@ public:
 
     void set711Info(CtiTransmitter711Info *pInfo);
 
-    unsigned long getRequestCount(unsigned long requestID) const;
-    void retrieveQueueEntries( bool (*myFindFunc)(void*, void*) , void *findParameter, std::list<void*>& entries);
+    unsigned long getRequestCount(unsigned long requestID) const override;
+    OutMessagePtrVector retrieveQueueEntries( bool (*myFindFunc)(void*, void*) , void *findParameter) override;
 };
 
 }

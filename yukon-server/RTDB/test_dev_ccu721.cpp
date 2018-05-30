@@ -161,10 +161,8 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_all)
     BOOST_CHECK(test_ccu721.hasQueuedWork());
     BOOST_CHECK(!test_ccu721.hasRemoteWork());
 
-    std::list<void *> entries;
-
     //  pull out all OMs
-    test_ccu721.retrieveQueueEntries(findAllMessages, NULL, entries);
+    auto entries = test_ccu721.retrieveQueueEntries(findAllMessages, NULL);
 
     //  verify the OM is no longer in there
     BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
@@ -214,10 +212,10 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
     BOOST_CHECK(test_ccu721.hasQueuedWork());
     BOOST_CHECK(!test_ccu721.hasRemoteWork());
 
-    std::list<void *> entries;
+    std::vector<OUTMESS*> entries;
 
     //  try to grab a bogus requestID
-    test_ccu721.retrieveQueueEntries(findRequestId, (void *)111111, entries);
+    entries = test_ccu721.retrieveQueueEntries(findRequestId, (void *)111111);
 
     //  verify our OM is still in there
     BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
@@ -230,7 +228,7 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
     BOOST_CHECK_EQUAL(entries.size(), 0);
 
     //  grab the right requestID
-    test_ccu721.retrieveQueueEntries(findRequestId, (void *)112358, entries);
+    entries = test_ccu721.retrieveQueueEntries(findRequestId, (void *)112358);
 
     //  verify the OM is no longer in there
     BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);

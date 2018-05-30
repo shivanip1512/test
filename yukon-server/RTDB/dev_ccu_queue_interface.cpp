@@ -30,15 +30,19 @@ unsigned long CCU711DeviceQueueInterface::getRequestCount(unsigned long requestI
     return count;
 }
 
-void CCU711DeviceQueueInterface::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void*>& entries)
+auto CCU711DeviceQueueInterface::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter) -> OutMessagePtrVector
 {
+    OutMessagePtrVector entries;
+
     if( _p711Info != NULL )
     {
         if( _p711Info->QueueHandle->Elements > 0 )
         {
-            CleanQueue(_p711Info->QueueHandle, findParameter, myFindFunc, copyMessagesToList, (void *)&entries);
+            CleanQueue(_p711Info->QueueHandle, findParameter, myFindFunc, copyOutMessagesToVector, (void *)&entries);
         }
     }
+
+    return entries;
 }
 
 }
