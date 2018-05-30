@@ -2,6 +2,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
@@ -40,7 +41,7 @@
             <tr>
                 <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
                 <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>
-                <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
+                <td><a href="${dashboardUrl}">${fn:escapeXml(dashboard.name)}</a></td>
                 <td>
                     <c:choose>
                         <c:when test="${!empty dashboard.owner.username}">

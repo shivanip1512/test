@@ -20,7 +20,7 @@
 	}
 %>
         </select>
-        <input type="text" name="SearchValue" size="15" value='<%=(lastSrvcValue!=null?lastSrvcValue:"")%>'>
+        <input type="text" name="SearchValue" size="15" value='<%=(lastSrvcValue!=null?StringEscapeUtils.escapeXml11(lastSrvcValue):"")%>'>
         <input type="submit" name="Submit" value="Search">
 	  </form>
     </span></td>

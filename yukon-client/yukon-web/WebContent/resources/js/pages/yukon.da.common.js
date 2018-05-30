@@ -571,7 +571,8 @@ yukon.da.common = (function () {
             } else {
                 contents.removeClass('success').addClass('error');
             }
-            contents.html(message);
+            var userMessage = $("<span/>").text(message);
+            contents.html(userMessage.html());
             $('#alert-message-container').show();
             setTimeout (_hideAlertMessage, success ? 3000: 8000);
         },

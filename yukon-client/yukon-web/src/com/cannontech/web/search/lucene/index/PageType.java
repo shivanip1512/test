@@ -2,7 +2,10 @@ package com.cannontech.web.search.lucene.index;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 
 import com.cannontech.common.userpage.model.SiteModule;
@@ -19,15 +22,18 @@ public enum PageType {
             
             String path = document.get("path");
             String pageName = document.get("pageName");
-            
+
             List<String> pageArgs = getListFromDocument(document, "pageArg");
-            List<String> summaryArgs = new ArrayList<>(pageArgs);
+            List<String> summaryArgs = new ArrayList<>();
+            summaryArgs.addAll(pageArgs.stream()
+                                       .map(arg -> StringEscapeUtils.escapeXml11(arg))
+                                       .collect( Collectors.toList()));
             summaryArgs.addAll(getListFromDocument(document, "summaryArg"));
-            
+
             SiteModule module = SiteModule.getByName(document.get("module"));
             UserPage userPage = new UserPage(null, new Key(0, path), module, pageName, pageArgs, false, null);
             Page page = new Page(userPage, summaryArgs);
-            
+
             return page;
         }
     },
@@ -50,11 +56,14 @@ public enum PageType {
             String path = document.get("path");
             String module = document.get("module");
             String pageName = document.get("pageName");
-            
+
             List<String> pageArgs = getListFromDocument(document, "pageArg");
             List<String> summaryArgs = new ArrayList<>(pageArgs);
+            summaryArgs.addAll(pageArgs.stream()
+                                       .map(arg -> StringEscapeUtils.escapeXml11(arg))
+                                       .collect( Collectors.toList()));
             summaryArgs.addAll(getListFromDocument(document, "summaryArg"));
-            
+
             return new Page(path, module, pageName, summaryArgs);
         }
     },
@@ -65,12 +74,16 @@ public enum PageType {
         List<String> list = new ArrayList<>();
         int index = 0;
         String fieldValue;
-        
+
         while ((fieldValue = document.get(prefix + index)) != null) {
-            list.add(fieldValue);
+            if (StringUtils.equals("summaryArg", prefix)) {
+                list.add(StringEscapeUtils.escapeXml11(fieldValue));
+            } else {
+                list.add(fieldValue);
+            }
             index++;
         }
-        
+
         return list;
     }
     

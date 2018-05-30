@@ -136,7 +136,7 @@ $(function() {
                             </c:if>
                             <c:if test="${not empty parent}">
                                 <cti:url var="editParent" value="/capcontrol/areas/${parent.liteID}"/>
-                                    <a href="${editParent}">${parent.paoName}</a>
+                                    <a href="${editParent}">${fn:escapeXml(parent.paoName)}</a>
                             </c:if>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".state">

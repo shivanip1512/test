@@ -2,6 +2,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="dashboard" page="view">
 
@@ -10,7 +11,7 @@
         <c:if test="${dashboardPageType == 'AMI'}">
             <cti:crumbLink url="/meter/start" title="AMI" />
         </c:if>
-        <cti:crumbLink>${dashboard.name}</cti:crumbLink>
+        <cti:crumbLink>${fn:escapeXml(dashboard.name)}</cti:crumbLink>
     </cti:breadCrumbs>
 
 <tags:setFormEditMode mode="${mode}"/>

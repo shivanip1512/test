@@ -78,7 +78,7 @@ public class WorkOrderManagerUtil {
 			if (dateReported == null)
                 throw new WebClientException("Invalid report date format '"
                     + StringEscapeUtils.escapeXml11(req.getParameter("DateEventTimestamp")) + " "
-                    + req.getParameter("TimeEventTimestamp")
+                    + StringEscapeUtils.escapeXml11(req.getParameter("TimeEventTimestamp"))
                     + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
 			starsOrder.setDateReported(dateReported);
 		}

@@ -46,7 +46,7 @@
                             <tr>
                                 <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
                                 <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>            
-                                <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
+                                <td><a href="${dashboardUrl}">${fn:escapeXml(dashboard.name)}</a></td>
                                 <td>${dashboard.owner.username}</td>
                                 <td><i:inline key=".visibility.${dashboard.visibility}"/></td>
                                 <td>${dashboard.users}</td>

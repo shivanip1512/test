@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
@@ -187,7 +188,7 @@ public class SubstationController {
                             String contextPath = request.getContextPath();
                             StreamableCapObject streamable = ccCache.getStreamableArea(parentAreaId);
                             
-                            String areaLinkHtml = "<a href='" + contextPath + "/capcontrol/areas/" + streamable.getCcId() + "'>" + streamable.getCcName() + "</a>";
+                            String areaLinkHtml = "<a href='" + contextPath + "/capcontrol/areas/" + streamable.getCcId() + "'>" + StringEscapeUtils.escapeXml11(streamable.getCcName()) + "</a>";
                             String subBusLinkHtml = "<a href='" + contextPath + "/capcontrol/buses/" + bus.getCcId() + "'>" + bus.getCcName() + "</a>";
 
                             areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
