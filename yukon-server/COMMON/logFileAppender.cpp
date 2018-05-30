@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "logFileAppender.h"
+#include "CParms.h"
 
 #include "log4cxx/file.h"
 #include "log4cxx/helpers/synchronized.h"
@@ -93,6 +94,7 @@ LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInf
     const auto fileNamePattern = fileInfo.path + "\\" + fileInfo.baseFileName + "_%d{yyyyMMdd}.log.zip";
 
     policy->setFileNamePattern(toLogStr(fileNamePattern));
+    policy->setZipPath(toLogStr(gConfigParms.getYukonBase() + "\\server\\bin\\zip.cmd"));
 
     setRollingPolicy(policy);
 
