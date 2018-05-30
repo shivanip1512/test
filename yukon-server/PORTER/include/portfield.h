@@ -44,5 +44,5 @@ CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&Ou
 BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
 bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, const CtiDeviceSPtr &Device);
 void getNextExpirationTime(LONG timesPerDay, CtiTime &time);
-UINT purgeExpiredQueueEntries(CtiPortSPtr port);
+UINT purgeExpiredQueueEntries(CtiPort& port);
 

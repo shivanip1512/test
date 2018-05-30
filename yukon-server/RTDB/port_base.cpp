@@ -14,6 +14,8 @@
 
 #include "module_util.h"
 
+#include <boost/range/adaptor/map.hpp>
+
 #define SCREEN_WIDTH    80
 
 #define DEBUG_INPUT_FROM_SCADA 0x00000010
@@ -1413,15 +1415,9 @@ vector<long> CtiPort::getQueuedWorkDevices()
 {
     CtiLockGuard<CtiCriticalSection> guard(_criticalSection);
 
-    vector<long> retVal;
-
-    std::transform(
-        _queuedWork.begin(),
-        _queuedWork.end(),
-        back_inserter(retVal),
-        boost::bind(&device_queue_counts::value_type::first, _1));
-
-    return retVal;
+    return boost::copy_range<vector<long>>(
+        _queuedWork
+            | boost::adaptors::map_keys);
 }
 
 void CtiPort::setPortCommunicating(bool state, DWORD ticks)

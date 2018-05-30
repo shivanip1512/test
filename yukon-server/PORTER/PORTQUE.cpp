@@ -15,6 +15,7 @@
 #include "mgr_port.h"
 #include "port_shr.h"
 #include "streamLocalConnection.h"
+#include "streamAmqConnection.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -1768,6 +1769,32 @@ bool findAllQueueEntries(void *unused, void *d)
     return true;
 }
 
+void cleanupExpiredOutMessages(void *unusedptr, void* d)
+{
+    extern Cti::StreamConnection* ScannerNexus;
+
+    OUTMESS *OutMessage = (OUTMESS *)d;
+
+    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+    {
+        CTILOG_DEBUG(dout, "Expired OutMessage being cleaned up for device ID " << OutMessage->TargetID);
+    }
+
+    //  Do not report expiration errors back to Scanner in order to limit the impact of masses of OMs on uninitialized ports
+    if( OutMessage->ReturnNexus == ScannerNexus )
+    {
+        delete OutMessage;
+    }
+    else
+    {
+        OutMessage->Request.RetryMacroOffset = MacroOffset::none; //Do not resend this on macro route!
+        SendError(OutMessage, ClientErrors::RequestExpired);
+    }
+
+    return;
+}
+
+
 void cleanupOrphanOutMessages(void *unusedptr, void* d)
 {
     OUTMESS *OutMessage = (OUTMESS *)d;
@@ -1778,8 +1805,7 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
     }
 
     OutMessage->Request.RetryMacroOffset = MacroOffset::none; //Do not resend this on macro route!
-    SendError( OutMessage, ClientErrors::QueuePurged );
-    // delete OutMessage;
+    SendError(OutMessage, ClientErrors::QueuePurged);
 
     return;
 }

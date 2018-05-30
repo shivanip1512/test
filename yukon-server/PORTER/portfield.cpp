@@ -122,7 +122,7 @@ void PortThread(void *pid)
 
             if( nowTime > nextExpireTime )
             {
-                int entries = purgeExpiredQueueEntries(Port);
+                int entries = purgeExpiredQueueEntries(*Port);
                 getNextExpirationTime(expirationRate, nextExpireTime);
 
                 if( entries > 0 )
@@ -4416,42 +4416,27 @@ void getNextExpirationTime(LONG timesPerDay, CtiTime &time)
     }
 }
 
-UINT purgeExpiredQueueEntries(CtiPortSPtr port)
+UINT purgeExpiredQueueEntries(CtiPort& port)
 {
-    extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
+    extern void cleanupExpiredOutMessages(void *unusedptr, void* d);
 
-    int entries = 0;
-    CtiDeviceSPtr tempDev;
-    CtiTime now;
-    Cti::DeviceQueueInterface *queueInterface;
-    if( port )
+    const CtiTime now;
+
+    int entries = CleanQueue(port.getPortQueueHandle(), (void *)&now, findExpiredOutMessage, cleanupExpiredOutMessages);
+
+    for( const auto deviceId : port.getQueuedWorkDevices() )
     {
-        entries = CleanQueue(port->getPortQueueHandle(), (void *)&now, findExpiredOutMessage, cleanupOrphanOutMessages);
-
-        vector<long> queuedDevices = port->getQueuedWorkDevices();
-
-        vector<long>::iterator devIter;
-        for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
+        if( auto tempDev = DeviceManager.getDeviceByID(deviceId) )
         {
-            tempDev = DeviceManager.getDeviceByID(*devIter);
-
-            if( tempDev )
+            if( auto queueInterface = tempDev->getDeviceQueueHandler() )
             {
-                queueInterface = tempDev->getDeviceQueueHandler();
-
-                if( queueInterface != NULL )
-                {
-                    list<void*> omList;
-                    queueInterface->retrieveQueueEntries(findExpiredOutMessage, (void *)&now, omList);
-                    entries += omList.size();
-                    list<void*>::iterator iter = omList.begin();
-                    for(; iter!= omList.end(); )
-                    {
-                        OUTMESS *tempOM = (OUTMESS *)*iter;
-                        cleanupOrphanOutMessages(0, tempOM);
-                        iter = omList.erase(omList.begin());
-                    }
-                }
+                auto omList = queueInterface->retrieveQueueEntries(findExpiredOutMessage, (void *)&now);
+                
+                entries += omList.size();
+                    
+                boost::for_each(omList, [](OUTMESS* outmess) {
+                    cleanupExpiredOutMessages(0, outmess);
+                });
             }
         }
     }

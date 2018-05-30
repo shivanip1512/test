@@ -17,13 +17,11 @@
 
 using namespace std;
 
-namespace Cti {
-
-namespace Pil {
+namespace Cti::Pil {
 extern DLLIMPORT CtiFIFOQueue< CtiMessage > ClientReturnQueue;
 }
 
-namespace Porter {
+namespace Cti::Porter {
 
 SystemMsgThread::SystemMsgThread(CtiFIFOQueue< CtiMessage > &inputQueue,
                                  CtiDeviceManager &devMgr,
@@ -197,7 +195,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
     unsigned int entries = 0;
 
-    for each( CtiPortSPtr port in _portManager.getPorts() )
+    for( auto port : _portManager.getPorts() )
     {
         if( port->getWorkCount(requestID) > 0 )
         {
@@ -205,20 +203,20 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
             entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cancelOutMessages, (void *)1);
         }
 
-        for each( long deviceId in port->getQueuedWorkDevices() )
+        for( auto deviceId : port->getQueuedWorkDevices() )
         {
-            if( CtiDeviceSPtr tempDev = _devManager.getDeviceByID(deviceId) )
+            if( auto tempDev = _devManager.getDeviceByID(deviceId) )
             {
-                if( Cti::DeviceQueueInterface *queueInterface = tempDev->getDeviceQueueHandler() )
+                if( auto queueInterface = tempDev->getDeviceQueueHandler() )
                 {
-                    list<void*> omList;
-                    queueInterface->retrieveQueueEntries(findRequestIDMatch, (void *)requestID, omList);
+                    auto omList = queueInterface->retrieveQueueEntries(findRequestIDMatch, (void *)requestID);
+                    
                     entries += omList.size();
 
-                    for each( OUTMESS *tempOM in omList )
+                    for( auto outmess : omList )
                     {
-                        tempOM->Request.RetryMacroOffset = MacroOffset::none; //No resubmitting this request, it is dead!
-                        cancelOutMessages((void *)1,tempOM);
+                        outmess->Request.RetryMacroOffset = MacroOffset::none; //No resubmitting this request, it is dead!
+                        cancelOutMessages((void *)1,outmess);
                     }
                 }
             }
@@ -238,4 +236,4 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 }
 
 } //Namespace Cti::Porter
-}
+

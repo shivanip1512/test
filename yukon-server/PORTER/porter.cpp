@@ -91,6 +91,7 @@ using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 using Cti::StreamLocalConnection;
+using Cti::StreamConnection;
 
 ULONG TimeSyncRate = 3600L;
 
@@ -134,6 +135,7 @@ map< long, CtiPortShare * > PortShareManager;
 //These form the connection between Pil and Porter
 extern DLLIMPORT StreamLocalConnection<OUTMESS, INMESS> PilToPorter; //Pil handles this one
 StreamLocalConnection<INMESS, OUTMESS> PorterToPil;                  //Porter handles this one
+StreamConnection* ScannerNexus;
 extern DLLIMPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
 Cti::Porter::SystemMsgThread _sysMsgThread(PorterSystemMessageQueue, DeviceManager, PortManager, PilToPorter);
@@ -416,17 +418,13 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
             }
             case TYPE_CCU721:
             {
-                list<void *> entries;
-
-                RemoteDevice->getDeviceQueueHandler()->retrieveQueueEntries(findAllQueueEntries, NULL, entries);
+                auto entries = RemoteDevice->getDeviceQueueHandler()->retrieveQueueEntries(findAllQueueEntries, NULL);
 
                 CTILOG_WARN(dout, "CCU: "<< RemoteDevice->getName() <<" PURGING "<<  entries.size() <<" queue entries");
 
-                list<void *>::iterator itr = entries.begin();
-
-                for( ; itr != entries.end(); ++itr )
+                for( auto om : entries )
                 {
-                    cleanupOrphanOutMessages(NULL, *itr);
+                    cleanupOrphanOutMessages(NULL, om);
                 }
 
                 break;
@@ -854,8 +852,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerInMessages,
             Cti::Messaging::ActiveMQ::Queues::InboundQueue ::ScannerOutMessages);
 
-    boost::thread porterToScannerConnection(ConnectionThread, &PorterToScanner);
+    ScannerNexus = &PorterToScanner;
 
+    boost::thread porterToScannerConnection(ConnectionThread, ScannerNexus);
 
     /* Check if we need to start the filler thread */
     if(gConfigParms.isOpt("PORTER_START_FILLERTHREAD") && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_FILLERTHREAD").c_str())))
