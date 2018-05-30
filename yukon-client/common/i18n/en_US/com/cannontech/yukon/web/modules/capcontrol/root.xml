@@ -1196,7 +1196,7 @@
     <entry key="yukon.web.modules.capcontrol.dmvTest.updateFailed">There was an error saving the demand measurement and verification test.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.deleteFailed">There was an error deleting the demand measurement and verification test.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.pollingInterval">Polling Interval</entry>
-    <entry key="yukon.web.modules.capcontrol.dmvTest.pollingInterval.title">1 to 300 seconds with a default of 30 seconds.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.pollingInterval.title">15 to 300 seconds with a default of 30 seconds.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.dataGatheringDuration">Data Gathering Duration</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.dataGatheringDuration.title">1 to 30 minutes with a default of 10 minutes.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.stepSize">Step Size</entry>
