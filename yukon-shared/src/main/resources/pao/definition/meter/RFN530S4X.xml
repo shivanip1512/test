@@ -65,14 +65,6 @@
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
-        <pointInfo name="kVA Quadrant 1 Quadrant 2" attributes="KVA_Q1_Q2"/>
-        <pointInfo name="kVA Quadrant 1 Quadrant 3" attributes="KVA_Q1_Q3"/>
-        <pointInfo name="kVA Quadrant 2 Quadrant 4" attributes="KVA_Q2_Q4"/>
-        <pointInfo name="kVA Quadrant 3 Quadrant 4" attributes="KVA_Q3_Q4"/>
-        <pointInfo name="kVAr Quadrant 1 Quadrant 3" attributes="KVAR_Q1_Q3"/>
-        <pointInfo name="kVAr Quadrant 1 Quadrant 4" attributes="KVAR_Q1_Q4"/>
-        <pointInfo name="kVAr Quadrant 2 Quadrant 3" attributes="KVAR_Q2_Q3"/>
-        <pointInfo name="kVAr Quadrant 2 Quadrant 4" attributes="KVAR_Q2_Q4"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Max Voltage Phase A" attributes="MAXIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Max Voltage Phase B" attributes="MAXIMUM_VOLTAGE_PHASE_B"/>
@@ -110,6 +102,14 @@
         <pointInfo name="Peak kW Frozen (Rate C kW)" attributes="PEAK_DEMAND_FROZEN_RATE_C"/>
         <pointInfo name="Peak kW Frozen (Rate D kW)" attributes="PEAK_DEMAND_FROZEN_RATE_D"/>
         <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
+        <pointInfo name="Quadrant 1 Quadrant 2 kVA" attributes="Q1_Q2_KVA"/>
+        <pointInfo name="Quadrant 1 Quadrant 3 kVA" attributes="Q1_Q3_KVA"/>
+        <pointInfo name="Quadrant 1 Quadrant 3 kVAr" attributes="Q1_Q3_KVAR"/>
+        <pointInfo name="Quadrant 1 Quadrant 4 kVAr" attributes="Q1_Q4_KVAR"/>
+        <pointInfo name="Quadrant 2 Quadrant 3 kVAr" attributes="Q2_Q3_KVAR"/>
+        <pointInfo name="Quadrant 2 Quadrant 4 kVA" attributes="Q2_Q4_KVA"/>
+        <pointInfo name="Quadrant 2 Quadrant 4 kVAr" attributes="Q2_Q4_KVAR"/>
+        <pointInfo name="Quadrant 3 Quadrant 4 kVA" attributes="Q3_Q4_KVA"/>
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
         <pointInfo name="Rate A kWh" attributes="USAGE_RATE_A"/>
         <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
