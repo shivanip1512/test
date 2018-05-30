@@ -1,0 +1,436 @@
+<?xml version="1.0" ?>
+<project name="Automation" default="targets" basedir=".">
+
+	<property environment="env"/>
+
+	<!-- we need antcontrib.jar in order to use <if> statements below -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+	<property name="installer.dir" value="C:/Yukon/YukonInstall" />
+	<property name="database.dir" value="C:Yukon/YukonMisc" />
+	<property name="automation.dir" value="C:/Yukon/automation" />
+	<property name="install.to.dir" value="C:/Yukon" />
+	<property name="install.log.dir" value="C:/" />
+	<property name="screenshot.dir" value="C:/screenshots" />
+	<property name="screenshot.script.dir" value="${screenshot.dir}/scripts" />
+	<property name="screenshot.compare.dir" value="${screenshot.dir}/compare" />
+	<property name="zip.filename" value="yukon.zip" />
+	<property name="hudson.build" value="lastSuccessfulBuild" />
+	<property name="hudson.job" value="yukon_install_head"/>
+    <property name="ccu_simulator.exe" value="C:\Yukon\Server\bin\ccu_simulator.exe" />
+	<property name="field_simulator.exe" value="C:\Yukon\Server\bin\field_simulator.exe" />
+	<property name="field_simulator_service_name" value="Yukon Field Simulator Service" />
+    <property name="client_bin" value="C:\Yukon\Client\bin" />
+    <property name="restore.dir" value="C:\backupfilefordbupdater" />
+
+	<target name="targets">
+		<echo message="The following targets are available" />
+		<echo message=" download                - downloads yukon from hudson" />
+		<echo message=" unzip                   - unzips the Yukon zip file" />
+		<echo message=" install                 - installs yukon" />
+		<echo message=" cleanup_old_install     - delete copied and unzipped parts of installer" />
+		<echo message=" create_sql_tables		- creates the necessary tables in the sql to get yukon up" />
+		<echo message=" create_oracle_tables    - creates the necessary tables in the oracle database to get yukon up" />
+		<echo message=" dbpopulation            - populates the database with basic objects and gives System Admin Group full permissions" />
+		<echo message=" screenshot_crawl        - recursively iterates through each link in Yukon and takes screenshots" />
+		<echo message=" screenshot_compare      - iterates through each taken screenshot and compares them to the control set of good screenshots" />
+	    <echo message=" send_screenshot_email   - sends out an email if there were any screenshot comparison differences found"/>
+		<echo message=" upgrade_yukon           - upgrades currently installed Yukon"/>
+	</target>
+
+	<target name="download_version">
+		<get src="http://swbuild.cooperpowereas.net/job/${hudson.job}/${hudson.build}/artifact//*zip*/archive.zip"
+			dest="C:\${zip.filename}"/>
+	</target>
+
+	<target name="download_explicit">
+		<get src="${zip.fullpath}"
+			dest="C:\${zip.filename}"/>
+	</target>
+	
+	<target name="upgrade_yukon" depends="uninstall, cleanup_old_install, backup_database, unzip, install, db_update, start_broker, start_dispatch, start_all_services, start_eim, start_simulator">
+	</target>
+	
+	<target name="start_eim">
+		<!-- IF the tomcat program file folder exists, set up the EIM, otherwise exit without error -->
+		<if>
+			<available file="C:/Program Files/Apache Software Foundation/Tomcat 6.0" type="dir" />
+			<then>
+				<echo message="Found EIM folder, installing" />	
+                
+				<mkdir dir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina"/>
+				<mkdir dir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina/localhost"/>
+				
+				<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina/localhost" preservelastmodified="true">
+		            <fileset file="C:/Yukon/Server/Extras/Enterprise Integration Module/api.xml" />
+		        </copy>
+            
+    			<exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+    		        <arg value="Apache Tomcat 6.0 Tomcat6"/> </exec>
+			</then>
+			<else>
+				<echo message="No EIM folder found, skipping" />
+			</else>
+		</if>
+	</target>
+
+	<target name="unzip">
+		<unzip dest="Yukon" >
+			<fileset dir="C:\">
+				<include name="*.zip"/>
+			</fileset>
+		</unzip>
+		
+		<!-- Move the installer to make room for the next one. delete_installer wipes out the YukonInstall folder -->
+        <echo message="Move installer to C:\Yukon\YukonInstall"/>
+        <move todir="${install.to.dir}/YukonInstall">
+            <fileset file="C:\*.zip" />
+        </move>
+	</target>
+	
+	<target name="cleanup_old_install">
+	    <delete dir="C:\Yukon\YukonInstall"/>
+		<delete dir="C:\Yukon\YukonMisc"/>
+	</target>
+
+	<target name="install">
+		<mkdir dir="${install.to.dir}/Server/Config"/>
+
+		<!-- copy the master.cfg file to its proper location, this will have been updated by hudson -->
+		<echo message="Copy master.cfg"/>
+		<copy todir="${install.to.dir}/Server/Config" preservelastmodified="true">
+			<fileset file="C:\master.cfg" />
+		</copy>
+		
+		<antcall target="setup_exe" />
+	</target>
+	
+	<target name="setup_exe">
+		<echo message="Run setup.exe"/>
+	        <exec dir="" executable="cmd">
+	            <arg line="/c ${installer.dir}/setup.exe -s -f1C:\setup.iss -f2${install.log.dir}\installLog.log"/>
+	        </exec>
+	</target>
+
+    <target name="uninstall" depends="stop_all_services">
+    	<echo message="Uninstall Java Simulator"/>
+        <exec dir="${client_bin}" executable="cmd" failonerror="false">
+            <arg line="/c ..\..\Runtime\bin\java -jar wrapper.jar -removeWait simulators.conf"/>
+        </exec>
+    	
+    	<echo message="Uninstall Field Simulator"/>
+    	<exec dir="" executable="cmd" failonerror="false">
+                 <arg value="/c"/>
+                 <arg value="sc"/>
+                 <arg value="delete"/> <arg value="${field_simulator_service_name}"/>
+        </exec>
+    	
+    	<echo message="Uninstall EIM"/>
+    	<delete dir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina"/>
+    	
+    	<echo message="Uninstall Yukon"/>
+        <exec dir="" executable="cmd">
+            <arg line="/c ${installer.dir}/setup.exe -uninst -s -f1C:\uninstall.iss"/>
+        </exec>
+    </target>
+
+	<target name="create_sql_tables">
+		<echo message="DB name: ${database.name}"/>
+		<property name="sqlserver.table.creation.query" value="C:\Yukon\YukonMisc\YukonDatabase\DatabaseCreation\SqlServerTableCreation.sql" />
+
+		<!-- Run the sql server creation scripts -->
+		<sql
+	        driver="net.sourceforge.jtds.jdbc.Driver"
+	        url="jdbc:jtds:sqlserver://${database.server}"
+	        userid="${database.name}"
+	        password="${database.name}"
+	        delimiter='go'>
+			<classpath>
+				<pathelement location="C:\jtds.jar"/>
+			</classpath>
+			<transaction src="${sqlserver.table.creation.query}" />
+		</sql>
+	</target>
+
+    <target name="create_oracle_tables">
+        <echo message="DB name: ${database.name}"/>
+    	<echo message="Connecting through - ${database.name}/${database.name}@${database.server}:1521/${db.sid}"/>
+        <property name="oracle.table.creation.query" value="C:\Yukon\YukonMisc\YukonDatabase\DatabaseCreation" />
+
+        <!-- Run the oracle creation scripts -->
+        <exec executable="sqlplus" failonerror="true">
+            <arg value="${database.name}/${database.name}@${database.server}:1521/${db.sid}"/>
+            <arg value="@${oracle.table.creation.query}\OracleTableCreation.sql"/>
+        </exec>
+    </target>
+
+	<target name="findDbPopulationClass">
+        <path id="dbpopulation.classPath">
+            <fileset dir="C:\Yukon">
+                <include name="\Server\web\bin\*.jar"/>
+                <include name="\Client\bin\*.jar"/>
+            </fileset>
+        </path>
+	</target>
+
+    <target name="dbpopulation" depends="findDbPopulationClass">
+        <!-- 6.1 and older -->
+        <java classname="com.cannontech.web.support.development.database.service.impl.DevBuildDatabasePopulationService" jvm="C:\Yukon\Runtime\bin\java" fork="false" failonerror="false" classpathref="dbpopulation.classPath">
+            <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
+            <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
+            <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
+            <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
+            <jvmarg value="-XX:MaxPermSize=128m"/>
+            <jvmarg value="-Xms256m"/>
+            <jvmarg value="-Xmx384m"/>
+        </java>
+        <!-- 6.2 and newer -->
+        <java classname="com.cannontech.web.dev.database.service.impl.DevBuildDatabasePopulationService" jvm="C:\Yukon\Runtime\bin\java" fork="true" failonerror="false" classpathref="dbpopulation.classPath">
+            <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
+            <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
+            <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
+            <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
+            <jvmarg value="-XX:MaxPermSize=128m"/>
+            <jvmarg value="-Xms256m"/>
+            <jvmarg value="-Xmx384m"/>
+        </java>
+    </target>
+    
+	<target name="start_broker">
+        <exec dir="" executable="cmd">
+            <arg value="/c"/>
+            <arg value="NET"/>
+            <arg value="START"/>
+            <arg value="YukonMessageBroker"/>
+        </exec>
+    </target>
+	
+    <target name="start_dispatch">
+        <exec dir="" executable="cmd">
+            <arg value="/c"/>
+            <arg value="NET"/>
+            <arg value="START"/>
+            <arg value="Yukon Dispatch Service"/>
+        </exec>
+    </target>
+    
+    <target name="start_service_manager">
+        <exec dir="" executable="cmd">
+            <arg value="/c"/>
+            <arg value="NET"/>
+            <arg value="START"/>
+            <arg value="YukonServiceMgr"/>
+        </exec>
+    </target>
+
+	<!-- Starts all the services, exluding dispatch (already started) -->
+    <target name="start_all_services">
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="YukonServiceMgr"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="Yukon Real-Time Scan Service"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="Yukon Port Control Service"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="YukonNotificationServer"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="Yukon MAC Scheduler Service"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="Yukon Load Management Service"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="Yukon Foreign Data Service"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="YukonWatchdogService"/> </exec>
+        <!-- YUK-17115 - temporary sleep to allow Cap Control to start without crashing. -->
+        <sleep seconds="30"/>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="Yukon Cap Control Service"/> </exec>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="Yukon Calc-Logic Service"/> </exec>
+    	<sleep seconds="10"/>
+    	<exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+    	            <arg value="YukonWebApplicationService"/> </exec>
+    </target>
+
+    <!-- Stop all the services -->
+    <target name="stop_all_services">
+        <echo message="Stopping All Services"/>
+                <exec dir="" executable="cmd">
+                    <arg line="/c stop_services.bat"/>
+                </exec>
+    </target>
+
+   <target name="start_simulator">
+   	    <echo message="Installing Java Simulators"/>
+        <if>
+            <available file="${client_bin}\install_simulators.bat"/>
+            <then>
+            	<echo message="Starting install simulator: ${client_bin}\install_simulators.bat}"/>
+                <exec dir="${client_bin}" executable="cmd">
+                    <arg line="/c install_simulators.bat"/>
+                </exec>
+                
+                <exec dir="" executable="cmd">
+                             <arg value="/c"/>
+                             <arg value="NET"/>
+                             <arg value="START"/> <arg value="YukonSimulatorsService"/>
+                </exec>
+            </then>
+        </if>
+
+   	    <echo message="Installing C++ Simulators"/>
+   	    <if>
+            <available file="${ccu_simulator.exe}"/>
+            <then>
+                <echo message="Starting CCU simulator: ${ccu_simulator.exe}"/>
+                <exec dir="" executable="cmd">
+                         <arg value="/c"/>
+                         <arg value="sc"/>
+                         <arg value="create"/> <arg value="CCU_SIMULATOR"/>
+                         <arg value="binPath="/> <arg value="${ccu_simulator.exe}"/>
+                         <arg value="start="/> <arg value="auto"/>
+                </exec>
+                <exec dir="" executable="cmd">
+                             <arg value="/c"/>
+                             <arg value="NET"/>
+                             <arg value="START"/> <arg value="CCU_SIMULATOR"/>
+                </exec>
+            </then>
+            <else>
+                <echo message="Starting field simulator: ${field_simulator.exe}"/>
+                <exec dir="" executable="cmd">
+                         <arg value="/c"/>
+                         <arg value="sc"/>
+                         <arg value="create"/> <arg value="${field_simulator_service_name}"/>
+                         <arg value="binPath="/> <arg value="${field_simulator.exe}"/>
+                         <arg value="start="/> <arg value="auto"/>
+                </exec>
+            	<exec dir="" executable ="cmd">
+            		     <arg value="/c"/>
+                         <arg value="sc"/>
+                         <arg value="description"/> <arg value="${field_simulator_service_name}"/>
+                         <arg value="Simulator for PLC devices"/>
+        		</exec>
+                <exec dir="" executable="cmd">
+                             <arg value="/c"/>
+                             <arg value="NET"/>
+                             <arg value="START"/> <arg value="${field_simulator_service_name}"/>
+                </exec>
+            </else>
+        </if>
+    </target>
+
+   <target name="start_site_crawler">
+        <java jar="SiteCrawler.jar"
+        	  jvm="C:\Yukon\Runtime\bin\java"
+              fork="true"
+              failonerror="true">
+            <classpath>
+                <fileset dir="C:\Yukon">
+                    <include name="\Client\bin\*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+   </target>
+	
+    <target name="db_update">
+         <if>
+            <or>
+                <equals arg1="${db.type}" arg2="oracle12"/>
+                <equals arg1="${db.type}" arg2="oracle"/>
+            </or>
+            <then>
+                <echo message="Update oracle database ${database.name}" />
+            	<antcall target="db_updater_oracle"/>
+            </then>
+            <else>
+                <echo message="Update SQL Server database ${database.name}" />
+            	<antcall target="db_updater_sqlserver"/>
+            </else>
+        </if>
+	</target>
+
+   <target name="db_updater_sqlserver">
+     <java classname="com.cannontech.dbtools.updater.DBUpdater"
+     	         jvm="C:\Yukon\Runtime\bin\java"
+                 fork="true"
+                 failonerror="true">
+               <classpath>
+                    <fileset dir="C:\Yukon">
+                        <include name="\Client\bin\*.jar"/>
+                    </fileset>
+               </classpath>
+         	   <arg value="-Dsrc_path=C:/Yukon/YukonMisc/YukonDatabase/DatabaseUpdates/SqlServer"/>
+               <arg value="-Dverbose=false"/>
+               <arg value="-DignoreError=true"/>
+               <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
+               <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
+               <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
+               <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
+               <jvmarg value="-XX:MaxPermSize=128m"/>
+               <jvmarg value="-Xms256m"/>
+               <jvmarg value="-Xmx384m"/>
+     </java>
+   </target>
+   <target name="db_updater_oracle">
+         <java classname="com.cannontech.dbtools.updater.DBUpdater"
+                     jvm="C:\Yukon\Runtime\bin\java"
+                     fork="true"
+                     failonerror="true">
+                   <classpath>
+                        <fileset dir="C:\Yukon">
+                            <include name="\Client\bin\*.jar"/>
+                        </fileset>
+                   </classpath>
+                   <arg value="-Dsrc_path=C:/Yukon/YukonMisc/YukonDatabase/DatabaseUpdates/Oracle"/>
+                   <arg value="-Dverbose=false"/>
+                   <arg value="-DignoreError=true"/>
+                   <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
+                   <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
+                   <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
+                   <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
+                   <jvmarg value="-XX:MaxPermSize=128m"/>
+                   <jvmarg value="-Xms256m"/>
+                   <jvmarg value="-Xmx384m"/>
+         </java>
+	</target>
+
+    <target name="backup_database">
+    	<if>
+            <equals arg1="${database.backup.required}" arg2="true"/>
+    		<then>
+            <echo message="DB name: ${database.name}"/>
+            <sql
+                classpath="" 
+                driver="net.sourceforge.jtds.jdbc.Driver"
+                url="jdbc:jtds:sqlserver://${database.server}"
+                userid="${database.username}"
+                password="${database.password}"
+                delimiter='GO'
+                delimitertype="row"
+                keepformat="true" 
+                autocommit="true">
+               <classpath>
+                   <pathelement location="C:\jtds.jar"/>
+               </classpath>
+            <path>
+                <fileset dir="C:\">
+                    <include name="MaintenanceSolution.sql"/>
+                </fileset>
+            </path>
+                EXECUTE dbo.DatabaseBackup 
+                @Databases = ${database.name},
+                @Directory = "${database.backup.directory}",
+                @BackupType = 'FULL' ,
+                @Verify = 'Y' ,
+                @Compress = 'Y' ,
+                @CleanupTime = ${database.backup.cleanupTime}
+            </sql>
+			</then>
+    		<else>
+    			<echo message="No Database Backup being taken"/>
+			</else>
+		</if>
+    </target>
+</project>
+

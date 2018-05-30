@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<project name="VMAutomation" default="targets" basedir=".">
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+    <property environment="env"/>
+
+    <property name="guest_username" value="${env.VM_GUEST_USERNAME}" />
+    <property name="guest_password" value="${env.VM_GUEST_PASSWORD}" />
+    <property name="guest_address" value="${env.VM_GUEST_ADDRESS}" /> 
+
+    <target name="targets">
+        <echo message="The following targets are available"/>
+        <echo message=" compile_and_jar_site_crawler               - compiles and jars site crawler"/>
+        <echo message=" start_site_crawler                         - copies the jar over to vm and executes it"/>
+    </target>
+
+    <target name="compile_and_jar_site_crawler">
+        <mkdir dir="build"/>
+        <javac srcdir="../src"
+               destdir="build"
+                target="1.8" 
+                source="1.8">
+           <classpath>
+               <fileset dir="third-party">
+                 <include name="**/*.jar"/>
+               </fileset>
+           </classpath> 
+         </javac>
+
+         <jar jarfile="copy-to-vm/SiteCrawler.jar" basedir="build/">
+             <manifest>
+                <attribute name="Main-Class" value="com.cannontech.automation.SiteCrawler"/>
+                <attribute name="Class-Path" value="jsoup-1.7.2.jar"/>
+             </manifest>
+         </jar>
+    </target>
+
+    <target name="start_site_crawler" depends="compile_and_jar_site_crawler">
+        <!-- copy over java file to compile -->
+        <scp todir="${guest_username}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
+            <fileset dir="copy-to-vm">
+                <include name="SiteCrawler.jar"/>
+            </fileset>
+        </scp>
+        <sshexec host="${guest_address}"
+                 failonerror="true"
+                 trust="true"
+                 username="${guest_username}"
+                 password="${guest_password}"
+                 command="ant -f C:/install.xml start_site_crawler"/>
+    </target>
+</project>

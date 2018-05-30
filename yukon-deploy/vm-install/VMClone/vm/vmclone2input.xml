@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+
+<!--
+************************************************************************************************************ 
+This is a modified version of vmclone2 found online. The major differences added by Eaton/Cooper are:
+    More values are hard coded.
+    Some values are unused.
+    Fixed Administrator login password issues with Server 2008/2012
+    Many things are left here that are unused. Virtual-Machine-Spec is profided but currently unused and untested.
+    We have never tried Linux with this and never expect to.
+************************************************************************************************************
+
+This is a sample xml file for creating a virtual machine clone
+Following default values of the tags are set
+
+Customization Spec Tags
+Cust-Type		Win or Lin
+Auto-Logon              1  (windows only)
+Virtual-Machine-Name    testlin   
+Timezone                140  (windows only)
+Linux-Timezone          America/Chicago  (linux only)
+UTC-Clock		1 (linux only)
+Domain-User-Name        Administrator  (windows only)
+Domain-User-Password    secret   (windows only)
+Full-Name               VMware   (windows only)
+AutoMode                perServer  (or "perSeat")  (windows servers only)
+AutoUsers               5  (only used if "perServer")
+Orgnization-Name        VMware  (windows only)
+ProductId               XXXX-XXXX-XXXX-XXXX-XXXX  (adjust for Windows license)
+IP0                     192.168.0.201 or dhcp
+IP0Gateway              192.168.0.1 (array split on : char)
+IP0dnsServer            192.168.0.43:192.168.0.1 (array split on : char)
+IP0Subnet               255.255.255.0
+IP0dnsDomain            vmware.com  (works on windows - linux has empty /etc/resolv.conf)
+IP0primaryWINS          192.168.0.43  (windows only)
+IP0secondaryWINS        (empty)
+
+Virtual Machine Spec Tags
+<Guest-Id>windows8Server64Guest</Guest-Id>
+windows7Server64Guest
+Guest-Id             winXPProGuest
+Disksize(in KB)      4194304(4GB)
+Memory(in MB)        256 
+Number-of-Processor  1
+
+
+These values can be changed according to the requirement and network-->
+
+
+<Specification>
+   <Customization-Spec>
+          <Cust-Type>Win</Cust-Type>
+	  <Auto-Logon>1</Auto-Logon>
+	  <Virtual-Machine-Name>MACHINENAME</Virtual-Machine-Name>
+          <Timezone>020</Timezone>
+          <Linux-Timezone>America/Chicago</Linux-Timezone>
+          <UTC-Clock>1</UTC-Clock>
+	  <Domain>eatoneaseng.net</Domain>
+	  <Domain-User-Name>domainjoin</Domain-User-Name>
+	  <Domain-User-Password>P4ssw0rd</Domain-User-Password>
+	  <Full-Name>MACHINENAME.eatoneaseng.net</Full-Name>
+          <AutoMode>perServer</AutoMode>
+	  <AutoUsers>5</AutoUsers>
+	  <Orgnization-Name>Eaton</Orgnization-Name>
+          <ProductId>PRODUCTID</ProductId>
+          <IP0>IPADDRESS</IP0>
+	  <IP0Gateway>10.106.42.1</IP0Gateway>
+	  <IP0dnsServers>10.106.47.254</IP0dnsServers>
+	  <IP0Subnet>255.255.254.0</IP0Subnet>
+	  <IP0dnsDomain>local.local</IP0dnsDomain>
+	  <IP0primaryWINS>10.106.47.254</IP0primaryWINS>
+	  <IP0secondaryWINS></IP0secondaryWINS>
+   </Customization-Spec>
+ <Virtual-Machine-Spec>
+      <Guest-Id>windows8Server64Guest</Guest-Id>
+      <Memory>4096</Memory>
+      <Disksize>54230000</Disksize>
+      <Number-of-CPUS>4</Number-of-CPUS>
+  </Virtual-Machine-Spec>
+</Specification>
+
+
