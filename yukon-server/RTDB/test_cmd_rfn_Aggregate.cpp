@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_send_one_command)
         const std::vector<unsigned> exp {
             0x01, //  Aggregate message
             0x01, //  1 message
-            0x00, 0x08, //  Payload length 7
+            0x00, 0x08, //  Payload length 8
             //  message 1
             0x44, 0x44, //  context ID 0x4444
             0x02,       //  ASID 2
