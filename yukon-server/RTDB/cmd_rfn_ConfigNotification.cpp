@@ -82,7 +82,8 @@ std::string RfnConfigNotificationCommand::decodeTlvs(const std::vector<TLV> tlvs
         &Self::decodeOvUvAlarm,
         &Self::decodeTemperature,
         &Self::decodeDataStreaming,
-        &Self::decodeDemandInterval
+        &Self::decodeDemandInterval,
+        &Self::decodeVoltageProfileStatus
     };
     
     std::vector<std::string> results;
@@ -519,14 +520,17 @@ std::string RfnConfigNotificationCommand::decodeOvUvAlarm(Bytes payload)
     validate(Condition(payload.size() >= 18, ClientErrors::DataMissing)
         << "Focus AL Display payload too small - (" << payload.size() << " < " << 18);
 
-    RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration a;
+    if( ! ovuv.has_value() )
+    {
+        ovuv.emplace();
+    }
 
     const auto meterId = payload[0];
     const auto eventId = payload[1] << 8 | payload[2];
-    a.ovuvEnabled                = payload[3];
-    a.ovuvAlarmReportingInterval = payload[4];
-    a.ovuvAlarmRepeatInterval    = payload[5];
-    a.ovuvAlarmRepeatCount       = payload[6];
+    ovuv->ovuvEnabled                = payload[3];
+    ovuv->ovuvAlarmReportingInterval = payload[4];
+    ovuv->ovuvAlarmRepeatInterval    = payload[5];
+    ovuv->ovuvAlarmRepeatCount       = payload[6];
     const auto clearAlarmRepeatCount = payload[7];
     const auto severity          = payload[8];
     double setThresholdValue =
@@ -541,29 +545,27 @@ std::string RfnConfigNotificationCommand::decodeOvUvAlarm(Bytes payload)
 
     if( eventId == RfnOvUvConfigurationCommand::EventID::OverVoltage )
     {
-        a.ovThreshold = setThresholdValue;
+        ovuv->ovThreshold = setThresholdValue;
     }
-    else
+    else if(eventId == RfnOvUvConfigurationCommand::EventID::UnderVoltage)
     {
-        a.uvThreshold = setThresholdValue;
+        ovuv->uvThreshold = setThresholdValue;
     }
 
     FormattedList l;
 
     l.add("Meter ID") << meterId;
     l.add("Event ID") << eventId;
-    l.add("OV/UV alarming enabled")       << a.ovuvEnabled;
-    l.add("New alarm reporting interval") << std::chrono::minutes(a.ovuvAlarmReportingInterval);
-    l.add("Alarm repeat interval")        << std::chrono::minutes(a.ovuvAlarmRepeatInterval);
-    l.add("Set alarm repeat count")       << a.ovuvAlarmRepeatCount;
+    l.add("OV/UV alarming enabled")       << ovuv->ovuvEnabled;
+    l.add("New alarm reporting interval") << std::chrono::minutes(ovuv->ovuvAlarmReportingInterval);
+    l.add("Alarm repeat interval")        << std::chrono::minutes(ovuv->ovuvAlarmRepeatInterval);
+    l.add("Set alarm repeat count")       << ovuv->ovuvAlarmRepeatCount;
     l.add("Clear alarm repeat count")     << clearAlarmRepeatCount;
     l.add("Severity")                     << severity;
     l.add("Set threshold value")          << setThresholdValue;
     l.add("Unit of measure") << unitOfMeasure;
     l.add("UOM modifier 1")  << uomModifier1;
     l.add("UOM modifier 2")  << uomModifier2;
-
-    ovuv = a;
 
     return "OV/UV configuration:" + l.toString();
 }
@@ -613,6 +615,51 @@ std::string RfnConfigNotificationCommand::decodeDemandInterval(Bytes payload)
 
     return "Demand interval configuration:" + l.toString();
 }
+
+std::string RfnConfigNotificationCommand::decodeVoltageProfileStatus(Bytes payload)
+{
+    validate(Condition(payload.size() >= 1, ClientErrors::DataMissing)
+        << "Voltage Profile Status payload too small - (" << payload.size() << " < " << 1);
+
+    constexpr auto Disabled  = 0;
+    constexpr auto Permanent = 1;
+    constexpr auto Temporary = 2;
+    
+    FormattedList l;
+
+    VoltageProfileStatus s;
+
+    const auto mode = payload[0];
+
+    l.add("Mode") << (
+        (mode == Disabled)  ? "Disabled" :
+        (mode == Permanent) ? "Permanently enabled" :
+        (mode == Temporary) ? "Temporarily enabled" :
+            "Unknown (" + std::to_string(mode) + ")");
+
+    s.enabled = (mode == Permanent);
+
+    if( payload[0] == Temporary )
+    {
+        validate(Condition(payload.size() >= 5, ClientErrors::DataMissing)
+            << "Voltage Profile Status payload too small - (" << payload.size() << " < " << 5);
+
+        auto timestamp =
+            payload[1] << 24 |
+            payload[2] << 16 |
+            payload[3] <<  8 |
+            payload[4];
+
+        s.temporaryEnd = CtiTime(timestamp);
+
+        l.add("Temporary end") << s.temporaryEnd.value();
+    }
+
+    voltageProfileStatus = s;
+
+    return "Voltage profile status:" + l.toString();
+}
+
 
 std::string RfnConfigNotificationCommand::getCommandName()
 {

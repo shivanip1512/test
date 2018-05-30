@@ -38,6 +38,10 @@ namespace std {
     ostream& operator<<(ostream& out, const vector<unsigned char> &v);
 }
 
+namespace test_cmd_rfn_ConfigNotification {
+    extern const std::vector<uint8_t> payload;
+}
+
 const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
 const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
@@ -198,142 +202,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn410Centron_putconfig_display )
 
 BOOST_AUTO_TEST_CASE( test_config_notification )
 {
-    const std::vector<uint8_t> payload { 
-        0x1e, 
-        0x00, 0x0c, 
-        //  TLV 1
-        0x00, 0x01,  //  TOU Enable/Disable
-        0x00, 0x01,
-            //  TOU enable
-            0x01,
-        //  TLV 2
-        0x00, 0x02,  //  TOU Schedule
-        0x00, 0x38,
-            //  Day table
-            0x88, 0x36, 0x05,  //  1, 2, 3, 4, 4, 3, 2, 1
-            //  Schedule 1 switch times
-            0x00, 0x03, 
-            0x00, 0x01, 
-            0x00, 0x04, 
-            0x00, 0x01, 
-            0x00, 0x05, 
-            //  Schedule 2 switch times
-            0x00, 0x09, 
-            0x00, 0x02, 
-            0x00, 0x06, 
-            0x00, 0x05, 
-            0x00, 0x03, 
-            //  Schedule 3 switch times
-            0x00, 0x05, 
-            0x00, 0x08, 
-            0x00, 0x09, 
-            0x00, 0x07, 
-            0x00, 0x09, 
-            //  Schedule 4 switch times
-            0x00, 0x03, 
-            0x00, 0x02, 
-            0x00, 0x03, 
-            0x00, 0x08, 
-            0x00, 0x04, 
-            //  Schedule 1 rates
-            0xc1, 0x14, 0x00,  //  A B C D A B
-            //  Schedule 2 rates
-            0x53, 0x30, 0x01,  //  C D A B C D
-            //  Schedule 3 rates
-            0x0a, 0xa6, 0x00,  //  B C D A B C
-            //  Schedule 4 rates
-            0x98, 0x82, 0x01,  //  D A B C D A
-            //  default rate
-            0x01,  //  B
-        //  TLV 3
-        0x00, 0x03,  //  TOU Holiday
-        0x00, 0x0c,
-            //  Holiday 1
-            0x5A, 0xA9, 0x3B, 0x26, //  
-            //  Holiday 2
-            0x5B, 0x34, 0x53, 0x9D, //
-            //  Holiday 3
-            0x5A, 0x7B, 0x45, 0x42, 
-        //  TLV 4
-        0x00, 0x04,  //  Demand Freeze Day
-        0x00, 0x01,
-            0x20,  //  32
-        //  TLV 5
-        0x00, 0x05,  //  Interval recording
-        0x00, 0x11,
-            0x00, 0x00, 0x1c, 0x20,  //  7200
-            0x00, 0x01, 0x51, 0x80,  //  86400
-            0x04,  //  4 metrics
-            0x00, 0x01,
-            0x00, 0x02,
-            0x00, 0x03,
-            0x00, 0x04,
-            //  TLV 6
-        0x00, 0x06,  // Channel selection
-        0x00, 0x09,
-            0x04,
-            0x00, 0x05,
-            0x00, 0x06,
-            0x00, 0x07,
-            0x00, 0x08,
-        //  TLV 7
-        0x00, 0x07,  //  Disconnect
-        0x00, 0x06,
-            0x02,  //  Demand threshold
-            0x01,  //  Reconnect method
-            0x18,  //  Demand interval
-            0x1f,  //  Demand threshold
-            0x11,  //  Connect delay
-            0x07,  //  Max disconnects
-        //  TLV 8
-        0x00, 0x08,  //  Voltage profile
-        0x00, 0x02,
-            0x07,  //  Voltage demand interval (15 second increments)
-            0x0b,  //  Voltage load profile interval (minutes)
-        //  TLV 9
-        0x00, 0x09,  //  C2SX Display
-        0x00, 0x0d,
-            0x06,
-            0x00, 0x04,
-            0x01, 0x08,
-            0x02, 0x0c,
-            0xfd, 0x05,
-            0xfe, 0x07,
-            0xff, 0x00,
-        //  TLV 10
-        0x00, 0x0a,  //  Focus AL Display
-        0x00, 0x0b,
-            0x03,
-            0x06,
-            0x00, 0x3e, 0x55,
-            0x02, 0x41, 0x3b,
-            0x08, 0x47, 0x47,
-        //  TLV 11
-        0x00, 0x0b,  //  OV/UV configuration
-        0x00, 0x12,
-            0x7f,        //  Meter ID
-            0x01, 0xff,  //  Event ID
-            0x01,        //  OV/UV Enable/disable
-            0x0e,        //  New alarm reporting interval
-            0x03,        //  Alarm repeat interval
-            0x02,        //  Set alarm repeat count
-            0x05,        //  Clear alarm repeat count
-            0x0d,        //  Severity
-            0x0e, 0x0e, 0x0e, 0x0e,  //  Set threshold value
-            0x0e,        //  Unit of measure
-            0x0e, 0x0e,  //  UOM modifier 1
-            0x0e, 0x0e,  //  UOM modifier 2
-        //  TLV 12
-        0x00, 0x0c,  //  Temperature configuration
-        0x00, 0x07,
-            0x01,  //  Enable/disable
-            0x17, 0x01,  //  high temp threshold
-            0x03, 0x01,  //  low temp threshold
-            0x07,  //  repeat interval
-            0x0b,  //  Max repeats
-    };
-
-    auto cmd = Cti::Devices::Commands::RfnCommand::handleUnsolicitedReport(execute_time, payload);
+    auto cmd = Cti::Devices::Commands::RfnCommand::handleUnsolicitedReport(execute_time, test_cmd_rfn_ConfigNotification::payload);
 
     BOOST_REQUIRE(cmd);
 
@@ -417,10 +286,13 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
         { PI::Key_RFN_VoltageAveragingInterval, 105 },
         { PI::Key_RFN_LoadProfileInterval,       11 },
+        { PI::Key_RFN_VoltageProfileEnabled, false },
+        { PI::Key_RFN_VoltageProfileEnabledUntil, 0x51234567 },
 
         { PI::Key_RFN_DemandFreezeDay, 32 },
 
         { PI::Key_RFN_OvUvEnabled,                 1 },
+        { PI::Key_RFN_OvThreshold,            218959.117 },
         { PI::Key_RFN_UvThreshold,            235802.126 },
         { PI::Key_RFN_OvUvAlarmReportingInterval, 14 },
         { PI::Key_RFN_OvUvAlarmRepeatInterval,     3 },

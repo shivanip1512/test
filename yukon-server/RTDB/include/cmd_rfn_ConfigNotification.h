@@ -55,27 +55,29 @@ protected:
     
     std::string decodeTlvs(const std::vector<TLV> tlvs);
 
-    std::string decodeTouEnableDisable  (Bytes payload);
-    std::string decodeTouSchedule       (Bytes payload);
-    std::string decodeTouHoliday        (Bytes payload);
-    std::string decodeDemandFreezeDay   (Bytes payload);
+    std::string decodeTouEnableDisable    (Bytes payload);
+    std::string decodeTouSchedule         (Bytes payload);
+    std::string decodeTouHoliday          (Bytes payload);
+    std::string decodeDemandFreezeDay     (Bytes payload);
     std::string decodeIntervalRecordingReporting(Bytes payload);
-    std::string decodeChannelSelection  (Bytes payload);
-    std::string decodeDisconnect        (Bytes payload);
-    std::string decodeVoltageProfile    (Bytes payload);
-    std::string decodeC2sxDisplay       (Bytes payload);
-    std::string decodeFocusAlDisplay    (Bytes payload);
-    std::string decodeOvUvAlarm         (Bytes payload);
-    std::string decodeTemperature       (Bytes payload);
-    std::string decodeDataStreaming     (Bytes payload);
-    std::string decodeDemandInterval    (Bytes payload);
+    std::string decodeChannelSelection    (Bytes payload);
+    std::string decodeDisconnect          (Bytes payload);
+    std::string decodeVoltageProfile      (Bytes payload);
+    std::string decodeC2sxDisplay         (Bytes payload);
+    std::string decodeFocusAlDisplay      (Bytes payload);
+    std::string decodeOvUvAlarm           (Bytes payload);
+    std::string decodeTemperature         (Bytes payload);
+    std::string decodeDataStreaming       (Bytes payload);
+    std::string decodeDemandInterval      (Bytes payload);
+    std::string decodeVoltageProfileStatus(Bytes payload);
 
 public:
+
     boost::optional<RfnTouConfigurationCommand::TouState> touEnabled;
     boost::optional<RfnTouScheduleConfigurationCommand::Schedule> touSchedule;
-    boost::optional<uint8_t> demandFreezeDay;
-    boost::optional<RfnTouHolidayConfigurationCommand::Holidays> touHolidays;
-    boost::optional<RfnChannelConfigurationCommand::MetricIds> channelSelections;
+    std::optional<uint8_t> demandFreezeDay;
+    std::optional<RfnTouHolidayConfigurationCommand::Holidays> touHolidays;
+    std::optional<RfnChannelConfigurationCommand::MetricIds> channelSelections;
     
     struct IntervalRecording : RfnChannelIntervalRecording::ActiveConfiguration
     {
@@ -88,7 +90,7 @@ public:
         RfnChannelConfigurationCommand::MetricIds getIntervalMetrics() const override { return intervalMetrics; }
     };
 
-    boost::optional<IntervalRecording> intervalRecording;
+    std::optional<IntervalRecording> intervalRecording;
 
     struct Disconnect : RfnRemoteDisconnectConfigurationCommand::Read
     {
@@ -116,7 +118,7 @@ public:
         boost::optional<unsigned> connectTime;
     };
 
-    boost::optional<Disconnect> disconnect;
+    std::optional<Disconnect> disconnect;
 
     struct VoltageProfile : RfnVoltageProfileConfigurationCommand::Read
     {
@@ -127,7 +129,7 @@ public:
         boost::optional<unsigned> getLoadProfileInterval()      const override { return voltageProfileInterval; }
     };
 
-    boost::optional<VoltageProfile> voltageProfile;
+    std::optional<VoltageProfile> voltageProfile;
 
     struct C2sxDisplay : RfnCentronLcdConfigurationCommand::Read
     {
@@ -142,7 +144,7 @@ public:
         boost::optional<unsigned char> getLcdCycleTime()       const override { return lcdCycleTime;      }
     };
     
-    boost::optional<C2sxDisplay> c2sxDisplay;
+    std::optional<C2sxDisplay> c2sxDisplay;
 
     struct FocusDisplay 
     {
@@ -150,13 +152,21 @@ public:
         RfnFocusAlLcdConfigurationCommand::MetricVector displayItems;
     };
 
-    boost::optional<FocusDisplay> focusDisplay;
+    std::optional<FocusDisplay> focusDisplay;
 
-    boost::optional<RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration> ovuv;
+    std::optional<RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration> ovuv;
 
-    boost::optional<RfnTemperatureAlarmCommand::AlarmConfiguration> temperature;
+    std::optional<RfnTemperatureAlarmCommand::AlarmConfiguration> temperature;
 
     std::optional<uint8_t> demandInterval;
+
+    struct VoltageProfileStatus
+    {
+        bool enabled;
+        std::optional<CtiTime> temporaryEnd;
+    };
+
+    std::optional<VoltageProfileStatus> voltageProfileStatus;
 };
 
 }

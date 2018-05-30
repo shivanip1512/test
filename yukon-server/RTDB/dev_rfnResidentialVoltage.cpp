@@ -211,6 +211,20 @@ void RfnResidentialVoltageDevice::handleCommandResult(const Commands::RfnConfigN
         storeVoltageProfileConfig( *cmd.voltageProfile );
     }
 
+    if( cmd.voltageProfileStatus )
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabled, cmd.voltageProfileStatus->enabled );
+
+        if( cmd.voltageProfileStatus->temporaryEnd )
+        {
+            setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil, cmd.voltageProfileStatus->temporaryEnd.value() );
+        }
+        else
+        {
+            purgeDynamicPaoInfo( CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil );
+        }
+    }
+
     if( cmd.ovuv )
     {
         storeOvUvConfig( *cmd.ovuv );
@@ -440,7 +454,7 @@ void RfnResidentialVoltageDevice::storeOvUvConfig( const Commands::RfnGetOvUvAla
     {
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, *config.ovThreshold );
     }
-    else
+    if( config.uvThreshold ) 
     {
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, *config.uvThreshold );
     }
