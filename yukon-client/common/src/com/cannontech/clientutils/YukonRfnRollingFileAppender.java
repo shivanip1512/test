@@ -58,7 +58,7 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
         }
 
         if (pattern == null) {
-            pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log";
+            pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log.zip";
         }
 
         if (strategy == null) {

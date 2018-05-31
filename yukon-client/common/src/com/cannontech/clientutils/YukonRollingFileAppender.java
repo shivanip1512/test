@@ -155,7 +155,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         }
 
         if (strategy == null) {
-            DefaultRolloverStrategy.newBuilder().withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
+            strategy = DefaultRolloverStrategy.newBuilder().withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
                                                 .withConfig(((Logger) LogManager.getLogger(
                                                             YukonRollingFileAppender.class)).getContext().getConfiguration()).build();
         }
