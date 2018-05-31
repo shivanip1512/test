@@ -87,6 +87,8 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
+import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
+import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
@@ -999,6 +1001,22 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
+    
+    public static JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
+            JmsApi.builder(EcobeeAuthTokenRequest.class, EcobeeAuthTokenResponse.class)
+            .name("Ecobee Auth Token")
+            .description("Sent from Service Manager and Webserver and recieved by Service manager to generate Ecobee Auth Token")
+            .communicationPattern(REQUEST_RESPONSE)
+            .queue(new JmsQueue("yukon.ecobee.auth.token.EcobeeAuthTokenRequest"))
+            .responseQueue(JmsQueue.TEMP_QUEUE)
+            .requestMessage(EcobeeAuthTokenRequest.class)
+            .responseMessage(EcobeeAuthTokenResponse.class)
+            .sender(YUKON_WEBSERVER)
+            .sender(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
+            .build();
+    
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1023,7 +1041,8 @@ public final class JmsApiDirectory {
             .put(OTHER, LM_ADDRESS_NOTIFICATION)
             .put(OTHER, LOCATION)
             .put(OTHER, SIMULATORS)
-            
+            .put(OTHER, ECOBEE_AUTH_TOKEN)
+
             .put(RFN_LCR, RFN_EXPRESSCOM_BROADCAST)
             .put(RFN_LCR, RFN_EXPRESSCOM_UNICAST)
             .put(RFN_LCR, RFN_EXPRESSCOM_UNICAST_BULK)
