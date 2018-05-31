@@ -32,24 +32,25 @@ public final class FileUtil {
 
 
     public static enum LogFilePattern {
-        NAME_DATE_EXT(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)"), "log") {
+        NAME_DATE_LOG(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)"), "log") {
             @Override
             protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
                 return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
             }
         },
-        NAME_DATE_EXT_EXT(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)"), "zip") {
+        NAME_DATE_ZIP(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)"), "zip") {
             @Override
             protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
                 return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
             }
-
+        },
+        NAME_DATE_LOG_ZIP(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)"), "zip") {
             @Override
-            public String getApplicationName(String fileNameWithExt, Matcher matcher) {
-                return StringUtils.capitalize(matcher.group(1) + matcher.group(4));
+            protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
+                return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
             }
         },
-        NAME_EXT(Pattern.compile("(.+?)(\\.[^.]+$)"), "log"){
+        NAME_LOG(Pattern.compile("(.+?)(\\.[^.]+$)"), "log"){
         };
 
         private LogFilePattern(Pattern pattern, String ext) {

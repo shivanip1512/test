@@ -69,7 +69,7 @@
                                     <cti:param name="file" value="${file}${logFile.name}"/>
                                 </cti:url>
                                 <tr title="${logFile.name}">
-                                    <td><a href="${url}">${logFile.identifier}</a></td>
+                                    <td><a href="${url}">${logFile.identifier}</a> (.zip)</td>
                                     <td><cti:msg2 key="${logFile.size}"/></td>
                                 </tr>
                             </c:when>
