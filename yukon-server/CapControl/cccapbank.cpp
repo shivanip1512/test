@@ -174,6 +174,13 @@ CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
     {
         setDynamicData( rdr );
     }
+
+    // we hit max ops and were disabled, but re-enabled the bank manually
+
+    if ( getMaxDailyOpsHitFlag() && ! getDisableFlag() )
+    {
+        setMaxDailyOpsHitFlag( false );
+    }
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)

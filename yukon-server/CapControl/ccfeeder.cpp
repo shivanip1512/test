@@ -109,6 +109,13 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
     {
         _originalParent.restore( rdr );
     }
+
+    // we hit max ops and were disabled, but re-enabled the feeder manually
+
+    if ( getMaxDailyOpsHitFlag() && ! getDisableFlag() )
+    {
+        setMaxDailyOpsHitFlag( false );
+    }
 }
 
 /*---------------------------------------------------------------------------

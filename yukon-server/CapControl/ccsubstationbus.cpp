@@ -152,6 +152,13 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
     _altSubVarVal  = getRawCurrentVarLoadPointValue();
     _altSubWattVal = getRawCurrentWattLoadPointValue();
     _altSubVoltVal = getRawCurrentVoltLoadPointValue();
+
+    // we hit max ops and were disabled, but re-enabled the bus manually
+
+    if ( getMaxDailyOpsHitFlag() && ! getDisableFlag() )
+    {
+        setMaxDailyOpsHitFlag( false );
+    }
 }
 
 /*---------------------------------------------------------------------------

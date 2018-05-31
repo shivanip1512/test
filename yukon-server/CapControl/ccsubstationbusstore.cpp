@@ -2928,7 +2928,14 @@ void CtiCCSubstationBusStore::resetDailyOperations()
 
         }
         currentSubstationBus->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
-        currentSubstationBus->setMaxDailyOpsHitFlag(false);
+        if ( currentSubstationBus->getMaxDailyOpsHitFlag() )    // re-enable maxOps disabled bus
+        {
+            currentSubstationBus->setMaxDailyOpsHitFlag( false );
+            if ( currentSubstationBus->getDisableFlag() )
+            {
+                UpdatePaoDisableFlagInDB( currentSubstationBus, false );
+            }
+        }
         currentSubstationBus->setBusUpdatedFlag(true);
         currentSubstationBus->setCorrectionNeededNoBankAvailFlag(false);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
@@ -2938,7 +2945,14 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
             currentFeeder->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
-            currentFeeder->setMaxDailyOpsHitFlag(false);
+            if ( currentFeeder->getMaxDailyOpsHitFlag() )   // re-enable maxOps disabled feeder
+            {
+                currentFeeder->setMaxDailyOpsHitFlag( false );
+                if ( currentFeeder->getDisableFlag() )
+                {
+                    UpdatePaoDisableFlagInDB( currentFeeder, false );
+                }
+            }
             currentFeeder->setCorrectionNeededNoBankAvailFlag(false);
 
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
@@ -2950,7 +2964,14 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 currentCapBank->setCurrentDailyOperations(0);
-                currentCapBank->setMaxDailyOpsHitFlag(false);
+                if ( currentCapBank->getMaxDailyOpsHitFlag() )  // re-enable maxOps disabled capbank
+                {
+                    currentCapBank->setMaxDailyOpsHitFlag( false );
+                    if ( currentCapBank->getDisableFlag() )
+                    {
+                        UpdatePaoDisableFlagInDB( currentCapBank, false );
+                    }
+                }
                 currentCapBank->setRetryCloseFailedFlag(false);
                 currentCapBank->setRetryOpenFailedFlag(false);
             }
