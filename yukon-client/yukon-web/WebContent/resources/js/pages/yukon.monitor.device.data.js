@@ -167,10 +167,10 @@ yukon.ami.ddm = (function () {
                     countText = '';
                     var pt_help_title = $("#point-unknown-number-help").attr('target-title');
                     postHref = 
-                        '<a class="js-show-too-many-device-for-point-help" href="javascript:void(0);"'
+                        '<a class="fl js-show-too-many-device-for-point-help" href="javascript:void(0);"'
                         + ' target-id="point-unknown-number-help"'
                         + ' target-title="'+ pt_help_title +'">'
-                            + '<i class="icon icon-error">&nbsp;</i>'
+                            + '<i class="icon icon-error ML0">&nbsp;</i>'
                         + '</a>';
                 }
                 
