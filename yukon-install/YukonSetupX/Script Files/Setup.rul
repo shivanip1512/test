@@ -376,6 +376,12 @@ begin
 	sDir = TARGETDIR ^ "\\Server\\Static\\JRE";
 	DeleteFilesOfType(sDir, "exe");
     
+    //Delete Alarm Monitor icon in case of upgrade when installed version < "7.1.0".
+    if(IsInstalledVersionLesser("7.1.0")) then
+        DeleteFile ( TARGETDIR ^ "\\Client\\bin\\AlarmMonitor.ico");
+        DeleteFile ( TARGETDIR ^ "\\Server\\web\\webapps\\ROOT\\WebConfig\\yukon\\Icons\\32\\AlarmMonitor32.png");
+    endif;
+
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
 	
