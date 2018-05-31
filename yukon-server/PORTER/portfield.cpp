@@ -4434,9 +4434,10 @@ UINT purgeExpiredQueueEntries(CtiPort& port)
                 
                 entries += omList.size();
                     
-                boost::for_each(omList, [](OUTMESS* outmess) {
+                for( auto outmess : omList ) 
+                {
                     cleanupExpiredOutMessages(0, outmess);
-                });
+                }
             }
         }
     }

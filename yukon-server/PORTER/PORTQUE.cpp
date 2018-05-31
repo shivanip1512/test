@@ -1783,6 +1783,11 @@ void cleanupExpiredOutMessages(void *unusedptr, void* d)
     //  Do not report expiration errors back to Scanner in order to limit the impact of masses of OMs on uninitialized ports
     if( OutMessage->ReturnNexus == ScannerNexus )
     {
+        CTILOG_TRACE(dout, "Eliminating OutMessage from Scanner for device ID " << OutMessage->TargetID);
+
+        //  Manually record statistics
+        PorterStatisticsManager.newCompletion(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, ClientErrors::RequestExpired, OutMessage->MessageFlags);
+
         delete OutMessage;
     }
     else
