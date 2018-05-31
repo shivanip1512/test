@@ -19,8 +19,7 @@ public interface DisconnectEventLogService {
                                     @Arg(ArgEnum.commandRequestString) DisconnectCommand command,
                                     @Arg(ArgEnum.deviceName) String deviceName);
     
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = ""
-            + "amr.disconnect")
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
     public void actionCompleted(@Arg(ArgEnum.username) LiteYukonUser user,
                                 @Arg(ArgEnum.commandRequestString) DisconnectCommand command,
                                 @Arg(ArgEnum.deviceName) String deviceName,
