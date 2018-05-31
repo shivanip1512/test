@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--Highest Status OFFSET=1000 @ 2016-08-12-->
-<!--Highest Analog OFFSET=363 @ 2018-04-04-->
+<!--Highest Analog OFFSET=373 @ 2018-05-29-->
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
 <!-- Point Name naming convention: 
 [Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #] 
