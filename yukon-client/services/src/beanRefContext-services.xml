@@ -11,6 +11,7 @@
                 <value>com/cannontech/services/server/sharedServiceManagerContext.xml</value>
                 <value>com/cannontech/services/server/serviceManagerContext.xml</value>
                 <value>com/cannontech/services/server/exportedServicesContext.xml</value>
+                <value>com/cannontech/services/server/ecobeeAuthTokenContext.xml</value>
                 <value>com/cannontech/cbc/cbcContext.xml</value>
             </list>
         </constructor-arg>

@@ -1,6 +1,7 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.AUTHENTICATION_EXPIRED;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.AUTHENTICATION_FAILED;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -8,42 +9,56 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.YukonHttpProxy;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.message.AuthenticationRequest;
-import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.BaseResponse;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
+import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 public class EcobeeRestProxyFactory {
     private static final Logger log = YukonLogManager.getLogger(EcobeeRestProxyFactory.class);
 
-    private static final String authUrlPart = "register?format=json";
-
-    @Autowired private GlobalSettingDao settingDao;
-
+    @Autowired private ConfigurationSource configSource;
+    @Autowired private ConnectionFactory connectionFactory;
+ 
     private final RestTemplate proxiedTemplate;
     private final String authTokenKey = "authTokenKey";
-    private volatile String authToken;
     // As per ecobee documents, access token will expire after 1 hour
     private Cache<String,String> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();
 
+    private RequestReplyTemplate<EcobeeAuthTokenResponse> ecobeeAuthTokenRequestTemplate;
+    private JmsTemplate jmsTemplate;
+    
+    @PostConstruct
+    public void init() {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setDeliveryPersistent(false);
+        ecobeeAuthTokenRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.ECOBEE_AUTH_TOKEN.getName(),
+                configSource, connectionFactory, JmsApiDirectory.ECOBEE_AUTH_TOKEN.getQueue().getName(), false);
+    }
+    
     public EcobeeRestProxyFactory(RestTemplate proxiedTemplate) {
         this.proxiedTemplate = proxiedTemplate;
     }
@@ -53,25 +68,13 @@ public class EcobeeRestProxyFactory {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) {
                 try {
-                    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-                    YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
-                        factory.setProxy(httpProxy.getJavaHttpProxy());
-                    });
-                    proxiedTemplate.setRequestFactory(factory) ;
                     addAuthorizationToken(args);
                     Object responseObj = method.invoke(proxiedTemplate, args);
                     if (didAuthenticationFail(responseObj)) {
-                        synchronized (this) {
-                            responseObj = method.invoke(proxiedTemplate, args);
-                            if (didAuthenticationFail(responseObj)) {
-                                log.warn("Ecobee API authentication failed with cached token. Retrying after clearing it.");
-                                tokenCache.invalidateAll();
-                                addAuthorizationToken(args);
-                                responseObj = method.invoke(proxiedTemplate, args);
-                                if (didAuthenticationFail(responseObj)) {
-                                    throw new EcobeeCommunicationException("Communication error during authentication with Ecobee API.");
-                                }
-                            }
+                        addAuthorizationToken(args);
+                        responseObj = method.invoke(proxiedTemplate, args);
+                        if (didAuthenticationFail(responseObj)) {
+                            throw new EcobeeCommunicationException("Communication error during authentication with Ecobee API.");
                         }
                     }
                     return responseObj;
@@ -83,7 +86,7 @@ public class EcobeeRestProxyFactory {
         };
 
         Object obj = Proxy.newProxyInstance(RestOperations.class.getClassLoader(), new Class[] {RestOperations.class},
-            invocationHandler);
+                                            invocationHandler);
 
         return RestOperations.class.cast(obj);
     }
@@ -114,10 +117,14 @@ public class EcobeeRestProxyFactory {
     }
 
     private String getAuthenticationToken() throws EcobeeAuthenticationException {
+        String authToken = tokenCache.getIfPresent(authTokenKey);
         if (tokenCache.getIfPresent(authTokenKey) == null) {
             synchronized (this) {
                 if (tokenCache.getIfPresent(authTokenKey) == null) {
                     authToken = generateAuthenticationToken();
+                    if (StringUtils.isNotEmpty(authToken)) {
+                        tokenCache.put(authTokenKey, authToken);
+                    }
                 }
             }
         }
@@ -125,39 +132,22 @@ public class EcobeeRestProxyFactory {
     }
 
     private String generateAuthenticationToken() throws EcobeeAuthenticationException {
-     
-        //The request failed because the energy company's authentication token is expired
-        //or no token has been generated yet.
-        String urlBase = settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
-        String password = settingDao.getString(GlobalSettingType.ECOBEE_PASSWORD);
-        String userName = settingDao.getString(GlobalSettingType.ECOBEE_USERNAME);
-
-        //Sanity-check configuration values
-        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password)) {
-            throw new EcobeeAuthenticationException("One or more ecobee authentication settings is empty.");
-        }
-
-        String url = urlBase + authUrlPart;
-        log.debug("Attempting login with userName " + userName + " URL: "
-                 + url);
-
-        AuthenticationRequest authRequest = new AuthenticationRequest(userName, password);
-        AuthenticationResponse authResponse;
+        
+        String authToken = "";
+        BlockingJmsReplyHandler<EcobeeAuthTokenResponse> reply = new BlockingJmsReplyHandler<>(EcobeeAuthTokenResponse.class);
+        EcobeeAuthTokenRequest request = new EcobeeAuthTokenRequest();
+        ecobeeAuthTokenRequestTemplate.send(request, reply);
         try {
-            authResponse = proxiedTemplate.postForObject(url, authRequest, AuthenticationResponse.class);
-        } catch (RestClientException e) {
-            throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
+            EcobeeAuthTokenResponse response = reply.waitForCompletion();
+            authToken = response.getAuthToken();
+            if (authToken != null) {
+                //Authentication was successful. Cache the token and try the request again.
+                log.debug("Successfully logged in");
+            }   
+        } catch (Exception e) {
+            log.debug("Error getting authToken");
         }
 
-        if (authResponse.hasCode(SUCCESS)) {
-            //Authentication was successful. Cache the token and try the request again.
-            log.debug("Successfully logged in");
-            authToken = authResponse.getToken();
-            tokenCache.put(authTokenKey, authToken);
-        } else {
-            //Authentication failed. Give up.
-            throw new EcobeeAuthenticationException(userName, authResponse.getStatus().getMessage());
-        }
         return authToken;
     }
 }
