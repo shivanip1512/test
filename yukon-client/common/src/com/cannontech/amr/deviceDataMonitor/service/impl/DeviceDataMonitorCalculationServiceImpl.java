@@ -335,13 +335,13 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         }
         
         updateViolationCacheCount(monitor);
-        log.debug(" {} recalculation of violation for {} is complete",  monitor, device);
+        log.debug("{} recalculation of violation for {} is complete",  monitor, device);
     }
     
     /**
      * Cache violations count to be used when data updaters send request to SM to get the count.
      */
-    private void updateViolationCacheCount(DeviceDataMonitor monitor) {
+    public void updateViolationCacheCount(DeviceDataMonitor monitor) {
         StoredDeviceGroup violationsGroup = monitor.getViolationGroup();
         int violationsCount = deviceGroupService.getDeviceCount(Collections.singleton(violationsGroup));
         monitorIdToViolationCount.put(monitor.getId(), violationsCount);
@@ -388,6 +388,10 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             // find processor for the attribute
             DeviceDataMonitorProcessor processor = monitor.getProcessor((BuiltInAttribute) attribute);
 
+            if(processor == null) {
+                continue;
+            }
+            
             for (PointValueQualityHolder value : pointValues) {
                 SimpleDevice pao = pointIdsToPao.get(value.getId());
                 if (violatingDevices.contains(pao)) {

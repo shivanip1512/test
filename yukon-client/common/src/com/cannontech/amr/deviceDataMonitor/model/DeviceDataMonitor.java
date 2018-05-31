@@ -3,6 +3,7 @@ package com.cannontech.amr.deviceDataMonitor.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
@@ -78,7 +79,8 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     }
     
     public DeviceDataMonitorProcessor getProcessor(BuiltInAttribute attribute) {
-        return processors.stream().filter(p -> attribute == p.getAttribute()).findFirst().get();
+        Optional<DeviceDataMonitorProcessor> processor = processors.stream().filter(p -> attribute == p.getAttribute()).findFirst();
+        return processor.isPresent() ? processor.get(): null;
     }
     
     public List<DeviceDataMonitorProcessor> getStateProcessors() {
