@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLoggingHelperService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
+import com.cannontech.common.events.loggers.DataStreamingEventLogService;
 import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
@@ -22,7 +23,8 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private PointEventLogService pointEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    @Autowired private DataStreamingEventLogService dataStreamingEventLogService;
+    
     @Override
     public void log(CollectionActionResult result){
         switch (result.getAction()) {
@@ -75,11 +77,69 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         case UNASSIGN_CONFIG:
             logUnassignConfig(result);
             break;
+        case CONFIGURE_DATA_STREAMING:
+            logRemoveDataStreaming(result);
+            break;
+        case REMOVE_DATA_STREAMING:
+            logConfigDataStreaming(result);
+            break;
         default:
             throw new UnsupportedOperationException("Add event logger for collection action="+result.getAction());
         }
     }
 
+    private void logConfigDataStreaming(CollectionActionResult result) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            dataStreamingEventLogService.configDataStreamingInitiated(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          result.getCounts().getTotalCount(), 
+                                                          result.getContext().getYukonUser(), 
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            dataStreamingEventLogService.configDataStreamingCompleted(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          accessor.getMessage(result.getStatus()), 
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            dataStreamingEventLogService.configDataStreamingCancelled(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          result.getContext().getYukonUser(),
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        }
+    }
+
+    private void logRemoveDataStreaming(CollectionActionResult result) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+            dataStreamingEventLogService.removeDataStreamingInitiated(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          result.getCounts().getTotalCount(), 
+                                                          result.getContext().getYukonUser(), 
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+            dataStreamingEventLogService.removeDataStreamingCompleted(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          accessor.getMessage(result.getStatus()), 
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+            dataStreamingEventLogService.removeDataStreamingCancelled(accessor.getMessage(result.getAction()), 
+                                                          result.getDetailsString(accessor), 
+                                                          result.getContext().getYukonUser(),
+                                                          String.valueOf(result.getCacheKey()));
+            break;
+        }
+    }
+    
     private void logLocateRoute(CollectionActionResult result) {
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());

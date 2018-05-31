@@ -51,7 +51,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionActionCancellationService {
@@ -144,9 +143,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         }
         int cacheKey = initiateAction(commandString, deviceCollection, LogAction.SEND, CollectionAction.SEND_CONFIG,
             DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, callback, context);
-
-        eventLogService.sendConfigInitiated(deviceCollection.getDeviceCount(), commandString, String.valueOf(cacheKey),
-            context.getYukonUser()); // after the execute so we can have the key
         return cacheKey;
     }
 
@@ -157,9 +153,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
 
         int cacheKey = initiateAction(commandString, deviceCollection, LogAction.READ, CollectionAction.READ_CONFIG,
             DeviceRequestType.GROUP_DEVICE_CONFIG_READ, callback, context);
-
-        eventLogService.readConfigInitiated(deviceCollection.getDeviceCount(), String.valueOf(cacheKey),
-            context.getYukonUser()); // after execute call so we can get the key.
         return cacheKey;
     }
 
@@ -214,9 +207,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     }
     
     @Override
-    public int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context) {
-        eventLogService.verifyConfigInitiated(deviceCollection.getDeviceCount(), context.getYukonUser());
-        
+    public int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context) {        
         VerificationSummary summary = new VerificationSummary(deviceCollection.getDeviceList());
         List<SimpleDevice> supportedDevices = new ArrayList<>(summary.supported.keySet());
 
@@ -297,7 +288,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
 
     @Override
     public VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user) {
-        eventLogService.verifyConfigInitiated(Iterables.size(devices), user);
         return doVerifyConfigs(devices, user);
     }
 

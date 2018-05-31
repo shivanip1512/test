@@ -50,4 +50,42 @@ public interface DataStreamingEventLogService {
     public void cancelCompleted(@Arg(ArgEnum.resultKey) String resultKey, @Arg(ArgEnum.totalCount) Integer total,
             @Arg(ArgEnum.successCount) Integer success, @Arg(ArgEnum.failureCount) Integer failure,
             @Arg(ArgEnum.notAttemptedCount) Integer notAttempted, String canceledCount);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
+    public void configDataStreamingCancelled(String action,
+                                             String detail,
+                                             @Arg(ArgEnum.username) LiteYukonUser user,
+                                             @Arg(ArgEnum.resultKey) String resultKey);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
+    public void configDataStreamingInitiated(String action,
+                                             String detail,
+                                             @Arg(ArgEnum.totalCount)Integer numDevices,
+                                             @Arg(ArgEnum.username)LiteYukonUser username,
+                                             @Arg(ArgEnum.resultKey)String key);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
+    public void configDataStreamingCompleted(String action,
+                                             String detail,
+                                             String creStatus,
+                                             @Arg(ArgEnum.resultKey) String resultKey);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
+    public void removeDataStreamingCancelled(String action,
+                                             String detail,
+                                             @Arg(ArgEnum.username) LiteYukonUser user,
+                                             @Arg(ArgEnum.resultKey) String resultKey);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
+    public void removeDataStreamingInitiated(String action,
+                                             String detail,
+                                             @Arg(ArgEnum.totalCount)Integer numDevices,
+                                             @Arg(ArgEnum.username)LiteYukonUser username,
+                                             @Arg(ArgEnum.resultKey)String key);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
+    public void removeDataStreamingCompleted(String action,
+                                             String detail,
+                                             String creStatus,
+                                             @Arg(ArgEnum.resultKey) String resultKey);
 }

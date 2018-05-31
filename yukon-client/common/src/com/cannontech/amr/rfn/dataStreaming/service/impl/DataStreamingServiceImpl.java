@@ -694,7 +694,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     @Override
     public int read(int deviceId, YukonUserContext context) {
         log.info("Reading configuration for device=" + deviceId);
-        // logService.readAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey())
         DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
         LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
         inputs.put(CollectionActionInput.SELECTED_COMMAND.name(), "Read Data Streaming Configuration");
@@ -795,9 +794,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         Map<Integer, SimpleDevice> devices =
             Maps.uniqueIndex(deviceCollection.getDeviceList(), device -> device.getDeviceId());
 
-        // logService.unassignAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey()),
-        // deviceCollection.getDeviceCount());
-
         List<Integer> deviceIds = asDeviceIds(getSupportedDevices(deviceCollection));
         List<Integer> unsupportedDeviceIds = new ArrayList<>(devices.keySet());
         // remove supported devices
@@ -873,13 +869,10 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         
         List<Integer> devicesIds = Arrays.asList(deviceId);
   
-        //logService.removeAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
-   
         deviceBehaviorDao.unassignBehavior(TYPE, devicesIds);
         Map<Integer, BehaviorReport> reports = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, devicesIds);
         deviceBehaviorDao.deleteBehaviorReport(reports.get(deviceId).getId());
         
-        //logService.removeCompleted(result.getResultsId(), deviceCollection.getDeviceCount());
     }
 
     @Override
@@ -889,10 +882,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         if (config.getId() != 0) {
             config = findDataStreamingConfiguration(config.getId());
         }
-
-        // logService.assignAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey()),
-        // config.getName(),
-        // deviceCollection.getDeviceCount());
 
         List<SimpleDevice> devices = getSupportedDevices(deviceCollection);
 
@@ -943,9 +932,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     public void accept(List<Integer> allDeviceIds, YukonUserContext context) throws DataStreamingConfigException {
 
         log.info("Attempting to accept reported config for devices=" + allDeviceIds);
-
-        // logService.acceptAttempted(context.getYukonUser(), String.valueOf(result.getCacheKey()),
-        // allDeviceIds.size());
 
         // deviceId, report
         Map<Integer, BehaviorReport> deviceIdToReport =
@@ -1005,9 +991,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         if (!devicesIdsToUnassign.isEmpty()) {
             unassignDataStreamingConfig(createDeviceCollectionForIds(devicesIdsToUnassign), null, context);
         }
-
-        // logService.acceptCompleted(String.valueOf(result.getCacheKey()), allDeviceIds.size(),
-        // configIdsToDeviceIds.size(), devicesIdsToUnassign.size());
 
         if (!devicesToResend.isEmpty()) {
             log.debug("Re-sending devices=" + devicesToResend);
@@ -1573,8 +1556,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
                 asDeviceIds(result.getCancelableDevices()));
             updateRequestCount(result.getExecution(), result.getCounts().getSuccessCount() + result.getCounts().getFailedCount());
             collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELLED);
-          /*  logService.cancelCompleted(result.getCacheKey(), result.getCounts().getTotalCount(), result.getSuccessCount(),
-                result.getFailureCount(), result.getUnsupportedCount(), String.valueOf(result.getCanceledCount()));*/
         }
     }
 }
