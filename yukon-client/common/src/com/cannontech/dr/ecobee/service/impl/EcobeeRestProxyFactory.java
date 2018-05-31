@@ -132,8 +132,7 @@ public class EcobeeRestProxyFactory {
     }
 
     private String generateAuthenticationToken() throws EcobeeAuthenticationException {
-        
-        String authToken = "";
+        String authToken = null;
         BlockingJmsReplyHandler<EcobeeAuthTokenResponse> reply = new BlockingJmsReplyHandler<>(EcobeeAuthTokenResponse.class);
         EcobeeAuthTokenRequest request = new EcobeeAuthTokenRequest();
         ecobeeAuthTokenRequestTemplate.send(request, reply);
@@ -141,13 +140,11 @@ public class EcobeeRestProxyFactory {
             EcobeeAuthTokenResponse response = reply.waitForCompletion();
             authToken = response.getAuthToken();
             if (authToken != null) {
-                //Authentication was successful. Cache the token and try the request again.
                 log.debug("Successfully logged in");
             }   
         } catch (Exception e) {
             log.debug("Error getting authToken");
         }
-
         return authToken;
     }
 }
