@@ -197,7 +197,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
                     // Add log Creation date on top of log file. 
                     String logCreationDate = "Log Creation Date : "+ new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                    String header = logCreationDate + "\n" + "LOG CONTINUES (Running since " + startDate + ")\n" + systemInfoString + "\n";
+                    String header = logCreationDate + "\r\n" + "LOG CONTINUES (Running since " + startDate + ")\r\n" + systemInfoString + "\r\n";
                     fwriter.write(header);
                 } catch (IOException e) {
                     LOGGER.error("Unable to write header to new log file.");
