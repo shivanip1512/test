@@ -58,6 +58,7 @@
     <entry key="yukon.web.modules.support.logMenu.custom">Custom</entry>
     <entry key="yukon.web.modules.support.logMenu.custom.title">Custom Date Range</entry>
     <entry key="yukon.web.modules.support.logMenu.noLogsFound">No logs found for selected date range.</entry>
+    <entry key="yukon.web.modules.support.logFile.Extension">zip</entry>
     
     <!-- logging/logTail.jsp -->
     <entry key="yukon.web.modules.support.logTail.pageName">Log Tail</entry>
