@@ -15,8 +15,8 @@ public interface DemandResetEventLogService {
                                             @Arg(ArgEnum.resultKey) String resultKey,
                                             @Arg(ArgEnum.username) LiteYukonUser user);
     
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset.old")
-    public void demandResetInitiated(@Arg(ArgEnum.username) LiteYukonUser user,
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
+    public void demandResetToDeviceInitiated(@Arg(ArgEnum.username) LiteYukonUser user,
                                           @Arg(ArgEnum.deviceName) String deviceName,
                                           @Arg(ArgEnum.deviceRequestType) String deviceRequestType);
 

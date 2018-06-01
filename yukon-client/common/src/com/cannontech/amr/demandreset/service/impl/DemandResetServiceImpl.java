@@ -231,7 +231,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             if (meters.isEmpty()) {
                 callback.complete(strategy.getStrategy());
             } else {
-                meters.forEach(meter -> demandResetEventLogService.demandResetInitiated(user,
+                meters.forEach(meter -> demandResetEventLogService.demandResetToDeviceInitiated(user,
                     dbCache.getAllPaosMap().get(meter.getPaoIdentifier().getPaoId()).getPaoName(),
                     DeviceRequestType.DEMAND_RESET_COMMAND.getShortName()));
                 if (verifExecution == null) {

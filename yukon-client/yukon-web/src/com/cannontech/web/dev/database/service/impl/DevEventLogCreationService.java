@@ -262,11 +262,17 @@ public class DevEventLogCreationService {
                 String oldRouteName = devEventLog.getIndicatorString() + "oldRouteName";
                 String newRouteName = devEventLog.getIndicatorString() + "newRouteName";
                 String serialNumber = devEventLog.getIndicatorString() + "serialNumber";
-
+                
+                String action = "Collection Action";
+                String detail = "Collection Action Detail";
+                Integer numDevices = 1;
+                String creStatus = "COMPLETED";
+                String key = "123";
+                                
                 int paoId = 1;
                 int oldRouteId = 100;
                 int newRouteId = 200;
-                
+
                 String command = "putvalue xyz";
                 
                 commandEventLogService.changeRoute(user, paoName, oldRouteName, newRouteName, paoId, oldRouteId, newRouteId);
@@ -322,11 +328,22 @@ public class DevEventLogCreationService {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
                 String resultKey = "12345!@#$#%";
                 
+                String action = "Collection Action";
+                String detail = "Collection Action Detail";
+                Integer numDevices = 1;
+                String creStatus = "COMPLETED";
+                String key = "123";
+                                
                 demandResetEventLogService.demandResetAttempted(20, 17, 2, 1, resultKey, yukonUser);
-                demandResetEventLogService.demandResetInitiated(yukonUser, "456456-Name", DeviceRequestType.DEMAND_RESET_COMMAND.getShortName());
+                demandResetEventLogService.demandResetToDeviceInitiated(yukonUser, "456456-Name", DeviceRequestType.DEMAND_RESET_COMMAND.getShortName());
                 demandResetEventLogService.cancelInitiated(yukonUser, resultKey);
                 demandResetEventLogService.demandResetCompleted(yukonUser);
                 demandResetEventLogService.demandResetCompletedResults(resultKey, 20, 17, 2, 1);
+
+                demandResetEventLogService.demandResetInitiated(action, detail, numDevices, yukonUser, key);
+                demandResetEventLogService.demandResetCompleted(action, detail, creStatus, key);
+                demandResetEventLogService.demandResetCancelled(action, detail, yukonUser, key);
+                
             }
         });
         executables.put(LogType.DEMAND_RESPONSE, new DevEventLogExecutable() {
@@ -407,6 +424,11 @@ public class DevEventLogCreationService {
                 
                 String deviceConfig = "My Device Config";
                 String deviceName = "Device Name 123456";
+                Integer deviceCount = 1;
+                String resultKey = "1234";
+                String action = "Action 1";
+                String creStatus = "COMPLETED";
+                String detail = "Action Detail";
                 
                 deviceConfigEventLogService.assignConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
                 deviceConfigEventLogService.unassignConfigFromDeviceCompleted(deviceName, yukonUser, 0);
@@ -419,6 +441,24 @@ public class DevEventLogCreationService {
                 
                 deviceConfigEventLogService.verifyConfigFromDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
+                
+                deviceConfigEventLogService.sendConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.sendConfigCompleted(action, detail, creStatus, resultKey);
+                deviceConfigEventLogService.sendConfigCancelled(action, detail, yukonUser, resultKey);
+                
+                deviceConfigEventLogService.readConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.readConfigCompleted(action, detail, creStatus, resultKey);
+                deviceConfigEventLogService.readConfigCancelled(action, detail, yukonUser, resultKey);
+                
+                deviceConfigEventLogService.verifyConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.verifyConfigCompleted(action, detail, creStatus, resultKey);
+                deviceConfigEventLogService.verifyConfigCancelled(action, detail, yukonUser, resultKey);
+                
+                deviceConfigEventLogService.assignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.assignConfigCompleted(action, detail, creStatus, resultKey);
+                
+                deviceConfigEventLogService.unassignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.unassignConfigCompleted(action, detail, creStatus, resultKey);
             }
         });
         executables.put(LogType.DISCONNECT, new DevEventLogExecutable() {
@@ -428,6 +468,14 @@ public class DevEventLogCreationService {
                 
                 String deviceName = "45645-Name";
                 
+                String action = "Collection Action";
+                String detail = "Collection Action Detail";
+                Integer numDevices = 1;
+                String creStatus = "COMPLETED";
+                String key = "123";
+                
+                String command = "putvalue xyz";
+                
                 disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, DisconnectDeviceState.CONNECTED, 1);
                 disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, DisconnectDeviceState.DISCONNECTED, 0);
                 disconnectEventLogService.disconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT, deviceName);
@@ -436,6 +484,11 @@ public class DevEventLogCreationService {
                 disconnectEventLogService.groupCancelAttempted(yukonUser, DisconnectCommand.CONNECT);
                 disconnectEventLogService.groupDisconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT);
                 disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(yukonUser, deviceName);
+                
+                disconnectEventLogService.disconnectInitiated(action, detail, numDevices, yukonUser, key);
+                disconnectEventLogService.disconnectCompleted(action, detail, creStatus, key);
+                disconnectEventLogService.disconnectCancelled(action, detail, yukonUser, key);
+                
             }
         });
         executables.put(LogType.ENDPOINT, new DevEventLogExecutable() {
@@ -445,9 +498,23 @@ public class DevEventLogCreationService {
                 PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN420CD);
                 PaoLocation location = new PaoLocation(paoIdentifier, 44.969947, -93.281050);
                 String deviceName = "45645-Name";
+                String action = "Collection Action";
+                String detail = "Collection Action Detail";
+                Integer numDevices = 1;
+                String creStatus = "COMPLETED";
+                String key = "123";
                 
                 endPointEventLogService.locationRemoved(deviceName, yukonUser);
                 endPointEventLogService.locationUpdated(deviceName, location, yukonUser);
+
+                endPointEventLogService.changeInitiated(action, detail, numDevices, yukonUser, key);
+                endPointEventLogService.changeCompleted(action, detail, creStatus, key);
+                
+                endPointEventLogService.changeTypeInitiated(action, detail, numDevices, yukonUser, key);
+                endPointEventLogService.changeTypeCompleted(action, detail, creStatus, key);
+                
+                endPointEventLogService.deleteInitiated(action, detail, numDevices, yukonUser, key);
+                endPointEventLogService.deleteCompleted(action, detail, creStatus, key);
             }
         });
         executables.put(LogType.HARDWARE, new DevEventLogExecutable() {
@@ -881,6 +948,12 @@ public class DevEventLogCreationService {
                 String value = devEventLog.getIndicatorString() + "12345";
                 String oldValue = devEventLog.getIndicatorString() + "12345";
                 String newValue = devEventLog.getIndicatorString() + "6789";
+                String action = "Collection Action";
+                String detail = "Collection Action Detail";
+                Integer numDevices = 1;
+                String creStatus = "COMPLETED";
+                String key = "123";
+                
                 pointEventLogService.pointDataAdded(deviceName, pointName, value, timestamp, user);
                 pointEventLogService.pointDataUpdated(deviceName, pointName, oldValue, newValue, timestamp, user);
                 pointEventLogService.pointDataDeleted(deviceName, pointName, value, timestamp, user);
@@ -888,6 +961,17 @@ public class DevEventLogCreationService {
                 pointEventLogService.pointUpdated(deviceName, pointName, pointType, pointOffset, user);
                 pointEventLogService.pointDeleted(deviceName, pointName, pointType, pointOffset, user);
 
+                
+
+                pointEventLogService.pointsCreateInitiated(action, detail, numDevices, user, key);
+                pointEventLogService.pointsCreateCompleted(action, detail, creStatus, key);
+                
+                pointEventLogService.pointsUpdateInitiated(action, detail, numDevices, user, key);
+                pointEventLogService.pointsUpdateCompleted(action, detail, creStatus, key);
+                
+                pointEventLogService.pointsDeleteInitiated(action, detail, numDevices, user, key);
+                pointEventLogService.pointsDeleteCompleted(action, detail, creStatus, key);
+                
             }
         });
         executables.put(LogType.POWER_QUALITY_RESPONSE, new DevEventLogExecutable() {
@@ -916,23 +1000,23 @@ public class DevEventLogCreationService {
 
     public static enum LogType implements Displayable {
         ACCOUNT(AccountEventLogService.class, 59),
-        COMMAND(CommanderEventLogService.class, 3),
+        COMMAND(CommanderEventLogService.class, 12),
         COMMAND_REQUEST_EXECUTOR(CommandRequestExecutorEventLogService.class, 2),
         COMMAND_SCHEDULE(CommandScheduleEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
-        DEMAND_RESET(DemandResetEventLogService.class, 5),
+        DEMAND_RESET(DemandResetEventLogService.class, 8),
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 37),
-        DEVICE_CONFIG(DeviceConfigEventLogService.class, 8),
-        DISCONNECT(DisconnectEventLogService.class, 7),
+        DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
+        DISCONNECT(DisconnectEventLogService.class, 10),
         ECOBEE(EcobeeEventLogService.class, 3),
-        ENDPOINT(EndpointEventLogService.class, 2),
+        ENDPOINT(EndpointEventLogService.class, 8),
         GATEWAY(GatewayEventLogService.class, 8),
         HARDWARE(HardwareEventLogService.class, 23),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
         METERING(MeteringEventLogService.class, 12),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         OUTAGE(OutageEventLogService.class, 10),
-        POINT(PointEventLogService.class, 6),
+        POINT(PointEventLogService.class, 12),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),

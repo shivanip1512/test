@@ -351,7 +351,7 @@
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.8">Unsupported</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.9">To Verify</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.10">Unsupported Verify</entry>
-    <entry key="yukon.common.events.amr.demand.reset.old.demandResetInitiated">{3} action initiated for device {2} by {1}.</entry>
+    <entry key="yukon.common.events.amr.demand.reset.demandResetToDeviceInitiated">{3} action initiated for device {2} by {1}.</entry>
     <entry key="yukon.common.events.amr.demand.reset.cancelInitiated">Demand Reset canceled by {1}. Key:{2}</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCompletedResults">Demand Reset complete: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10}). Key:{1}</entry>
     
