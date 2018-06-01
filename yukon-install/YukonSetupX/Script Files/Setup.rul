@@ -263,7 +263,7 @@ end;
 function OnUpdateUIBefore()
 number nResult ;
 BOOL bOptYes, bOptNo, bOpt;
-string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName, shortcutDir;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -380,6 +380,8 @@ begin
     if(IsInstalledVersionLesser("7.1.0")) then
         DeleteFile ( TARGETDIR ^ "\\Client\\bin\\AlarmMonitor.ico");
         DeleteFile ( TARGETDIR ^ "\\Server\\web\\webapps\\ROOT\\WebConfig\\yukon\\Icons\\32\\AlarmMonitor32.png");
+        shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Alarm Monitor.lnk";
+        DeleteFile (shortcutDir);
     endif;
 
 	//set installer to update all features that are currently installed
