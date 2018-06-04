@@ -298,7 +298,7 @@ public class CollectionActionResult {
         for (String key : inputs.getInputs().keySet()) {
             retVal += key + ": " + inputs.getInputs().get(key) + ",";
         }
-        return StringUtils.isNotEmpty(retVal) ? retVal.substring(0, retVal.length() - 1) : "";
+        return StringUtils.isNotEmpty(retVal) ? StringUtils.abbreviate(retVal.substring(0, retVal.length() - 1), 2000) : "";
     }
     
     public String getResultStatsString(MessageSourceAccessor accessor) {
