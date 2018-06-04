@@ -7,12 +7,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -34,8 +32,6 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.BaseResponse;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class EcobeeRestProxyFactory {
     private static final Logger log = YukonLogManager.getLogger(EcobeeRestProxyFactory.class);
@@ -44,10 +40,6 @@ public class EcobeeRestProxyFactory {
     @Autowired private ConnectionFactory connectionFactory;
  
     private final RestTemplate proxiedTemplate;
-    private final String authTokenKey = "authTokenKey";
-    // As per ecobee documents, access token will expire after 1 hour
-    private Cache<String,String> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();
-
     private RequestReplyTemplate<EcobeeAuthTokenResponse> ecobeeAuthTokenRequestTemplate;
     private JmsTemplate jmsTemplate;
     
@@ -117,21 +109,6 @@ public class EcobeeRestProxyFactory {
     }
 
     private String getAuthenticationToken() throws EcobeeAuthenticationException {
-        String authToken = tokenCache.getIfPresent(authTokenKey);
-        if (tokenCache.getIfPresent(authTokenKey) == null) {
-            synchronized (this) {
-                if (tokenCache.getIfPresent(authTokenKey) == null) {
-                    authToken = generateAuthenticationToken();
-                    if (StringUtils.isNotEmpty(authToken)) {
-                        tokenCache.put(authTokenKey, authToken);
-                    }
-                }
-            }
-        }
-        return authToken;
-    }
-
-    private String generateAuthenticationToken() throws EcobeeAuthenticationException {
         String authToken = null;
         BlockingJmsReplyHandler<EcobeeAuthTokenResponse> reply = new BlockingJmsReplyHandler<>(EcobeeAuthTokenResponse.class);
         EcobeeAuthTokenRequest request = new EcobeeAuthTokenRequest();
@@ -143,7 +120,7 @@ public class EcobeeRestProxyFactory {
                 log.debug("Successfully logged in");
             }   
         } catch (Exception e) {
-            log.debug("Error getting authToken");
+            log.debug("Error getting authToken", e);
         }
         return authToken;
     }

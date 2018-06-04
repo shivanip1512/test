@@ -40,7 +40,7 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
     
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private ConnectionFactory connectionFactory;
-    final private RestTemplate proxiedTemplate;
+    private final RestTemplate restTemplate;
 
     private Cache<String,String> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();
     private static final String authTokenKey = "authTokenKey";
@@ -57,7 +57,7 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
     }
     
     public EcobeeAuthTokenServiceImpl(RestTemplate proxiedTemplate) {
-        this.proxiedTemplate = proxiedTemplate;
+        this.restTemplate = proxiedTemplate;
     }
     
     @Override
@@ -67,19 +67,17 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
         YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
             factory.setProxy(httpProxy.getJavaHttpProxy());
         });
-        proxiedTemplate.setRequestFactory(factory);
+        restTemplate.setRequestFactory(factory);
         
         EcobeeAuthTokenResponse response = new EcobeeAuthTokenResponse();
-        
+
         if (tokenCache.getIfPresent(authTokenKey) == null) {
-            synchronized (this) {
-                if (tokenCache.getIfPresent(authTokenKey) == null) {
-                    try {
-                        String authToken = generateAuthenticationToken();
-                        tokenCache.put(authTokenKey, authToken);
-                    } catch (EcobeeAuthenticationException e) {
-                        log.warn("caught exception in handle", e);
-                    }
+            if (tokenCache.getIfPresent(authTokenKey) == null) {
+                try {
+                    String authToken = generateAuthenticationToken();
+                    tokenCache.put(authTokenKey, authToken);
+                } catch (EcobeeAuthenticationException e) {
+                    log.warn("caught exception in handle", e);
                 }
             }
         }
@@ -107,7 +105,7 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
         AuthenticationRequest authRequest = new AuthenticationRequest(userName, password);
         AuthenticationResponse authResponse;
         try {
-            authResponse = proxiedTemplate.postForObject(url, authRequest, AuthenticationResponse.class);
+            authResponse = restTemplate.postForObject(url, authRequest, AuthenticationResponse.class);
         } catch (RestClientException e) {
             throw new EcobeeCommunicationException("Unable to communicate with Ecobee API.", e);
         }

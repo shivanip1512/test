@@ -9,8 +9,6 @@ public interface EcobeeAuthTokenService {
 
     /**
      * Receives from jmsqueue and responds with auth token value. 
-     * @return 
-     *
      */
     EcobeeAuthTokenResponse handle(EcobeeAuthTokenRequest request) throws JMSException;
 

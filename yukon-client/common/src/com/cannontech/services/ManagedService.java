@@ -9,6 +9,7 @@ package com.cannontech.services;
 public enum ManagedService {
     SMART_NOTIFICATION("Smart Notification", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/smartNotification/smartNotificationContext.xml"),
     MAINTENANCE("System Maintenance", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/maintenance/service/maintenanceContext.xml"),
+    ECOBEE_AUTH_TOKEN("Ecobee Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/ecobee/authToken/ecobeeAuthTokenContext.xml"),
     ;
     private final String name;
     private final ServiceType type;
