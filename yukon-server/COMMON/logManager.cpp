@@ -207,6 +207,9 @@ void LogManager::start()
 
     baseLogger->addAppender(asyncAppender);
 
+    // Hack workaround to make sure the AsyncAppender is started (see YUK-17311, YUK-18299)
+    Sleep(1000);
+
     _started = true;
 }
 
