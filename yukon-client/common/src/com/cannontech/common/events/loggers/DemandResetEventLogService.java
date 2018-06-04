@@ -57,5 +57,5 @@ public interface DemandResetEventLogService {
      * Do not use this method, only here for legacy demand reset functionality (multispeak and EIM callbacks)
      */
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void demandResetCompleted(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void demandResetByApiCompleted(@Arg(ArgEnum.username)LiteYukonUser user);
 }

@@ -19,12 +19,14 @@ import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
+import com.cannontech.common.events.loggers.DataStreamingEventLogService;
 import com.cannontech.common.events.loggers.DatabaseMigrationEventLogService;
 import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
@@ -72,6 +74,7 @@ public class DevEventLogCreationService {
     @Autowired private CommanderEventLogService commandEventLogService;
     @Autowired private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
     @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
+    @Autowired private DataStreamingEventLogService dataStreamingEventLogService;
     @Autowired private DatabaseMigrationEventLogService databaseMigrationEventLogService;
     @Autowired private DemandResetEventLogService demandResetEventLogService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
@@ -263,10 +266,10 @@ public class DevEventLogCreationService {
                 String newRouteName = devEventLog.getIndicatorString() + "newRouteName";
                 String serialNumber = devEventLog.getIndicatorString() + "serialNumber";
                 
-                String action = "Collection Action";
                 String detail = "Collection Action Detail";
                 Integer numDevices = 1;
                 String creStatus = "COMPLETED";
+                String statistics = "Completed: 1, Cancelled: 0";
                 String key = "123";
                                 
                 int paoId = 1;
@@ -278,6 +281,20 @@ public class DevEventLogCreationService {
                 commandEventLogService.changeRoute(user, paoName, oldRouteName, newRouteName, paoId, oldRouteId, newRouteId);
                 commandEventLogService.executeOnPao(user, command, paoName, paoId);
                 commandEventLogService.executeOnSerial(user, command, serialNumber, oldRouteName, oldRouteId);
+                
+                commandEventLogService.attributeReadInitiated(CollectionAction.READ_ATTRIBUTE.toString(), detail, numDevices, user, key);
+                commandEventLogService.attributeReadCancelled(CollectionAction.READ_ATTRIBUTE.toString(), detail, statistics, user, key);
+                commandEventLogService.attributeReadCompleted(CollectionAction.READ_ATTRIBUTE.toString(), detail, statistics, creStatus, key);
+              
+                String gcDetail = "SELECTED_ROUTES: 801 B, AUTOMATICALLY_OPDATE_ROUTE: false, SELECTED_COMMAND: Ping, Command: ping,";
+                commandEventLogService.groupCommandInitiated(CollectionAction.SEND_COMMAND.toString(), gcDetail, 4, user, key);
+                commandEventLogService.groupCommandCancelled(CollectionAction.SEND_COMMAND.toString(), gcDetail, statistics, user, key);
+                commandEventLogService.groupCommandCompleted(CollectionAction.SEND_COMMAND.toString(), gcDetail, statistics, creStatus, key);
+                
+                String lrDetail = "SELECTED_ROUTES: 801 B, AUTOMATICALLY_OPDATE_ROUTE: false, SELECTED_COMMAND: Ping, Command: ping,";
+                commandEventLogService.locateRouteInitiated(CollectionAction.LOCATE_ROUTE.toString(), lrDetail, 4, user, key);
+                commandEventLogService.locateRouteCancelled(CollectionAction.LOCATE_ROUTE.toString(), lrDetail, statistics, user, key);
+                commandEventLogService.locateRouteCompleted(CollectionAction.LOCATE_ROUTE.toString(), lrDetail, statistics, creStatus, key);
             }
         });
         executables.put(LogType.COMMAND_REQUEST_EXECUTOR, new DevEventLogExecutable() {
@@ -311,6 +328,26 @@ public class DevEventLogCreationService {
                 commandScheduleEventLogService.scheduleUpdated(yukonUser, commandScheduleId);
             }
         });
+        executables.put(LogType.DATA_STREAMING, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
+                String input = "";
+                Integer numDevices = 1;
+                String creStatus = "COMPLETED";
+                String statistics = "COMPLETED: 1";
+                String resultKey = "546345";
+                
+                dataStreamingEventLogService.configDataStreamingInitiated(CollectionAction.CONFIGURE_DATA_STREAMING.toString(), input, numDevices, yukonUser, resultKey);
+                dataStreamingEventLogService.configDataStreamingCompleted(CollectionAction.CONFIGURE_DATA_STREAMING.toString(), input, statistics, creStatus, resultKey);
+                dataStreamingEventLogService.configDataStreamingCancelled(CollectionAction.CONFIGURE_DATA_STREAMING.toString(), input, statistics, yukonUser, resultKey);
+                
+                dataStreamingEventLogService.removeDataStreamingInitiated(CollectionAction.REMOVE_DATA_STREAMING.toString(), input, numDevices, yukonUser, resultKey);
+                dataStreamingEventLogService.removeDataStreamingCompleted(CollectionAction.REMOVE_DATA_STREAMING.toString(), input, statistics, creStatus, resultKey);
+                dataStreamingEventLogService.removeDataStreamingCancelled(CollectionAction.REMOVE_DATA_STREAMING.toString(), input, statistics, yukonUser, resultKey);
+                
+            }
+        });
         executables.put(LogType.DATABASE_MIGRATION, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
@@ -338,7 +375,7 @@ public class DevEventLogCreationService {
                 demandResetEventLogService.demandResetAttempted(20, 17, 2, 1, resultKey, yukonUser);
                 demandResetEventLogService.demandResetToDeviceInitiated(yukonUser, "456456-Name", DeviceRequestType.DEMAND_RESET_COMMAND.getShortName());
                 demandResetEventLogService.cancelInitiated(yukonUser, resultKey);
-                demandResetEventLogService.demandResetCompleted(yukonUser);
+                demandResetEventLogService.demandResetByApiCompleted(yukonUser);
                 demandResetEventLogService.demandResetCompletedResults(resultKey, 20, 17, 2, 1);
 
                 demandResetEventLogService.demandResetInitiated(action, input, numDevices, yukonUser, key);
@@ -476,7 +513,6 @@ public class DevEventLogCreationService {
                 String creStatus = "COMPLETED";
                 String key = "123";
                 String statistics = "Completed: 1";
-                String command = "putvalue xyz";
                 
                 disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, DisconnectDeviceState.CONNECTED, 1);
                 disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, DisconnectDeviceState.DISCONNECTED, 0);
@@ -511,12 +547,15 @@ public class DevEventLogCreationService {
                 endPointEventLogService.locationUpdated(deviceName, location, yukonUser);
 
                 endPointEventLogService.changeInitiated(action, input, numDevices, yukonUser, key);
+                endPointEventLogService.changeCancelled(action, input, statistics, yukonUser, key);
                 endPointEventLogService.changeCompleted(action, input, statistics, creStatus, key);
                 
                 endPointEventLogService.changeTypeInitiated(action, input, numDevices, yukonUser, key);
+                endPointEventLogService.changeTypeCancelled(action, input, statistics, yukonUser, key);
                 endPointEventLogService.changeTypeCompleted(action, input, statistics, creStatus, key);
                 
                 endPointEventLogService.deleteInitiated(action, input, numDevices, yukonUser, key);
+                endPointEventLogService.deleteCancelled(action, input, statistics, yukonUser, key);
                 endPointEventLogService.deleteCompleted(action, input, statistics, creStatus, key);
             }
         });
@@ -581,6 +620,7 @@ public class DevEventLogCreationService {
                 LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
                 String scheduleName = devEventLog.getIndicatorString() + "ScheduleName";
                 
+                String deviceName = "RfnMeter 453";
                 String meterNumber = devEventLog.getIndicatorString() + "meterNumber";
                 String deviceRequestType = DeviceRequestType.GROUP_ATTRIBUTE_READ.getShortName();
                 String deviceGroup = "/Meters/Collection/Cycle 1";
@@ -594,6 +634,9 @@ public class DevEventLogCreationService {
                 int contextId = 56789;
                 int commands = 2;
                 
+                String serialNumberOrAddress = "45445";
+                PaoType paoType = PaoType.RFN410FD;
+                
                 meteringEventLogService.readNowPushedForReadingsWidget(user, meterNumber);
                 meteringEventLogService.scheduleDeleted(user, scheduleName);
                 meteringEventLogService.jobStarted(deviceRequestType, scheduleName, deviceGroup, retry, user, jobId);
@@ -606,7 +649,9 @@ public class DevEventLogCreationService {
                 meteringEventLogService.readTimeout(deviceRequestType, scheduleName, tryNumber, contextId, executionId);
                 meteringEventLogService.tryStarted(deviceRequestType, scheduleName, tryNumber, commands, contextId, executionId);
                 meteringEventLogService.tryCompleted(deviceRequestType, scheduleName, tryNumber, commands, contextId, executionId);
-                
+                meteringEventLogService.meterCreated(deviceName, meterNumber, serialNumberOrAddress, paoType, user.getUsername());
+                meteringEventLogService.meterDeleted(deviceName, meterNumber, user.getUsername());
+                meteringEventLogService.meterEdited(deviceName, meterNumber, user.getUsername());
             }
         });
         executables.put(LogType.MULTISPEAK, new DevEventLogExecutable() {
@@ -773,11 +818,14 @@ public class DevEventLogCreationService {
                 systemEventLogService.newPublicKeyGenerated(user, DREncryption.HONEYWELL);
                 systemEventLogService.certificateGenerated(user, DREncryption.HONEYWELL);
                 systemEventLogService.certificateGenerationFailed(user, DREncryption.HONEYWELL);
+                
                 systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
+                
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.DISABLED_USER);
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.INVALID_PASSWORD);
                 systemEventLogService.loginClientFailed(user.getUsername(), username, Type.DISABLED_USER);
                 systemEventLogService.loginClientFailed(user.getUsername(), username, Type.INVALID_PASSWORD);
+                
                 systemEventLogService.loginOutboundVoiceFailed(user.getUsername(), username);
                 systemEventLogService.loginClient(user, remoteAddress);
                 systemEventLogService.loginConsumer(user, EventSource.API);
@@ -786,6 +834,7 @@ public class DevEventLogCreationService {
                 systemEventLogService.loginPasswordChangeAttempted(user, devEventLog.getEventSource());
                 systemEventLogService.loginUsernameChangeAttempted(user, newUsername, devEventLog.getEventSource());
                 systemEventLogService.loginWeb(user, remoteAddress);
+                
                 systemEventLogService.passwordRequestAttempted("barney", "barney@eaton.com", "123123123", EventSource.CONSUMER);
                 systemEventLogService.rphDeleteDanglingEntries(rowsDeleted, start, finish);
                 systemEventLogService.rphDeleteDuplicates(rowsDeleted, start, finish);
@@ -794,6 +843,20 @@ public class DevEventLogCreationService {
                 systemEventLogService.systemLogWeatherDataUpdate("MSP", "Error updating weather stations.");
                 systemEventLogService.smartIndexMaintenance(start, finish);
                 systemEventLogService.usernameChanged(user, oldUsername, newUsername);
+                
+                String serialNumber = "ge645a5";
+                String error = "testError";
+                systemEventLogService.groupConflictLCRDetected(serialNumber);
+                systemEventLogService.configMessageSent(serialNumber);
+                systemEventLogService.messageSendingFailed(serialNumber, error);
+                systemEventLogService.inServiceMessageSent(serialNumber);
+                systemEventLogService.outOfServiceMessageSent(serialNumber);
+                
+                String taskName = "testTask";
+                
+                systemEventLogService.maintenanceTaskDisabled(user, taskName);
+                systemEventLogService.maintenanceTaskEnabled(user, taskName);
+                systemEventLogService.maintenanceTaskSettingsUpdated(user, taskName);
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -835,7 +898,10 @@ public class DevEventLogCreationService {
                 toolsEventLogService.macsScriptEnabled(user, name, state);
                 toolsEventLogService.macsScriptStarted(user, name, startDate, endDate);
                 toolsEventLogService.macsScriptStopped(user, name, endDate);
-
+                toolsEventLogService.macsScriptCreated(user, formatName);
+                toolsEventLogService.macsScriptUpdated(user, formatName);
+                toolsEventLogService.macsScriptDeleted(user, formatName);
+                
                 toolsEventLogService.importStarted(user, BulkImportType.MCT.name());
             }
         });
@@ -935,6 +1001,7 @@ public class DevEventLogCreationService {
                gatewayEventLogService.deletedGateway(user, paoName, serial);
                gatewayEventLogService.sentCertificateUpdate(user, "fake.pkg.nm", "fakeCertificate", 1);
                gatewayEventLogService.sentFirmwareUpdate(user, 1);
+               gatewayEventLogService.deletedGatewayAutomatically(paoName, serial);
            }
         });
         executables.put(LogType.POINT, new DevEventLogExecutable() {
@@ -968,12 +1035,15 @@ public class DevEventLogCreationService {
                 
 
                 pointEventLogService.pointsCreateInitiated(action, input, numDevices, user, key);
+                pointEventLogService.pointsCreateCancelled(action, input, statistics, user, key);
                 pointEventLogService.pointsCreateCompleted(action, input, statistics, creStatus, key);
                 
                 pointEventLogService.pointsUpdateInitiated(action, input, numDevices, user, key);
+                pointEventLogService.pointsUpdateCancelled(action, input, statistics, user, key);
                 pointEventLogService.pointsUpdateCompleted(action, input, statistics, creStatus, key);
                 
                 pointEventLogService.pointsDeleteInitiated(action, input, numDevices, user, key);
+                pointEventLogService.pointsDeleteCancelled(action, input, statistics, user, key);
                 pointEventLogService.pointsDeleteCompleted(action, input, statistics, creStatus, key);
                 
             }
@@ -1007,25 +1077,26 @@ public class DevEventLogCreationService {
         COMMAND(CommanderEventLogService.class, 12),
         COMMAND_REQUEST_EXECUTOR(CommandRequestExecutorEventLogService.class, 2),
         COMMAND_SCHEDULE(CommandScheduleEventLogService.class, 6),
+        DATA_STREAMING(DataStreamingEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 8),
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 37),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
         ECOBEE(EcobeeEventLogService.class, 3),
-        ENDPOINT(EndpointEventLogService.class, 8),
-        GATEWAY(GatewayEventLogService.class, 8),
+        ENDPOINT(EndpointEventLogService.class, 11),
+        GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
-        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
-        METERING(MeteringEventLogService.class, 12),
+        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
+        METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         OUTAGE(OutageEventLogService.class, 10),
-        POINT(PointEventLogService.class, 12),
+        POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 25),
-        TOOLS(ToolsEventLogService.class, 19),
+        SYSTEM(SystemEventLogService.class, 34),
+        TOOLS(ToolsEventLogService.class, 22),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
         ;

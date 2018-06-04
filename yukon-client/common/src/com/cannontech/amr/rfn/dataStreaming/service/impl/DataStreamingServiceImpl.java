@@ -137,7 +137,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private DataStreamingEventLogService logService;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private CommandExecutionService commandExecutionService;
@@ -709,9 +708,6 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.CONFIGURE_DATA_STREAMING, null,
             deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, context);
 
-        logService.resendAttempted(result.getContext().getYukonUser(), String.valueOf(result.getCacheKey()),
-            result.getCounts().getTotalCount());
-
         log.info("Re-sending configuration for cache key=" + result.getCacheKey());
 
         Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
@@ -720,7 +716,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
         ConfigResponseResult configResponseResult = sendNmConfiguration(configToDeviceIds, requestSeqNumber,
             DeviceDataStreamingConfigRequestType.UPDATE_WITH_FORCE);
-        List<Integer> devicesToResend = new ArrayList<>();
+        List<Integer> devicesToResend = new ArrayList<>();  
         devicesToResend.addAll(deviceIds);
         if (configResponseResult.hasDeviceErrors) {
             devicesToResend.removeAll(configResponseResult.deviceIds);
@@ -811,7 +807,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             log.debug("Devices without behaviors=" + devicesIdsWithoutBehavior);
             deviceIds.removeAll(devicesIdsWithoutBehavior);
             if (!deviceIds.isEmpty()) {
-                failedVerificationDevices.addAll(getAllFailedVerificationDevices(deviceIdToBehavior, devices));
+                failedVerificationDevices.addAll(getAllFailedVerificationDevices(deviceIdToBehavior, devices)); 
                 deviceIds.removeAll(failedVerificationDevices);
                 log.debug("Devices failed NM verifications=" + failedVerificationDevices);
                 unsupportedDeviceIds.addAll(failedVerificationDevices);
@@ -1545,8 +1541,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     public void cancel(int key, LiteYukonUser user) {
         CollectionActionResult result = collectionActionService.getCachedResult(key);
         if (result != null) {
-            logService.cancelAttempted(user, String.valueOf(result.getCacheKey()));
-
+            
             result.setCanceled(true);
             collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
             result.getCancellationCallbacks(StrategyType.PORTER).forEach(callback -> {

@@ -296,7 +296,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
                 if (pendingStrategies.isEmpty()) {
                     completeCommandRequestExecution(execution, COMPLETE);
                     callback.initiated(initiationResults);
-                    demandResetEventLogService.demandResetCompleted(user);
+                    demandResetEventLogService.demandResetByApiCompleted(user);
                 }
             }
 
@@ -390,7 +390,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
                     log.debug("Completing " + strategyType + " verification strategy. Remaining verification strategies:" + pendingVerifStrategies);
                     log.debug("Demand Reset Verification Completed for all strategies.");
                     completeExecutions(COMPLETE);
-                    demandResetEventLogService.demandResetCompleted(user);
+                    demandResetEventLogService.demandResetByApiCompleted(user);
                 }
             }
             
