@@ -296,18 +296,17 @@ public class CollectionActionResult {
         }
         String retVal = "";
         for (String key : inputs.getInputs().keySet()) {
-            retVal += key + ": " + inputs.getInputs().get(key) + "," + System.lineSeparator();
+            retVal += key + ": " + inputs.getInputs().get(key) + ",";
         }
-        return retVal;
+        return StringUtils.isNotEmpty(retVal) ? retVal.substring(0, retVal.length() - 1) : "";
     }
     
     public String getResultStatsString(MessageSourceAccessor accessor) {
         String retValue = "";
         for(CollectionActionDetail key : details.keySet()){
-            retValue += accessor.getMessage(key) + ":" + details.get(key).getDevices().getDeviceCount() + "," + System.lineSeparator();
+            retValue += accessor.getMessage(key) + ":" + details.get(key).getDevices().getDeviceCount() + ",";
         }
-        return retValue;
-        
+        return StringUtils.isNotEmpty(retValue) ? retValue.substring(0, retValue.length() - 1) : "";
     }
     
     public boolean isCached() {
