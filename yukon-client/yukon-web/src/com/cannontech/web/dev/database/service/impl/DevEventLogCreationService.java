@@ -328,8 +328,9 @@ public class DevEventLogCreationService {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
                 String resultKey = "12345!@#$#%";
                 
-                String action = "Collection Action";
-                String detail = "Collection Action Detail";
+                String action = "Demand Reset";
+                String input = "Collection Action Detail";
+                String statistics = "COMPLETED: 1";
                 Integer numDevices = 1;
                 String creStatus = "COMPLETED";
                 String key = "123";
@@ -340,9 +341,9 @@ public class DevEventLogCreationService {
                 demandResetEventLogService.demandResetCompleted(yukonUser);
                 demandResetEventLogService.demandResetCompletedResults(resultKey, 20, 17, 2, 1);
 
-                demandResetEventLogService.demandResetInitiated(action, detail, numDevices, yukonUser, key);
-                demandResetEventLogService.demandResetCompleted(action, detail, creStatus, key);
-                demandResetEventLogService.demandResetCancelled(action, detail, yukonUser, key);
+                demandResetEventLogService.demandResetInitiated(action, input, numDevices, yukonUser, key);
+                demandResetEventLogService.demandResetCompleted(action, input, statistics, creStatus, resultKey);
+                demandResetEventLogService.demandResetCancelled(action, input, statistics, yukonUser, resultKey);
                 
             }
         });
@@ -425,10 +426,11 @@ public class DevEventLogCreationService {
                 String deviceConfig = "My Device Config";
                 String deviceName = "Device Name 123456";
                 Integer deviceCount = 1;
-                String resultKey = "1234";
-                String action = "Action 1";
+                String resultKey = "ef4a68ge678ea";
+                String action = "Read Config";
                 String creStatus = "COMPLETED";
-                String detail = "Action Detail";
+                String input = "add config";
+                String statistics = "Completed: 1";
                 
                 deviceConfigEventLogService.assignConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
                 deviceConfigEventLogService.unassignConfigFromDeviceCompleted(deviceName, yukonUser, 0);
@@ -443,22 +445,22 @@ public class DevEventLogCreationService {
                 deviceConfigEventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
                 
                 deviceConfigEventLogService.sendConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.sendConfigCompleted(action, detail, creStatus, resultKey);
-                deviceConfigEventLogService.sendConfigCancelled(action, detail, yukonUser, resultKey);
+                deviceConfigEventLogService.sendConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.sendConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
                 deviceConfigEventLogService.readConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.readConfigCompleted(action, detail, creStatus, resultKey);
-                deviceConfigEventLogService.readConfigCancelled(action, detail, yukonUser, resultKey);
+                deviceConfigEventLogService.readConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.readConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
                 deviceConfigEventLogService.verifyConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.verifyConfigCompleted(action, detail, creStatus, resultKey);
-                deviceConfigEventLogService.verifyConfigCancelled(action, detail, yukonUser, resultKey);
+                deviceConfigEventLogService.verifyConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.verifyConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
                 deviceConfigEventLogService.assignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.assignConfigCompleted(action, detail, creStatus, resultKey);
+                deviceConfigEventLogService.assignConfigCompleted(action, input, statistics, creStatus, resultKey);
                 
                 deviceConfigEventLogService.unassignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.unassignConfigCompleted(action, detail, creStatus, resultKey);
+                deviceConfigEventLogService.unassignConfigCompleted(action, input, statistics, creStatus, resultKey);
             }
         });
         executables.put(LogType.DISCONNECT, new DevEventLogExecutable() {
@@ -468,12 +470,12 @@ public class DevEventLogCreationService {
                 
                 String deviceName = "45645-Name";
                 
-                String action = "Collection Action";
-                String detail = "Collection Action Detail";
+                String action = "Disconnect";
+                String input = "disconnect input";
                 Integer numDevices = 1;
                 String creStatus = "COMPLETED";
                 String key = "123";
-                
+                String statistics = "Completed: 1";
                 String command = "putvalue xyz";
                 
                 disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, DisconnectDeviceState.CONNECTED, 1);
@@ -485,9 +487,9 @@ public class DevEventLogCreationService {
                 disconnectEventLogService.groupDisconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT);
                 disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(yukonUser, deviceName);
                 
-                disconnectEventLogService.disconnectInitiated(action, detail, numDevices, yukonUser, key);
-                disconnectEventLogService.disconnectCompleted(action, detail, creStatus, key);
-                disconnectEventLogService.disconnectCancelled(action, detail, yukonUser, key);
+                disconnectEventLogService.disconnectInitiated(action, input, numDevices, yukonUser, key);
+                disconnectEventLogService.disconnectCompleted(action, input, statistics, creStatus, key);
+                disconnectEventLogService.disconnectCancelled(action, input, statistics, yukonUser, key);
                 
             }
         });
@@ -498,23 +500,24 @@ public class DevEventLogCreationService {
                 PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN420CD);
                 PaoLocation location = new PaoLocation(paoIdentifier, 44.969947, -93.281050);
                 String deviceName = "45645-Name";
-                String action = "Collection Action";
-                String detail = "Collection Action Detail";
+                String action = "Change Type";
+                String input = "change ";
                 Integer numDevices = 1;
                 String creStatus = "COMPLETED";
+                String statistics = "Completed: 1";
                 String key = "123";
                 
                 endPointEventLogService.locationRemoved(deviceName, yukonUser);
                 endPointEventLogService.locationUpdated(deviceName, location, yukonUser);
 
-                endPointEventLogService.changeInitiated(action, detail, numDevices, yukonUser, key);
-                endPointEventLogService.changeCompleted(action, detail, creStatus, key);
+                endPointEventLogService.changeInitiated(action, input, numDevices, yukonUser, key);
+                endPointEventLogService.changeCompleted(action, input, statistics, creStatus, key);
                 
-                endPointEventLogService.changeTypeInitiated(action, detail, numDevices, yukonUser, key);
-                endPointEventLogService.changeTypeCompleted(action, detail, creStatus, key);
+                endPointEventLogService.changeTypeInitiated(action, input, numDevices, yukonUser, key);
+                endPointEventLogService.changeTypeCompleted(action, input, statistics, creStatus, key);
                 
-                endPointEventLogService.deleteInitiated(action, detail, numDevices, yukonUser, key);
-                endPointEventLogService.deleteCompleted(action, detail, creStatus, key);
+                endPointEventLogService.deleteInitiated(action, input, numDevices, yukonUser, key);
+                endPointEventLogService.deleteCompleted(action, input, statistics, creStatus, key);
             }
         });
         executables.put(LogType.HARDWARE, new DevEventLogExecutable() {
@@ -948,10 +951,11 @@ public class DevEventLogCreationService {
                 String value = devEventLog.getIndicatorString() + "12345";
                 String oldValue = devEventLog.getIndicatorString() + "12345";
                 String newValue = devEventLog.getIndicatorString() + "6789";
-                String action = "Collection Action";
-                String detail = "Collection Action Detail";
+                String action = "Point Create";
+                String input = "create";
                 Integer numDevices = 1;
                 String creStatus = "COMPLETED";
+                String statistics = "Completed: 1";
                 String key = "123";
                 
                 pointEventLogService.pointDataAdded(deviceName, pointName, value, timestamp, user);
@@ -963,14 +967,14 @@ public class DevEventLogCreationService {
 
                 
 
-                pointEventLogService.pointsCreateInitiated(action, detail, numDevices, user, key);
-                pointEventLogService.pointsCreateCompleted(action, detail, creStatus, key);
+                pointEventLogService.pointsCreateInitiated(action, input, numDevices, user, key);
+                pointEventLogService.pointsCreateCompleted(action, input, statistics, creStatus, key);
                 
-                pointEventLogService.pointsUpdateInitiated(action, detail, numDevices, user, key);
-                pointEventLogService.pointsUpdateCompleted(action, detail, creStatus, key);
+                pointEventLogService.pointsUpdateInitiated(action, input, numDevices, user, key);
+                pointEventLogService.pointsUpdateCompleted(action, input, statistics, creStatus, key);
                 
-                pointEventLogService.pointsDeleteInitiated(action, detail, numDevices, user, key);
-                pointEventLogService.pointsDeleteCompleted(action, detail, creStatus, key);
+                pointEventLogService.pointsDeleteInitiated(action, input, numDevices, user, key);
+                pointEventLogService.pointsDeleteCompleted(action, input, statistics, creStatus, key);
                 
             }
         });

@@ -49,22 +49,24 @@ public interface DisconnectEventLogService {
                                         );
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.group.disconnect")
-    public void disconnectInitiated(String action,
-                                    String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void disconnectInitiated(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.totalCount)Integer numDevices,
+                                    @Arg(ArgEnum.username)LiteYukonUser username,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.group.disconnect")
-    public void disconnectCompleted(String action,
-                                    String detail,
-                                    String creStatus,
+    public void disconnectCompleted(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.status)String creStatus,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.group.disconnect")
+    public void disconnectCancelled(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.username) LiteYukonUser user,
                                     @Arg(ArgEnum.resultKey) String resultKey);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.group.disconnect")
-    public void disconnectCancelled(String action,
-                                      String detail,
-                                      @Arg(ArgEnum.username) LiteYukonUser user,
-                                      @Arg(ArgEnum.resultKey) String resultKey);
 
 }

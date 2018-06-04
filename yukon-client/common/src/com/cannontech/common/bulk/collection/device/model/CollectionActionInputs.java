@@ -25,15 +25,4 @@ public class CollectionActionInputs {
     public LinkedHashMap<String, String> getInputs() {
         return inputs;
     }
-    
-    public String getInputsString() {
-        if (inputs == null) {
-            return "";
-        }
-        String retVal = "";
-        for (String key : inputs.keySet()) {
-            retVal += key + ": " + inputs.get(key) + "," + System.lineSeparator();
-        }
-        return retVal;
-    }
 }

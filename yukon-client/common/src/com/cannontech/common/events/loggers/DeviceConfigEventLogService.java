@@ -18,26 +18,28 @@ public interface DeviceConfigEventLogService {
                                                   Integer successOrFail);
     
     @YukonEventLog(category = "device.configuration")
-    public void sendConfigInitiated(String action,
-                                    String detail,
-                                    @Arg(ArgEnum.totalCount) Integer numDevices,
-                                    @Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void sendConfigInitiated(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.totalCount)Integer numDevices,
+                                    @Arg(ArgEnum.username)LiteYukonUser username,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
     public void sendConfigToDeviceInitiated(@Arg(ArgEnum.deviceName) String deviceName,
                                             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(category = "device.configuration")
-    public void sendConfigCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void sendConfigCompleted(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.status)String creStatus,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void sendConfigCancelled(String action,
-                                    String detail,
-                                    @Arg(ArgEnum.username) LiteYukonUser username,
+    public void sendConfigCancelled(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.username) LiteYukonUser user,
                                     @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(category = "device.configuration")
@@ -45,17 +47,18 @@ public interface DeviceConfigEventLogService {
                                             Integer successOrFail);
     
     @YukonEventLog(category = "device.configuration")
-    public void readConfigInitiated(String action,
-                                    String detail,
-                                    @Arg(ArgEnum.totalCount) Integer numDevices,
-                                    @Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void readConfigInitiated(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.totalCount)Integer numDevices,
+                                    @Arg(ArgEnum.username)LiteYukonUser username,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void readConfigCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void readConfigCompleted(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.status)String creStatus,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
 
     @YukonEventLog(category = "device.configuration")
     public void readConfigFromDeviceInitiated(@Arg(ArgEnum.deviceName) String deviceName,
@@ -66,29 +69,32 @@ public interface DeviceConfigEventLogService {
                                               Integer successOrFail);
 
     @YukonEventLog(category = "device.configuration")
-    public void readConfigCancelled(String action,
-                                    String detail,
-                                    @Arg(ArgEnum.username) LiteYukonUser username,
+    public void readConfigCancelled(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.username) LiteYukonUser user,
                                     @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void verifyConfigInitiated(String action,
-                                    String detail,
-                                    @Arg(ArgEnum.totalCount) Integer numDevices,
-                                    @Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void verifyConfigInitiated(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.totalCount)Integer numDevices,
+                                      @Arg(ArgEnum.username)LiteYukonUser username,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void verifyConfigCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void verifyConfigCompleted(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
+                                      @Arg(ArgEnum.status)String creStatus,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void verifyConfigCancelled(String action,
-                                    String detail,
-                                    @Arg(ArgEnum.username) LiteYukonUser username,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void verifyConfigCancelled(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
+                                      @Arg(ArgEnum.username) LiteYukonUser user,
+                                      @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(category = "device.configuration")
     public void verifyConfigFromDeviceInitiated(@Arg(ArgEnum.deviceName) String deviceName,
@@ -99,29 +105,31 @@ public interface DeviceConfigEventLogService {
                                                 Integer successOrFail);
     
     @YukonEventLog(category = "device.configuration")
-    public void assignConfigInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void assignConfigInitiated(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.totalCount)Integer numDevices,
+                                      @Arg(ArgEnum.username)LiteYukonUser username,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void assignConfigCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void assignConfigCompleted(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
+                                      @Arg(ArgEnum.status)String creStatus,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void unassignConfigInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void unassignConfigInitiated(@Arg(ArgEnum.action)String action,
+                                        @Arg(ArgEnum.input)String input,
+                                        @Arg(ArgEnum.totalCount)Integer numDevices,
+                                        @Arg(ArgEnum.username)LiteYukonUser username,
+                                        @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "device.configuration")
-    public void unassignConfigCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void unassignConfigCompleted(@Arg(ArgEnum.action)String action,
+                                        @Arg(ArgEnum.input)String input,
+                                        @Arg(ArgEnum.statistics)String statistics,
+                                        @Arg(ArgEnum.status)String creStatus,
+                                        @Arg(ArgEnum.resultKey)String resultKey);
     
 }

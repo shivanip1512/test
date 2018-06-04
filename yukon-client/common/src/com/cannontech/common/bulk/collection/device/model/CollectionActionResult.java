@@ -289,9 +289,20 @@ public class CollectionActionResult {
         return details;
     }
     
-    public String getDetailsString(MessageSourceAccessor accessor) {
+    public String getInputString() {
+        
+        if (inputs.getInputs() == null) {
+            return "";
+        }
+        String retVal = "";
+        for (String key : inputs.getInputs().keySet()) {
+            retVal += key + ": " + inputs.getInputs().get(key) + "," + System.lineSeparator();
+        }
+        return retVal;
+    }
+    
+    public String getResultStatsString(MessageSourceAccessor accessor) {
         String retValue = "";
-        retValue = this.getInputs().getInputsString();
         for(CollectionActionDetail key : details.keySet()){
             retValue += accessor.getMessage(key) + ":" + details.get(key).getDevices().getDeviceCount() + "," + System.lineSeparator();
         }

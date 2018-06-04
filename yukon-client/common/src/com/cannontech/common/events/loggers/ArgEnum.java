@@ -2,6 +2,7 @@ package com.cannontech.common.events.loggers;
 
 public enum ArgEnum {
     accountNumber,
+    action,
     applianceCategoryName,
     applianceType,
     changeId,
@@ -36,6 +37,7 @@ public enum ArgEnum {
     globalSettingType,
     globalSettingValue,
     hardwareType,
+    input,
     inventoryId,
     ipAddress,
     jobId,
@@ -72,6 +74,8 @@ public enum ArgEnum {
     shedDuration,
     startDate,
     state,
+    statistics,
+    status,
     substationName,
     successCount,
     syncIssueType,

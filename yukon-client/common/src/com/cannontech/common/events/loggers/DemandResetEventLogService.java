@@ -33,24 +33,25 @@ public interface DemandResetEventLogService {
                                             @Arg(ArgEnum.notAttemptedCount) Integer notAttempted);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void demandResetInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void demandResetInitiated(@Arg(ArgEnum.action)String action,
+                                     @Arg(ArgEnum.input)String input,
+                                     @Arg(ArgEnum.totalCount)Integer numDevices,
+                                     @Arg(ArgEnum.username)LiteYukonUser username,
+                                     @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void demandResetCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void demandResetCompleted(@Arg(ArgEnum.action)String action,
+                                     @Arg(ArgEnum.input)String input,
+                                     @Arg(ArgEnum.statistics)String statistics,
+                                     @Arg(ArgEnum.status)String creStatus,
+                                     @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.demand.reset")
-    public void demandResetCancelled(String action,
-                                      String detail,
-                                      @Arg(ArgEnum.username) LiteYukonUser user,
-                                      @Arg(ArgEnum.resultKey) String resultKey
-                                      );
+    public void demandResetCancelled(@Arg(ArgEnum.action)String action,
+                                     @Arg(ArgEnum.input)String input,
+                                     @Arg(ArgEnum.statistics)String statistics,
+                                     @Arg(ArgEnum.username) LiteYukonUser user,
+                                     @Arg(ArgEnum.resultKey) String resultKey);
     
     /**
      * Do not use this method, only here for legacy demand reset functionality (multispeak and EIM callbacks)

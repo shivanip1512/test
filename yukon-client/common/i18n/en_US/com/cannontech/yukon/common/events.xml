@@ -12,6 +12,7 @@
     
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
+    <entry key="yukon.common.events.action">Action</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
     <entry key="yukon.common.events.changeId">ChangeId</entry>
@@ -46,6 +47,7 @@
     <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
     <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
     <entry key="yukon.common.events.hardwareType">Hardware Type</entry>
+    <entry key="yukon.common.events.input">Input</entry>
     <entry key="yukon.common.events.inventoryId">Inventory Id</entry>
     <entry key="yukon.common.events.ipAddress">IP Address</entry>
     <entry key="yukon.common.events.jobId">Job Id</entry>
@@ -82,6 +84,8 @@
     <entry key="yukon.common.events.shedDuration">Shed Duration</entry>
     <entry key="yukon.common.events.startDate">Start Date</entry>
     <entry key="yukon.common.events.state">Enabled/Disabled</entry>
+    <entry key="yukon.common.events.statistics">Statistics</entry>
+    <entry key="yukon.common.events.status">Status</entry>
     <entry key="yukon.common.events.substationName">Substation Name</entry>
     <entry key="yukon.common.events.successCount">Success</entry>
     <entry key="yukon.common.events.syncIssueType">Sync Type</entry>
@@ -786,8 +790,8 @@
     
     <!-- Collection Actions -->
     <entry key="yukon.common.events.commander.groupCommandInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.commander.groupCommandCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.commander.groupCommandCancelled">Action: {1} {2} cancelled by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.commander.groupCommandCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.commander.groupCommandCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {4}</entry>
     <entry key="yukon.common.events.commander.attributeReadInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.commander.attributeReadCompleted">Action: {1} {2} Status: {3}. Key: {4}</entry>
     <entry key="yukon.common.events.commander.attributeReadCancelled">Action: {1} {2} cancelled by {3}. Key: {4}</entry>

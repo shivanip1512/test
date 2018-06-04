@@ -29,60 +29,66 @@ public interface CommanderEventLogService {
             @Arg(ArgEnum.routeId) int newRouteId);
     
     @YukonEventLog(category="commander")
-    public void groupCommandInitiated(String action,
-                                      String detail,
-                                    @Arg(ArgEnum.totalCount)Integer numDevices,
-                                    @Arg(ArgEnum.username)LiteYukonUser username,
-                                    @Arg(ArgEnum.resultKey)String key);
+    public void groupCommandInitiated(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.totalCount)Integer numDevices,
+                                      @Arg(ArgEnum.username)LiteYukonUser username,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category="commander")
-    public void groupCommandCancelled(String action,
-                                      String detail,
+    public void groupCommandCancelled(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
                                       @Arg(ArgEnum.username) LiteYukonUser user,
                                       @Arg(ArgEnum.resultKey) String resultKey);
 
     @YukonEventLog(category="commander")
-    public void groupCommandCompleted(String action,
-            String detail,
-            String creStatus,
-            @Arg(ArgEnum.resultKey) String resultKey);
+    public void groupCommandCompleted(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
+                                      @Arg(ArgEnum.status)String creStatus,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category="commander")
-    public void attributeReadInitiated(String action,
-                                       String detail,
+    public void attributeReadInitiated(@Arg(ArgEnum.action)String action,
+                                       @Arg(ArgEnum.input)String input,
                                        @Arg(ArgEnum.totalCount)Integer numDevices,
                                        @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+                                       @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category="commander")
-    public void attributeReadCompleted(String action,
-            String detail,
-            String creStatus,
-            @Arg(ArgEnum.resultKey) String resultKey);
+    public void attributeReadCompleted(@Arg(ArgEnum.action)String action,
+                                       @Arg(ArgEnum.input)String input,
+                                       @Arg(ArgEnum.statistics)String statistics,
+                                       @Arg(ArgEnum.status)String creStatus,
+                                       @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category="commander")
-    public void attributeReadCancelled(String action,
-                                      String detail,
-                                      @Arg(ArgEnum.username) LiteYukonUser user,
-                                      @Arg(ArgEnum.resultKey) String resultKey);
+    public void attributeReadCancelled(@Arg(ArgEnum.action)String action,
+                                       @Arg(ArgEnum.input)String input,
+                                       @Arg(ArgEnum.statistics)String statistics,
+                                       @Arg(ArgEnum.username) LiteYukonUser user,
+                                       @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(category="commander")
-    public void locateRouteInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void locateRouteInitiated(@Arg(ArgEnum.action)String action,
+                                     @Arg(ArgEnum.input)String input,
+                                     @Arg(ArgEnum.totalCount)Integer numDevices,
+                                     @Arg(ArgEnum.username)LiteYukonUser username,
+                                     @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category="commander")
-    public void locateRouteCompleted(String action,
-            String detail,
-            String creStatus,
-            @Arg(ArgEnum.resultKey) String resultKey);
+    public void locateRouteCompleted(@Arg(ArgEnum.action)String action,
+                                     @Arg(ArgEnum.input)String input,
+                                     @Arg(ArgEnum.statistics)String statistics,
+                                     @Arg(ArgEnum.status)String creStatus,
+                                     @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category="commander")
-    public void locateRouteCancelled(String action,
-                                      String detail,
-                                      @Arg(ArgEnum.username) LiteYukonUser user,
-                                      @Arg(ArgEnum.resultKey) String resultKey);
+    public void locateRouteCancelled(@Arg(ArgEnum.action)String action,
+                                     @Arg(ArgEnum.input)String input,
+                                     @Arg(ArgEnum.statistics)String statistics,
+                                     @Arg(ArgEnum.username) LiteYukonUser user,
+                                     @Arg(ArgEnum.resultKey) String resultKey);
     
 }

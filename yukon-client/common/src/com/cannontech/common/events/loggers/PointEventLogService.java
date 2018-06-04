@@ -35,59 +35,65 @@ public interface PointEventLogService {
             @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) int pointOffset, @Arg(ArgEnum.username) LiteYukonUser user);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsCreateInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void pointsCreateInitiated(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.totalCount)Integer numDevices,
+                                      @Arg(ArgEnum.username)LiteYukonUser username,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsCreateCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void pointsCreateCompleted(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
+                                      @Arg(ArgEnum.status)String creStatus,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsCreateCancelled(String action,
-                                      String detail,
+    public void pointsCreateCancelled(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
                                       @Arg(ArgEnum.username) LiteYukonUser user,
                                       @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsUpdateInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void pointsUpdateInitiated(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.totalCount)Integer numDevices,
+                                      @Arg(ArgEnum.username)LiteYukonUser username,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsUpdateCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void pointsUpdateCompleted(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
+                                      @Arg(ArgEnum.status)String creStatus,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsUpdateCancelled(String action,
-                                      String detail,
+    public void pointsUpdateCancelled(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
                                       @Arg(ArgEnum.username) LiteYukonUser user,
                                       @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsDeleteInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void pointsDeleteInitiated(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.totalCount)Integer numDevices,
+                                      @Arg(ArgEnum.username)LiteYukonUser username,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsDeleteCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
+    public void pointsDeleteCompleted(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
+                                      @Arg(ArgEnum.status)String creStatus,
+                                      @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
-    public void pointsDeleteCancelled(String action,
-                                      String detail,
+    public void pointsDeleteCancelled(@Arg(ArgEnum.action)String action,
+                                      @Arg(ArgEnum.input)String input,
+                                      @Arg(ArgEnum.statistics)String statistics,
                                       @Arg(ArgEnum.username) LiteYukonUser user,
                                       @Arg(ArgEnum.resultKey) String resultKey);
 }

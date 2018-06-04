@@ -15,68 +15,69 @@ public interface EndpointEventLogService {
     public void locationRemoved(@Arg(ArgEnum.deviceLabel) String deviceLabel,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
-    @YukonEventLog(category = "endpoint.device")
-    public void changeInitiated(String action,
-                                String detail,
-                                Integer devices,
-                                @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(category = "endpoint.device")
-    public void changeCompleted(String action,
-                                String detail,
-                                String creStatus,
-                                String key);
+    public void changeCompleted(@Arg(ArgEnum.action)String action,
+                                @Arg(ArgEnum.input)String input,
+                                @Arg(ArgEnum.statistics)String statistics,
+                                @Arg(ArgEnum.status)String creStatus,
+                                @Arg(ArgEnum.resultKey)String resultKey);
 
     @YukonEventLog(category = "endpoint.device")
-    public void changeInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void changeInitiated(@Arg(ArgEnum.action)String action,
+                                @Arg(ArgEnum.input)String input,
+                                @Arg(ArgEnum.totalCount)Integer numDevices,
+                                @Arg(ArgEnum.username)LiteYukonUser username,
+                                @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "endpoint.device")
-    public void changeCancelled(String action,
-                                      String detail,
-                                      @Arg(ArgEnum.username) LiteYukonUser user,
-                                      @Arg(ArgEnum.resultKey) String resultKey);
+    public void changeCancelled(@Arg(ArgEnum.action)String action,
+                                @Arg(ArgEnum.input)String input,
+                                @Arg(ArgEnum.statistics)String statistics,
+                                @Arg(ArgEnum.username) LiteYukonUser user,
+                                @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(category = "endpoint.device")
-    public void changeTypeInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void changeTypeInitiated(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.totalCount)Integer numDevices,
+                                    @Arg(ArgEnum.username)LiteYukonUser username,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "endpoint.device")
-    public void changeTypeCompleted(String action,
-                                    String detail,
-                                    String creStatus,
+    public void changeTypeCompleted(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.status)String creStatus,
+                                    @Arg(ArgEnum.resultKey)String resultKey);
+    
+    @YukonEventLog(category = "endpoint.device")
+    public void changeTypeCancelled(@Arg(ArgEnum.action)String action,
+                                    @Arg(ArgEnum.input)String input,
+                                    @Arg(ArgEnum.statistics)String statistics,
+                                    @Arg(ArgEnum.username) LiteYukonUser user,
                                     @Arg(ArgEnum.resultKey) String resultKey);
     
     @YukonEventLog(category = "endpoint.device")
-    public void changeTypeCancelled(String action,
-                                      String detail,
-                                      @Arg(ArgEnum.username) LiteYukonUser user,
-                                      @Arg(ArgEnum.resultKey) String resultKey);
+    public void deleteInitiated(@Arg(ArgEnum.action)String action,
+                                @Arg(ArgEnum.input)String input,
+                                @Arg(ArgEnum.totalCount)Integer numDevices,
+                                @Arg(ArgEnum.username)LiteYukonUser username,
+                                @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "endpoint.device")
-    public void deleteInitiated(String action,
-                                       String detail,
-                                       @Arg(ArgEnum.totalCount)Integer numDevices,
-                                       @Arg(ArgEnum.username)LiteYukonUser username,
-                                       @Arg(ArgEnum.resultKey)String key);
+    public void deleteCompleted(@Arg(ArgEnum.action)String action,
+                                @Arg(ArgEnum.input)String input,
+                                @Arg(ArgEnum.statistics)String statistics,
+                                @Arg(ArgEnum.status)String creStatus,
+                                @Arg(ArgEnum.resultKey)String resultKey);
     
     @YukonEventLog(category = "endpoint.device")
-    public void deleteCompleted(String action,
-                                    String detail,
-                                    String creStatus,
-                                    @Arg(ArgEnum.resultKey) String resultKey);
-    
-    @YukonEventLog(category = "endpoint.device")
-    public void deleteCancelled(String action,
-                                      String detail,
-                                      @Arg(ArgEnum.username) LiteYukonUser user,
-                                      @Arg(ArgEnum.resultKey) String resultKey);
+    public void deleteCancelled(@Arg(ArgEnum.action)String action,
+                                @Arg(ArgEnum.input)String input,
+                                @Arg(ArgEnum.statistics)String statistics,
+                                @Arg(ArgEnum.username) LiteYukonUser user,
+                                @Arg(ArgEnum.resultKey) String resultKey);
     
 }
 

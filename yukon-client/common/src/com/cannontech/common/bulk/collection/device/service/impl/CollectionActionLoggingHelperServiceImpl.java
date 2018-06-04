@@ -24,7 +24,7 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     @Autowired private PointEventLogService pointEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DataStreamingEventLogService dataStreamingEventLogService;
-    
+
     @Override
     public void log(CollectionActionResult result){
         switch (result.getAction()) {
@@ -94,22 +94,24 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             dataStreamingEventLogService.configDataStreamingInitiated(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
-                                                          result.getCounts().getTotalCount(), 
-                                                          result.getContext().getYukonUser(), 
-                                                          String.valueOf(result.getCacheKey()));
+                                                                      result.getInputString(), 
+                                                                      result.getCounts().getTotalCount(), 
+                                                                      result.getContext().getYukonUser(), 
+                                                                      String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            dataStreamingEventLogService.configDataStreamingCompleted(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
-                                                          accessor.getMessage(result.getStatus()), 
-                                                          String.valueOf(result.getCacheKey()));
+            dataStreamingEventLogService.configDataStreamingCompleted(accessor.getMessage(result.getAction()),
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      accessor.getMessage(result.getStatus()), 
+                                                                      String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             dataStreamingEventLogService.configDataStreamingCancelled(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
-                                                          result.getContext().getYukonUser(),
-                                                          String.valueOf(result.getCacheKey()));
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      result.getContext().getYukonUser(),
+                                                                      String.valueOf(result.getCacheKey()));
             break;
         }
     }
@@ -120,26 +122,28 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             dataStreamingEventLogService.removeDataStreamingInitiated(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
-                                                          result.getCounts().getTotalCount(), 
-                                                          result.getContext().getYukonUser(), 
-                                                          String.valueOf(result.getCacheKey()));
+                                                                      result.getInputString(), 
+                                                                      result.getCounts().getTotalCount(), 
+                                                                      result.getContext().getYukonUser(), 
+                                                                      String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            dataStreamingEventLogService.removeDataStreamingCompleted(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
-                                                          accessor.getMessage(result.getStatus()), 
-                                                          String.valueOf(result.getCacheKey()));
+            dataStreamingEventLogService.removeDataStreamingCompleted(accessor.getMessage(result.getAction()),
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      accessor.getMessage(result.getStatus()), 
+                                                                      String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             dataStreamingEventLogService.removeDataStreamingCancelled(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
-                                                          result.getContext().getYukonUser(),
-                                                          String.valueOf(result.getCacheKey()));
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      result.getContext().getYukonUser(),
+                                                                      String.valueOf(result.getCacheKey()));
             break;
         }
     }
-    
+
     private void logLocateRoute(CollectionActionResult result) {
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
@@ -147,20 +151,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             commanderEventLogService.locateRouteInitiated(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
+                                                          result.getInputString(), 
                                                           result.getCounts().getTotalCount(), 
                                                           result.getContext().getYukonUser(), 
                                                           String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            commanderEventLogService.locateRouteCompleted(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
+            commanderEventLogService.locateRouteCompleted(accessor.getMessage(result.getAction()),
+                                                          result.getInputString(),
+                                                          result.getResultStatsString(accessor), 
                                                           accessor.getMessage(result.getStatus()), 
                                                           String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             commanderEventLogService.locateRouteCancelled(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
+                                                          result.getInputString(),
+                                                          result.getResultStatsString(accessor), 
                                                           result.getContext().getYukonUser(),
                                                           String.valueOf(result.getCacheKey()));
             break;
@@ -175,20 +181,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             disconnectEventLogService.disconnectInitiated(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
+                                                          result.getInputString(), 
                                                           result.getCounts().getTotalCount(), 
                                                           result.getContext().getYukonUser(), 
                                                           String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            disconnectEventLogService.disconnectCompleted(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
+            disconnectEventLogService.disconnectCompleted(accessor.getMessage(result.getAction()),
+                                                          result.getInputString(),
+                                                          result.getResultStatsString(accessor), 
                                                           accessor.getMessage(result.getStatus()), 
                                                           String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             disconnectEventLogService.disconnectCancelled(accessor.getMessage(result.getAction()), 
-                                                          result.getDetailsString(accessor), 
+                                                          result.getInputString(),
+                                                          result.getResultStatsString(accessor), 
                                                           result.getContext().getYukonUser(),
                                                           String.valueOf(result.getCacheKey()));
             break;
@@ -203,20 +211,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             demandResetEventLogService.demandResetInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
                                                             result.getCounts().getTotalCount(), 
                                                             result.getContext().getYukonUser(), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
             demandResetEventLogService.demandResetCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             accessor.getMessage(result.getStatus()), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             demandResetEventLogService.demandResetCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             result.getContext().getYukonUser(),
                                                             String.valueOf(result.getCacheKey()));
             break;
@@ -231,20 +241,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             deviceConfigEventLogService.sendConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
                                                             result.getCounts().getTotalCount(), 
                                                             result.getContext().getYukonUser(), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
             deviceConfigEventLogService.sendConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             accessor.getMessage(result.getStatus()), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             deviceConfigEventLogService.sendConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             result.getContext().getYukonUser(),
                                                             String.valueOf(result.getCacheKey()));
             break;
@@ -259,20 +271,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             deviceConfigEventLogService.readConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
                                                             result.getCounts().getTotalCount(), 
                                                             result.getContext().getYukonUser(), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
             deviceConfigEventLogService.readConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             accessor.getMessage(result.getStatus()), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             deviceConfigEventLogService.readConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             result.getContext().getYukonUser(),
                                                             String.valueOf(result.getCacheKey()));
             break;
@@ -287,20 +301,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             deviceConfigEventLogService.verifyConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
+                                                              result.getInputString(), 
                                                               result.getCounts().getTotalCount(), 
                                                               result.getContext().getYukonUser(), 
                                                               String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            deviceConfigEventLogService.verifyConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
+            deviceConfigEventLogService.verifyConfigCompleted(accessor.getMessage(result.getAction()),
+                                                              result.getInputString(),
+                                                              result.getResultStatsString(accessor), 
                                                               accessor.getMessage(result.getStatus()), 
                                                               String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             deviceConfigEventLogService.verifyConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
+                                                              result.getInputString(),
+                                                              result.getResultStatsString(accessor), 
                                                               result.getContext().getYukonUser(),
                                                               String.valueOf(result.getCacheKey()));
             break;
@@ -315,20 +331,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             endpointEventLogService.changeInitiated(accessor.getMessage(result.getAction()), 
-                                                    result.getDetailsString(accessor), 
+                                                    result.getInputString(), 
                                                     result.getCounts().getTotalCount(), 
                                                     result.getContext().getYukonUser(), 
                                                     String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            endpointEventLogService.changeCompleted(accessor.getMessage(result.getAction()), 
-                                                    result.getDetailsString(accessor), 
+            endpointEventLogService.changeCompleted(accessor.getMessage(result.getAction()),
+                                                    result.getInputString(),
+                                                    result.getResultStatsString(accessor), 
                                                     accessor.getMessage(result.getStatus()), 
                                                     String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             endpointEventLogService.changeCancelled(accessor.getMessage(result.getAction()), 
-                                                    result.getDetailsString(accessor), 
+                                                    result.getInputString(),
+                                                    result.getResultStatsString(accessor), 
                                                     result.getContext().getYukonUser(),
                                                     String.valueOf(result.getCacheKey()));
             break;
@@ -343,20 +361,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             endpointEventLogService.changeTypeInitiated(accessor.getMessage(result.getAction()), 
-                                                        result.getDetailsString(accessor), 
+                                                        result.getInputString(), 
                                                         result.getCounts().getTotalCount(), 
                                                         result.getContext().getYukonUser(), 
                                                         String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            endpointEventLogService.changeTypeCompleted(accessor.getMessage(result.getAction()), 
-                                                        result.getDetailsString(accessor), 
+            endpointEventLogService.changeTypeCompleted(accessor.getMessage(result.getAction()),
+                                                        result.getInputString(),
+                                                        result.getResultStatsString(accessor), 
                                                         accessor.getMessage(result.getStatus()), 
                                                         String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             endpointEventLogService.changeTypeCancelled(accessor.getMessage(result.getAction()), 
-                                                        result.getDetailsString(accessor), 
+                                                        result.getInputString(),
+                                                        result.getResultStatsString(accessor), 
                                                         result.getContext().getYukonUser(),
                                                         String.valueOf(result.getCacheKey()));
             break;
@@ -371,20 +391,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             endpointEventLogService.deleteInitiated(accessor.getMessage(result.getAction()), 
-                                                    result.getDetailsString(accessor), 
+                                                    result.getInputString(), 
                                                     result.getCounts().getTotalCount(), 
                                                     result.getContext().getYukonUser(), 
                                                     String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            endpointEventLogService.deleteCompleted(accessor.getMessage(result.getAction()), 
-                                                    result.getDetailsString(accessor), 
+            endpointEventLogService.deleteCompleted(accessor.getMessage(result.getAction()),
+                                                    result.getInputString(),
+                                                    result.getResultStatsString(accessor), 
                                                     accessor.getMessage(result.getStatus()), 
                                                     String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             endpointEventLogService.deleteCancelled(accessor.getMessage(result.getAction()), 
-                                                    result.getDetailsString(accessor), 
+                                                    result.getInputString(),
+                                                    result.getResultStatsString(accessor), 
                                                     result.getContext().getYukonUser(),
                                                     String.valueOf(result.getCacheKey()));
             break;
@@ -399,20 +421,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             pointEventLogService.pointsCreateInitiated(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+                                                       result.getInputString(), 
                                                        result.getCounts().getTotalCount(), 
                                                        result.getContext().getYukonUser(), 
                                                        String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            pointEventLogService.pointsCreateCompleted(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+            pointEventLogService.pointsCreateCompleted(accessor.getMessage(result.getAction()),
+                                                       result.getInputString(),
+                                                       result.getResultStatsString(accessor), 
                                                        accessor.getMessage(result.getStatus()), 
                                                        String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             pointEventLogService.pointsCreateCancelled(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+                                                       result.getInputString(),
+                                                       result.getResultStatsString(accessor), 
                                                        result.getContext().getYukonUser(),
                                                        String.valueOf(result.getCacheKey()));
             break;
@@ -427,20 +451,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             pointEventLogService.pointsUpdateInitiated(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+                                                       result.getInputString(), 
                                                        result.getCounts().getTotalCount(), 
                                                        result.getContext().getYukonUser(), 
                                                        String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            pointEventLogService.pointsUpdateCompleted(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+            pointEventLogService.pointsUpdateCompleted(accessor.getMessage(result.getAction()),
+                                                       result.getInputString(),
+                                                       result.getResultStatsString(accessor), 
                                                        accessor.getMessage(result.getStatus()), 
                                                        String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             pointEventLogService.pointsUpdateCancelled(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+                                                       result.getInputString(),
+                                                       result.getResultStatsString(accessor), 
                                                        result.getContext().getYukonUser(),
                                                        String.valueOf(result.getCacheKey()));
             break;
@@ -455,20 +481,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             pointEventLogService.pointsDeleteInitiated(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+                                                       result.getInputString(), 
                                                        result.getCounts().getTotalCount(), 
                                                        result.getContext().getYukonUser(), 
                                                        String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            pointEventLogService.pointsDeleteCompleted(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+            pointEventLogService.pointsDeleteCompleted(accessor.getMessage(result.getAction()),
+                                                       result.getInputString(),
+                                                       result.getResultStatsString(accessor), 
                                                        accessor.getMessage(result.getStatus()), 
                                                        String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             pointEventLogService.pointsDeleteCancelled(accessor.getMessage(result.getAction()), 
-                                                       result.getDetailsString(accessor), 
+                                                       result.getInputString(),
+                                                       result.getResultStatsString(accessor), 
                                                        result.getContext().getYukonUser(),
                                                        String.valueOf(result.getCacheKey()));
             break;
@@ -483,14 +511,15 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             deviceConfigEventLogService.assignConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
+                                                              result.getInputString(), 
                                                               result.getCounts().getTotalCount(), 
                                                               result.getContext().getYukonUser(), 
                                                               String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            deviceConfigEventLogService.assignConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                              result.getDetailsString(accessor), 
+            deviceConfigEventLogService.assignConfigCompleted(accessor.getMessage(result.getAction()),
+                                                              result.getInputString(),
+                                                              result.getResultStatsString(accessor), 
                                                               accessor.getMessage(result.getStatus()), 
                                                               String.valueOf(result.getCacheKey()));
             break;
@@ -505,14 +534,15 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             deviceConfigEventLogService.unassignConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
+                                                                result.getInputString(), 
                                                                 result.getCounts().getTotalCount(), 
                                                                 result.getContext().getYukonUser(), 
                                                                 String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            deviceConfigEventLogService.unassignConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                                result.getDetailsString(accessor), 
+            deviceConfigEventLogService.unassignConfigCompleted(accessor.getMessage(result.getAction()),
+                                                                result.getInputString(),
+                                                                result.getResultStatsString(accessor), 
                                                                 accessor.getMessage(result.getStatus()), 
                                                                 String.valueOf(result.getCacheKey()));
             break;
@@ -527,20 +557,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             deviceConfigEventLogService.readConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
                                                             result.getCounts().getTotalCount(), 
                                                             result.getContext().getYukonUser(), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
             deviceConfigEventLogService.readConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             accessor.getMessage(result.getStatus()), 
                                                             String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             deviceConfigEventLogService.readConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getDetailsString(accessor), 
+                                                            result.getInputString(), 
+                                                            result.getResultStatsString(accessor),
                                                             result.getContext().getYukonUser(),
                                                             String.valueOf(result.getCacheKey()));
             break;
@@ -555,20 +587,22 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
         switch (result.getStatus()) {
         case STARTED:
             commanderEventLogService.groupCommandInitiated(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
+                                                           result.getInputString(), 
                                                            result.getCounts().getTotalCount(), 
                                                            result.getContext().getYukonUser(), 
                                                            String.valueOf(result.getCacheKey()));
             break;
         case COMPLETE:
-            commanderEventLogService.groupCommandCompleted(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
+            commanderEventLogService.groupCommandCompleted(accessor.getMessage(result.getAction()),
+                                                           result.getInputString(),
+                                                           result.getResultStatsString(accessor), 
                                                            accessor.getMessage(result.getStatus()), 
                                                            String.valueOf(result.getCacheKey()));
             break;
         case CANCELLED:
             commanderEventLogService.groupCommandCancelled(accessor.getMessage(result.getAction()), 
-                                                           result.getDetailsString(accessor), 
+                                                           result.getInputString(),
+                                                           result.getResultStatsString(accessor), 
                                                            result.getContext().getYukonUser(),
                                                            String.valueOf(result.getCacheKey()));
             break;
