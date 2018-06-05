@@ -231,6 +231,18 @@ WHERE PollingInterval < 15;
 INSERT INTO DBUpdates VALUES ('YUK-18333', '7.1.0', SYSDATE);
 /* @end YUK-18333 */
 
+/* @start YUK-18391 */
+ALTER TABLE DmvTest
+RENAME COLUMN PollingInterval
+TO DataArchivingInterval;
+
+ALTER TABLE DmvTest
+RENAME COLUMN DataGatheringDuration
+TO IntervalDataGatheringDuration;
+
+INSERT INTO DBUpdates VALUES ('YUK-18391', '7.1.0', SYSDATE);
+/* @end YUK-18391 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

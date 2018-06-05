@@ -14,8 +14,8 @@ struct DmvTestData
 
     long
         TestId,
-        PollingInterval,
-        DataGatheringDuration,
+        DataArchivingInterval,
+        IntervalDataGatheringDuration,
         CommSuccessPercentage,
         ExecutionID;
 

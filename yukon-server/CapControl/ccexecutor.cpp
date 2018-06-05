@@ -6141,8 +6141,8 @@ void TriggerDmvTestExecutor::execute()
         static const string sql = "SELECT "
                                   "    DmvTestId AS TestId, "
                                   "    DmvTestName AS TestName, "
-                                  "    PollingInterval, "
-                                  "    DataGatheringDuration, "
+                                  "    DataArchivingInterval, "
+                                  "    IntervalDataGatheringDuration, "
                                   "    StepSize, "
                                   "    CommSuccessPercentage "
                                   "FROM DmvTest "
@@ -6165,12 +6165,12 @@ void TriggerDmvTestExecutor::execute()
 
         testData = std::make_unique<DmvTestData>();
 
-        testData->TestId                = rdr["TestId"].as<long>();
-        testData->TestName              = rdr["TestName"].as<string>();
-        testData->PollingInterval       = rdr["PollingInterval"].as<long>();
-        testData->DataGatheringDuration = rdr["DataGatheringDuration"].as<long>();
-        testData->StepSize              = rdr["StepSize"].as<double>();
-        testData->CommSuccessPercentage = rdr["CommSuccessPercentage"].as<long>();
+        testData->TestId                        = rdr["TestId"].as<long>();
+        testData->TestName                      = rdr["TestName"].as<string>();
+        testData->DataArchivingInterval         = rdr["DataArchivingInterval"].as<long>();
+        testData->IntervalDataGatheringDuration = rdr["IntervalDataGatheringDuration"].as<long>();
+        testData->StepSize                      = rdr["StepSize"].as<double>();
+        testData->CommSuccessPercentage         = rdr["CommSuccessPercentage"].as<long>();
 
         bool testRunning = ! ivvcStrat->setDmvTestExecution( busID, std::move( testData ) );
 

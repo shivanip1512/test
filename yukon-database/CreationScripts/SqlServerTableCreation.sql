@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/25/2018 9:43:20 AM                         */
+/* Created on:     6/5/2018 1:49:36 PM                          */
 /*==============================================================*/
 
 
@@ -4851,8 +4851,8 @@ go
 create table DmvTest (
    DmvTestId            numeric              not null,
    DmvTestName          varchar(100)         not null,
-   PollingInterval      numeric              not null,
-   DataGatheringDuration numeric              not null,
+   DataArchivingInterval numeric              not null,
+   IntervalDataGatheringDuration numeric              not null,
    StepSize             float                not null,
    CommSuccessPercentage numeric              not null,
    constraint PK_DmvTest primary key (DmvTestId)

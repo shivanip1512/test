@@ -742,7 +742,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             auto & dmvTestSettings = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.IntervalDataGatheringDuration );    // IntervalDataGatheringDuration in minutes   
 
             state->dmvTestStatusMessage.clear();
             state->feasibilityData.clear();
@@ -774,9 +774,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 break;
             }
 
-            // Set the current and expiration times for the polling interval
+            // Set the current and expiration times for the data archiving interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + dmvTestSettings.PollingInterval );
+            state->setNextControlTime( timeNow + dmvTestSettings.DataArchivingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -1117,7 +1117,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             auto & dmvTestSettings = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.IntervalDataGatheringDuration );    // IntervalDataGatheringDuration in minutes   
 
             state->setState( IVVCState::DMV_POST_BUMP_TEST_SCAN );
             break;
@@ -1141,9 +1141,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 break;
             }
 
-            // Set the current and expiration times for the polling interval
+            // Set the current and expiration times for the data archiving interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + dmvTestSettings.PollingInterval );
+            state->setNextControlTime( timeNow + dmvTestSettings.DataArchivingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -1264,7 +1264,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             auto & dmvTestSettings = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * dmvTestSettings.IntervalDataGatheringDuration );    // IntervalDataGatheringDuration in minutes   
 
             state->setState( IVVCState::DMV_RETURN_BUMP_TEST_SCAN );
             break;
@@ -1288,9 +1288,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 break;
             }
 
-            // Set the current and expiration times for the polling interval
+            // Set the current and expiration times for the data archiving interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + dmvTestSettings.PollingInterval );
+            state->setNextControlTime( timeNow + dmvTestSettings.DataArchivingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );

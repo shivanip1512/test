@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/25/2018 9:38:29 AM                         */
+/* Created on:     6/5/2018 1:50:46 PM                          */
 /*==============================================================*/
 
 
@@ -4623,8 +4623,8 @@ create index INDX_DmvMeasurementData_TStamp on DmvMeasurementData (
 create table DmvTest  (
    DmvTestId            NUMBER                          not null,
    DmvTestName          VARCHAR2(100)                   not null,
-   PollingInterval      NUMBER                          not null,
-   DataGatheringDuration NUMBER                          not null,
+   DataArchivingInterval NUMBER                          not null,
+   IntervalDataGatheringDuration NUMBER                          not null,
    StepSize             FLOAT                           not null,
    CommSuccessPercentage NUMBER                          not null,
    constraint PK_DmvTest primary key (DmvTestId)
