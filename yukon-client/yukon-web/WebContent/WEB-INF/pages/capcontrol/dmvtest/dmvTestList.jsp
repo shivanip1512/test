@@ -18,8 +18,8 @@
                 <thead>
                     <tr>
                         <th><i:inline key=".name"/></th>
-                        <th><i:inline key=".pollingInterval"/></th>
-                        <th><i:inline key=".dataGatheringDuration"/></th>
+                        <th><i:inline key=".dataArchivingInterval"/></th>
+                        <th><i:inline key=".intervalDataGatheringDuration"/></th>
                         <th><i:inline key=".stepSize"/></th>
                         <th><i:inline key=".commSuccPercentage"/></th>
                     </tr>
@@ -32,11 +32,11 @@
                                 <a href="${viewUrl}">${fn:escapeXml(dmvTest.name)}</a>
                             </td>
                             <td>
-                                <c:out value="${dmvTest.pollingInterval} " />
+                                <c:out value="${dmvTest.dataArchivingInterval} "/> 
                                 <i:inline key="yukon.common.units.SECONDS"/>                                                        
                             </td>
                             <td>
-                                <c:out value="${dmvTest.dataGatheringDuration} " />
+                                <c:out value="${dmvTest.intervalDataGatheringDuration} " />
                                 <i:inline key="yukon.common.units.MINUTES"/>                                                        
                             </td>                            
                             <td>

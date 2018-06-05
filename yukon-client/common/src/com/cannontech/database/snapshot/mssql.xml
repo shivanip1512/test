@@ -46650,7 +46650,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>PollingInterval</i__columnName>
+            <i__columnName>DataArchivingInterval</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -46666,7 +46666,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>DataGatheringDuration</i__columnName>
+            <i__columnName>IntervalDataGatheringDuration</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>

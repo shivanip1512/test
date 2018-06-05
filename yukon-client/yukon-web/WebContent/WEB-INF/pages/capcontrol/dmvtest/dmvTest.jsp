@@ -31,17 +31,18 @@
     <form:form id="dmvTest-form" commandName="dmvTest" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="dmvTestId" />
+        <div key= "yukon.web.modules.capcontrol.dmvTest.helpText"/>
         <tags:sectionContainer2 nameKey="info" styleClass="stacked-lg">
             <tags:nameValueContainer2 tableClass="natural-width">
                 <tags:nameValue2 nameKey="yukon.common.name">
                     <tags:input path="name" maxlength="100"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".pollingInterval">
-                    <tags:input path="pollingInterval" size="3" maxlength="3"/>
+                <tags:nameValue2 nameKey=".dataArchivingInterval">
+                    <tags:input path="dataArchivingInterval" size="3" maxlength="3"/>
                     <i:inline key="yukon.common.units.SECONDS"/>                                                        
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".dataGatheringDuration">
-                    <tags:input path="dataGatheringDuration" size="2" maxlength="2"/>
+                <tags:nameValue2 nameKey=".intervalDataGatheringDuration">
+                    <tags:input path="intervalDataGatheringDuration" size="2" maxlength="2"/>
                     <i:inline key="yukon.common.units.MINUTES"/>                                                        
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".stepSize">

@@ -114,6 +114,16 @@ public class YukonValidationUtils extends ValidationUtils {
             }
         }
     }
+    
+    /**
+     * Check to ensure that the Data Archiving Interval is less than or equal to the Interval Data Gathering Duration
+     */
+    public static void checkIsDataArchivingIntervalTooLarge(Errors errors, String field, Integer dataArchivingInterval, Integer intervalDataGatheringDuration) {
+        // intervalDataGatheringDuration is multiplied by 60 to convert minutes into seconds.
+        if (dataArchivingInterval > (intervalDataGatheringDuration * 60)) {
+            errors.rejectValue(field, "yukon.web.error.dataArchivingIntervalTooLarge");
+        }
+    }
 
     /**
      * Check to ensure that the given value is between the given min and max value. While this will

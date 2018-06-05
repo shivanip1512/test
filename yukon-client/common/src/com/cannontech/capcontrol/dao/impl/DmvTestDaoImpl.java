@@ -19,8 +19,8 @@ public class DmvTestDaoImpl implements DmvTestDao {
         DmvTest dmvTest = new DmvTest();
         dmvTest.setName(rs.getString("DmvTestName"));
         dmvTest.setDmvTestId(rs.getInt("DmvTestId"));
-        dmvTest.setPollingInterval(rs.getInt("PollingInterval"));
-        dmvTest.setDataGatheringDuration(rs.getInt("DataGatheringDuration"));
+        dmvTest.setDataArchivingInterval(rs.getInt("DataArchivingInterval"));
+        dmvTest.setIntervalDataGatheringDuration(rs.getInt("IntervalDataGatheringDuration"));
         dmvTest.setStepSize(rs.getDouble("StepSize"));
         dmvTest.setCommSuccPercentage(rs.getInt("CommSuccessPercentage"));
         return dmvTest;
@@ -58,8 +58,8 @@ public class DmvTestDaoImpl implements DmvTestDao {
     
     private void updateParameterSink(SqlParameterSink parameterSink, DmvTest dmvTest) {
         parameterSink.addValue("DmvTestName", dmvTest.getName());
-        parameterSink.addValue("PollingInterval", dmvTest.getPollingInterval());
-        parameterSink.addValue("DataGatheringDuration", dmvTest.getDataGatheringDuration());
+        parameterSink.addValue("DataArchivingInterval", dmvTest.getDataArchivingInterval());
+        parameterSink.addValue("IntervalDataGatheringDuration", dmvTest.getIntervalDataGatheringDuration());
         parameterSink.addValue("StepSize", dmvTest.getStepSize());
         parameterSink.addValue("CommSuccessPercentage", dmvTest.getCommSuccPercentage());
     }
@@ -67,7 +67,7 @@ public class DmvTestDaoImpl implements DmvTestDao {
     @Override
     public List<DmvTest> getAllDmvTest() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DmvTestId, DmvTestName, PollingInterval, DataGatheringDuration, StepSize, CommSuccessPercentage");
+        sql.append("SELECT DmvTestId, DmvTestName, DataArchivingInterval, IntervalDataGatheringDuration, StepSize, CommSuccessPercentage");
         sql.append("FROM DmvTest");
         sql.append("ORDER By DmvTestName");
         
@@ -77,7 +77,7 @@ public class DmvTestDaoImpl implements DmvTestDao {
     @Override
     public List<DmvTest> getDmvTestByTestNames(List<String> testNames) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DmvTestId, DmvTestName, PollingInterval, DataGatheringDuration, StepSize, CommSuccessPercentage");
+        sql.append("SELECT DmvTestId, DmvTestName, DataArchivingInterval, IntervalDataGatheringDuration, StepSize, CommSuccessPercentage");
         sql.append("FROM DmvTest");
         sql.append("WHERE DmvTestName").in(testNames);
         sql.append("ORDER By DmvTestName");
@@ -89,7 +89,7 @@ public class DmvTestDaoImpl implements DmvTestDao {
     public DmvTest getDmvTestById(int id) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DmvTestId, DmvTestName, PollingInterval, DataGatheringDuration, StepSize, CommSuccessPercentage");
+        sql.append("SELECT DmvTestId, DmvTestName, DataArchivingInterval, IntervalDataGatheringDuration, StepSize, CommSuccessPercentage");
         sql.append("FROM DmvTest");
         sql.append("WHERE DmvTestId").eq(id);
         return jdbcTemplate.queryForObject(sql, rowMapper);

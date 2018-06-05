@@ -4,8 +4,8 @@ public class DmvTest {
 
     private int dmvTestId;
     private String name;
-    private int pollingInterval = 30;
-    private int dataGatheringDuration = 10;
+    private int dataArchivingInterval = 30;
+    private int intervalDataGatheringDuration = 10;
     private double stepSize = 1.5;
     private int commSuccPercentage = 100;
     
@@ -15,11 +15,11 @@ public class DmvTest {
     public void setName(String name) {
         this.name = name;
     }
-    public int getPollingInterval() {
-        return pollingInterval;
+    public int getDataArchivingInterval() {
+        return dataArchivingInterval;
     }
-    public void setPollingInterval(int pollingInterval) {
-        this.pollingInterval = pollingInterval;
+    public void setDataArchivingInterval(int dataArchivingInterval) {
+        this.dataArchivingInterval = dataArchivingInterval;
     }
     public double getStepSize() {
         return stepSize;
@@ -27,11 +27,11 @@ public class DmvTest {
     public void setStepSize(double stepSize) {
         this.stepSize = stepSize;
     }
-    public int getDataGatheringDuration() {
-        return dataGatheringDuration;
+    public int getIntervalDataGatheringDuration() {
+        return intervalDataGatheringDuration;
     }
-    public void setDataGatheringDuration(int dataGatheringDuration) {
-        this.dataGatheringDuration = dataGatheringDuration;
+    public void setIntervalDataGatheringDuration(int intervalDataGatheringDuration) {
+        this.intervalDataGatheringDuration = intervalDataGatheringDuration;
     }
     public int getCommSuccPercentage() {
         return commSuccPercentage;

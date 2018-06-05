@@ -1195,15 +1195,27 @@
     <entry key="yukon.web.modules.capcontrol.dmvTest.saved">Demand measurement and verification test was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.updateFailed">There was an error saving the demand measurement and verification test.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.deleteFailed">There was an error deleting the demand measurement and verification test.</entry>
-    <entry key="yukon.web.modules.capcontrol.dmvTest.pollingInterval">Polling Interval</entry>
-    <entry key="yukon.web.modules.capcontrol.dmvTest.pollingInterval.title">15 to 300 seconds with a default of 30 seconds.</entry>
-    <entry key="yukon.web.modules.capcontrol.dmvTest.dataGatheringDuration">Data Gathering Duration</entry>
-    <entry key="yukon.web.modules.capcontrol.dmvTest.dataGatheringDuration.title">1 to 30 minutes with a default of 10 minutes.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.dataArchivingInterval">Data Archiving Interval</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.dataArchivingInterval.title">15 to 300 seconds with a default of 30 seconds.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.intervalDataGatheringDuration">Interval Data Gathering Duration</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.intervalDataGatheringDuration.title">1 to 30 minutes with a default of 10 minutes.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.stepSize">Step Size</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.stepSize.title">0.75 to 5.0 Volts with a default of 1.5 Volts.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.commSuccPercentage">Communication Success Percentage</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.commSuccPercentage.title">0 - 100 percent with a default of 100 percent.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.deleteFailed">Demand measurement and verification test was not deleted.</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.noDmvTest">No Demand measurement and Verification Test</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.helpText"><![CDATA[
+        <ul>
+            <li><b>Name</b> - the name for the DMV Test</li>
+            <li><b>Data Archiving Interval</b> - the frequency with which data is archived during an individual Interval Data Gathering Duration</li>
+            <li><b>Interval Data Gathering Duration</b> - the duration of the data collection. There are three Data Archiving Intervals in each DMV Test: 
+            the Pre-Test Interval, the DMV Test Bump Interval, and the DMV Return to Normal Interval. There are two bumps associated with each DMV test.</li>
+            <li><b>Step Size</b> - the size of each bump</li>
+            <li><b>Communication Success Percentage</b> - the minimum required amount of data for a particular Data Archiving Interval. For example, 
+            if the Communication Success Percentage value is 50%, and more than 50% of the tests fail, no data from that interval will be archived. </li>
+        </ul>
+        Note: The DMV Test does not initiate any DNP3 Polling. The DMV Test only archives data as part of an interval.
+    ]]></entry>
     
 </properties>
