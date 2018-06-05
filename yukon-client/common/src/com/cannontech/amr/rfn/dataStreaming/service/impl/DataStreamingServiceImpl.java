@@ -875,8 +875,11 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     public int assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection,
             List<Integer> failedVerificationDevices, SimpleCallback<CollectionActionResult> alertCallback,
             YukonUserContext context) throws DataStreamingConfigException {
+      
+        MessageSourceAccessor accessor = config.getAccessor();
         if (config.getId() != 0) {
             config = findDataStreamingConfiguration(config.getId());
+            config.setAccessor(accessor);
         }
 
         List<SimpleDevice> devices = getSupportedDevices(deviceCollection);

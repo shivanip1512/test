@@ -103,6 +103,10 @@ public class DataStreamingConfig implements Cloneable {
         return String.join(", ",  attList);
     }
     
+    public MessageSourceAccessor getAccessor() {
+        return accessor;
+    }
+    
     public String getCommaDelimitedAttributesOnOff() {
         if (attributes.isEmpty()) {
             commaDelimitedAttributesOnOff = "None";
