@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
@@ -24,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -32,13 +34,15 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.BaseResponse;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class EcobeeRestProxyFactory {
     private static final Logger log = YukonLogManager.getLogger(EcobeeRestProxyFactory.class);
 
     @Autowired private ConfigurationSource configSource;
     @Autowired private ConnectionFactory connectionFactory;
- 
+    @Autowired private GlobalSettingDao settingDao;
+
     private final RestTemplate proxiedTemplate;
     private RequestReplyTemplate<EcobeeAuthTokenResponse> ecobeeAuthTokenRequestTemplate;
     private JmsTemplate jmsTemplate;
@@ -60,6 +64,11 @@ public class EcobeeRestProxyFactory {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) {
                 try {
+                    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+                    YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
+                        factory.setProxy(httpProxy.getJavaHttpProxy());
+                    });
+                    proxiedTemplate.setRequestFactory(factory) ;
                     addAuthorizationToken(args);
                     Object responseObj = method.invoke(proxiedTemplate, args);
                     if (didAuthenticationFail(responseObj)) {
