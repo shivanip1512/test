@@ -3,6 +3,7 @@
 #include "dev_rfnCommercial.h"
 #include "cmd_rfn.h"
 #include "cmd_rfn_Aggregate.h"  //  to reset the global counter
+#include "cmd_rfn_ConfigNotification.h"
 #include "config_data_rfn.h"
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
@@ -46,6 +47,10 @@ namespace std {
     //  defined in rtdb/test_main.cpp
     ostream& operator<<(ostream& out, const vector<unsigned char> &v);
     ostream& operator<<(ostream& out, const vector<bool> &v);
+}
+
+namespace test_cmd_rfn_ConfigNotification {
+    extern const std::vector<uint8_t> payload;
 }
 
 
@@ -686,6 +691,77 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
         BOOST_CHECK_EQUAL(result.status, 0);
         BOOST_CHECK(result.points.empty());
     }
+}
+
+BOOST_AUTO_TEST_CASE( test_config_notification )
+{
+    auto cmd = Cti::Devices::Commands::RfnCommand::handleUnsolicitedReport(execute_time, test_cmd_rfn_ConfigNotification::payload);
+
+    BOOST_REQUIRE(cmd);
+
+    Cti::Devices::RfnCommercialDevice dut;
+
+    dut.extractCommandResult(*cmd);
+
+    using PI = CtiTableDynamicPaoInfo;
+    using PIIdx = CtiTableDynamicPaoInfoIndexed;
+
+    Cti::Test::PaoInfoValidator dpiExpected[] 
+    {
+        { PI::Key_RFN_TempAlarmIsEnabled,            1 },
+        { PI::Key_RFN_TempAlarmRepeatInterval,       7 },
+        { PI::Key_RFN_TempAlarmRepeatCount,         11 },
+        { PI::Key_RFN_TempAlarmHighTempThreshold, 5889 },
+
+        { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
+        { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+    };
+
+    BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));
+
+    for( auto expected : dpiExpected )
+    {
+        BOOST_TEST_CONTEXT("Key " << expected.key)
+        {
+            BOOST_CHECK( expected.validate(dut) );
+        }
+    }
+
+    const auto midnightExpected = { 5, 6, 7, 8 };
+    const auto midnightActual = dut.findDynamicInfo<unsigned long>(PIIdx::Key_RFN_MidnightMetrics);
+    BOOST_REQUIRE(midnightActual);
+    BOOST_CHECK_EQUAL_RANGES(midnightActual.value(), midnightExpected);
+    const auto intervalExpected = { 1, 2, 3, 4 };
+    const auto intervalActual = dut.findDynamicInfo<unsigned long>(PIIdx::Key_RFN_IntervalMetrics);
+    BOOST_REQUIRE(intervalActual);
+    BOOST_CHECK_EQUAL_RANGES(intervalActual.value(), intervalExpected);
+
+    const auto json = cmd->getDataStreamingJson(dut.getDeviceType());
+
+    BOOST_CHECK_EQUAL(json, 
+R"SQUID(json{
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "DELIVERED_DEMAND",
+    "interval" : 5,
+    "enabled" : true,
+    "status" : "OK"
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false,
+    "status" : "METER_ACCESS_ERROR"
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true,
+    "status" : "METER_OR_NODE_BUSY"
+  }],
+"sequence" : 3735928559
+})SQUID");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
