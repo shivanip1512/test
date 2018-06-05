@@ -3,6 +3,7 @@
 #include "mgr_rfn_request.h"
 #include "amq_connection.h"
 #include "dev_rfn.h"
+#include "cmd_rfn_ConfigNotification.h"
 #include "rfn_statistics.h"
 #include "std_helper.h"
 
@@ -604,7 +605,7 @@ size_t RfnRequestManager::countByGroupMessageId(long groupMessageId)
     using boost::adaptors::map_values;
     using boost::adaptors::transformed;
 
-    auto get_group_message_id = make_lambda_overloads<long>(
+    auto get_group_message_id = lambda_overloads(
         [](const RfnDeviceRequest &r) { return r.parameters.groupMessageId; },
         [](const ActiveRfnRequest &a) { return a.request.parameters.groupMessageId; });
 

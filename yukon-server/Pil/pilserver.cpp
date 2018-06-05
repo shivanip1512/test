@@ -37,6 +37,7 @@
 #include "PorterResponseMessage.h"
 
 #include "mgr_rfn_request.h"
+#include "cmd_rfn_ConfigNotification.h"
 
 #include "debug_timer.h"
 #include "millisecond_timer.h"
@@ -855,7 +856,9 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
     auto rfnDevice = DeviceManager->getDeviceByRfnIdentifier(report.rfnId);
 
     const auto invokeCommand = [report = std::move(report)](Devices::RfnDevice & rfnDev) {
-        rfnDev.extractCommandResult(*(report.command));
+        rfnDev.extractCommandResult(*report.command);
+        //  TODO - sent resulting JSON to Java
+        const auto json = report.command->getDataStreamingJson(rfnDev.getDeviceType());
     };
         
     if( ! rfnDevice )

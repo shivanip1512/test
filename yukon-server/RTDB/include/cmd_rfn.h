@@ -144,7 +144,7 @@ public:
     virtual RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode) = 0;
 
-    static RfnCommandPtr handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload);
+    static std::unique_ptr<RfnConfigNotificationCommand> handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 

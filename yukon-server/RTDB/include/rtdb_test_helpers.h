@@ -453,10 +453,12 @@ auto extractExpectMore(const CtiDeviceSingle::ReturnMsgList & returnMsgs)
     return boost::copy_range<std::vector<bool>>(returnMsgs | boost::adaptors::transformed([](const std::unique_ptr<CtiReturnMsg> &msg) { return msg->ExpectMore(); }));
 }
 
+#if __cplusplus >= 201703L  //  only enable if the translation unit is C++17 or above
+
 struct PaoInfoValidator
 {
     CtiTableDynamicPaoInfo::PaoInfoKeys key;
-    boost::variant<int, std::string, double> value;
+    std::variant<int, std::string, double> value;
 
     template<typename T>
     bool check(CtiDeviceBase & dut, CtiTableDynamicPaoInfo::PaoInfoKeys key, T value)
@@ -470,14 +472,16 @@ struct PaoInfoValidator
 
     bool validate(CtiDeviceBase &dut)
     {
-        auto visitor = Cti::make_lambda_overloads<bool>(
+        auto visitor = Cti::lambda_overloads(
             [&](const int value)         { return check<long>       (dut, key, value); },
             [&](const std::string value) { return check<std::string>(dut, key, value); },
             [&](const double value)      { return check<double>     (dut, key, value); });
 
-        return value.apply_visitor(visitor);
+        return std::visit(visitor, value);
     }
 };
+
+#endif
 
 }
 }

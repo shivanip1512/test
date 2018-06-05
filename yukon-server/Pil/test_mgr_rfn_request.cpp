@@ -2,6 +2,7 @@
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ChannelConfiguration.h"
+#include "cmd_rfn_ConfigNotification.h"
 
 #include "boost_test_helpers.h"
 

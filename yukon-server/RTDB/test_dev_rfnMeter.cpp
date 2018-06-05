@@ -3,6 +3,7 @@
 #include "dev_rfnMeter.h"
 #include "ctidate.h"
 #include "cmd_rfn.h"
+#include "cmd_rfn_ConfigNotification.h"
 #include "config_device.h"
 #include "config_data_rfn.h"
 #include "rtdb_test_helpers.h"
@@ -1210,7 +1211,7 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
     Cti::Devices::RfnMeterDevice dut;
 
-    cmd->invokeResultHandler(dut);
+    dut.extractCommandResult(*cmd);
 
     using PI = CtiTableDynamicPaoInfo;
     using PIIdx = CtiTableDynamicPaoInfoIndexed;
@@ -1244,6 +1245,33 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     const auto intervalActual = dut.findDynamicInfo<unsigned long>(PIIdx::Key_RFN_IntervalMetrics);
     BOOST_REQUIRE(intervalActual);
     BOOST_CHECK_EQUAL_RANGES(intervalActual.value(), intervalExpected);
+
+    const auto json = cmd->getDataStreamingJson(dut.getDeviceType());
+
+    BOOST_CHECK_EQUAL(json,
+R"SQUID(json{
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "DELIVERED_DEMAND",
+    "interval" : 5,
+    "enabled" : true,
+    "status" : "OK"
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false,
+    "status" : "METER_ACCESS_ERROR"
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true,
+    "status" : "METER_OR_NODE_BUSY"
+  }],
+"sequence" : 3735928559
+})SQUID");
 }
 
 BOOST_AUTO_TEST_CASE( test_getconfig_install_all_separate )

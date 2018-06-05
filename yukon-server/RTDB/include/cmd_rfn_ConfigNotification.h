@@ -9,6 +9,7 @@
 #include "cmd_rfn_OvUvConfiguration.h"
 #include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_ChannelConfiguration.h"
+#include "cmd_rfn_DataStreamingConfiguration.h"
 
 #include <boost/variant.hpp>
 
@@ -36,6 +37,8 @@ public:
     ASID getApplicationServiceId() const override;
 
     static unsigned char getUnsolicitedCommandCode();
+
+    std::string getDataStreamingJson(DeviceTypes type) const;
 
 protected:
 
@@ -157,6 +160,8 @@ public:
     std::optional<RfnGetOvUvAlarmConfigurationCommand::AlarmConfiguration> ovuv;
 
     std::optional<RfnTemperatureAlarmCommand::AlarmConfiguration> temperature;
+
+    std::optional<RfnDataStreamingConfigurationCommand::ConfigResponse> dataStreaming;
 
     std::optional<uint8_t> demandInterval;
 

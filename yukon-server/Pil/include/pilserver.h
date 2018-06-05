@@ -14,6 +14,7 @@
 #include "amq_constants.h"
 
 #include "mgr_rfn_request.h"
+#include "cmd_rfn_ConfigNotification.h"
 #include "rf_data_streaming_processor.h"
 
 #include <boost/thread.hpp>

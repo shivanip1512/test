@@ -28,6 +28,8 @@ protected:
 
     RfnDataStreamingConfigurationCommand(const DeviceTypes paoType);
 
+    friend class RfnConfigNotificationCommand;
+
     struct ConfigResponse
     {
         bool streamingEnabled;

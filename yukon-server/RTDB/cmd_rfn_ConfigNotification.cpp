@@ -2,6 +2,7 @@
 
 #include "std_helper.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_DataStreamingConfiguration.h"
 #include "cmd_rfn_helper.h"
 
 #include <boost/range/adaptor/map.hpp>
@@ -598,8 +599,65 @@ std::string RfnConfigNotificationCommand::decodeTemperature(Bytes payload)
 
 std::string RfnConfigNotificationCommand::decodeDataStreaming(Bytes payload)
 {
-    return "Data Streaming configuration:"
-        "\nNot currently decoded";
+    validate(Condition(payload.size() >= 6, ClientErrors::DataMissing)
+        << "Data Streaming payload too small - (" << payload.size() << " < " << 6);
+
+    RfnDataStreamingConfigurationCommand::ConfigResponse cr;
+
+    int index = 0;
+
+    uint8_t metricCount = payload[index++];
+
+    const auto payloadExpected = 6 + 5 * metricCount;
+
+    validate(Condition(payload.size() >= payloadExpected, ClientErrors::DataMissing)
+        << "Data Streaming payload too small - (" << payload.size() << " < " << payloadExpected);
+
+    FormattedList l;
+
+    cr.streamingEnabled = payload[index++];
+
+    l.add("Global enable") << cr.streamingEnabled;
+    l.add("Metric count")  << metricCount;
+
+    for( auto i = 0; i < metricCount; ++i )
+    {
+        RfnDataStreamingConfigurationCommand::ConfigResponse::MetricConfiguration mc;
+
+        mc.metricId = payload[index + 0] << 8 | 
+                      payload[index + 1];
+        mc.enabled  = payload[index + 2];
+        mc.interval = payload[index + 3];
+        mc.status   = payload[index + 4];
+
+        index += 5;
+
+        l.add("Metric " + std::to_string(mc.metricId)) << (mc.enabled ? "Enabled" : "Disabled") << " @ " << std::chrono::minutes(mc.interval) << ", status " << mc.status;
+
+        cr.metrics.push_back(mc);
+    }
+
+    cr.sequence =
+        payload[index + 0] << 24 |
+        payload[index + 1] << 16 |
+        payload[index + 2] <<  8 |
+        payload[index + 3];
+
+    l.add("Sequence") << cr.sequence;
+
+    dataStreaming = cr;
+
+    return "Data Streaming configuration:" + l.toString();
+}
+
+std::string RfnConfigNotificationCommand::getDataStreamingJson(DeviceTypes type) const
+{
+    if( ! dataStreaming )
+    {
+        return "";
+    }
+
+    return RfnDataStreamingConfigurationCommand::createJson(*dataStreaming, type);
 }
 
 std::string RfnConfigNotificationCommand::decodeDemandInterval(Bytes payload)

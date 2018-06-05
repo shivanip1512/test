@@ -13,44 +13,21 @@
 
 namespace Cti {
 
-//  Workaround for MSVC's lack of support for P0195R2, see https://docs.microsoft.com/en-us/cpp/visual-cpp-language-conformance for current status.
-//    Once that is available, all the following should be replaced with:
-/*
-template<class ... Lambdas> struct lambda_overloads : Lambdas... { using Lambdas::operator()...; };
-*/
+#if __cplusplus >= 201703L  //  only enable if the translation unit is C++17 or above
 
-template<typename Result, typename... Lambdas>
-struct lambda_overloads;
-
-template<typename Result, typename Lambda, typename... Others>
-struct lambda_overloads<Result, Lambda, Others...> : Lambda, lambda_overloads<Result, Others...>
+template<typename... Lambdas>
+struct lambda_overloads : Lambdas...
 {
-    using Lambda::operator();
-    using lambda_overloads<Result, Others...>::operator();
-
-    lambda_overloads(Lambda ld, Others... others)
-        :   Lambda(ld),
-            lambda_overloads<Result, Others...>(others...) 
+    lambda_overloads(Lambdas... lds)
+        :   Lambdas{lds}...
     {}
+
+    using Lambdas::operator()...;
 };
 
-template<typename Result, typename Lambda>
-struct lambda_overloads<Result, Lambda> : public Lambda
-{
-    using result_type = Result;  //  for compatibility with boost's apply_visitor - could remove when replaced with std::variant/std::visit
+template<typename... Lambdas> lambda_overloads(Lambdas... lambdas) -> lambda_overloads<Lambdas...>;
 
-    using Lambda::operator ();
-
-    lambda_overloads(Lambda ld)
-        :   Lambda(ld) 
-    {}
-};
-
-//  Type deduction helper, can be replaced with a C++17 type deduction guide when available - see https://dev.to/tmr232/that-overloaded-trick-overloading-lambdas-in-c17
-template<typename Result, typename... Lambdas> auto make_lambda_overloads(Lambdas... lambdas)
-{
-    return lambda_overloads <Result, Lambdas...> { lambdas... };
-}
+#endif
 
 class ScopeExit 
 {

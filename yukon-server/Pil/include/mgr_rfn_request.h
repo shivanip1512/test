@@ -66,15 +66,17 @@ class IM_EX_CTIPIL RfnRequestManager
 {
 public:
 
+    using ConfigNotificationPtr = std::unique_ptr<Devices::Commands::RfnConfigNotificationCommand>;
+
     struct UnsolicitedReport
     {
-        UnsolicitedReport( RfnIdentifier rfnId_, Devices::Commands::RfnCommandPtr command_)
+        UnsolicitedReport( RfnIdentifier rfnId_,  ConfigNotificationPtr command_)
             :   rfnId(rfnId_),
                 command(std::move(command_))
         { }
 
         RfnIdentifier rfnId;
-        Devices::Commands::RfnCommandPtr command;
+        ConfigNotificationPtr command;
     };
 
     using ResultQueue          = std::deque<RfnDeviceResult>;

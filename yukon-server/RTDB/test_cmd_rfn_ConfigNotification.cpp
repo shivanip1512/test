@@ -161,10 +161,22 @@ extern const std::vector<uint8_t> payload {
         0x0b,  //  Max repeats
     //  TLV 13
     0x00, 0x0d,  //  Data Streaming configuration
-    0x00, 0x0f,
-        0x01, 0x01, 0x01, 0x01, 0x01,  //  15 bytes of filler until we actually decode it
-        0x01, 0x01, 0x01, 0x01, 0x01, 
-        0x01, 0x01, 0x01, 0x01, 0x01,
+    0x00, 0x15,
+        0x03,  //  number of metrics
+        0x01,  //  data streaming on/off
+        0x00, 0x05,  //  metric ID 1
+        0x01,          //  metric ID 1 enable/disable
+        0x05,          //  metric ID 1 interval
+        0x00,          //  metric ID 1 status
+        0x00, 0x73,  //  metric ID 2
+        0x00,          //  metric ID 2 enable/disable
+        0x0f,          //  metric ID 2 interval
+        0x01,          //  metric ID 2 status
+        0x00, 0x50,  //  metric ID 3
+        0x01,          //  metric ID 3 enable/disable
+        0x1e,          //  metric ID 3 interval
+        0x02,          //  metric ID 3 status
+        0xde, 0xad, 0xbe, 0xef, //  DS metrics sequence number
     //  TLV 14
     0x00, 0x0e,  //  Demand Interval configuration
     0x00, 0x01,
@@ -426,7 +438,12 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Repeat interval              : 7 minutes"
         "\n    Max repeats                  : 11"
         "\nData Streaming configuration:"
-        "\n    Not currently decoded"
+        "\n    Global enable : true"
+        "\n    Metric count  : 3"
+        "\n    Metric 5      : Enabled @ 5 minutes, status 0"
+        "\n    Metric 115    : Disabled @ 15 minutes, status 1"
+        "\n    Metric 80     : Enabled @ 30 minutes, status 2"
+        "\n    Sequence      : 3735928559"
         "\nDemand interval configuration:"
         "\n    Demand Interval : 6 minutes"
         "\nVoltage profile status:"

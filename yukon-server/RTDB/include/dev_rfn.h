@@ -40,7 +40,9 @@ protected:
     template<typename Function, typename Caller>
     inline static ConfigMethod bindConfigMethod(Function f, Caller c)
     {
-        return boost::bind( f, c, _1, _2, _3, _4 );
+        return [f, c](CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) {
+            return (c->*f)(pReq, parse, returnMsgs, rfnRequests);
+        };
     }
 
     virtual bool areAggregateCommandsSupported() const;
