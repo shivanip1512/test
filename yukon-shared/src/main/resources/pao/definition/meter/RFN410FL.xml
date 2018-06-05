@@ -19,6 +19,7 @@
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>
     <configuration>
+        <category type="demand" optional="true"/>
         <category type="rfnChannelConfiguration"/>
         <category type="rfnTempAlarm"/>
     </configuration>
