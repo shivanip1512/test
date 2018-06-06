@@ -11,6 +11,9 @@
 #include "Thrift/RfnE2eData_types.h"
 #include "Thrift/NetworkManagerMessaging_types.h"
 
+#include "DeviceCreationMessaging.h"
+#include "Thrift/DeviceCreationMessaging_types.h"
+
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
@@ -184,6 +187,46 @@ catch( apache::thrift::TException )
     return boost::none;
 }
 
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<RfnDeviceCreationRequestMessage>::serialize(const RfnDeviceCreationRequestMessage &m)
+try
+{
+    Thrift::RfnIdentifier               identifier;
+    Thrift::RfnDeviceCreationRequest    request;
+
+    identifier.__set_sensorManufacturer(m.rfnIdentifier.manufacturer);
+    identifier.__set_sensorModel(m.rfnIdentifier.model);
+    identifier.__set_sensorSerialNumber(m.rfnIdentifier.serialNumber);
+
+    request.__set_rfnIdentifier(identifier);
+
+    return SerializeThriftBytes(request);
+}
+catch (apache::thrift::TException)
+{
+    //  log?
+    return {};
+}
+
+template<>
+boost::optional<RfnDeviceCreationReplyMessage> IM_EX_MSG MessageSerializer<RfnDeviceCreationReplyMessage>::deserialize(const std::vector<unsigned char> &buf)
+try
+{
+    const Thrift::RfnDeviceCreationReply thriftMsg = DeserializeThriftBytes<Thrift::RfnDeviceCreationReply>(buf);
+
+    RfnDeviceCreationReplyMessage msg;
+
+    msg.paoId      = thriftMsg.paoId;
+    msg.category   = thriftMsg.category;
+    msg.deviceType = thriftMsg.deviceType;
+
+    return msg;
+}
+catch (apache::thrift::TException)
+{
+    //  log?
+    return boost::none;
+}
 
 }
 }

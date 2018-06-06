@@ -421,6 +421,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ControlHistoryAssociationResponse.cpp">
     </ClCompile>
+    <ClCompile Include="DeviceCreationMessaging.cpp" />
     <ClCompile Include="DispatchConnection.cpp">
     </ClCompile>
     <ClCompile Include="DispatchPointDataRequest.cpp">

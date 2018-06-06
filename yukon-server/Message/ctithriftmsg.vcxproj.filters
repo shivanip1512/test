@@ -461,6 +461,12 @@
     <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\DeviceCreationMessaging_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\DeviceCreationMessaging_types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Serialization\Thrift\CCCapBankMove_constants.h">
@@ -911,6 +917,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\DeviceCreationMessaging_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\DeviceCreationMessaging_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

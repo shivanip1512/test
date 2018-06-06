@@ -168,6 +168,9 @@
     <ClCompile Include="NetworkManagerMessaging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DeviceCreationMessaging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\amq_connection.h">

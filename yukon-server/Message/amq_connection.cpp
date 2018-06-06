@@ -8,6 +8,7 @@
 #include "StreamableMessage.h"
 #include "RfnBroadcastReplyMessage.h"
 #include "RfnWaterNodeMessaging.h"
+#include "DeviceCreationMessaging.h"
 
 #include "utility.h"
 
@@ -917,7 +918,7 @@ const IM_EX_MSG OutboundQueue
                 ("com.eaton.eas.yukon.networkmanager.waternode.SetChannelConfiguration");
 const IM_EX_MSG OutboundQueue
         OutboundQueue::DeviceCreationRequest
-                ("yukon.notif.stream.DeviceCreation");
+                ("yukon.notif.obj.serverDeviceCreation");
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
@@ -948,6 +949,8 @@ template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnSetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnGetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<RfnDeviceCreationReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 }
 }

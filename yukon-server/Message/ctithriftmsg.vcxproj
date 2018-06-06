@@ -390,6 +390,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\DBChange_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\DeviceCreationMessaging_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\DeviceCreationMessaging_types.cpp" />
     <ClCompile Include="Serialization\Thrift\LMCommand_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMCommand_types.cpp">
@@ -644,6 +646,8 @@
     <ClInclude Include="Serialization\Thrift\Command_types.h" />
     <ClInclude Include="Serialization\Thrift\DBChange_constants.h" />
     <ClInclude Include="Serialization\Thrift\DBChange_types.h" />
+    <ClInclude Include="Serialization\Thrift\DeviceCreationMessaging_constants.h" />
+    <ClInclude Include="Serialization\Thrift\DeviceCreationMessaging_types.h" />
     <ClInclude Include="Serialization\Thrift\LMCommand_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMCommand_types.h" />
     <ClInclude Include="Serialization\Thrift\LMControlAreas_constants.h" />

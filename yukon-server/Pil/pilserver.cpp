@@ -35,6 +35,7 @@
 #include "database_reader.h"
 #include "amq_connection.h"
 #include "PorterResponseMessage.h"
+#include "DeviceCreationMessaging.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
@@ -46,6 +47,7 @@
 #include "win_helper.h"
 #include "desolvers.h"
 #include "MessageCounter.h"
+#include "message_factory.h"
 
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
@@ -863,7 +865,47 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         
     if( ! rfnDevice )
     {
-        //  invoke system call to Java
+
+        using namespace Cti::Messaging;
+        using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+        RfnDeviceCreationRequestMessage requestMessage(report.rfnId);
+
+        ActiveMQConnectionManager::SerializedMessage serialized
+            = Serialization::MessageSerializer<RfnDeviceCreationRequestMessage>::serialize(requestMessage);
+
+        // build a device creation call to Java
+        auto msgReceivedCallback =
+            [&](const RfnDeviceCreationReplyMessage & reply)
+        {
+            CTILOG_DEBUG(dout, "Recevied RfnDeviceCreationReply from client for rfn device with id " << reply.paoId);
+            // force a device reload of the new device
+            DeviceManager->refreshDeviceByID(reply.paoId, reply.category, reply.deviceType);
+
+            // attempt to get the device again
+            auto newDevice = DeviceManager->getDeviceByRfnIdentifier(report.rfnId);
+
+            // call invokeCommand(*newDevice)
+            if ( newDevice )
+            {
+                invokeCommand(*newDevice);
+            }
+        };
+
+        auto timedOutCallback =
+            [&]()
+        {
+            CTILOG_DEBUG(dout, "RFN device creation request from Porter to client timed out for RfnIdentifier " << report.rfnId);
+        };
+
+        CTILOG_DEBUG(dout, "Sending RfnDeviceCreationRequest to client for RfnIdentifier " << report.rfnId);
+        // send the device creation message to Java
+        ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(
+            Cti::Messaging::ActiveMQ::Queues::OutboundQueue::DeviceCreationRequest,
+            serialized,
+            msgReceivedCallback,
+            std::chrono::seconds{ 5 },
+            timedOutCallback);
     }
     else
     {
