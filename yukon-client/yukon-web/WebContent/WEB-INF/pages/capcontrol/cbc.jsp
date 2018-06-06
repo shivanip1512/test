@@ -18,21 +18,13 @@
     <tags:setFormEditMode mode="${mode}" />
 
     <div class="js-page-additional-actions dn">
-        <cti:displayForPageEditModes modes="VIEW,EDIT">
-            <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
-                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                    <li class="divider" />
-                </cti:checkRolesAndProperties>
-            </cti:checkRolesAndProperties>
-        
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
-                                   data-popup="#copy-cbc"/>
-            </cti:checkRolesAndProperties>
-        </cti:displayForPageEditModes>
-
         <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
+                    <li class="divider" />
+                </cti:checkRolesAndProperties>
+                <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
+                                   data-popup="#copy-cbc"/>
                 <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit" />
                 <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
             </cti:checkRolesAndProperties>
