@@ -379,6 +379,19 @@ public class NmIntegrationController {
 
         return "rfn/viewMeterReadArchive.jsp";
     }
+    
+    @RequestMapping("viewDataIndicationMessage")
+    public String viewDataIndicationMessage(@ModelAttribute RfnTestMeterReading meterReading, ModelMap model, FlashScope flashScope) {
+        model.addAttribute("rfnTypeGroups", rfnEventTestingService.getGroupedRfnTypes());
+
+        Integer numberSent = (Integer) model.get("numberSent");
+        if (numberSent != null) {
+            flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Data indicatoin messages sent: " + numberSent), 
+                                  numberSent > 0 ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
+        }
+
+        return "rfn/viewDataIndicationMessage.jsp";
+    }
 
     @RequestMapping("viewLocationArchiveRequest")
     public String viewLocationArchiveRequest() {
@@ -642,6 +655,16 @@ public class NmIntegrationController {
         redirectAttributes.addFlashAttribute("meterReading", meterReading);
 
         return "redirect:viewMeterReadArchiveRequest";
+    }
+    
+    @RequestMapping("sendDataIndicationMessage")
+    public String sendDataIndicationMessage(@ModelAttribute RfnTestMeterReading meterReading, RedirectAttributes redirectAttributes) {
+        int numberSent = rfnEventTestingService.sendDataIndicationMessage(meterReading);
+
+        redirectAttributes.addFlashAttribute("numberSent", numberSent);
+        redirectAttributes.addFlashAttribute("meterReading", meterReading);
+
+        return "redirect:viewDataIndicationMessage";
     }
 
     @RequestMapping("sendLcrReadArchiveRequest")

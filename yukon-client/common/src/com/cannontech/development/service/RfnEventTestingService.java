@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.DecoderException;
 
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -35,4 +36,5 @@ public interface RfnEventTestingService {
      * Gets a RFN meter types, grouped by manufacturer and/or type.  
      */
     Map<String, List<RfnManufacturerModel>> getGroupedRfnTypes();
+    int sendDataIndicationMessage(RfnTestMeterReading reading);
 }
