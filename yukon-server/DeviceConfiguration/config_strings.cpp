@@ -373,80 +373,84 @@ const string CbcStrings::cbcHeartbeatPeriod     = "cbcHeartbeatPeriod";
 const string CbcStrings::cbcHeartbeatValue      = "cbcHeartbeatValue";
 const string CbcStrings::cbcHeartbeatMode       = "cbcHeartbeatMode";
 
-// Display Items
-const string DisplayItemValues::SLOT_DISABLED = "SLOT_DISABLED";            //0
-const string DisplayItemValues::NO_SEGMENTS = "NO_SEGMENTS";                //1
-const string DisplayItemValues::ALL_SEGMENTS = "ALL_SEGMENTS";              //2
-// Item #3 is deprecated and unused.
-const string DisplayItemValues::CURRENT_LOCAL_TIME = "CURRENT_LOCAL_TIME";  //4
-const string DisplayItemValues::CURRENT_LOCAL_DATE = "CURRENT_LOCAL_DATE";  //5
-const string DisplayItemValues::TOTAL_KWH = "TOTAL_KWH";                    //6
-const string DisplayItemValues::NET_KWH = "NET_KWH";                        //7
-const string DisplayItemValues::DELIVERED_KWH = "DELIVERED_KWH";            //8
-const string DisplayItemValues::RECEIVED_KWH = "RECEIVED_KWH";              //9
-const string DisplayItemValues::LAST_INTERVAL_KW = "LAST_INTERVAL_KW";      //10
-const string DisplayItemValues::PEAK_KW = "PEAK_KW";                        //11
-const string DisplayItemValues::PEAK_KW_DATE = "PEAK_KW_DATE";              //12
-const string DisplayItemValues::PEAK_KW_TIME = "PEAK_KW_TIME";              //13
-const string DisplayItemValues::LAST_INTERVAL_VOLTAGE = "LAST_INTERVAL_VOLTAGE"; //14
-const string DisplayItemValues::PEAK_VOLTAGE = "PEAK_VOLTAGE";              //15
-const string DisplayItemValues::PEAK_VOLTAGE_DATE = "PEAK_VOLTAGE_DATE";    //16
-const string DisplayItemValues::PEAK_VOLTAGE_TIME = "PEAK_VOLTAGE_TIME";    //17
-const string DisplayItemValues::MINIMUM_VOLTAGE = "MINIMUM_VOLTAGE";        //18
-const string DisplayItemValues::MINIMUM_VOLTAGE_DATE = "MINIMUM_VOLTAGE_DATE"; //19
-const string DisplayItemValues::MINIMUM_VOLTAGE_TIME = "MINIMUM_VOLTAGE_TIME"; //20
-const string DisplayItemValues::TOU_RATE_A_KWH = "TOU_RATE_A_KWH";          //21
-const string DisplayItemValues::TOU_RATE_A_PEAK_KW = "TOU_RATE_A_PEAK_KW";  //22
-const string DisplayItemValues::TOU_RATE_A_DATE_OF_PEAK_KW = "TOU_RATE_A_DATE_OF_PEAK_KW"; //23
-const string DisplayItemValues::TOU_RATE_A_TIME_OF_PEAK_KW = "TOU_RATE_A_TIME_OF_PEAK_KW"; //24
-const string DisplayItemValues::TOU_RATE_B_KWH = "TOU_RATE_B_KWH";          //25
-const string DisplayItemValues::TOU_RATE_B_PEAK_KW = "TOU_RATE_B_PEAK_KW";  //26
-const string DisplayItemValues::TOU_RATE_B_DATE_OF_PEAK_KW = "TOU_RATE_B_DATE_OF_PEAK_KW"; //27
-const string DisplayItemValues::TOU_RATE_B_TIME_OF_PEAK_KW = "TOU_RATE_B_TIME_OF_PEAK_KW"; //28
-const string DisplayItemValues::TOU_RATE_C_KWH = "TOU_RATE_C_KWH";          //29
-const string DisplayItemValues::TOU_RATE_C_PEAK_KW = "TOU_RATE_C_PEAK_KW";  //30
-const string DisplayItemValues::TOU_RATE_C_DATE_OF_PEAK_KW = "TOU_RATE_C_DATE_OF_PEAK_KW"; //31
-const string DisplayItemValues::TOU_RATE_C_TIME_OF_PEAK_KW = "TOU_RATE_C_TIME_OF_PEAK_KW"; //32
-const string DisplayItemValues::TOU_RATE_D_KWH = "TOU_RATE_D_KWH";          //33
-const string DisplayItemValues::TOU_RATE_D_PEAK_KW = "TOU_RATE_D_PEAK_KW";  //34
-const string DisplayItemValues::TOU_RATE_D_DATE_OF_PEAK_KW = "TOU_RATE_D_DATE_OF_PEAK_KW"; //35
-const string DisplayItemValues::TOU_RATE_D_TIME_OF_PEAK_KW = "TOU_RATE_D_TIME_OF_PEAK_KW"; //36;
+using DIV = DisplayItemValues;
 
-IM_EX_CONFIG const std::map<std::string, long> Cti::Config::displayItemMap{
-    {DisplayItemValues::SLOT_DISABLED, slotDisabled},
-    {DisplayItemValues::NO_SEGMENTS, noSegments},
-    {DisplayItemValues::ALL_SEGMENTS, allSegments},
-    {DisplayItemValues::CURRENT_LOCAL_TIME, currentLocalTime},
-    {DisplayItemValues::CURRENT_LOCAL_DATE, currentLocalDate},
-    {DisplayItemValues::TOTAL_KWH, totalKwh},
-    {DisplayItemValues::NET_KWH, netKwh},
-    {DisplayItemValues::DELIVERED_KWH, deliveredKwh},
-    {DisplayItemValues::RECEIVED_KWH, receivedKwh},
-    {DisplayItemValues::LAST_INTERVAL_KW, lastIntervalKw},
-    {DisplayItemValues::PEAK_KW, peakKw},
-    {DisplayItemValues::PEAK_KW_DATE, peakKwDate},
-    {DisplayItemValues::PEAK_KW_TIME, peakKwTime},
-    {DisplayItemValues::LAST_INTERVAL_VOLTAGE, lastIntervalVoltage},
-    {DisplayItemValues::PEAK_VOLTAGE, peakVoltage},
-    {DisplayItemValues::PEAK_VOLTAGE_DATE, peakVoltageDate},
-    {DisplayItemValues::PEAK_VOLTAGE_TIME, peakVoltageTime},
-    {DisplayItemValues::MINIMUM_VOLTAGE, minimumVoltage},
-    {DisplayItemValues::MINIMUM_VOLTAGE_DATE, minimumVoltageDate},
-    {DisplayItemValues::MINIMUM_VOLTAGE_TIME, minimumVoltageTime},
-    {DisplayItemValues::TOU_RATE_A_KWH, touRateAKwh},
-    {DisplayItemValues::TOU_RATE_A_PEAK_KW, touRateAPeakKw},
-    {DisplayItemValues::TOU_RATE_A_DATE_OF_PEAK_KW, touRateADateOfPeakKw},
-    {DisplayItemValues::TOU_RATE_A_TIME_OF_PEAK_KW, touRateATimeOfPeakKw},
-    {DisplayItemValues::TOU_RATE_B_KWH, touRateBKwh},
-    {DisplayItemValues::TOU_RATE_B_PEAK_KW, touRateBPeakKw},
-    {DisplayItemValues::TOU_RATE_B_DATE_OF_PEAK_KW, touRateBDateOfPeakKw},
-    {DisplayItemValues::TOU_RATE_B_TIME_OF_PEAK_KW, touRateBTimeOfPeakKw},
-    {DisplayItemValues::TOU_RATE_C_KWH, touRateCKwh},
-    {DisplayItemValues::TOU_RATE_C_PEAK_KW, touRateCPeakKw},
-    {DisplayItemValues::TOU_RATE_C_DATE_OF_PEAK_KW, touRateCDateOfPeakKw},
-    {DisplayItemValues::TOU_RATE_C_TIME_OF_PEAK_KW, touRateCTimeOfPeakKw},
-    {DisplayItemValues::TOU_RATE_D_KWH, touRateDKwh},
-    {DisplayItemValues::TOU_RATE_D_PEAK_KW, touRateDPeakKw},
-    {DisplayItemValues::TOU_RATE_D_DATE_OF_PEAK_KW, touRateDDateOfPeakKw},
-    {DisplayItemValues::TOU_RATE_D_TIME_OF_PEAK_KW, touRateDTimeOfPeakKw}
+// Display Items
+#define DIV_STRING(x) const string DIV::x = #x
+
+DIV_STRING(SLOT_DISABLED);
+DIV_STRING(NO_SEGMENTS);
+DIV_STRING(ALL_SEGMENTS);
+
+DIV_STRING(CURRENT_LOCAL_TIME);
+DIV_STRING(CURRENT_LOCAL_DATE);
+DIV_STRING(TOTAL_KWH);
+DIV_STRING(NET_KWH);
+DIV_STRING(DELIVERED_KWH);
+DIV_STRING(RECEIVED_KWH);
+DIV_STRING(LAST_INTERVAL_KW);
+DIV_STRING(PEAK_KW);
+DIV_STRING(PEAK_KW_DATE);
+DIV_STRING(PEAK_KW_TIME);
+DIV_STRING(LAST_INTERVAL_VOLTAGE);
+DIV_STRING(PEAK_VOLTAGE);
+DIV_STRING(PEAK_VOLTAGE_DATE);
+DIV_STRING(PEAK_VOLTAGE_TIME);
+DIV_STRING(MINIMUM_VOLTAGE);
+DIV_STRING(MINIMUM_VOLTAGE_DATE);
+DIV_STRING(MINIMUM_VOLTAGE_TIME);
+DIV_STRING(TOU_RATE_A_KWH);
+DIV_STRING(TOU_RATE_A_PEAK_KW);
+DIV_STRING(TOU_RATE_A_DATE_OF_PEAK_KW);
+DIV_STRING(TOU_RATE_A_TIME_OF_PEAK_KW);
+DIV_STRING(TOU_RATE_B_KWH);
+DIV_STRING(TOU_RATE_B_PEAK_KW);
+DIV_STRING(TOU_RATE_B_DATE_OF_PEAK_KW);
+DIV_STRING(TOU_RATE_B_TIME_OF_PEAK_KW);
+DIV_STRING(TOU_RATE_C_KWH);
+DIV_STRING(TOU_RATE_C_PEAK_KW);
+DIV_STRING(TOU_RATE_C_DATE_OF_PEAK_KW);
+DIV_STRING(TOU_RATE_C_TIME_OF_PEAK_KW);
+DIV_STRING(TOU_RATE_D_KWH);
+DIV_STRING(TOU_RATE_D_PEAK_KW);
+DIV_STRING(TOU_RATE_D_DATE_OF_PEAK_KW);
+DIV_STRING(TOU_RATE_D_TIME_OF_PEAK_KW);
+
+IM_EX_CONFIG const std::map<std::string, uint8_t> Cti::Config::displayItemMap {
+    { DIV::SLOT_DISABLED,              slotDisabled         },
+    { DIV::NO_SEGMENTS,                noSegments           },
+    { DIV::ALL_SEGMENTS,               allSegments          },
+    { DIV::CURRENT_LOCAL_TIME,         currentLocalTime     },
+    { DIV::CURRENT_LOCAL_DATE,         currentLocalDate     },
+    { DIV::TOTAL_KWH,                  totalKwh             },
+    { DIV::NET_KWH,                    netKwh               },
+    { DIV::DELIVERED_KWH,              deliveredKwh         },
+    { DIV::RECEIVED_KWH,               receivedKwh          },
+    { DIV::LAST_INTERVAL_KW,           lastIntervalKw       },
+    { DIV::PEAK_KW,                    peakKw               },
+    { DIV::PEAK_KW_DATE,               peakKwDate           },
+    { DIV::PEAK_KW_TIME,               peakKwTime           },
+    { DIV::LAST_INTERVAL_VOLTAGE,      lastIntervalVoltage  },
+    { DIV::PEAK_VOLTAGE,               peakVoltage          },
+    { DIV::PEAK_VOLTAGE_DATE,          peakVoltageDate      },
+    { DIV::PEAK_VOLTAGE_TIME,          peakVoltageTime      },
+    { DIV::MINIMUM_VOLTAGE,            minimumVoltage       },
+    { DIV::MINIMUM_VOLTAGE_DATE,       minimumVoltageDate   },
+    { DIV::MINIMUM_VOLTAGE_TIME,       minimumVoltageTime   },
+    { DIV::TOU_RATE_A_KWH,             touRateAKwh          },
+    { DIV::TOU_RATE_A_PEAK_KW,         touRateAPeakKw       },
+    { DIV::TOU_RATE_A_DATE_OF_PEAK_KW, touRateADateOfPeakKw },
+    { DIV::TOU_RATE_A_TIME_OF_PEAK_KW, touRateATimeOfPeakKw },
+    { DIV::TOU_RATE_B_KWH,             touRateBKwh          },
+    { DIV::TOU_RATE_B_PEAK_KW,         touRateBPeakKw       },
+    { DIV::TOU_RATE_B_DATE_OF_PEAK_KW, touRateBDateOfPeakKw },
+    { DIV::TOU_RATE_B_TIME_OF_PEAK_KW, touRateBTimeOfPeakKw },
+    { DIV::TOU_RATE_C_KWH,             touRateCKwh          },
+    { DIV::TOU_RATE_C_PEAK_KW,         touRateCPeakKw       },
+    { DIV::TOU_RATE_C_DATE_OF_PEAK_KW, touRateCDateOfPeakKw },
+    { DIV::TOU_RATE_C_TIME_OF_PEAK_KW, touRateCTimeOfPeakKw },
+    { DIV::TOU_RATE_D_KWH,             touRateDKwh          },
+    { DIV::TOU_RATE_D_PEAK_KW,         touRateDPeakKw       },
+    { DIV::TOU_RATE_D_DATE_OF_PEAK_KW, touRateDDateOfPeakKw },
+    { DIV::TOU_RATE_D_TIME_OF_PEAK_KW, touRateDTimeOfPeakKw }
 };

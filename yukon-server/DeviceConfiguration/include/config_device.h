@@ -101,6 +101,7 @@ template<> IM_EX_CONFIG boost::optional<double>      DeviceConfig::findValue<dou
 
 template<> IM_EX_CONFIG boost::optional<std::string> DeviceConfig::findValue<std::string> ( const std::string & key, const std::map<std::string, std::string> &map ) const;
 template<> IM_EX_CONFIG boost::optional<bool>        DeviceConfig::findValue<bool>        ( const std::string & key, const std::map<std::string, bool>        &map ) const;
+template<> IM_EX_CONFIG boost::optional<uint8_t>     DeviceConfig::findValue<uint8_t>     ( const std::string & key, const std::map<std::string, uint8_t>     &map ) const;
 template<> IM_EX_CONFIG boost::optional<long>        DeviceConfig::findValue<long>        ( const std::string & key, const std::map<std::string, long>        &map ) const;
 template<> IM_EX_CONFIG boost::optional<double>      DeviceConfig::findValue<double>      ( const std::string & key, const std::map<std::string, double>      &map ) const;
 
@@ -186,7 +187,7 @@ public:
     static const std::string TOU_RATE_D_TIME_OF_PEAK_KW; //36;
 };
 
-extern const IM_EX_CONFIG std::map<std::string, long> displayItemMap;
+extern const IM_EX_CONFIG std::map<std::string, uint8_t> displayItemMap;
 
 }
 }

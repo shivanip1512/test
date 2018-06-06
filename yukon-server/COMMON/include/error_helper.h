@@ -20,7 +20,7 @@ public:
     {
         if( ! valid )
         {
-            description = std::make_unique<std::ostringstream>();
+            description = std::make_unique<StreamBuffer>();
         }
     }
 
@@ -59,7 +59,7 @@ public:
             return {};
         }
 
-        return description->str();
+        return *description;
     }
 
 private:
@@ -67,7 +67,7 @@ private:
     const bool valid;
     const YukonError_t errorCode;
 
-    std::unique_ptr<std::ostringstream> description;
+    std::unique_ptr<StreamBuffer> description;
 
     template <typename T>
     inline Condition& insert( T item )

@@ -479,8 +479,7 @@ YukonError_t Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiComman
             const PaoInfoKeys pao_key    = paoConfigKey.first;
             const std::string config_key = paoConfigKey.second;
 
-            const boost::optional<long>
-                config_value = deviceConfig->findValue<long>(config_key, Cti::Config::displayItemMap);
+            const auto config_value = deviceConfig->findValue<uint8_t>(config_key, Cti::Config::displayItemMap);
 
             if ( ! config_value )
             {

@@ -168,7 +168,25 @@ boost::optional<bool> DeviceConfig::findValue<bool>( const std::string & key, co
 }
 
 
-/** 
+/**
+Find the value associated with the key and then look it up in the map, and return the result.
+Useful for decoding enumerated data from the device configuration
+*/
+template <>
+boost::optional<uint8_t> DeviceConfig::findValue<uint8_t>(const std::string & key, const std::map<std::string, uint8_t> &map) const
+{
+    boost::optional<std::string>  result = lookup(key);
+
+    if( !result || result->empty() )
+    {
+        return boost::none;
+    }
+
+    return Cti::mapFind(map, result->c_str());
+}
+
+
+/**
 Find the value associated with the key and then look it up in the map, and return the result.
 Useful for decoding enumerated data from the device configuration 
 */
