@@ -1,7 +1,9 @@
 package com.cannontech.common.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,28 +31,52 @@ import com.cannontech.clientutils.YukonLogManager;
 
 public final class FileUtil {
     private static Logger log = YukonLogManager.getLogger(FileUtil.class);
+    private final static String fileNameDateFormat = "yyyyMMdd";
 
-
+    /**
+     * Patterns (NAME_DATE_LOG, NAME_DATE_ZIP, NAME_DATE_LOG_ZIP) look for a base file name (group 1) 
+     * that is the leading part of the file minus an optional underscore, a 1-8 digit number which is 
+     * the log file date (group 2), and the extension (group 3).
+     * Pattern NAME_LOG looks for a base file name (group 1) that is the leading part of the file and 
+     * extension (group 2). 
+     */
     public static enum LogFilePattern {
+        // Accept file name like abc_20180101.log
         NAME_DATE_LOG(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)"), "log") {
             @Override
-            protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
-                return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
+            protected Date getFileDate(File file, Matcher matcher) throws ParseException {
+                return new SimpleDateFormat(fileNameDateFormat).parse(matcher.group(2).replaceFirst("_", ""));
             }
         },
+        // Accept file name like abc_20180101.zip
         NAME_DATE_ZIP(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+$)"), "zip") {
             @Override
-            protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
-                return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
+            protected Date getFileDate(File file, Matcher matcher) throws ParseException {
+                return new SimpleDateFormat(fileNameDateFormat).parse(matcher.group(2).replaceFirst("_", ""));
             }
         },
+        // Accept file name like abc_20180101.log.zip
         NAME_DATE_LOG_ZIP(Pattern.compile("(.+?)(_?\\d{1,8})(\\.[^.]+)(\\.[^.]+$)"), "zip") {
             @Override
-            protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
-                return new SimpleDateFormat("yyyyMMdd").parse(matcher.group(2).replaceFirst("_", ""));
+            protected Date getFileDate(File file, Matcher matcher) throws ParseException {
+                return new SimpleDateFormat(fileNameDateFormat).parse(matcher.group(2).replaceFirst("_", ""));
             }
         },
+        // Accept file name like abc.log
         NAME_LOG(Pattern.compile("(.+?)(\\.[^.]+$)"), "log"){
+            @Override
+            protected Date getFileDate(File file, Matcher matcher) throws ParseException {
+                // Read header line from current log file and parse log creation date
+                try (BufferedReader fileHeader = new BufferedReader(new FileReader(file))) {
+                    String[] headerArray = fileHeader.readLine().split("\\:");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(fileNameDateFormat);
+                    String logDateStr= dateFormat.format((new SimpleDateFormat("yyyy-MM-dd").parse(headerArray[1].trim()))); 
+                    return dateFormat.parse(logDateStr);
+                } catch (Exception e) {
+                    log.debug("Unable to parse log creation date for " + file.getName());
+                    return LocalDate.now(DateTimeZone.getDefault()).toDate();
+                }
+            }
         };
 
         private LogFilePattern(Pattern pattern, String ext) {
@@ -66,10 +92,10 @@ public final class FileUtil {
         }
 
         /**
-         * Returns date from fileNameWithExt.
+         * Returns date from fileName or file header.
          * Override per LogFilePattern for specific pattern parsing. 
          */
-        protected Date getFileDate(String fileNameWithExt, Matcher matcher) throws ParseException {
+        protected Date getFileDate(File file, Matcher matcher) throws ParseException {
             return LocalDate.now(DateTimeZone.getDefault()).toDate();
         };
 
@@ -289,7 +315,7 @@ public final class FileUtil {
         for (LogFilePattern pattern : LogFilePattern.values()) {
             Matcher matcher = pattern.getMatcher(fileNameWithExt);
             if (matcher.matches() && fileNameWithExt.endsWith(pattern.ext)) {
-                return pattern.getFileDate(fileNameWithExt, matcher);
+                return pattern.getFileDate(file, matcher);
             }
         }
         return getCreationDate(file);
