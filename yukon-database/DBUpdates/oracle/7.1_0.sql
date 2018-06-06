@@ -243,6 +243,75 @@ TO IntervalDataGatheringDuration;
 INSERT INTO DBUpdates VALUES ('YUK-18391', '7.1.0', SYSDATE);
 /* @end YUK-18391 */
 
+/* @start YUK-18379 */
+UPDATE EventLog 
+SET String4 = String2, String2 = ' '
+WHERE EventType = 'commander.groupCommandInitiated'
+AND String4 IS NULL;
+
+UPDATE EventLog 
+SET String3 = String1, String1 = 'Send Command', String4 = 'Completed', String5 = String2, String2 = ' '
+WHERE EventType = 'commander.groupCommandCompleted'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET String5 = String1, String4 = String2, String2 = ' ', String1 = 'Send Command', String3 = ' '
+WHERE EventType = 'commander.groupCommandCancelled'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET EventType = 'amr.demand.reset.demandResetToDeviceInitiated' 
+WHERE EventType = 'amr.demand.reset.demandResetInitiated'
+AND Int7 IS NULL;
+
+UPDATE EventLog 
+SET EventType = 'amr.demand.reset.demandResetByApiCompleted' 
+WHERE EventType = 'amr.demand.reset.demandResetCompleted'
+AND String2 IS NULL;
+
+UPDATE EventLog 
+SET String4 = String2, String2 = ' '
+WHERE EventType = 'device.configuration.sendConfigInitiated'
+AND String4 IS NULL;
+
+UPDATE EventLog 
+SET String3 = String1, String1 = 'Send Config', String4 = 'Completed', String5 = String2, String2 = ' '
+WHERE EventType = 'device.configuration.sendConfigCompleted'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET String4 = String1, String1 = 'Read Config', String3 = String2, String2 = ' '
+WHERE EventType = 'device.configuration.readConfigInitiated'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET String3 = String1, String1 = 'Read Config', String4 = 'Completed', String5 = String2, String2 = ' '
+WHERE EventType = 'device.configuration.readConfigCompleted'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET String4 = String1, String1 = 'Verify Config', String3 = String2, String2 = ' '
+WHERE EventType = 'device.configuration.verifyConfigInitiated'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET String3 = String1, String1 = 'Verify Config', String4 = 'Completed', String5 = String2, String2 = ' '
+WHERE EventType = 'device.configuration.verifyConfigCompleted'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET String2 = String1, String1 = 'Assign Config', String3 = String2, String4 = ' '
+WHERE EventType = 'device.configuration.assignConfigInitiated'
+AND String3 IS NULL;
+
+UPDATE EventLog 
+SET String3 = String1, String1 = 'Unassign Config', String2 = ' ', String4 = ' '
+WHERE EventType = 'device.configuration.unassignConfigInitiated'
+AND String3 IS NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-18379', '7.1.0', SYSDATE);
+/* @end YUK-18379 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
