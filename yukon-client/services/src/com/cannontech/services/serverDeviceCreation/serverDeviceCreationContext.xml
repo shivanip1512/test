@@ -1,0 +1,23 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:jms="http://www.springframework.org/schema/jms"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+    <context:annotation-config/>
+    
+    <bean id="serverDeviceCreationMsgListener" class="com.cannontech.services.serverDeviceCreation.service.ServerDeviceCreationMsgService" />
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.serverDeviceCreation" />
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="serverDeviceCreationMsgListener"/>
+    </bean>
+    
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.RfnDeviceCreationRequestSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.RfnDeviceCreationReplySerializer"/>
+</beans>
