@@ -163,7 +163,7 @@ public:
 
     std::optional<RfnDataStreamingConfigurationCommand::ConfigResponse> dataStreaming;
 
-    std::optional<uint8_t> demandInterval;
+    std::optional<std::chrono::minutes> demandInterval;
 
     struct VoltageProfileStatus
     {

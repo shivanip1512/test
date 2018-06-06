@@ -20,6 +20,8 @@ class RfnFocusAlLcdConfigurationReadCommand;
 class RfnFocusAlLcdConfigurationWriteCommand;
 class RfnDemandFreezeConfigurationCommand;
 class RfnGetDemandFreezeInfoCommand;
+class RfnDemandIntervalSetConfigurationCommand;
+class RfnDemandIntervalGetConfigurationCommand;
 class RfnLoadProfileGetRecordingCommand;
 class RfnLoadProfileSetTemporaryRecordingCommand;
 class RfnLoadProfileSetPermanentRecordingCommand;
@@ -78,6 +80,8 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnFocusAlLcdConfigurationWriteCommand &)              {}
         virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand &)                       {}
+        virtual void handleCommandResult(const RfnDemandIntervalSetConfigurationCommand &)            {}
+        virtual void handleCommandResult(const RfnDemandIntervalGetConfigurationCommand &)            {}
         virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &)                   {}
         virtual void handleCommandResult(const RfnLoadProfileSetTemporaryRecordingCommand &)          {}
         virtual void handleCommandResult(const RfnLoadProfileSetPermanentRecordingCommand &)          {}

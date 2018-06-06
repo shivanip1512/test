@@ -39,9 +39,14 @@ protected:
     YukonError_t executePutConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
     YukonError_t executeGetConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
 
+    YukonError_t executePutConfigDemandInterval           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+    YukonError_t executeGetConfigDemandInterval           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+
     void handleCommandResult( const Commands::RfnConfigNotificationCommand               & cmd ) override;
     void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand              & cmd ) override;
     void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand        & cmd ) override;
+    void handleCommandResult( const Commands::RfnDemandIntervalGetConfigurationCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnDemandIntervalSetConfigurationCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand      & cmd ) override;
     void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand      & cmd ) override;
     void handleCommandResult( const Commands::RfnTouStateConfigurationCommand            & cmd ) override;
@@ -53,6 +58,8 @@ protected:
 
     static bool isDisconnectConfigSupported(DeviceTypes t);
     bool isDisconnectConfigSupported() const;
+
+    virtual bool isDemandIntervalConfigSupported() const;
 
 private:
 
@@ -67,6 +74,7 @@ private:
 
     void storeTouHolidays(const Commands::RfnTouHolidayConfigurationCommand::Holidays holidays);
     void storeDemandFreezeDay(const uint8_t demandFreezeDay);
+    void storeDemandInterval(const std::chrono::minutes demandInterval);
     void storeDisconnect(const Commands::RfnRemoteDisconnectConfigurationCommand::Read & cmd);
 };
 

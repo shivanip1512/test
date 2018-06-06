@@ -26,6 +26,7 @@ protected:
         static const std::string temperaturealarm;
         static const std::string channelconfig;
         static const std::string voltageprofile;
+        static const std::string demand;
     };
 
     typedef boost::container::flat_map<std::string, ConfigMethod> ConfigMap;

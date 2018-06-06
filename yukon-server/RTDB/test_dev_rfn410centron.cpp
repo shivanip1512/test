@@ -292,6 +292,8 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
 
         { PI::Key_RFN_DemandFreezeDay, 32 },
 
+        { PI::Key_RFN_DemandInterval, 6 },
+
         { PI::Key_RFN_OvUvEnabled,                 1 },
         { PI::Key_RFN_OvThreshold,            218959.117 },
         { PI::Key_RFN_UvThreshold,            235802.126 },

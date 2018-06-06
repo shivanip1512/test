@@ -665,11 +665,11 @@ std::string RfnConfigNotificationCommand::decodeDemandInterval(Bytes payload)
     validate(Condition(payload.size() >= 1, ClientErrors::DataMissing)
         << "Demand Interval payload too small - (" << payload.size() << " < " << 1);
 
-    demandInterval = payload[0];
+    demandInterval = std::chrono::minutes(payload[0]);
 
     FormattedList l;
 
-    l.add("Demand Interval") << std::chrono::minutes(demandInterval.value());
+    l.add("Demand Interval") << demandInterval.value();
 
     return "Demand interval configuration:" + l.toString();
 }

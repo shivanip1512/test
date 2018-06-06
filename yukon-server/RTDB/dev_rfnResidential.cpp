@@ -6,6 +6,7 @@
 #include "config_helpers.h"
 #include "dev_rfnResidential.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_DemandInterval.h"
 #include "devicetypes.h"
 
 #include <boost/optional.hpp>
@@ -66,22 +67,30 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
 
     if( installType == InstallType::GetConfig )
     {
-        m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ) );
-        m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) );
+        m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,     this ) );
+        m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,      this ) );
 
         if( isDisconnectConfigSupported() )
         {
             m.emplace(ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executeGetConfigDisconnect, this ) );
         }
+        if( isDemandIntervalConfigSupported() )
+        {
+            m.emplace(ConfigPart::demand, bindConfigMethod( &RfnResidentialDevice::executeGetConfigDemandInterval, this ) );
+        }
     }
     else
     {
-        m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ) );
-        m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) );
+        m.emplace(ConfigPart::freezeday, bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay, this ) );
+        m.emplace(ConfigPart::tou,       bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,      this ) );
 
         if( isDisconnectConfigSupported() )
         {
             m.emplace(ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executePutConfigDisconnect, this ) );
+        }
+        if( isDemandIntervalConfigSupported() )
+        {
+            m.emplace(ConfigPart::demand, bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandInterval, this ) );
         }
     }
 
@@ -727,6 +736,63 @@ YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    
     return ClientErrors::None;
 }
 
+
+YukonError_t RfnResidentialDevice::executePutConfigDemandInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+try
+{
+    using Commands::RfnDemandIntervalSetConfigurationCommand;
+
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( ! deviceConfig )
+    {
+        return reportConfigErrorDetails(ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs);
+    }
+
+    const bool sendForced = parse.isKeyValid("force");
+
+    const auto demandInterval = deviceConfig->findValue<long>(RfnStrings::demandInterval);
+
+    //  This is an optional config, so don't throw an error if it's missing
+    if( ! demandInterval.is_initialized() )
+    {
+        return ClientErrors::None;
+    }
+
+    if( ! sendForced && demandInterval.value() == getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) )
+    {
+        return ClientErrors::ConfigCurrent;
+    }
+
+    rfnRequests.push_back(
+        std::make_unique<RfnDemandIntervalSetConfigurationCommand>( 
+            std::chrono::minutes { demandInterval.value() } ) );
+
+    return ClientErrors::None;
+}
+catch( const MissingConfigDataException &e )
+{
+    CTILOG_EXCEPTION_ERROR(dout, e, "Device \"" << getName() << "\"");
+
+    return reportConfigErrorDetails(e, pReq, returnMsgs);
+}
+catch( const InvalidConfigDataException &e )
+{
+    CTILOG_EXCEPTION_ERROR(dout, e, "Device \"" << getName() << "\"");
+
+    return reportConfigErrorDetails(e, pReq, returnMsgs);
+}
+
+YukonError_t RfnResidentialDevice::executeGetConfigDemandInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    using Commands::RfnDemandIntervalGetConfigurationCommand;
+
+    rfnRequests.push_back(
+        std::make_unique<RfnDemandIntervalGetConfigurationCommand>());
+
+    return ClientErrors::None;
+}
+
 YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                                                                CtiCommandParser & parse,
                                                                ReturnMsgList    & returnMsgs,
@@ -875,6 +941,10 @@ bool RfnResidentialDevice::isDisconnectConfigSupported() const
     return isDisconnectConfigSupported(getDeviceType());
 }
 
+bool RfnResidentialDevice::isDemandIntervalConfigSupported() const
+{
+    return gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.0;
+}
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnConfigNotificationCommand & cmd )
 {
@@ -890,6 +960,11 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnConfigNotific
     if( cmd.demandFreezeDay )
     {
         storeDemandFreezeDay(*cmd.demandFreezeDay);
+    }
+
+    if( cmd.demandInterval )
+    {
+        storeDemandInterval(*cmd.demandInterval);
     }
 
     if( cmd.disconnect )
@@ -917,6 +992,21 @@ void RfnResidentialDevice::handleCommandResult(const Commands::RfnDemandFreezeCo
 void RfnResidentialDevice::storeDemandFreezeDay( const uint8_t demandFreezeDay )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, demandFreezeDay );
+}
+
+void RfnResidentialDevice::handleCommandResult(const Commands::RfnDemandIntervalGetConfigurationCommand & cmd)
+{
+    storeDemandInterval(cmd.getDemandInterval());
+}
+
+void RfnResidentialDevice::handleCommandResult(const Commands::RfnDemandIntervalSetConfigurationCommand & cmd)
+{
+    storeDemandInterval(cmd.demandInterval);
+}
+
+void RfnResidentialDevice::storeDemandInterval(const std::chrono::minutes demandInterval)
+{
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, demandInterval.count());
 }
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectGetConfigurationCommand & cmd )

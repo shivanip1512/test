@@ -459,6 +459,9 @@
     <ClCompile Include="cmd_rfn_ConfigNotification.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cmd_rfn_DemandInterval.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cmd_device.h">
@@ -1029,6 +1032,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\cmd_rfn_ConfigNotification.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cmd_rfn_DemandInterval.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

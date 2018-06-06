@@ -67,6 +67,7 @@ const std::string RfnMeterDevice::ConfigPart::disconnect       = "disconnect";
 const std::string RfnMeterDevice::ConfigPart::temperaturealarm = "temperaturealarm";
 const std::string RfnMeterDevice::ConfigPart::channelconfig    = "channelconfig";
 const std::string RfnMeterDevice::ConfigPart::voltageprofile   = "voltageprofile";
+const std::string RfnMeterDevice::ConfigPart::demand           = "demand";
 
 
 YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
