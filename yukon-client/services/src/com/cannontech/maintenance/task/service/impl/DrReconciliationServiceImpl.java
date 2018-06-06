@@ -311,7 +311,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         try {
             CountDownLatch messageSendingDone = new CountDownLatch(1);
             stopSchedulers();
-            if (!doDRReconciliation(messageSendingDone)) {
+            if (!doDRReconciliation(messageSendingDone, processEndTime)) {
                 return true;
             }
             long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
@@ -338,7 +338,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     /**
      * This method send the appropriate messages to LCR.
      */
-    private boolean doDRReconciliation(CountDownLatch messageSendingDone) {
+    private boolean doDRReconciliation(CountDownLatch messageSendingDone, Instant processEndTime) {
 
         ScheduledFuture<?> futureSchdTwelveMin, futureSchdOneMin;
         BlockingQueue<LCRCommandHolder> queue = new ArrayBlockingQueue<>(10000);
@@ -366,6 +366,16 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         allLcrs.addAll(sendOOSDevice);
         allLcrs.addAll(sendInServiceDevice);
         allLcrs.addAll(sendAddressing);
+        
+        // Check if message can be send to LCR in this run cycle of DR reconciliation. 
+        // If not then remove those LCR from list and do not consider them in further processing for this run cycle
+        long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
+        Set<Integer> allLcrsForThisCycle = drReconciliationDao.getLcrToSendMessageInCurrentCycle(allLcrs, drReconEndTime);
+        sendOOSDevice.retainAll(allLcrsForThisCycle);
+        sendInServiceDevice.retainAll(allLcrsForThisCycle);
+        sendAddressing.retainAll(allLcrsForThisCycle);
+        
+        log.debug("Devices picked for Sending in this DR reconciliation run cycle " + allLcrsForThisCycle);
 
         // Do not have any LCR's to send message return back.
         if (allLcrs.isEmpty()) {
@@ -394,7 +404,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             // This query should return top LCR for which message have to be send. noOfLCRToSendMessage is the number
             // of message to send in next 12 min
             Map<Integer, Integer> sendMessageToLcr =
-                drReconciliationDao.getLcrWithLatestEvent(allLcrs, noOfLCRToSendMessage);
+                drReconciliationDao.getLcrWithLatestEvent(allLcrsForThisCycle, noOfLCRToSendMessage);
 
             // Queue the messages to send
             sendMessageToLcr.entrySet().stream().forEach(lcr -> {

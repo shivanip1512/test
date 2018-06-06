@@ -4,21 +4,25 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -199,6 +203,40 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
         sql.append(getAllEnrolledDevicesSql()).append(") ");
         sql.append("AND lhcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         return sql;
+    }
+    
+    @Override
+    public Set<Integer> getLcrToSendMessageInCurrentCycle(Set<Integer> allLcrs, long processEndTime) {
+        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        DateTime timeStamp = new DateTime(System.currentTimeMillis() + processEndTime);
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ");
+                sql.append( "deviceId FROM (");
+                sql.append(    "SELECT ib.deviceId as deviceId, (MAX(EventDateTime) + 1) AS SendNextCommandDate");
+                sql.append(    "FROM LMHardwareEvent he");
+                sql.append(        "JOIN LMCustomerEventBase ceb ON he.EventID = ceb.EventID");
+                sql.append(        "JOIN InventoryBase ib ON he.InventoryID = ib.InventoryID");
+                sql.append(        "JOIN ECToLMCustomerEventMapping map ON map.EventID = ceb.EventID");
+                sql.append(        "JOIN YukonListEntry yle ON yle.EntryID = ceb.ActionID");
+                sql.append(    "WHERE ib.deviceId").in(subList);
+                sql.append(    "AND yle.YukonDefinitionID IN (");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).append(",");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).append(",");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).append(",");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).append(")");
+                sql.append(    "GROUP BY ib.deviceId");
+                sql.append(    " ) innerTable ");
+                sql.append(    "WHERE SendNextCommandDate").lt(timeStamp);
+                return sql;
+            }
+        };
+        List<Integer> sendMessageForLcrs = template.query(sqlGenerator, allLcrs, TypeRowMapper.INTEGER);
+        Set<Integer> lcr = new HashSet<>(sendMessageForLcrs);
+        return lcr;
     }
     
     @Override

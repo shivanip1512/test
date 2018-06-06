@@ -41,4 +41,10 @@ public interface DrReconciliationDao {
      * Get LCR which have communicated back 1 day after message (IN, OOS, Config) was send to them
      */
     Map<Integer, Integer> getLcrWithLatestEvent(Set<Integer> allLcrs, int noOfLcrs);
+    
+    /**
+     * Return LCR's for which message can be send in this run cycle of DR reconciliation.
+     * LCR for which message was send 1 day prior will only be eligible for sending message.
+     */
+    Set<Integer> getLcrToSendMessageInCurrentCycle(Set<Integer> allLcrs, long processEndTime);
 }
