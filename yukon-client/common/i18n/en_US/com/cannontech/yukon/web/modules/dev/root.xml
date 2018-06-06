@@ -304,7 +304,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.viewMappingSimulator.pageName">Mapping Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStart">Mapping simulator started!</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStop">Mapping simulator stopped.</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated">Database has been populated.</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated">Database population started. See simulator service log entry for completion.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated">Settings have been updated.</entry>
     
     <!-- Smart Notifications -->

@@ -1,14 +1,15 @@
 package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -56,6 +57,7 @@ import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
@@ -86,13 +88,14 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private LocationService locationService;
     @Autowired private IDatabaseCache cache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private IDatabaseCache databaseCache;
     private JmsTemplate jmsTemplate;
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private Executor executor = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
 
     @PostConstruct
@@ -107,17 +110,21 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         log.info("Setting up locations");
         paoLocationDao.delete(Origin.SIMULATOR);
 
-        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex( paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
-        List<LiteYukonPAObject> devices = cache.getAllDevices().stream().filter(
-            x -> x.getPaoType().isRfn() && !locations.containsKey(x.getPaoIdentifier())).collect(Collectors.toList());
-        List<PaoLocation> newLocations = new ArrayList<>();
-        int estimatedRadius = getEstimatedRadius(devices.size());
-        for(LiteYukonPAObject device:devices){
-            newLocations.add(getLocation(device.getPaoIdentifier(), latitude, longitude, estimatedRadius));
-        }
-        log.info("Inserting "+newLocations.size()+" locations.");
-        paoLocationDao.save(newLocations);
-        log.info("Inserting "+newLocations.size()+" locations is done.");
+        executor.execute(() -> {
+            Map<PaoIdentifier, PaoLocation> locations =
+                Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
+            List<LiteYukonPAObject> devices = cache.getAllDevices().stream().filter(
+                x -> x.getPaoType().isRfn() && !locations.containsKey(x.getPaoIdentifier())).collect(
+                    Collectors.toList());
+            List<PaoLocation> newLocations = new ArrayList<>();
+            int estimatedRadius = getEstimatedRadius(devices.size());
+            for (LiteYukonPAObject device : devices) {
+                newLocations.add(getLocation(device.getPaoIdentifier(), latitude, longitude, estimatedRadius));
+            }
+            log.info("Inserting " + newLocations.size() + " locations.");
+            paoLocationDao.save(newLocations);
+            log.info("Inserting " + newLocations.size() + " locations is done.");
+        });
     }
     
     @Override
@@ -180,7 +187,12 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             String primaryGateway = "Primary Gateway (Sim)";
                             List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
                             if (gateways.size() > 0) {
-                                primaryGateway = gateways.get(0).getNameWithIPAddress();
+                                RfnGateway gateway = gateways.get(0);
+                                if(gateway.getData() != null) {
+                                    primaryGateway = gateways.get(0).getNameWithIPAddress();
+                                } else {
+                                    primaryGateway =  gateways.get(0).getName();
+                                }
                             }
                             metadata.put(RfnMetadata.PRIMARY_GATEWAY, primaryGateway);
                             metadata.put(RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT, settings.getRouteData().getHopCount().intValue());
@@ -377,7 +389,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
      */
     public RfnPrimaryRouteDataReply getRoute(RfnIdentifier identifier) {
         RfnDevice device= rfnDeviceDao.getDeviceForExactIdentifier(identifier);
-        int max = getRandomNumberInRange(2, 8);
+        int max = getRandomNumberInRange(2, 3);
         List<RfnDevice> neighbors = getNeighbors(device, max);
         List<RouteData> routeData = new ArrayList<>();
         //add original device
@@ -409,7 +421,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
      */
     public RfnNeighborDataReply getNeighbors(RfnIdentifier identifier) {
         RfnDevice device= rfnDeviceDao.getDeviceForExactIdentifier(identifier);
-        int max = getRandomNumberInRange(2, 10);
+        log.info("device="+device);
+        int max = getRandomNumberInRange(2, 3);
         List<RfnDevice> neighbors = getNeighbors(device, max);
 
         RfnNeighborDataReply reply = new RfnNeighborDataReply();
@@ -473,51 +486,51 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private List<RfnDevice> getNeighbors(RfnDevice device, int max) {
         PaoLocation location = paoLocationDao.getLocation(device.getPaoIdentifier().getPaoId());
         List<PaoLocation> locations = paoLocationDao.getLocations(Origin.SIMULATOR);
-        List<PaoDistance> distances = locationService.getNearbyLocations(locations, location, DISTANCE_IN_MILES,
-            DistanceUnit.MILES, null);
-        log.debug("device="+device+" distances="+distances.size()+" max="+max);
-        List<List<PaoDistance>> parts = Lists.partition(distances, distances.size()/max);
-        log.debug("parts="+parts.size());
-        List<PaoDistance> randomDistances = new ArrayList<>();
-        for (int i = 0; i < max; i++) {
-            List<PaoDistance> part = parts.get(i);
-            log.debug("part size=" + part.size());
-            PaoDistance lastElement = part.stream().reduce((a, b) -> b).get();
-            randomDistances.add(lastElement);
-        }
-        List<Integer> paoIds =
-            randomDistances.stream().map(x -> x.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
-        log.debug("neighbors found=" + paoIds.size());
-        List<RfnDevice> rfDevices = rfnDeviceDao.getDevicesByPaoIds(paoIds);
-        ListIterator<RfnDevice> it = rfDevices.listIterator();
-        while (it.hasNext()) {
-            RfnDevice d = it.next();
-            if (!d.getRfnIdentifier().isNotBlank()) {
-                log.debug(d + " has a blank identifier "+d.getRfnIdentifier()+"- removing");
-                it.remove();
-            }
-        }
-        return rfDevices;
+        return getNearbyLocations(locations, location, DISTANCE_IN_MILES,
+            DistanceUnit.MILES, max);
     }
     
     private RfnIdentifier getNearbyGateway(PaoLocation location){
-
         List<RfnDevice> gateways = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
         List<PaoLocation> locations = paoLocationDao.getLocations(gateways).stream().filter( x-> x.getOrigin() == Origin.SIMULATOR).collect(
             Collectors.toList());
         if(locations.isEmpty()){
             return null;
         }
-        List<PaoDistance> distance =
-            locationService.getNearbyLocations(locations, location, DISTANCE_IN_MILES, DistanceUnit.MILES, null);
-        int deviceId;
-        if (distance.isEmpty()) {
-            deviceId = locations.get(0).getPaoIdentifier().getPaoId();
+        List<RfnDevice> devices = getNearbyLocations(locations, location, DISTANCE_IN_MILES, DistanceUnit.MILES, 1);
+        if (devices.isEmpty()) {
+            return gateways.get(0).getRfnIdentifier();
         }else{
-            deviceId = distance.get(0).getPaoIdentifier().getPaoId();
+            return devices.get(0).getRfnIdentifier();
         }
-        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        return device.getRfnIdentifier();
+    }
+    
+    public List<RfnDevice> getNearbyLocations(List<PaoLocation> locations, PaoLocation location, double distance, DistanceUnit unit, int max) {
+        
+        List<PaoDistance> nearby = new ArrayList<>();
+        Map<Integer, RfnDevice> devices = new HashMap<>();
+        for (PaoLocation current : locations) {
+            if (location.equals(current)) {
+                continue;
+            }
+            double distanceTo = location.distanceTo(current, unit);
+            if (distanceTo <= distance) {
+                LiteYukonPAObject pao = databaseCache.getAllPaosMap().get(current.getPaoIdentifier().getPaoId());
+                RfnDevice device = rfnDeviceDao.getDeviceForId(pao.getYukonID());
+                if(RfnManufacturerModel.of(device.getRfnIdentifier()) != null) {
+                    nearby.add(PaoDistance.of(pao, distanceTo, unit, current)); 
+                    devices.put(device.getPaoIdentifier().getPaoId(), device);
+                }
+        
+                if(nearby.size() == max) {
+                    break;
+                }
+            }
+        }
+        
+        Collections.sort(nearby, LocationService.ON_DISTANCE);
+        
+        return nearby.stream().map(d-> devices.get(d.getPao().getLiteID())).collect(Collectors.toList());
     }
     
     private int getRandomNumberInRange(int min, int max) {
