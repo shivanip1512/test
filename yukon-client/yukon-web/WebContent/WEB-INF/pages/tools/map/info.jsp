@@ -1,6 +1,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -8,7 +9,18 @@
 
 <cti:msgScope paths="modules.tools.map,modules.operator.mapNetwork">
 <tags:nameValueContainer2 tableClass="name-collapse">
-    <tags:nameValue2 nameKey=".device"><cti:paoDetailUrl yukonPao="${pao}" newTab="true">${fn:escapeXml(pao.name)}</cti:paoDetailUrl></tags:nameValue2>
+    <tags:nameValue2 nameKey=".device">
+        <cti:paoDetailUrl yukonPao="${pao}" newTab="true">${fn:escapeXml(pao.name)}</cti:paoDetailUrl>
+        <cm:dropdown icon="icon-cog" triggerClasses="js-cog-menu" style="padding-left:10px;">
+            <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+            <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
+                <cm:dropdownOption key=".viewNeighbors" classes="js-device-neighbors" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                <c:if test="${!pao.paoIdentifier.paoType.isRfGateway()}">
+                    <cm:dropdownOption key=".viewPrimaryRoute" classes="js-device-route" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                </c:if>
+            </c:if>
+        </cm:dropdown>
+    </tags:nameValue2>
     <c:if test="${showMeterNumber}">
         <tags:nameValue2 nameKey=".meterNumber">${fn:escapeXml(pao.meter.meterNumber)}</tags:nameValue2>
     </c:if>

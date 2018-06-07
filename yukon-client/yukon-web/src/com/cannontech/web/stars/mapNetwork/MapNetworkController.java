@@ -86,7 +86,7 @@ public class MapNetworkController {
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
-    public String home(ModelMap model, @RequestParam("deviceId") int deviceId, @RequestParam(value = "inventoryId", required = false) Integer inventoryId,
+    public String home(ModelMap model, @RequestParam("deviceId") int deviceId,
                        YukonUserContext userContext, HttpServletRequest request) throws ServletException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         FeatureCollection geojson = paoLocationService.getLocationsAsGeoJson(Arrays.asList(device));
@@ -105,10 +105,8 @@ public class MapNetworkController {
         boolean isGateway = PaoType.getRfGatewayTypes().contains(device.getDeviceType());
         model.addAttribute("isGateway", isGateway);
         model.addAttribute("isRelay", PaoType.getRfRelayTypes().contains(device.getDeviceType()));
-        model.addAttribute("isRfLcr", PaoType.getRfLcrTypes().contains(device.getDeviceType()));
-        if (inventoryId != null) {
-            model.addAttribute("inventoryId", inventoryId);
-        }
+        boolean isRfLcr = PaoType.getRfLcrTypes().contains(device.getDeviceType());
+        model.addAttribute("isRfLcr", isRfLcr);
         
         boolean isPlc = device.getDeviceType().isPlc();
         boolean displayNeighborsLayer = !isPlc && !device.getDeviceType().isWaterMeter();

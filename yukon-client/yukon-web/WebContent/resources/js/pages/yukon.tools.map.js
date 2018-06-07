@@ -4,6 +4,7 @@ yukon.namespace('yukon.tools.map');
  * Singleton that manages the device collection mapping feature.
  * 
  * @module yukon.tools.map
+ * @requires yukon.mapping.js
  * @requires JQUERY
  * @requires OPEN_LAYERS
  */
@@ -13,6 +14,18 @@ yukon.tools.map = (function() {
     
     var
     _initialized = false,
+    
+    _primaryRoutePreviousPoints,
+    _deviceFocusCurrentIcon,
+    _deviceFocusIcons = [],
+    _deviceFocusLines = [],
+    _deviceFocusIconLayer,
+    _largerScale = 1.3,
+    
+    //order layers should display, Icons > Parent > Primary Route > Neighbors
+    _neighborsLayerIndex = 0,
+    _primaryRouteLayerIndex = 1,
+    _iconLayerIndex = 3,
     
     /** @type {number} - The setTimeout reference for periodic updating of device collection. */
     _updater = -1, 
@@ -41,46 +54,8 @@ yukon.tools.map = (function() {
     /** @type {boolean} - This is a boolean variable indicating if the _doubleClickZoomInteraction and _doubleClickZoomInteraction interactions are blocked */
     _interactionsBlocked = false,
     
-    /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
-    _styles = { 
-        'METER_ELECTRIC': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.png'), anchor: [0.5, 1.0] }) }),
-        'METER_PLC_ELECTRIC': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-plc-elec-grey.png'), anchor: [0.5, 1.0] }) }),
-        'METER_WATER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water-grey.png'), anchor: [0.5, 1.0] }) }),
-        'METER_GAS': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas-grey.png'), anchor: [0.5, 1.0] }) }),
-        'TRANSMITTER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.png'), anchor: [0.5, 1.0] }) }),
-        'RELAY': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-relay-grey.png'), anchor: [0.5, 1.0] }) }),
-        'LCR' : new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-lcr-grey.png'), anchor: [0.5, 1.0] }) }),
-        'THERMOSTAT' : new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-thermostat-grey.png'), anchor: [0.5, 1.0] }) }),
-        'GENERIC_GREY': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), anchor: [0.5, 1.0] }) }),
-    },
-    
-    /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
-    _tiles = [   
-          new ol.layer.Tile({ name: 'mqosm',
-              source: new ol.source.XYZ({ name: 'mqosm',
-                  url: yg.map_devices_street_url,
-                  attributions: [new ol.Attribution({
-                      html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
-                    })]
-              })
-          }),
-          new ol.layer.Tile({ name: 'mqsat', visible: false,
-              source: new ol.source.XYZ({ name: 'mqsat', 
-                url: yg.map_devices_satellite_url,
-                attributions: [new ol.Attribution({
-                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
-                  })]
-              })
-          }),
-          new ol.layer.Tile({ name: 'hybrid', visible: false,
-              source: new ol.source.XYZ({ name: 'hybrid', 
-                url: yg.map_devices_hybrid_url,
-                attributions: [new ol.Attribution({
-                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
-                  })]
-              })
-          })
-    ],
+    _styles = yukon.mapping.getStyles(),
+    _tiles = yukon.mapping.getTiles(),
         
     /** 
      * Returns the first layer with name provided.
@@ -221,6 +196,190 @@ yukon.tools.map = (function() {
         }
     },
     
+    _removeDeviceFocusLayers = function() {
+        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+        _deviceFocusIcons.forEach(icon => source.removeFeature(icon));
+        _deviceFocusLines.forEach(line => _map.removeLayer(line));
+        _map.removeLayer(_deviceFocusIconLayer);
+        _deviceFocusIcons = [];
+        _deviceFocusLines = [];
+        _deviceFocusIconLayer = null;
+        //set focus device back to normal style
+        if (_deviceFocusCurrentIcon != null) {
+            //var normalStyle = _deviceFocusCurrentIcon.getStyle().clone();
+            var normalStyle = _deviceFocusCurrentIcon.getStyle();
+            normalStyle.getImage().setScale(1);
+            _deviceFocusCurrentIcon.setStyle(normalStyle);
+        }
+        yukon.mapping.hideNeighborsLegend();
+    },
+    
+    _findFocusDevice = function(deviceId) {
+        //check icons first
+        var exists = [];
+        for (var i in _icons) {
+            if (_icons[i].get('pao').paoId == deviceId) {
+                exists.push(_icons[i]);
+                break;
+            }
+        }
+        //check focus devices next
+        if (exists.length == 0) {
+            exists = _deviceFocusIcons.filter(function (device) {
+                if (device.getProperties().routeInfo != null) {
+                    return device.getProperties().routeInfo.device.paoIdentifier.paoId == deviceId;
+                } else if (device.getProperties().neighbor != null) {
+                    return device.getProperties().neighbor.device.paoIdentifier.paoId == deviceId;
+                }
+            })
+        }
+        if (exists.length > 0) {
+            var focusDevice = exists[0],
+                largerStyle = focusDevice.getStyle().clone();
+            largerStyle.getImage().setScale(_largerScale);
+            focusDevice.setStyle(largerStyle);
+            return focusDevice;
+        }
+    },
+    
+    _addPrimaryRouteToMap = function(deviceId, routeInfo) {
+        var source = _map.getLayers().getArray()[_tiles.length].getSource(),
+            focusDevice = _findFocusDevice(deviceId),
+            focusPoints = focusDevice.getGeometry().getCoordinates(),
+            routeColor = '#808080',
+            routeLineWidth = 2.5;
+
+        _primaryRoutePreviousPoints = null;
+        _removeDeviceFocusLayers();
+        _deviceFocusCurrentIcon = focusDevice;
+
+        for (var x in routeInfo) {
+            var route = routeInfo[x],
+                feature = route.location.features[0],
+                src_projection = 'EPSG:4326',
+                style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                icon = new ol.Feature({ routeInfo: route });
+            
+            icon.setStyle(style);
+            
+            //the first device in the route will be the focus device
+            if (x == 0) {
+                var largerStyle = icon.getStyle().clone();
+                largerStyle.getImage().setScale(_largerScale);
+                icon.setStyle(largerStyle);
+            }
+            
+            if (src_projection === _destProjection) {
+                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+            } else {
+                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                icon.setGeometry(new ol.geom.Point(coord));
+            }
+
+            _deviceFocusIcons.push(icon);
+            source.addFeature(icon);
+            
+            //draw line
+            var points = [];
+            points.push(icon.getGeometry().getCoordinates());
+            if (_primaryRoutePreviousPoints != null) {
+                points.push(_primaryRoutePreviousPoints);
+            } else {
+                points.push(focusPoints);
+            }
+            _primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+            
+            var layerLines = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [new ol.Feature({
+                        geometry: new ol.geom.LineString(points),
+                        name: 'Line'
+                    })]
+                }),
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({ color: routeColor, width: routeLineWidth })
+                })
+            });
+            
+            layerLines.setZIndex(_primaryRouteLayerIndex);
+            _deviceFocusLines.push(layerLines);
+            _map.addLayer(layerLines);
+        }
+        
+        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _deviceFocusIcons})});
+        iconsLayer.setZIndex(_iconLayerIndex);
+        _deviceFocusIconLayer = iconsLayer;
+        _map.addLayer(iconsLayer);
+        
+        _updateZoom();
+    },
+    
+    _addNeighborDataToMap = function(deviceId, neighbors) {
+        var source = _map.getLayers().getArray()[_tiles.length].getSource(),
+            focusDevice = _findFocusDevice(deviceId),
+            focusPoints = focusDevice.getGeometry().getCoordinates(),
+            clonedFocusDevice = focusDevice.clone();
+            
+           _removeDeviceFocusLayers();
+           _deviceFocusCurrentIcon = clonedFocusDevice;
+           _deviceFocusIcons.push(clonedFocusDevice);
+           source.addFeature(clonedFocusDevice);
+        
+        for (var x in neighbors) {
+            var neighbor = neighbors[x],
+            feature = neighbor.location.features[0],
+            src_projection = 'EPSG:4326',
+            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+            icon = new ol.Feature({ neighbor: neighbor });
+            
+            icon.setStyle(style);
+            
+            if (src_projection === _destProjection) {
+                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+            } else {
+                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                icon.setGeometry(new ol.geom.Point(coord));
+            }
+            
+            _deviceFocusIcons.push(icon);
+            source.addFeature(icon);
+            
+            //draw line
+            var points = [];
+            points.push(icon.getGeometry().getCoordinates());
+            points.push(focusPoints);
+
+            var lineColor = yukon.mapping.getNeighborLineColor(neighbor.data.etxBand),
+                lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.data.numSamples);
+            
+            var layerLines = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [new ol.Feature({
+                        geometry: new ol.geom.LineString(points),
+                        name: 'Line'
+                    })]
+                }),
+
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
+                })
+            });
+            
+            layerLines.setZIndex(_neighborsLayerIndex);
+            _deviceFocusLines.push(layerLines);
+            _map.addLayer(layerLines);
+        }
+        
+        var allIcons = [];
+        allIcons.push.apply(allIcons, _deviceFocusIcons);
+        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
+        iconsLayer.setZIndex(_iconLayerIndex);
+        _deviceFocusIconLayer = iconsLayer;
+        _map.addLayer(iconsLayer);
+        
+        _updateZoom();
+    },
+    
     _mod = {
         
         /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */
@@ -259,18 +418,40 @@ yukon.tools.map = (function() {
                     var 
                     geometry = feature.getGeometry(),
                     coord = geometry.getCoordinates(),
-                    url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
-                    $('#marker-info').load(url, function() {
-                        $('#marker-info').show();
+                    properties = feature.getProperties(),
+                    neighbor = properties.neighbor,
+                    routeInfo = properties.routeInfo;
+                    if (routeInfo != null) {
+                        yukon.mapping.displayCommonPopupProperties(routeInfo);
+                        yukon.mapping.displayPrimaryRoutePopupProperties(routeInfo);
                         _overlay.setPosition(coord);
-                    });
-                    //close any lingering delete dialogs to simplify handling
-                    var deleteDialog = $('#confirm-delete');
-                    if (deleteDialog.hasClass('ui-dialog-content')) {
-                        deleteDialog.dialog('destroy');
+                    } else if (neighbor != null) {
+                        yukon.mapping.displayCommonPopupProperties(neighbor);
+                        yukon.mapping.displayNeighborPopupProperties(neighbor);
+                        _overlay.setPosition(coord);
+                    } else {
+                        $('#parent-info').hide();
+                        $('#neighbor-info').hide();
+                        $('#route-info').hide();
+                        var url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
+                        $('#device-info').load(url, function() {
+                            $('#device-info').show();
+                            $('#marker-info').show();
+                            _overlay.setPosition(coord);
+                        });
+                        //close any lingering delete dialogs to simplify handling
+                        var deleteDialog = $('#confirm-delete');
+                        if (deleteDialog.hasClass('ui-dialog-content')) {
+                            deleteDialog.dialog('destroy');
+                        }
                     }
                 } else {
-                    $('#marker-info').hide();
+                    var target = ev.originalEvent.target;
+                    //check if user clicked on cog
+                    var cog = $(target).closest('.js-cog-menu');
+                    if (cog.length == 0) {
+                        $('#marker-info').hide();
+                    }
                 }
             });
             
@@ -432,6 +613,49 @@ yukon.tools.map = (function() {
             /** Destroy the coordinate deletion confirmation popup when cancelled **/
             $(document).on('click', '.cancel-delete', function(event) {
                 $('#confirm-delete').dialog('destroy');
+            });
+            
+            /** Redirects to new device map network page **/
+            $(document).on('click', '.js-device-map', function() {
+                var deviceId = $(this).data('deviceId');
+                window.location.href = yukon.url('/stars/mapNetwork/home') + '?deviceId=' + deviceId;
+            });
+            
+            /** Gets the neighbor data from Network Manager **/
+            $(document).on('click', '.js-device-neighbors', function() {
+                var deviceId = $(this).data('deviceId'),
+                    mapContainer = $('#map-container');
+                yukon.ui.block(mapContainer);
+                $.getJSON(yukon.url('/stars/mapNetwork/neighbors') + '?' + $.param({ deviceId: deviceId }))
+                .done(function (json) {
+                    if (json.neighbors) {
+                        _addNeighborDataToMap(deviceId, json.neighbors);
+                        yukon.mapping.displayNeighborsLegend();
+                    }
+                    if (json.errorMsg) {
+                        yukon.ui.alertError(json.errorMsg);
+                    }
+                    yukon.ui.unblock(mapContainer);
+                    $('#marker-info').hide();
+                });
+            });
+            
+            /** Gets the neighbor data from Network Manager **/
+            $(document).on('click', '.js-device-route', function() {
+                var deviceId = $(this).data('deviceId'),
+                    mapContainer = $('#map-container');
+                yukon.ui.block(mapContainer);
+                $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute') + '?' + $.param({ deviceId: deviceId }))
+                .done(function (json) {
+                    if (json.routeInfo) {
+                        _addPrimaryRouteToMap(deviceId, json.routeInfo);
+                    }
+                    if (json.errorMsg) {
+                        yukon.ui.alertError(json.errorMsg);
+                    }
+                    yukon.ui.unblock(mapContainer);
+                    $('#marker-info').hide();
+                });
             });
             
             /** Remove animation classes when animation finishes. */

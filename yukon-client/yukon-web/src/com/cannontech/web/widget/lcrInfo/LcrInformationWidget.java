@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -17,6 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -34,9 +36,10 @@ public class LcrInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private AccountService accountService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private AttributeService attributeService;
+    @Autowired private InventoryDao inventoryDao;
     
     @Autowired
-    public LcrInformationWidget(@Qualifier("widgetInput.inventoryId")
+    public LcrInformationWidget(@Qualifier("widgetInput.deviceId")
             SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         addInput(simpleWidgetInput);
@@ -44,9 +47,10 @@ public class LcrInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping("render")
-    public String render(ModelMap model, int inventoryId, YukonUserContext userContext) {
+    public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        Hardware hardware = hardwareUiService.getHardware(inventoryId);
+        InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(deviceId);
+        Hardware hardware = hardwareUiService.getHardware(inventory.getInventoryId());
         model.addAttribute("hardware", hardware);
         HardwareType type = hardware.getHardwareType();
         

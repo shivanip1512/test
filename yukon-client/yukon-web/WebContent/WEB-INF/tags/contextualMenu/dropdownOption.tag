@@ -13,9 +13,11 @@
 <%@ attribute name="key" description="Required when 'label' attribute is not used." %>
 <%@ attribute name="label" description="Text for the option. Text is html escaped internally." %>
 <%@ attribute name="newTab" type="java.lang.Boolean" description="If true, the link will open in a new browser tab. Default: false." %>
+<%@ attribute name="showIcon" type="java.lang.Boolean" description="If false, no icon will display. Default: true." %>
 
 <cti:default var="icon" value="icon-blank"/>
 <cti:default var="newTab" value="${false}"/>
+<cti:default var="showIcon" value="${true}"/>
 <c:set var="classes" value="dropdown-option ${pageScope.classes}"/>
 <c:set var="labelClasses" value="dropdown-option-label"/>
 <c:set var="disabled" value="${not empty pageScope.disabled && disabled == 'true' ? 'disabled' : ''}"/>
@@ -27,17 +29,17 @@
        <c:if test="${newTab}">target="_blank"</c:if> 
        class="clearfix">
 
+        <c:if test="${showIcon}">
+            <cti:icon icon="${icon}" classes="${disabled}"/>
+        </c:if>
         <c:choose>
             <c:when test="${not empty pageScope.key}">
-                <cti:icon icon="${icon}" classes="${disabled}"/>
                 <span class="${labelClasses} ${disabled}"><cti:msg2 key="${key}"/></span>
             </c:when>
             <c:when test="${not empty pageScope.label}">
-                <cti:icon icon="${icon}" classes="${disabled}"/>
                 <span class="${labelClasses} ${disabled}">${fn:escapeXml(label)}</span>
             </c:when>
             <c:otherwise>
-                <cti:icon icon="${icon}" classes="${disabled}"/>
                 <span class="${labelClasses} ${disabled}"><jsp:doBody/></span>
             </c:otherwise>
         </c:choose>

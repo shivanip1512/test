@@ -34,7 +34,7 @@
 
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
-    <div id="marker-info" class="well dn"></div>
+    <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
     
     <div id="map-container" style="height:85%;width:100%;" class="PT10">
         <c:if test="${empty dynamic}">
@@ -127,9 +127,12 @@
         </c:forEach>
     </cti:url>
     <input id="state-group-base-url" type="hidden" value="${fn:escapeXml(stateGroupBaseUrl)}">
+    
+    <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
 
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
+    <cti:includeScript link="/resources/js/common/yukon.mapping.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.tools.map.js"/>
 
 </cti:standardPage>

@@ -1,44 +1,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="mapNetwork">
     
 <style>
 #map-network-container { height: 400px; }
-#legend {
-    text-align:center;
-    border:1px solid #ccc;
-    padding:2px;
-    margin-top:50px;
-    font-size:11px;
-    box-shadow: 0px 0px 2px #888;
-}
-#legend hr {
-    width:30px;
-    display:inline-block;
-    margin-bottom:3px;
-}
-#legend span {
-    padding-left:5px;
-    padding-right:10px;
-}
-
 </style>
 
-    <div id="marker-info" class="well dn">
-        <div id="device-info" class="dn"></div>
-        <div id="parent-info" class="dn">
-            <%@ include file="parentInfo.jsp" %>
-        </div>
-        <div id="neighbor-info" class="dn">
-            <%@ include file="neighborInfo.jsp" %>
-        </div>
-        <div id="route-info" class="dn">
-            <%@ include file="routeInfo.jsp" %>
-        </div>
-    </div>  
+    <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
     
     <input type="hidden" class="js-device-status" value="${deviceStatus}"/>
     <input type="hidden" class="js-device-id" value="${deviceId}"/>
@@ -55,7 +26,7 @@
                     <tags:widget bean="relayInformationWidget" deviceId="${deviceId}" container="section"/>
                 </c:when>
                 <c:when test="${isRfLcr}">
-                    <tags:widget bean="lcrInformationWidget" inventoryId="${inventoryId}" container="section"/>
+                    <tags:widget bean="lcrInformationWidget" deviceId="${deviceId}" container="section"/>
                 </c:when>
                 <c:otherwise>
                     <tags:widget bean="meterInformationWidget" deviceId="${deviceId}" container="section"/>
@@ -63,62 +34,51 @@
             </c:choose>
         </div>
         <div class="column two nogutter">
-        <cti:msg2 var="locationHelp" key=".location.helpText"/>
-        <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
-        <%@ include file="locationInput.jspf"%>
-        <div style="height:400px;">
-            <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}" style="height:90%;width:100%;">
-                    <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
-                    <div class="buffered">
-                        <c:set var="groupClass" value=""/>
-                        <c:if test="${numLayers > 1}">
-                            <c:set var="groupClass" value="button-group"/>
-                        </c:if>
-                        <div class="${groupClass} stacked">
-                            <c:if test="${displayNeighborsLayer}">
-                                <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />                            
+            <cti:msg2 var="locationHelp" key=".location.helpText"/>
+            <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
+                <%@ include file="locationInput.jspf"%>
+                <div style="height:400px;">
+                    <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}" style="height:90%;width:100%;">
+                        <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
+                        <div class="buffered">
+                            <c:set var="groupClass" value=""/>
+                            <c:if test="${numLayers > 1}">
+                                <c:set var="groupClass" value="button-group"/>
                             </c:if>
-                            <c:if test="${displayParentNodeLayer}">
-                                <tags:check name="parent" key=".parent" classes="js-parent-node" />
-                            </c:if>
-                            <c:if test="${displayPrimaryRouteLayer}">
-                                <tags:check name="primary" key=".primary" classes="js-primary-route" />
-                            </c:if>
-                            <c:if test="${displayNearbyLayer}">
-                                <span class="fl" style="text-transform:capitalize">
-                                    <i:inline key=".distance.miles"/>:&nbsp;
-                                    <select id="miles" class="js-miles">
-                                        <option>0.25</option>
-                                        <option>0.5</option>
-                                        <option selected="selected">1</option>
-                                        <option>5</option>
-                                        <option>10</option>
-                                    </select>
-                                </span>
-                                <tags:check name="nearby" key=".nearby" classes="js-nearby" />
-                            </c:if>
-                        </div>
-                        <div id="map-tiles" class="fr button-group">
-                            <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                            <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                            <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                            <div class="${groupClass} stacked">
+                                <c:if test="${displayNeighborsLayer}">
+                                    <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />                            
+                                </c:if>
+                                <c:if test="${displayParentNodeLayer}">
+                                    <tags:check name="parent" key=".parent" classes="js-parent-node" />
+                                </c:if>
+                                <c:if test="${displayPrimaryRouteLayer}">
+                                    <tags:check name="primary" key=".primary" classes="js-primary-route" />
+                                </c:if>
+                                <c:if test="${displayNearbyLayer}">
+                                    <span class="fl" style="text-transform:capitalize">
+                                        <i:inline key=".distance.miles"/>:&nbsp;
+                                        <select id="miles" class="js-miles">
+                                            <option>0.25</option>
+                                            <option>0.5</option>
+                                            <option selected="selected">1</option>
+                                            <option>5</option>
+                                            <option>10</option>
+                                        </select>
+                                    </span>
+                                    <tags:check name="nearby" key=".nearby" classes="js-nearby" />
+                                </c:if>
+                            </div>
+                            <div id="map-tiles" class="fr button-group">
+                                <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
+                                <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
+                                <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="legend" class="dn js-legend-neighbors">
-                <span><b><i:inline key=".neighborsLineColor"/></b></span><br/>
-                <hr class="js-etx-1"/><span><i:inline key=".etxBand1"/></span>
-                <hr class="js-etx-2"/><span><i:inline key=".etxBand2"/></span>
-                <hr class="js-etx-3"/><span><i:inline key=".etxBand3"/></span><br/>
-                <hr class="js-etx-4"/><span><i:inline key=".etxBand4"/></span>
-                <hr class="js-etx-5"/><span><i:inline key=".etxBand5"/></span><br/>              
-                <span><b><i:inline key=".neighborsLineThickness"/></b></span><br/>
-                <hr style="border-top:1px solid;"/><span><i:inline key=".numSamplesZeroToFifty"/></span>
-                <hr style="border-top:2px solid;"/><span><i:inline key=".numSamplesFiftyOneToFiveHundred"/></span>
-                <hr style="border-top:3px solid;"/><span><i:inline key=".numSamplesOverFiveHundred"/></span>
-            </div>
+                
+                <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
 
             </tags:sectionContainer2>
 
@@ -129,9 +89,9 @@
     
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
+    <cti:includeScript link="/resources/js/common/yukon.mapping.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.map.network.js"/>
     <cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
     
-
 </cti:standardPage>

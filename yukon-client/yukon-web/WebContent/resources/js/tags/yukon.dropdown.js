@@ -15,7 +15,8 @@ $(function() {
          * have been ajaxed in. */
         if (menu[0]) { // The menu hasn't been moved to the body yet
             trigger.data({'menu': menu});
-            if($(this).closest('div.ol-viewport').length === 1) {
+            //check if in full screen mode
+            if ((document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement) && $(this).closest('div.ol-viewport').length === 1) {
                 $(this).closest('div.ol-viewport').prepend(menu); // prepend will move, not clone
             } else {
                 $('body').prepend(menu); // prepend will move, not clone
