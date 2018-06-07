@@ -2,6 +2,7 @@ package com.cannontech.watchdog.base;
 
 import java.util.List;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
@@ -24,13 +25,13 @@ public abstract class WatchdogBase implements Watchdog {
      * This will convert WatchdogWarnings to SmartNotificationEvent
      */
     private List<SmartNotificationEvent> assemble(List<WatchdogWarnings> warnings) {
-        return watchDogNotif.assemble(warnings);
+        return watchDogNotif.assemble(warnings, Instant.now());
     }
 
     @Override
     public void watchAndNotify() {
         List<WatchdogWarnings> warnings = watch();
-        if (warnings.size() > 1) {
+        if (!warnings.isEmpty()) {
             List<SmartNotificationEvent> events = assemble(warnings);
             sendNotification(SmartNotificationEventType.YUKON_WATCHDOG, events);
         }

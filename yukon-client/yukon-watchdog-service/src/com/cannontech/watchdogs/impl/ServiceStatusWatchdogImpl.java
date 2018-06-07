@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
@@ -14,8 +15,11 @@ import com.cannontech.watchdog.base.Watchdogs;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
+import com.google.common.collect.Maps;
 
 public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements ServiceStatusWatchdog {
+    public static final String WARNING_TYPE = "WarningType";
+    public static final String SERVICE_STATUS = "Status";
 
     Logger log = YukonLogManager.getLogger(ServiceStatusWatchdogImpl.class);
 
@@ -36,17 +40,22 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
         UNKNOWN;
     }
 
-    public List<WatchdogWarnings>  generateWarning(WatchdogWarningType type, ServiceStatus connectionStatus) {
+    /**
+     * This will generate WatchdogWarnings , containing WatchdogWarningType and {key , value} pair of arguments . 
+     * If a service have different set of arguments , then that particular service watcher has to override this method and 
+     * provide its own implementation .
+     */
+    public List<WatchdogWarnings> generateWarning(WatchdogWarningType type, ServiceStatus connectionStatus) {
         List<WatchdogWarnings> warnings = new ArrayList<>();
         if (connectionStatus == ServiceStatus.STOPPED) {
-            List<Object> arguments = new ArrayList<>();
-            arguments.add(ServiceStatus.STOPPED);
-
-            WatchdogWarnings wd = new WatchdogWarnings(type, arguments);
-            warnings.add(wd);
+            Map<String, Object> arguments = Maps.newHashMap();
+            arguments.put(WARNING_TYPE, type.name());
+            arguments.put(SERVICE_STATUS, ServiceStatus.STOPPED.name());
+            WatchdogWarnings watchdogWarning = new WatchdogWarnings(type, arguments);
+            warnings.add(watchdogWarning);
         }
-        warnings.stream().forEach(
-            e -> log.info("Warning generated " + e.getWarningType() + " is " + e.getArguments().get(0)));
+        warnings.stream().forEach(warning -> log.info("An Watchdog Warning is generated : "
+            + warning.getWarningType().getWatchdogCategory() + " is " + warning.getArguments().get(SERVICE_STATUS)));
 
         return warnings;
     }

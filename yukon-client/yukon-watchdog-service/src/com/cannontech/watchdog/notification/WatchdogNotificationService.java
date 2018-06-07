@@ -2,6 +2,8 @@ package com.cannontech.watchdog.notification;
 
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
@@ -19,5 +21,5 @@ public interface WatchdogNotificationService {
     /**
      * Will call assemble method.    
      */
-    List<SmartNotificationEvent> assemble(List<WatchdogWarnings> warnings);
+    List<SmartNotificationEvent> assemble(List<WatchdogWarnings> warnings, Instant now);
 }

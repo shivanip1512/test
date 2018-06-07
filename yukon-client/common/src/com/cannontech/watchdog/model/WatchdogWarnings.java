@@ -1,14 +1,13 @@
 package com.cannontech.watchdog.model;
 
-import java.util.List;
+import java.util.Map;
 
-public class WatchdogWarnings {
-    // TODO: This is temporary code, this will have to be replaced  
+public class WatchdogWarnings { 
     private final WatchdogWarningType warningType;
-    private final List<Object> arguments;
+    private final Map<String, Object> arguments;
     
 
-    public WatchdogWarnings(WatchdogWarningType warningType, List<Object> arguments) {
+    public WatchdogWarnings(WatchdogWarningType warningType, Map<String, Object> arguments) {
         super();
         this.warningType = warningType;
         this.arguments = arguments;
@@ -20,7 +19,7 @@ public class WatchdogWarnings {
     }
 
 
-    public List<Object> getArguments() {
+    public Map<String, Object> getArguments() {
         return arguments;
     }
     
