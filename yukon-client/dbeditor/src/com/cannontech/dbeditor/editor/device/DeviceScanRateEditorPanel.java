@@ -257,11 +257,11 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
                 ivjIntegrityRateComboBox.setPreferredSize(new java.awt.Dimension(100, 27));
                 ivjIntegrityRateComboBox.setMinimumSize(new java.awt.Dimension(100, 27));
 
-                // Integerity Rate JComboBox
-                ivjIntegrityRateComboBox.addItem("5 seconds");
-                ivjIntegrityRateComboBox.addItem("10 seconds");
-                ivjIntegrityRateComboBox.addItem("15 seconds");
-                ivjIntegrityRateComboBox.addItem("30 seconds");
+                // Integrity Rate JComboBox
+                ivjIntegrityRateComboBox.addItem("5 second");
+                ivjIntegrityRateComboBox.addItem("10 second");
+                ivjIntegrityRateComboBox.addItem("15 second");
+                ivjIntegrityRateComboBox.addItem("30 second");
                 ivjIntegrityRateComboBox.addItem("1 minute");
                 ivjIntegrityRateComboBox.addItem("2 minute");
                 ivjIntegrityRateComboBox.addItem("3 minute");

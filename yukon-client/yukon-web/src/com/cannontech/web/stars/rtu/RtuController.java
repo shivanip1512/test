@@ -151,6 +151,7 @@ public class RtuController {
         List<MessageSourceResolvable> duplicatePointMessages =
             rtuService.generateDuplicatePointsErrorMessages(rtu.getId(), request);
         flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
+        setDeviceScanRate(rtu);
         return setupModel(rtu, model);
     }
 
@@ -160,6 +161,7 @@ public class RtuController {
         model.addAttribute("mode", PageEditMode.EDIT);
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
         getPointsForModel(id, model);
+        setDeviceScanRate(rtu);
         return setupModel(rtu, model);
     }
 
@@ -181,6 +183,7 @@ public class RtuController {
         if (result.hasErrors()) {
             return bindAndForward(rtu, result, redirectAttributes);
         }
+        setDeviceScanRate(rtu);
         int paoId = rtuDnpService.save(rtu);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
         return "redirect:/stars/rtu/" + paoId;
@@ -297,6 +300,22 @@ public class RtuController {
         model.addAttribute("dnpConfig", dnpConfig);
         
         return "/rtu/rtuDetail.jsp";
+    }
+
+    /**
+     * This method will set the value of alternate rate as 0 when its value is same as interval rate i.e. when
+     * we save the scan rate as none from DBEditor. The value of alternate rate is set as interval rate when
+     * its value is 0 i.e. when we save the value of scan rate as none for any RTU from web so that DBEditor
+     * can display the value as none.
+     */
+    private void setDeviceScanRate(RtuDnp rtu) {
+        rtu.getDeviceScanRateMap().forEach((key, deviceScanRate) -> {
+            if (deviceScanRate.getAlternateRate().equals(deviceScanRate.getIntervalRate())) {
+                deviceScanRate.setAlternateRate(0);
+            } else if (deviceScanRate.getAlternateRate().equals(0)) {
+                deviceScanRate.setAlternateRate(deviceScanRate.getIntervalRate());
+            }
+        });
     }
 
     public enum RtuPointsSortBy implements DisplayableEnum {
