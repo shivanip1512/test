@@ -2,6 +2,7 @@ package com.cannontech.maintenance.task.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,13 @@ import com.google.common.collect.Multimap;
 
 public class DrReconciliationDaoImpl implements DrReconciliationDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    private static final List<Integer> entryTypes = Arrays.asList(
+      YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED,
+       YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL,
+       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG,
+       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION
+    );
 
     @Override
     public List<Integer> getInServiceExpectedLcrs() {
@@ -206,7 +214,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
     }
     
     @Override
-    public Set<Integer> getLcrToSendMessageInCurrentCycle(Set<Integer> allLcrs, long processEndTime) {
+    public Set<Integer> getLcrsToSendMessageInCurrentCycle(Set<Integer> allLcrs, long processEndTime) {
         final ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         DateTime timeStamp = new DateTime(System.currentTimeMillis() + processEndTime);
         
@@ -223,11 +231,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
                 sql.append(        "JOIN ECToLMCustomerEventMapping map ON map.EventID = ceb.EventID");
                 sql.append(        "JOIN YukonListEntry yle ON yle.EntryID = ceb.ActionID");
                 sql.append(    "WHERE ib.deviceId").in(subList);
-                sql.append(    "AND yle.YukonDefinitionID IN (");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).append(",");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).append(",");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).append(",");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).append(")");
+                sql.append(    "AND yle.YukonDefinitionID ").in(entryTypes);
                 sql.append(    "GROUP BY ib.deviceId");
                 sql.append(    " ) innerTable ");
                 sql.append(    "WHERE SendNextCommandDate").lt(timeStamp);
@@ -259,11 +263,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
                 sql.append(        "JOIN ECToLMCustomerEventMapping map ON map.EventID = ceb.EventID");
                 sql.append(        "JOIN YukonListEntry yle ON yle.EntryID = ceb.ActionID");
                 sql.append(    "WHERE ib.deviceId").in(subList);
-                sql.append(    "AND yle.YukonDefinitionID IN (");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).append(",");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).append(",");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).append(",");
-                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).append(")");
+                sql.append(    "AND yle.YukonDefinitionID").in(entryTypes);
                 sql.append(    "GROUP BY ib.deviceId, ib.InventoryID");
                 sql.append(    " ) innerTable ");
                 sql.append(    "WHERE lastCommunicated = 1");

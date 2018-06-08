@@ -370,7 +370,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         // Check if message can be send to LCR in this run cycle of DR reconciliation. 
         // If not then remove those LCR from list and do not consider them in further processing for this run cycle
         long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
-        Set<Integer> allLcrsForThisCycle = drReconciliationDao.getLcrToSendMessageInCurrentCycle(allLcrs, drReconEndTime);
+        Set<Integer> allLcrsForThisCycle = drReconciliationDao.getLcrsToSendMessageInCurrentCycle(allLcrs, drReconEndTime);
         sendOOSDevice.retainAll(allLcrsForThisCycle);
         sendInServiceDevice.retainAll(allLcrsForThisCycle);
         sendAddressing.retainAll(allLcrsForThisCycle);

@@ -46,5 +46,5 @@ public interface DrReconciliationDao {
      * Return LCR's for which message can be send in this run cycle of DR reconciliation.
      * LCR for which message was send 1 day prior will only be eligible for sending message.
      */
-    Set<Integer> getLcrToSendMessageInCurrentCycle(Set<Integer> allLcrs, long processEndTime);
+    Set<Integer> getLcrsToSendMessageInCurrentCycle(Set<Integer> allLcrs, long processEndTime);
 }
