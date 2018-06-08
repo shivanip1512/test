@@ -16,6 +16,7 @@ public enum DatabaseVendor {
     MS2012   ("Microsoft SQL Server", 11), // Denali
     MS2014   ("Microsoft SQL Server", 12),
     MS2016   ("Microsoft SQL Server", 13),
+    MS2017   ("Microsoft SQL Server", 14),
     MS_UNKNOWN("Microsoft SQL Server"),
     ORACLE9I ("Oracle", 9),
     ORACLE10G("Oracle", 10),
@@ -29,7 +30,7 @@ public enum DatabaseVendor {
     private static Set<DatabaseVendor> oracleDatabases =
         ImmutableSet.of(ORACLE9I, ORACLE10G, ORACLE11G, ORACLE12C, ORACLE_UNKNOWN);
     private static Set<DatabaseVendor> msDatabases =
-        ImmutableSet.of(MS2000, MS2005, MS2008, MS2012, MS2014, MS2016, MS_UNKNOWN);
+        ImmutableSet.of(MS2000, MS2005, MS2008, MS2012, MS2014, MS2016, MS2017, MS_UNKNOWN);
 
     private final String vendorName;
     private final int databaseMajorVersion;
