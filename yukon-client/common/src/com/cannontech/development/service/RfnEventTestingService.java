@@ -36,5 +36,9 @@ public interface RfnEventTestingService {
      * Gets a RFN meter types, grouped by manufacturer and/or type.  
      */
     Map<String, List<RfnManufacturerModel>> getGroupedRfnTypes();
-    int sendDataIndicationMessage(RfnTestMeterReading reading);
+    
+    /**
+     * Sends an RFN Config Notification message to Porter.  
+     */
+    int sendConfigNotification(RfnTestMeterReading reading);
 }

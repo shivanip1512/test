@@ -55,6 +55,7 @@ import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.util.ByteUtil;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -63,10 +64,10 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
+import com.cannontech.messaging.serialization.thrift.SimpleThriftSerializer;
 import com.cannontech.messaging.serialization.thrift.generated.RfnE2eDataIndication;
 import com.cannontech.messaging.serialization.thrift.generated.RfnE2eMessagePriority;
 import com.cannontech.messaging.serialization.thrift.generated.RfnE2eProtocol;
-import com.cannontech.messaging.serialization.thrift.serializer.porter.DynamicPaoInfoRequestSerializer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -531,7 +532,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
 
     @Override
-    public int sendDataIndicationMessage(RfnTestMeterReading reading) {
+    public int sendConfigNotification(RfnTestMeterReading reading) {
         RfnE2eDataIndication dataIndication = new RfnE2eDataIndication();
         
         com.cannontech.messaging.serialization.thrift.generated.RfnIdentifier thriftRfnIdentifier = 
@@ -549,74 +550,95 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         dataIndication.setE2eProtocol(RfnE2eProtocol.findByValue(0));
         dataIndication.setApplicationServiceId((byte)0xFE);
         dataIndication.setPriority(RfnE2eMessagePriority.findByValue(1));
-        byte[] payload = { (byte)0x42, (byte)0x01, (byte)0xdb, (byte)0x9f, (byte)0x00, (byte)0x7a, (byte)0xff,
-                           (byte)0x1e, (byte)0x00, (byte)0x0e, (byte)0x00, (byte)0x0b, (byte)0x00, (byte)0x12,
-                           (byte)0x04, (byte)0x07, (byte)0xe6, (byte)0x00, (byte)0x0f, (byte)0x3c, (byte)0x02,
-                           (byte)0x01, (byte)0x06, (byte)0x00, (byte)0x01, (byte)0xf4, (byte)0x00, (byte)0x10,
-                           (byte)0x80, (byte)0x00, (byte)0x01, (byte)0xc0, (byte)0x00, (byte)0x0b, (byte)0x00,
-                           (byte)0x12, (byte)0x04, (byte)0x07, (byte)0xe7, (byte)0x00, (byte)0x0f, (byte)0x3c, 
-                           (byte)0x02, (byte)0x01, (byte)0x06, (byte)0x00, (byte)0x01, (byte)0xb5, (byte)0x80, 
-                           (byte)0x10, (byte)0x80, (byte)0x00, (byte)0x01, (byte)0xc0, (byte)0x00, (byte)0x0c, 
-                           (byte)0x00, (byte)0x07, (byte)0x01, (byte)0x00, (byte)0xb4, (byte)0x00, (byte)0x3c, 
-                           (byte)0x01, (byte)0xe0, (byte)0x05, (byte)0xa0, (byte)0x00, (byte)0x00, (byte)0x00, 
-                           (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x05, (byte)0xa0, 
-                           (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, 
-                           (byte)0x00, (byte)0x05, (byte)0xa0, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, 
-                           (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x08, (byte)0x00, (byte)0x00, 
-                           (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x02, (byte)0x00, (byte)0x00, (byte)0x03, 
-                           (byte)0x00, (byte)0x00, (byte)0x01, (byte)0x00, (byte)0x03, (byte)0x00, (byte)0x0c, 
-                           (byte)0x55, (byte)0x55, (byte)0x55, (byte)0x55, (byte)0x66, (byte)0x66, (byte)0x66, 
-                           (byte)0x66, (byte)0x77, (byte)0x77, (byte)0x77, (byte)0x77, (byte)0x00, (byte)0x04, 
-                           (byte)0x52, (byte)0x00, (byte)0x48, (byte)0x0f, (byte)0x03, (byte)0x00, (byte)0x01, 
-                           (byte)0x00, (byte)0x01, (byte)0x01, (byte)0x00, (byte)0x02, (byte)0x00, (byte)0x38, 
-                           (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x02, (byte)0x1c, (byte)0x00, (byte)0xb4, 
-                           (byte)0x00, (byte)0x00, (byte)0x01, (byte)0x0f, (byte)0x00, (byte)0x08, (byte)0x00, 
-                           (byte)0x02, (byte)0x08, (byte)0x05, (byte)0x00, (byte)0x09, (byte)0x00, (byte)0x3b, 
-                           (byte)0x1d, (byte)0x00, (byte)0x02, (byte)0x01, (byte)0x02, (byte)0x02, (byte)0x02, 
-                           (byte)0x03, (byte)0x08, (byte)0x04, (byte)0x08, (byte)0x05, (byte)0x08, (byte)0x06, 
-                           (byte)0x08, (byte)0x07, (byte)0x09, (byte)0x08, (byte)0x09, (byte)0x09, (byte)0x09, 
-                           (byte)0x0a, (byte)0x09, (byte)0x0b, (byte)0x00, (byte)0x0c, (byte)0x00, (byte)0x0d, 
-                           (byte)0x00, (byte)0x0e, (byte)0x00, (byte)0x0f, (byte)0x00, (byte)0x10, (byte)0x00, 
-                           (byte)0x11, (byte)0x00, (byte)0x12, (byte)0x00, (byte)0x13, (byte)0x00, (byte)0x14, 
-                           (byte)0x00, (byte)0x15, (byte)0x00, (byte)0x16, (byte)0x00, (byte)0x17, (byte)0x00, 
-                           (byte)0x18, (byte)0x00, (byte)0x19, (byte)0x00, (byte)0xfd, (byte)0x05, (byte)0xfe, 
-                           (byte)0x01, (byte)0xff, (byte)0x01, (byte)0x00, (byte)0x06, (byte)0x00, (byte)0x03, 
-                           (byte)0x01, (byte)0x00, (byte)0x01, (byte)0x00, (byte)0x0e, (byte)0x00, (byte)0x01, 
-                           (byte)0x0f, (byte)0x00, (byte)0x07, (byte)0x00, (byte)0x02, (byte)0x01, (byte)0x01, 
-                           (byte)0x00, (byte)0x05, (byte)0x00, (byte)0x0b, (byte)0x00, (byte)0x00, (byte)0x03, 
-                           (byte)0x84, (byte)0x00, (byte)0x00, (byte)0x1c, (byte)0x20, (byte)0x01, (byte)0x00, 
-                           (byte)0x01, (byte)0x00, (byte)0x0d, (byte)0x00, (byte)0x1a, (byte)0x04, (byte)0x00, 
-                           (byte)0x00, (byte)0x01, (byte)0x00, (byte)0x1e, (byte)0x00, (byte)0x00, (byte)0x02, 
-                           (byte)0x00, (byte)0x1e, (byte)0x07, (byte)0x00, (byte)0x05, (byte)0x00, (byte)0x1e, 
-                           (byte)0x07, (byte)0x00, (byte)0x73, (byte)0x00, (byte)0x1e, (byte)0x07, (byte)0x00, 
-                           (byte)0x00, (byte)0x00, (byte)0x03, (byte)0x00, (byte)0x0f, (byte)0x00, (byte)0x01, 
-                           (byte)0x00 
-        };
+        
+        //  Details in Device Configuration Aggregated Messaging Design.docx:
+        //  http://teams.etn.com/es/EASEngineering/EAS%20Engineering%20Documents/End%20Point%20Automation/Network%20Communications%20Software/Releases/Release%209.0/Design/Device%20Configuration%20Aggregated%20Messaging%20Design.docx
+        byte[] payload = ByteUtil.parseHexArray(
+                  //  CoAP header
+                  "42 01 c2 43  42 f1 ff"
+                  //  RFN Config Notification  
+                  + " 1e"
+                  //  15 TLVs
+                  + " 00 0f"
+                  //  type 11, length 18 (OVUV)
+                  + " 00 0b  00 12"
+                  + " 04 07 e6 00  0f 3c 02 01  06 00 01 f4  00 10 80 00  01 c0"
+                  //  type 11, length 18 (OVUV)
+                  + " 00 0b  00 12"
+                  + " 04 07 e7 00  0f 3c 02 01  06 00 01 b5  80 10 80 00  01 c0"
+                  //  type 12, length 7 (Temperature)
+                  + " 00 0c  00 07"
+                  + " 01 00 52 00  48 0f 03"
+                  //  type 1, length 1 (TOU enable)
+                  + " 00 01  00 01"
+                  + " 01"
+                  //  type 2, length 56 (TOU schedule)
+                  + " 00 02  00 38"
+                  + " 00 00 00 02  1c 00 b4 00  b4 00 3c 01  e0 05 a0 00"
+                  + " 00 00 00 00  00 00 00 05  a0 00 00 00  00 00 00 00"
+                  + " 00 05 a0 00  00 00 00 00  00 00 00 08  00 00 01 00"
+                  + " 00 02 00 00  03 00 00 01"
+                  //  type 3, length 12 (TOU holiday)
+                  + " 00 03  00 0c"
+                  + " 55 55 55 55  66 66 66 66  77 77 77 77"
+                  //  type 4, length 1 (Demand freeze day)
+                  + " 00 04  00 01"
+                  + " 0f"
+                  //  type 8, length 2 (Voltage profile)
+                  + " 00 08  00 02"
+                  + " 08 05"
+                  //  type 9, length 59 (C2SX display)
+                  + " 00 09  00 3b"
+                  + " 1d 00 02 01  02 02 02 03  08 04 08 05  08 06 08 07"
+                  + " 09 08 09 09  09 0a 09 0b  00 0c 00 0d  00 0e 00 0f"
+                  + " 00 10 00 11  00 12 00 13  00 14 00 15  00 16 00 17"
+                  + " 00 18 00 19  00 fd 05 fe  01 ff 01"
+                  //  type 6, length 3 (Channel selection)
+                  + " 00 06  00 03"
+                  + " 01 00 01"
+                  //  type 14, length 1 (Demand interval)
+                  + " 00 0e  00 01"
+                  + " 0f"
+                  //  type 7, length 2 (Disconnect)
+                  + " 00 07  00 02"
+                  + " 01 01"
+                  //  type 5, length 11 (Interval recording/reporting)
+                  + " 00 05  00 0b"
+                  + " 00 00 03 84  00 00 1c 20  01 00 01"
+                  //  type 13, length 26 (Data streaming)
+                  + " 00 0d  00 1a"
+                  + " 04 00 00 01  00 1e 00 00  02 00 1e 07  00 05 00 1e"
+                  + " 07 00 73 00  1e 07 00 00  00 03"
+                  //  type 15, length 1 (Voltage profile status)
+                  + " 00 0f  00 01"
+                  + " 00");
+
         dataIndication.setPayload(payload);
 
-        //just need a simple thrift serializer, doesn't matter which implementation
-        DynamicPaoInfoRequestSerializer serializer = new DynamicPaoInfoRequestSerializer();
+        SimpleThriftSerializer serializer = new SimpleThriftSerializer() {};
+        int messagesSent = 0;
         
         try {
             Connection connection = connectionFactory.createConnection();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination dest = session.createQueue(dataIndicationQueueName);
+            MessageProducer producer = session.createProducer(dest);
 
             for (Integer serial : serials) {
                 BytesMessage outBytesMsg = session.createBytesMessage();
                 thriftRfnIdentifier.setSensorSerialNumber(Integer.toString(serial));
                 dataIndication.setRfnIdentifier(thriftRfnIdentifier);
                 outBytesMsg.writeBytes(serializer.serialize(dataIndication));
-                MessageProducer producer = session.createProducer(dest);
                 producer.send(outBytesMsg);
+                messagesSent++;
             };
             
             session.close();
             connection.close();
         } catch (Exception e) {
-            //do nothing
+            log.error("Error sending config notification to porter: " + e);
         }
 
-        return serials.size();
+        return messagesSent;
     }
 }

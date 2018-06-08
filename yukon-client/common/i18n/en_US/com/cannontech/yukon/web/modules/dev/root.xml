@@ -307,7 +307,9 @@
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStop">Mapping simulator stopped.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated">Database population started. See simulator service log entry for completion.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated">Settings have been updated.</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.dataIndicationMessage.label">Data Indication Message</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.label">RFN Config Notification</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.helpText"><![CDATA[The RFN Config Notification Test simulates RFN Config Notification messages 
+    from RFN nodes to Porter. ]]></entry>
     
     <!-- Smart Notifications -->
     <entry key="yukon.web.modules.dev.smartNotificationsSimulator.pageName">Smart Notifications Simulator</entry>

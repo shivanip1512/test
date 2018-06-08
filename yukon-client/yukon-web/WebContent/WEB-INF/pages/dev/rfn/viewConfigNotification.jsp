@@ -6,8 +6,9 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="dev" page="rfnTest">
-    <tags:sectionContainer title="RFN Data Indication Message Test">
-        <form:form action="sendDataIndicationMessage" method="post" commandName="meterReading">
+        <cti:msg2 key="modules.dev.rfnTest.rfnConfigNotification.helpText" var="helpText"/>
+    <tags:sectionContainer title="RFN Config Notification Test"  helpText="${helpText}">
+        <form:form action="sendConfigNotification" method="post" commandName="meterReading">
         <cti:csrfToken/>
             <tags:nameValueContainer tableClass="natural-width">
                 

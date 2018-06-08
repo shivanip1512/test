@@ -380,17 +380,22 @@ public class NmIntegrationController {
         return "rfn/viewMeterReadArchive.jsp";
     }
     
-    @RequestMapping("viewDataIndicationMessage")
-    public String viewDataIndicationMessage(@ModelAttribute RfnTestMeterReading meterReading, ModelMap model, FlashScope flashScope) {
+    @RequestMapping("viewConfigNotification")
+    public String viewConfigNotification(@ModelAttribute RfnTestMeterReading meterReading, ModelMap model, FlashScope flashScope) {
         model.addAttribute("rfnTypeGroups", rfnEventTestingService.getGroupedRfnTypes());
 
         Integer numberSent = (Integer) model.get("numberSent");
+        Integer totalMessages = (Integer) model.get("totalMessages");
         if (numberSent != null) {
-            flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Data indicatoin messages sent: " + numberSent), 
-                                  numberSent > 0 ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
+            if (totalMessages < 0 ) {
+                flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Invalid Serial Number range."), FlashScopeMessageType.ERROR);
+            } else {
+            flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode(numberSent + " of " + totalMessages + " RFN Config Notification messages sent."), 
+                                  numberSent == totalMessages ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
+            }
         }
 
-        return "rfn/viewDataIndicationMessage.jsp";
+        return "rfn/viewConfigNotification.jsp";
     }
 
     @RequestMapping("viewLocationArchiveRequest")
@@ -657,14 +662,16 @@ public class NmIntegrationController {
         return "redirect:viewMeterReadArchiveRequest";
     }
     
-    @RequestMapping("sendDataIndicationMessage")
-    public String sendDataIndicationMessage(@ModelAttribute RfnTestMeterReading meterReading, RedirectAttributes redirectAttributes) {
-        int numberSent = rfnEventTestingService.sendDataIndicationMessage(meterReading);
-
+    @RequestMapping("sendConfigNotification")
+    public String sendConfigNotification(@ModelAttribute RfnTestMeterReading meterReading, RedirectAttributes redirectAttributes) {
+        int numberSent = rfnEventTestingService.sendConfigNotification(meterReading);
+        int totalMessages = meterReading.getSerialTo() == null ? 1 : meterReading.getSerialTo() - meterReading.getSerialFrom() + 1;
+        
         redirectAttributes.addFlashAttribute("numberSent", numberSent);
+        redirectAttributes.addFlashAttribute("totalMessages", totalMessages);
         redirectAttributes.addFlashAttribute("meterReading", meterReading);
 
-        return "redirect:viewDataIndicationMessage";
+        return "redirect:viewConfigNotification";
     }
 
     @RequestMapping("sendLcrReadArchiveRequest")

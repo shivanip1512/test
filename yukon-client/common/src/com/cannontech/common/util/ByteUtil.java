@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 public class ByteUtil {
@@ -66,5 +67,13 @@ public class ByteUtil {
     public static byte[] convertListToArray(List<Byte> list) {
         Byte[] wrappedByteArray = list.toArray(new Byte[list.size()]);
         return ArrayUtils.toPrimitive(wrappedByteArray);
+    }
+    
+    /** Parse a string of hex chars into a byte array */
+    public static byte[] parseHexArray(String s) {
+        //  Preface with an FF so any leading 00 characters are preserved in the BigInteger, then remove all spaces before parsing
+        byte[] padded = new BigInteger(StringUtils.remove("ff" + s, ' '), 16).toByteArray();
+        //  trim off the FF in the returned array
+        return Arrays.copyOfRange(padded, 2, padded.length);
     }
 }
