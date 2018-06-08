@@ -38,7 +38,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     private static final List<Integer> entryTypes = Arrays.asList(
-      YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED,
+       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED,
        YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL,
        YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG,
        YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION
