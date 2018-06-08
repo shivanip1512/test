@@ -27,21 +27,14 @@ public class ServerDeviceCreationMsgService implements SessionAwareMessageListen
     @Autowired RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired MessageSerializer<RfnDeviceCreationRequest> rfnCreationRequestDeserializer;
     @Autowired MessageSerializer<RfnDeviceCreationReply> rfnCreationReplySerializer;
-    //MessageSerializer<?> rfnCreationRequestDeserializer = msgFactory.findSerializer(RfnDeviceCreationRequest.class);
-    //MessageSerializer<?> rfnCreationReplySerializer = msgFactory.findSerializer(RfnDeviceCreationReply.class);
-    
-    //@Autowired RfnDeviceCreationRequestSerializer rfnCreationRequestDeserializer;
-    //@Autowired RfnDeviceCreationReplySerializer rfnCreationReplySerializer;
 
     @Override
     public void onMessage(BytesMessage message, Session session) {
         try {
-            BytesMessage inBytesMsg, outBytesMsg;
             
             //get bytes
-            inBytesMsg = (BytesMessage) message;
-            byte[] msgBytes = new byte[(int)inBytesMsg.getBodyLength()];
-            inBytesMsg.readBytes(msgBytes);
+            byte[] msgBytes = new byte[(int)message.getBodyLength()];
+            message.readBytes(msgBytes);
             
             log.debug("Received RfnDeviceCreationRequest from yukon-server");
             //deserialize message
@@ -55,7 +48,7 @@ public class ServerDeviceCreationMsgService implements SessionAwareMessageListen
             //build reply message
             PaoIdentifier paoId = newDevice.getPaoIdentifier();
             RfnDeviceCreationReply reply = new RfnDeviceCreationReply(paoId.getPaoId(), PaoCategory.DEVICE.toString(), paoId.getPaoType().toString());
-            outBytesMsg = session.createBytesMessage();
+            BytesMessage outBytesMsg = session.createBytesMessage();
             outBytesMsg.writeBytes(rfnCreationReplySerializer.serialize(msgFactory, reply));
             log.debug("Created RfnDeviceCreationReply with paoIdentifier: " + paoId.toString());
 
