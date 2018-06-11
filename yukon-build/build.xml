@@ -227,7 +227,7 @@
 
         <!-- Tomcat Component -->
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/Tomcat85" />
+            <fileset dir="${basedir}/yukon-install/Tomcat9" />
         </copy>
         <copy file="${basedir}/yukon-build/yukonservice.bat"
             todir="${install.bag}/Tomcat/bin" preservelastmodified="true"/>

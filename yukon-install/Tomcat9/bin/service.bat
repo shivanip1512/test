@@ -18,7 +18,7 @@ rem ---------------------------------------------------------------------------
 rem NT Service Install/Uninstall script
 rem
 rem Options
-rem install                Install the service using Tomcat8 as service name.
+rem install                Install the service using Tomcat9 as service name.
 rem                        Service is installed using default settings.
 rem remove                 Remove the service from the System.
 rem
@@ -33,13 +33,13 @@ rem Guess CATALINA_HOME if not defined
 set "CURRENT_DIR=%cd%"
 if not "%CATALINA_HOME%" == "" goto gotHome
 set "CATALINA_HOME=%cd%"
-if exist "%CATALINA_HOME%\bin\tomcat8.exe" goto okHome
+if exist "%CATALINA_HOME%\bin\tomcat9.exe" goto okHome
 rem CD to the upper dir
 cd ..
 set "CATALINA_HOME=%cd%"
 :gotHome
-if exist "%CATALINA_HOME%\bin\tomcat8.exe" goto okHome
-echo The tomcat8.exe was not found...
+if exist "%CATALINA_HOME%\bin\tomcat9.exe" goto okHome
+echo The tomcat9.exe was not found...
 echo The CATALINA_HOME environment variable is not defined correctly.
 echo This environment variable is needed to run this program
 goto end
@@ -78,11 +78,11 @@ if not "%CATALINA_BASE%" == "" goto gotBase
 set "CATALINA_BASE=%CATALINA_HOME%"
 :gotBase
 
-set "EXECUTABLE=%CATALINA_HOME%\bin\tomcat8.exe"
+set "EXECUTABLE=%CATALINA_HOME%\bin\tomcat9.exe"
 
 rem Set default Service name
-set SERVICE_NAME=Tomcat8
-set DISPLAYNAME=Apache Tomcat 8.5 %SERVICE_NAME%
+set SERVICE_NAME=Tomcat9
+set DISPLAYNAME=Apache Tomcat 9.0 %SERVICE_NAME%
 
 rem Java 9 no longer supports the java.endorsed.dirs
 rem system property. Only try to use it if
@@ -105,7 +105,7 @@ if "x%1x" == "xx" goto checkServiceCmd
 if "x%1x" == "x/userx" goto runAsUser
 if "x%1x" == "x--userx" goto runAsUser
 set SERVICE_NAME=%1
-set DISPLAYNAME=Apache Tomcat 8.5 %1
+set DISPLAYNAME=Apache Tomcat 9.0 %1
 shift
 if "x%1x" == "xx" goto checkServiceCmd
 goto checkUser
@@ -167,7 +167,7 @@ if "%JvmMs%" == "" set JvmMs=128
 if "%JvmMx%" == "" set JvmMx=256
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 8.5.24 Server - http://tomcat.apache.org/" ^
+    --Description "Apache Tomcat 9.0.8 Server - http://tomcat.apache.org/" ^
     --DisplayName "%DISPLAYNAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
@@ -184,7 +184,7 @@ if "%JvmMx%" == "" set JvmMx=256
     --StartParams start ^
     --StopParams stop ^
     --JvmOptions "-Dcatalina.home=%CATALINA_HOME%;-Dcatalina.base=%CATALINA_BASE%;-D%ENDORSED_PROP%=%CATALINA_HOME%\endorsed;-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties;%JvmArgs%" ^
-    --JvmOptions9 "--add-opens=java.base/java.lang=ALL-UNNAMED#--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED" ^
+    --JvmOptions9 "--add-opens=java.base/java.lang=ALL-UNNAMED#--add-opens=java.base/java.io=ALL-UNNAMED#--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED" ^
     --Startup "%SERVICE_STARTUP_MODE%" ^
     --JvmMs "%JvmMs%" ^
     --JvmMx "%JvmMx%"

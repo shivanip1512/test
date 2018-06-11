@@ -20,7 +20,8 @@ public enum ContentSecurityPolicyFilterType {
         + "https://api-secure.recaptcha.net "   // Recaptcha
         + "https://www.gstatic.com/recaptcha/ " // Recaptcha
         + "https://www.google.com "             // Recaptcha
-        + "http://www.google.com ; "),          // Recaptcha
+        + "http://www.google.com "              // Recaptcha
+        + "https://ssl.google-analytics.com/ga.js ; "),
     CONNECT_SRC("connect-src 'self' 'unsafe-inline' " 
         + "https://api.mapbox.com "
         + "https://*.tiles.mapbox.com " 
