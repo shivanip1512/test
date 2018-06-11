@@ -18,11 +18,19 @@ public class AttributeGraphType {
     }
 
     public String getLabel() {
-        return baseKey + attribute.name() + ".label";
+        return baseKey + getMessageKey() + ".label";
+    }
+
+    private String getMessageKey() {
+        if (getConverterType() == ConverterType.DAILY_USAGE) {
+            return ConverterType.DAILY_USAGE.name();
+        } else {
+            return attribute.name();
+        }
     }
 
     public String getDescription() {
-    	return baseKey +  attribute.name() + ".description";
+    	return baseKey +  getMessageKey() + ".description";
     }
     
     public void setConverterType(ConverterType converterType) {

@@ -393,17 +393,23 @@ public class HistoricalReadingsController {
         startDate = DateUtils.addMonths(startDate, -monthsToSubtract);
         startDate = DateUtils.truncate(startDate, Calendar.DATE);
         ChartPeriod chartPeriod = ChartPeriod.MONTH;
-        ChartInterval chartInterval = chartPeriod.getChartUnit(Range.inclusive(startDate, endDate));
-        model.addAttribute("interval", chartInterval);
+        ConverterType converterType = ConverterType.RAW;
         if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.KWH) {
             // "Usage" data can be "normalized" delta, since it is an ever increasing number
-            model.addAttribute("converterType", ConverterType.NORMALIZED_DELTA);
+            if (liteYukonPAO.getPaoType().isRfn()) {
+                converterType = ConverterType.DAILY_USAGE;
+            } else {
+                converterType = ConverterType.NORMALIZED_DELTA;
+            }
         } else if (UnitOfMeasure.getForId(litePoint.getUofmID()) == UnitOfMeasure.GALLONS) {
             // water usage can be delta also.
-            model.addAttribute("converterType", ConverterType.DELTA_WATER);
+            converterType = ConverterType.DELTA_WATER;
         } else { // everything is raw
-            model.addAttribute("converterType", ConverterType.RAW);
+            converterType = ConverterType.RAW;
         }
+        ChartInterval chartInterval = chartPeriod.getChartUnit(Range.inclusive(startDate, endDate), converterType);
+        model.addAttribute("interval", chartInterval);
+        model.addAttribute("converterType", converterType);
         model.addAttribute("graphType", GraphType.LINE);
         model.addAttribute("startDateMillis", startDate.getTime());
         model.addAttribute("endDateMillis", endDate.getTime());

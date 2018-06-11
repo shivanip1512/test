@@ -17,37 +17,37 @@ import com.cannontech.common.util.Range;
 public enum ChartPeriod implements DisplayableEnum {
     YEAR(Duration.standardDays(365)) {
         @Override
-        public ChartInterval getChartUnit(Range<Date> dateRange) {
+        protected ChartInterval getChartUnit(Range<Date> dateRange) {
             return ChartInterval.WEEK;
         }
     },
     THREEMONTH(Duration.standardDays(90)) {
         @Override
-        public ChartInterval getChartUnit(Range<Date> dateRange) {
+        protected ChartInterval getChartUnit(Range<Date> dateRange) {
             return ChartInterval.DAY;
         }
     },
     MONTH(Duration.standardDays(30)) {
         @Override
-        public ChartInterval getChartUnit(Range<Date> dateRange) {
+        protected ChartInterval getChartUnit(Range<Date> dateRange) {
             return ChartInterval.DAY;
         }
     },
     WEEK(Duration.standardDays(7)) {
         @Override
-        public ChartInterval getChartUnit(Range<Date> dateRange) {
+        protected ChartInterval getChartUnit(Range<Date> dateRange) {
             return ChartInterval.HOUR;
         }
     },
     DAY(Duration.standardDays(1)) {
         @Override
-        public ChartInterval getChartUnit(Range<Date> dateRange) {
+        protected ChartInterval getChartUnit(Range<Date> dateRange) {
             return ChartInterval.FIVEMINUTE;
         }
     },
     NOPERIOD(Duration.ZERO) {
         @Override
-        public ChartInterval getChartUnit(Range<Date> dateRange) {
+        protected ChartInterval getChartUnit(Range<Date> dateRange) {
             // choose interval based on how many days apart the two dates are
             // note: this method doesn't account for day light savings, but its quick and will be good enough to pick an interval
             long millisRange = Math.abs(dateRange.getMin().getTime() - dateRange.getMax().getTime());
@@ -99,5 +99,17 @@ public enum ChartPeriod implements DisplayableEnum {
 
     private static String baseKey = "yukon.common.chartPeriod.";
 
-    public abstract ChartInterval getChartUnit(Range<Date> dateRange);
+    protected abstract ChartInterval getChartUnit(Range<Date> dateRange);
+
+    public ChartInterval getChartUnit(Range<Date> dateRange, ConverterType converterType) {
+        ChartInterval interval = getChartUnit(dateRange);
+        if (converterType == ConverterType.DAILY_USAGE) {
+            if (interval == ChartInterval.HOUR
+                        || interval == ChartInterval.FIFTEENMINUTE 
+                        || interval == ChartInterval.FIVEMINUTE) {
+                interval = ChartInterval.DAY;
+            }
+        }
+        return interval;
+    };
 }

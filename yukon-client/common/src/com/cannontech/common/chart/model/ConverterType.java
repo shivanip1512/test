@@ -3,6 +3,7 @@ package com.cannontech.common.chart.model;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.chart.service.ChartDataConverter;
+import com.cannontech.common.chart.service.impl.ChartDailyUsageDeltaConverter;
 import com.cannontech.common.chart.service.impl.ChartDefaultConverter;
 import com.cannontech.common.chart.service.impl.ChartDeltaWaterConverter;
 import com.cannontech.common.chart.service.impl.ChartNormalizedDeltaConverter;
@@ -31,6 +32,11 @@ public enum ConverterType implements DisplayableEnum {
     POWERFACTOR {
         public ChartDataConverter getDataConverter() {
         	return new ChartPowerFactorDataConverter();
+        }
+    },
+    DAILY_USAGE {
+        public ChartDataConverter getDataConverter() {
+            return new ChartDailyUsageDeltaConverter();
         }
     };
 

@@ -128,6 +128,16 @@ public class CsrTrendWidget extends WidgetControllerBase {
         
         for (AttributeGraphType agt : supportedAttributeGraphMap.values()) {
             if (existingAttributes.contains(agt.getAttribute())) {
+                
+                if (agt.getAttribute() == BuiltInAttribute.USAGE) {
+                    if (device.getPaoIdentifier().getPaoType().isRfMeter()) {
+                        AttributeGraphType agtAdjusted = new AttributeGraphType();
+                        agtAdjusted.setAttribute(agt.getAttribute());
+                        agtAdjusted.setConverterType(ConverterType.DAILY_USAGE);
+                        agtAdjusted.setGraphType(agt.getGraphType());
+                        agt = agtAdjusted;
+                    }
+                }
                 availableAttributeGraphs.add(agt);
                 if (agt.getAttribute() == attribute){
                     attributeGraphType = agt;
@@ -147,7 +157,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
 
         ChartPeriod chartPeriod = getChartPeriod(request, userContext.getYukonUser());
         MutableRange<Date> dateRange = getDateRange(chartPeriod, userContext, request);
-        ChartInterval chartInterval = chartPeriod.getChartUnit(dateRange.getImmutableRange());
+        ChartInterval chartInterval = chartPeriod.getChartUnit(dateRange.getImmutableRange(), attributeGraphType.getConverterType());
         LitePoint point = attributeService.getPointForAttribute(device, attribute);
         String tabularDataViewer = WidgetParameterHelper.getStringParameter(request, "tabularDataViewer", "archivedDataReport");
         String title = getTitle(chartPeriod, dateRange.getImmutableRange(), userContext, attribute, attributeGraphType);
@@ -202,7 +212,6 @@ public class CsrTrendWidget extends WidgetControllerBase {
                             BuiltInAttribute attribute, AttributeGraphType attributeGraphType) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         if (chartPeriod != ChartPeriod.NOPERIOD) {
-            MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
             MessageSourceResolvable converterTypeResolvable = 
                     new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
             MessageSourceResolvable attributeResolvable = attribute.getMessage();
