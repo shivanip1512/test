@@ -58,7 +58,7 @@ public enum PageType {
             String pageName = document.get("pageName");
 
             List<String> pageArgs = getListFromDocument(document, "pageArg");
-            List<String> summaryArgs = new ArrayList<>(pageArgs);
+            List<String> summaryArgs = new ArrayList<>();
             summaryArgs.addAll(pageArgs.stream()
                                        .map(arg -> StringEscapeUtils.escapeXml11(arg))
                                        .collect( Collectors.toList()));

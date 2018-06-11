@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ tag body-content="empty" %>
 <%@ attribute name="value" required="true" type="java.lang.Object"%>
@@ -30,7 +31,7 @@
     </c:if>
     
     <c:if test="${value == valueArg}">
-        <cti:formatObject value="${labelArg}"/>
+        <cti:formatObject value="${fn:escapeXml(labelArg)}"/>
         <c:set var="labelFound" value="true"/>
     </c:if>
 </c:forEach>
