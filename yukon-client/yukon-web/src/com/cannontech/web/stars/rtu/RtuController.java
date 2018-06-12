@@ -304,9 +304,9 @@ public class RtuController {
 
     /**
      * This method will set the value of alternate rate as 0 when its value is same as interval rate i.e. when
-     * we save the scan rate as none from DBEditor. The value of alternate rate is set as interval rate when
-     * its value is 0 i.e. when we save the value of scan rate as none for any RTU from web so that DBEditor
-     * can display the value as none.
+     * the alternate rate is selected as "none" from DBEditor. The value of alternate rate is set as interval
+     * rate when the value of alternate rate is selected as "none" for any RTU from web so that DBEditor can
+     * display the value of alternate rate as "none".
      */
     private void setDeviceScanRate(RtuDnp rtu) {
         rtu.getDeviceScanRateMap().forEach((key, deviceScanRate) -> {
