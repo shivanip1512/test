@@ -13,6 +13,7 @@
 #include "amq_util.h"
 #include "message_factory.h"
 #include "millisecond_timer.h"
+#include "logManager.h"
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -492,7 +493,24 @@ void CtiConnection::close()
         // interrupt the current or the next getQueue() call
         _outQueue.interruptBlockingRead();
 
-        _outthread.tryJoinOrTerminateFor( Chrono::seconds(35) );
+        if ( _outthread.tryJoinFor( Chrono::seconds( 35 ) ) )
+        {
+            {
+                Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+ 
+                CTILOG_FATAL( dout, who() << "_outthread failed to join in a timely manner. Creating a mini-dump and aborting." );
+                {
+                    std::ostringstream os;
+
+                    os << "connection.close-" << who() << ":" << GetCurrentThreadId();
+                    CreateMiniDump( os.str() );
+                }
+            }
+
+            std::this_thread::sleep_for( std::chrono::seconds( 10 ) );
+
+            abort();
+        }
 
         forceTermination();
 
