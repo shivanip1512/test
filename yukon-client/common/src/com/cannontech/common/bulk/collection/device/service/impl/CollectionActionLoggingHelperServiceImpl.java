@@ -74,6 +74,7 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
             break;
         case ASSIGN_CONFIG:
             logAssignConfig(result);
+            break;
         case UNASSIGN_CONFIG:
             logUnassignConfig(result);
             break;
