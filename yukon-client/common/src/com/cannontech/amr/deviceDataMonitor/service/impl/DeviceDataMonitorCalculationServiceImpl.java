@@ -425,7 +425,9 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                 return processor.getState().getStateRawState() == (int) pointValue.getValue();
             } else if (processor.getType() == ProcessorType.RANGE && type.isValuePoint()) {
                 return Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
-            } else if (processor.getType() == ProcessorType.LESS && type.isValuePoint()) {
+            } else if (processor.getType() == ProcessorType.OUTSIDE && type.isValuePoint()) {
+                return !Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
+            }else if (processor.getType() == ProcessorType.LESS && type.isValuePoint()) {
                 return pointValue.getValue() < processor.getProcessorValue();
             } else if (processor.getType() == ProcessorType.GREATER && type.isValuePoint()) {
                 return pointValue.getValue() > processor.getProcessorValue();

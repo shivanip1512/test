@@ -151,7 +151,7 @@
                                     <td><i:inline key="${processor.attribute}"/></td>
                                     <td><i:inline key="${processor.type.formatKey}"/>&nbsp;
                                         <c:choose>
-                                            <c:when test="${processor.type == 'RANGE'}">
+                                            <c:when test="${(processor.type == 'RANGE' or processor.type == 'OUTSIDE')}">
                                                 <i:inline key="yukon.common.min"/>: ${processor.rangeMin}&nbsp;<i:inline key="yukon.common.max"/>: ${processor.rangeMax}
                                             </c:when>
                                             <c:otherwise>

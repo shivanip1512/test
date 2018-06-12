@@ -68,7 +68,7 @@ public class DeviceDataMonitorValidator extends SimpleValidator<DeviceDataMonito
         for (DeviceDataMonitorProcessor processor : processors) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "processors[" + index + "].attribute", "yukon.web.error.isBlank");
             if (processor.getType() != ProcessorType.STATE) {
-                if (processor.getType() == ProcessorType.RANGE) {
+                if (processor.getType() == ProcessorType.RANGE || processor.getType() == ProcessorType.OUTSIDE) {
                     String rangeMinField = "processors[" + index + "].rangeMin";
                     String rangeMaxField = "processors[" + index + "].rangeMax";
                     YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, rangeMinField, "yukon.web.error.isBlank");

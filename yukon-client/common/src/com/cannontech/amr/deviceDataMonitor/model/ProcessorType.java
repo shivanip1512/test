@@ -6,7 +6,8 @@ public enum ProcessorType implements DisplayableEnum {
     STATE,
     RANGE,
     LESS,
-    GREATER;
+    GREATER,
+    OUTSIDE;
     
     public boolean isStateBased() {
         return this == STATE;

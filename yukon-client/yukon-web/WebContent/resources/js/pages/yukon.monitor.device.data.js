@@ -664,8 +664,8 @@ yukon.ami.ddm = (function () {
             
             $(document).on('change', '.js-processor-type', function () {
                 var selectedValue = $(this).val();
-                $(this).closest('.processor').find('.js-range-values').toggleClass('dn', selectedValue != 'RANGE');
-                $(this).closest('.processor').find('.js-processor-value').toggleClass('dn', selectedValue == 'RANGE');
+                $(this).closest('.processor').find('.js-range-values').toggleClass('dn', selectedValue != 'RANGE' && selectedValue != 'OUTSIDE');
+                $(this).closest('.processor').find('.js-processor-value').toggleClass('dn', selectedValue == 'OUTSIDE' || selectedValue == 'RANGE');
             });
                         
             $('.js-save-monitor').on('click', _show_update_dialog);

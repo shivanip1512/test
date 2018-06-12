@@ -102,7 +102,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
                     processor.setStateGroup(stateGroup);
                 }
                 if (processor.getType().isValueBased()) {
-                    if (processor.getType() == ProcessorType.RANGE) {
+                    if (processor.getType() == ProcessorType.RANGE || processor.getType() == ProcessorType.OUTSIDE) {
                         processor.setRangeMin(rs.getDouble("RangeMin"));
                         processor.setRangeMax(rs.getDouble("RangeMax"));
                     } else {
@@ -231,7 +231,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
                 p.addValue("StateGroupId", processor.getStateGroup().getStateGroupID());
                 p.addValue("ProcessorValue", processor.getState().getLiteID());
             } else if (processor.getType().isValueBased()) {
-                if (processor.getType() == ProcessorType.RANGE) {
+                if (processor.getType() == ProcessorType.RANGE || processor.getType() == ProcessorType.OUTSIDE) {
                     p.addValue("RangeMin", processor.getRangeMin());
                     p.addValue("RangeMax", processor.getRangeMax());
                 } else {

@@ -317,6 +317,7 @@ public class DeviceDataMonitorController {
         selectableTypes.add(ProcessorType.GREATER);
         selectableTypes.add(ProcessorType.LESS);
         selectableTypes.add(ProcessorType.RANGE);
+        selectableTypes.add(ProcessorType.OUTSIDE);
         model.addAttribute("processorTypes", selectableTypes);
     }
     
