@@ -24,10 +24,9 @@ public enum PageType {
             String pageName = document.get("pageName");
 
             List<String> pageArgs = getListFromDocument(document, "pageArg");
-            List<String> summaryArgs = new ArrayList<>();
-            summaryArgs.addAll(pageArgs.stream()
-                                       .map(arg -> StringEscapeUtils.escapeXml11(arg))
-                                       .collect( Collectors.toList()));
+            List<String> summaryArgs = pageArgs.stream()
+                                               .map(arg -> StringEscapeUtils.escapeXml11(arg))
+                                               .collect( Collectors.toList());
             summaryArgs.addAll(getListFromDocument(document, "summaryArg"));
 
             SiteModule module = SiteModule.getByName(document.get("module"));
@@ -58,10 +57,9 @@ public enum PageType {
             String pageName = document.get("pageName");
 
             List<String> pageArgs = getListFromDocument(document, "pageArg");
-            List<String> summaryArgs = new ArrayList<>();
-            summaryArgs.addAll(pageArgs.stream()
-                                       .map(arg -> StringEscapeUtils.escapeXml11(arg))
-                                       .collect( Collectors.toList()));
+            List<String> summaryArgs = pageArgs.stream()
+                                               .map(arg -> StringEscapeUtils.escapeXml11(arg))
+                                               .collect( Collectors.toList());
             summaryArgs.addAll(getListFromDocument(document, "summaryArg"));
 
             return new Page(path, module, pageName, summaryArgs);
