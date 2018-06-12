@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,17 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     public static final String SERVICE_STATUS = "Status";
 
     Logger log = YukonLogManager.getLogger(ServiceStatusWatchdogImpl.class);
+    
+    private List<YukonServices> runningServices = new ArrayList<>();
+
+    private static final List<YukonServices> optionalServices = Arrays.asList(
+        YukonServices.MACS,
+        YukonServices.REALTIMESCANNER,
+        YukonServices.FDR,
+        YukonServices.CALCLOGIC
+        );
+
+    public abstract YukonServices getServiceName();
 
     @Override
     public Watchdogs getName() {
@@ -47,17 +59,55 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
      */
     public List<WatchdogWarnings> generateWarning(WatchdogWarningType type, ServiceStatus connectionStatus) {
         List<WatchdogWarnings> warnings = new ArrayList<>();
-        if (connectionStatus == ServiceStatus.STOPPED) {
+
+        if (shouldSendWarning(connectionStatus)) {
             Map<String, Object> arguments = Maps.newHashMap();
             arguments.put(WARNING_TYPE, type.name());
             arguments.put(SERVICE_STATUS, ServiceStatus.STOPPED.name());
             WatchdogWarnings watchdogWarning = new WatchdogWarnings(type, arguments);
             warnings.add(watchdogWarning);
+            warnings.stream().forEach(warning -> log.info(
+                "An Watchdog Warning is generated : " + warning.getWarningType().getWatchdogCategory() + " is "
+                    + warning.getArguments().get(SERVICE_STATUS)));
         }
-        warnings.stream().forEach(warning -> log.info("An Watchdog Warning is generated : "
-            + warning.getWarningType().getWatchdogCategory() + " is " + warning.getArguments().get(SERVICE_STATUS)));
-
         return warnings;
+    }
+    
+    /**
+     * Checks if a warning have to be send or not.
+     * Case 1: If a service is optional service, then it should have been seen running aleast once and current
+     * status should be stopped.
+     * Case 2: If a service is not optional service and its status is stopped then send warning.
+     */
+    private boolean shouldSendWarning(ServiceStatus connectionStatus) {
+        YukonServices service = getServiceName();
+        if (isServiceOptional(service)) {
+            if (connectionStatus == ServiceStatus.RUNNING && !haveSeenRunning(service)) {
+                runningServices.add(service);
+            }
+            if (!haveSeenRunning(service)) {
+                return false;
+            }
+        }
+        if (connectionStatus == ServiceStatus.STOPPED) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if the passed service is optional service or not.
+     * Optional service means it may run or may not run.
+     */
+    private boolean isServiceOptional(YukonServices serviceName) {
+        return optionalServices.contains(serviceName);
+    }
+
+    /**
+     * Checks if the service was seen running atleast once.
+     */
+    private boolean haveSeenRunning(YukonServices serviceName) {
+        return runningServices.contains(serviceName);
     }
 
     /**

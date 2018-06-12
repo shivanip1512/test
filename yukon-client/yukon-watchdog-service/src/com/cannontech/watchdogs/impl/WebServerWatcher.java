@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.util.WebserverUrlResolver;
+import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 
@@ -62,5 +63,10 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
             log.debug("Yukon web server is down ");
             return ServiceStatus.STOPPED;
         }
+    }
+
+    @Override
+    public YukonServices getServiceName() {
+        return YukonServices.WEBSERVER;
     }
 }

@@ -25,9 +25,7 @@ public interface Watchdog {
     List<WatchdogWarnings> watch();
 
     /**
-     * Can be used in future to check if the watchdog should run.
-     * This can be used when watchdog become configurable.
-     * It optional right now, can be removed.
+     * Check's if watchdog/watcher has to be started or not.
      */
     default boolean shouldRun() {
         return true;

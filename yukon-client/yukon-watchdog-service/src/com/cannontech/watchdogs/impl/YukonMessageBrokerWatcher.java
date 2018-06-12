@@ -18,6 +18,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 
@@ -93,5 +94,10 @@ public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
         public void transportResumed() {
             log.debug("Connected to broker");
         }
+    }
+
+    @Override
+    public YukonServices getServiceName() {
+        return YukonServices.MESSAGEBROKER;
     }
 }

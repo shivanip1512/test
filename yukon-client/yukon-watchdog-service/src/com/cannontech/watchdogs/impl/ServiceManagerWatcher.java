@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 
@@ -38,4 +39,7 @@ public class ServiceManagerWatcher extends ServiceStatusWatchdogImpl {
         return getStatusFromWindows(serviceName);
     }
 
+    public YukonServices getServiceName() {
+        return YukonServices.SERVICEMANAGER;
+    }
 }

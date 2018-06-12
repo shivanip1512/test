@@ -33,9 +33,14 @@ public class WatchdogService {
     }
     
     private synchronized void start() throws Exception {
-        // TODO: This is temporary code, this will have to be replaced  
+        // TODO: This is temporary code, this will have to be replaced
         // Can create separate thread for each watchdog
-        watchdog.stream().forEach(monitor -> monitor.start());
+
+        watchdog.stream().forEach(watcher -> {
+            if (watcher.shouldRun()) {
+                watcher.start();
+            }
+        });
     }
     
 
