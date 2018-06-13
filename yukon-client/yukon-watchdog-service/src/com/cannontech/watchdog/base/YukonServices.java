@@ -12,5 +12,6 @@ public enum YukonServices {
     LOADMANAGEMENT,
     FDR,
     CAPCONTROL,
-    CALCLOGIC;
+    CALCLOGIC,
+    NETWORKMANAGER;
 }
