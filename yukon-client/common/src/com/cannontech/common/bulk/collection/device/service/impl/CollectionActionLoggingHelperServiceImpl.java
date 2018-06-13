@@ -79,10 +79,10 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
             logUnassignConfig(result);
             break;
         case CONFIGURE_DATA_STREAMING:
-            logRemoveDataStreaming(result);
+            logConfigDataStreaming(result);
             break;
         case REMOVE_DATA_STREAMING:
-            logConfigDataStreaming(result);
+            logRemoveDataStreaming(result);
             break;
         default:
             throw new UnsupportedOperationException("Add event logger for collection action="+result.getAction());
