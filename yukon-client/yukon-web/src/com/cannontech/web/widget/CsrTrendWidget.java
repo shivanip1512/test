@@ -130,6 +130,8 @@ public class CsrTrendWidget extends WidgetControllerBase {
             if (existingAttributes.contains(agt.getAttribute())) {
                 
                 if (agt.getAttribute() == BuiltInAttribute.USAGE) {
+                    //If the meter is an Rf meter and Usage is trying to be displayed, the daily usage converter will be used.
+                    //The daily usage converter will only display one data point on the chart per day using the nearest to midnight data.
                     if (device.getPaoIdentifier().getPaoType().isRfMeter()) {
                         AttributeGraphType agtAdjusted = new AttributeGraphType();
                         agtAdjusted.setAttribute(agt.getAttribute());

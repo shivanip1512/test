@@ -106,7 +106,9 @@ public enum ChartPeriod implements DisplayableEnum {
         if (converterType == ConverterType.DAILY_USAGE) {
             if (interval == ChartInterval.HOUR
                         || interval == ChartInterval.FIFTEENMINUTE 
-                        || interval == ChartInterval.FIVEMINUTE) {
+                        || interval == ChartInterval.FIVEMINUTE
+                        || interval == ChartInterval.MINUTE
+                        || interval == ChartInterval.FIFTEENSECOND) {
                 interval = ChartInterval.DAY;
             }
         }
