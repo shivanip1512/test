@@ -486,18 +486,17 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
     }
     else    // set point calculations...
     {
+        const double currentVoltage       = getVoltage();
+        const double currentSetPoint      = _controlPolicy->getSetPointValue();
         const double currentHalfBandwidth = _controlPolicy->getSetPointBandwidth() / 2.0;
+
+        const double voltageWindow = currentVoltage - currentSetPoint;
 
         if ( adjuster == Single )   // old way for normal IVVC ops
         {
-            const double currentVoltage       = getVoltage();
-            const double currentSetPoint      = _controlPolicy->getSetPointValue();
-
             const bool withinBandwidth =
                 ( ( ( currentSetPoint - currentHalfBandwidth ) < currentVoltage ) &&
                 ( currentVoltage < ( currentSetPoint + currentHalfBandwidth ) ) );
-
-            const double voltageWindow = currentVoltage - currentSetPoint;
 
             if ( withinBandwidth )
             {
@@ -517,13 +516,31 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
                 }
             }
         }
-        else
+        else if ( adjuster == Inclusive )
         {
             const double adjustment =  std::abs( changeAmount ) + currentHalfBandwidth - voltageChangePerTap;
 
             return ( changeAmount > 0 )
                         ? adjustment
                         : -adjustment;
+        }
+        else    // adjuster == Exclusive
+        {
+            const double adjustedChange
+                = voltageChangePerTap * std::floor( std::abs( changeAmount ) / voltageChangePerTap );
+
+            const double adjustedHalfBW
+                = voltageChangePerTap * std::floor( std::abs( currentHalfBandwidth ) / voltageChangePerTap );
+
+            const double totalAdjustment
+                = adjustedChange + adjustedHalfBW
+                    + ( ( changeAmount > 0 )
+                            ? voltageWindow
+                            : -voltageWindow );
+
+            return ( changeAmount > 0 )
+                        ? totalAdjustment
+                        : -totalAdjustment;
         }
     }
 
