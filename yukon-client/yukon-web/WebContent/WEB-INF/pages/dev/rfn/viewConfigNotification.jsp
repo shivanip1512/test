@@ -15,7 +15,7 @@
                 <tags:nameValue name="Serial Number">
                     <form:input path="serialFrom" size="5" />
                     to 
-                    <form:input path="serialTo" size="5" cssClass="optional"/>
+                    <tags:input path="serialTo" size="5" placeholder="optional"/>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Manufacturer and Model">
