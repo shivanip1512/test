@@ -248,6 +248,7 @@ public:
     static const Attribute  UsageRateD;
     static const Attribute  UsageRateE;
     static const Attribute  WaterUsageReading;
+    static const Attribute  GasUsageReading;
     static const Attribute  Voltage;
     static const Attribute  VoltagePhaseA;
     static const Attribute  VoltagePhaseB;
@@ -310,6 +311,7 @@ public:
     static const Attribute  DeliveredkVArhperInterval;
     static const Attribute  SumkVArhperInterval;
     static const Attribute  WaterUsageperInterval;
+    static const Attribute  GasUsageperInterval;
     static const Attribute  ForwardInductivekVArhperInterval;
     static const Attribute  ForwardCapacitivekVArhperInterval;
     static const Attribute  ReverseInductivekVArhperInterval;

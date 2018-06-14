@@ -257,6 +257,7 @@ INIT_ATTRIBUTE( UsageRateC,                                         "USAGE_RATE_
 INIT_ATTRIBUTE( UsageRateD,                                         "USAGE_RATE_D" );
 INIT_ATTRIBUTE( UsageRateE,                                         "USAGE_RATE_E" );
 INIT_ATTRIBUTE( WaterUsageReading,                                  "USAGE_WATER" );
+INIT_ATTRIBUTE( GasUsageReading,                                    "USAGE_GAS" );
 INIT_ATTRIBUTE( Voltage,                                            "VOLTAGE" );
 INIT_ATTRIBUTE( VoltagePhaseA,                                      "VOLTAGE_PHASE_A" );
 INIT_ATTRIBUTE( VoltagePhaseB,                                      "VOLTAGE_PHASE_B" );
@@ -319,6 +320,7 @@ INIT_ATTRIBUTE( SumkVAhperInterval,                                 "SUM_KVAH_PE
 INIT_ATTRIBUTE( DeliveredkVArhperInterval,                          "DELIVERED_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkVArhperInterval,                                "SUM_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( WaterUsageperInterval,                              "WATER_USAGE_PER_INTERVAL" );
+INIT_ATTRIBUTE( GasUsageperInterval,                                "GAS_USAGE_PER_INTERVAL" );
 INIT_ATTRIBUTE( ForwardInductivekVArhperInterval,                   "FORWARD_INDUCTIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ForwardCapacitivekVArhperInterval,                  "FORWARD_CAPACITIVE_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReverseInductivekVArhperInterval,                   "REVERSE_INDUCTIVE_KVARH_PER_INTERVAL" );
