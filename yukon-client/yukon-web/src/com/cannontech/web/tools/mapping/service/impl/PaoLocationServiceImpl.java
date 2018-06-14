@@ -48,6 +48,9 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getWaterMeterTypes()) {
             icons.put(type, Icon.METER_WATER);
         }
+        for (PaoType type : PaoType.getGasMeterTypes()) {
+            icons.put(type, Icon.METER_GAS);
+        }
         for (PaoType type : PaoType.getRfRelayTypes()) {
             icons.put(type,  Icon.RELAY);
         }

@@ -260,6 +260,11 @@ public interface DeviceTypes extends TypeBase
 
     public final static int CBC_LOGICAL = DEVICE_OFFSET + 198;
     
+    public final static int RFG201 = DEVICE_OFFSET + 199;
+    public final static int RFG205 = DEVICE_OFFSET + 200;
+
+    
+    
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
     public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
@@ -412,4 +417,6 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_RFW201 = {"RFW-201", "RFW 201" };
     public static final String[] STRING_RFW205 = {"RFW-205", "RFW 205" };
     public static final String[] STRING_CBC_LOGICAL  = {"CBC Logical"};
+    public static final String[] STRING_RFG201 = {"RFG-201", "RFG 201" };
+    public static final String[] STRING_RFG205 = {"RFG-205", "RFG 205" };
 }

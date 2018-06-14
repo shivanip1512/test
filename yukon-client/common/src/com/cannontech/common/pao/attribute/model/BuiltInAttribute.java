@@ -261,6 +261,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     USAGE_RATE_D("Usage Rate D", AttributeGroup.USAGE),
     USAGE_RATE_E("Usage Rate E", AttributeGroup.USAGE),
     USAGE_WATER("Water Usage Reading", AttributeGroup.USAGE, false),    //water not readable
+    USAGE_GAS("Gas Usage Reading", AttributeGroup.USAGE, false),    //gas not readable
     VOLTAGE("Voltage", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_A("Voltage (Phase A)", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_B("Voltage (Phase B)", AttributeGroup.VOLTAGE),
@@ -314,6 +315,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DELIVERED_KVARH_PER_INTERVAL("Delivered kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
     SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
     WATER_USAGE_PER_INTERVAL("Water Usage per Interval", AttributeGroup.USAGE, false),   //calculated, water not readable
+    GAS_USAGE_PER_INTERVAL("GAS Usage per Interval", AttributeGroup.USAGE, false),   //calculated, gas not readable
     FORWARD_INDUCTIVE_KVARH_PER_INTERVAL("Forward Inductive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
     FORWARD_CAPACITIVE_KVARH_PER_INTERVAL("Forward Capacitive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
     REVERSE_INDUCTIVE_KVARH_PER_INTERVAL("Reverse Inductive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
@@ -429,7 +431,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_PHASE_C_OUT("Voltage Phase C Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
     VOLTAGE_PHASE_ERROR("Voltage Phase Error", AttributeGroup.RFN_METERING_EVENT, false),
     
-    // RFN Gen 2 Water Meter Events
+    // RFN Gen 2 Water/Gas Meter Events
     METER_READ_NO_ENCODER_FOUND("Meter Read - No encoder found", AttributeGroup.RFN_METERING_EVENT, false),
     METER_READ_PARITY_ERROR("Meter Read - Parity error", AttributeGroup.RFN_METERING_EVENT, false),
     METER_READ_NO_EOF_DETECTED("Meter Read - No EOF detected", AttributeGroup.RFN_METERING_EVENT, false),

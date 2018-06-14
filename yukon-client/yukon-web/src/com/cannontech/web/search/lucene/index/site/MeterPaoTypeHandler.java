@@ -52,6 +52,10 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
             path = "/meter/water/home?deviceId=" + paoId;
             pageName = "meterDetail.water";
         }
+        if (paoIdentifier.getPaoType().isGasMeter()) {
+            path = "/meter/gas/home?deviceId=" + paoId;
+            pageName = "meterDetail.gas";
+        }
         builder.pageName(pageName);
         builder.path(path);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);

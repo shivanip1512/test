@@ -109,6 +109,8 @@
             <xs:enumeration value="DnpTimeOffset"/>
             <xs:enumeration value="WaterRecordingInterval"/>
             <xs:enumeration value="WaterReportingInterval"/>
+            <xs:enumeration value="GasRecordingInterval"/>
+            <xs:enumeration value="GasReportingInterval"/>
             <xs:enumeration value="CBCHeartbeatMode"/>
         </xs:restriction>
     </xs:simpleType>

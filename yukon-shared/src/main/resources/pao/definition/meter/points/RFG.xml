@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Gas Usage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="CUBIC_FEET"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Battery Voltage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Temperature</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_C"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="186" type="Analog">
+        <name>Gas Usage per Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="CUBIC_FEET"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="82" type="Status">
+        <name>Meter Read - No encoder found</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="83" type="Status">
+        <name>Meter Read - Parity error</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="84" type="Status">
+        <name>Meter Read - No EOF detected</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="85" type="Status">
+        <name>Meter Read - Protocol cannot be determined</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="86" type="Status">
+        <name>Meter Read - Field exceeded maximum digits</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="87" type="Status">
+        <name>Meter Read - Error reading serial number</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="88" type="Status">
+        <name>Meter Read - Checksum error</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="89" type="Status">
+        <name>Tamper - Cable Cut</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+</points>

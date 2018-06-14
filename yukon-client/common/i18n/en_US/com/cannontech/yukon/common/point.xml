@@ -233,6 +233,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_D">Usage Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_E">Usage Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.USAGE_GAS">Gas Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_COIN">Power Factor Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_POWER_FACTOR">Delivered Power Factor</entry>
@@ -412,6 +413,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH_PER_INTERVAL">Sum kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_PER_INTERVAL">Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WATER_USAGE_PER_INTERVAL">Water Usage per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.GAS_USAGE_PER_INTERVAL">Gas Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_LOAD_PROFILE">Delivered kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVAR_LOAD_PROFILE">Delivered kVAr Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_LOAD_PROFILE">Received kW Load Profile</entry>

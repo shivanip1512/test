@@ -269,6 +269,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     RFW201(DeviceTypes.RFW201, "RFW-201", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFW205(DeviceTypes.RFW205, "RFW-205", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
+    RFG201(DeviceTypes.RFG201, "RFG-201", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFG205(DeviceTypes.RFG205, "RFG-205", PaoCategory.DEVICE, PaoClass.RFMESH),
     ;
     
     private final int deviceTypeId;
@@ -311,7 +314,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> waterMeterTypes;
     private final static ImmutableSet<PaoType> thermostatTypes;
     private final static ImmutableSet<PaoType> tlvReportingTypes;
-    
+    private final static ImmutableSet<PaoType> gasMeterTypes;
+
     public final static int INVALID = -1;
     
     static {
@@ -478,6 +482,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFWMETER,
             RFW201,
             RFW205,
+            RFG201,
+            RFG205,
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
@@ -524,6 +530,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFWMETER,
             RFW201,
             RFW205,
+            RFG201,
+            RFG205,
             RFN_1200,
             LCR6200_RFN,
             LCR6600_RFN,
@@ -686,9 +694,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         waterMeterTypes = ImmutableSet.of(
         	RFWMETER, 
         	RFW201, 
-        	RFW205);
-        
-        rfElectricTypes = Sets.difference(rfMeterTypes, waterMeterTypes).immutableCopy();
+        	RFW205
+        	//TODO Add gas meters here? or make new pao type group for gas meters
+        	);
+        gasMeterTypes = ImmutableSet.of(
+            RFG201, 
+            RFG205
+            );
+        rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
     }
     
     /**
@@ -853,7 +866,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
 
     public boolean isWaterMeter() {
-    	return waterMeterTypes.contains(this);
+        return waterMeterTypes.contains(this);
+    }
+    
+    public boolean isGasMeter() {
+        return gasMeterTypes.contains(this);
     }
     
     public boolean isLoadGroup() {
@@ -1052,5 +1069,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public static ImmutableSet<PaoType> getWaterMeterTypes() {
         return waterMeterTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getGasMeterTypes() {
+        return gasMeterTypes;
     }
 }

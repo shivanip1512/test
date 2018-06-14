@@ -49,6 +49,7 @@ public enum SystemGroupEnum {
     ALL_MCT_METERS,
     ALL_RF_ELECTRIC_METERS,
     ALL_RFW_METERS,
+    ALL_RFG_METERS,
     DEMAND_RESPONSE,
     LOAD_GROUPS,
     LOAD_PROGRAMS,

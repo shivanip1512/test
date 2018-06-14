@@ -45,6 +45,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="DnpTimeOffset"/>
  *     &lt;enumeration value="WaterRecordingInterval"/>
  *     &lt;enumeration value="WaterReportingInterval"/>
+ *     &lt;enumeration value="GasRecordingInterval"/>
+ *     &lt;enumeration value="GasReportingInterval"/>
  *     &lt;enumeration value="CBCHeartbeatMode"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -117,6 +119,10 @@ public enum EnumOption {
     WATER_RECORDING_INTERVAL("WaterRecordingInterval"),
     @XmlEnumValue("WaterReportingInterval")
     WATER_REPORTING_INTERVAL("WaterReportingInterval"),
+    @XmlEnumValue("GasRecordingInterval")
+    GAS_RECORDING_INTERVAL("GasRecordingInterval"),
+    @XmlEnumValue("GasReportingInterval")
+    GAS_REPORTING_INTERVAL("GasReportingInterval"),
     @XmlEnumValue("CBCHeartbeatMode")
     CBC_HEARTBEAT_MODE("CBCHeartbeatMode");
     private final String value;

@@ -650,6 +650,17 @@
         <aop:scoped-proxy/>
     </bean>
 
+    <bean id="gasCsrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
+        <qualifier value="gasCsrTrendWidgetCachingWidgetParameterGrabber"/>
+        <property name="useCache" value="true"/>
+        <property name="uniqueIdentifiers">
+            <list>
+                <value>gasCsrTrendWidget</value>
+            </list>
+        </property>
+        <aop:scoped-proxy/>
+    </bean>
+    
     <bean id="operationsSetupTagPrototype" class="com.cannontech.web.taglib.OperationsSetupTag"/>
 
     <bean id="attributeResolverTagPrototype" class="com.cannontech.web.taglib.AttributeResolverTag"/>

@@ -58,6 +58,12 @@
                             (reading - previousReading) / (days between readings).
                             If gaps in data exist that are greater than the charted interval, then that interval will be
                             removed from the display.]]></entry>
+<entry key="yukon.web.attributeGraphType.USAGE_GAS.label">Gas Usage (Delta)</entry>
+<entry key="yukon.web.attributeGraphType.USAGE_GAS.description"><![CDATA[The <b>Delta Usage</b> graph is a view of the usage data as the delta between intervals.<br><br>  Each
+                            point on the graph is generated using the following formula: 
+                            (reading - previousReading) / (days between readings).
+                            If gaps in data exist that are greater than the charted interval, then that interval will be
+                            removed from the display.]]></entry>
 <entry key="yukon.web.attributeGraphType.LOAD_PROFILE.label">Load Profile</entry>
 <entry key="yukon.web.attributeGraphType.LOAD_PROFILE.description"><![CDATA[Graph of raw Load Profile data.]]></entry>
 <entry key="yukon.web.attributeGraphType.VOLTAGE_PROFILE.label">Voltage Profile</entry>

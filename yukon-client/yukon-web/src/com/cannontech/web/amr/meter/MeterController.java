@@ -1,7 +1,6 @@
 package com.cannontech.web.amr.meter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,7 +228,7 @@ public class MeterController {
         PaoType type = device.getDeviceType();
 
         // Redirecting water meters to WaterMeterController
-        if (type.isWaterMeter()) {
+        if (type.isWaterMeter() || type.isGasMeter()) {
             return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(device);
         }
 

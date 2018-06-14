@@ -230,6 +230,11 @@
         <enum field="recordingIntervalSeconds" type="WaterRecordingInterval" default="15"/>
         <enum field="reportingIntervalSeconds" type="WaterReportingInterval" default="2"/>
     </category>
+    
+        <category type="rfnGasChannelConfiguration">
+        <enum field="recordingIntervalSeconds" type="GasRecordingInterval" default="15"/>
+        <enum field="reportingIntervalSeconds" type="GasReportingInterval" default="2"/>
+    </category>
 
     <category type="addressing">
         <integer field="serviceProviderId" minValue="0" maxValue="254" default="0"/>

@@ -42,6 +42,14 @@ public class PaoDetailUrlHelper {
         });
         pageNameBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, "meterDetail.water");
         
+        urlBuilder.put(PaoTag.GAS_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/meter/gas/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        pageNameBuilder.put(PaoTag.GAS_METER_DETAIL_DISPLAYABLE, "meterDetail.gas");
+        
         urlBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
