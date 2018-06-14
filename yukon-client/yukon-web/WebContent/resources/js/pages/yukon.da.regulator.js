@@ -57,7 +57,11 @@ yukon.da.regulator = (function () {
     };
     
     var _updateRecentEvents = function () {
-        
+        // We should not update the regulator recent events if the regulator events table is not displayed.
+        if ($("#regulator-events").length === 0) {
+            return false;
+        }
+
         var range = $('#ivvc-events-range').val();
         
         $.ajax({
