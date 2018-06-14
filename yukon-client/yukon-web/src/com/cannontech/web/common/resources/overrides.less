@@ -375,7 +375,11 @@ span.dynatree-folder a {
     }
 }
 
-.ui-widget-overlay { background: #fff; }
+.ui-widget-overlay { 
+    background: #fff; 
+    opacity: .5;
+    filter: Alpha(Opacity=50); /* support: IE8 */
+}
 
 .ui-tabs {
     
