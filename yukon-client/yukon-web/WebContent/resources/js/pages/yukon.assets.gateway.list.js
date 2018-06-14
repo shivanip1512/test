@@ -36,7 +36,7 @@ yukon.assets.gateway.list = (function () {
                 if (data != null) {
                     if (dataExists === false) {
                         dataExists = true;
-                        $('.update-servers').find('.disabled').andSelf().removeClass('disabled');
+                        $('.update-servers').find('.disabled').addBack().removeClass('disabled');
                     }
                     
                     timestamp = moment(data.lastCommTimestamp).tz(yg.timezone).format(yg.formats.date.full_hm);
