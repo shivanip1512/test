@@ -36,11 +36,9 @@ public class WatchdogService {
         // TODO: This is temporary code, this will have to be replaced
         // Can create separate thread for each watchdog
 
-        watchdog.stream().forEach(watcher -> {
-            if (watcher.shouldRun()) {
-                watcher.start();
-            }
-        });
+            watchdog.stream()
+            .filter(Watchdog::shouldRun)
+            .forEach(Watchdog::start);
     }
     
 
