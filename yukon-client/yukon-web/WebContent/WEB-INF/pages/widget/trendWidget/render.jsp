@@ -120,7 +120,7 @@ $(function () {
             <tr>
                 <td class="wsnw">
                     <c:choose>
-                        <c:when test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER'}">
+                        <c:when test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER' || attributeGraphType.attribute == 'USAGE_GAS'}">
                             <i:inline key=".archivedUsageData"/>
                         </c:when>
                         <c:otherwise>
@@ -137,7 +137,7 @@ $(function () {
                 </td>
             </tr>
             
-            <c:if test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER'}">
+            <c:if test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER' || attributeGraphType.attribute == 'USAGE_GAS'}">
                 <tr>
                     <td class="wsnw"><b><i:inline key=".normalizedUsageData"/></b></td>
                     

@@ -93,6 +93,7 @@ public class AMRReportsController extends MultiActionController  {
         PaoType type = deviceDao.getYukonDevice(deviceId).getDeviceType();
         
         mav.addObject("isWaterMeter", type.isWaterMeter());
+        mav.addObject("isGasMeter", type.isGasMeter());
         mav.addObject("deviceId", deviceId);
     }
     

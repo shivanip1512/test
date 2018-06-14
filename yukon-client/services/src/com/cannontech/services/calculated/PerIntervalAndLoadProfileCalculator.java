@@ -28,7 +28,6 @@ import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
@@ -51,7 +50,6 @@ import com.google.common.collect.ImmutableSet.Builder;
  */
 public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
 
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -184,7 +182,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             }
         }
         
-        if (pao.getPaoType().isWaterMeter() && (nextPerIntervalValue < 0 || previousPerIntervalValue < 0)) {
+        if ((pao.getPaoType().isWaterMeter() || pao.getPaoType().isGasMeter()) && (nextPerIntervalValue < 0 || previousPerIntervalValue < 0)) {
             log.info("Error in previous/next RFW meter reading values, Interval and profile data calculations being skipped for "
                 + timestamp + " RFW meter Id : " + pao.getPaoId() + " : " + pointData);
             return; // Do not process further

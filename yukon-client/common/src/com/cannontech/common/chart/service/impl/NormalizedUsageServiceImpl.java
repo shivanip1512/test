@@ -47,7 +47,8 @@ public class NormalizedUsageServiceImpl implements NormalizedUsageService {
     }
 
     private ChartDataConverter getChartDataConverter(Attribute attribute) {
-        if (attribute == BuiltInAttribute.USAGE_WATER) {
+        if (attribute == BuiltInAttribute.USAGE_WATER 
+                || attribute == BuiltInAttribute.USAGE_GAS) {
             return new ChartDeltaWaterConverter();
         }
         return new ChartNormalizedDeltaConverter();

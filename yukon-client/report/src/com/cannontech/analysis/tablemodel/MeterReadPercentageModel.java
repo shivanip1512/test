@@ -118,7 +118,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     private MeterReadPercentagePeriod period = MeterReadPercentagePeriod.SEVEN_DAYS;
     protected List<ModelRow> data = new ArrayList<ModelRow>();
     private final static Set<? extends Attribute> usageAttributes =
-            ImmutableSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.USAGE_WATER);
+            ImmutableSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.USAGE_WATER, BuiltInAttribute.USAGE_GAS);
    
     @Override
     public void doLoadData() {

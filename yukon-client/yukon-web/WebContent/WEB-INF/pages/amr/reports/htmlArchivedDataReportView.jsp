@@ -12,16 +12,24 @@
         <c:if test="${searchResults != null}">
             <cti:crumbLink url="${searchResults}" title="Search" />
         </c:if>
-        <c:if test="${isWaterMeter}">
-            <cti:crumbLink url="/meter/water/home?deviceId=${deviceId}">
-                <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-            </cti:crumbLink>
-        </c:if>
-        <c:if test="${!isWaterMeter}">
-            <cti:crumbLink url="/meter/home?deviceId=${deviceId}">
-                <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-            </cti:crumbLink>
-        </c:if>
+        
+        <c:choose>
+            <c:when test="${isWaterMeter}">
+                <cti:crumbLink url="/meter/water/home?deviceId=${deviceId}">
+                    <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+                </cti:crumbLink>
+            </c:when>
+            <c:when test="${isGasMeter}">
+                <cti:crumbLink url="/meter/gas/home?deviceId=${deviceId}">
+                    <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+                </cti:crumbLink>
+            </c:when>
+            <c:otherwise>
+                <cti:crumbLink url="/meter/home?deviceId=${deviceId}">
+                    <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+                </cti:crumbLink>
+            </c:otherwise>
+        </c:choose>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>
 

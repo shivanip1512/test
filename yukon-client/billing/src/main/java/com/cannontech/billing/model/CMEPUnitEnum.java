@@ -28,7 +28,7 @@ public enum CMEPUnitEnum {
     THERM(null), // Therms. 
     GALREG(BuiltInAttribute.USAGE_WATER), // Gallons. 
     GAL(null), // Gallons. 
-    CF(null), // Cubic Feet. 
+    CF(BuiltInAttribute.USAGE_GAS), // Cubic Feet. 
     CCF(null), // Hundreds of Cubic Feet. 
     MCF(null), // Thousands of Cubic Feet. 
     ACFT(null), // Acre-Feet. 
