@@ -3,6 +3,7 @@ package com.cannontech.watchdog.base;
 import java.util.List;
 
 import com.cannontech.watchdog.model.WatchdogWarnings;
+import com.cannontech.watchdog.model.Watchdogs;
 
 public interface Watchdog {
 

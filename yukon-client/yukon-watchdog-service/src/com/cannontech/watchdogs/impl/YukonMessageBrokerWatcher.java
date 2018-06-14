@@ -53,7 +53,7 @@ public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
 
     @Override
     public List<WatchdogWarnings> watch() {
-        return generateWarning(WatchdogWarningType.YUKON_MESSAGE_BROKER_CONNECTION_STATUS, ServiceStatus.STOPPED);
+        return generateWarning(WatchdogWarningType.YUKON_MESSAGE_BROKER_SERVICE_STATUS, ServiceStatus.STOPPED);
     }
 
     /**

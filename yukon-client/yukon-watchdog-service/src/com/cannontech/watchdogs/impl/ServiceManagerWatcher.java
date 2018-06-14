@@ -31,7 +31,7 @@ public class ServiceManagerWatcher extends ServiceStatusWatchdogImpl {
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getServiceManagerStatus();
         log.debug("Status of service manager " + connectionStatus);
-        return generateWarning(WatchdogWarningType.SERVICE_MANAGER_CONNECTION_STATUS, connectionStatus);
+        return generateWarning(WatchdogWarningType.SERVICE_MANAGER_SERVICE_STATUS, connectionStatus);
     }
 
     private ServiceStatus getServiceManagerStatus() {

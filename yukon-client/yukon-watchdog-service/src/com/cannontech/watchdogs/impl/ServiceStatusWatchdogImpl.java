@@ -12,10 +12,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.watchdog.base.WatchdogBase;
-import com.cannontech.watchdog.base.Watchdogs;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
+import com.cannontech.watchdog.model.Watchdogs;
 import com.google.common.collect.Maps;
 
 public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements ServiceStatusWatchdog {
@@ -37,7 +37,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
 
     @Override
     public Watchdogs getName() {
-        return Watchdogs.SERVICESTATUS;
+        return Watchdogs.SERVICE_STATUS;
     }
 
     @Override
@@ -61,13 +61,13 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
         List<WatchdogWarnings> warnings = new ArrayList<>();
 
         if (shouldSendWarning(connectionStatus)) {
-            Map<String, Object> arguments = Maps.newHashMap();
+            Map<String, Object> arguments = Maps.newLinkedHashMap();
             arguments.put(WARNING_TYPE, type.name());
             arguments.put(SERVICE_STATUS, ServiceStatus.STOPPED.name());
             WatchdogWarnings watchdogWarning = new WatchdogWarnings(type, arguments);
             warnings.add(watchdogWarning);
             warnings.stream().forEach(warning -> log.info(
-                "An Watchdog Warning is generated : " + warning.getWarningType().getWatchdogCategory() + " is "
+                "An Watchdog Warning is generated : " + warning.getWarningType() + " is "
                     + warning.getArguments().get(SERVICE_STATUS)));
         }
         return warnings;

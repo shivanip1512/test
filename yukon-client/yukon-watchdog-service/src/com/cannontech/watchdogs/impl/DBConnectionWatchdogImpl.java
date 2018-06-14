@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.watchdog.base.WatchdogBase;
-import com.cannontech.watchdog.base.Watchdogs;
 import com.cannontech.watchdog.model.WatchdogWarnings;
+import com.cannontech.watchdog.model.Watchdogs;
 
 @Component
 public class DBConnectionWatchdogImpl extends WatchdogBase implements DBConnectionWatchdog {
@@ -22,7 +22,7 @@ public class DBConnectionWatchdogImpl extends WatchdogBase implements DBConnecti
 
     @Override
     public Watchdogs getName() {
-        return Watchdogs.DBCONNECTION;
+        return Watchdogs.DB_CONNECTION;
     }
 
     @Override

@@ -12,11 +12,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
 public class SmartNotificationWatchdogDecider extends SmartNotificationDecider {
-    
+
     {
         eventType = SmartNotificationEventType.YUKON_WATCHDOG;
     }
-    // TODO: This is temporary code, this will have to be replaced  
+
     @Override
     public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> getSubscriptionsForEvents(
             List<SmartNotificationEvent> allEvents, SmartNotificationFrequency frequency) {
@@ -30,7 +30,7 @@ public class SmartNotificationWatchdogDecider extends SmartNotificationDecider {
         });
         return subscriptions;
     }
-    
+
     @Override
     public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> mapSubscriptionsToEvents(
             Set<SmartNotificationSubscription> allSubscriptions, List<SmartNotificationEvent> allEvents) {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.widgets.watchdogWarnings.warningType.WEB_SERVER_SERVICE_STATUS.SUMMARY">{0} is {1}</entry>
+
+</properties>
