@@ -695,7 +695,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         	RFWMETER, 
         	RFW201, 
         	RFW205
-        	//TODO Add gas meters here? or make new pao type group for gas meters
         	);
         gasMeterTypes = ImmutableSet.of(
             RFG201, 
