@@ -180,7 +180,6 @@ public:
             SessionCallback callback);
 
     static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::type callback);
-    static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr  callback);
     static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
     static auto registerSessionCallback(const MessageCallback::type callback) -> SessionCallback;
 

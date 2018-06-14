@@ -737,15 +737,9 @@ void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQ
 }
 
 
-void ActiveMQConnectionManager::registerHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback)
-{
-    gActiveMQConnection->addNewCallback(queue, std::move(callback));
-}
-
-
 void ActiveMQConnectionManager::registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
 {
-    gActiveMQConnection->addNewCallback(queue, std::move(callback));
+    gActiveMQConnection->addNewCallback(queue, callback);
 }
 
 
