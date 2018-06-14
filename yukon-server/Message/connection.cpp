@@ -493,7 +493,7 @@ void CtiConnection::close()
         // interrupt the current or the next getQueue() call
         _outQueue.interruptBlockingRead();
 
-        if ( _outthread.tryJoinFor( Chrono::seconds( 35 ) ) )
+        if ( ! _outthread.tryJoinFor( Chrono::seconds( 35 ) ) )
         {
             {
                 Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
