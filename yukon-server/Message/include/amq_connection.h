@@ -6,6 +6,7 @@
 #include "connection_base.h"
 
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 
 #include <chrono>
 #include <queue>
@@ -94,14 +95,47 @@ public:
         ~MessageDescriptor();
     };
 
-    using MessageCallback = std::function<void(const MessageDescriptor &)>;
+    struct MessageCallback
+    {
+        using type = std::function<void(const MessageDescriptor&)>;
+        using Ptr  = std::unique_ptr<MessageCallback>;
+
+        virtual void operator()(const MessageDescriptor&) const = 0;
+    };
+
+    struct SimpleMessageCallback : MessageCallback
+    {
+        using Function = type;
+
+        SimpleMessageCallback(Function f) : fn { f } {}
+
+        Function fn;
+
+        void operator()(const MessageDescriptor &md) const override { fn(md); }
+    };
+
     using MessageCallbackWithReply = std::function<std::unique_ptr<SerializedMessage>(const MessageDescriptor &)>;
     using TimeoutCallback = std::function<void()>;
 
     template<class Msg>
     struct CallbackFor
     {
-        typedef std::function<void (const Msg &)> type;
+        using type = std::function<void (const Msg &)>;
+        using Ptr  = std::unique_ptr<CallbackFor<Msg>>;
+
+        virtual void operator()(const Msg&) const = 0;
+    };
+
+    template<class Msg>
+    struct SimpleCallbackFor : CallbackFor<Msg>
+    {
+        using Function = type;
+        
+        SimpleCallbackFor(Function f) : fn { f } {}
+
+        Function fn;
+
+        void operator()(const Msg& msg) const override { return fn(msg); }
     };
 
     class SessionCallback
@@ -109,8 +143,8 @@ public:
         friend class ActiveMQConnectionManager;
         static std::atomic_size_t globalId;
         size_t id { std::numeric_limits<size_t>::max() };
-        MessageCallback callback;
-        SessionCallback(MessageCallback callback_) : callback { callback_ }, id { globalId++ } {}
+        MessageCallback::type callback;
+        SessionCallback(MessageCallback::type callback_) : callback { callback_ }, id { globalId++ } {}
     public:
         SessionCallback() = default;
         SessionCallback(const SessionCallback&) = default;
@@ -134,22 +168,38 @@ public:
     static void enqueueMessageWithCallbackFor(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
             typename CallbackFor<Msg>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+    template<class Msg>
+    static void enqueueMessageWithCallbackFor(
+            const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
+            typename CallbackFor<Msg>::Ptr callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
     static void enqueueMessageWithCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
-            MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+            MessageCallback::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
     static void enqueueMessageWithSessionCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, 
             SessionCallback callback);
 
-    static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
-    static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
-    static auto registerSessionCallback(const MessageCallback callback) -> SessionCallback;
+    static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::type callback);
+    static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr  callback);
+    static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
+    static auto registerSessionCallback(const MessageCallback::type callback) -> SessionCallback;
 
     virtual void close();
 
 protected:
 
-    using ReturnLabel = std::function<const cms::Destination*()>;
+    struct TimedCallback
+    {
+        MessageCallback::Ptr callback;
+        std::chrono::seconds timeout;
+        TimeoutCallback timeoutCallback;
+    };
+
+    using ReturnAddress = boost::variant<TimedCallback, SessionCallback>;
+
+    using ReturnLabel = std::unique_ptr<ReturnAddress>;
+
+    const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
 
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
@@ -160,8 +210,8 @@ protected:
             const SerializedMessage &message,
             ReturnLabel returnAddress);
 
-    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
-    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
         
     void acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
     void acceptSingleReply (const cms::Message *message);
@@ -203,7 +253,7 @@ private:
     using ProducersByQueueName = std::map<std::string, std::unique_ptr<ActiveMQ::QueueProducer>>;
     ProducersByQueueName _producers;
 
-    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback> CallbacksPerQueue;
+    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback::Ptr> CallbacksPerQueue;
     CtiCriticalSection _newCallbackMux;
     CallbacksPerQueue  _newCallbacks;
     CallbacksPerQueue  _namedCallbacks;
@@ -222,7 +272,7 @@ private:
     struct TempQueueConsumerWithCallback
     {
         std::unique_ptr<ActiveMQ::TempQueueConsumer> managedConsumer;
-        MessageCallback callback;
+        MessageCallback::Ptr callback;
     };
 
     using TemporaryConsumersByDestination = std::map<std::string, std::unique_ptr<TempQueueConsumerWithCallback>>;
@@ -236,7 +286,7 @@ private:
     TemporaryConsumersByDestination _sessionConsumers;
     DestinationsBySessionCallback _sessionConsumerDestinations;
 
-    ReturnLabel makeReturnLabel(MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timeoutCallback);
+    ReturnLabel makeReturnLabel(MessageCallback::Ptr callback, std::chrono::seconds timeout, TimeoutCallback timeoutCallback);
     ReturnLabel makeReturnLabel(SessionCallback& callback);
 
     struct ExpirationHandler

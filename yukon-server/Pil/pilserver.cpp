@@ -853,49 +853,67 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
 
 void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport report)
 {
+    using ConfigNotification = Devices::Commands::RfnConfigNotificationCommand;
+
     CTILOG_INFO(dout, "Handling unsolicited report for " << report.rfnId);
 
-    auto rfnDevice = DeviceManager->getDeviceByRfnIdentifier(report.rfnId);
+    auto rfnId = report.rfnId;
+    auto rfnDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId);
 
-    const auto invokeCommand = [report = std::move(report)](Devices::RfnDevice & rfnDev) {
-        rfnDev.extractCommandResult(*report.command);
-        //  TODO - sent resulting JSON to Java
-        const auto json = report.command->getDataStreamingJson(rfnDev.getDeviceType());
+    const auto invokeCommand = [](Devices::RfnDevice & rfnDev, const ConfigNotification &command) {
+        rfnDev.extractCommandResult(command);
+        //  TODO - send resulting JSON to Java
+        return command.getDataStreamingJson(rfnDev.getDeviceType());
     };
         
     if( ! rfnDevice )
     {
-
         using namespace Cti::Messaging;
         using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-        RfnDeviceCreationRequestMessage requestMessage(report.rfnId);
+        RfnDeviceCreationRequestMessage requestMessage(rfnId);
 
         ActiveMQConnectionManager::SerializedMessage serialized
             = Serialization::MessageSerializer<RfnDeviceCreationRequestMessage>::serialize(requestMessage);
 
-        // build a device creation call to Java
-        auto msgReceivedCallback =
-            [&](const RfnDeviceCreationReplyMessage & reply)
+        struct DeviceLookupCallback : ActiveMQConnectionManager::CallbackFor<RfnDeviceCreationReplyMessage>
         {
-            CTILOG_DEBUG(dout, "Recevied RfnDeviceCreationReply from client for rfn device with id " << reply.paoId);
-            // force a device reload of the new device
-            DeviceManager->refreshDeviceByID(reply.paoId, reply.category, reply.deviceType);
+            using CommandInvoker = std::function<std::string(Devices::RfnDevice & rfnDev, const ConfigNotification &command)>;
+            using ConfigNotificationPtr = RfnRequestManager::ConfigNotificationPtr;
 
-            // attempt to get the device again
-            auto newDevice = DeviceManager->getDeviceByRfnIdentifier(report.rfnId);
+            ConfigNotificationPtr command;
+            RfnIdentifier rfnId;
+            CtiDeviceManager* DeviceManager;
+            CommandInvoker invokeCommand;
 
-            // call invokeCommand(*newDevice)
-            if ( newDevice )
+            DeviceLookupCallback(CtiDeviceManager* DeviceManager_, RfnIdentifier rfnId_, ConfigNotificationPtr command_, CommandInvoker invokeCommand_) 
+                :   DeviceManager { DeviceManager_ },
+                    rfnId         { rfnId_ }, 
+                    command       { std::move(command_) },
+                    invokeCommand { invokeCommand_ }
+            {}
+
+            // build a device creation call to Java
+            void operator()(const RfnDeviceCreationReplyMessage & reply) const override
             {
-                invokeCommand(*newDevice);
-            }
+                CTILOG_DEBUG(dout, "Received RfnDeviceCreationReply from client for rfn device with id " << reply.paoId);
+                // force a device reload of the new device
+                DeviceManager->refreshDeviceByID(reply.paoId, reply.category, reply.deviceType);
+
+                // attempt to get the device again
+                auto newDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId);
+
+                if( newDevice )
+                {
+                    invokeCommand(*newDevice, *command);
+                }
+            };
         };
 
         auto timedOutCallback =
-            [&]()
+            [=]()
         {
-            CTILOG_DEBUG(dout, "RFN device creation request from Porter to client timed out for RfnIdentifier " << report.rfnId);
+            CTILOG_DEBUG(dout, "RFN device creation request from Porter to client timed out for RfnIdentifier " << rfnId);
         };
 
         CTILOG_DEBUG(dout, "Sending RfnDeviceCreationRequest to client for RfnIdentifier " << report.rfnId);
@@ -903,7 +921,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(
             Cti::Messaging::ActiveMQ::Queues::OutboundQueue::DeviceCreationRequest,
             serialized,
-            msgReceivedCallback,
+            std::make_unique<DeviceLookupCallback>(DeviceManager, rfnId, std::move(report.command), invokeCommand),
             std::chrono::seconds{ 5 },
             timedOutCallback);
     }
@@ -911,7 +929,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
     {
         CTILOG_INFO(dout, "Invoking command result handler for device " << rfnDevice->getName());
 
-        invokeCommand(*rfnDevice);
+        invokeCommand(*rfnDevice, *report.command);
     }
 }
 

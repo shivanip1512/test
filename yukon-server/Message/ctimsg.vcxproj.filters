@@ -365,6 +365,9 @@
     <ClInclude Include="include\DeviceCreationMessaging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RfnWaterNodeMessaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">
