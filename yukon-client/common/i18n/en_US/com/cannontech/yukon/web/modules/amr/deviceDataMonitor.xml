@@ -46,7 +46,7 @@
         <br/><br/>
         <b>Adding and removing from the Violations Group</b>
         <br/>
-        For a value based rule, please select the attribute to monitor and the rule to evaluate when a new value is received. Evaluations include is the attribute value greater than the defined threshold, less than the defined threshold or does the value land within a defined minimum and maximum range of thresholds. Multiple value based rules may be defined per data monitor and if the attribute's data value breaks any of the defined rules, the device will be placed in the violations group
+        For a value based rule, please select the attribute to monitor and the rule to evaluate when a new value is received. Evaluations include is the attribute value greater than the defined threshold, less than the defined threshold, does the value land within a defined minimum and maximum range of thresholds, or does the value land outside of a defined minimum and maximum range of thresholds. Multiple value based rules may be defined per data monitor and if the attribute's data value breaks any of the defined rules, the device will be placed in the violations group
     ]]></entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.value">Value</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.validationError.minGreaterThanMax">Min must be less than Max.</entry>
