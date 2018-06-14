@@ -31,11 +31,11 @@
                 </tags:nameValue>
 
                 <tags:nameValue name="Manufacturer override">
-                    <form:input path="manufacturerOverride" size="7" cssClass="optional"/>
+                    <tags:input path="manufacturerOverride" size="7" placeholder="optional"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="Model override">
-                    <form:input path="modelOverride" size="7" cssClass="optional"/>
+                    <tags:input path="modelOverride" size="7" placeholder="optional"/>
                 </tags:nameValue>
             </tags:nameValueContainer>
             <div class="action-area"><cti:button nameKey="sendMessage" type="submit" classes="js-blocker"/></div>
