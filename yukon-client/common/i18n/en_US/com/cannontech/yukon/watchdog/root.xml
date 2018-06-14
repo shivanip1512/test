@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <entry key="yukon.watchdog.root.internalNotifMessage">Critical Yukon services are stopped. Check status of below services.</entry>
-    <entry key="yukon.watchdog.root.internalNotifSubject">Notification for critical Yukon services</entry>
+    <entry key="yukon.watchdog.notification.subject">[yukon] Required Yukon services are not running</entry>
+    <entry key="yukon.watchdog.notification.text">Services required for Watchdog notifications are not running. Check status of the following services:</entry>
 </properties>

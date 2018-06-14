@@ -66,9 +66,9 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     private void sendInternalNotification(List<String> stoppedServices) {
         try {
             String to = globalSettingDao.getString(GlobalSettingType.CONTACT_EMAIL);
-            String subject = messageSourceAccessor.getMessage("yukon.watchdog.root.internalNotifSubject");
+            String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
             StringBuilder msgBuilder = new StringBuilder();
-            String message = messageSourceAccessor.getMessage("yukon.watchdog.root.internalNotifMessage");
+            String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
             msgBuilder.append(message + "\n");
             // Append all the stopped services names to the email body.
             for (String s : stoppedServices) {
