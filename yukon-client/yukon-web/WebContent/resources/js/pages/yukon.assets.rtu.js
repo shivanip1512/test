@@ -68,6 +68,20 @@ yukon.assets.rtu = (function() {
                 window.history.back();
             });
             
+            $(document).on('click', '#commander-menu-option', function (ev) {
+                var params = {
+                    target: 'DEVICE',
+                    paoId: $('#rtuId').val()
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: yukon.url('/tools/commander/updateCommanderPreferences'),
+                    data: params 
+                }).done(function() {
+                    window.location.href = yukon.url('/tools/redirectToCommander');
+                });
+            });
+            
             // Initiablize the data-url for that table that displays all the RTUs.
             $('#rtu-list-container').data('url', yukon.url('/stars/rtu-list?' + $('#filter-rtu-form').serialize()));
             

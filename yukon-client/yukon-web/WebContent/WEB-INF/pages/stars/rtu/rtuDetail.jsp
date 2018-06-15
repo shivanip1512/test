@@ -20,6 +20,12 @@
                     <li class="divider"></li>
                     <cti:url var="editUrl" value="/stars/rtu/${rtu.id}/edit" />
                     <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+                    
+                    <!-- Commander -->
+                    <cti:checkRolesAndProperties value="ENABLE_WEB_COMMANDER">
+                        <li class="divider"></li>
+                        <cm:dropdownOption key=".commander" id="commander-menu-option" icon="icon-ping"/>
+                    </cti:checkRolesAndProperties>
                 </cti:displayForPageEditModes>
             </div>
         </cti:displayForPageEditModes>
