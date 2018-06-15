@@ -18,7 +18,9 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="Centron410DisplayItem"/>
  *     &lt;enumeration value="Centron420DisplayItem"/>
  *     &lt;enumeration value="FocusAlDisplayItem"/>
- *     &lt;enumeration value="Interval"/>
+ *     &lt;enumeration value="MctDemandInterval"/>
+ *     &lt;enumeration value="RfnDemandInterval"/>
+ *     &lt;enumeration value="ProfileInterval"/>
  *     &lt;enumeration value="Rate"/>
  *     &lt;enumeration value="Schedule"/>
  *     &lt;enumeration value="Mct470MeterType"/>
@@ -65,8 +67,12 @@ public enum EnumOption {
     CENTRON_420_DISPLAY_ITEM("Centron420DisplayItem"),
     @XmlEnumValue("FocusAlDisplayItem")
     FOCUS_AL_DISPLAY_ITEM("FocusAlDisplayItem"),
-    @XmlEnumValue("Interval")
-    INTERVAL("Interval"),
+    @XmlEnumValue("MctDemandInterval")
+    MCT_DEMAND_INTERVAL("MctDemandInterval"),
+    @XmlEnumValue("RfnDemandInterval")
+    RFN_DEMAND_INTERVAL("RfnDemandInterval"),
+    @XmlEnumValue("ProfileInterval")
+    PROFILE_INTERVAL("ProfileInterval"),
     @XmlEnumValue("Rate")
     RATE("Rate"),
     @XmlEnumValue("Schedule")

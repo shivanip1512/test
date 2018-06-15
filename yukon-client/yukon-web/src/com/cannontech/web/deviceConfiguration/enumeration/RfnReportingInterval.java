@@ -1,13 +1,9 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
-import java.util.List;
 import org.springframework.stereotype.Component;
 
-import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.input.type.InputOption;
-
 @Component
-public final class RfnReportingInterval extends RfnInterval implements DeviceConfigurationInputEnumeration {
+public final class RfnReportingInterval extends RfnChannelDataInterval {
 
     //  5m, 15m, 30m, 1h
     private static final Integer[] highFrequencyIntervals = { 5, 15, 30, 60 };
@@ -15,10 +11,15 @@ public final class RfnReportingInterval extends RfnInterval implements DeviceCon
     private static final Integer[] minuteIntervals = { 2*60, 4*60, 6*60, 12*60, 24*60, 2*24*60 };
 
     @Override
-    public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
-        return createIntervalInputOptions(userContext, highFrequencyIntervals, minuteIntervals);
+    protected Integer[] getHighFrequencyIntervals() {
+        return highFrequencyIntervals;
     }
-
+    
+    @Override
+    protected Integer[] getIntervals() {
+        return minuteIntervals;
+    }
+    
     @Override
     public String getEnumOptionName() {
         return "ReportingInterval";

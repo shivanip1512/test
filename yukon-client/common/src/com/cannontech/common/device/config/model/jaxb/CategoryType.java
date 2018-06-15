@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="mct430PrecannedTable"/>
  *     &lt;enumeration value="rfnDisconnectConfiguration"/>
  *     &lt;enumeration value="mctDisconnectConfiguration"/>
+ *     &lt;enumeration value="rfnDemand"/>
  *     &lt;enumeration value="rfnVoltage"/>
  *     &lt;enumeration value="rfnTempAlarm"/>
  *     &lt;enumeration value="regulatorCategory"/>
@@ -110,6 +111,8 @@ public enum CategoryType {
     RFN_DISCONNECT_CONFIGURATION("rfnDisconnectConfiguration"),
     @XmlEnumValue("mctDisconnectConfiguration")
     MCT_DISCONNECT_CONFIGURATION("mctDisconnectConfiguration"),
+    @XmlEnumValue("rfnDemand")
+    RFN_DEMAND("rfnDemand"),
     @XmlEnumValue("rfnVoltage")
     RFN_VOLTAGE("rfnVoltage"),
     @XmlEnumValue("rfnTempAlarm")

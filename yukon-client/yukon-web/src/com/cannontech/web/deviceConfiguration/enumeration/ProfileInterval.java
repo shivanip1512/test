@@ -3,9 +3,9 @@ package com.cannontech.web.deviceConfiguration.enumeration;
 import org.springframework.stereotype.Component;
 
 @Component
-public final class DisconnectDemandInterval extends DemandInterval {
+public final class ProfileInterval extends Interval {
 
-    private static final Integer[] intervals = { 5, 10, 15 };
+    private final Integer[] intervals = { 5, 15, 30, 60 };
 
     @Override
     protected Integer[] getIntervals() {
@@ -14,6 +14,11 @@ public final class DisconnectDemandInterval extends DemandInterval {
 
     @Override
     public String getEnumOptionName() {
-        return "DisconnectDemandInterval";
+        return "ProfileInterval";
+    }
+
+    @Override
+    public SelectionType getSelectionType() {
+        return SelectionType.SWITCH;
     }
 }

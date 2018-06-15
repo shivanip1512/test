@@ -87,6 +87,8 @@ yukon-client/yukon-web/generated_web.xml
 yukon-client/yukon-web/jspbuild
 yukon-client/yukon-web/srcbuild
 yukon-client/yukon-web/temp
+yukon-client/yukon-web/test/build
+yukon-client/yukon-web/test/testResults
 yukon-client/yukon-web/work
 yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build

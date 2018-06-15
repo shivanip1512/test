@@ -22,6 +22,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.impl.DurationFormattingServiceImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInputEnumeration.SelectionType;
 import com.cannontech.web.input.type.InputOption;
@@ -34,8 +35,8 @@ public class IntervalTest {
     private static DurationFormattingServiceImpl durationService;
 
     @Test
-    public void testInterval() {
-        Interval interval = new Interval();
+    public void testProfileInterval() {
+        ProfileInterval interval = new ProfileInterval();
         setDurationService(interval);
         
         List<InputOption> expected = new InputOptionListBuilder()
@@ -47,7 +48,44 @@ public class IntervalTest {
         
         assertEquals(expected, interval.getDisplayableValues(userContext));
         
-        assertEquals("Interval", interval.getEnumOptionName());
+        assertEquals("ProfileInterval", interval.getEnumOptionName());
+        assertEquals(SelectionType.SWITCH, interval.getSelectionType());
+    }
+
+    @Test
+    public void testMctDemandInterval() {
+        MctDemandInterval interval = (new MctDemandInterval());
+        setDurationService(interval);
+
+        List<InputOption> expected = new InputOptionListBuilder()
+                .add( "5",  "5 mins")
+                .add("15", "15 mins")
+                .add("30", "30 mins")
+                .add("60",  "1 hr")
+                .build();
+        
+        assertEquals(expected, interval.getDisplayableValues(userContext));
+        
+        assertEquals("MctDemandInterval", interval.getEnumOptionName());
+        assertEquals(SelectionType.SWITCH, interval.getSelectionType());
+    }
+
+    @Test
+    public void testRfnDemandInterval() {
+        RfnDemandInterval interval = (new RfnDemandInterval());
+        setDurationService(interval);
+
+        List<InputOption> expected = new InputOptionListBuilder()
+                .add( "1",  "1 min")
+                .add( "5",  "5 mins")
+                .add("15", "15 mins")
+                .add("30", "30 mins")
+                .add("60",  "1 hr")
+                .build();
+        
+        assertEquals(expected, interval.getDisplayableValues(userContext));
+        
+        assertEquals("RfnDemandInterval", interval.getEnumOptionName());
         assertEquals(SelectionType.SWITCH, interval.getSelectionType());
     }
 
@@ -72,19 +110,34 @@ public class IntervalTest {
     public void testRfnRecordingInterval() {
         RfnRecordingInterval interval = (new RfnRecordingInterval());
         setDurationService(interval);
-        setConfigurationSource(interval, falseConfigurationSource);
-
-        List<InputOption> expected = new InputOptionListBuilder()
-                .add(  "5",  "5 minutes", false)
-                .add( "15", "15 minutes")
-                .add( "30", "30 minutes")
-                .add( "60",  "1 hour")
-                .add("120",  "2 hours")
-                .add("240",  "4 hours")
-                .build();
-        
-        assertEquals(expected, interval.getDisplayableValues(userContext));
-        
+        {
+            setConfigurationSource(interval, falseConfigurationSource);
+    
+            List<InputOption> expected = new InputOptionListBuilder()
+                    .add(  "5",  "5 minutes", false)
+                    .add( "15", "15 minutes")
+                    .add( "30", "30 minutes")
+                    .add( "60",  "1 hour")
+                    .add("120",  "2 hours")
+                    .add("240",  "4 hours")
+                    .build();
+            
+            assertEquals(expected, interval.getDisplayableValues(userContext));
+        }
+        {
+            setConfigurationSource(interval, trueConfigurationSource);
+    
+            List<InputOption> expected = new InputOptionListBuilder()
+                    .add(  "5",  "5 minutes")
+                    .add( "15", "15 minutes")
+                    .add( "30", "30 minutes")
+                    .add( "60",  "1 hour")
+                    .add("120",  "2 hours")
+                    .add("240",  "4 hours")
+                    .build();
+            
+            assertEquals(expected, interval.getDisplayableValues(userContext));
+        }
         assertEquals("RecordingInterval", interval.getEnumOptionName());
         assertEquals(SelectionType.STANDARD, interval.getSelectionType());
     }
@@ -95,18 +148,18 @@ public class IntervalTest {
         setDurationService(interval);
         setConfigurationSource(interval, falseConfigurationSource);
         {
-            List<InputOption> expected = new InputOptionListBuilder()
-                    .add(   "5",  "5 minutes", false)
-                    .add(  "15", "15 minutes", false)
-                    .add(  "30", "30 minutes", false)
-                    .add(  "60",  "1 hour",    false)
-                    .add( "120",  "2 hours")
-                    .add( "240",  "4 hours")
-                    .add( "360",  "6 hours")
-                    .add( "720", "12 hours")
-                    .add("1440",  "1 day")
-                    .add("2880",  "2 days")
-                    .build();
+        List<InputOption> expected = new InputOptionListBuilder()
+                .add(   "5",  "5 minutes", false)
+                .add(  "15", "15 minutes", false)
+                .add(  "30", "30 minutes", false)
+                .add(  "60",  "1 hour",    false)
+                .add( "120",  "2 hours")
+                .add( "240",  "4 hours")
+                .add( "360",  "6 hours")
+                .add( "720", "12 hours")
+                .add("1440",  "1 day")
+                .add("2880",  "2 days")
+                .build();
             
             assertEquals(expected, interval.getDisplayableValues(userContext));
         }
@@ -136,6 +189,7 @@ public class IntervalTest {
     public void testWaterRecordingInterval() {
         WaterRecordingInterval interval = (new WaterRecordingInterval());
         setDurationService(interval);
+        setConfigurationSource(interval, falseConfigurationSource);
 
         List<InputOption> expected = new InputOptionListBuilder()
                 .add(  "900", "15 minutes")
@@ -155,6 +209,7 @@ public class IntervalTest {
     public void testWaterReportingInterval() {
         WaterReportingInterval interval = (new WaterReportingInterval());
         setDurationService(interval);
+        setConfigurationSource(interval, falseConfigurationSource);
 
         List<InputOption> expected = new InputOptionListBuilder()
                 .add(  "7200",  "2 hours")
@@ -175,7 +230,7 @@ public class IntervalTest {
         ReflectionTestUtils.setField(inputEnumeration, "durationService", durationService);
     }
 
-    private <E extends RfnInterval> void setConfigurationSource(E rfnChannelDataInterval, ConfigurationSource configurationSource) {
+    private <E extends RfnChannelDataInterval> void setConfigurationSource(E rfnChannelDataInterval, ConfigurationSource configurationSource) {
         ReflectionTestUtils.setField(rfnChannelDataInterval, "configurationSource", configurationSource);
     }
 
@@ -197,6 +252,7 @@ public class IntervalTest {
         }
     }
 
+    @SuppressWarnings("serial")
     @BeforeClass
     public static void setup() {
         userContext = new YukonUserContext() {
@@ -214,7 +270,8 @@ public class IntervalTest {
 
             @Override
             public TimeZone getTimeZone() {
-                return TimeZone.getTimeZone("Africa/Djibouti");
+                Assert.fail();
+                return null;
             }
 
             @Override
