@@ -82,7 +82,9 @@
             <xs:enumeration value="Centron410DisplayItem"/>
             <xs:enumeration value="Centron420DisplayItem"/>
             <xs:enumeration value="FocusAlDisplayItem"/>
-            <xs:enumeration value="Interval"/>
+            <xs:enumeration value="MctDemandInterval"/>
+            <xs:enumeration value="RfnDemandInterval"/>
+            <xs:enumeration value="ProfileInterval"/>
             <xs:enumeration value="Rate"/>
             <xs:enumeration value="Schedule"/>
             <xs:enumeration value="Mct470MeterType"/>

@@ -171,11 +171,15 @@
     </category>
 
     <category type="demand">
-        <enum field="demandInterval" type="Interval" default="5"/>
+        <enum field="demandInterval" type="MctDemandInterval" default="5"/>
+    </category>
+
+    <category type="rfnDemand">
+        <enum field="demandInterval" type="RfnDemandInterval" default="5"/>
     </category>
 
     <category type="profile">
-        <enum field="profileInterval" type="Interval" default="60"/>
+        <enum field="profileInterval" type="ProfileInterval" default="60"/>
     </category>
 
     <category type="mct470ProfileChannels">
