@@ -3,15 +3,13 @@ package com.cannontech.web.deviceConfiguration.enumeration;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
-
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
-import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.Assert;
@@ -20,9 +18,10 @@ import org.junit.BeforeClass;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MockConfigurationSource;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.impl.DurationFormattingServiceImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInputEnumeration.SelectionType;
 import com.cannontech.web.input.type.InputOption;
@@ -271,6 +270,26 @@ public class IntervalTest {
             messageSource.addMessage("yukon.common.durationFormatting.symbol.D_SHORT.suffix.singular", Locale.US, "day");
             messageSource.addMessage("yukon.common.durationFormatting.symbol.D_SHORT.suffix.plural", Locale.US, "days");
 }
+        class YukonUserContextMessageSourceResolverMock implements YukonUserContextMessageSourceResolver, MessageSourceAware {
+        
+            private MessageSource messageSource;
+
+            @Override
+            public MessageSource getMessageSource(YukonUserContext userContext) {
+                return messageSource;
+            }
+
+            @Override
+            public MessageSourceAccessor getMessageSourceAccessor(YukonUserContext userContext) {
+                return new MessageSourceAccessor(messageSource, Locale.US);
+            }
+
+            @Override
+            public void setMessageSource(MessageSource messageSource) {
+                this.messageSource = messageSource;
+            }
+        };
+        
         YukonUserContextMessageSourceResolverMock messageSourceResolver = new YukonUserContextMessageSourceResolverMock();
         {
             messageSourceResolver.setMessageSource(messageSource);
