@@ -116,6 +116,9 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRole.WORK_ORDER),
     GATEWAYS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.gateways", "/stars/gateways", MatchStyle.any, YukonRoleProperty.INFRASTRUCTURE_ADMIN,
              YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, YukonRoleProperty.INFRASTRUCTURE_DELETE, YukonRoleProperty.INFRASTRUCTURE_VIEW),
+    RELAYS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.relays", "/stars/relay", MatchStyle.any, YukonRoleProperty.INFRASTRUCTURE_ADMIN,
+        YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, YukonRoleProperty.INFRASTRUCTURE_DELETE, YukonRoleProperty.INFRASTRUCTURE_VIEW),
+    RTUS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.rtus", "/stars/rtu-list", MatchStyle.all, YukonRoleProperty.CBC_DATABASE_EDIT),
 
     CONFIGURATION(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.pageName", "/admin/config/view",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
