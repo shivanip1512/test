@@ -26,6 +26,14 @@
                         <li class="divider"></li>
                         <cm:dropdownOption key=".commander" id="commander-menu-option" icon="icon-ping"/>
                     </cti:checkRolesAndProperties>
+                    
+                    <!-- Other Collection Actions -->
+                    <li class="divider"></li>
+                    <cti:url var="url" value="/bulk/collectionActions">
+                        <cti:param name="collectionType" value="idList"/>
+                        <cti:param name="idList.ids" value="${rtu.id}"/>
+                    </cti:url>
+                    <cm:dropdownOption key="yukon.web.components.button.otherActions.label" href="${url}" icon="icon-cog-go"/>
                 </cti:displayForPageEditModes>
             </div>
         </cti:displayForPageEditModes>
