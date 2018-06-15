@@ -320,6 +320,18 @@ AND String3 IS NULL;
 INSERT INTO DBUpdates VALUES ('YUK-18379', '7.1.0', GETDATE());
 /* @end YUK-18379 */
 
+/* @start YUK-18432 */
+BEGIN
+    DECLARE @MaxDeviceGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE DG.DeviceGroupId < 100)
+
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+    VALUES(@MaxDeviceGroupId + 1, 'All RFG Meters', (
+SELECT DG.DeviceGroupId FROM DeviceGroup DG WHERE SystemGroupEnum = 'ALL_RFN_METERS'), 'NOEDIT_NOMOD', 'METERS_ALL_RFG_METERS', GETDATE(), 'ALL_RFG_METERS')
+END;
+
+INSERT INTO DBUpdates VALUES ('YUK-18432', '7.1.0', GETDATE());
+/* @end YUK-18432 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

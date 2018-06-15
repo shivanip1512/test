@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/5/2018 1:49:36 PM                          */
+/* Created on:     6/15/2018 10:18:57 AM                        */
 /*==============================================================*/
 
 
@@ -3381,6 +3381,7 @@ INSERT INTO DeviceGroup VALUES (50, 'All RFW Meters', 48, 'NOEDIT_NOMOD', 'METER
 INSERT INTO DeviceGroup VALUES (51, 'Demand Response', 12, 'NOEDIT_NOMOD', 'STATIC', '01-Nov-2017', 'DEMAND_RESPONSE');
 INSERT INTO DeviceGroup VALUES (52, 'Load Groups', 51, 'NOEDIT_NOMOD', 'LOAD_GROUPS', '01-Nov-2017', 'LOAD_GROUPS');
 INSERT INTO DeviceGroup VALUES (53, 'Load Programs', 51, 'NOEDIT_NOMOD', 'LOAD_PROGRAMS', '01-Nov-2017', 'LOAD_PROGRAMS');
+INSERT INTO DeviceGroup VALUES (54, 'All RFG Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFG_METERS', '02-JUN-2017', 'ALL_RFG_METERS');
 
 alter table DeviceGroup
    add constraint AK_DeviceGroup_ParentDG_GrpNam unique (GroupName, ParentDeviceGroupId)

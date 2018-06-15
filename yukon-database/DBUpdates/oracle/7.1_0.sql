@@ -312,6 +312,25 @@ AND String3 IS NULL;
 INSERT INTO DBUpdates VALUES ('YUK-18379', '7.1.0', SYSDATE);
 /* @end YUK-18379 */
 
+/* @start YUK-18432 */
+/* @start-block */
+DECLARE
+    v_MaxDeviceGroupId NUMBER;
+    v_AllRfnGroupId NUMBER;
+BEGIN
+    SELECT MAX(DG.DeviceGroupId) INTO v_MaxDeviceGroupId FROM DeviceGroup DG WHERE DG.DeviceGroupId < 100;
+    SELECT DG.DeviceGroupId INTO v_AllRfnGroupId FROM DeviceGroup DG WHERE SystemGroupEnum = 'ALL_RFN_METERS';
+    
+    INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+        VALUES (v_MaxDeviceGroupId + 1, 'All RFG Meters', v_AllRfnGroupId, 'NOEDIT_NOMOD', 'METERS_ALL_RFG_METERS', SYSDATE, 'ALL_RFG_METERS');
+
+END;
+/
+/* @end-block */
+
+INSERT INTO DBUpdates VALUES ('YUK-18432', '7.1.0', SYSDATE);
+/* @end YUK-18432 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
