@@ -22,7 +22,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.impl.DurationFormattingServiceImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInputEnumeration.SelectionType;
 import com.cannontech.web.input.type.InputOption;
