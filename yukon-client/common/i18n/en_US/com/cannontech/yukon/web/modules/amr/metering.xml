@@ -63,6 +63,18 @@
     <entry key="yukon.web.widgetClasses.WaterMeterReadingsWidget.recentReadings">Recent Readings (since {0})</entry>
     <entry key="yukon.web.widgetClasses.WaterMeterReadingsWidget.dailyReadings">Daily readings (before {0})</entry>
     <entry key="yukon.web.widgetClasses.WaterMeterReadingsWidget.points.title">Points</entry>
+    <!-- gasMeterReadingsWidget/render.jsp -->
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.unsupported">Unsupported</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.notConfigured">Not Configured</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.previousUsage">Previous</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.totalConsumption">Total Consumption</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.readNow.label">Read</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.readNow.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.argumentStub">{0}</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.threePhaseVoltage">Phase A Voltage</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.recentReadings">Recent Readings (since {0})</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.dailyReadings">Daily readings (before {0})</entry>
+    <entry key="yukon.web.widgetClasses.GasMeterReadingsWidget.points.title">Points</entry>
     
     <!-- polyphaseMeterReadingsWidget/render.jsp -->
     <entry key="yukon.web.widgetClasses.PolyphaseMeterReadingsWidget.unsupported">Unsupported</entry>

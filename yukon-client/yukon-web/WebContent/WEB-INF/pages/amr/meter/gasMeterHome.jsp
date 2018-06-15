@@ -60,6 +60,7 @@
         <div class="column-12-12">
             <div class="column one">
                 <tags:widget bean="meterInformationWidget" />
+                <tags:widget bean="gasMeterReadingsWidget" />
 
                 <c:if test="${showRfMetadata}">
                     <tags:widget bean="rfnDeviceMetadataWidget" />
