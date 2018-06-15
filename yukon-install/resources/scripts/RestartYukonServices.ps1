@@ -26,11 +26,12 @@ exit
 Clear-Host
 
 # Just Add/Remove any service here if any change comes The first service in the list is stopped first and started last.
+# These values must be the Service Name, not the Display Name.
 [System.Collections.ArrayList]$YukonServices = 
 "YukonWatchdogService",
 "YukonWebApplicationService",
 "YukonSimulatorsService",
-"Yukon Field Simulator Service",
+"FIELDSIMULATOR",
 "Yukon Load Management Service",
 "Yukon Cap Control Service",
 "Yukon Calc-Logic Service",
@@ -53,7 +54,7 @@ $global:SERVICES_STOPPED = $True
 # Adding only those services to ServicesToRestart list if they are set start automatically or currently running #
 foreach($YukonService in $YukonServices)
 {
-    $ServiceStartMode = (Get-WmiObject Win32_Service -filter "Name='$YukonService'").StartMode
+    $ServiceStartMode = (Get-CimClass Win32_Service -filter "Name='$YukonService'").StartMode
 
     If($ServiceStartMode -eq "Auto")
     {
@@ -190,7 +191,7 @@ Function KillServices {
         If($CurrentServiceStatus -ne $STOPPED)
         {
             Write-Host "Kill Service $ServiceToKill" 
-            $ServicePID = (get-wmiobject win32_service | where { $_.name -eq $ServiceToKill}).processID
+            $ServicePID = (get-wmiobject win32_service | Where-Object { $_.name -eq $ServiceToKill}).processID
             Stop-Process $ServicePID -Force
         }
     }
