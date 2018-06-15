@@ -1753,7 +1753,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_interval)
 {
     fixtureConfig->addCategory(
         Cti::Config::Category::ConstructCategory(
-            "demand",
+            "rfnDemand",
             std::map<std::string, std::string> { { RfnStrings::demandInterval, "11" } }));
 
     {
@@ -1948,7 +1948,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
                     { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
                 
             // demand interval
-            CategoryDefinition { "demand", 
+            CategoryDefinition { "rfnDemand", 
                 CategoryItems {
                     { RfnStrings::demandInterval, "13" } } }
             };
@@ -2124,7 +2124,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
                     { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
 
             // demand interval
-            CategoryDefinition { "demand", 
+            CategoryDefinition { "rfnDemand", 
                 CategoryItems {
                     { RfnStrings::demandInterval, "11" } } }
             };
@@ -2415,7 +2415,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
                     { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
 
-            CategoryDefinition { "demand", 
+            CategoryDefinition { "rfnDemand", 
                 CategoryItems {
                     { RfnStrings::demandInterval, "13" } } }
             };
