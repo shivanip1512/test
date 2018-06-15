@@ -1,12 +1,13 @@
 package com.cannontech.web.input.type;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
+
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.base.Objects;
+
 
 /**
  * Class which represents an input option to be used with a drop down box
@@ -87,8 +88,8 @@ public class InputOption implements InputOptionProvider {
             InputOption other = (InputOption) obj;
         
             return enabled == other.enabled 
-                && Objects.equal(value, other.value)
-                && Objects.equal(messageSourceResolvable, other.messageSourceResolvable);
+                && Objects.equals(value, other.value)
+                && Objects.equals(messageSourceResolvable, other.messageSourceResolvable);
         }
         return false;
     }
