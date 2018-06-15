@@ -115,6 +115,7 @@ yukon.tools.dataExporterFormat = (function () {
                         classes: {
                             "ui-dialog": 'ov'
                         },
+                        modal: true,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.add', target: popup})
                     });
                 });
@@ -130,6 +131,7 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addField,
                         width: 'auto',
+                        modal: true,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.add', target: popup})
                     });
                 });
@@ -236,6 +238,7 @@ yukon.tools.dataExporterFormat = (function () {
                         classes: {
                             "ui-dialog": 'ov'
                         },
+                        modal: true,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.edit', target: row})
                     });
                 });
@@ -259,6 +262,7 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.editField,
                         width: 'auto',
+                        modal: true,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.edit', target: row})
                     });
                 });

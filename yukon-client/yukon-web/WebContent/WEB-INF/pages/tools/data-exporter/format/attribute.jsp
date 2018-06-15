@@ -17,7 +17,7 @@
 </form:form>
 <style>
 #format-popup {
-    overflow: initial !important;
+    overflow: visible !important;
 }
 </style>
 <script>
