@@ -78,26 +78,26 @@ yukon.mapping = (function () {
         },
         
         displayCommonPopupProperties: function(pao) {
-            $('.js-device-display').toggleClass('dn', pao.device.name == null);
+            $('.js-device-display').toggleClass('dn', pao.device.name === null);
             if (pao.deviceDetailUrl != null) {
                 var nameSpan = $('<span />'),
                     deviceLink = '<a href="' + yukon.url(pao.deviceDetailUrl) + '" target=_blank>' + nameSpan.text(pao.device.name).html() + '</a>',
                     cogMenu = $('.js-cog-menu').clone().removeClass('dn');
                 cogMenu.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
-                if (pao.device.paoIdentifier.paoType == 'RFN_GATEWAY' || pao.device.paoIdentifier.paoType == 'GWY800') {
+                if (pao.device.paoIdentifier.paoType === 'RFN_GATEWAY' || pao.device.paoIdentifier.paoType === 'GWY800') {
                     cogMenu.find('.js-device-route').addClass('dn');
                 }
                 $('.js-device').html(deviceLink + cogMenu[0].outerHTML);
             } else {
                 $('.js-device').text(pao.device.name);
             }
-            $('.js-meter-number-display').toggleClass('dn', pao.meterNumber == null);
+            $('.js-meter-number-display').toggleClass('dn', pao.meterNumber === null);
             $('.js-meter-number').text(pao.meterNumber);
-            $('.js-type-display').toggleClass('dn', pao.device.paoIdentifier.paoType == null);
+            $('.js-type-display').toggleClass('dn', pao.device.paoIdentifier.paoType === null);
             $('.js-type').text(pao.device.paoIdentifier.paoType);
-            $('.js-status-display').toggleClass('dn', pao.statusDisplay == null);
+            $('.js-status-display').toggleClass('dn', pao.statusDisplay === null);
             $('.js-status').text(pao.statusDisplay);
-            $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway == null);
+            $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway === null);
             if (pao.primaryGatewayUrl != null) {
                 var nameSpan = $('<span />');
                 nameSpan.text(pao.primaryGateway);
@@ -109,25 +109,25 @@ yukon.mapping = (function () {
         
         displayNeighborPopupProperties: function(neighbor) {
             var neighborData = neighbor.data;
-            $('.js-node-sn-display').toggleClass('dn', (neighborData.serialNumber == null || neighbor.gatewayType));
+            $('.js-node-sn-display').toggleClass('dn', (neighborData.serialNumber === null || neighbor.gatewayType));
             $('.js-node-sn').text(neighborData.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber == null || neighbor.gatewayType));
+            $('.js-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || neighbor.gatewayType));
             $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber == null || !neighbor.gatewayType));
+            $('.js-gateway-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || !neighbor.gatewayType));
             $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress == null);
+            $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress === null);
             $('.js-ip-address').text(neighbor.ipAddress);
-            $('.js-address-display').toggleClass('dn', neighborData.neighborAddress == null);
+            $('.js-address-display').toggleClass('dn', neighborData.neighborAddress === null);
             $('.js-address').text(neighborData.neighborAddress);
-            $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags == null);
+            $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags === null);
             $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
-            $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost == null);
+            $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost === null);
             $('.js-link-cost').text(neighborData.neighborLinkCost);
-            $('.js-num-samples-display').toggleClass('dn', neighborData.numSamples == null);
+            $('.js-num-samples-display').toggleClass('dn', neighborData.numSamples === null);
             $('.js-num-samples').text(neighborData.numSamples);
-            $('.js-etx-band-display').toggleClass('dn', neighborData.etxBand == null);
+            $('.js-etx-band-display').toggleClass('dn', neighborData.etxBand === null);
             $('.js-etx-band').text(neighborData.etxBand);
-            $('.js-distance-display').toggleClass('dn', neighbor.distanceDisplay == null);
+            $('.js-distance-display').toggleClass('dn', neighbor.distanceDisplay === null);
             $('.js-distance').text(neighbor.distanceDisplay);
             $('#parent-info').hide();
             $('#device-info').hide();
@@ -137,27 +137,27 @@ yukon.mapping = (function () {
         },
         
         displayPrimaryRoutePopupProperties: function(routeInfo) {
-            $('.js-node-sn-display').toggleClass('dn', (routeInfo.route.serialNumber == null || routeInfo.gatewayType));
+            $('.js-node-sn-display').toggleClass('dn', (routeInfo.route.serialNumber === null || routeInfo.gatewayType));
             $('.js-node-sn').text(routeInfo.route.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber == null || routeInfo.gatewayType));
+            $('.js-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || routeInfo.gatewayType));
             $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber == null || !routeInfo.gatewayType));
+            $('.js-gateway-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || !routeInfo.gatewayType));
             $('.js-gateway-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', routeInfo.ipAddress == null);
+            $('.js-ip-address-display').toggleClass('dn', routeInfo.ipAddress === null);
             $('.js-ip-address').text(routeInfo.ipAddress);
-            $('.js-address-display').toggleClass('dn', routeInfo.macAddress == null);
+            $('.js-address-display').toggleClass('dn', routeInfo.macAddress === null);
             $('.js-address').text(routeInfo.macAddress);
-            $('.js-destination-address-display').toggleClass('dn', routeInfo.route.destinationAddress == null);
+            $('.js-destination-address-display').toggleClass('dn', routeInfo.route.destinationAddress === null);
             $('.js-destination-address').text(routeInfo.route.destinationAddress);
-            $('.js-next-hop-address-display').toggleClass('dn', routeInfo.route.nextHopAddress == null);
+            $('.js-next-hop-address-display').toggleClass('dn', routeInfo.route.nextHopAddress === null);
             $('.js-next-hop-address').text(routeInfo.route.nextHopAddress);
-            $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost == null);
+            $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost === null);
             $('.js-total-cost').text(routeInfo.route.totalCost);
-            $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount == null);
+            $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount === null);
             $('.js-hop-count').text(routeInfo.route.hopCount);
-            $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags == null);
+            $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags === null);
             $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
-            $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles == 0);
+            $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles === 0);
             $('.js-distance').text(routeInfo.distanceDisplay);
             $('#parent-info').hide();
             $('#neighbor-info').hide();

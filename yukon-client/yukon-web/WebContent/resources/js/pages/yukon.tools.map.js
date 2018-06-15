@@ -218,20 +218,20 @@ yukon.tools.map = (function() {
         //check icons first
         var exists = [];
         for (var i in _icons) {
-            if (_icons[i].get('pao').paoId == deviceId) {
+            if (_icons[i].get('pao').paoId === deviceId) {
                 exists.push(_icons[i]);
                 break;
             }
         }
         //check focus devices next
-        if (exists.length == 0) {
+        if (exists.length === 0) {
             exists = _deviceFocusIcons.filter(function (device) {
                 if (device.getProperties().routeInfo != null) {
-                    return device.getProperties().routeInfo.device.paoIdentifier.paoId == deviceId;
+                    return device.getProperties().routeInfo.device.paoIdentifier.paoId === deviceId;
                 } else if (device.getProperties().neighbor != null) {
-                    return device.getProperties().neighbor.device.paoIdentifier.paoId == deviceId;
+                    return device.getProperties().neighbor.device.paoIdentifier.paoId === deviceId;
                 }
-            })
+            });
         }
         if (exists.length > 0) {
             var focusDevice = exists[0],
@@ -408,6 +408,13 @@ yukon.tools.map = (function() {
             _destProjection = _map.getView().getProjection().getCode();
             _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
             _loadIcons();
+            /** Hide any cog dropdowns on zoom or map move **/
+            _map.getView().on('change:resolution', function(ev) {
+               $('.dropdown-menu').css('display', 'none');
+            });
+            _map.on('movestart', function(ev) {
+                $('.dropdown-menu').css('display', 'none');
+             });
             
             /** Display marker info popup on marker clicks. */
             var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
@@ -449,7 +456,7 @@ yukon.tools.map = (function() {
                     var target = ev.originalEvent.target;
                     //check if user clicked on cog
                     var cog = $(target).closest('.js-cog-menu');
-                    if (cog.length == 0) {
+                    if (cog.length === 0) {
                         $('#marker-info').hide();
                     }
                 }
@@ -685,6 +692,9 @@ yukon.tools.map = (function() {
                         $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
                     }
                 }
+                
+                //close any popups
+                $('#marker-info').hide();
             });
             
             $("body").on("dialogopen", function (event, ui) {
