@@ -20,13 +20,13 @@
     <form action="${dataUrl}" method="get" id="filter-rtu-form">
         <i:inline key="yukon.common.filterBy"/>
         <select id="rtuType" name="rtuType">
-            <option value="AllTypes" label="<i:inline key="yukon.web.modules.operator.rtu.allTypes"/>"/>
+            <option value="AllTypes"><i:inline key="yukon.web.modules.operator.rtu.allTypes"/></option>
             <c:forEach var="rtuType" items="${rtuTypes}">
                 <c:set var="isSelected" value=""/>
                 <c:if test="${rtuType == selectedRtuType}">
                     <c:set var="isSelected" value="selected"/>
                 </c:if>
-                <option value="${rtuType}" label="<i:inline key="${rtuType}"/>" ${isSelected}/>
+                <option value="${rtuType}" ${isSelected}><i:inline key="${rtuType}"/></option>
             </c:forEach>
         </select>
         <cti:button type="submit" classes="action primary fn vab" nameKey="filter" />
