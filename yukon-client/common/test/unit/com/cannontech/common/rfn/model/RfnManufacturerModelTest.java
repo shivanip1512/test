@@ -30,6 +30,20 @@ public class RfnManufacturerModelTest {
     			ImmutableList.of(
     					RfnManufacturerModel.RFN_530S4RT,
     					RfnManufacturerModel.RFN_530S4RR));
+
+        Assert.assertEquals(
+                RfnManufacturerModel.getForType(PaoType.RFN530FAX), 
+                ImmutableList.of(
+                         RfnManufacturerModel.RFN_530FAXD,
+                         RfnManufacturerModel.RFN_530FAXT,
+                         RfnManufacturerModel.RFN_530FAXR));
+
+        Assert.assertEquals(
+                RfnManufacturerModel.getForType(PaoType.RFN530FRX), 
+                ImmutableList.of(
+                         RfnManufacturerModel.RFN_530FRXD,
+                         RfnManufacturerModel.RFN_530FRXT,
+                         RfnManufacturerModel.RFN_530FRXR));
     }
     
     @Test(expected=IllegalArgumentException.class)

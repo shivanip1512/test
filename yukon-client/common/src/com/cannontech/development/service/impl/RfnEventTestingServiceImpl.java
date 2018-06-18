@@ -156,8 +156,12 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_520FRXR_SD));
 
         groupedMeterTypesBuilder.put("Landis & Gyr polyphase", ImmutableList.of(
-            RfnManufacturerModel.RFN_530FAX,
-            RfnManufacturerModel.RFN_530FRX,
+            RfnManufacturerModel.RFN_530FAXD,
+            RfnManufacturerModel.RFN_530FAXT,
+            RfnManufacturerModel.RFN_530FAXR,
+            RfnManufacturerModel.RFN_530FRXD,
+            RfnManufacturerModel.RFN_530FRXT,
+            RfnManufacturerModel.RFN_530FRXR,
             RfnManufacturerModel.RFN_530S4X,
             RfnManufacturerModel.RFN_530S4AD,
             RfnManufacturerModel.RFN_530S4AT,

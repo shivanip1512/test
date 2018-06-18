@@ -90,9 +90,12 @@ public enum RfnManufacturerModel {
     RFN_520FRXT_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-500"),
     RFN_520FRXR_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-500"),
     
-    //this manufacturer value doesn't actually exist yet.
-    RFN_530FAX(PaoType.RFN530FAX, "LGYR", "FocusAXT-530"),
-    RFN_530FRX(PaoType.RFN530FRX, "LGYR", "FocusAXR-530"),
+    RFN_530FAXD(PaoType.RFN530FAX, "LGYR", "FocusAXD-530"),
+    RFN_530FAXT(PaoType.RFN530FAX, "LGYR", "FocusAXT-530"),
+    RFN_530FAXR(PaoType.RFN530FAX, "LGYR", "FocusAXR-530"),
+    RFN_530FRXD(PaoType.RFN530FRX, "LGYR", "FocusRXD-530"),
+    RFN_530FRXT(PaoType.RFN530FRX, "LGYR", "FocusRXT-530"),
+    RFN_530FRXR(PaoType.RFN530FRX, "LGYR", "FocusRXR-530"),
     
     RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
     RFN_530S4AD(PaoType.RFN530S4EAX, "LGYR", "S4-AD"),
