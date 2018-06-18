@@ -188,7 +188,6 @@ public class IntervalTest {
     public void testWaterRecordingInterval() {
         WaterRecordingInterval interval = (new WaterRecordingInterval());
         setDurationService(interval);
-        setConfigurationSource(interval, falseConfigurationSource);
 
         List<InputOption> expected = new InputOptionListBuilder()
                 .add(  "900", "15 minutes")
@@ -208,7 +207,6 @@ public class IntervalTest {
     public void testWaterReportingInterval() {
         WaterReportingInterval interval = (new WaterReportingInterval());
         setDurationService(interval);
-        setConfigurationSource(interval, falseConfigurationSource);
 
         List<InputOption> expected = new InputOptionListBuilder()
                 .add(  "7200",  "2 hours")
@@ -225,11 +223,50 @@ public class IntervalTest {
         assertEquals(SelectionType.STANDARD, interval.getSelectionType());
     }
 
+    @Test
+    public void testGasRecordingInterval() {
+        GasRecordingInterval interval = (new GasRecordingInterval());
+        setDurationService(interval);
+
+        List<InputOption> expected = new InputOptionListBuilder()
+                .add(  "900", "15 minutes")
+                .add( "1800", "30 minutes")
+                .add( "3600",  "1 hour")
+                .add( "7200",  "2 hours")
+                .add("14400",  "4 hours")
+                .build();
+        
+        assertEquals(expected, interval.getDisplayableValues(userContext));
+        
+        assertEquals("GasRecordingInterval", interval.getEnumOptionName());
+        assertEquals(SelectionType.STANDARD, interval.getSelectionType());
+    }
+
+    @Test
+    public void testGasReportingInterval() {
+        GasReportingInterval interval = (new GasReportingInterval());
+        setDurationService(interval);
+
+        List<InputOption> expected = new InputOptionListBuilder()
+                .add(  "7200",  "2 hours")
+                .add( "14400",  "4 hours")
+                .add( "21600",  "6 hours")
+                .add( "43200", "12 hours")
+                .add( "86400",  "1 day")
+                .add("172800",  "2 days")
+                .build();
+        
+        assertEquals(expected, interval.getDisplayableValues(userContext));
+        
+        assertEquals("GasReportingInterval", interval.getEnumOptionName());
+        assertEquals(SelectionType.STANDARD, interval.getSelectionType());
+    }
+
     private <E extends DeviceConfigurationInputEnumeration> void setDurationService(E inputEnumeration) {
         ReflectionTestUtils.setField(inputEnumeration, "durationService", durationService);
     }
 
-    private <E extends RfnChannelDataInterval> void setConfigurationSource(E rfnChannelDataInterval, ConfigurationSource configurationSource) {
+    private <E extends RfnElectricMeterChannelDataInterval> void setConfigurationSource(E rfnChannelDataInterval, ConfigurationSource configurationSource) {
         ReflectionTestUtils.setField(rfnChannelDataInterval, "configurationSource", configurationSource);
     }
 

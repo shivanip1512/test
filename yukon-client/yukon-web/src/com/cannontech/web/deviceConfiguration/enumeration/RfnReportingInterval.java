@@ -3,7 +3,7 @@ package com.cannontech.web.deviceConfiguration.enumeration;
 import org.springframework.stereotype.Component;
 
 @Component
-public final class RfnReportingInterval extends RfnChannelDataInterval {
+public final class RfnReportingInterval extends RfnElectricMeterChannelDataInterval {
 
     //  5m, 15m, 30m, 1h
     private static final Integer[] highFrequencyIntervals = { 5, 15, 30, 60 };
