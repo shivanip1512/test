@@ -18,7 +18,6 @@ struct IM_EX_MSG RfnDeviceCreationRequestMessage
 struct IM_EX_MSG RfnDeviceCreationReplyMessage
 {
     DeviceCreationDescriptor descriptor;
-    
     bool                     success;
 
     RfnDeviceCreationReplyMessage();
