@@ -29,18 +29,6 @@ struct DeviceCreationDescriptor : Loggable
             "category="   << category << ", "
             "deviceType=" << deviceType << "]";
     }
-
-    bool operator<(const DeviceCreationDescriptor &rhs) const
-    {
-        return boost::tie(paoId, category, deviceType)
-             < boost::tie(rhs.paoId, rhs.category, rhs.deviceType);
-    }
-
-    bool operator==(const DeviceCreationDescriptor &rhs) const
-    {
-        return boost::tie(paoId, category, deviceType)
-            == boost::tie(rhs.paoId, rhs.category, rhs.deviceType);
-    }
 };
 
 }

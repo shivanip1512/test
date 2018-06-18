@@ -35,6 +35,18 @@ struct RfnIdentifier : Loggable
         //  matches RfnIdentifier.java getCombinedIdentifier()
         return StreamBuffer() << manufacturer << "_" << model << "_" << serialNumber;
     }
+
+    bool operator<(const RfnIdentifier &rhs) const
+    {
+        return boost::tie(manufacturer, model, serialNumber)
+             < boost::tie(rhs.manufacturer, rhs.model, rhs.serialNumber);
+    }
+
+    bool operator==(const RfnIdentifier &rhs) const
+    {
+        return boost::tie(manufacturer, model, serialNumber)
+            == boost::tie(rhs.manufacturer, rhs.model, rhs.serialNumber);
+    }
 };
 
 }
