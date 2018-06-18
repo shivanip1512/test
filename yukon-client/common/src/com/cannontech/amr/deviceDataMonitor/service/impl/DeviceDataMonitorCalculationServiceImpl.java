@@ -306,11 +306,15 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     }
     
     @Override
-    public void recalculateViolation(DeviceDataMonitor monitor, int deviceId){
+    public boolean recalculateViolation(DeviceDataMonitor monitor, int deviceId){
 
         Multimap<SimpleDevice, Attribute> devices = attributeService.getDevicesInGroupThatSupportAttribute(
             monitor.getGroup(), monitor.getAttributes(), Lists.newArrayList(deviceId));
-        
+        if (devices.isEmpty()) {
+            log.debug("{} recalculation of violation for device id {} is skipped. Device doesn't support {} attributes",
+                monitor, deviceId, monitor.getAttributes());
+            return false;
+        }
         SimpleDevice device = devices.keySet().iterator().next();
         log.debug("{} recalculating violations for {} attributes {}", monitor, device, deviceId);
 
@@ -336,6 +340,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         
         updateViolationCacheCount(monitor);
         log.debug("{} recalculation of violation for {} is complete",  monitor, device);
+        return true;
     }
     
     /**

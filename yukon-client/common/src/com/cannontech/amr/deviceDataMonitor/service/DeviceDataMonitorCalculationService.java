@@ -7,7 +7,8 @@ public interface DeviceDataMonitorCalculationService {
     /**
      * Recalculates violation for device. Adds device to violation group if violation was
      * found otherwise removes device from violation group.
+     * @return false - if violations were not recalculated because the attributes were not supported by the device
      */
 
-    void recalculateViolation(DeviceDataMonitor monitor, int deviceId);
+    boolean recalculateViolation(DeviceDataMonitor monitor, int deviceId);
 }
