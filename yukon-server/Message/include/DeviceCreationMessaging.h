@@ -3,6 +3,7 @@
 #include "dlldefs.h"
 #include "ctitime.h"
 #include "rfn_identifier.h"
+#include "DeviceCreationDescriptor.h"
 
 namespace Cti {
 namespace Messaging {
@@ -16,9 +17,9 @@ struct IM_EX_MSG RfnDeviceCreationRequestMessage
 
 struct IM_EX_MSG RfnDeviceCreationReplyMessage
 {
-    int             paoId;
-    std::string     category,
-                    deviceType;
+    DeviceCreationDescriptor descriptor;
+    
+    bool                     success;
 
     RfnDeviceCreationReplyMessage();
 };

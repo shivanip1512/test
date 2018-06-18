@@ -215,10 +215,12 @@ try
     const Thrift::RfnDeviceCreationReply thriftMsg = DeserializeThriftBytes<Thrift::RfnDeviceCreationReply>(buf);
 
     RfnDeviceCreationReplyMessage msg;
+    Thrift::DeviceCreationDescriptor descriptor = thriftMsg.descriptor;
 
-    msg.paoId      = thriftMsg.paoId;
-    msg.category   = thriftMsg.category;
-    msg.deviceType = thriftMsg.deviceType;
+    msg.descriptor.paoId      = descriptor.paoId;
+    msg.descriptor.category   = descriptor.category;
+    msg.descriptor.deviceType = descriptor.deviceType;
+    msg.success               = thriftMsg.success;
 
     return msg;
 }

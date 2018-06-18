@@ -56,16 +56,16 @@ class RfnDeviceCreationRequest {
 void swap(RfnDeviceCreationRequest &a, RfnDeviceCreationRequest &b);
 
 
-class RfnDeviceCreationReply {
+class DeviceCreationDescriptor {
  public:
 
   static const char* ascii_fingerprint; // = "3368C2F81F2FEF71F11EDACDB2A3ECEF";
   static const uint8_t binary_fingerprint[16]; // = {0x33,0x68,0xC2,0xF8,0x1F,0x2F,0xEF,0x71,0xF1,0x1E,0xDA,0xCD,0xB2,0xA3,0xEC,0xEF};
 
-  RfnDeviceCreationReply() : paoId(0), category(), deviceType() {
+  DeviceCreationDescriptor() : paoId(0), category(), deviceType() {
   }
 
-  virtual ~RfnDeviceCreationReply() throw() {}
+  virtual ~DeviceCreationDescriptor() throw() {}
 
   int32_t paoId;
   std::string category;
@@ -83,13 +83,66 @@ class RfnDeviceCreationReply {
     deviceType = val;
   }
 
-  bool operator == (const RfnDeviceCreationReply & rhs) const
+  bool operator == (const DeviceCreationDescriptor & rhs) const
   {
     if (!(paoId == rhs.paoId))
       return false;
     if (!(category == rhs.category))
       return false;
     if (!(deviceType == rhs.deviceType))
+      return false;
+    return true;
+  }
+  bool operator != (const DeviceCreationDescriptor &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DeviceCreationDescriptor & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(DeviceCreationDescriptor &a, DeviceCreationDescriptor &b);
+
+typedef struct _RfnDeviceCreationReply__isset {
+  _RfnDeviceCreationReply__isset() : descriptor(false) {}
+  bool descriptor;
+} _RfnDeviceCreationReply__isset;
+
+class RfnDeviceCreationReply {
+ public:
+
+  static const char* ascii_fingerprint; // = "4462D3C52BFBF791C5452AAA17F9C1ED";
+  static const uint8_t binary_fingerprint[16]; // = {0x44,0x62,0xD3,0xC5,0x2B,0xFB,0xF7,0x91,0xC5,0x45,0x2A,0xAA,0x17,0xF9,0xC1,0xED};
+
+  RfnDeviceCreationReply() : success(0) {
+  }
+
+  virtual ~RfnDeviceCreationReply() throw() {}
+
+  DeviceCreationDescriptor descriptor;
+  bool success;
+
+  _RfnDeviceCreationReply__isset __isset;
+
+  void __set_descriptor(const DeviceCreationDescriptor& val) {
+    descriptor = val;
+    __isset.descriptor = true;
+  }
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  bool operator == (const RfnDeviceCreationReply & rhs) const
+  {
+    if (__isset.descriptor != rhs.__isset.descriptor)
+      return false;
+    else if (__isset.descriptor && !(descriptor == rhs.descriptor))
+      return false;
+    if (!(success == rhs.success))
       return false;
     return true;
   }

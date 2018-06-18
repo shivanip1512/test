@@ -557,6 +557,7 @@
     <ClInclude Include="include\desolvers.h" />
     <ClInclude Include="include\DeviceAttributeLookup.h" />
     <ClInclude Include="include\DeviceConfigDescription.h" />
+    <ClInclude Include="include\DeviceCreationDescriptor.h" />
     <ClInclude Include="include\devicetypes.h" />
     <ClInclude Include="include\dllbase.h" />
     <ClInclude Include="include\dlldefs.h" />

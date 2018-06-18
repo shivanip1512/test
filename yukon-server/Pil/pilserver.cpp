@@ -896,16 +896,24 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
             // build a device creation call to Java
             void operator()(const RfnDeviceCreationReplyMessage & reply) const override
             {
-                CTILOG_DEBUG(dout, "Received RfnDeviceCreationReply from client for rfn device with id " << reply.paoId);
-                // force a device reload of the new device
-                DeviceManager->refreshDeviceByID(reply.paoId, reply.category, reply.deviceType);
-
-                // attempt to get the device again
-                auto newDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId);
-
-                if( newDevice )
+                if ( reply.success )
                 {
-                    invokeCommand(*newDevice, *command);
+                    CTILOG_DEBUG(dout, "Received RfnDeviceCreationReply from client for " << reply.descriptor);
+                    // force a device reload of the new device
+                    DeviceCreationDescriptor descriptor = reply.descriptor;
+                    DeviceManager->refreshDeviceByID(descriptor.paoId, descriptor.category, descriptor.deviceType);
+
+                    // attempt to get the device again
+                    auto newDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId);
+
+                    if (newDevice)
+                    {
+                        invokeCommand(*newDevice, *command);
+                    }
+                } 
+                else
+                {
+                    CTILOG_DEBUG(dout, "RFN device creation request from Porter to client failed for new rfn device " << rfnId);
                 }
             };
         };

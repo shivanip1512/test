@@ -653,7 +653,7 @@
     <ClInclude Include="include\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\environment\libraries\nlohmann\3.1.2\json.hpp">
+    <ClInclude Include="include\DeviceCreationDescriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

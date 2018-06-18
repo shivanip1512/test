@@ -33,9 +33,8 @@ import org.slf4j.LoggerFactory;
 public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDeviceCreationReply, RfnDeviceCreationReply._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("RfnDeviceCreationReply");
 
-  private static final org.apache.thrift.protocol.TField PAO_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("paoId", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField CATEGORY_FIELD_DESC = new org.apache.thrift.protocol.TField("category", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField DEVICE_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("deviceType", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField DESCRIPTOR_FIELD_DESC = new org.apache.thrift.protocol.TField("descriptor", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -43,15 +42,13 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
     schemes.put(TupleScheme.class, new RfnDeviceCreationReplyTupleSchemeFactory());
   }
 
-  private int paoId; // required
-  private String category; // required
-  private String deviceType; // required
+  private DeviceCreationDescriptor descriptor; // optional
+  private boolean success; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PAO_ID((short)1, "paoId"),
-    CATEGORY((short)2, "category"),
-    DEVICE_TYPE((short)3, "deviceType");
+    DESCRIPTOR((short)1, "descriptor"),
+    SUCCESS((short)2, "success");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -66,12 +63,10 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // PAO_ID
-          return PAO_ID;
-        case 2: // CATEGORY
-          return CATEGORY;
-        case 3: // DEVICE_TYPE
-          return DEVICE_TYPE;
+        case 1: // DESCRIPTOR
+          return DESCRIPTOR;
+        case 2: // SUCCESS
+          return SUCCESS;
         default:
           return null;
       }
@@ -112,17 +107,16 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
   }
 
   // isset id assignments
-  private static final int __PAOID_ISSET_ID = 0;
+  private static final int __SUCCESS_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.DESCRIPTOR};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.PAO_ID, new org.apache.thrift.meta_data.FieldMetaData("paoId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.CATEGORY, new org.apache.thrift.meta_data.FieldMetaData("category", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.DEVICE_TYPE, new org.apache.thrift.meta_data.FieldMetaData("deviceType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DESCRIPTOR, new org.apache.thrift.meta_data.FieldMetaData("descriptor", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DeviceCreationDescriptor.class)));
+    tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(RfnDeviceCreationReply.class, metaDataMap);
   }
@@ -131,15 +125,11 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
   }
 
   public RfnDeviceCreationReply(
-    int paoId,
-    String category,
-    String deviceType)
+    boolean success)
   {
     this();
-    this.paoId = paoId;
-    setPaoIdIsSet(true);
-    this.category = category;
-    this.deviceType = deviceType;
+    this.success = success;
+    setSuccessIsSet(true);
   }
 
   /**
@@ -147,13 +137,10 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
    */
   public RfnDeviceCreationReply(RfnDeviceCreationReply other) {
     __isset_bitfield = other.__isset_bitfield;
-    this.paoId = other.paoId;
-    if (other.isSetCategory()) {
-      this.category = other.category;
+    if (other.isSetDescriptor()) {
+      this.descriptor = new DeviceCreationDescriptor(other.descriptor);
     }
-    if (other.isSetDeviceType()) {
-      this.deviceType = other.deviceType;
-    }
+    this.success = other.success;
   }
 
   public RfnDeviceCreationReply deepCopy() {
@@ -162,103 +149,71 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
 
   @Override
   public void clear() {
-    setPaoIdIsSet(false);
-    this.paoId = 0;
-    this.category = null;
-    this.deviceType = null;
+    this.descriptor = null;
+    setSuccessIsSet(false);
+    this.success = false;
   }
 
-  public int getPaoId() {
-    return this.paoId;
+  public DeviceCreationDescriptor getDescriptor() {
+    return this.descriptor;
   }
 
-  public void setPaoId(int paoId) {
-    this.paoId = paoId;
-    setPaoIdIsSet(true);
+  public void setDescriptor(DeviceCreationDescriptor descriptor) {
+    this.descriptor = descriptor;
   }
 
-  public void unsetPaoId() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PAOID_ISSET_ID);
+  public void unsetDescriptor() {
+    this.descriptor = null;
   }
 
-  /** Returns true if field paoId is set (has been assigned a value) and false otherwise */
-  public boolean isSetPaoId() {
-    return EncodingUtils.testBit(__isset_bitfield, __PAOID_ISSET_ID);
+  /** Returns true if field descriptor is set (has been assigned a value) and false otherwise */
+  public boolean isSetDescriptor() {
+    return this.descriptor != null;
   }
 
-  public void setPaoIdIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PAOID_ISSET_ID, value);
-  }
-
-  public String getCategory() {
-    return this.category;
-  }
-
-  public void setCategory(String category) {
-    this.category = category;
-  }
-
-  public void unsetCategory() {
-    this.category = null;
-  }
-
-  /** Returns true if field category is set (has been assigned a value) and false otherwise */
-  public boolean isSetCategory() {
-    return this.category != null;
-  }
-
-  public void setCategoryIsSet(boolean value) {
+  public void setDescriptorIsSet(boolean value) {
     if (!value) {
-      this.category = null;
+      this.descriptor = null;
     }
   }
 
-  public String getDeviceType() {
-    return this.deviceType;
+  public boolean isSuccess() {
+    return this.success;
   }
 
-  public void setDeviceType(String deviceType) {
-    this.deviceType = deviceType;
+  public void setSuccess(boolean success) {
+    this.success = success;
+    setSuccessIsSet(true);
   }
 
-  public void unsetDeviceType() {
-    this.deviceType = null;
+  public void unsetSuccess() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
   }
 
-  /** Returns true if field deviceType is set (has been assigned a value) and false otherwise */
-  public boolean isSetDeviceType() {
-    return this.deviceType != null;
+  /** Returns true if field success is set (has been assigned a value) and false otherwise */
+  public boolean isSetSuccess() {
+    return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
   }
 
-  public void setDeviceTypeIsSet(boolean value) {
-    if (!value) {
-      this.deviceType = null;
-    }
+  public void setSuccessIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case PAO_ID:
+    case DESCRIPTOR:
       if (value == null) {
-        unsetPaoId();
+        unsetDescriptor();
       } else {
-        setPaoId((Integer)value);
+        setDescriptor((DeviceCreationDescriptor)value);
       }
       break;
 
-    case CATEGORY:
+    case SUCCESS:
       if (value == null) {
-        unsetCategory();
+        unsetSuccess();
       } else {
-        setCategory((String)value);
-      }
-      break;
-
-    case DEVICE_TYPE:
-      if (value == null) {
-        unsetDeviceType();
-      } else {
-        setDeviceType((String)value);
+        setSuccess((Boolean)value);
       }
       break;
 
@@ -267,14 +222,11 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case PAO_ID:
-      return Integer.valueOf(getPaoId());
+    case DESCRIPTOR:
+      return getDescriptor();
 
-    case CATEGORY:
-      return getCategory();
-
-    case DEVICE_TYPE:
-      return getDeviceType();
+    case SUCCESS:
+      return Boolean.valueOf(isSuccess());
 
     }
     throw new IllegalStateException();
@@ -287,12 +239,10 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
     }
 
     switch (field) {
-    case PAO_ID:
-      return isSetPaoId();
-    case CATEGORY:
-      return isSetCategory();
-    case DEVICE_TYPE:
-      return isSetDeviceType();
+    case DESCRIPTOR:
+      return isSetDescriptor();
+    case SUCCESS:
+      return isSetSuccess();
     }
     throw new IllegalStateException();
   }
@@ -310,30 +260,21 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
     if (that == null)
       return false;
 
-    boolean this_present_paoId = true;
-    boolean that_present_paoId = true;
-    if (this_present_paoId || that_present_paoId) {
-      if (!(this_present_paoId && that_present_paoId))
+    boolean this_present_descriptor = true && this.isSetDescriptor();
+    boolean that_present_descriptor = true && that.isSetDescriptor();
+    if (this_present_descriptor || that_present_descriptor) {
+      if (!(this_present_descriptor && that_present_descriptor))
         return false;
-      if (this.paoId != that.paoId)
-        return false;
-    }
-
-    boolean this_present_category = true && this.isSetCategory();
-    boolean that_present_category = true && that.isSetCategory();
-    if (this_present_category || that_present_category) {
-      if (!(this_present_category && that_present_category))
-        return false;
-      if (!this.category.equals(that.category))
+      if (!this.descriptor.equals(that.descriptor))
         return false;
     }
 
-    boolean this_present_deviceType = true && this.isSetDeviceType();
-    boolean that_present_deviceType = true && that.isSetDeviceType();
-    if (this_present_deviceType || that_present_deviceType) {
-      if (!(this_present_deviceType && that_present_deviceType))
+    boolean this_present_success = true;
+    boolean that_present_success = true;
+    if (this_present_success || that_present_success) {
+      if (!(this_present_success && that_present_success))
         return false;
-      if (!this.deviceType.equals(that.deviceType))
+      if (this.success != that.success)
         return false;
     }
 
@@ -353,32 +294,22 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
     int lastComparison = 0;
     RfnDeviceCreationReply typedOther = (RfnDeviceCreationReply)other;
 
-    lastComparison = Boolean.valueOf(isSetPaoId()).compareTo(typedOther.isSetPaoId());
+    lastComparison = Boolean.valueOf(isSetDescriptor()).compareTo(typedOther.isSetDescriptor());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetPaoId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.paoId, typedOther.paoId);
+    if (isSetDescriptor()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.descriptor, typedOther.descriptor);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetCategory()).compareTo(typedOther.isSetCategory());
+    lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetCategory()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.category, typedOther.category);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetDeviceType()).compareTo(typedOther.isSetDeviceType());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetDeviceType()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.deviceType, typedOther.deviceType);
+    if (isSetSuccess()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -403,24 +334,18 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
     StringBuilder sb = new StringBuilder("RfnDeviceCreationReply(");
     boolean first = true;
 
-    sb.append("paoId:");
-    sb.append(this.paoId);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("category:");
-    if (this.category == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.category);
+    if (isSetDescriptor()) {
+      sb.append("descriptor:");
+      if (this.descriptor == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.descriptor);
+      }
+      first = false;
     }
-    first = false;
     if (!first) sb.append(", ");
-    sb.append("deviceType:");
-    if (this.deviceType == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.deviceType);
-    }
+    sb.append("success:");
+    sb.append(this.success);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -428,19 +353,14 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetPaoId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'paoId' is unset! Struct:" + toString());
-    }
-
-    if (!isSetCategory()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'category' is unset! Struct:" + toString());
-    }
-
-    if (!isSetDeviceType()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'deviceType' is unset! Struct:" + toString());
+    if (!isSetSuccess()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'success' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
+    if (descriptor != null) {
+      descriptor.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -479,26 +399,19 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
           break;
         }
         switch (schemeField.id) {
-          case 1: // PAO_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.paoId = iprot.readI32();
-              struct.setPaoIdIsSet(true);
+          case 1: // DESCRIPTOR
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.descriptor = new DeviceCreationDescriptor();
+              struct.descriptor.read(iprot);
+              struct.setDescriptorIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // CATEGORY
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.category = iprot.readString();
-              struct.setCategoryIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // DEVICE_TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.deviceType = iprot.readString();
-              struct.setDeviceTypeIsSet(true);
+          case 2: // SUCCESS
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.success = iprot.readBool();
+              struct.setSuccessIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -516,19 +429,16 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(PAO_ID_FIELD_DESC);
-      oprot.writeI32(struct.paoId);
+      if (struct.descriptor != null) {
+        if (struct.isSetDescriptor()) {
+          oprot.writeFieldBegin(DESCRIPTOR_FIELD_DESC);
+          struct.descriptor.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
+      oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+      oprot.writeBool(struct.success);
       oprot.writeFieldEnd();
-      if (struct.category != null) {
-        oprot.writeFieldBegin(CATEGORY_FIELD_DESC);
-        oprot.writeString(struct.category);
-        oprot.writeFieldEnd();
-      }
-      if (struct.deviceType != null) {
-        oprot.writeFieldBegin(DEVICE_TYPE_FIELD_DESC);
-        oprot.writeString(struct.deviceType);
-        oprot.writeFieldEnd();
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -546,20 +456,28 @@ public class RfnDeviceCreationReply implements org.apache.thrift.TBase<RfnDevice
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, RfnDeviceCreationReply struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeI32(struct.paoId);
-      oprot.writeString(struct.category);
-      oprot.writeString(struct.deviceType);
+      oprot.writeBool(struct.success);
+      BitSet optionals = new BitSet();
+      if (struct.isSetDescriptor()) {
+        optionals.set(0);
+      }
+      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetDescriptor()) {
+        struct.descriptor.write(oprot);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, RfnDeviceCreationReply struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.paoId = iprot.readI32();
-      struct.setPaoIdIsSet(true);
-      struct.category = iprot.readString();
-      struct.setCategoryIsSet(true);
-      struct.deviceType = iprot.readString();
-      struct.setDeviceTypeIsSet(true);
+      struct.success = iprot.readBool();
+      struct.setSuccessIsSet(true);
+      BitSet incoming = iprot.readBitSet(1);
+      if (incoming.get(0)) {
+        struct.descriptor = new DeviceCreationDescriptor();
+        struct.descriptor.read(iprot);
+        struct.setDescriptorIsSet(true);
+      }
     }
   }
 

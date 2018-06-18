@@ -74,10 +74,10 @@ void swap(RfnDeviceCreationRequest &a, RfnDeviceCreationRequest &b) {
   swap(a.rfnIdentifier, b.rfnIdentifier);
 }
 
-const char* RfnDeviceCreationReply::ascii_fingerprint = "3368C2F81F2FEF71F11EDACDB2A3ECEF";
-const uint8_t RfnDeviceCreationReply::binary_fingerprint[16] = {0x33,0x68,0xC2,0xF8,0x1F,0x2F,0xEF,0x71,0xF1,0x1E,0xDA,0xCD,0xB2,0xA3,0xEC,0xEF};
+const char* DeviceCreationDescriptor::ascii_fingerprint = "3368C2F81F2FEF71F11EDACDB2A3ECEF";
+const uint8_t DeviceCreationDescriptor::binary_fingerprint[16] = {0x33,0x68,0xC2,0xF8,0x1F,0x2F,0xEF,0x71,0xF1,0x1E,0xDA,0xCD,0xB2,0xA3,0xEC,0xEF};
 
-uint32_t RfnDeviceCreationReply::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t DeviceCreationDescriptor::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -142,9 +142,9 @@ uint32_t RfnDeviceCreationReply::read(::apache::thrift::protocol::TProtocol* ipr
   return xfer;
 }
 
-uint32_t RfnDeviceCreationReply::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t DeviceCreationDescriptor::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("RfnDeviceCreationReply");
+  xfer += oprot->writeStructBegin("DeviceCreationDescriptor");
 
   xfer += oprot->writeFieldBegin("paoId", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->paoId);
@@ -163,11 +163,90 @@ uint32_t RfnDeviceCreationReply::write(::apache::thrift::protocol::TProtocol* op
   return xfer;
 }
 
-void swap(RfnDeviceCreationReply &a, RfnDeviceCreationReply &b) {
+void swap(DeviceCreationDescriptor &a, DeviceCreationDescriptor &b) {
   using ::std::swap;
   swap(a.paoId, b.paoId);
   swap(a.category, b.category);
   swap(a.deviceType, b.deviceType);
+}
+
+const char* RfnDeviceCreationReply::ascii_fingerprint = "4462D3C52BFBF791C5452AAA17F9C1ED";
+const uint8_t RfnDeviceCreationReply::binary_fingerprint[16] = {0x44,0x62,0xD3,0xC5,0x2B,0xFB,0xF7,0x91,0xC5,0x45,0x2A,0xAA,0x17,0xF9,0xC1,0xED};
+
+uint32_t RfnDeviceCreationReply::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_success = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->descriptor.read(iprot);
+          this->__isset.descriptor = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          isset_success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_success)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t RfnDeviceCreationReply::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("RfnDeviceCreationReply");
+
+  if (this->__isset.descriptor) {
+    xfer += oprot->writeFieldBegin("descriptor", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->descriptor.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 2);
+  xfer += oprot->writeBool(this->success);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(RfnDeviceCreationReply &a, RfnDeviceCreationReply &b) {
+  using ::std::swap;
+  swap(a.descriptor, b.descriptor);
+  swap(a.success, b.success);
+  swap(a.__isset, b.__isset);
 }
 
 }}}} // namespace

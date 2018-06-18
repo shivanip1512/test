@@ -950,7 +950,7 @@ const IM_EX_MSG OutboundQueue
                 ("com.eaton.eas.yukon.networkmanager.waternode.SetChannelConfiguration");
 const IM_EX_MSG OutboundQueue
         OutboundQueue::DeviceCreationRequest
-                ("yukon.notif.obj.serverDeviceCreation");
+                ("com.eaton.eas.yukon.deviceCreation");
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
