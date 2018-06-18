@@ -11,7 +11,7 @@
     
     <bean id="serverDeviceCreationMsgListener" class="com.cannontech.services.serverDeviceCreation.service.ServerDeviceCreationMsgService" />
     <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
-        <property name="destinationName" value="yukon.notif.obj.serverDeviceCreation" />
+        <property name="destinationName" value="com.eaton.eas.yukon.deviceCreation" />
         <property name="pubSubDomain" value="false"/>
         <property name="concurrentConsumers" value="1"/>
         <property name="connectionFactory" ref="connectionFactory" />

@@ -1,5 +1,6 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
+import com.cannontech.message.DeviceCreationDescriptor;
 import com.cannontech.message.porter.message.RfnDeviceCreationReply;
 import com.cannontech.messaging.serialization.thrift.ThriftMessageFactory;
 import com.cannontech.messaging.serialization.thrift.ThriftSerializer;
@@ -33,17 +34,21 @@ public class RfnDeviceCreationReplySerializer extends ThriftSerializer<RfnDevice
     protected void populateMessageFromThriftEntity(ThriftMessageFactory factory,
                                                    com.cannontech.messaging.serialization.thrift.generated.RfnDeviceCreationReply entity,
                                                    com.cannontech.message.porter.message.RfnDeviceCreationReply msg) {
-        msg.setPaoId(entity.getPaoId());
-        msg.setCategory(entity.getCategory());
-        msg.setDeviceType(entity.getDeviceType());
+        com.cannontech.messaging.serialization.thrift.generated.DeviceCreationDescriptor descriptor = entity.getDescriptor();
+        if (descriptor != null) {
+            msg.setDescriptor(new DeviceCreationDescriptor(descriptor.getPaoId(), descriptor.getCategory(), descriptor.getDeviceType()));
+        }
+        msg.setSuccess(entity.isSuccess());
     }
 
     @Override
     protected void populateThriftEntityFromMessage(ThriftMessageFactory factory,
                                                    com.cannontech.message.porter.message.RfnDeviceCreationReply msg,
                                                    com.cannontech.messaging.serialization.thrift.generated.RfnDeviceCreationReply entity) {
-        entity.setPaoId(msg.getPaoId());
-        entity.setCategory(msg.getCategory());
-        entity.setDeviceType(msg.getDeviceType());
+        DeviceCreationDescriptor descriptor = msg.getDescriptor();
+        if (descriptor != null) {
+            entity.setDescriptor(new com.cannontech.messaging.serialization.thrift.generated.DeviceCreationDescriptor(descriptor.getPaoId(), descriptor.getCategory(), descriptor.getDeviceType()));
+        }
+        entity.setSuccess(msg.isSuccess());
     }
 }

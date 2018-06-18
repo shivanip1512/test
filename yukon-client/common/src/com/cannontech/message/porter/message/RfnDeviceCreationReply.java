@@ -1,38 +1,33 @@
 package com.cannontech.message.porter.message;
 
+import com.cannontech.message.DeviceCreationDescriptor;
+
 public class RfnDeviceCreationReply {
-    private int paoId;
-    private String category, deviceType;
+
+    private DeviceCreationDescriptor descriptor;
+    private boolean success;
     
-    public RfnDeviceCreationReply(int paoId, String category, String deviceType) {
-        this.paoId = paoId;
-        this.category = category;
-        this.deviceType = deviceType;
-    }
-    
-    public void setPaoId(int paoId) {
-        this.paoId = paoId;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    public RfnDeviceCreationReply() {}
-
-    public int getPaoId() {
-        return paoId;
+    public RfnDeviceCreationReply(DeviceCreationDescriptor descriptor, boolean success) {
+        this.descriptor = descriptor;
+        this.success = success;
     }
     
-    public String getCategory() {
-        return category;
+    public RfnDeviceCreationReply() {
     }
-    
-    public String getDeviceType() {
-        return deviceType;
+
+    public DeviceCreationDescriptor getDescriptor() {
+        return descriptor;
+    }
+
+    public void setDescriptor(DeviceCreationDescriptor descriptor) {
+        this.descriptor = descriptor;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }

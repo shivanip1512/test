@@ -15,6 +15,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
+import com.cannontech.message.DeviceCreationDescriptor;
 import com.cannontech.message.porter.message.RfnDeviceCreationReply;
 import com.cannontech.message.porter.message.RfnDeviceCreationRequest;
 import com.cannontech.messaging.serialization.MessageSerializer;
@@ -41,13 +42,14 @@ public class ServerDeviceCreationMsgService implements SessionAwareMessageListen
             RfnDeviceCreationRequest request = (RfnDeviceCreationRequest) rfnCreationRequestDeserializer.deserialize(msgFactory, msgBytes);
             
             //create new device
-            RfnIdentifier rfnId = new RfnIdentifier(request.getRfnIdentifier().getSensorSerialNumber(), request.getRfnIdentifier().getSensorModel(), request.getRfnIdentifier().getSensorManufacturer());
+            RfnIdentifier rfnId = new RfnIdentifier(request.getRfnIdentifier().getSensorSerialNumber(), request.getRfnIdentifier().getSensorManufacturer(), request.getRfnIdentifier().getSensorModel());
             RfnDevice newDevice = rfnDeviceCreationService.create(rfnId);
             log.debug("Created new RFN device: " + newDevice.toString());
             
             //build reply message
             PaoIdentifier paoId = newDevice.getPaoIdentifier();
-            RfnDeviceCreationReply reply = new RfnDeviceCreationReply(paoId.getPaoId(), PaoCategory.DEVICE.toString(), paoId.getPaoType().toString());
+            DeviceCreationDescriptor descriptor = new DeviceCreationDescriptor(paoId.getPaoId(), PaoCategory.DEVICE.toString(), paoId.getPaoType().toString());
+            RfnDeviceCreationReply reply = new RfnDeviceCreationReply(descriptor, true);
             BytesMessage outBytesMsg = session.createBytesMessage();
             outBytesMsg.writeBytes(rfnCreationReplySerializer.serialize(msgFactory, reply));
             log.debug("Created RfnDeviceCreationReply with paoIdentifier: " + paoId.toString());
@@ -57,9 +59,18 @@ public class ServerDeviceCreationMsgService implements SessionAwareMessageListen
             producer.send(outBytesMsg);
         
         } catch (JMSException e) {
-            log.error("Unable to extract message", e);
+            log.error("Unable to handle RFN device creation message", e);
         } catch (Exception e) {
-            log.error("Unable to process message", e);
+            RfnDeviceCreationReply reply = new RfnDeviceCreationReply(null, false);
+            try {
+                BytesMessage outBytesMsg = session.createBytesMessage();
+                outBytesMsg.writeBytes(rfnCreationReplySerializer.serialize(msgFactory, reply));
+                MessageProducer producer = session.createProducer(message.getJMSReplyTo());
+                producer.send(outBytesMsg);
+            } catch (Exception ee) {
+                log.error("Unable to send RFN device creation reply indicating device creation failure", ee);
+            }
+
         }
     }
 }
