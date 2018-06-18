@@ -18,9 +18,9 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="paoTypes" type="{}paoTypes"/>
- *         &lt;element name="tags" type="{}tags"/>
- *         &lt;element name="configurations" type="{}configurations"/>
- *         &lt;element name="pointInfos" type="{}pointInfos"/>
+ *         &lt;element name="tags" type="{}tags" minOccurs="0"/>
+ *         &lt;element name="configurations" type="{}configurations" minOccurs="0"/>
+ *         &lt;element name="pointInfos" type="{}pointInfos" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -40,11 +40,8 @@ public class Override {
 
     @XmlElement(required = true)
     protected PaoTypes paoTypes;
-    @XmlElement(required = true)
     protected Tags tags;
-    @XmlElement(required = true)
     protected Configurations configurations;
-    @XmlElement(required = true)
     protected PointInfos pointInfos;
 
     /**
