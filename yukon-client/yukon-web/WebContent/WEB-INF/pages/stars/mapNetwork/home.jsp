@@ -38,7 +38,7 @@
             <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
                 <%@ include file="locationInput.jspf"%>
                 <div style="height:400px;">
-                    <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}" style="height:90%;width:100%;">
+                    <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}" style="height:100%;width:100%;">
                         <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
                         <div class="buffered">
                             <c:set var="groupClass" value=""/>

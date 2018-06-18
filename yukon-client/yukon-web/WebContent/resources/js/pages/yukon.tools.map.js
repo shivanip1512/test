@@ -198,8 +198,12 @@ yukon.tools.map = (function() {
     
     _removeDeviceFocusLayers = function() {
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
-        _deviceFocusIcons.forEach(icon => source.removeFeature(icon));
-        _deviceFocusLines.forEach(line => _map.removeLayer(line));
+        _deviceFocusIcons.forEach(function (icon) {
+            source.removeFeature(icon);
+        });
+        _deviceFocusLines.forEach(function (line) {
+            _map.removeLayer(line);
+        });
         _map.removeLayer(_deviceFocusIconLayer);
         _deviceFocusIcons = [];
         _deviceFocusLines = [];
@@ -682,19 +686,26 @@ yukon.tools.map = (function() {
                 $('#map-updater .button').toggleClass('on');
             });
             
-            $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
-                _updateZoom();
-                
+            $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {                
                 // we if are doing an exit from the full screen, close any open pop-ups
                 if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
                     $(".ui-dialog-content").dialog("close");
                     if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
                         $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
                     }
+                    //adjust height back
+                    $('#map-container').css('padding-bottom', '0px');
+                    $('#map-container').css('padding-top', '0px');
+                } else {
+                    //adjust height for mapping buttons
+                    $('#map-container').css('padding-bottom', '80px');
+                    $('#map-container').css('padding-top', '10px');
                 }
                 
                 //close any popups
                 $('#marker-info').hide();
+                _updateZoom();
+                _map.updateSize();
             });
             
             $("body").on("dialogopen", function (event, ui) {

@@ -36,7 +36,7 @@
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
     
-    <div id="map-container" style="height:85%;width:100%;" class="PT10">
+    <div id="map-container" style="height:100%;width:100%;">
         <c:if test="${empty dynamic}">
             <div class="fr">
                 <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>

@@ -168,8 +168,12 @@ yukon.map.network = (function () {
     
     _removeDeviceFocusLayers = function() {
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
-        _deviceFocusIcons.forEach(icon => source.removeFeature(icon));
-        _deviceFocusLines.forEach(line => _map.removeLayer(line));
+        _deviceFocusIcons.forEach(function (icon) {
+            source.removeFeature(icon);
+        });
+        _deviceFocusLines.forEach(function (line) {
+            _map.removeLayer(line);
+        });
         _map.removeLayer(_deviceFocusIconLayer);
         _deviceFocusIcons = [];
         _deviceFocusLines = [];
@@ -195,7 +199,7 @@ yukon.map.network = (function () {
             });
         }
         //check parent node
-        if (exists.length === 0) {
+        if (exists.length === 0 && _parentIcon != null) {
             if (_parentIcon.getProperties().parent.device.paoIdentifier.paoId === deviceId) {
                 exists.push(_parentIcon);
             }
@@ -729,8 +733,12 @@ yukon.map.network = (function () {
                         yukon.mapping.displayNeighborsLegend();
                         if (_neighborIcons.length > 0) {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                            _neighborLines.forEach(line => _map.addLayer(line));
-                            _neighborIcons.forEach(icon => source.addFeature(icon));
+                            _neighborLines.forEach(function (line) {
+                                _map.addLayer(line);
+                            });
+                            _neighborIcons.forEach(function (icon) {
+                                source.addFeature(icon);
+                            });
                             _map.addLayer(_neighborIconLayer);
                             _updateZoom();
                             _makeCurrentDeviceStandOut();
@@ -753,8 +761,12 @@ yukon.map.network = (function () {
                     } else {
                         yukon.mapping.hideNeighborsLegend();
                         var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                        _neighborIcons.forEach(icon => source.removeFeature(icon));
-                        _neighborLines.forEach(line => _map.removeLayer(line));
+                        _neighborIcons.forEach(function (icon) {
+                            source.removeFeature(icon);
+                        });
+                        _neighborLines.forEach(function (line) {
+                            _map.removeLayer(line);
+                        });
                         _map.removeLayer(_neighborIconLayer);
                         _removeDeviceFocusLayers();
                         _updateZoom();
@@ -789,8 +801,12 @@ yukon.map.network = (function () {
                     if (!wasChecked) {
                         if (_primaryRouteIcons.length > 0) {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                            _primaryRouteLines.forEach(line => _map.addLayer(line));
-                            _primaryRouteIcons.forEach(icon => source.addFeature(icon));
+                            _primaryRouteLines.forEach(function (line) {
+                                _map.addLayer(line);
+                            });
+                            _primaryRouteIcons.forEach(function (icon) {
+                                source.addFeature(icon);
+                            });
                             _map.addLayer(_primaryRouteIconLayer);
                             _updateZoom();
                             _makeCurrentDeviceStandOut();
@@ -812,8 +828,12 @@ yukon.map.network = (function () {
                         }
                     } else {
                         var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                        _primaryRouteIcons.forEach(icon => source.removeFeature(icon));
-                        _primaryRouteLines.forEach(line => _map.removeLayer(line));
+                        _primaryRouteIcons.forEach(function (icon) {
+                            source.removeFeature(icon);
+                        });
+                        _primaryRouteLines.forEach(function (line) {
+                            _map.removeLayer(line);
+                        });
                         _map.removeLayer(_primaryRouteIconLayer);
                         _removeDeviceFocusLayers();
                         _updateZoom();
@@ -914,16 +934,22 @@ yukon.map.network = (function () {
                 });
                 
                 $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
-                    _updateZoom();
                     // we if are doing an exit from the full screen, close any open pop-ups
                     if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
                         $(".ui-dialog-content").dialog("close");
                         if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
                             $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
                         }
+                        //adjust height back
+                        $('#map-network-container').css('padding-bottom', '0px');
+                    } else {
+                        //adjust height for mapping buttons
+                        $('#map-network-container').css('padding-bottom', '50px');
                     }
                     //close any popups
                     $('#marker-info').hide();
+                    _updateZoom();
+                    _map.updateSize();
                 });
                 
                 $("body").on("dialogopen", function (event, ui) {
