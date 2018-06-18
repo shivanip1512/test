@@ -6,25 +6,25 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class PaoNotes {
     
-    private Integer noteId;
-    private Integer paObjectId;
+    private int noteId;
+    private int paObjectId;
     private String noteText;
-    private Character status;
+    private char status;
     private LiteYukonUser CreatorUserName; 
     private Instant CreationDate;
     private LiteYukonUser EditorUserName;
     private Instant EditDate;
     
-    public Integer getNoteId() {
+    public int getNoteId() {
         return noteId;
     }
-    public void setNoteId(Integer noteId) {
+    public void setNoteId(int noteId) {
         this.noteId = noteId;
     }
-    public Integer getPaObjectId() {
+    public int getPaObjectId() {
         return paObjectId;
     }
-    public void setPaObjectId(Integer paObjectId) {
+    public void setPaObjectId(int paObjectId) {
         this.paObjectId = paObjectId;
     }
     public String getNoteText() {
@@ -33,10 +33,10 @@ public class PaoNotes {
     public void setNoteText(String noteText) {
         this.noteText = noteText;
     }
-    public Character getStatus() {
+    public char getStatus() {
         return status;
     }
-    public void setStatus(Character status) {
+    public void setStatus(char status) {
         this.status = status;
     }
     public LiteYukonUser getCreatorUserName() {
