@@ -31,7 +31,7 @@ void InitDispatchGlobals(void);
 int main(int argc, char* argv[])
 {
    BOOL bConsole;
-   LPTSTR szName = "Dispatch";
+   LPTSTR szName    = "Yukon Dispatch Service";
    LPTSTR szDisplay = "Yukon Dispatch Service";
 
    // Catch and clean SEH Exceptions and make sure we get a minidump

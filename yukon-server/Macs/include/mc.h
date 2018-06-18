@@ -2,7 +2,7 @@
 
 #include "logger.h"
 
-#define MC_SERVICE_NAME "MACS"
+#define MC_SERVICE_NAME         "Yukon MAC Scheduler Service"
 #define MC_SERVICE_DISPLAY_NAME "Yukon MAC Scheduler Service"
 
 #define MC_FTP_INTERFACE_USER "MACS FTP Interface"

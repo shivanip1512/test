@@ -22,7 +22,7 @@ using namespace std;
 int install( DWORD dwStart = SERVICE_DEMAND_START );
 int remove( void );
 
-LPTSTR szServiceName = "CALCLOGIC";
+LPTSTR szServiceName = "Yukon Calc-Logic Service";
 LPTSTR szDisplayName = "Yukon Calc-Logic Service";
 
 /* Called when we get an SEH exception.  Generates a minidump. */

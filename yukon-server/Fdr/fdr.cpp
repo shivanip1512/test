@@ -25,7 +25,7 @@ Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 int install( DWORD dwStart = SERVICE_DEMAND_START );
 int remove( void );
 
-LPTSTR szServiceName = "FDR";
+LPTSTR szServiceName = "Yukon Foreign Data Service";
 LPTSTR szDisplayName = "Yukon Foreign Data Service";
 
 /* Called when we get an SEH exception.  Generates a minidump. */

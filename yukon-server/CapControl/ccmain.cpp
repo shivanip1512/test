@@ -28,7 +28,7 @@ ETN_MINIDUMP_EXCEPTION_FILTER;
 int main(int argc, char* argv[] )
 {
     INT RunningInConsole = false;
-    LPTSTR szServiceName = "CapControl";
+    LPTSTR szServiceName = "Yukon Cap Control Service";
     LPTSTR szDisplayName = "Yukon Cap Control Service";
 
     // Catch and clean SEH Exceptions and make sure we get a minidump

@@ -27,7 +27,7 @@ ETN_MINIDUMP_EXCEPTION_FILTER;
 
 int main(int argc, char* argv[])
 {
-   LPTSTR szName = "Scanner";
+   LPTSTR szName    = "Yukon Real-Time Scan Service";
    LPTSTR szDisplay = "Yukon Real-Time Scan Service";
    LPTSTR szDesc = "Manages the periodic - timed scanning of field devices";
 

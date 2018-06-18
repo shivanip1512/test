@@ -27,7 +27,7 @@ ETN_MINIDUMP_EXCEPTION_FILTER;
 int main(int argc, char* argv[])
 {
     INT RunningInConsole = FALSE;
-    LPTSTR szServiceName = "LoadManagement";
+    LPTSTR szServiceName = "Yukon Load Management Service";
     LPTSTR szDisplayName = "Yukon Load Management Service";
 
     // Catch and clean SEH Exceptions and make sure we get a minidump

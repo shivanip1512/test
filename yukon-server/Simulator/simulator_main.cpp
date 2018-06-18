@@ -24,7 +24,7 @@ int install(DWORD dwStart = SERVICE_DEMAND_START);
 int remove();
 
 int RunningInConsole = FALSE;
-LPTSTR szServiceName = "FIELDSIMULATOR";
+LPTSTR szServiceName = "Yukon Field Simulator Service";
 LPTSTR szDisplayName = "Yukon Field Simulator Service";
 LPTSTR szDesc = "Simulates the actions of field devices";
 

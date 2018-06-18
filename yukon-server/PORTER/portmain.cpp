@@ -30,7 +30,7 @@ int remove();
 extern int PorterMainFunction (int argc, char **argv);
 
 INT RunningInConsole = FALSE;
-LPTSTR szServiceName = "Porter";
+LPTSTR szServiceName = "Yukon Port Control Service";
 LPTSTR szDisplayName = "Yukon Port Control Service";
 LPTSTR szDesc = "Controls communications to field devices";
 
