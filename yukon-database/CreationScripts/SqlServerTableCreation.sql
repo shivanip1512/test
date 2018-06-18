@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/18/2018 9:27:30 AM                         */
+/* Created on:     6/18/2018 2:39:55 PM                         */
 /*==============================================================*/
 
 
@@ -8182,6 +8182,31 @@ create table PaoLocation (
 go
 
 /*==============================================================*/
+/* Table: PaoNote                                               */
+/*==============================================================*/
+create table PaoNote (
+   NoteId               numeric              not null,
+   PaObjectId           numeric              not null,
+   NoteText             nvarchar(255)        not null,
+   Status               char(1)              not null,
+   CreatorUserName      nvarchar(64)         not null,
+   CreationDate         datetime             not null,
+   EditorUserName       nvarchar(64)         null,
+   EditDate             datetime             null,
+   constraint PK_PaoNote primary key (NoteId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_PaObjectId_Status                                */
+/*==============================================================*/
+create index INDX_PaObjectId_Status on PaoNote (
+PaObjectId ASC,
+Status ASC
+)
+go
+
+/*==============================================================*/
 /* Table: PasswordHistory                                       */
 /*==============================================================*/
 create table PasswordHistory (
@@ -14365,6 +14390,12 @@ go
 
 alter table PaoLocation
    add constraint FK_PaoLocation_YukonPAObject foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
+go
+
+alter table PaoNote
+   add constraint FK_PaoNote_YukonPAObject foreign key (PaObjectId)
       references YukonPAObject (PAObjectID)
          on delete cascade
 go

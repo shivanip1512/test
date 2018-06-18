@@ -332,6 +332,33 @@ END;
 INSERT INTO DBUpdates VALUES ('YUK-18432', '7.1.0', GETDATE());
 /* @end YUK-18432 */
 
+/* @start YUK-18371 */
+CREATE TABLE PaoNote (
+    NoteId              NUMERIC         NOT NULL,
+    PaObjectId          NUMERIC         NOT NULL,
+    NoteText            NVARCHAR(255)   NOT NULL,
+    Status              CHAR(1)         NOT NULL,
+    CreatorUserName     NVARCHAR(64)    NOT NULL,
+    CreationDate        DATETIME        NOT NULL,
+    EditorUserName      NVARCHAR(64)    NULL,
+    EditDate            DATETIME        NULL,
+    CONSTRAINT PK_PaoNote PRIMARY KEY (NoteId)
+);
+GO
+
+CREATE INDEX INDX_PaObjectId_Status ON PaoNote (
+    PaObjectId ASC,
+    Status ASC
+);
+
+ALTER TABLE PaoNote
+   ADD CONSTRAINT FK_PaoNote_YukonPAObject FOREIGN KEY (PaObjectId)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-18371', '7.1.0', GETDATE());
+/* @end YUK-18371 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/18/2018 9:28:20 AM                         */
+/* Created on:     6/18/2018 2:44:34 PM                         */
 /*==============================================================*/
 
 
@@ -7710,6 +7710,29 @@ create table PaoLocation  (
 );
 
 /*==============================================================*/
+/* Table: PaoNote                                               */
+/*==============================================================*/
+create table PaoNote  (
+   NoteId               NUMBER                          not null,
+   PaObjectId           NUMBER                          not null,
+   NoteText             NVARCHAR2(255)                  not null,
+   Status               CHAR(1)                         not null,
+   CreatorUserName      NVARCHAR2(64)                   not null,
+   CreationDate         DATE                            not null,
+   EditorUserName       NVARCHAR2(64),
+   EditDate             DATE,
+   constraint PK_PaoNote primary key (NoteId)
+);
+
+/*==============================================================*/
+/* Index: INDX_PaObjectId_Status                                */
+/*==============================================================*/
+create index INDX_PaObjectId_Status on PaoNote (
+   PaObjectId ASC,
+   Status ASC
+);
+
+/*==============================================================*/
 /* Table: PasswordHistory                                       */
 /*==============================================================*/
 create table PasswordHistory  (
@@ -13205,6 +13228,11 @@ alter table PROFILEPEAKRESULT
 
 alter table PaoLocation
    add constraint FK_PaoLocation_YukonPAObject foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
+
+alter table PaoNote
+   add constraint FK_PaoNote_YukonPAObject foreign key (PaObjectId)
       references YukonPAObject (PAObjectID)
       on delete cascade;
 
