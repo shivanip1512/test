@@ -40,7 +40,7 @@
                                 <i:inline key=".noEntryText"/>
                             </c:if>
                             <c:if test="${!empty entry.entryText}">
-                                <i:inline key="${entry.entryTextMsr}"/>
+                                <i:inline key="${entry.entryTextMsr}" htmlEscape="true"/>
                             </c:if>
                         </td>
                         <c:if test="${usesType}">
