@@ -31,7 +31,7 @@ Clear-Host
 "YukonWatchdogService",
 "YukonWebApplicationService",
 "YukonSimulatorsService",
-"FIELDSIMULATOR",
+"Yukon Field Simulator Service",
 "Yukon Load Management Service",
 "Yukon Cap Control Service",
 "Yukon Calc-Logic Service",
