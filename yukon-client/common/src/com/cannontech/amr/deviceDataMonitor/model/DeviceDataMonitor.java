@@ -24,8 +24,8 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     private Integer id;
     private String name;
     private boolean enabled = true;
-    private DeviceGroup group;
-    private StoredDeviceGroup violationGroup;
+    private transient DeviceGroup group;
+    private transient StoredDeviceGroup violationGroup;
     private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
 
     public DeviceDataMonitor() {
