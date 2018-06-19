@@ -48,7 +48,7 @@ public class ServerDeviceCreationMsgService implements SessionAwareMessageListen
             
             //build reply message
             PaoIdentifier paoId = newDevice.getPaoIdentifier();
-            DeviceCreationDescriptor descriptor = new DeviceCreationDescriptor(paoId.getPaoId(), PaoCategory.DEVICE.toString(), paoId.getPaoType().toString());
+            DeviceCreationDescriptor descriptor = new DeviceCreationDescriptor(paoId.getPaoId(), paoId.getPaoType().getPaoCategory().getDbString(), paoId.getPaoType().getDbString());
             RfnDeviceCreationReply reply = new RfnDeviceCreationReply(descriptor, true);
             BytesMessage outBytesMsg = session.createBytesMessage();
             outBytesMsg.writeBytes(rfnCreationReplySerializer.serialize(msgFactory, reply));
@@ -70,7 +70,6 @@ public class ServerDeviceCreationMsgService implements SessionAwareMessageListen
             } catch (Exception ee) {
                 log.error("Unable to send RFN device creation reply indicating device creation failure", ee);
             }
-
         }
     }
 }
