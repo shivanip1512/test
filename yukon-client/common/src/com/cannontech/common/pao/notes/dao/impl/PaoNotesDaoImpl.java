@@ -11,7 +11,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
-import com.cannontech.common.pao.notes.model.PaoNotes;
+import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -25,11 +25,11 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
     
-    private final YukonRowMapper<PaoNotes> paoNotesRowMapper = new YukonRowMapper<PaoNotes>() {
+    private final YukonRowMapper<PaoNote> paoNotesRowMapper = new YukonRowMapper<PaoNote>() {
 
         @Override
-        public PaoNotes mapRow(YukonResultSet rs) throws SQLException {
-            PaoNotes row = new PaoNotes();
+        public PaoNote mapRow(YukonResultSet rs) throws SQLException {
+            PaoNote row = new PaoNote();
             row.setNoteId(rs.getInt("NoteId"));
             row.setPaObjectId(rs.getInt("PaObjectId"));
             row.setNoteText(rs.getString("NoteText"));
@@ -56,7 +56,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     }
 
     @Override
-    public List<PaoNotes> findMostRecentNotes(int paoId, int numOfNotes) {
+    public List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
@@ -69,7 +69,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     }
 
     @Override
-    public SearchResults<PaoNotes> findAllNotesByPaoId(int paoId) {
+    public SearchResults<PaoNote> findAllNotesByPaoId(int paoId) {
         PaoNotesFilter filter = new PaoNotesFilter();
         filter.setPaoIds(Collections.singleton((Integer)paoId));
         return findAllNotesByFilter(filter,
@@ -79,7 +79,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     }
 
     @Override
-    public SearchResults<PaoNotes> findAllNotesByFilter(PaoNotesFilter filter,
+    public SearchResults<PaoNote> findAllNotesByFilter(PaoNotesFilter filter,
                                                           SortBy sortBy,
                                                           Direction direction,
                                                           PagingParameters paging) {
@@ -98,10 +98,10 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
         
-        PagingResultSetExtractor<PaoNotes> rse = new PagingResultSetExtractor<>(start, count, paoNotesRowMapper);
+        PagingResultSetExtractor<PaoNote> rse = new PagingResultSetExtractor<>(start, count, paoNotesRowMapper);
         yukonJdbcTemplate.query(sql, rse);
 
-        SearchResults<PaoNotes> searchResults = new SearchResults<>();
+        SearchResults<PaoNote> searchResults = new SearchResults<>();
         searchResults.setBounds(start, count, getAllNotesByFilterCount(filter));
         searchResults.setResultList(rse.getResultList());
         

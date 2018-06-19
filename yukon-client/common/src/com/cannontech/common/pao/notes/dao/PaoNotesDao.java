@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
-import com.cannontech.common.pao.notes.model.PaoNotes;
+import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -40,12 +40,12 @@ public interface PaoNotesDao {
      * @param numOfNotes - this method will return up to this many notes
      * @return
      */
-    List<PaoNotes> findMostRecentNotes(int paoId, int numOfNotes);
+    List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes);
     
     //TODO consult with UI developer about sorting the results in SQL possiby
-    SearchResults<PaoNotes> findAllNotesByPaoId(int paoId);
+    SearchResults<PaoNote> findAllNotesByPaoId(int paoId);
     
-    SearchResults<PaoNotes> findAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
+    SearchResults<PaoNote> findAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                 Direction direction, PagingParameters paging);
 
 }

@@ -2,7 +2,7 @@ package com.cannontech.common.pao.notes.model;
 
 import org.joda.time.Instant;
 
-public class PaoNotes {
+public class PaoNote {
     
     private int noteId;
     private int paObjectId;
