@@ -54,7 +54,7 @@ $global:SERVICES_STOPPED = $True
 # Adding only those services to ServicesToRestart list if they are set start automatically or currently running #
 foreach($YukonService in $YukonServices)
 {
-    $ServiceStartMode = (Get-CimClass Win32_Service -filter "Name='$YukonService'").StartMode
+    $ServiceStartMode = (Get-WmiObject Win32_Service -filter "Name='$YukonService'").StartMode
 
     If($ServiceStartMode -eq "Auto")
     {
