@@ -1,8 +1,6 @@
 package com.cannontech.common.pao.notes.model;
 
-import java.time.Instant;
-
-import com.cannontech.database.data.lite.LiteYukonUser;
+import org.joda.time.Instant;
 
 public class PaoNotes {
     
@@ -10,9 +8,9 @@ public class PaoNotes {
     private int paObjectId;
     private String noteText;
     private char status;
-    private LiteYukonUser CreatorUserName; 
+    private String CreatorUserName; 
     private Instant CreationDate;
-    private LiteYukonUser EditorUserName;
+    private String EditorUserName;
     private Instant EditDate;
     
     public int getNoteId() {
@@ -39,10 +37,10 @@ public class PaoNotes {
     public void setStatus(char status) {
         this.status = status;
     }
-    public LiteYukonUser getCreatorUserName() {
+    public String getCreatorUserName() {
         return CreatorUserName;
     }
-    public void setCreatorUserName(LiteYukonUser creatorUserName) {
+    public void setCreatorUserName(String creatorUserName) {
         CreatorUserName = creatorUserName;
     }
     public Instant getCreationDate() {
@@ -51,10 +49,10 @@ public class PaoNotes {
     public void setCreationDate(Instant creationDate) {
         CreationDate = creationDate;
     }
-    public LiteYukonUser getEditorUserName() {
+    public String getEditorUserName() {
         return EditorUserName;
     }
-    public void setEditorUserName(LiteYukonUser editorUserName) {
+    public void setEditorUserName(String editorUserName) {
         EditorUserName = editorUserName;
     }
     public Instant getEditDate() {
