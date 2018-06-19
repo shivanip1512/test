@@ -70,16 +70,6 @@ yukon.da.common = (function () {
         
         var hasControl = $('[data-has-control]').length;
 
-        $('.js-show-bank-comments').on('click', function () {
-            var link = $(this);
-            var menu = link.closest('.dropdown-menu');
-            var trigger = menu.data('trigger');
-            var bankId = trigger.closest('[data-bank-id]').data('bankId');
-            var bankName = trigger.closest('[data-bank-name').data('bankName');
-
-            mod.showComments(bankId, bankName);
-        });
-
         var banks = $('[data-bank-id]');
         banks.each(function (idx, item){
             
@@ -254,6 +244,15 @@ yukon.da.common = (function () {
                     var title = content.find('input.title').val();
                     content.dialog({title: title, modal: true});
                 });
+            });
+            
+
+            $('.js-show-comments').on('click', function () {
+                var link = $(this),
+                    paoId = link.data('paoId'),
+                    paoName = link.data('paoName');
+
+                mod.showComments(paoId, paoName);
             });
         },
         

@@ -167,7 +167,8 @@
                                 <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
                         </c:if>
                         <li class="divider" />
-                        <cm:dropdownOption classes="js-show-bank-comments" key=".menu.viewComments" icon="icon-comment" />
+                        <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${bankId}" 
+                            data-pao-name="${fn:escapeXml(viewableCapBank.ccName)}"/>
                         <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${bankId}" />
                         <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
                         <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">

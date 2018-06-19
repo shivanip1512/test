@@ -159,6 +159,11 @@
                         <cti:param name="value" value="${feederId}"/>
                     </cti:url>
                     <cm:dropdownOption key=".location.label" icon="icon-interstate" href="${locationUrl}" />
+                    <li class="divider" />
+                    <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${feederId}" 
+                        data-pao-name="${fn:escapeXml(viewfeeder.ccName)}"/>
+                    <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${feederId}" />
+                    <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
                 </cm:dropdown>
             </td>
         </tr>

@@ -50,6 +50,12 @@
             <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
+    
+    <li class="divider" />
+    <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${bus.id}" 
+        data-pao-name="${fn:escapeXml(bus.name)}"/>
+    <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${bus.id}" />
+    <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
 </div>
 
 <cti:url var="action" value="/capcontrol/buses"/>

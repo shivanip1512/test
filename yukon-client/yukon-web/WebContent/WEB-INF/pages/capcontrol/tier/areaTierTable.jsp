@@ -83,7 +83,11 @@
                              <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents">
                                 <cti:param name="value" value="${areaId}" />
                             </cti:url>
-                            <cm:dropdownOption key=".recentEvents.label" icon="icon-application-view-columns" href="${recentEventsUrl}" />                               
+                            <li class="divider" />
+                            <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${areaId}" 
+                                data-pao-name="${fn:escapeXml(viewableArea.ccName)}"/>
+                            <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${areaId}" />
+                            <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
                         </cm:dropdown>
                     </td>
                 </tr>

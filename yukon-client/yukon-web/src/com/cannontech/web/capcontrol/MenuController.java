@@ -78,8 +78,6 @@ public class MenuController {
         model.addAttribute("paoName", StringEscapeUtils.escapeXml11(paoName));
         
         model.addAttribute("showChangeOpState", false);
-        model.addAttribute("showComments", true);
-        model.addAttribute("showRecentCommands", true);
         model.addAttribute("showLocalControl", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user));
         
         if (object instanceof Area || object instanceof SpecialArea) {
@@ -288,8 +286,6 @@ public class MenuController {
         commands.add(new CommandOption(CommandType.SEND_DISABLE_TIMECONTROL, isEnabledTime, disabledTextKey));
 
         model.addAttribute("commands", commands);
-        model.addAttribute("showRecentCommands", false);
-        model.addAttribute("showComments", false);
 
         return "tier/popupmenu/menu.jsp";
     }

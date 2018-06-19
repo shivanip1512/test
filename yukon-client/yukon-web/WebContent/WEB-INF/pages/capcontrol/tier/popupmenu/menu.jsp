@@ -43,18 +43,6 @@ $('#resetBankOpCountOption').click(function(event) {
     yukon.da.common.getMenuFromURL(yukon.url('/capcontrol/menu/resetBankOpCount?bankId=${paoId}'), event, {});
 });
 </c:if>
-<c:if test="${showRecentCommands}">
-$('#recentEventsOption').click(function(event) {
-    yukon.da.common.hideMenu();
-    window.location.href = yukon.url('/capcontrol/search/recentEvents?value=${paoId}');
-});
-</c:if>
-<c:if test="${showComments}">
-$('#viewCommentsOption').click(function(event) {
-    yukon.da.common.hideMenu();
-    yukon.da.common.showDialog($(event.currentTarget).find('input').val(), yukon.url('/capcontrol/comments/paoComments?paoId=${paoId}'), {}, "#contentPopup" );
-});
-</c:if>
 </script>
 
 <cti:getProperty var="warnOnCommands" property='CONTROL_WARNING'/>
@@ -97,15 +85,6 @@ $('#viewCommentsOption').click(function(event) {
         </c:if>
         <c:if test="${showChangeOpState}">
             <li class="menuOption" id="changeOpStateOption"><a href="javascript:void(0);"><i:inline key="${changeOpState}"/></a></li>
-        </c:if>
-        <c:if test="${showComments}">
-            <li class="menuOption" id="viewCommentsOption">
-                <input type="hidden" value="<cti:msg2 key="yukon.web.modules.capcontrol.comments.title" arguments="${paoName}"/>">
-                <a href="javascript:void(0);"><i:inline key=".viewComments"/></a>
-            </li>
-        </c:if>
-        <c:if test="${showRecentCommands}">
-            <li class="menuOption" id="recentEventsOption"><a href="javascript:void(0);"><i:inline key=".viewRecentEvents"/></a></li>
         </c:if>
         <c:if test="${showLocalControl}">
             <li class="menuOption" id="localControlsOption"><a href="javascript:void(0);"><i:inline key=".moreControls"/></a></li>
