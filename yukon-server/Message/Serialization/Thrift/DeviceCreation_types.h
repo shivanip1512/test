@@ -4,8 +4,8 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef DeviceCreationMessaging_TYPES_H
-#define DeviceCreationMessaging_TYPES_H
+#ifndef DeviceCreation_TYPES_H
+#define DeviceCreation_TYPES_H
 
 #include <thrift/Thrift.h>
 #include <thrift/TApplicationException.h>

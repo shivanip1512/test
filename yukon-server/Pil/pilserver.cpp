@@ -35,7 +35,7 @@
 #include "database_reader.h"
 #include "amq_connection.h"
 #include "PorterResponseMessage.h"
-#include "DeviceCreationMessaging.h"
+#include "DeviceCreation.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
@@ -896,12 +896,12 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
             // build a device creation call to Java
             void operator()(const RfnDeviceCreationReplyMessage & reply) const override
             {
-                if ( reply.success )
+                if ( reply.success && reply.descriptor )
                 {
-                    CTILOG_DEBUG(dout, "Received RfnDeviceCreationReply from client for " << reply.descriptor);
+                    CTILOG_DEBUG(dout, "Received device creation service call response for " << reply.descriptor->toString());
                     // force a device reload of the new device
-                    DeviceCreationDescriptor descriptor = reply.descriptor;
-                    DeviceManager->refreshDeviceByID(descriptor.paoId, descriptor.category, descriptor.deviceType);
+                    boost::optional<DeviceCreationDescriptor> descriptor = reply.descriptor;
+                    DeviceManager->refreshDeviceByID(descriptor->paoId, descriptor->category, descriptor->deviceType);
 
                     // attempt to get the device again
                     auto newDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId);
@@ -913,7 +913,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
                 } 
                 else
                 {
-                    CTILOG_DEBUG(dout, "RFN device creation request from Porter to client failed for new rfn device " << rfnId);
+                    CTILOG_DEBUG(dout, "RFN device creation service call failed for new RFN device " << rfnId);
                 }
             };
         };
@@ -921,10 +921,10 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         auto timedOutCallback =
             [=]()
         {
-            CTILOG_DEBUG(dout, "RFN device creation request from Porter to client timed out for RfnIdentifier " << rfnId);
+            CTILOG_DEBUG(dout, "RFN device creation service call timed out for RFN device " << rfnId);
         };
 
-        CTILOG_DEBUG(dout, "Sending RfnDeviceCreationRequest to client for RfnIdentifier " << report.rfnId);
+        CTILOG_DEBUG(dout, "Making RFN device creation service call for RFN device " << report.rfnId);
         // send the device creation message to Java
         ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(
             Cti::Messaging::ActiveMQ::Queues::OutboundQueue::DeviceCreationRequest,

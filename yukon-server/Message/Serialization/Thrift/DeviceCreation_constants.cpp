@@ -4,13 +4,13 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "DeviceCreationMessaging_constants.h"
+#include "DeviceCreation_constants.h"
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const DeviceCreationMessagingConstants g_DeviceCreationMessaging_constants;
+const DeviceCreationConstants g_DeviceCreation_constants;
 
-DeviceCreationMessagingConstants::DeviceCreationMessagingConstants() {
+DeviceCreationConstants::DeviceCreationConstants() {
 }
 
 }}}} // namespace

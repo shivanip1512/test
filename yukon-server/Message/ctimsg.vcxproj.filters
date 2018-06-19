@@ -168,7 +168,7 @@
     <ClCompile Include="NetworkManagerMessaging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DeviceCreationMessaging.cpp">
+    <ClCompile Include="DeviceCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -362,10 +362,10 @@
     <ClInclude Include="include\LMHoneywellMessages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\DeviceCreationMessaging.h">
+    <ClInclude Include="include\RfnWaterNodeMessaging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\RfnWaterNodeMessaging.h">
+    <ClInclude Include="include\DeviceCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

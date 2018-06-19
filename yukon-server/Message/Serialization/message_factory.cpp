@@ -11,8 +11,8 @@
 #include "Thrift/RfnE2eData_types.h"
 #include "Thrift/NetworkManagerMessaging_types.h"
 
-#include "DeviceCreationMessaging.h"
-#include "Thrift/DeviceCreationMessaging_types.h"
+#include "DeviceCreation.h"
+#include "Thrift/DeviceCreation_types.h"
 
 #include "std_helper.h"
 
@@ -215,12 +215,16 @@ try
     const Thrift::RfnDeviceCreationReply thriftMsg = DeserializeThriftBytes<Thrift::RfnDeviceCreationReply>(buf);
 
     RfnDeviceCreationReplyMessage msg;
-    Thrift::DeviceCreationDescriptor descriptor = thriftMsg.descriptor;
 
-    msg.descriptor.paoId      = descriptor.paoId;
-    msg.descriptor.category   = descriptor.category;
-    msg.descriptor.deviceType = descriptor.deviceType;
-    msg.success               = thriftMsg.success;
+    if ( thriftMsg.__isset.descriptor )
+    {
+        boost::optional<Thrift::DeviceCreationDescriptor> descriptor = thriftMsg.descriptor;
+        msg.descriptor = DeviceCreationDescriptor();
+        msg.descriptor->paoId      = descriptor->paoId;
+        msg.descriptor->category   = descriptor->category;
+        msg.descriptor->deviceType = descriptor->deviceType;
+    }
+    msg.success = thriftMsg.success;
 
     return msg;
 }

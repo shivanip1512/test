@@ -8,7 +8,7 @@
 #include "StreamableMessage.h"
 #include "RfnBroadcastReplyMessage.h"
 #include "RfnWaterNodeMessaging.h"
-#include "DeviceCreationMessaging.h"
+#include "DeviceCreation.h"
 
 #include "utility.h"
 

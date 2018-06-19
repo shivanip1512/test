@@ -421,7 +421,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ControlHistoryAssociationResponse.cpp">
     </ClCompile>
-    <ClCompile Include="DeviceCreationMessaging.cpp" />
+    <ClCompile Include="DeviceCreation.cpp" />
     <ClCompile Include="DispatchConnection.cpp">
     </ClCompile>
     <ClCompile Include="DispatchPointDataRequest.cpp">
@@ -510,7 +510,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\connection_listener.h" />
     <ClInclude Include="include\connection_server.h" />
     <ClInclude Include="include\ControlHistoryAssociationResponse.h" />
-    <ClInclude Include="include\DeviceCreationMessaging.h" />
+    <ClInclude Include="include\DeviceCreation.h" />
     <ClInclude Include="include\DispatchConnection.h" />
     <ClInclude Include="include\DispatchPointDataRequest.h" />
     <ClInclude Include="include\id_ctimsg.h" />
