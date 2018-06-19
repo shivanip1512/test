@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 #include "std_helper.h"
-#include "DeviceCreationMessaging.h"
+#include "DeviceCreation.h"
 
 namespace Cti       {
 namespace Messaging {
