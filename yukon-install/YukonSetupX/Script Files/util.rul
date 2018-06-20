@@ -825,3 +825,57 @@ function RemoveOldDesktopDebugServers()
 begin
 	DeleteDir( FOLDER_DESKTOP ^ "Yukon Debug Servers", ALLCONTENTS);
 end;
+
+//-------------------------------------------------------------------
+// Helper function to convert date format from MM-DD-YYYY to YYYYMMDD 
+//-------------------------------------------------------------------
+export prototype string FormatDatePattern(string);
+function string FormatDatePattern(dateString) 
+number nResult, i;
+string tempDay, tempMonth, sDay, sMonth, sYear, formattedDate;
+LIST systemDateTokens;
+begin
+    systemDateTokens = ListCreate (STRINGLIST);
+    StrGetTokens(systemDateTokens, dateString, "-" );
+    nResult = ListGetFirstString (systemDateTokens, tempMonth);
+    i = 0; 
+    while (nResult != END_OF_LIST)
+      nResult = ListGetNextString(systemDateTokens, sYear);
+        if(i=0) then
+          tempDay = sYear;
+        endif;
+      i = i+1;
+    endwhile;
+    // If day is single digit ,append 0 before day string
+    if(StrLength(tempDay) = 1) then
+      sDay = "0" + tempDay;
+    else 
+      sDay = tempDay;
+    endif;
+    // If month is single digit, append 0 before month string
+    if(StrLength(tempMonth) = 1) then
+      sMonth = "0" + tempMonth;
+    else 
+      sMonth = tempMonth;
+    endif;
+    formattedDate = sYear + sMonth + sDay;
+    return formattedDate;
+end;
+
+//--------------------------------------------------------------------------------
+// Rename old yukonlogging.xml and remoteLogging.xml files (based on passed suffix)
+// and take backup in Yukon\\Server\\Config\\Backup\\. 
+// Also remove old files from Yukon\\Server\\config directory
+//--------------------------------------------------------------------------------
+export prototype BackupLoggingConfigFiles(string);
+function BackupLoggingConfigFiles(suffix)
+string szFile;
+begin
+CopyFile(TARGETDIR + "\\Server\\Config\\yukonLogging.xml", TARGETDIR + "\\Server\\Config\\Backup\\yukonLogging_" + suffix + ".xml");
+CopyFile(TARGETDIR + "\\Server\\Config\\remoteLogging.xml", TARGETDIR + "\\Server\\Config\\Backup\\remoteLogging_" + suffix + ".xml");
+// Delete old yukonLogging and remoteLogging files.
+szFile = TARGETDIR ^ "\\Server\\Config\\yukonLogging.xml";
+DeleteFile ( szFile );
+szFile = TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml";
+DeleteFile ( szFile );
+end;
