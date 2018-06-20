@@ -218,11 +218,11 @@ try
 
     if ( thriftMsg.__isset.descriptor )
     {
-        boost::optional<Thrift::DeviceCreationDescriptor> descriptor = thriftMsg.descriptor;
+        const auto & descriptor = thriftMsg.descriptor;
         msg.descriptor = DeviceCreationDescriptor();
-        msg.descriptor->paoId      = descriptor->paoId;
-        msg.descriptor->category   = descriptor->category;
-        msg.descriptor->deviceType = descriptor->deviceType;
+        msg.descriptor->paoId      = descriptor.paoId;
+        msg.descriptor->category   = descriptor.category;
+        msg.descriptor->deviceType = descriptor.deviceType;
     }
     msg.success = thriftMsg.success;
 
