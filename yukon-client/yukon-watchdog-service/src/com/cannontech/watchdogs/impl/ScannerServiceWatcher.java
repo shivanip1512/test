@@ -42,7 +42,7 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl {
         }, 0, 5, TimeUnit.MINUTES);
     }
 
-    public void init() {
+    private void init() {
         PaoIdentifier paoIdentifier = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
 
         BuiltInAttribute memoryAttribute = BuiltInAttribute.SCANNER_MEMORY_UTILIZATION;
@@ -61,7 +61,7 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl {
         return generateWarning(WatchdogWarningType.SCANNER_SERVICE_STATUS, serviceStatus);
     }
 
-    public ServiceStatus getScannerServiceStatus() {
+    private ServiceStatus getScannerServiceStatus() {
         if (memoryPoint != null) {
             PointValueHolder pointData = asyncDynamicDataSource.getPointValue(memoryPoint.getPointID());
             long diff = Duration.between(pointData.getPointDataTimeStamp().toInstant(), Instant.now()).getSeconds();
@@ -74,6 +74,7 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl {
 
     }
 
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.REALTIMESCANNER;
     }

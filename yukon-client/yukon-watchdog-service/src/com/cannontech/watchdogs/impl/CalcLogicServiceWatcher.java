@@ -42,7 +42,7 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl {
         }, 0, 5, TimeUnit.MINUTES);
     }
 
-    public void init() {
+    private void init() {
         PaoIdentifier paoIdentifier = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
 
         BuiltInAttribute memoryAttribute = BuiltInAttribute.CALC_MEMORY_UTILIZATION;
@@ -61,7 +61,7 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl {
         return generateWarning(WatchdogWarningType.CALC_SERVICE_STATUS, serviceStatus);
     }
 
-    public ServiceStatus getCalcLogicServiceStatus() {
+    private ServiceStatus getCalcLogicServiceStatus() {
         if (memoryPoint != null) {
             PointValueHolder pointData = asyncDynamicDataSource.getPointValue(memoryPoint.getPointID());
             long diff = Duration.between(pointData.getPointDataTimeStamp().toInstant(), Instant.now()).getSeconds();
@@ -73,7 +73,8 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl {
         return ServiceStatus.STOPPED;
 
     }
-
+    
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.CALCLOGIC;
     }

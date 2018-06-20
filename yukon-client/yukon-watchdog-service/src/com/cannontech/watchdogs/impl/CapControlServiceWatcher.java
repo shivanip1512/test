@@ -49,7 +49,7 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
         watchAndNotify();
     }
 
-    public WatchdogCapControlClientConnection createConnection() {
+    private WatchdogCapControlClientConnection createConnection() {
         if (clientConnection == null) {
             clientConnection = new WatchdogCapControlClientConnection();
             clientConnection.addWatchdogMessageListener(this);
@@ -97,6 +97,7 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
         }
     }
 
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.CAPCONTROL;
     }

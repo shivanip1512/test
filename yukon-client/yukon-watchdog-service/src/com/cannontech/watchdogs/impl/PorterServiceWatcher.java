@@ -50,7 +50,7 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
         watchAndNotify();
     }
 
-    public WatchdogPorterClientConnection createConnection() {
+    private WatchdogPorterClientConnection createConnection() {
         if (porterClientConnection == null) {
             porterClientConnection = new WatchdogPorterClientConnection();
             porterClientConnection.addWatchdogMessageListener(this);
@@ -98,6 +98,7 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
         }
     }
 
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.PORTER;
     }

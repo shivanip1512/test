@@ -51,7 +51,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
         watchAndNotify();
     }
 
-    public WatchdogDispatchClientConnection createConnection() {
+    private WatchdogDispatchClientConnection createConnection() {
         if (dispatchConnection == null) {
             dispatchConnection = new WatchdogDispatchClientConnection();
             dispatchConnection.addWatchdogMessageListener(this);
@@ -99,6 +99,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
         }
     }
 
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.DISPATCH;
     }

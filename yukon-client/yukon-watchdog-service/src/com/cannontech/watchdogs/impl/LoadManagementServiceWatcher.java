@@ -51,7 +51,7 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
         watchAndNotify();
     }
 
-    public WatchdogLoadManagementClientConnection createConnection() {
+    private WatchdogLoadManagementClientConnection createConnection() {
         if (clientConnection == null) {
             clientConnection = new WatchdogLoadManagementClientConnection();
             clientConnection.addWatchdogMessageListener(this);
@@ -100,6 +100,7 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
         }
     }
 
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.LOADMANAGEMENT;
     }

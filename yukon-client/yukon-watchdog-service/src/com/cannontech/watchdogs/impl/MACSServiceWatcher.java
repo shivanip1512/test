@@ -51,7 +51,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
         watchAndNotify();
     }
 
-    public WatchdogMACSConnection createConnection() {
+    private WatchdogMACSConnection createConnection() {
         if (macsConnection == null) {
             macsConnection = new WatchdogMACSConnection();
             macsConnection.addWatchdogMessageListener(this);
@@ -100,6 +100,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
         }
     }
 
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.MACS;
     }
