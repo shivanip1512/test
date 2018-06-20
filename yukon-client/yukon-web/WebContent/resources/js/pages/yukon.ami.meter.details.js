@@ -106,6 +106,11 @@ yukon.ami.meterDetails = (function () {
                 $('.dropdown-menu').hide()
             });
             
+            $(document).on('yukon:meter:delete', function (event) {
+                yukon.ui.blockPage();
+                $('#delete-meter-form').submit();
+            });
+            
             _initialized = true;
         }
 

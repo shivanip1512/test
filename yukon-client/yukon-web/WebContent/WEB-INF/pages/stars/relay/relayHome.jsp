@@ -4,7 +4,6 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -31,8 +30,14 @@
         
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
             <li class="divider"/>
-            <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" onclick="$('#delete-relay-form').submit();" />
-            <d:confirm on="#deleteRelay" nameKey="delete.confirm" />
+            <cti:msgScope paths="yukon.web.components.ajaxConfirm.confirmDelete">
+                <div id="confirm-delete-relay" class="dn" data-dialog data-ok-text="<i:inline key=".ok" />" 
+                     data-target="#deleteRelay" data-event="yukon:relay:delete" data-title='<i:inline key=".title" />'>
+                    <i:inline key=".message" arguments="${deviceName}"/>
+                </div>
+            </cti:msgScope>
+            <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" 
+                               data-popup="#confirm-delete-relay" />
             <cti:url var="deleteUrl" value="/stars/relay/${deviceId}"/>
             <form:form id="delete-relay-form" action="${deleteUrl}" method="delete">
                 <cti:csrfToken/>
@@ -61,6 +66,6 @@
                 <tags:widget bean="deviceGroupWidget"/>
             </div>
         </div>
-    </tags:widgetContainer>  
-    
+    </tags:widgetContainer>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.relay.details.js"/>
 </cti:standardPage>

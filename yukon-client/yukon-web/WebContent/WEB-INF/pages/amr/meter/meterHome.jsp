@@ -4,7 +4,6 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="amr" page="meterDetail.electric">
@@ -46,8 +45,14 @@
             </cti:checkRolesAndProperties>
             <!-- Delete Meter Button -->
             <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
-                <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" icon="icon-cross" onclick="$('#delete-meter-form').submit();" />
-                <d:confirm on="#deleteMeter"  nameKey="meter.confirmDelete"/>
+                <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" 
+                                   icon="icon-cross" data-popup="#confirm-delete-meter"/>
+                <cti:msgScope paths="yukon.web.components.ajaxConfirm.confirmDelete">
+                    <div id="confirm-delete-meter" class="dn" data-dialog data-ok-text="<i:inline key=".ok" />" 
+                         data-target="#deleteMeter" data-event="yukon:meter:delete" data-title='<i:inline key=".title" />'>
+                        <i:inline key=".message" arguments="${deviceName}"/>
+                    </div>
+                </cti:msgScope>
                 <cti:url var="deleteUrl" value="/meter/${deviceId}"/>
                 <form:form id="delete-meter-form" action="${deleteUrl}" method="delete">
                     <cti:csrfToken/>
