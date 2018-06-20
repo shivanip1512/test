@@ -125,7 +125,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      * Start recalculating monitor
      */
     private void startWork(DeviceDataMonitor monitor) {
-
+        cacheViolationGroupAndDeviceGroup(monitor);
         executor.execute(() -> {
             try {
                 log.debug("Starting work " + monitor);
@@ -193,9 +193,9 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     switch (monitorMessage.getAction()) {
                     case CREATE:
                         createViolationGroup(monitorMessage.getUpdatedMonitor());
-                        cacheViolationGroupAndDeviceGroup(monitorMessage.getUpdatedMonitor());
                         startWork(monitorMessage.getUpdatedMonitor());
                     case DISABLE:
+                        cacheViolationGroupAndDeviceGroup(monitorMessage.getUpdatedMonitor());
                         deviceGroupMemberEditorDao.removeAllChildDevices(monitorMessage.getUpdatedMonitor().getViolationGroup());
                         break;
                     case ENABLE:
@@ -204,7 +204,6 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                         break;
                     case UPDATE:
                         updateViolationGroup(monitorMessage);
-                        cacheViolationGroupAndDeviceGroup(monitorMessage.getUpdatedMonitor());
                         startWork(monitorMessage.getUpdatedMonitor());
                         break;
                     default:
