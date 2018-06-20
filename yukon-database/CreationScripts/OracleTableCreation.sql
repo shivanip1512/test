@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/18/2018 2:44:34 PM                         */
+/* Created on:     6/20/2018 2:12:27 PM                         */
 /*==============================================================*/
 
 
@@ -7717,9 +7717,9 @@ create table PaoNote  (
    PaObjectId           NUMBER                          not null,
    NoteText             NVARCHAR2(255)                  not null,
    Status               CHAR(1)                         not null,
-   CreatorUserName      NVARCHAR2(64)                   not null,
-   CreationDate         DATE                            not null,
-   EditorUserName       NVARCHAR2(64),
+   CreateUserName       NVARCHAR2(64)                   not null,
+   CreateDate           DATE                            not null,
+   EditUserName         NVARCHAR2(64),
    EditDate             DATE,
    constraint PK_PaoNote primary key (NoteId)
 );

@@ -331,15 +331,31 @@ END;
 INSERT INTO DBUpdates VALUES ('YUK-18432', '7.1.0', SYSDATE);
 /* @end YUK-18432 */
 
-/* @start YUK-18371 */
+/* @start YUK-18371-1 if YUK-18371 */
+ALTER TABLE PaoNote
+RENAME COLUMN CreatorUserName
+TO CreateUserName;
+
+ALTER TABLE PaoNote
+RENAME COLUMN CreationDate
+TO CreateDate;
+
+ALTER TABLE PaoNote
+RENAME COLUMN EditorUserName
+TO EditUserName;
+
+INSERT INTO DBUpdates VALUES ('YUK-18371-1', '7.1.0', SYSDATE);
+/* @end YUK-18371-1 */
+
+/* @start YUK-18371-1 */
 CREATE TABLE PaoNote  (
     NoteId              NUMBER              NOT NULL,
     PaObjectId          NUMBER              NOT NULL,
     NoteText            NVARCHAR2(255)      NOT NULL,
     Status              CHAR(1)             NOT NULL,
-    CreatorUserName     NVARCHAR2(64)       NOT NULL,
-    CreationDate        DATE                NOT NULL,
-    EditorUserName      NVARCHAR2(64),
+    CreateUserName      NVARCHAR2(64)       NOT NULL,
+    CreateDate          DATE                NOT NULL,
+    EditUserName        NVARCHAR2(64),
     EditDate            DATE,
     CONSTRAINT PK_PaoNote PRIMARY KEY (NoteId)
 );
@@ -354,8 +370,8 @@ ALTER TABLE PaoNote
         REFERENCES YukonPAObject (PAObjectID)
             ON DELETE CASCADE;
 
-INSERT INTO DBUpdates VALUES ('YUK-18371', '7.1.0', SYSDATE);
-/* @end YUK-18371 */
+INSERT INTO DBUpdates VALUES ('YUK-18371-1', '7.1.0', SYSDATE);
+/* @end YUK-18371-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

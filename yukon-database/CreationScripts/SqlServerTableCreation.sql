@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/18/2018 2:39:55 PM                         */
+/* Created on:     6/20/2018 2:13:18 PM                         */
 /*==============================================================*/
 
 
@@ -8189,9 +8189,9 @@ create table PaoNote (
    PaObjectId           numeric              not null,
    NoteText             nvarchar(255)        not null,
    Status               char(1)              not null,
-   CreatorUserName      nvarchar(64)         not null,
-   CreationDate         datetime             not null,
-   EditorUserName       nvarchar(64)         null,
+   CreateUserName       nvarchar(64)         not null,
+   CreateDate           datetime             not null,
+   EditUserName         nvarchar(64)         null,
    EditDate             datetime             null,
    constraint PK_PaoNote primary key (NoteId)
 )
