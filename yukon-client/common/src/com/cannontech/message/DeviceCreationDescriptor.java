@@ -1,5 +1,7 @@
 package com.cannontech.message;
 
+import com.cannontech.common.pao.PaoIdentifier;
+
 public class DeviceCreationDescriptor {
 
     private final int paoId;
@@ -12,6 +14,12 @@ public class DeviceCreationDescriptor {
         this.deviceType = deviceType;
     }
 
+    public DeviceCreationDescriptor(PaoIdentifier paoIdentifier) {
+        this.paoId = paoIdentifier.getPaoId();
+        this.category = paoIdentifier.getPaoType().getPaoCategory().getDbString();
+        this.deviceType = paoIdentifier.getPaoType().getDbString();
+    }
+    
     public int getPaoId() {
         return paoId;
     }

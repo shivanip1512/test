@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -48,7 +47,7 @@ public class ServerDeviceCreationMsgService implements SessionAwareMessageListen
             
             //build reply message
             PaoIdentifier paoId = newDevice.getPaoIdentifier();
-            DeviceCreationDescriptor descriptor = new DeviceCreationDescriptor(paoId.getPaoId(), paoId.getPaoType().getPaoCategory().getDbString(), paoId.getPaoType().getDbString());
+            DeviceCreationDescriptor descriptor = new DeviceCreationDescriptor(paoId);
             RfnDeviceCreationReply reply = new RfnDeviceCreationReply(descriptor, true);
             BytesMessage outBytesMsg = session.createBytesMessage();
             outBytesMsg.writeBytes(rfnCreationReplySerializer.serialize(msgFactory, reply));
