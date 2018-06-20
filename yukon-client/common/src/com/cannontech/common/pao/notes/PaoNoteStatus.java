@@ -1,6 +1,8 @@
 package com.cannontech.common.pao.notes;
 
-public enum PaoNoteStatus {
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
+public enum PaoNoteStatus implements DatabaseRepresentationSource {
 
     CREATED("C"),
     EDITED("E"),
@@ -13,6 +15,11 @@ public enum PaoNoteStatus {
     }
     
     public String getDBString() {
+        return dbString;
+    }
+
+    @Override
+    public Object getDatabaseRepresentation() {
         return dbString;
     }
 }

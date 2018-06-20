@@ -125,4 +125,7 @@
   <bean class="com.cannontech.common.smartNotification.service.impl.SmartNotificationSubscriptionServiceImpl" />
   <bean class="com.cannontech.common.smartNotification.service.impl.SmartNotificationEventCreationServiceImpl"/>
   <bean class="com.cannontech.common.smartNotification.dao.impl.SmartNotificationEventDaoImpl" />
+  
+  <bean class="com.cannontech.common.pao.notes.dao.impl.PaoNotesDaoImpl"/>
+  <bean class="com.cannontech.common.pao.notes.service.impl.PaoNotesServiceImpl"/>
 </beans>
