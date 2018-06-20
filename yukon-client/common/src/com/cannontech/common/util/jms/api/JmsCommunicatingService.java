@@ -11,5 +11,6 @@ public enum JmsCommunicatingService {
     YUKON_WEBSERVER,
     YUKON_WEBSERVER_DEV_PAGES,
     YUKON_MESSAGE_BROKER,
+    YUKON_WATCHDOG;
     ;
 }

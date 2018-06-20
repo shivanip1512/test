@@ -3,6 +3,7 @@
 <properties>
 
     <entry key="yukon.web.widgets.watchdogWarnings.warningType.WEB_SERVER_SERVICE_STATUS.SUMMARY">{0} is {1}</entry>
+    <entry key="yukon.web.widgets.watchdogWarnings.warningType.NETWORK_MANAGER_STATUS.SUMMARY">{0} is {1}</entry>
     <entry key="yukon.web.widgets.watchdogWarnings.warningType.DISPATCH_SERVICE_STATUS.SUMMARY">{0} is {1}</entry>
     <entry key="yukon.web.widgets.watchdogWarnings.warningType.CAPCONTROL_SERVICE_STATUS.SUMMARY">{0} is {1}</entry>
     <entry key="yukon.web.widgets.watchdogWarnings.warningType.LOADMANAGEMENT_SERVICE_STATUS.SUMMARY">{0} is {1}</entry>

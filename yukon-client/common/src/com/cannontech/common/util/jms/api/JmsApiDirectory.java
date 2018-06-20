@@ -556,6 +556,7 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewayDataResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_SERVICE_MANAGER)
+                  .sender(YUKON_WATCHDOG)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
