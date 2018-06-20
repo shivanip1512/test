@@ -52,7 +52,10 @@
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
     
-    <li class="divider" />
+    <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS,CBC_DATABASE_EDIT">
+        <li class="divider" />
+    </cti:checkRolesAndProperties>
+    
     <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${feeder.id}" 
         data-pao-name="${fn:escapeXml(feeder.name)}"/>
     <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${feeder.id}" />

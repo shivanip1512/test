@@ -51,7 +51,10 @@
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
     
-    <li class="divider" />
+    <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS,CBC_DATABASE_EDIT">
+        <li class="divider" />
+    </cti:checkRolesAndProperties>
+    
     <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${bus.id}" 
         data-pao-name="${fn:escapeXml(bus.name)}"/>
     <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${bus.id}" />

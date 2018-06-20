@@ -51,7 +51,10 @@
                 </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         
-        <li class="divider" />
+        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS,CBC_DATABASE_EDIT">
+            <li class="divider" />
+        </cti:checkRolesAndProperties>
+        
         <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${capbank.id}" 
             data-pao-name="${fn:escapeXml(capbank.name)}"/>
         <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${capbank.id}" />

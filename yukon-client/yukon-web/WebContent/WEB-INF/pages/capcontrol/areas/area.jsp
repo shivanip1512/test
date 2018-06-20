@@ -320,20 +320,20 @@
                         <span style="margin-right:10px;"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" initialize="false"/>
                     </td>
                     <td>
-                        <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
                             <cm:dropdown icon="icon-cog">
-                                <li>
-                                    <a id="substationState_${substationId}" href="javascript:void(0)" class="clearfix">
-                                        <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".substation.actions"/></span>
-                                    </a>
-                                </li>
-                                <li class="divider" />
+                               <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+                                    <li>
+                                        <a id="substationState_${substationId}" href="javascript:void(0)" class="clearfix">
+                                            <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".substation.actions"/></span>
+                                        </a>
+                                    </li>
+                                    <li class="divider" />
+                                </cti:checkRolesAndProperties>
                                 <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${substationId}" 
                                     data-pao-name="${fn:escapeXml(station.name)}"/>
                                 <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${substationId}" />
                                 <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
                             </cm:dropdown>
-                        </cti:checkRolesAndProperties>
                     </td>
                 </tr>
             </c:forEach>
