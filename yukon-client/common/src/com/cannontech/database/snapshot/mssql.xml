@@ -35388,7 +35388,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>CreatorUserName</i__columnName>
+            <i__columnName>CreateUserName</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>nvarchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -35404,7 +35404,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>CreationDate</i__columnName>
+            <i__columnName>CreateDate</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>datetime</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -35420,7 +35420,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>EditorUserName</i__columnName>
+            <i__columnName>EditUserName</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>nvarchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
