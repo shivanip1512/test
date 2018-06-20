@@ -90,6 +90,8 @@ const MetricInfo metricInfos[] = {
         {  69,  TouRates,  "Q delivered, peak demand coincident"   },
         {  70,  TouRates,  "Q received, peak demand coincident"    },
 
+        {  78,  TouRates,  "Average Delivered Power Factor"        },
+        {  79,  TouRates,  "Average Received Power Factor"         },
         {  80,  TouRates,  "Power Factor"                          },
         {  81,  TouRates,  "Power Factor kWh(del)/kVar(del)"       },
         {  82,  TouRates,  "Power Factor kWh(rec)/kVar(rec)"       },

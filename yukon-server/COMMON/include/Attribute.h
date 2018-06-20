@@ -177,6 +177,8 @@ public:
     static const Attribute  PeakkVArh;
     static const Attribute  PeakkVArhCoincidental;
     static const Attribute  Phase;
+    static const Attribute  PowerFactorAvgDelivered;
+    static const Attribute  PowerFactorAvgReceived;
     static const Attribute  PowerFactor;
     static const Attribute  PowerFactorCoincidental;
     static const Attribute  PowerFactorDelivered;

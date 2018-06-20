@@ -190,6 +190,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PEAK_KVARH("Peak kVArh", AttributeGroup.REACTIVE),
     PEAK_KVARH_COIN("Peak kVArh Coincidental", AttributeGroup.REACTIVE),
     PHASE("Phase", AttributeGroup.OTHER),
+    AVERAGE_DELIVERED_POWER_FACTOR("Average Delivered Power Factor", AttributeGroup.REACTIVE),
+    AVERAGE_RECEIVED_POWER_FACTOR("Average Received Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR("Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_COIN("Power Factor Coincidental", AttributeGroup.REACTIVE),
     DELIVERED_POWER_FACTOR("Delivered Power Factor", AttributeGroup.REACTIVE),

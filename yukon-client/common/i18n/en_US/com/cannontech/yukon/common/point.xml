@@ -234,6 +234,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_E">Usage Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_GAS">Gas Usage Reading</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_DELIVERED_POWER_FACTOR">Average Delivered Power Factor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_RECEIVED_POWER_FACTOR">Average Delivered Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_COIN">Power Factor Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_POWER_FACTOR">Delivered Power Factor</entry>

@@ -892,6 +892,26 @@
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
 
+        <point name="Average Delivered Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+
+        <point name="Average Received Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+
         <point name="Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>

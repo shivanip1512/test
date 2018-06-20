@@ -186,6 +186,8 @@ INIT_ATTRIBUTE( Q2Q3kVAr,                                           "Q2_Q3_KVAR"
 INIT_ATTRIBUTE( PeakkVArh,                                          "PEAK_KVARH" );
 INIT_ATTRIBUTE( PeakkVArhCoincidental,                              "PEAK_KVARH_COIN" );
 INIT_ATTRIBUTE( Phase,                                              "PHASE" );
+INIT_ATTRIBUTE( PowerFactorAvgDelivered,                            "AVERAGE_DELIVERED_POWER_FACTOR" );
+INIT_ATTRIBUTE( PowerFactorAvgReceived,                             "AVERAGE_RECEIVED_POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactor,                                        "POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactorCoincidental,                            "POWER_FACTOR_COIN" );
 INIT_ATTRIBUTE( PowerFactorDelivered,                               "DELIVERED_POWER_FACTOR" );
