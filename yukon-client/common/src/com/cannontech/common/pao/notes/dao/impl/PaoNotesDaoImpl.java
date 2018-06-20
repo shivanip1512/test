@@ -1,28 +1,35 @@
 package com.cannontech.common.pao.notes.dao.impl;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.notes.PaoNoteStatus;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PaoNotesDaoImpl implements PaoNotesDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
 
     
     private final YukonRowMapper<PaoNote> paoNotesRowMapper = new YukonRowMapper<PaoNote>() {
@@ -43,16 +50,56 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         
     };
     
+    private int getNextPaoNoteId() {
+        return nextValueHelper.getNextValue("PaoNotes");
+    }
+    
     @Override
-    public void create(int paoId, String text, LiteYukonUser user) {
+    public int create(PaoNote note, LiteYukonUser user) {
+        int noteId = getNextPaoNoteId();
+        Timestamp creationDate = new Timestamp(System.currentTimeMillis());
+        
+        SqlStatementBuilder insertSql = new SqlStatementBuilder();
+        SqlParameterSink sink = insertSql.insertInto("PaoNotes");
+        sink.addValue("NoteId", noteId);
+        sink.addValue("PaObjectId", note.getPaObjectId());
+        sink.addValue("NoteText", note.getNoteText());
+        sink.addValue("Status", PaoNoteStatus.CREATED.getDBString());
+        sink.addValue("CreatorUserName", user.getUsername());
+        sink.addValue("CreationDate", creationDate.toString());
+        yukonJdbcTemplate.update(insertSql);
+        
+        return noteId;
     }
 
     @Override
-    public void edit(int noteId, String text, LiteYukonUser user) {
+    public int edit(PaoNote note, LiteYukonUser user) {
+        Timestamp editDate = new Timestamp(System.currentTimeMillis());
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.put("NoteText", note.getNoteText());
+        values.put("Status", PaoNoteStatus.EDITED.getDBString());
+        values.put("EditorUserName", user.getUsername());
+        values.put("EditDate", editDate.toString());
+        
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.update("PaoNotes");
+        updateSql.set(values);
+        updateSql.append("WHERE NoteId").eq_k(note.getNoteId());
+        return yukonJdbcTemplate.update(updateSql);
     }
 
     @Override
-    public void delete(int noteId) {
+    public int delete(int noteId, LiteYukonUser user) {
+        Timestamp editDate = new Timestamp(System.currentTimeMillis());
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.put("Status", PaoNoteStatus.DELETED.getDBString());
+        values.put("EditorUserName", user.getUsername());
+        values.put("EditDate", editDate.toString());
+        
+        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+        deleteSql.update("PaoNotes");
+        deleteSql.set(values);
+        return yukonJdbcTemplate.update(deleteSql);
     }
 
     @Override

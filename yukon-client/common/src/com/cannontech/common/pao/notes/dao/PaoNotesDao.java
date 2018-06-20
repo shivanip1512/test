@@ -29,11 +29,25 @@ public interface PaoNotesDao {
 
     }
     
-    void create(int paoId, String text, LiteYukonUser user);
+    /**
+     * Add a new PaoNote to the PaoNotes table. Includes NoteId, PaObjectId, NoteText, Status, 
+     * CreatorUserName, and CreationDate. Excludes EditorUserName and EditDate
+     */
+    int create(PaoNote note, LiteYukonUser user);
     
-    void edit(int noteId, String text, LiteYukonUser user);
+    /**
+     * Update the note's NoteText, Status ('E'), EditorUserName, and EditDate.
+     */
+    int edit(PaoNote note, LiteYukonUser user);
     
-    void delete(int noteId);
+    /**
+     * Delete the note by noteId. This will not remove the
+     * note from the database. Instead it will update the
+     * status of the note to 'D' as well as the EditDate and
+     * EditUsername to reflect the deletion event instead of
+     * the last edit.
+     */
+    int delete(int noteId, LiteYukonUser user);
     
     /**
      * @param paoId
