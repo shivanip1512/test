@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.notes.PaoNoteStatus;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
@@ -21,6 +22,7 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -36,13 +38,19 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         public PaoNote mapRow(YukonResultSet rs) throws SQLException {
             PaoNote row = new PaoNote();
             row.setNoteId(rs.getInt("NoteId"));
-            row.setPaObjectId(rs.getInt("PaObjectId"));
+            row.setPaoId(rs.getInt("PAObjectId"));
             row.setNoteText(rs.getString("NoteText"));
-            row.setStatus(rs.getString("Status").charAt(0));
-            row.setCreatorUserName(rs.getString("CreatorUserName"));
-            row.setCreationDate(rs.getInstant("CreationDate"));
-            row.setEditorUserName(rs.getString("EditorUserName"));
+            row.setStatus(rs.getEnum("Status", PaoNoteStatus.class));
+            row.setCreateUserName(rs.getString("CreateUsername"));
+            row.setCreateDate(rs.getInstant("CreateDate"));
+            row.setEditUserName(rs.getString("EditUserName"));
             row.setEditDate(rs.getInstant("EditDate"));
+            LiteYukonPAObject yukonPao = new LiteYukonPAObject(rs.getInt("PAObjectId"),
+                                                               rs.getString("PAOName"),
+                                                               rs.getEnum("Type", PaoType.class),
+                                                               rs.getString("Description"),
+                                                               rs.getString("DisableFlag"));
+            row.setLiteYukonPAObject(yukonPao);
             return row;
         }
         
@@ -59,10 +67,10 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         SqlStatementBuilder insertSql = new SqlStatementBuilder();
         SqlParameterSink sink = insertSql.insertInto("PaoNote");
         sink.addValue("NoteId", noteId);
-        sink.addValue("PaObjectId", note.getPaObjectId());
+        sink.addValue("PaObjectId", note.getPaoId());
         sink.addValue("NoteText", note.getNoteText());
         sink.addValue("Status", PaoNoteStatus.CREATED);
-        sink.addValue("CreateUsername", note.getCreatorUserName());
+        sink.addValue("CreateUsername", note.getCreateUserName());
         sink.addValue("CreateDate", new Instant());
         yukonJdbcTemplate.update(insertSql);
         
@@ -101,10 +109,11 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
-        sql.append("SELECT NoteId, PaObjectId, NoteText, Status, CreatorUserName, CreationDate, EditorUserName, EditDate");
+        sql.append("SELECT NoteId, PAObjectId, NoteText, Status, CreateUserName, CreateDate, EditUserName, EditDate");
         sql.append("FROM PaoNote");
-        sql.append("WHERE PaObjectId").eq_k(paoId);
-        sql.append("ORDER BY COALESCE(EditDate, CreationDate) DESC");
+        sql.append("WHERE PAObjectId").eq(paoId);
+        sql.append("AND Status").neq_k(PaoNoteStatus.DELETED);
+        sql.append("ORDER BY COALESCE(EditDate, CreateDate) DESC");
         
         return yukonJdbcTemplate.queryForLimitedResults(sql, paoNotesRowMapper, numOfNotes);
     }
@@ -125,16 +134,17 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
                                                           Direction direction,
                                                           PagingParameters paging) {
         
-        if (sortBy == null) {
-            sortBy = SortBy.DATE;
-        }
         if (direction == null) {
-            direction = Direction.asc;
+            direction = Direction.desc;
+        }
+        if (paging == null) {
+            paging = PagingParameters.of(25, 1);
         }
         
-        SqlStatementBuilder sql = getAllNotesSql(filter);
-        
-        sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT pn.NoteId As NoteId, pn.PaObjectId AS PAObjectId, pn.NoteText AS NoteText, pn.Status AS Status, pn.CreateUserName AS CreateUserName, pn.CreateDate As CreateDate, pn.EditUserName AS EditUserName, pn.EditDate As EditDate, ypo.PAOName AS PAOName, ypo.Type AS Type, ypo.Description AS Description, ypo.DisableFlag AS DisableFlag");
+        sql.append(getAllNotesSql(filter));
+        sql.append("ORDER BY").append(getOrderBy(sortBy, direction));
         
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
@@ -148,34 +158,45 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         
         return searchResults;
     }
+        
+    private SqlStatementBuilder getOrderBy(SortBy sortBy, Direction direction) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (sortBy == null) {
+            sql.append("PAOName ASC, COALESCE(EditDate, CreateDate)").append(direction);
+        } else {
+            sql.append(sortBy.getDbString()).append(direction);
+        }
+        return sql;
+    }
     
     private int getAllNotesByFilterCount(PaoNotesFilter filter) {
-        SqlStatementBuilder sql = getAllNotesSql(filter);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append(getAllNotesSql(filter));
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
     private SqlStatementBuilder getAllNotesSql(PaoNotesFilter filter) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT NoteId, PaObjectId, NoteText, Status, CreatorUserName, CreationDate, EditorUserName, EditDate");
-        sql.append("FROM PaoNote");
+        sql.append("FROM PaoNote pn");
+        sql.append("JOIN YukonPaobject ypo ON pn.PaobjectId = ypo.PAObjectID");
         sql.append("WHERE 1=1");
         if (filter.getPaoIds() != null) {
-            sql.append("AND PaObjectId").in(filter.getPaoIds());
+            sql.append("AND pn.PaObjectId").in(filter.getPaoIds());
         }
         if (StringUtils.isNotEmpty(filter.getText())) {
-            sql.append("AND NoteText").contains(filter.getText());
+            sql.append("AND UPPER(pn.NoteText)").contains(filter.getText().toUpperCase());
         }
         if (filter.getUser() != null) {
-            sql.append("AND CreatorUserName").eq(filter.getUser());
+            sql.append("AND pn.CreateUserName").eq(filter.getUser());
         }
         if (filter.getStartDate() != null) {
-            sql.append("CreationDate").gt(filter.getStartDate());
+            sql.append("AND pn.CreateDate").gt(filter.getStartDate());
         }
         if (filter.getEndDate() != null) {
-            sql.append("CreationDate").lte(filter.getEndDate());
+            sql.append("AND pn.CreateDate").lte(filter.getEndDate());
         }
-        
+        sql.append("AND pn.Status").neq_k(PaoNoteStatus.DELETED);
         return sql;
     }
-
 }

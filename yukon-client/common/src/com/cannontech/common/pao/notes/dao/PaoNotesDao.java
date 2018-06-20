@@ -12,10 +12,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface PaoNotesDao {
     
     public enum SortBy {
-        PAO_ID("PaoId"),
-        TEXT("Text"),
-        DATE("Date"),
-        USERNAME("Username"),;
+        NOTE_TEXT("NoteText"),
+        CREATE_DATE("CreateDate"),
+        CREATE_USERNAME("CreateUsername"),
+        EDIT_USERNAME("EditUsername"),
+        EDIT_DATE("EditDate"),
+        PAO_NAME("PAOName"),
+        PAO_TYPE("Type");
         
         private SortBy(String dbString) {
             this.dbString = dbString;
@@ -58,7 +61,14 @@ public interface PaoNotesDao {
     
     //TODO consult with UI developer about sorting the results in SQL possiby
     SearchResults<PaoNote> findAllNotesByPaoId(int paoId);
-    
+    /**
+     * 
+     * @param filter
+     * @param sortBy is nullable default sort will be by Device Name, then Last Date.
+     * @param direction is nullable
+     * @param paging is nullable
+     * @return
+     */
     SearchResults<PaoNote> findAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                 Direction direction, PagingParameters paging);
 
