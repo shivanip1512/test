@@ -20,7 +20,9 @@ public enum RfnE2eDataReplyType implements org.apache.thrift.TEnum {
   NETWORK_SERVER_IDENTIFIER_INVALID(5),
   APPLICATION_SERVICE_IDENTIFIER_INVALID(6),
   NETWORK_LOAD_CONTROL(7),
-  NETWORK_SERVICE_FAILURE(8);
+  NETWORK_SERVICE_FAILURE(8),
+  REQUEST_CANCELED(9),
+  REQUEST_EXPIRED(10);
 
   private final int value;
 
@@ -59,6 +61,10 @@ public enum RfnE2eDataReplyType implements org.apache.thrift.TEnum {
         return NETWORK_LOAD_CONTROL;
       case 8:
         return NETWORK_SERVICE_FAILURE;
+      case 9:
+        return REQUEST_CANCELED;
+      case 10:
+        return REQUEST_EXPIRED;
       default:
         return null;
     }

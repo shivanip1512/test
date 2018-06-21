@@ -39,6 +39,7 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
   private static final org.apache.thrift.protocol.TField PRIORITY_FIELD_DESC = new org.apache.thrift.protocol.TField("priority", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField SECURITY_FIELD_DESC = new org.apache.thrift.protocol.TField("security", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField PAYLOAD_FIELD_DESC = new org.apache.thrift.protocol.TField("payload", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField HEADER_FIELD_DESC = new org.apache.thrift.protocol.TField("header", org.apache.thrift.protocol.TType.STRUCT, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -52,6 +53,7 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
   private RfnE2eMessagePriority priority; // required
   private String security; // optional
   private ByteBuffer payload; // required
+  private com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader header; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -68,7 +70,8 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
      */
     PRIORITY((short)4, "priority"),
     SECURITY((short)5, "security"),
-    PAYLOAD((short)6, "payload");
+    PAYLOAD((short)6, "payload"),
+    HEADER((short)7, "header");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -95,6 +98,8 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
           return SECURITY;
         case 6: // PAYLOAD
           return PAYLOAD;
+        case 7: // HEADER
+          return HEADER;
         default:
           return null;
       }
@@ -137,7 +142,7 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
   // isset id assignments
   private static final int __APPLICATIONSERVICEID_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.SECURITY};
+  private _Fields optionals[] = {_Fields.SECURITY,_Fields.HEADER};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -153,6 +158,8 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PAYLOAD, new org.apache.thrift.meta_data.FieldMetaData("payload", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
+    tmpMap.put(_Fields.HEADER, new org.apache.thrift.meta_data.FieldMetaData("header", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(RfnE2eDataRequest.class, metaDataMap);
   }
@@ -198,6 +205,9 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
       this.payload = org.apache.thrift.TBaseHelper.copyBinary(other.payload);
 ;
     }
+    if (other.isSetHeader()) {
+      this.header = new com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader(other.header);
+    }
   }
 
   public RfnE2eDataRequest deepCopy() {
@@ -213,6 +223,7 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
     this.priority = null;
     this.security = null;
     this.payload = null;
+    this.header = null;
   }
 
   /**
@@ -377,6 +388,29 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
     }
   }
 
+  public com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader getHeader() {
+    return this.header;
+  }
+
+  public void setHeader(com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader header) {
+    this.header = header;
+  }
+
+  public void unsetHeader() {
+    this.header = null;
+  }
+
+  /** Returns true if field header is set (has been assigned a value) and false otherwise */
+  public boolean isSetHeader() {
+    return this.header != null;
+  }
+
+  public void setHeaderIsSet(boolean value) {
+    if (!value) {
+      this.header = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case E2E_PROTOCOL:
@@ -427,6 +461,14 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
       }
       break;
 
+    case HEADER:
+      if (value == null) {
+        unsetHeader();
+      } else {
+        setHeader((com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader)value);
+      }
+      break;
+
     }
   }
 
@@ -449,6 +491,9 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
 
     case PAYLOAD:
       return getPayload();
+
+    case HEADER:
+      return getHeader();
 
     }
     throw new IllegalStateException();
@@ -473,6 +518,8 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
       return isSetSecurity();
     case PAYLOAD:
       return isSetPayload();
+    case HEADER:
+      return isSetHeader();
     }
     throw new IllegalStateException();
   }
@@ -541,6 +588,15 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
       if (!(this_present_payload && that_present_payload))
         return false;
       if (!this.payload.equals(that.payload))
+        return false;
+    }
+
+    boolean this_present_header = true && this.isSetHeader();
+    boolean that_present_header = true && that.isSetHeader();
+    if (this_present_header || that_present_header) {
+      if (!(this_present_header && that_present_header))
+        return false;
+      if (!this.header.equals(that.header))
         return false;
     }
 
@@ -620,6 +676,16 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetHeader()).compareTo(typedOther.isSetHeader());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetHeader()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.header, typedOther.header);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -685,6 +751,16 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
       org.apache.thrift.TBaseHelper.toString(this.payload, sb);
     }
     first = false;
+    if (isSetHeader()) {
+      if (!first) sb.append(", ");
+      sb.append("header:");
+      if (this.header == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.header);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -714,6 +790,9 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
     // check for sub-struct validity
     if (rfnIdentifier != null) {
       rfnIdentifier.validate();
+    }
+    if (header != null) {
+      header.validate();
     }
   }
 
@@ -802,6 +881,15 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // HEADER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.header = new com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader();
+              struct.header.read(iprot);
+              struct.setHeaderIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -845,6 +933,13 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
         oprot.writeBinary(struct.payload);
         oprot.writeFieldEnd();
       }
+      if (struct.header != null) {
+        if (struct.isSetHeader()) {
+          oprot.writeFieldBegin(HEADER_FIELD_DESC);
+          struct.header.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -871,9 +966,15 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
       if (struct.isSetSecurity()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetHeader()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
       if (struct.isSetSecurity()) {
         oprot.writeString(struct.security);
+      }
+      if (struct.isSetHeader()) {
+        struct.header.write(oprot);
       }
     }
 
@@ -891,10 +992,15 @@ public class RfnE2eDataRequest implements org.apache.thrift.TBase<RfnE2eDataRequ
       struct.setPriorityIsSet(true);
       struct.payload = iprot.readBinary();
       struct.setPayloadIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
         struct.security = iprot.readString();
         struct.setSecurityIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.header = new com.cannontech.messaging.serialization.thrift.generated.NetworkManagerRequestHeader();
+        struct.header.read(iprot);
+        struct.setHeaderIsSet(true);
       }
     }
   }
