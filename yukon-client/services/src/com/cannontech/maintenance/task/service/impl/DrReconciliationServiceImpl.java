@@ -355,12 +355,12 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, sendInServiceDevice);
 
         compareExpectedServiceStatusWithReportedLcrs(lcrsToSendCommand);
-        log.debug("Devices picked for Send In service command " + sendInServiceDevice);
-        log.debug("Devices picked for Send Out of service command " + sendOOSDevice);
+        log.debug("Devices suspected for sending In service command " + sendInServiceDevice);
+        log.debug("Devices suspected for sending Out of service command " + sendOOSDevice);
 
         // Get LCR's with incorrect addressing, we need to send config message to them
         Set<Integer> sendAddressing = getLCRWithConflictingAddressing();
-        log.debug("Devices picked for Send config command " + sendAddressing);
+        log.debug("Devices suspected for sending Config command " + sendAddressing);
 
         Set<Integer> allLcrs = new HashSet<>();
         allLcrs.addAll(sendOOSDevice);
@@ -375,7 +375,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         sendInServiceDevice.retainAll(allLcrsForThisCycle);
         sendAddressing.retainAll(allLcrsForThisCycle);
         
-        log.debug("Devices picked for Sending in this DR reconciliation run cycle " + allLcrsForThisCycle);
+        log.debug("Devices picked for Send In service command " + sendOOSDevice);
+        log.debug("Devices picked for Send Out of service command " + sendInServiceDevice);
+        log.debug("Devices picked for Send Config command " + sendAddressing);
 
         // Do not have any LCR's to send message return back.
         if (allLcrs.isEmpty()) {
