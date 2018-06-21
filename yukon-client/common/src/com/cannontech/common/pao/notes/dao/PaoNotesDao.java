@@ -6,6 +6,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.model.PaoNote;
+import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -52,9 +53,9 @@ public interface PaoNotesDao {
      */
     int delete(int noteId, LiteYukonUser user);
 
-    List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes);
+    List<PaoNotesSearchResult> findMostRecentNotes(int paoId, int numOfNotes);
     
-    SearchResults<PaoNote> getAllNotesByPaoId(int paoId);
+    SearchResults<PaoNotesSearchResult> getAllNotesByPaoId(int paoId);
     /**
      * 
      * @param filter
@@ -63,7 +64,7 @@ public interface PaoNotesDao {
      * @param paging is nullable
      * @return
      */
-    SearchResults<PaoNote> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
+    SearchResults<PaoNotesSearchResult> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                 Direction direction, PagingParameters paging);
 
 }

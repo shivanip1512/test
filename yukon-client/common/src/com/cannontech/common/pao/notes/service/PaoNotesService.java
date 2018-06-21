@@ -7,6 +7,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao.SortBy;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.model.PaoNote;
+import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -38,21 +39,21 @@ public interface PaoNotesService {
      * @param paging nullable Defaults to 25 pages per item and on the first page
      * @return
      */
-    SearchResults<PaoNote> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
+    SearchResults<PaoNotesSearchResult> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                Direction direction, PagingParameters paging);
     /**
      * 
      * @param paoId
      * @return all notes on a device sorted by most recently edited/created.
      */
-    SearchResults<PaoNote> getAllNotesByPaoId(int paoId);
+    SearchResults<PaoNotesSearchResult> getAllNotesByPaoId(int paoId);
     
     /**
      * @param paoId
      * @param numOfNotes - this method will return up to this many notes
      * @return
      */
-    List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes);
+    List<PaoNotesSearchResult> findMostRecentNotes(int paoId, int numOfNotes);
     /**
      * 
      * @param paoId

@@ -3,7 +3,6 @@ package com.cannontech.common.pao.notes.model;
 import org.joda.time.Instant;
 
 import com.cannontech.common.pao.notes.PaoNoteStatus;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public class PaoNote {
     
@@ -15,7 +14,6 @@ public class PaoNote {
     private Instant createDate;
     private String editUserName;
     private Instant editDate;
-    private LiteYukonPAObject liteYukonPAObject;
     
     public int getNoteId() {
         return noteId;
@@ -79,14 +77,6 @@ public class PaoNote {
     
     public void setEditDate(Instant editDate) {
         this.editDate = editDate;
-    }
-
-    public LiteYukonPAObject getLiteYukonPAObject() {
-        return liteYukonPAObject;
-    }
-
-    public void setLiteYukonPAObject(LiteYukonPAObject liteYukonPAObject) {
-        this.liteYukonPAObject = liteYukonPAObject;
     }
     
 }

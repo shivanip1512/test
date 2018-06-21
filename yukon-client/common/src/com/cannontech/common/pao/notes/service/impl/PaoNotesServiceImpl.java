@@ -12,6 +12,7 @@ import com.cannontech.common.pao.notes.dao.PaoNotesDao;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao.SortBy;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.model.PaoNote;
+import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -37,7 +38,7 @@ public class PaoNotesServiceImpl implements PaoNotesService {
     }
     
     @Override
-    public SearchResults<PaoNote> getAllNotesByFilter(PaoNotesFilter filter, 
+    public SearchResults<PaoNotesSearchResult> getAllNotesByFilter(PaoNotesFilter filter, 
                                                       SortBy sortBy, 
                                                       Direction direction, 
                                                       PagingParameters paging) {
@@ -49,12 +50,12 @@ public class PaoNotesServiceImpl implements PaoNotesService {
     }
 
     @Override 
-    public SearchResults<PaoNote> getAllNotesByPaoId(int paoId) {
+    public SearchResults<PaoNotesSearchResult> getAllNotesByPaoId(int paoId) {
         return paoNotesDao.getAllNotesByPaoId(paoId);
     }
     
     @Override
-    public List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes) {
+    public List<PaoNotesSearchResult> findMostRecentNotes(int paoId, int numOfNotes) {
         return paoNotesDao.findMostRecentNotes(paoId, numOfNotes);
     }
 
