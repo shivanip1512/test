@@ -1,6 +1,7 @@
 package com.cannontech.common.pao.notes.service.impl;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,7 +45,22 @@ public class PaoNotesServiceImpl implements PaoNotesService {
         if (filter.getDeviceGroup() != null) {
             filter.setPaoIds(deviceGroupService.getDeviceIds(Collections.singleton(filter.getDeviceGroup())));
         }
-        return paoNotesDao.findAllNotesByFilter(filter, sortBy, direction, paging);
+        return paoNotesDao.getAllNotesByFilter(filter, sortBy, direction, paging);
+    }
+
+    @Override 
+    public SearchResults<PaoNote> getAllNotesByPaoId(int paoId) {
+        return paoNotesDao.getAllNotesByPaoId(paoId);
+    }
+    
+    @Override
+    public List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes) {
+        return paoNotesDao.findMostRecentNotes(paoId, numOfNotes);
+    }
+
+    @Override
+    public boolean hasNotes(int paoId) {
+        return !paoNotesDao.getAllNotesByPaoId(paoId).getResultList().isEmpty();
     }
 
 }

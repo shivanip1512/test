@@ -119,17 +119,17 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     }
 
     @Override
-    public SearchResults<PaoNote> findAllNotesByPaoId(int paoId) {
+    public SearchResults<PaoNote> getAllNotesByPaoId(int paoId) {
         PaoNotesFilter filter = new PaoNotesFilter();
         filter.setPaoIds(Collections.singleton((Integer)paoId));
-        return findAllNotesByFilter(filter,
+        return getAllNotesByFilter(filter,
                                     null,
                                     null,
                                     null);
     }
 
     @Override
-    public SearchResults<PaoNote> findAllNotesByFilter(PaoNotesFilter filter,
+    public SearchResults<PaoNote> getAllNotesByFilter(PaoNotesFilter filter,
                                                           SortBy sortBy,
                                                           Direction direction,
                                                           PagingParameters paging) {
@@ -142,7 +142,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT pn.NoteId As NoteId, pn.PaObjectId AS PAObjectId, pn.NoteText AS NoteText, pn.Status AS Status, pn.CreateUserName AS CreateUserName, pn.CreateDate As CreateDate, pn.EditUserName AS EditUserName, pn.EditDate As EditDate, ypo.PAOName AS PAOName, ypo.Type AS Type, ypo.Description AS Description, ypo.DisableFlag AS DisableFlag");
+        sql.append("SELECT pn.NoteId, pn.PaObjectId, pn.NoteText, pn.Status, pn.CreateUserName, pn.CreateDate, pn.EditUserName, pn.EditDate, ypo.PAOName, ypo.Type, ypo.Description, ypo.DisableFlag");
         sql.append(getAllNotesSql(filter));
         sql.append("ORDER BY").append(getOrderBy(sortBy, direction));
         

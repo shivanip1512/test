@@ -1,5 +1,7 @@
 package com.cannontech.common.pao.notes.service;
 
+import java.util.List;
+
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao.SortBy;
@@ -25,6 +27,7 @@ public interface PaoNotesService {
      * in the database but it's status is now 'D'.
      */
     void delete(int noteId, LiteYukonUser user);
+    
     /**
      * 
      * @param filter will be used to determine how to query for List of PaoIds, if deviceGroup is not null
@@ -37,6 +40,24 @@ public interface PaoNotesService {
      */
     SearchResults<PaoNote> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                Direction direction, PagingParameters paging);
+    /**
+     * 
+     * @param paoId
+     * @return all notes on a device sorted by most recently edited/created.
+     */
+    SearchResults<PaoNote> getAllNotesByPaoId(int paoId);
     
+    /**
+     * @param paoId
+     * @param numOfNotes - this method will return up to this many notes
+     * @return
+     */
+    List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes);
+    /**
+     * 
+     * @param paoId
+     * @return is true if paoId has any non-deleted notes. Otherwise this will return false.
+     */
+    boolean hasNotes(int paoId);
     
 }

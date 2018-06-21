@@ -51,16 +51,10 @@ public interface PaoNotesDao {
      * the last edit.
      */
     int delete(int noteId, LiteYukonUser user);
-    
-    /**
-     * @param paoId
-     * @param numOfNotes - this method will return up to this many notes
-     * @return
-     */
+
     List<PaoNote> findMostRecentNotes(int paoId, int numOfNotes);
     
-    //TODO consult with UI developer about sorting the results in SQL possiby
-    SearchResults<PaoNote> findAllNotesByPaoId(int paoId);
+    SearchResults<PaoNote> getAllNotesByPaoId(int paoId);
     /**
      * 
      * @param filter
@@ -69,7 +63,7 @@ public interface PaoNotesDao {
      * @param paging is nullable
      * @return
      */
-    SearchResults<PaoNote> findAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
+    SearchResults<PaoNote> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                 Direction direction, PagingParameters paging);
 
 }
