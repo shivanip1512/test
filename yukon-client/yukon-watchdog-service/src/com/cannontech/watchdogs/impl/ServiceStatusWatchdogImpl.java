@@ -41,7 +41,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     }
 
     @Override
-    public boolean isServiceRunning(YukonServices service) {
+    public boolean isServiceRunning() {
         return true;
     }
 

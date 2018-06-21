@@ -3,4 +3,7 @@
 <properties>
     <entry key="yukon.watchdog.notification.subject">[yukon] Required Yukon services are not running</entry>
     <entry key="yukon.watchdog.notification.text">Services required for Watchdog notifications are not running. Check status of the following services:</entry>
+    <entry key="yukon.watchdog.notification.MESSAGEBROKER">Yukon Message Broker</entry>
+    <entry key="yukon.watchdog.notification.SERVICEMANAGER">Yukon Service Manager</entry>
+    <entry key="yukon.watchdog.notification.NOTIFICATIONSERVICE">Yukon Notification Server</entry>
 </properties>

@@ -43,4 +43,9 @@ public class NotificationServiceWatcher extends ServiceStatusWatchdogImpl {
     public YukonServices getServiceName() {
         return YukonServices.NOTIFICATIONSERVICE;
     }
+
+    @Override
+    public boolean isServiceRunning() {
+        return getNotificationServerStatus() == (ServiceStatus.RUNNING);
+    }
 }

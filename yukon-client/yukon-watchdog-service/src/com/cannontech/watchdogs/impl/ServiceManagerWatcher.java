@@ -39,7 +39,13 @@ public class ServiceManagerWatcher extends ServiceStatusWatchdogImpl {
         return getStatusFromWindows(serviceName);
     }
 
+    @Override
     public YukonServices getServiceName() {
         return YukonServices.SERVICEMANAGER;
+    }
+
+    @Override
+    public boolean isServiceRunning() {
+        return getServiceManagerStatus() == (ServiceStatus.RUNNING);
     }
 }

@@ -29,6 +29,8 @@ public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired protected ConfigurationSource configurationSource;
 
+    private static volatile boolean isMsgBrokerRunning = false;
+
     @Override
     public void start() {
         startMessageBrokerListener();
@@ -45,6 +47,9 @@ public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
             connection = (ActiveMQConnection) factory.createConnection();
             connection.addTransportListener(new ConnectionStateMonitor());
 
+            if (!(connection.getBrokerInfo() == null)) {
+                isMsgBrokerRunning = true;
+            }
             log.info("Started listener on broker url: " + brokerConnection);
         } catch (JMSException e) {
             log.error("Could not start listener for broker " + brokerConnection);
@@ -81,23 +86,31 @@ public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
         @Override
         public void onException(IOException exception) {
             log.info("Exception, broker may be down", exception);
+            isMsgBrokerRunning = false;
             watchAndNotify();
         }
 
         @Override
         public void transportInterupted() {
             log.info("Transport interupted, broker may be down.");
+            isMsgBrokerRunning = false;
             watchAndNotify();
         }
 
         @Override
         public void transportResumed() {
             log.debug("Connected to broker");
+            isMsgBrokerRunning = true;
         }
     }
 
     @Override
     public YukonServices getServiceName() {
         return YukonServices.MESSAGEBROKER;
+    }
+
+    @Override
+    public boolean isServiceRunning() {
+        return isMsgBrokerRunning;
     }
 }
