@@ -9,6 +9,7 @@
 #include "RfnBroadcastReplyMessage.h"
 #include "RfnWaterNodeMessaging.h"
 #include "DeviceCreation.h"
+#include "RfnDataStreamingUpdate.h"
 
 #include "utility.h"
 
@@ -951,6 +952,9 @@ const IM_EX_MSG OutboundQueue
 const IM_EX_MSG OutboundQueue
         OutboundQueue::DeviceCreationRequest
                 ("com.eaton.eas.yukon.deviceCreation");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::RfnDataStreamingUpdate
+                ("com.eaton.eas.yukon.rfnDataStreamingUpdate");
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
@@ -981,6 +985,8 @@ template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnSetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnGetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::DataStreamingUpdateReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::DataStreamingUpdateReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<RfnDeviceCreationReplyMessage>::Ptr callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 

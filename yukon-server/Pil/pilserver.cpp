@@ -36,6 +36,7 @@
 #include "amq_connection.h"
 #include "PorterResponseMessage.h"
 #include "DeviceCreation.h"
+#include "RfnDataStreamingUpdate.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
@@ -853,6 +854,7 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
 
 void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport report)
 {
+    using namespace Messaging;
     using ConfigNotification = Devices::Commands::RfnConfigNotificationCommand;
 
     CTILOG_INFO(dout, "Handling unsolicited report for " << report.rfnId);
@@ -862,23 +864,44 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
 
     const auto invokeCommand = [](Devices::RfnDevice & rfnDev, const ConfigNotification &command) {
         rfnDev.extractCommandResult(command);
-        //  TODO - send resulting JSON to Java
-        return command.getDataStreamingJson(rfnDev.getDeviceType());
+
+        const auto json = command.getDataStreamingJson(rfnDev.getDeviceType());
+        const auto paoId = rfnDev.getID();
+
+        Rfn::DataStreamingUpdateMessage dataStreamingUpdate { paoId, json };
+
+        auto serialized = Serialization::serialize(dataStreamingUpdate);
+
+        ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::DataStreamingUpdateReplyMessage>(
+            ActiveMQ::Queues::OutboundQueue::RfnDataStreamingUpdate,
+            serialized,
+            [paoId, json](const Rfn::DataStreamingUpdateReplyMessage& m) {
+                if( m.success )
+                {
+                    CTILOG_INFO(dout, "Data Streaming status update succeeded for pao ID " << paoId);
+                }
+                else
+                {
+                    CTILOG_WARN(dout, "Data Streaming status update failed for pao ID " << paoId << endl << json);
+                }
+            },
+            std::chrono::seconds{ 5 },
+            [paoId, json] {
+                CTILOG_WARN(dout, "Data Streaming status update timed out for pao ID " << paoId << endl << json);
+            });
     };
         
     if( ! rfnDevice )
     {
-        using namespace Cti::Messaging;
-        using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+        using ActiveMQ::Queues::OutboundQueue;
 
         RfnDeviceCreationRequestMessage requestMessage(rfnId);
 
-        ActiveMQConnectionManager::SerializedMessage serialized
-            = Serialization::MessageSerializer<RfnDeviceCreationRequestMessage>::serialize(requestMessage);
+        auto serialized = Serialization::serialize(requestMessage);
 
         struct DeviceLookupCallback : ActiveMQConnectionManager::CallbackFor<RfnDeviceCreationReplyMessage>
         {
-            using CommandInvoker = std::function<std::string(Devices::RfnDevice & rfnDev, const ConfigNotification &command)>;
+            using CommandInvoker = std::function<void(Devices::RfnDevice & rfnDev, const ConfigNotification &command)>;
             using ConfigNotificationPtr = RfnRequestManager::ConfigNotificationPtr;
 
             ConfigNotificationPtr command;
@@ -927,7 +950,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         CTILOG_DEBUG(dout, "Making RFN device creation service call for RFN device " << report.rfnId);
         // send the device creation message to Java
         ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(
-            Cti::Messaging::ActiveMQ::Queues::OutboundQueue::DeviceCreationRequest,
+            ActiveMQ::Queues::OutboundQueue::DeviceCreationRequest,
             serialized,
             std::make_unique<DeviceLookupCallback>(DeviceManager, rfnId, std::move(report.command), invokeCommand),
             std::chrono::seconds{ 5 },

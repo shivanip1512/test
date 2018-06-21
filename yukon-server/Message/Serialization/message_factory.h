@@ -254,6 +254,11 @@ struct MessageSerializer
     static boost::optional<Msg> deserialize( const std::vector<unsigned char> &buf );
 };
 
+template<typename Msg>
+std::vector<unsigned char> serialize(const Msg &m)
+{
+    return MessageSerializer<Msg>::serialize(m);
+}
 
 IM_EX_MSG extern MessageFactory<::CtiMessage> g_messageFactory;
 

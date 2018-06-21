@@ -14,6 +14,9 @@
 #include "DeviceCreation.h"
 #include "Thrift/DeviceCreation_types.h"
 
+#include "RfnDataStreamingUpdate.h"
+#include "Thrift/RfnDataStreamingUpdate_types.h"
+
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
@@ -233,6 +236,42 @@ catch (apache::thrift::TException)
     //  log?
     return boost::none;
 }
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<Rfn::DataStreamingUpdateMessage>::serialize(const Rfn::DataStreamingUpdateMessage &m)
+try
+{
+    Thrift::RfnDataStreamingUpdate update;
+
+    update.paoId = m.paoId;
+    update.json  = m.json;
+
+    return SerializeThriftBytes(update);
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+template<>
+boost::optional<Rfn::DataStreamingUpdateReplyMessage> IM_EX_MSG MessageSerializer<Rfn::DataStreamingUpdateReplyMessage>::deserialize(const std::vector<unsigned char> &buf)
+try
+{
+    const Thrift::RfnDataStreamingUpdateReply thriftMsg = DeserializeThriftBytes<Thrift::RfnDataStreamingUpdateReply>(buf);
+
+    Rfn::DataStreamingUpdateReplyMessage msg;
+
+    msg.success = thriftMsg.success;
+
+    return msg;
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return boost::none;
+}
+
 
 }
 }

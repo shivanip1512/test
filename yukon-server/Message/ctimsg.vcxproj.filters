@@ -365,7 +365,13 @@
     <ClInclude Include="include\RfnWaterNodeMessaging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RfnDataStreamingUpdate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\DeviceCreation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\message_serialization_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
