@@ -4,6 +4,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -30,14 +31,9 @@
         
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
             <li class="divider"/>
-            <cti:msgScope paths="yukon.web.components.ajaxConfirm.confirmDelete">
-                <div id="confirm-delete-relay" class="dn" data-dialog data-ok-text="<i:inline key=".ok" />" 
-                     data-target="#deleteRelay" data-event="yukon:relay:delete" data-title='<i:inline key=".title" />'>
-                    <i:inline key=".message" arguments="${deviceName}"/>
-                </div>
-            </cti:msgScope>
             <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" 
-                               data-popup="#confirm-delete-relay" />
+                               data-ok-event="yukon:relay:delete" />
+            <d:confirm on="#deleteRelay" nameKey="delete.confirm" />
             <cti:url var="deleteUrl" value="/stars/relay/${deviceId}"/>
             <form:form id="delete-relay-form" action="${deleteUrl}" method="delete">
                 <cti:csrfToken/>
