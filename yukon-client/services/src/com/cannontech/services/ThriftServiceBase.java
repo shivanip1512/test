@@ -44,11 +44,16 @@ public abstract class ThriftServiceBase <Request, Reply> implements SessionAware
         }
     }
 
-    private void sendReply(BytesMessage message, Session session, BytesMessage outBytesMsg) throws JMSException {
-        //send the reply to the temp queue
-        MessageProducer producer = session.createProducer(message.getJMSReplyTo());
-        producer.send(outBytesMsg);
+    private Request deserializeRequest(byte[] msgBytes) {
+        //deserialize message
+        Request request = requestDeserializer.deserialize(null, msgBytes);
+        log.debug("Received " + requestDeserializer.getClass() + " from yukon-server");
+        return request;
     }
+
+    protected abstract Reply handleRequest(Request request);
+
+    protected abstract Reply handleFailure();
 
     private BytesMessage serializeReply(Session session, Reply reply) throws JMSException {
         BytesMessage outBytesMsg = session.createBytesMessage();
@@ -56,14 +61,9 @@ public abstract class ThriftServiceBase <Request, Reply> implements SessionAware
         return outBytesMsg;
     }
 
-    protected abstract Reply handleRequest(Request request);
-
-    protected abstract Reply handleFailure();
-
-    private Request deserializeRequest(byte[] msgBytes) {
-        //deserialize message
-        Request request = requestDeserializer.deserialize(null, msgBytes);
-        log.debug("Received " + requestDeserializer.getClass() + " from yukon-server");
-        return request;
+    private void sendReply(BytesMessage message, Session session, BytesMessage outBytesMsg) throws JMSException {
+        //send the reply to the temp queue
+        MessageProducer producer = session.createProducer(message.getJMSReplyTo());
+        producer.send(outBytesMsg);
     }
 }
