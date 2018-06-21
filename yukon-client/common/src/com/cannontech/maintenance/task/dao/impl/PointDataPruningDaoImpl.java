@@ -3,6 +3,7 @@ package com.cannontech.maintenance.task.dao.impl;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.TransientDataAccessResourceException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Range;
@@ -64,7 +65,12 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         log.debug("Query execution started for date range - " + dateRange);
         SqlStatementBuilder deleteDuplicatePointDataQuery =
             buildDeleteDuplicatePointDataQuery(dateRange, noLockRequired);
-        int rowsDeleted = jdbcTemplate.update(deleteDuplicatePointDataQuery);
+        int rowsDeleted = 0;
+        try {
+            rowsDeleted = jdbcTemplate.queryForInt(deleteDuplicatePointDataQuery);
+        } catch (TransientDataAccessResourceException e) {
+            log.error("Error when deleting duplicate data " + e);
+        }
         log.debug("Query execution finished for date range - " + dateRange);
         log.debug("Rows deleted for this range = " + rowsDeleted);
         return rowsDeleted;
@@ -93,26 +99,44 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             sql.append(")");
         } else {
             sql.append("BEGIN");
-            sql.append("BEGIN TRANSACTION;");
-            sql.append("WITH CTE AS (");
-            sql.append("SELECT CHANGEID, ROW_NUMBER() ");
-            sql.append(  "OVER (PARTITION BY PointId, Value, Timestamp, Quality ORDER BY ChangeId) RN ");
-            sql.append("FROM RAWPOINTHISTORY ");
+            sql.append("DECLARE @TotalDeleted int");
+            sql.append("SET @TotalDeleted = 0;");
+            sql.append(    "IF OBJECT_ID('#TempRph', 'U') IS NOT NULL");
+            sql.append(    "DROP TABLE #TempRph");
+            sql.append(    "SELECT CHANGEID INTO #TempRph");
+            sql.append(    "FROM (");
+            sql.append(        "SELECT CHANGEID, ROW_NUMBER()");
+            sql.append(        "OVER (PARTITION BY PointId, Value, Timestamp, Quality ORDER BY ChangeId) RN");
+            sql.append(        "FROM RAWPOINTHISTORY");
             if (noLockRequired) {
-                sql.append("WITH (NOLOCK)");
+                sql.append(    "WITH (NOLOCK)");
             }
-            sql.append("WHERE Timestamp").gte(dateRange.getMin());
-            sql.append(  "AND Timestamp").lte(dateRange.getMax());
-            sql.append(  "AND PointId IN (");
-            sql.append(      "SELECT PointId ");
-            sql.append(      "FROM Point p ");
-            sql.append(        "JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId)");
-            sql.append(")");
-            sql.append("DELETE");
-            sql.append("FROM CTE");
-            sql.append("WHERE RN > 1");
-            sql.append("COMMIT TRANSACTION");
-            sql.append("END;");
+            sql.append(        "WHERE Timestamp").gte(dateRange.getMin());
+            sql.append(        "AND Timestamp").lte(dateRange.getMax());
+            sql.append(        "AND PointId IN (");
+            sql.append(            "SELECT PointId ");
+            sql.append(            "FROM Point p ");
+            sql.append(            "JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId)");
+            sql.append(    ") a  WHERE RN > 1");
+
+            sql.append(    "BEGIN TRANSACTION");
+            sql.append(    "DECLARE @Rowcount INT = 1");
+            sql.append(    "WHILE @Rowcount > 0");
+            sql.append(    "BEGIN");
+            sql.append(        "DELETE");
+            sql.append(        "FROM RAWPOINTHISTORY WHERE CHANGEID IN");
+            sql.append(        "(SELECT TOP(1000) changeid FROM #TempRph ORDER BY CHANGEID)");
+            sql.append(    "SET @TotalDeleted = (SELECT @TotalDeleted) + (SELECT @@ROWCOUNT)");
+            
+            sql.append(        "DELETE");
+            sql.append(        "FROM #TempRph WHERE CHANGEID IN");
+            sql.append(         "(SELECT TOP(1000) changeid FROM #TempRph ORDER BY CHANGEID)");
+            sql.append(    "SET @Rowcount = @@ROWCOUNT");
+            sql.append(    "END");
+            sql.append(    "COMMIT TRANSACTION");
+            sql.append(    "DROP TABLE #TempRph");
+            sql.append(    "SELECT @TotalDeleted AS totaldeleted");
+            sql.append("END");
         }
         return sql;
     }
