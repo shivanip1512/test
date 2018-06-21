@@ -1556,4 +1556,23 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELLED);
         }
     }
+
+    @Override
+    public boolean updateReportedConfig(int deviceId, ReportedDataStreamingConfig config) {
+        try {
+            SimpleDevice device = new SimpleDevice(rfnDeviceDao.getDeviceForId(deviceId)); 
+            
+            BehaviorReport reportedBehavior = buildBehaviorReport(config, deviceId, BehaviorReportStatus.CONFIRMED);
+            
+            //  Grab another sequence number, this is an independent report
+            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+            
+            handleReportedDataStreamingConfig(device, config, reportedBehavior, requestSeqNumber);
+            
+            return true;
+        } catch (RuntimeException e) {
+            log.error("Failed to update Data Streaming config", e);
+            return false;
+        }
+    }
 }

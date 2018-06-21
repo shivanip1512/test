@@ -13,6 +13,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionResult
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorStrings;
+import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -122,4 +123,11 @@ public interface DataStreamingService extends DeviceBehaviorStrings{
      */
     CollectionActionResult resend(List<Integer> deviceIds, SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) throws DataStreamingConfigException;
 
+    /**
+     * Processes an unsolicited report of a device's Data Streaming configuration. 
+     * @param paoId The device ID to update
+     * @param config The data streaming config reported by the device 
+     * @return success or failure
+     */
+    boolean updateReportedConfig(int paoId, ReportedDataStreamingConfig config);
 }
