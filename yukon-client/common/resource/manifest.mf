@@ -15,26 +15,26 @@ Class-Path: ./
  jdom-2.0.2.jar 
  jradius-client.jar 
  aopalliance-1.0.jar 
- spring-aop-4.2.0.RELEASE.jar 
- spring-aspects-4.2.0.RELEASE.jar 
- spring-beans-4.2.0.RELEASE.jar 
- spring-context-4.2.0.RELEASE.jar 
- spring-context-support-4.2.0.RELEASE.jar 
- spring-core-4.2.0.RELEASE.jar 
- spring-expression-4.2.0.RELEASE.jar 
- spring-instrument-4.2.0.RELEASE.jar 
- spring-instrument-tomcat-4.2.0.RELEASE.jar 
- spring-jdbc-4.2.0.RELEASE.jar 
- spring-jms-4.2.0.RELEASE.jar 
- spring-messaging-4.2.0.RELEASE.jar 
- spring-orm-4.2.0.RELEASE.jar 
- spring-oxm-4.2.0.RELEASE.jar 
- spring-test-4.2.0.RELEASE.jar 
- spring-tx-4.2.0.RELEASE.jar 
- spring-web-4.2.0.RELEASE.jar 
- spring-webmvc-4.2.0.RELEASE.jar 
- spring-webmvc-portlet-4.2.0.RELEASE.jar 
- spring-websocket-4.2.0.RELEASE.jar 
+ spring-aop-4.3.5.RELEASE.jar 
+ spring-aspects-4.3.5.RELEASE.jar 
+ spring-beans-4.3.5.RELEASE.jar 
+ spring-context-4.3.5.RELEASE.jar 
+ spring-context-support-4.3.5.RELEASE.jar 
+ spring-core-4.3.5.RELEASE.jar 
+ spring-expression-4.3.5.RELEASE.jar 
+ spring-instrument-4.3.5.RELEASE.jar 
+ spring-instrument-tomcat-4.3.5.RELEASE.jar 
+ spring-jdbc-4.3.5.RELEASE.jar 
+ spring-jms-4.3.5.RELEASE.jar 
+ spring-messaging-4.3.5.RELEASE.jar 
+ spring-orm-4.3.5.RELEASE.jar 
+ spring-oxm-4.3.5.RELEASE.jar 
+ spring-test-4.3.5.RELEASE.jar 
+ spring-tx-4.3.5.RELEASE.jar 
+ spring-web-4.3.5.RELEASE.jar 
+ spring-webmvc-4.3.5.RELEASE.jar 
+ spring-webmvc-portlet-4.3.5.RELEASE.jar 
+ spring-websocket-4.3.5.RELEASE.jar 
  spring-xml-2.3.0.RELEASE.jar 
  stax2-api-3.1.4.jar 
  dom4j-1.6.1.jar 
@@ -104,10 +104,10 @@ Class-Path: ./
  guava-18.0.jar 
  httpclient-4.3.6.jar 
  httpcore-4.3.3.jar 
- jackson-annotations-2.7.3.jar 
- jackson-core-2.7.3.jar 
+ jackson-annotations-2.9.6.jar 
+ jackson-core-2.9.6.jar 
  jackson-core-asl-1.9.2.jar 
- jackson-databind-2.7.3.jar 
+ jackson-databind-2.9.6.jar 
  snakeyaml-1.18.2.jar 
  jackson-jaxrs-1.9.2.jar 
  jackson-mapper-asl-1.9.2.jar 

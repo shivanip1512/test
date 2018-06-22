@@ -53,9 +53,9 @@
         <include name="guava-18.0.jar"/>
         <include name="hawtbuf-1.11.jar"/>
         <include name="i18n-en_US.jar"/>
-        <include name="jackson-annotations-2.7.3.jar"/>
-        <include name="jackson-core-2.7.3.jar"/>
-        <include name="jackson-databind-2.7.3.jar"/>
+        <include name="jackson-annotations-2.9.6.jar"/>
+        <include name="jackson-core-2.9.6.jar"/>
+        <include name="jackson-databind-2.9.6.jar"/>
         <include name="snakeyaml-1.18.2.jar"/>
         <include name="jasypt-1.9.2.jar"/>
         <include name="jaxm-api.jar"/>
@@ -88,7 +88,7 @@
         <include name="spring-xml-2.3.0.RELEASE.jar"/>
         <include name="spring-ws-core-2.3.0.RELEASE.jar"/>
         <include name="stax2-api-3.1.4.jar"/>
-        <include name="spring-*-4.2.0.RELEASE.jar"/>
+        <include name="spring-*-4.3.5.RELEASE.jar"/>
         <include name="sqljdbc42.jar"/>
         <include name="web-common.jar"/>
         <include name="wsdl4j-1.6.3.jar"/>
