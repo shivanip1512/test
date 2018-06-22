@@ -70,7 +70,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         sink.addValue("PaObjectId", note.getPaoId());
         sink.addValue("NoteText", note.getNoteText());
         sink.addValue("Status", PaoNoteStatus.CREATED);
-        sink.addValue("CreateUsername", note.getCreateUserName());
+        sink.addValue("CreateUsername", user.getUsername());
         sink.addValue("CreateDate", new Instant());
         yukonJdbcTemplate.update(insertSql);
         
