@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib tagdir="/WEB-INF/tags/amr" prefix="amr" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="amr" page="cre.detail">
 
@@ -102,7 +103,7 @@
             <c:forEach var="input" items="${result.inputs.inputs}">
                 <tr>
                     <td class="name">${input.key}:</td>
-                    <td class="value">${input.value}</td>
+                    <td class="value">${fn:escapeXml(input.value)}</td>
                 </tr>
             </c:forEach>
             

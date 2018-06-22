@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.collectionActions.progressReport,yukon.web.modules.tools.collectionActions">
 
@@ -37,7 +38,7 @@
                     <cti:msg2 var="inputNameKey" key=".collectionActionInput.${input.key}" blankIfMissing="true"/>
                     <c:set var="inputName" value="${!empty inputNameKey ?  inputNameKey : input.key}"/>
                     <td class="name">${inputName}:</td>
-                    <td class="value">${input.value}</td>
+                    <td class="value">${fn:escapeXml(input.value)}</td>
                 </tr>
             </c:forEach>
             <tags:nameValue2 nameKey=".devices">

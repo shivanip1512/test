@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.bulk.routeLocateHome">
 
@@ -26,7 +27,7 @@
             <%-- ROUTE OPTIONS --%>
             <select multiple name="routesSelect" id="routesSelect" size="12" style="min-width:400px;">
                 <c:forEach var="routeOption" items="${routeOptions}">
-                    <option value="${routeOption.key}">${routeOption.value}</option>
+                    <option value="${routeOption.key}">${fn:escapeXml(routeOption.value)}</option>
                 </c:forEach>
             </select>
             
@@ -38,7 +39,7 @@
                     <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
                     <h4>${selectCommandLabel}:</h4>
                     <amr:commandSelector id="commandSelectId" selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
-                        selectedCommandString="${commandString}"
+                        selectedCommandString="${fn:escapeXml(commandString)}"
                         selectedSelectValue="${commandSelectValue}"/>
                     <input type="hidden" id="commandFromDropdown" name="commandFromDropdown"/>
                 </div>
