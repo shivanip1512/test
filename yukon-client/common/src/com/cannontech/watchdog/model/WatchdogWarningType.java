@@ -1,12 +1,10 @@
 package com.cannontech.watchdog.model;
 
 import org.apache.commons.lang3.text.WordUtils;
-
-import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.watchdog.model.Watchdogs;
 
 
-public enum WatchdogWarningType implements DisplayableEnum {
+public enum WatchdogWarningType {
 
     WEB_SERVER_SERVICE_STATUS(Watchdogs.SERVICE_STATUS),
     SERVICE_MANAGER_SERVICE_STATUS(Watchdogs.SERVICE_STATUS),
@@ -52,12 +50,6 @@ public enum WatchdogWarningType implements DisplayableEnum {
         return strArray[1];
     }
 
-    private static final String keyBase = "yukon.web.widgets.watchdogWarnings.warningType.";
-
-    @Override
-    public String getFormatKey() {
-        return keyBase + name();
-    }
 
     @Override
     public String toString() {
