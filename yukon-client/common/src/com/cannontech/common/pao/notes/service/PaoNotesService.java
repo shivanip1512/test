@@ -30,33 +30,25 @@ public interface PaoNotesService {
     void delete(int noteId, LiteYukonUser user);
     
     /**
-     * 
      * @param filter will be used to determine how to query for List of PaoIds, if deviceGroup is not null
      * deviceGroup will be used to obtain list of paoIds and set filter.paoIds. Otherwise if deviceGroup is null
      * paoIds should be explicitly set by the controller.
      * @param sortBy nullable defaults to sort by Device Name, then by Last Edit Date
      * @param direction nullable defaults to Desc
      * @param paging nullable Defaults to 25 pages per item and on the first page
-     * @return
      */
     SearchResults<PaoNotesSearchResult> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                Direction direction, PagingParameters paging);
     /**
-     * 
-     * @param paoId
      * @return all notes on a device sorted by most recently edited/created.
      */
     SearchResults<PaoNotesSearchResult> getAllNotesByPaoId(int paoId);
     
     /**
-     * @param paoId
      * @param numOfNotes - this method will return up to this many notes
-     * @return
      */
     List<PaoNotesSearchResult> findMostRecentNotes(int paoId, int numOfNotes);
     /**
-     * 
-     * @param paoId
      * @return is true if paoId has any non-deleted notes. Otherwise this will return false.
      */
     boolean hasNotes(int paoId);

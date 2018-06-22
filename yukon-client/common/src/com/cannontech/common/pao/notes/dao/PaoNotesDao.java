@@ -57,12 +57,9 @@ public interface PaoNotesDao {
     
     SearchResults<PaoNotesSearchResult> getAllNotesByPaoId(int paoId);
     /**
-     * 
-     * @param filter
      * @param sortBy is nullable default sort will be by Device Name, then Last Date.
      * @param direction is nullable
      * @param paging is nullable
-     * @return
      */
     SearchResults<PaoNotesSearchResult> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                 Direction direction, PagingParameters paging);
