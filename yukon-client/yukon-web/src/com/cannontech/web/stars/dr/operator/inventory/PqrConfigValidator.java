@@ -9,7 +9,7 @@ import com.cannontech.dr.rfn.model.PqrConfig;
 
 @Service
 public class PqrConfigValidator extends SimpleValidator<PqrConfig> {
-    private static final String keyBase = "yukon.web.modules.operator.pqrConfig.validation.";
+    public static final String keyBase = "yukon.web.modules.operator.pqrConfig.validation.";
     
     public PqrConfigValidator() {
         super(PqrConfig.class);
@@ -24,6 +24,20 @@ public class PqrConfigValidator extends SimpleValidator<PqrConfig> {
         validateLofEventDuration(config, errors);
         validateLofDelayDuration(config, errors);
         validateMinimumEventSeparation(config, errors);
+    }
+    
+    public boolean isEmpty(PqrConfig config) {
+        if (config.getPqrEnable() == null &&
+                config.getMinimumEventSeparation() == null &&
+                !config.hasLofDelayDurations() &&
+                !config.hasLofEventDurations() &&
+                !config.hasLofParams() &&
+                !config.hasLovDelayDurations() &&
+                !config.hasLovEventDurations() &&
+                !config.hasLovParams()) {
+            return true;
+        }
+        return false;
     }
     
     private void validateLovParameters(PqrConfig config, Errors errors) {

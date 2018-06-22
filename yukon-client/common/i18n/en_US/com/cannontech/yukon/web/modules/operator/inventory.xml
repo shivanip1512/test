@@ -159,6 +159,7 @@
     <entry key="yukon.web.modules.operator.pqrConfigConfirm.notSent">(Not Sent)</entry>
       <!-- Validation Error Messages -->
     <entry key="yukon.web.modules.operator.pqrConfig.validation.invalidConfig">The configuration is invalid. Please check errors below.</entry>
+    <entry key="yukon.web.modules.operator.pqrConfig.validation.emptyConfig">No configuration options are specified.</entry>
     <entry key="yukon.web.modules.operator.pqrConfig.validation.valueEmpty">Value cannot be empty if other values in section are specified.</entry>
     <entry key="yukon.web.modules.operator.pqrConfig.validation.triggerGtRestore">Trigger must be greater than Restore</entry>
     <entry key="yukon.web.modules.operator.pqrConfig.validation.triggerLtRestore">Trigger must be less than Restore</entry>
