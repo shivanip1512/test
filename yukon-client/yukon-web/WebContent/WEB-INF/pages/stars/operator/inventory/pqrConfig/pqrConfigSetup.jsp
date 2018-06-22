@@ -17,8 +17,8 @@
     </div>
     
     <cti:msg2 var="volts" key="yukon.common.units.VOLTS"/>
-    <cti:msg2 var="microsec" key="yukon.common.units.MICROSECONDS"/>
-    <cti:msg2 var="millis" key="yukon.common.units.MILLIS"/>
+    <cti:msg2 var="microsec" key="yukon.common.units.MICROSECONDS_PERIOD"/>
+    <cti:msg2 var="millis" key="yukon.common.units.MILLISECONDS"/>
     <cti:msg2 var="secs" key="yukon.common.units.SECONDS"/>
     
     <cti:url var="submitUrl" value="/stars/operator/inventory/pqrConfig/confirm"/>
@@ -44,10 +44,10 @@
                 <tags:sectionContainer2 nameKey="ovTriggers">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ovTrigger">
-                            <tags:input path="lovTrigger" units="${volts}" inputClass="skinny"/>
+                            <tags:input path="lovTrigger" units="${volts}" placeholder="000.0" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovRestore">
-                            <tags:input path="lovRestore" units="${volts}" inputClass="skinny"/>
+                            <tags:input path="lovRestore" units="${volts}" placeholder="000.0" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ovTriggerTime">
                             <tags:input path="lovTriggerTime" units="${millis}" inputClass="skinny"/>
@@ -90,10 +90,10 @@
                 <tags:sectionContainer2 nameKey="ofTriggers">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".ofTrigger">
-                            <tags:input path="lofTrigger" units="${microsec}" inputClass="skinny"/>
+                            <tags:input path="lofTrigger" units="${microsec}" placeholder="00000" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ofRestore">
-                            <tags:input path="lofRestore" units="${microsec}" inputClass="skinny"/>
+                            <tags:input path="lofRestore" units="${microsec}" placeholder="00000" inputClass="skinny"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ofTriggerTime">
                             <tags:input path="lofTriggerTime" units="${millis}" inputClass="skinny"/>

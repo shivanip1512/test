@@ -17,7 +17,7 @@
     </div>
     
     <cti:msg2 var="volts" key="yukon.common.units.VOLTS"/>
-    <cti:msg2 var="microsec" key="yukon.common.units.MICROSECONDS"/>
+    <cti:msg2 var="microsec" key="yukon.common.units.MICROSECONDS_PERIOD"/>
     <cti:msg2 var="millis" key="yukon.common.units.MILLIS"/>
     <cti:msg2 var="secs" key="yukon.common.units.SECONDS"/>
     
