@@ -144,7 +144,7 @@ public class YukonWatchdogEmailBuilder extends SmartNotificationEmailBuilder {
                 String formattedDate = getFormattedDate(event.getTimestamp().toDate());
                 List<Object> warningArgs = WatchdogAssembler.getWarningArgumentsForDetailed(event.getParameters(), formattedDate);
                 String warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs.toArray());
-                builder.append(warningTypeString).append("\n   ");
+                builder.append(warningTypeString).append("\n  ");
                 watchdogWarningType.add(warningType.name());
             }
         }
