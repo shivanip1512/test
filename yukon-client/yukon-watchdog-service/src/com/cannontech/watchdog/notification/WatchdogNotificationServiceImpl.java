@@ -69,15 +69,13 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
 
     // Return a list of Stopped services which are required for smart notification i.e Broker, Service Manager and Notification.
     private synchronized List<YukonServices> getStoppedServices() {
-        List <YukonServices> stoppedServices = new ArrayList<>();
-        serviceStatusWatchers.forEach(e -> {
-            if (requiedServicesForSmartNotif.contains(e.getServiceName())) {
-                if (!e.isServiceRunning()) {
-                    stoppedServices.add(e.getServiceName());
-                }
-            }
-        });
+        List<YukonServices> stoppedServices = serviceStatusWatchers.stream()
+                                                                   .filter(e -> (requiedServicesForSmartNotif.contains(e.getServiceName()) && !e.isServiceRunning()))
+                                                                   .map(ServiceStatusWatchdog::getServiceName)
+                                                                   .collect(Collectors.toList());
+
         return stoppedServices;
+
     }
 
     // Create an email for internal notification and add all stopped services names to it.
