@@ -42,6 +42,7 @@ public class RfnDataStreamingUpdateSerializer extends ThriftSerializer<RfnDataSt
     @Override
     protected void populateThriftEntityFromMessage(ThriftMessageFactory factory, RfnDataStreamingUpdate msg,
             com.cannontech.messaging.serialization.thrift.generated.RfnDataStreamingUpdate entity) {
+        //  We do not expect to send these
         throw new NotImplementedException();
     }
 }

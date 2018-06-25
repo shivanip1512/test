@@ -1,5 +1,7 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.cannontech.message.porter.message.RfnDeviceCreationRequest;
 import com.cannontech.messaging.serialization.thrift.ThriftMessageFactory;
 import com.cannontech.messaging.serialization.thrift.ThriftSerializer;
@@ -40,6 +42,7 @@ public class RfnDeviceCreationRequestSerializer extends ThriftSerializer<RfnDevi
     protected void populateThriftEntityFromMessage(ThriftMessageFactory factory,
                                                    com.cannontech.message.porter.message.RfnDeviceCreationRequest msg,
                                                    com.cannontech.messaging.serialization.thrift.generated.RfnDeviceCreationRequest entity) {
-        entity.setRfnIdentifier(msg.getRfnIdentifier());
+        //  We do not expect to send these
+        throw new NotImplementedException();
     }
 }
