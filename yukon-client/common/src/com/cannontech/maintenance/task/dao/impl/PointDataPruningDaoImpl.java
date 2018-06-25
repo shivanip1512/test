@@ -25,7 +25,13 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
     public int deletePointData(Instant deleteUpto) {
         SqlFragmentSource deleteSql = buildDeleteQuery(deleteUpto);
         log.debug(deleteSql);
-        return jdbcTemplate.update(deleteSql);
+        int rowDeleted = 0;
+        try {
+            rowDeleted = jdbcTemplate.queryForInt(deleteSql);
+        } catch (TransientDataAccessResourceException e) {
+            log.error("Error when deleting duplicate data " + e);
+        }
+        return rowDeleted;
     }
 
     private SqlFragmentSource buildDeleteQuery(Instant deleteUpto) {
@@ -43,19 +49,45 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             sql.append("  AND ROWNUM").lt(BATCH_SIZE);
             sql.append("  )");
         } else {
-            sql.append("DELETE FROM RawPointHistory");
-            sql.append("WHERE ChangeId IN (");
-            sql.append("  SELECT TOP (");
-            sql.append(BATCH_SIZE);
-            sql.append("  ) ChangeId");
-            sql.append("  FROM RawPointHistory");
-            sql.append("  WITH (NOLOCK)");
-            sql.append("  WHERE Timestamp").lt(deleteUpto);
-            sql.append("  AND PointId IN (");
-            sql.append("    SELECT PointId FROM");
-            sql.append("    Point p JOIN yukonPaObject pao");
-            sql.append("    ON p.paObjectId = pao.paObjectId)");
-            sql.append("  )");
+            sql.append("BEGIN");
+            sql.append(    "DECLARE @TotalDeleted int");
+            sql.append(    "SET @TotalDeleted = 0;");
+            sql.append(    "IF OBJECT_ID('#TempPruning', 'U') IS NOT NULL");
+            sql.append(    "DROP TABLE #TempPruning ");
+            sql.append(    "SELECT CHANGEID INTO #TempPruning");
+            sql.append(    "FROM (");
+            sql.append(    "SELECT TOP (");
+            sql.append(    BATCH_SIZE);
+            sql.append(    ") ChangeId");
+            sql.append(    "FROM RawPointHistory");
+            sql.append(    "WITH (NOLOCK)");
+            sql.append(    "WHERE Timestamp").lt(deleteUpto);
+            sql.append(    "AND PointId IN (");
+            sql.append(        "SELECT PointId FROM");
+            sql.append(        "Point p JOIN yukonPaObject pao");
+            sql.append(        "ON p.paObjectId = pao.paObjectId)");
+            sql.append(    ") a");
+            sql.append(    "BEGIN TRANSACTION");
+            sql.append(    "DECLARE @Rowcount INT = 1");
+            sql.append(    "WHILE @Rowcount > 0 ");
+            sql.append(    "BEGIN");
+            sql.append(        "DELETE FROM RAWPOINTHISTORY");
+            sql.append(        "WHERE CHANGEID IN (");
+            sql.append(            "SELECT TOP(1000) changeid");
+            sql.append(            "FROM #TempPruning");
+            sql.append(            "ORDER BY CHANGEID)");
+            sql.append(        "SET @TotalDeleted = (select @TotalDeleted) + (select @@ROWCOUNT)");
+            sql.append(        "DELETE FROM #TempPruning");
+            sql.append(        "WHERE CHANGEID IN (");
+            sql.append(            "SELECT TOP(1000) changeid");
+            sql.append(            "FROM #TempPruning");
+            sql.append(            "ORDER BY CHANGEID)");
+            sql.append(        "SET @Rowcount = @@ROWCOUNT");
+            sql.append(        "END");
+            sql.append(        "COMMIT TRANSACTION");
+            sql.append(        "DROP TABLE #TempPruning");
+            sql.append(        "SELECT @TotalDeleted AS totaldeleted");
+            sql.append(    "END");
         }
         return sql;
     }
