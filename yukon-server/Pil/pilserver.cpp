@@ -936,7 +936,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
                 } 
                 else
                 {
-                    CTILOG_DEBUG(dout, "RFN device creation service call failed for new RFN device " << rfnId);
+                    CTILOG_WARN(dout, "RFN device creation service call failed for new RFN device " << rfnId);
                 }
             };
         };
@@ -944,10 +944,10 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
         auto timedOutCallback =
             [=]()
         {
-            CTILOG_DEBUG(dout, "RFN device creation service call timed out for RFN device " << rfnId);
+            CTILOG_WARN(dout, "RFN device creation service call timed out for RFN device " << rfnId);
         };
 
-        CTILOG_DEBUG(dout, "Making RFN device creation service call for RFN device " << report.rfnId);
+        CTILOG_INFO(dout, "Making RFN device creation service call for RFN device " << report.rfnId);
         // send the device creation message to Java
         ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnDeviceCreationReplyMessage>(
             ActiveMQ::Queues::OutboundQueue::DeviceCreationRequest,
