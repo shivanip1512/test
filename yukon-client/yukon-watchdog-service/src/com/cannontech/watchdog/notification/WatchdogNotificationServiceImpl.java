@@ -91,8 +91,9 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                 msgBuilder.append("\n");
                 msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
             }
-            EmailMessage emailMessage = new EmailMessage(InternetAddress.parse(to), subject, msgBuilder.toString());
-            emailService.sendMessage(emailMessage);
+            /* TODO EmailMessage emailMessage = new EmailMessage(InternetAddress.parse(to), subject, msgBuilder.toString());
+            emailService.sendMessage(emailMessage);*/
+            log.error("Notification is not accessible, an Email needs to be sent here to the people subscribed to the Watchdog smart notification");
         } catch (Exception e) {
             log.error("Watch dog is unable to send Internal Notification");
         }
