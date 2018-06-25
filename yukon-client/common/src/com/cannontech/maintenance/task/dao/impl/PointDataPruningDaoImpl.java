@@ -29,7 +29,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         try {
             rowDeleted = jdbcTemplate.queryForInt(deleteSql);
         } catch (TransientDataAccessResourceException e) {
-            log.error("Error when deleting duplicate data " + e);
+            log.error("Error when deleting RPH data " + e);
         }
         return rowDeleted;
     }
