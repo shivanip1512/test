@@ -107,6 +107,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
 
+        if (rfnIdentifier.isBlank()) {
+            return null;
+        }
+        
         RfnDevice rfnDevice = null;
 
         RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);

@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
@@ -130,7 +132,7 @@ public enum RfnManufacturerModel {
         return Optional.of(
                 Stream.of(values())
                         .filter(item -> item.type == type)
-                        .collect(Collectors.toCollection(() -> new ArrayList<>())))
+                        .collect(Collectors.toCollection(ArrayList::new)))
                 .filter(list -> ! list.isEmpty())
                 .orElseThrow(() -> new IllegalArgumentException("Unknown template for type: " + type));
     }
@@ -140,7 +142,13 @@ public enum RfnManufacturerModel {
      * Will return the RFN-420 versions of the reused LGYR Focus manufacturer+model strings.
      */
     public static RfnManufacturerModel of(RfnIdentifier rfnIdentifier) {
-        return lookup.get(rfnIdentifier.getSensorManufacturer().toLowerCase(), rfnIdentifier.getSensorModel().toLowerCase());
+        String manufacturer = rfnIdentifier.getSensorManufacturer();
+        String model        = rfnIdentifier.getSensorModel();
+        if (StringUtils.isBlank(manufacturer) || 
+            StringUtils.isBlank(model)) {
+            return null;
+        }
+        return lookup.get(manufacturer.toLowerCase(), model.toLowerCase());
     }
     
     public PaoType getType() {

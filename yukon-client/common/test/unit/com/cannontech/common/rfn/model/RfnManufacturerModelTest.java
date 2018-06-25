@@ -60,8 +60,26 @@ public class RfnManufacturerModelTest {
         rfnId = new RfnIdentifier("123456", "EE", "A3D");
         Assert.assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
         
-        //  Manual bad example
+        rfnId = new RfnIdentifier("", "EE", "A3D");
+        Assert.assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
+
+        rfnId = new RfnIdentifier(null, "EE", "A3D");
+        Assert.assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
+        
+        //  Manual bad examples
         rfnId = new RfnIdentifier("123456", "Larry", "CableGuy");
+        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        
+        rfnId = new RfnIdentifier("123456", "", "CableGuy");
+        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        
+        rfnId = new RfnIdentifier("123456", "Larry", "");
+        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        
+        rfnId = new RfnIdentifier("", "", "");
+        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        
+        rfnId = new RfnIdentifier(null, null, null);
         Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
         
         //  Run through all of them by enum
