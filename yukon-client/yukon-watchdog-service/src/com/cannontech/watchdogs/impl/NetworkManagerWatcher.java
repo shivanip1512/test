@@ -55,16 +55,21 @@ public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
     @Override
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getNetworkManagerStatus();
-        log.debug("Status of network manager " + connectionStatus);
+        log.info("Status of network manager " + connectionStatus);
         return generateWarning(WatchdogWarningType.NETWORK_MANAGER_STATUS, connectionStatus);
     }
 
+    /*
+     * To check network manager status, latest gateway is picked from Yukon and GatewayDataRequest is send.
+     * If a response is received then NM is in running status else it is stopped.
+     * If no gateway is found in system, we wont send a request and will not check status of NM.
+     */
     private ServiceStatus getNetworkManagerStatus() {
         RfnIdentifier rfnIdentifier;
         try {
             rfnIdentifier = watcherService.getGatewayRfnIdentifier();
         } catch (NotFoundException e) {
-            log.error("No Rfn Gateway found in yukon. Not checking status of Network Manager");
+            log.info("No Rfn Gateway found in yukon. Not checking status of Network Manager");
             return ServiceStatus.UNKNOWN;
         }
 

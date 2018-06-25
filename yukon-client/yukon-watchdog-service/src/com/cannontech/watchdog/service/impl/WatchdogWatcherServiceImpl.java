@@ -7,7 +7,6 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.dao.WatchdogWatcherDao;
@@ -37,8 +36,6 @@ public class WatchdogWatcherServiceImpl implements WatchdogWatcherService {
 
     @Override
     public RfnIdentifier getGatewayRfnIdentifier() throws NotFoundException {
-        int gatewayId = dao.getIdForLatestGateway();
-        RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(gatewayId);
-        return rfnDevice.getRfnIdentifier();
+        return dao.getIdForLatestGateway();
     }
 }

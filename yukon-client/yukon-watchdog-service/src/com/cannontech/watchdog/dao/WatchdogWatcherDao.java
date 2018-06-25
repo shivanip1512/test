@@ -1,6 +1,7 @@
 package com.cannontech.watchdog.dao;
 
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public interface WatchdogWatcherDao {
 
@@ -10,8 +11,8 @@ public interface WatchdogWatcherDao {
     boolean paoClassPaoExists(PaoClass paoClass);
     
     /**
-     * Get Pao Id of gateway which was added last
+     * Get Rfn Identifier of gateway which was added last
      */
-    int getIdForLatestGateway();
+    RfnIdentifier getIdForLatestGateway();
     
 }
