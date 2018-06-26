@@ -70,6 +70,13 @@ std::string preformatMethodName(const char * func)
     return methodName;
 }
 
+const char * trimPath(const char * file)
+{
+    auto pos = std::strrchr(file, '\\');
+
+    return pos ? pos + 1 : file;
+}
+
 } // namespace anonymous
 
 struct Logger::LoggerObj
@@ -173,7 +180,7 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
                     _logger->_logger->getName(),
                     getLogLevel(level),
                     msg,
-                    log4cxx::spi::LocationInfo(file, methodName, line));
+                    log4cxx::spi::LocationInfo(trimPath(file), methodName, line));
     
     event->getMDCCopy();
 
