@@ -10,6 +10,7 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.Device;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -32,6 +33,8 @@ public class PaoUtils {
     public static final LiteYukonPAObject LITEPAOBJECT_NONE = new LiteYukonPAObject(0, CtiUtilities.STRING_NONE, PaoType.SYSTEM, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE);
     
     public final static char[] ILLEGAL_NAME_CHARS = { '\'', ',', '|', '"', '/', '\\' };
+    
+    public static final PaoIdentifier SYSTEM_PAOIDENTIFIER = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
     
     private final static Function<PaoIdentifier, Integer> paoIdentifierToPaoIdFunction =
         new Function<PaoIdentifier, Integer>() {
