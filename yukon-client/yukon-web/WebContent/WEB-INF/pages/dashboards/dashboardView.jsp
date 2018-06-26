@@ -16,7 +16,6 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 <cti:yukonUser var="user"/>
-
     <div id="page-actions" class="dn">
         <c:if test="${ownedDashboards.size() > 0}">
             <c:forEach var="ownedDashboard" items="${ownedDashboards}" varStatus="status">
@@ -35,8 +34,6 @@
         <cm:dropdownOption key=".manageDashboards" href="${manageDashboardsUrl}"/>
         <c:if test="${dashboardPageType == 'AMI'}">
             <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
-                <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
-                <div id="contentPopup" class="dn" data-create-title="${popupTitle}"></div>
                 <li class="divider"/>
                 <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
             </cti:checkRolesAndProperties>
@@ -68,6 +65,8 @@
     </c:forEach>
     
     <c:if test="${dashboardPageType == 'AMI'}">
+        <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
+        <div id="contentPopup" class="dn" data-create-title="${popupTitle}"></div>
         <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
     </c:if>
     
