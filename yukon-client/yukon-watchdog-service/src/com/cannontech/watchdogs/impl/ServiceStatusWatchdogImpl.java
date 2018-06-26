@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.watchdog.base.WatchdogBase;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
@@ -19,11 +23,12 @@ import com.cannontech.watchdog.model.Watchdogs;
 import com.google.common.collect.Maps;
 
 public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements ServiceStatusWatchdog {
+    Logger log = YukonLogManager.getLogger(ServiceStatusWatchdogImpl.class);
+    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+
     public static final String WARNING_TYPE = "WarningType";
     public static final String SERVICE_STATUS = "Status";
 
-    Logger log = YukonLogManager.getLogger(ServiceStatusWatchdogImpl.class);
-    
     private List<YukonServices> runningServices = new ArrayList<>();
 
     private static final List<YukonServices> optionalServices = Arrays.asList(
@@ -50,6 +55,15 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
         STOPPED,
         RUNNING,
         UNKNOWN;
+    }
+
+    public void doWatchAction() {
+        watchAndNotify();
+    }
+
+    @Override
+    public void start() {
+        executor.scheduleAtFixedRate(this::doWatchAction, 0, 5, TimeUnit.MINUTES);
     }
 
     /**

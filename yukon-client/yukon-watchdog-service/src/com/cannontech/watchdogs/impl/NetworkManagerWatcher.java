@@ -2,14 +2,12 @@ package com.cannontech.watchdogs.impl;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -18,7 +16,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
-import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.NotFoundException;
@@ -31,7 +28,6 @@ import com.cannontech.watchdog.service.WatchdogWatcherService;
 public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
     private static final Logger log = YukonLogManager.getLogger(NetworkManagerWatcher.class);
 
-    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private WatchdogWatcherService watcherService;
@@ -43,13 +39,6 @@ public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
     public void initialize() {
         requestTemplate = new RequestReplyTemplateImpl<>("RF_GATEWAY_DATA", configurationSource, connectionFactory,
             gatewayDataRequestQueue, false);
-    }
-
-    @Override
-    public void start() {
-        executor.scheduleAtFixedRate(() -> {
-            watchAndNotify();
-        }, 0, 5, TimeUnit.MINUTES);
     }
 
     @Override

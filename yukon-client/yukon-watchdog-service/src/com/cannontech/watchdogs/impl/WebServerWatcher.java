@@ -5,15 +5,12 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
@@ -23,15 +20,7 @@ import com.cannontech.watchdog.model.WatchdogWarnings;
 public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     private static final Logger log = YukonLogManager.getLogger(WebServerWatcher.class);
 
-    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
-
-    @Override
-    public void start() {
-        executor.scheduleAtFixedRate(() -> {
-            watchAndNotify();
-        }, 0, 5, TimeUnit.MINUTES);
-    }
 
     @Override
     public List<WatchdogWarnings> watch() {

@@ -1,16 +1,17 @@
 package com.cannontech.watchdogs.impl;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.util.ConnectionFactoryService;
@@ -20,24 +21,35 @@ import com.cannontech.watchdog.model.WatchdogWarnings;
 import com.cannontech.watchdogs.message.WatchdogMessageListener;
 import com.cannontech.watchdogs.util.WatchdogPorterClientConnection;
 
+/**
+ * This class will validate Port Control Service Status in every 5 min and generate warning.
+ */
+
+@Service
 public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements WatchdogMessageListener {
 
     private static final Logger log = YukonLogManager.getLogger(PorterServiceWatcher.class);
-    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ConnectionFactoryService connectionFactorySvc;
 
-    private BlockingQueue<Message> queue = new ArrayBlockingQueue<>(1);
+    private Instant receivedLatestMessageTimeStamp;
+    private Instant sendMessageTimeStamp;
     private static WatchdogPorterClientConnection porterClientConnection;
+    
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
 
     @Override
-    public void start() {
-        executor.scheduleAtFixedRate(() -> {
-            createConnection();
-            sendLoopBackCommandtoServer();
-        }, 0, 5, TimeUnit.MINUTES);
+    public void doWatchAction() {
+        receivedLatestMessageTimeStamp = null;
+        createConnection();
+        sendLoopbackCommandToServer();
     }
 
-    private void sendLoopBackCommandtoServer() {
+    /**
+     * Send LOOP_CLIENT command to Port Control Service and based on Status, generate warning.
+     */
+
+    private void sendLoopbackCommandToServer() {
+        sendMessageTimeStamp =  OffsetDateTime.now().withNano(0).toInstant();
         if (porterClientConnection.isValid()) {
             Command cmd = new Command();
             cmd.setOperation(Command.LOOP_CLIENT);
@@ -49,6 +61,10 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
         }
         watchAndNotify();
     }
+
+    /**
+     * Creating Port Control client connection.
+     */
 
     private WatchdogPorterClientConnection createConnection() {
         if (porterClientConnection == null) {
@@ -73,13 +89,10 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
 
     @Override
     public List<WatchdogWarnings> watch() {
-        Message message = null;
         try {
-            message = queue.poll(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            /* ignore */
-        }
-        if (message == null) {
+            countDownLatch.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {}
+        if (receivedLatestMessageTimeStamp == null || (receivedLatestMessageTimeStamp.isBefore(sendMessageTimeStamp)) || !porterClientConnection.isValid()) {
             log.debug("Status of Porter service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.PORTER_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
@@ -91,10 +104,11 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
     @Override
     public void handleMessage(Message message) {
         log.debug("messageReceived: " + message.toString());
-        try {
-            queue.put(message);
-        } catch (InterruptedException e) {
-            /* ignore */
+        Instant timeStamp = message.getTimeStamp().toInstant();
+        synchronized (this) {
+            if (receivedLatestMessageTimeStamp == null || timeStamp.isAfter(receivedLatestMessageTimeStamp)) {
+                receivedLatestMessageTimeStamp = timeStamp;
+            }
         }
     }
 
