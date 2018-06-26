@@ -30,12 +30,18 @@ public final class GatewayFirmwareVersion implements Comparable<GatewayFirmwareV
         if (versionString == null) {
             throw new IllegalArgumentException("Null firmware version string.");
         }
+        
+        // Trim leading and trailing whitespace and split into parts
+        versionString = versionString.trim();
         String[] parts = versionString.split("\\.");
         int partsLength = parts.length;
-        // Expected Firmware Version format is either x.y or x.y.z
+        
+        // Check for valid format - either x.y or x.y.z
         if (partsLength < 2 || partsLength > 3) {
             throw new IllegalArgumentException("Invalid firmware version string: " + versionString);
         }
+        
+        // Attempt to assemble a new GatewayFirmwareVersion object from the parts
         try {
             int major = Integer.parseInt(parts[0]);
             int minor = Integer.parseInt(parts[1]);
@@ -47,6 +53,40 @@ public final class GatewayFirmwareVersion implements Comparable<GatewayFirmwareV
         }
     }
     
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + major;
+        result = prime * result + minor;
+        result = prime * result + revision;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        GatewayFirmwareVersion other = (GatewayFirmwareVersion) obj;
+        if (major != other.major) {
+            return false;
+        }
+        if (minor != other.minor) {
+            return false;
+        }
+        if (revision != other.revision) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return Integer.toString(major) + "." + Integer.toString(minor) + "." + Integer.toString(revision);
