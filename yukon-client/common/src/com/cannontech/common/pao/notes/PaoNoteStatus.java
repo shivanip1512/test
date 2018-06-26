@@ -14,8 +14,12 @@ public enum PaoNoteStatus implements DatabaseRepresentationSource {
         this.dbString = dbString;
     }
 
-    @Override
-    public String getDatabaseRepresentation() {
+    public String getDbString() {
         return dbString;
+    }
+    
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getDbString();
     }
 }
