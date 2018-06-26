@@ -15,7 +15,7 @@ public class PointDataPruningTask implements MaintenanceTask {
     public boolean doTask(Instant endOfTimeSlice) {
         // Do a small unit of work Log the work done return true if there's no more work to do
         int numDeleted = dataPruningService.deletePointData(endOfTimeSlice);
-        if (numDeleted == 0) {
+        if (numDeleted <= 1000) {
             return true;
         }
         return false;
