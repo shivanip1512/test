@@ -835,7 +835,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q2                                                   ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q3                                                   ], Models: *____-____-650 }
     - Q4 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q4                                                   ], Models: *____-____-650 }
-    - Delivered VARarhours:                       { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2                                              ], Models: *____-____-650 }
+    - Delivered VARhours:                         { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2                                              ], Models: *____-____-650 }
     - Received VARhours:                          { unit: *Varh,  Unit Modifiers: [ *Q3, *Q4                                              ], Models: *____-____-650 }
     - Total VARhours:                             { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *____-RDTR-650 }
     - Net VARhours:                               { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                              ], Models: *____-RDTR-___ }
@@ -926,7 +926,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q2, *RateA                                           ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q3, *RateA                                           ], Models: *____-____-650 }
     - Q4 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q4, *RateA                                           ], Models: *____-____-650 }
-    - Delivered VARarhours:                       { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateA                                      ], Models: *____-____-650 }
+    - Delivered VARhours:                         { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateA                                      ], Models: *____-____-650 }
     - Received VARhours:                          { unit: *Varh,  Unit Modifiers: [ *Q3, *Q4, *RateA                                      ], Models: *____-____-650 }
     - Total VARhours:                             { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA                            ], Models: *____-R_TR-650 }
     - Net VARhours:                               { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA                      ], Models: *____-R_TR-___ }
@@ -1015,7 +1015,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q2, *RateB                                           ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q3, *RateB                                           ], Models: *____-____-650 }
     - Q4 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q4, *RateB                                           ], Models: *____-____-650 }
-    - Delivered VARarhours:                       { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateB                                      ], Models: *____-____-650 }
+    - Delivered VARhours:                         { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateB                                      ], Models: *____-____-650 }
     - Received VARhours:                          { unit: *Varh,  Unit Modifiers: [ *Q3, *Q4, *RateB                                      ], Models: *____-____-650 }
     - Total VARhours:                             { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB                            ], Models: *____-R_TR-650 }
     - Net VARhours:                               { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB                      ], Models: *____-R_TR-___ }
@@ -1104,7 +1104,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q2, *RateC                                           ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q3, *RateC                                           ], Models: *____-____-650 }
     - Q4 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q4, *RateC                                           ], Models: *____-____-650 }
-    - Delivered VARarhours:                       { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateC                                      ], Models: *____-____-650 }
+    - Delivered VARhours:                         { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateC                                      ], Models: *____-____-650 }
     - Received VARhours:                          { unit: *Varh,  Unit Modifiers: [ *Q3, *Q4, *RateC                                      ], Models: *____-____-650 }
     - Total VARhours:                             { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC                            ], Models: *____-R_TR-650 }
     - Net VARhours:                               { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC                      ], Models: *____-R_TR-___ }
@@ -1193,7 +1193,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q2, *RateD                                           ], Models: *____-____-650 }
     - Q3 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q3, *RateD                                           ], Models: *____-____-650 }
     - Q4 Watthours:                               { unit: *Wh,    Unit Modifiers: [ *Q4, *RateD                                           ], Models: *____-____-650 }
-    - Delivered VARarhours:                       { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateD                                      ], Models: *____-____-650 }
+    - Delivered VARhours:                         { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *RateD                                      ], Models: *____-____-650 }
     - Received VARhours:                          { unit: *Varh,  Unit Modifiers: [ *Q3, *Q4, *RateD                                      ], Models: *____-____-650 }
     - Total VARhours:                             { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD                            ], Models: *____-R_TR-650 }
     - Net VARhours:                               { unit: *Varh,  Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD                      ], Models: *____-R_TR-___ }
@@ -1277,12 +1277,23 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Delivered Watts:                            { unit: *W,     Unit Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650 }
     - Received Watts:                             { unit: *W,     Unit Modifiers: [ *Q2, *Q3                                              ], Models: *____-____-650 }
     - Total Watts:                                { unit: *W,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *____-____-650 }
+    - Net Watts:                                  { unit: *W,     Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                              ], Models: *____-____-650 }
     - Delivered Var:                              { unit: *Var,   Unit Modifiers: [ *Q1, *Q2                                              ], Models: *____-____-650 }
     - Received Var:                               { unit: *Var,   Unit Modifiers: [ *Q3, *Q4                                              ], Models: *____-____-650 }
+    - Var Q1 + Q3:                                { unit: *Var,   Unit Modifiers: [ *Q1, *Q3                                              ], Models: *____-____-650 }
+    - Var Q2 + Q4:                                { unit: *Var,   Unit Modifiers: [ *Q2, *Q4                                              ], Models: *____-____-650 }
+    - Var Q1 + Q4:                                { unit: *Var,   Unit Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650 }
+    - Var Q2 + Q3:                                { unit: *Var,   Unit Modifiers: [ *Q2, *Q3                                              ], Models: *____-____-650 }
     - Total Var:                                  { unit: *Var,   Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *____-____-650 }
+    - Net Var:                                    { unit: *Var,   Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                              ], Models: *____-____-650 }
     - Delivered VA:                               { unit: *VA,    Unit Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650 }
     - Received VA:                                { unit: *VA,    Unit Modifiers: [ *Q2, *Q3                                              ], Models: *____-____-650 }
+    - VA Q1 + Q2:                                 { unit: *VA,    Unit Modifiers: [ *Q1, *Q2                                              ], Models: *____-____-650 }
+    - VA Q3 + Q4:                                 { unit: *VA,    Unit Modifiers: [ *Q3, *Q4                                              ], Models: *____-____-650 }
+    - VA Q1 + Q3:                                 { unit: *VA,    Unit Modifiers: [ *Q1, *Q3                                              ], Models: *____-____-650 }
+    - VA Q2 + Q4:                                 { unit: *VA,    Unit Modifiers: [ *Q2, *Q4                                              ], Models: *____-____-650 }
     - Total VA:                                   { unit: *VA,    Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *____-____-650 }
+    - Net VA:                                     { unit: *VA,    Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                              ], Models: *____-____-650 }
     - Voltage Phase A:                            { unit: *V,     Unit Modifiers: [ *PhA, *milli                                          ], Models: *ADTR-RDTR-650 }
     - Voltage Phase B:                            { unit: *V,     Unit Modifiers: [ *PhB, *milli                                          ], Models: *ADTR-RDTR-650 }
     - Voltage Phase C:                            { unit: *V,     Unit Modifiers: [ *PhC, *milli                                          ], Models: *ADTR-RDTR-650 }
