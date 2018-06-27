@@ -284,8 +284,11 @@ public final class FileUtil {
                 try {
                     Instant creation = new Instant(getFileDate(file));
                     return !(from.isAfter(creation) || to.isBefore(creation));
-                } catch (IOException | ParseException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
+                } catch (ParseException e) {
+                    log.warn("Parse Exception occurred for log file", e);
+                    return false;
                 }
             }
         };
