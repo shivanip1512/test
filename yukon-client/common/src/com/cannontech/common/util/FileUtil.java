@@ -287,7 +287,7 @@ public final class FileUtil {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } catch (ParseException e) {
-                    log.warn("Parse Exception occurred for log file", e);
+                    log.warn("Parse Exception occurred for log file " + file.getName(), e);
                     return false;
                 }
             }
