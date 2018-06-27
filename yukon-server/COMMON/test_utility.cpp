@@ -325,4 +325,17 @@ BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
     BOOST_CHECK_EQUAL( ciStringEqual(s1, s2),true );
 }
 
+BOOST_AUTO_TEST_CASE(test_trimPath)
+{
+    auto p1 = "";
+    auto p2 = "\\";
+    auto p3 = "no_slashes_here";
+    auto p4 = R"(c:\jenkins\workspace\yukon_server_head\yukon\yukon-server\common\database_bulk_writer.cpp)";
+
+    BOOST_CHECK_EQUAL(Cti::trimPath(p1), "");
+    BOOST_CHECK_EQUAL(Cti::trimPath(p2), "");
+    BOOST_CHECK_EQUAL(Cti::trimPath(p3), "no_slashes_here");
+    BOOST_CHECK_EQUAL(Cti::trimPath(p4), "database_bulk_writer.cpp");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
