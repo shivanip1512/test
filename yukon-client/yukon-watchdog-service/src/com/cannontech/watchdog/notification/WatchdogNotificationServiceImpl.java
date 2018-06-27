@@ -1,5 +1,6 @@
 package com.cannontech.watchdog.notification;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +10,8 @@ import javax.annotation.PostConstruct;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,8 +39,10 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @Autowired private EmailService emailService;
     @Autowired private WatchdogServiceService watchdogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
+    private DateTime lastNotificationSendTime;
     
     private final List<YukonServices> requiredServicesForSmartNotif = new ArrayList<>(
         Arrays.asList(YukonServices.MESSAGEBROKER, YukonServices.NOTIFICATIONSERVICE, YukonServices.SERVICEMANAGER));
@@ -58,12 +63,10 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
         List <YukonServices> stoppedServices = getStoppedServices();
         // Check If all required services are running for smart notification else send internal notification.
         if (stoppedServices.isEmpty()) {
-        // TODO: This is temporary code, this will have to be replaced
             smartNotificationEventCreationService.send(type, events);
         } else {
             sendInternalNotification(stoppedServices);
         }
-
     }
 
     // Return a list of Stopped services which are required for smart notification i.e Broker, Service Manager and Notification.
@@ -79,9 +82,12 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
 
     // Create an email for internal notification and add all stopped services names to it.
     private void sendInternalNotification(List<YukonServices> stoppedServices) {
+        if (!shouldSendInternalNotification()) {
+            log.debug("Not sending any notification now as notification was send at " + lastNotificationSendTime);
+        } else {
             try {
                 List<String> sendToEmailIds = watchdogService.getSubscribedUsersEmailId();
-                String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
+                String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject", InetAddress.getLocalHost().getHostName());
                 StringBuilder msgBuilder = new StringBuilder();
                 String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
                 msgBuilder.append(message + "\n");
@@ -97,8 +103,24 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
             } catch (Exception e) {
                 log.error("Watch dog is unable to send Internal Notification " + e);
             }
+        }
     }
 
+    /*
+     * Check if internal notification should be send.
+     * Do not send notification if notification was send less then an hour ago.
+     */
+    private boolean shouldSendInternalNotification() {
+        if (lastNotificationSendTime == null) {
+            lastNotificationSendTime = DateTime.now();
+        }
+
+        if (Hours.hoursBetween(lastNotificationSendTime, DateTime.now()).getHours() < 1) {
+            return false;
+        }
+        return true;
+    }
+    
     public List<SmartNotificationEvent> assemble(List<WatchdogWarnings> warnings, Instant now) {
         return warnings.stream().map(warning -> WatchdogAssembler.assemble(warning, now)).collect(Collectors.toList());
     }

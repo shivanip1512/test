@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
@@ -30,6 +31,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     public static final String SERVICE_STATUS = "Status";
 
     private List<YukonServices> runningServices = new ArrayList<>();
+    private Map<YukonServices, ServiceStatus> lastServiceStatus = new ConcurrentHashMap<>();
 
     private static final List<YukonServices> optionalServices = Arrays.asList(
         YukonServices.MACS,
@@ -91,7 +93,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
      * Checks if a warning have to be send or not.
      * Case 1: If a service is optional service, then it should have been seen running aleast once and current
      * status should be stopped.
-     * Case 2: If a service is not optional service and its status is stopped then send warning.
+     * Case 2: If a service is not optional service and it was running earlier and have stopped then send warning.
      */
     private boolean shouldSendWarning(ServiceStatus connectionStatus) {
         YukonServices service = getServiceName();
@@ -103,9 +105,12 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
                 return false;
             }
         }
-        if (connectionStatus == ServiceStatus.STOPPED) {
+        if (connectionStatus == ServiceStatus.STOPPED
+            && (!lastServiceStatus.containsKey(service) || lastServiceStatus.get(service) == ServiceStatus.RUNNING)) {
+            lastServiceStatus.put(service, connectionStatus);
             return true;
         }
+        lastServiceStatus.put(service, connectionStatus);
         return false;
     }
 
