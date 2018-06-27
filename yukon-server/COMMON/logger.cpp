@@ -70,13 +70,6 @@ std::string preformatMethodName(const char * func)
     return methodName;
 }
 
-const char * trimPath(const char * file)
-{
-    auto pos = std::strrchr(file, '\\');
-
-    return pos ? pos + 1 : file;
-}
-
 } // namespace anonymous
 
 struct Logger::LoggerObj

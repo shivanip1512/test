@@ -40,8 +40,10 @@ static LONG WINAPI MinidumpExceptionFilter( LPEXCEPTION_POINTERS pExceptionPtrs 
 
 IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter(const Cti::compileinfo_t &info, const LPEXCEPTION_POINTERS &pExceptionPtrs );
 
-struct CallSite
+struct IM_EX_CTIBASE CallSite
 {
+    CallSite(const char * func, const char * file, const unsigned line);
+
     const char *func;
     const char *file;
     const unsigned line;

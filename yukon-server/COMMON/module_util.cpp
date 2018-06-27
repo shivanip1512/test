@@ -12,6 +12,13 @@ using std::endl;
 
 namespace Cti {
 
+CallSite::CallSite(const char * func_, const char * file_, const unsigned line_) 
+    :   func { func_ },
+        file { trimPath(file_) },
+        line { line }
+{
+}
+
 void identifyProject(const compileinfo_t &info)
 {
     if( isDebugLudicrous() && info.date )
