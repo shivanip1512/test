@@ -113,11 +113,9 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
         Instant timeStamp = message.getTimeStamp().toInstant();
 
         if (sendMessageTimeStamp != null) {
-            if (sendMessageTimeStamp != null) {
-                Instant compareTimeStamp = Optional.ofNullable(receivedLatestMessageTimeStamp).orElse(sendMessageTimeStamp);
-                if (timeStamp.compareTo(compareTimeStamp) >= 0) {
-                    receivedLatestMessageTimeStamp = timeStamp;
-                }
+            Instant compareTimeStamp = Optional.ofNullable(receivedLatestMessageTimeStamp).orElse(sendMessageTimeStamp);
+            if (timeStamp.compareTo(compareTimeStamp) >= 0) {
+                receivedLatestMessageTimeStamp = timeStamp;
             }
         }
     }

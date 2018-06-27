@@ -108,14 +108,14 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
     public void handleMessage(Message message) {
         log.debug("messageReceived: " + message.toString());
         Instant timeStamp = message.getTimeStamp().toInstant();
+
         if (sendMessageTimeStamp != null) {
-            if (sendMessageTimeStamp != null) {
-                Instant compareTimeStamp = Optional.ofNullable(receivedLatestMessageTimeStamp).orElse(sendMessageTimeStamp);
-                if (timeStamp.compareTo(compareTimeStamp) >= 0) {
-                    receivedLatestMessageTimeStamp = timeStamp;
-                }
+            Instant compareTimeStamp = Optional.ofNullable(receivedLatestMessageTimeStamp).orElse(sendMessageTimeStamp);
+            if (timeStamp.compareTo(compareTimeStamp) >= 0) {
+                receivedLatestMessageTimeStamp = timeStamp;
             }
         }
+        
     }
 
     @Override
