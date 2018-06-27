@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
     @Override
     public DeviceCollection createDeviceCollection(HttpServletRequest request) throws ServletRequestBindingException {
         final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
-        final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
+        final List<Integer> idList = ServletUtil.getIntegerListFromString(StringEscapeUtils.escapeXml11(ids));
         
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
         Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");

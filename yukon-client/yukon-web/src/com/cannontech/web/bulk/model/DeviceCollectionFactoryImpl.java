@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 
@@ -35,7 +36,7 @@ public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory {
         DeviceCollectionType deviceCollectionType;
         
         try {
-            deviceCollectionType = DeviceCollectionType.valueOf(type);
+            deviceCollectionType = DeviceCollectionType.valueOf(StringEscapeUtils.escapeXml11(type));
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("collectionType: " + type + " is not supported.");
         }
