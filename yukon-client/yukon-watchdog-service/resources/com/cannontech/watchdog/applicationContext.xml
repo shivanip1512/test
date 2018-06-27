@@ -18,6 +18,8 @@
     <bean id="globalSettingDao" class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
     <bean id="watchdogWatcherDao" class="com.cannontech.watchdog.dao.impl.WatchdogWatcherDaoImpl"/>
     <bean id="watchdogWatcherService" class="com.cannontech.watchdog.service.impl.WatchdogWatcherServiceImpl"/>
+    <bean id="watchdogDao" class="com.cannontech.watchdog.dao.impl.WatchdogDaoImpl"/>
+    <bean id="watchdogServiceService" class="com.cannontech.watchdog.service.impl.WatchdogServiceServiceImpl"/>
     
     <bean id="connectionFactoryTarget" class="com.cannontech.services.jms.YukonJmsConnectionFactory" lazy-init="true" autowire-candidate="false"/>
 

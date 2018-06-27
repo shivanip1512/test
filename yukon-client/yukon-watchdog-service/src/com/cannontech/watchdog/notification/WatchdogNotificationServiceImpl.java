@@ -20,13 +20,12 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.WatchdogAssembler;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarnings;
+import com.cannontech.watchdog.service.WatchdogServiceService;
 import com.cannontech.watchdogs.impl.ServiceStatusWatchdog;
 
 @Component
@@ -35,7 +34,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
 
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private EmailService emailService;
-    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private WatchdogServiceService watchdogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
@@ -80,23 +79,24 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
 
     // Create an email for internal notification and add all stopped services names to it.
     private void sendInternalNotification(List<YukonServices> stoppedServices) {
-        try {
-            String to = globalSettingDao.getString(GlobalSettingType.CONTACT_EMAIL);
-            String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
-            StringBuilder msgBuilder = new StringBuilder();
-            String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
-            msgBuilder.append(message + "\n");
-            // Append all the stopped services names to the email body.
-            for (YukonServices s : stoppedServices) {
-                msgBuilder.append("\n");
-                msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
+            try {
+                List<String> sendToEmailIds = watchdogService.getSubscribedUsersEmailId();
+                String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
+                StringBuilder msgBuilder = new StringBuilder();
+                String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
+                msgBuilder.append(message + "\n");
+                // Append all the stopped services names to the email body.
+                for (YukonServices s : stoppedServices) {
+                    msgBuilder.append("\n");
+                    msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
+                }
+                String emails = String.join(",", sendToEmailIds);
+                EmailMessage emailMessage =
+                    new EmailMessage(InternetAddress.parse(emails), subject, msgBuilder.toString());
+                emailService.sendMessage(emailMessage);
+            } catch (Exception e) {
+                log.error("Watch dog is unable to send Internal Notification " + e);
             }
-            /* TODO EmailMessage emailMessage = new EmailMessage(InternetAddress.parse(to), subject, msgBuilder.toString());
-            emailService.sendMessage(emailMessage);*/
-            log.error("Notification is not accessible, an Email needs to be sent here to the people subscribed to the Watchdog smart notification");
-        } catch (Exception e) {
-            log.error("Watch dog is unable to send Internal Notification");
-        }
     }
 
     public List<SmartNotificationEvent> assemble(List<WatchdogWarnings> warnings, Instant now) {
