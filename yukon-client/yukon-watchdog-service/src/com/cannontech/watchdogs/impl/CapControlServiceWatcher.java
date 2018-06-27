@@ -53,7 +53,9 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
      * generate warning and disconnect from service.
      */
     private void sendRequestAllDataCommandToServer() {
-        sendMessageTimeStamp =  OffsetDateTime.now().withNano(0).toInstant();
+        // Received timestamp from c++ with 0 nanoseconds and Instant.now() gives timestamp with
+        // nanoseconds precision
+        sendMessageTimeStamp = OffsetDateTime.now().withNano(0).toInstant();
         if (clientConnection.isValid()) {
             clientConnection.sendCommand(new CapControlCommand(CommandType.REQUEST_ALL_DATA.getCommandId()));
         } else {

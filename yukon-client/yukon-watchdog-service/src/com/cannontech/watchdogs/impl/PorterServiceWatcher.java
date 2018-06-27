@@ -49,6 +49,8 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
      */
 
     private void sendLoopbackCommandToServer() {
+        // Received timestamp from c++ with 0 nanoseconds and Instant.now() gives timestamp with
+        // nanoseconds precision
         sendMessageTimeStamp =  OffsetDateTime.now().withNano(0).toInstant();
         if (porterClientConnection.isValid()) {
             Command cmd = new Command();

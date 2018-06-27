@@ -51,6 +51,8 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
      */
 
     private void retrieveAllControlAreasFromServer() {
+        // Received timestamp from c++ with 0 nanoseconds and Instant.now() gives timestamp with
+        // nanoseconds precision
         sendMessageTimeStamp =  OffsetDateTime.now().withNano(0).toInstant();
         if (clientConnection.isValid()) {
             LMCommand cmd = new LMCommand();
