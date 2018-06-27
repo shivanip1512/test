@@ -34,7 +34,7 @@ public class WatchdogAssembler {
     }
 
     /**
-     * This method will return argument for summary verbosity .
+     * This method will return arguments for summary verbosity .
      */
     public static Object[] getWarningArgumentsForSummary(Map<String, Object> parameters) {
         return parameters.entrySet().stream().map(Map.Entry::getValue)
@@ -42,7 +42,7 @@ public class WatchdogAssembler {
     }
 
     /**
-     * This method will return argument for detailed verbosity .
+     * This method will return arguments for detailed verbosity .
      */
     public static List<Object> getWarningArgumentsForDetailed(Map<String, Object> parameters, String date) {
         List<Object> parametersList = new ArrayList<>();
