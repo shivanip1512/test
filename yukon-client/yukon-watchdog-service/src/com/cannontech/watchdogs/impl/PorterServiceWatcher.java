@@ -31,7 +31,7 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
     private static final Logger log = YukonLogManager.getLogger(PorterServiceWatcher.class);
     @Autowired private ConnectionFactoryService connectionFactorySvc;
 
-    private Instant receivedLatestMessageTimeStamp;
+    private volatile Instant receivedLatestMessageTimeStamp;
     private Instant sendMessageTimeStamp;
     private static WatchdogPorterClientConnection porterClientConnection;
     
@@ -105,8 +105,10 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
     public void handleMessage(Message message) {
         log.debug("messageReceived: " + message.toString());
         Instant timeStamp = message.getTimeStamp().toInstant();
-        synchronized (this) {
-            if (receivedLatestMessageTimeStamp == null || timeStamp.isAfter(receivedLatestMessageTimeStamp)) {
+        if (sendMessageTimeStamp != null) {
+            if ((receivedLatestMessageTimeStamp == null
+                && ((timeStamp.isAfter(sendMessageTimeStamp) || timeStamp.equals(sendMessageTimeStamp))))
+                || (timeStamp.isAfter(receivedLatestMessageTimeStamp))) {
                 receivedLatestMessageTimeStamp = timeStamp;
             }
         }

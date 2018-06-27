@@ -35,7 +35,7 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
     @Autowired private WatchdogWatcherService watcherService;
 
     private static WatchdogCapControlClientConnection clientConnection;
-    private Instant receivedLatestMessageTimeStamp;
+    private volatile Instant receivedLatestMessageTimeStamp;
     private Instant sendMessageTimeStamp;
     
     private CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -91,7 +91,7 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
             countDownLatch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {}
 
-        if (receivedLatestMessageTimeStamp == null || (receivedLatestMessageTimeStamp.isBefore(sendMessageTimeStamp)) || !clientConnection.isValid()) {
+        if (receivedLatestMessageTimeStamp == null || !clientConnection.isValid()) {
             log.debug("Status of CapControl service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.CAPCONTROL_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
@@ -105,8 +105,10 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
     public void handleMessage(Message message) {
         log.debug("messageReceived: " + message.toString());
         Instant timeStamp = message.getTimeStamp().toInstant();
-        synchronized (this) {
-            if (receivedLatestMessageTimeStamp == null || timeStamp.isAfter(receivedLatestMessageTimeStamp)) {
+        if (sendMessageTimeStamp != null) {
+            if ((receivedLatestMessageTimeStamp == null
+                && ((timeStamp.isAfter(sendMessageTimeStamp) || timeStamp.equals(sendMessageTimeStamp))))
+                || (timeStamp.isAfter(receivedLatestMessageTimeStamp))) {
                 receivedLatestMessageTimeStamp = timeStamp;
             }
         }

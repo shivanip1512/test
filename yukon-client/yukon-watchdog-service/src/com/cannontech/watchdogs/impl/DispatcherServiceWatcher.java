@@ -32,7 +32,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
 
     @Autowired private ConnectionFactoryService connectionFactorySvc;
 
-    private Instant receivedLatestMessageTimeStamp;
+    private volatile Instant receivedLatestMessageTimeStamp;
     private Instant sendMessageTimeStamp;
     private static WatchdogDispatchClientConnection dispatchConnection;
     
@@ -95,7 +95,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
             countDownLatch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {}
 
-        if (receivedLatestMessageTimeStamp == null || (receivedLatestMessageTimeStamp.isBefore(sendMessageTimeStamp))) {
+        if (receivedLatestMessageTimeStamp == null || !dispatchConnection.isValid()) {
             log.debug("Status of Dispatcher service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.DISPATCH_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
@@ -108,8 +108,11 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
     public void handleMessage(Message message) {
         log.debug("messageReceived: " + message.toString());
         Instant timeStamp = message.getTimeStamp().toInstant();
-        synchronized (this) {
-            if (receivedLatestMessageTimeStamp == null || timeStamp.isAfter(receivedLatestMessageTimeStamp)) {
+
+        if (sendMessageTimeStamp != null) {
+            if ((receivedLatestMessageTimeStamp == null
+                && ((timeStamp.isAfter(sendMessageTimeStamp) || timeStamp.equals(sendMessageTimeStamp))))
+                || (timeStamp.isAfter(receivedLatestMessageTimeStamp))) {
                 receivedLatestMessageTimeStamp = timeStamp;
             }
         }

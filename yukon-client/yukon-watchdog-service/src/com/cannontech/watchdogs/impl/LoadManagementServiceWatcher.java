@@ -32,7 +32,7 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
     @Autowired private ConnectionFactoryService connectionFactorySvc;
     @Autowired private WatchdogWatcherService watcherService;
 
-    private Instant receivedLatestMessageTimeStamp;
+    private volatile Instant receivedLatestMessageTimeStamp;
     private Instant sendMessageTimeStamp;
     private static WatchdogLoadManagementClientConnection clientConnection;
     
@@ -93,7 +93,7 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
             countDownLatch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {}
 
-        if (receivedLatestMessageTimeStamp == null || (receivedLatestMessageTimeStamp.isBefore(sendMessageTimeStamp)) || !clientConnection.isValid()) {
+        if (receivedLatestMessageTimeStamp == null || !clientConnection.isValid()) {
             log.debug("Status of LoadManagement service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.LOADMANAGEMENT_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
@@ -107,11 +107,15 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
     public void handleMessage(Message message) {
         log.debug("messageReceived: " + message.toString());
         Instant timeStamp = message.getTimeStamp().toInstant();
-        synchronized (this) {
-            if (receivedLatestMessageTimeStamp == null || timeStamp.isAfter(receivedLatestMessageTimeStamp)) {
+
+        if (sendMessageTimeStamp != null) {
+            if ((receivedLatestMessageTimeStamp == null
+                && ((timeStamp.isAfter(sendMessageTimeStamp) || timeStamp.equals(sendMessageTimeStamp))))
+                || (timeStamp.isAfter(receivedLatestMessageTimeStamp))) {
                 receivedLatestMessageTimeStamp = timeStamp;
             }
         }
+
     }
 
     @Override

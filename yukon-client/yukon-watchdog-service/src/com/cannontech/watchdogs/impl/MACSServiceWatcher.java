@@ -31,8 +31,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
     @Autowired private ConnectionFactoryService connectionFactorySvc;
 
     private static WatchdogMACSConnection macsConnection;
-    private Instant receivedLatestMessageTimeStamp;
-    private Instant sendMessageTimeStamp;
+    private volatile Instant receivedLatestMessageTimeStamp;
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -48,7 +47,6 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
      */
 
     private void sendAllScheduleCommandToServer() {
-        sendMessageTimeStamp =  Instant.now();
         if (macsConnection.isValid()) {
             RetrieveSchedule newSchedules = new RetrieveSchedule();
             newSchedules.setUserName(CtiUtilities.getUserName());
@@ -93,7 +91,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
             countDownLatch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {}
 
-        if (receivedLatestMessageTimeStamp == null || (receivedLatestMessageTimeStamp.isBefore(sendMessageTimeStamp)) || !macsConnection.isValid()) {
+        if (receivedLatestMessageTimeStamp == null || !macsConnection.isValid()) {
             log.debug("Status of MACS service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.MACS_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
@@ -105,11 +103,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
     @Override
     public void handleMessage(Message message) {
         log.debug("messageReceived: " + message.toString());
-        synchronized (this) {
-            if (receivedLatestMessageTimeStamp == null) {
-                receivedLatestMessageTimeStamp = Instant.now();
-            }
-        }
+        receivedLatestMessageTimeStamp = Instant.now();
     }
 
     @Override
