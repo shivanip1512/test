@@ -77,7 +77,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         }
 
         if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
-            boolean success = deviceDataMonitorCalculationService.recalculateViolation(monitor, device.getDeviceId());
+            boolean success = deviceDataMonitorCalculationService.recalculateViolation(monitor, device, richPointData.getPointValue());
             if (!success) {
                 devicesToMonitors.put(pair, false);
             }

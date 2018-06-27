@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -44,7 +45,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
@@ -63,11 +63,9 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
@@ -270,7 +268,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
         log.info("{} recalculating violations", monitor);
 
-        Multimap<SimpleDevice, Attribute> devicesToEvaluate =
+        Multimap<BuiltInAttribute, SimpleDevice> devicesToEvaluate =
             attributeService.getDevicesInGroupThatSupportAttribute(monitor.getGroup(), monitor.getAttributes(), null);
         
         List<SimpleDevice> devicesInViolationGroup =
@@ -305,19 +303,57 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     }
     
     @Override
-    public boolean recalculateViolation(DeviceDataMonitor monitor, int deviceId){
+    public boolean recalculateViolation(DeviceDataMonitor monitor, SimpleDevice device, PointValueQualityHolder receivedValue){
 
-        Multimap<SimpleDevice, Attribute> devices = attributeService.getDevicesInGroupThatSupportAttribute(
-            monitor.getGroup(), monitor.getAttributes(), Lists.newArrayList(deviceId));
-        if (devices.isEmpty()) {
-            log.debug("{} recalculation of violation for device id {} is skipped. Device doesn't support {} attributes",
-                monitor, deviceId, monitor.getAttributes());
+        //find all points for monitored attributes
+        Map<BuiltInAttribute, LitePoint> attributeToPoint = new HashMap<>();
+        monitor.getAttributes().forEach(attribute -> {
+            attributeToPoint.put(attribute, attributeService.findPointForAttribute(device, attribute));
+        });
+        
+        //true if monitor is monitoring the attribute for which we received point data
+        boolean containsAttributeForPoint = attributeToPoint.values().stream()
+                .filter(p -> p.getLiteID() == receivedValue.getId()).findFirst().isPresent();
+   
+        if (attributeToPoint.isEmpty()) {
+            log.debug("{} recalculation of violation for device {} is skipped. Device doesn't support {} attributes",
+                monitor, device, monitor.getAttributes());
             return false;
         }
-        SimpleDevice device = devices.keySet().iterator().next();
-        log.debug("{} recalculating violations for {} attributes {}", monitor, device, deviceId);
 
-        boolean foundViolation = !findViolations(monitor, devices).isEmpty();
+        if (!containsAttributeForPoint) {
+            log.debug("{} recalculation of violation for device {} is skipped. The monitor is not monitoring for point id {}",
+                monitor, device, receivedValue.getId());
+            return false;
+        }
+        
+        log.debug("{} recalculating violations for {} attributes {}", monitor, device, monitor.getAttributes());
+        
+        Set<Integer> otherPoints = attributeToPoint.values().stream()
+                .filter(p -> p.getLiteID() != receivedValue.getId())
+                .map(p -> p.getLiteID()).collect(Collectors.toSet());
+        
+        Map<Integer, PointValueQualityHolder> pointValues = new HashMap<>();
+        
+        if(!otherPoints.isEmpty()) {
+            log.debug("{} asking dispatch for point data {}", monitor, otherPoints);
+            pointValues.putAll(asyncDynamicDataSource.getPointDataOnce(otherPoints).stream()
+                .collect(Collectors.toMap(p -> p.getId(), p -> p)));
+        }
+                
+        boolean foundViolation = false;
+
+        for (Map.Entry<BuiltInAttribute, LitePoint> entry : attributeToPoint.entrySet()) {
+            int pointId = entry.getValue().getPointID();
+            PointValueQualityHolder pointValue = pointId == receivedValue.getId() ? receivedValue : pointValues.get(pointId);
+            if (pointValue != null) {
+                DeviceDataMonitorProcessor processor = monitor.getProcessor(entry.getKey());
+                foundViolation = isViolating(processor, entry.getValue().getStateGroupID(), pointValue);
+                if (foundViolation) {
+                    break;
+                }
+            }
+        }
 
         boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(monitor.getViolationGroup(), device);
         
@@ -338,7 +374,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         }
         
         updateViolationCacheCount(monitor);
-        log.debug("{} recalculation of violation for {} is complete",  monitor, device);
+        log.debug("{} recalculation of violation for {} is complete, fiolattion found:{}",  monitor, device, foundViolation);
         return true;
     }
     
@@ -357,57 +393,50 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      * If the point data is not available in cache it will ask dispatch for it.
      */
     private Set<SimpleDevice> findViolations(DeviceDataMonitor monitor,
-            Multimap<SimpleDevice, Attribute> devicesToAttribute) {
+            Multimap<BuiltInAttribute, SimpleDevice> attributeToDevice) {
 
         Set<SimpleDevice> violatingDevices = Sets.newHashSet();
-        Multimap<Attribute, SimpleDevice> attributeToDevice = HashMultimap.create();
-        Multimaps.invertFrom(devicesToAttribute, attributeToDevice);
-
-        for (Attribute attribute : attributeToDevice.keySet()) {
+      
+        Map<BuiltInAttribute, Map<Integer, SimpleDevice>> attributeToPoints = new HashMap<>();
+        Set<Integer> allPoints = new HashSet<>();
+        Map<Integer, Integer> pointIdsToStateGroup = new HashMap<>();
+        
+        for (BuiltInAttribute attribute : attributeToDevice.keySet()) {
             // for monitor group and attribute - find device
             Collection<SimpleDevice> devices = attributeToDevice.get(attribute);
-
-            // already in violation
-            devices.removeIf(d -> violatingDevices.contains(d));
-
             if (devices.isEmpty()) {
                 continue;
             }
-            BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, (BuiltInAttribute) attribute);
-
+            BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, attribute);
+            pointIdsToStateGroup.putAll(points.values().stream().collect(Collectors.toMap(p -> p.getLiteID(), p -> p.getStateGroupID())));
+                    
             Map<Integer, SimpleDevice> pointIdsToPao = points.entrySet().stream().collect(
                 Collectors.toMap(p -> p.getValue().getPointID(), p -> new SimpleDevice(p.getKey())));
+            allPoints.addAll(pointIdsToPao.keySet());
 
-            if (pointIdsToPao.isEmpty()) {
-                continue;
+            if (!pointIdsToPao.isEmpty()) {
+                attributeToPoints.put(attribute, pointIdsToPao);
             }
-
-            // Gets point values from cache, if the points values are not available in cache, asks
-            // dispatch for the point data
-            Set<? extends PointValueQualityHolder> pointValues =
-                asyncDynamicDataSource.getPointValues(pointIdsToPao.keySet());
-            Map<Integer, Integer> pointIdsToStateGroup =
-                points.values().stream().collect(Collectors.toMap(p -> p.getLiteID(), p -> p.getStateGroupID()));
-
-            // find processor for the attribute
-            DeviceDataMonitorProcessor processor = monitor.getProcessor((BuiltInAttribute) attribute);
-
-            if(processor == null) {
-                continue;
-            }
-            
-            for (PointValueQualityHolder value : pointValues) {
-                SimpleDevice pao = pointIdsToPao.get(value.getId());
-                if (violatingDevices.contains(pao)) {
-                    continue;
-                }
-                if (isViolating(processor, pointIdsToStateGroup.get(value.getId()), value)) {
-                    log.debug("Found violation for processor:{} point value:{}", processor, value);
-                    violatingDevices.add(pao);
+        }
+        Map<Integer, PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointDataOnce(allPoints).stream()
+                .collect(Collectors.toMap(p -> p.getId(), p -> p));
+ 
+        if (!pointValues.isEmpty()) {
+            for (Entry<BuiltInAttribute, Map<Integer, SimpleDevice>> entry : attributeToPoints.entrySet()) {
+                DeviceDataMonitorProcessor processor = monitor.getProcessor(entry.getKey());
+                for (Entry<Integer, SimpleDevice> pointToDevice : entry.getValue().entrySet()) {
+                    SimpleDevice device = pointToDevice.getValue();
+                    int pointId = pointToDevice.getKey();
+                    int stateGroupId = pointIdsToStateGroup.get(pointId);
+                    if (!violatingDevices.contains(device)) {
+                        PointValueQualityHolder valuetHolder = pointValues.get(pointId);
+                        if (isViolating(processor, stateGroupId, valuetHolder)) {
+                            violatingDevices.add(device);
+                        }
+                    }
                 }
             }
         }
-
         return violatingDevices;
     }
 

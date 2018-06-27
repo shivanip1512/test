@@ -11,7 +11,7 @@ import com.cannontech.common.util.CtiUtilities;
 public class Message {
     
     private Date timeStamp;
-    private int priority;
+    private int priority = 7;
     private int SOE_Tag;
     private String userName = CtiUtilities.getUserName();
     private String source = CtiUtilities.DEFAULT_MSG_SOURCE;

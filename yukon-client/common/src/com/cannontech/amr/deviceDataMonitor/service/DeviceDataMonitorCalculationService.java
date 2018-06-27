@@ -1,6 +1,8 @@
 package com.cannontech.amr.deviceDataMonitor.service;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 public interface DeviceDataMonitorCalculationService {
 
@@ -10,5 +12,5 @@ public interface DeviceDataMonitorCalculationService {
      * @return false - if violations were not recalculated because the attributes were not supported by the device
      */
 
-    boolean recalculateViolation(DeviceDataMonitor monitor, int deviceId);
+    boolean recalculateViolation(DeviceDataMonitor monitor, SimpleDevice device, PointValueQualityHolder pointValue);
 }

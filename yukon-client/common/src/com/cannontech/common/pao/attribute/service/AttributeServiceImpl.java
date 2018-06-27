@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -630,13 +631,13 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public Multimap<SimpleDevice, Attribute> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
+    public Multimap<BuiltInAttribute, SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
             List<BuiltInAttribute> attributes, List<Integer> deviceIds) {
 
-        Multimap<Attribute, PaoType> attributeToPaoType = HashMultimap.create();
+        Multimap<BuiltInAttribute, PaoType> attributeToPaoType = HashMultimap.create();
         for (Entry<PaoType, Attribute> entry : paoDefinitionDao.getPaoTypeAttributesMultiMap().entries()) {
             if (attributes.contains(entry.getValue())) {
-                attributeToPaoType.put(entry.getValue(), entry.getKey());
+                attributeToPaoType.put((BuiltInAttribute) entry.getValue(), entry.getKey());
             }
         }
 
@@ -655,14 +656,14 @@ public class AttributeServiceImpl implements AttributeService {
 
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
 
-        Multimap<PaoType, Attribute> paoTypeToAttribute = HashMultimap.create();
-        Multimaps.invertFrom(attributeToPaoType, paoTypeToAttribute);
-
         List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
-                
-        Multimap<SimpleDevice, Attribute> attributeToDevice = HashMultimap.create();
-        devices.forEach(device -> {
-            attributeToDevice.putAll(device, paoTypeToAttribute.get(device.getDeviceType()));
+
+        Multimap<BuiltInAttribute, SimpleDevice> attributeToDevice = HashMultimap.create();
+        attributes.forEach(attribute -> {
+            Collection<PaoType> types = attributeToPaoType.get(attribute);
+            List<SimpleDevice> devicesForAttribute =
+                devices.stream().filter(d -> types.contains(d.getDeviceType())).collect(Collectors.toList());
+            attributeToDevice.putAll(attribute, devicesForAttribute);
         });
 
         return attributeToDevice;
