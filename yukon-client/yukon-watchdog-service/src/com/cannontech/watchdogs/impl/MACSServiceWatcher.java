@@ -33,7 +33,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
     private static WatchdogMACSConnection macsConnection;
     private volatile Instant receivedLatestMessageTimeStamp;
 
-    CountDownLatch countDownLatch = new CountDownLatch(1);
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
 
     @Override
     public void doWatchAction() {

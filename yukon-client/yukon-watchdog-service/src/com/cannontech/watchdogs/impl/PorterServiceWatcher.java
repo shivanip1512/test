@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -108,10 +109,11 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
         log.debug("messageReceived: " + message.toString());
         Instant timeStamp = message.getTimeStamp().toInstant();
         if (sendMessageTimeStamp != null) {
-            if ((receivedLatestMessageTimeStamp == null
-                && ((timeStamp.isAfter(sendMessageTimeStamp) || timeStamp.equals(sendMessageTimeStamp))))
-                || (timeStamp.isAfter(receivedLatestMessageTimeStamp))) {
-                receivedLatestMessageTimeStamp = timeStamp;
+            if (sendMessageTimeStamp != null) {
+                Instant compareTimeStamp = Optional.ofNullable(receivedLatestMessageTimeStamp).orElse(sendMessageTimeStamp);
+                if (timeStamp.compareTo(compareTimeStamp) >= 0) {
+                    receivedLatestMessageTimeStamp = timeStamp;
+                }
             }
         }
     }
