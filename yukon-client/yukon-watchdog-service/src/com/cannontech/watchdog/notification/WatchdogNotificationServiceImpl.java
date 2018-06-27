@@ -40,7 +40,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
     
-    private final List<YukonServices> requiedServicesForSmartNotif = new ArrayList<>(
+    private final List<YukonServices> requiredServicesForSmartNotif = new ArrayList<>(
         Arrays.asList(YukonServices.MESSAGEBROKER, YukonServices.NOTIFICATIONSERVICE, YukonServices.SERVICEMANAGER));
     
     @PostConstruct
@@ -70,7 +70,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     // Return a list of Stopped services which are required for smart notification i.e Broker, Service Manager and Notification.
     private synchronized List<YukonServices> getStoppedServices() {
         List<YukonServices> stoppedServices = serviceStatusWatchers.stream()
-                                                                   .filter(e -> (requiedServicesForSmartNotif.contains(e.getServiceName()) && !e.isServiceRunning()))
+                                                                   .filter(e -> (requiredServicesForSmartNotif.contains(e.getServiceName()) && !e.isServiceRunning()))
                                                                    .map(ServiceStatusWatchdog::getServiceName)
                                                                    .collect(Collectors.toList());
 
