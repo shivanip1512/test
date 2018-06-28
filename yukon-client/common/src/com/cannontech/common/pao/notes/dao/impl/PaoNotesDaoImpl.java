@@ -41,7 +41,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
             paoNote.setPaoId(rs.getInt("PAObjectId"));
             paoNote.setNoteText(rs.getString("NoteText"));
             paoNote.setStatus(rs.getEnum("Status", PaoNoteStatus.class));
-            paoNote.setCreateUserName(rs.getString("CreateUsername"));
+            paoNote.setCreateUserName(rs.getString("CreateUserName"));
             paoNote.setCreateDate(rs.getInstant("CreateDate"));
             paoNote.setEditUserName(rs.getString("EditUserName"));
             paoNote.setEditDate(rs.getInstant("EditDate"));
@@ -76,7 +76,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         sink.addValue("PaObjectId", note.getPaoId());
         sink.addValue("NoteText", note.getNoteText());
         sink.addValue("Status", PaoNoteStatus.CREATED);
-        sink.addValue("CreateUsername", user.getUsername());
+        sink.addValue("CreateUserName", user.getUsername());
         sink.addValue("CreateDate", new Instant());
         yukonJdbcTemplate.update(insertSql);
         
@@ -89,7 +89,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         SqlParameterSink sink = updateSql.update("PaoNote");
         sink.addValue("NoteText", note.getNoteText());
         sink.addValue("Status", PaoNoteStatus.EDITED);
-        sink.addValue("EditUsername", user.getUsername());
+        sink.addValue("EditUserName", user.getUsername());
         sink.addValue("EditDate", new Instant());
         updateSql.append("WHERE NoteId").eq(note.getNoteId());
         
@@ -102,7 +102,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         SqlStatementBuilder updateSql = new SqlStatementBuilder();
         SqlParameterSink sink = updateSql.update("PaoNote");
         sink.addValue("Status", PaoNoteStatus.DELETED);
-        sink.addValue("EditUsername", user.getUsername());
+        sink.addValue("EditUserName", user.getUsername());
         sink.addValue("EditDate", new Instant());
         updateSql.append("WHERE NoteId").eq(noteId);
         
