@@ -27,13 +27,14 @@
 	<c:if test="${status.error}">
 		<c:set var="inputClass" value="error"/>
 	</c:if>
-	<c:set var="resizable" value=""/>
-	<c:if test="${isResizable == false}">
+	
+    <c:set var="resizable" value=""/>
+    <c:if test="${isResizable == false}">
         <c:set var="resizable" value="resize: none;"/>
     </c:if>
-	
-		<form:textarea path="${path }" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
-		               cssStyle="${resizable}" />
+    
+    <form:textarea path="${path }" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
+                   cssStyle="${resizable}" />
 	
 	<c:if test="${status.error}">
 		<br>

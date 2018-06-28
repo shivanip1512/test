@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.monitor.validators;
+package com.cannontech.web.paonote.validator;
 
 import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
 import org.springframework.stereotype.Service;

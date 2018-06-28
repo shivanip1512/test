@@ -25,8 +25,8 @@ import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionServi
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.monitor.validators.PaoNoteValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.paonote.validator.PaoNoteValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 

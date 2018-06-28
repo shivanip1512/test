@@ -1291,8 +1291,6 @@
     
     <bean class="com.cannontech.web.amr.meter.MeterValidator"/>
     
-    <bean class="com.cannontech.web.amr.monitor.validators.PaoNoteValidator"/>
-    
     <bean class="com.cannontech.web.common.dashboard.service.impl.DashboardServiceImpl"/>
     <bean class="com.cannontech.web.common.dashboard.widget.service.impl.WidgetServiceImpl"/>
     
@@ -1330,4 +1328,7 @@
      <bean class="com.cannontech.web.capcontrol.IvvcHelper"/>
      
      <bean id="pqrConfigBackingService" class="com.cannontech.web.updater.pqrConfig.PqrConfigBackingService"/>
+     
+     <bean class="com.cannontech.web.paonote.validator.PaoNoteValidator"/>
+     
 </beans>

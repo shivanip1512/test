@@ -1,7 +1,7 @@
 yukon.namespace('yukon.paonotes.widget');
  
 /**
- * Module to handle notes functionality.
+ * Module to handle pao notes functionality.
  * 
  * @module yukon.paonotes.widget
  * @requires yukon
