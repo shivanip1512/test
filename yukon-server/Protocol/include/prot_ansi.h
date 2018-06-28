@@ -419,8 +419,6 @@ public:
        void prepareApplicationLayer();
        void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed,
        unsigned char * mfgTblsUsed, int dimMfgTblsUsed);
-       std::list < short > getStdTblsAvailable(void);
-       std::list < short > getMfgTblsAvailable(void);
        bool isStdTableAvailableInMeter(short tableNbr);
        bool isMfgTableAvailableInMeter(short tableNbr);
        double getElecMultiplier(int index);
@@ -500,8 +498,8 @@ public:
      int _lpLastBlockSize;
 
      BOOL _ansiAbortOperation;
-     std::list < short > _stdTblsAvailable;
-     std::list < short > _mfgTblsAvailable;
+     std::vector< short > _stdTblsAvailable;
+     std::vector< short > _mfgTblsAvailable;
 
      bool _currentTableNotAvailableFlag;
      bool _requestingBatteryLifeFlag;

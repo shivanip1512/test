@@ -10,9 +10,11 @@
 #include "ctidate.h"
 #include "cparms.h"
 
+#include <boost/range/algorithm/find.hpp>
+
 using std::endl;
 using std::string;
-using std::list;
+using std::vector;
 
 using namespace Cti::Protocols::Ansi;
 const CHAR * CtiProtocolANSI::METER_TIME_TOLERANCE = "PORTER_SENTINEL_TIME_TOLERANCE";
@@ -2787,50 +2789,16 @@ void CtiProtocolANSI::setTablesAvailable(unsigned char * stdTblsUsed, int dimStd
     return;
 }
 
-list < short > CtiProtocolANSI::getStdTblsAvailable(void)
-{
-    return _stdTblsAvailable;
-}
-
-list < short > CtiProtocolANSI::getMfgTblsAvailable(void)
-{
-    return _mfgTblsAvailable;
-}
-
 bool CtiProtocolANSI::isStdTableAvailableInMeter(short tableNbr)
 {
-    std::list<short>::iterator ii = _stdTblsAvailable.begin();
-
-    do
-    {
-        if (*ii == tableNbr)
-        {
-            return true;
-        }
-        else
-            ii++;
-
-    }while(ii != _stdTblsAvailable.end());
-
-    return false;
+    return boost::find(_stdTblsAvailable, tableNbr)
+                    != _stdTblsAvailable.end();
 }
 
 bool CtiProtocolANSI::isMfgTableAvailableInMeter(short tableNbr)
 {
-    std::list<short>::iterator ii = _mfgTblsAvailable.begin();
-
-    do
-    {
-        if (*ii == tableNbr)
-        {
-            return true;
-        }
-        else
-            ii++;
-
-    }while(ii != _mfgTblsAvailable.end());
-
-    return false;
+    return boost::find(_mfgTblsAvailable, tableNbr)
+                    != _mfgTblsAvailable.end();
 }
 
 
