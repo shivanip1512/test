@@ -18,17 +18,18 @@ import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.WatchdogAssembler;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarnings;
-import com.cannontech.watchdog.service.WatchdogServiceService;
 import com.cannontech.watchdogs.impl.ServiceStatusWatchdog;
 
 @Component
@@ -37,8 +38,8 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
 
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private EmailService emailService;
-    @Autowired private WatchdogServiceService watchdogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
@@ -86,7 +87,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
             log.debug("Not sending any notification now as notification was send at " + lastNotificationSendTime);
         } else {
             try {
-                List<String> sendToEmailIds = watchdogService.getSubscribedUsersEmailId();
+                List<String> sendToEmailIds = getSubscribedUsersEmailId();
                 String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject", InetAddress.getLocalHost().getHostName());
                 StringBuilder msgBuilder = new StringBuilder();
                 String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
@@ -96,14 +97,27 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                     msgBuilder.append("\n");
                     msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
                 }
-                String emails = String.join(",", sendToEmailIds);
-                EmailMessage emailMessage =
-                    new EmailMessage(InternetAddress.parse(emails), subject, msgBuilder.toString());
-                emailService.sendMessage(emailMessage);
+
+                for (String email : sendToEmailIds) {
+                    EmailMessage emailMessage =
+                        new EmailMessage(InternetAddress.parse(email), subject, msgBuilder.toString());
+                    emailService.sendMessage(emailMessage);
+                }
             } catch (Exception e) {
                 log.error("Watch dog is unable to send Internal Notification " + e);
             }
         }
+    }
+    
+    /*
+     * Return list of users subscribed for watchdog notifications
+     */
+    private List<String> getSubscribedUsersEmailId() throws NotFoundException {
+        List<String> emailAddresses = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
+        if (emailAddresses.isEmpty()) {
+            throw new NotFoundException("No user subscribed for notification for watchdog");
+        }
+        return emailAddresses;
     }
 
     /*
@@ -113,6 +127,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     private boolean shouldSendInternalNotification() {
         if (lastNotificationSendTime == null) {
             lastNotificationSendTime = DateTime.now();
+            return true;
         }
 
         if (Hours.hoursBetween(lastNotificationSendTime, DateTime.now()).getHours() < 1) {
