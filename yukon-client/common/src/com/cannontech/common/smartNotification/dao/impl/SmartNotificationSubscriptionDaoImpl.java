@@ -28,6 +28,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Lists;
@@ -277,5 +278,20 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         addParameters(subscriptions);
         return subscriptions.stream()
                             .collect(StreamUtils.groupingBy(SmartNotificationSubscription::getType));
+    }
+    
+    @Override
+   public List<String> getSubscribedEmails(SmartNotificationEventType type) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT recipient ");
+        sql.append("FROM SmartNotificationSub");
+        sql.append("WHERE type ").eq_k(type);
+
+        return jdbcTemplate.query(sql, new YukonRowMapper<String>() {
+            @Override
+            public String mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getStringSafe("recipient");
+            }
+        });
     }
 }
