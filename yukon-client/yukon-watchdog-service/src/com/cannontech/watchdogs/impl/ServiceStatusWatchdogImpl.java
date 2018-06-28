@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
@@ -31,7 +31,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     public static final String SERVICE_STATUS = "Status";
 
     private List<YukonServices> runningServices = new ArrayList<>();
-    private Map<YukonServices, ServiceStatus> lastServiceStatus = new ConcurrentHashMap<>();
+    private List<YukonServices> serviceNotificationSent = Collections.synchronizedList(new ArrayList<YukonServices>());
 
     private static final List<YukonServices> optionalServices = Arrays.asList(
         YukonServices.MACS,
@@ -91,7 +91,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     
     /**
      * Checks if a warning have to be send or not.
-     * Case 1: If a service is optional service, then it should have been seen running aleast once and current
+     * Case 1: If a service is optional service, then it should have been seen running atleast once and current
      * status should be stopped.
      * Case 2: If a service is not optional service and it was running earlier and have stopped then send warning.
      */
@@ -105,12 +105,14 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
                 return false;
             }
         }
-        if (connectionStatus == ServiceStatus.STOPPED
-            && (!lastServiceStatus.containsKey(service) || lastServiceStatus.get(service) == ServiceStatus.RUNNING)) {
-            lastServiceStatus.put(service, connectionStatus);
+        // Tracks services to which notification should not be send to,
+        // Add services when a notification goes out and remove them when they are back to a valid state
+        if (connectionStatus == ServiceStatus.STOPPED && (!serviceNotificationSent.contains(service))) {
+            serviceNotificationSent.add(service);
             return true;
+        } else if (connectionStatus == ServiceStatus.RUNNING && (serviceNotificationSent.contains(service))) {
+            serviceNotificationSent.remove(service);
         }
-        lastServiceStatus.put(service, connectionStatus);
         return false;
     }
 

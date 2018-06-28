@@ -124,7 +124,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
      * Check if internal notification should be send.
      * Do not send notification if notification was send less then an hour ago.
      */
-    private boolean shouldSendInternalNotification() {
+    private synchronized boolean shouldSendInternalNotification() {
         if (lastNotificationSendTime == null) {
             lastNotificationSendTime = DateTime.now();
             return true;
