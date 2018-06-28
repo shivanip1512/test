@@ -54,7 +54,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant finish = new Instant();
         log.info("Point data deletion finished. Deleted " + totalEntriesDeleted + " records.");
         systemEventLogService.deletePointDataEntries(totalEntriesDeleted, start, finish);
-        return numDeleted;
+        return totalEntriesDeleted;
     }
 
     private boolean isEnoughTimeAvailable(Instant processEndTime) {
