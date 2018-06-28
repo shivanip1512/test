@@ -13,6 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface PaoNotesService {
     
+    int MAX_CHARACTERS_IN_NOTE = 255;
+    
     /**
      * Create a new note and return the new NoteId
      */

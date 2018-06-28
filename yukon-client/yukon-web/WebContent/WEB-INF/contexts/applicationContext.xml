@@ -1291,6 +1291,8 @@
     
     <bean class="com.cannontech.web.amr.meter.MeterValidator"/>
     
+    <bean class="com.cannontech.web.amr.monitor.validators.PaoNoteValidator"/>
+    
     <bean class="com.cannontech.web.common.dashboard.service.impl.DashboardServiceImpl"/>
     <bean class="com.cannontech.web.common.dashboard.widget.service.impl.WidgetServiceImpl"/>
     

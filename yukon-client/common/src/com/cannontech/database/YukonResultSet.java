@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
+import java.sql.ResultSetMetaData;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -277,5 +278,16 @@ public class YukonResultSet {
 
     public boolean wasNull() throws SQLException {
         return rs.wasNull();
+    }
+    
+    public boolean hasColumn(String columnName) throws SQLException {
+        ResultSetMetaData metadata = rs.getMetaData();
+        int columns = metadata.getColumnCount();
+        for (int index = 1; index <= columns; index++) {
+            if (columnName.equals(metadata.getColumnName(index))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

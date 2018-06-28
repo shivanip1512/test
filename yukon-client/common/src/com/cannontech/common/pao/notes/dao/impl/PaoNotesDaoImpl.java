@@ -48,8 +48,14 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
             
             PaoNotesSearchResult row = new PaoNotesSearchResult();
             row.setPaoNote(paoNote);
-            row.setPaoName(rs.getString("PAOName"));
-            row.setPaoType(rs.getEnum("Type", PaoType.class));
+            
+            if (rs.hasColumn("PAOName")) {
+                row.setPaoName(rs.getString("PAOName"));
+            }
+            
+            if (rs.hasColumn("Type")) {
+                row.setPaoType(rs.getEnum("Type", PaoType.class));
+            }
             
             return row;
         }

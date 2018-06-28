@@ -57,6 +57,7 @@
 <entry key="yukon.web.widgets.gasMeterReadingsWidget">Gas Meter Readings</entry>
 <entry key="yukon.web.widgets.miniTdcWidget">Mini TDC</entry>
 <entry key="yukon.web.widgets.profileWidget">Profile Collection</entry>
+<entry key="yukon.web.widgets.paoNotesWidget">Notes</entry>
 <entry key="yukon.web.widgets.pendingProfilesWidget">Pending Profile Collections</entry>
 <entry key="yukon.web.widgets.peakReportWidget">Peak Summary Report</entry>
 <entry key="yukon.web.widgets.outageMonitorsWidget">Outage Monitors</entry>

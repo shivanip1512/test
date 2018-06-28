@@ -138,6 +138,7 @@
                 
                 <c:if test="${showRfMetadata}"><tags:widget bean="rfnDeviceMetadataWidget"/></c:if>
                 <c:if test="${showCis}"><tags:widget bean="${cisInfoWidgetName}"/></c:if>
+                <tags:widget bean="paoNotesWidget"/>
                 
                 <!-- Including deviceGroupWidget's resources here since this particular
                      widget is being added to the page via ajax  -->

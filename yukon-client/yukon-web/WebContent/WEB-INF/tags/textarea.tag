@@ -7,6 +7,8 @@
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="rows" required="true" type="java.lang.Integer"%>
 <%@ attribute name="cols" required="true" type="java.lang.Integer"%>
+<%@ attribute name="id" required="false" type="java.lang.String"%>
+<%@ attribute name="isResizable" required="false" type="java.lang.Boolean"%>
 
 <spring:bind path="${path}">
 
@@ -25,8 +27,13 @@
 	<c:if test="${status.error}">
 		<c:set var="inputClass" value="error"/>
 	</c:if>
+	<c:set var="resizable" value=""/>
+	<c:if test="${isResizable == false}">
+        <c:set var="resizable" value="resize: none;"/>
+    </c:if>
 	
-		<form:textarea path="${path }" rows="${rows}" cols="${cols}" cssClass="${inputClass}"/>
+		<form:textarea path="${path }" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
+		               cssStyle="${resizable}" />
 	
 	<c:if test="${status.error}">
 		<br>

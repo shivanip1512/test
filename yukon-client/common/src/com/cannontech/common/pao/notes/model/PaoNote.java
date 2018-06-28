@@ -1,5 +1,7 @@
 package com.cannontech.common.pao.notes.model;
 
+import java.util.Date;
+
 import org.joda.time.Instant;
 
 import com.cannontech.common.pao.notes.PaoNoteStatus;
@@ -78,5 +80,13 @@ public class PaoNote {
     public void setEditDate(Instant editDate) {
         this.editDate = editDate;
     }
+    
+    public Date getFormattedCreateDate(){
+        return createDate.toDate();
+    }
+    
+    public Date getFormattedEditDate(){
+        return editDate.toDate();
+    } 
     
 }
