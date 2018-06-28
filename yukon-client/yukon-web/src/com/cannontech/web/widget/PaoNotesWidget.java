@@ -1,10 +1,10 @@
 package com.cannontech.web.widget;
 
+import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 
-import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
-
 @Controller
 @RequestMapping("/paoNotesWidget/*")
 public class PaoNotesWidget extends AdvancedWidgetControllerBase {
@@ -56,7 +54,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     }
 
     @RequestMapping(value = "createPaoNote", method = RequestMethod.POST)
-    public String createNote(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, FlashScope flash,
+    public String createNote(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("createPaoNote") PaoNote paoNote, BindingResult result) {
 
         paoNoteValidator.validate(paoNote, result);
