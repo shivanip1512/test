@@ -374,7 +374,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         }
         
         updateViolationCacheCount(monitor);
-        log.debug("{} recalculation of violation for {} is complete, fiolattion found:{}",  monitor, device, foundViolation);
+        log.debug("{} recalculation of violation for {} is complete, violation found:{}",  monitor, device, foundViolation);
         return true;
     }
     
