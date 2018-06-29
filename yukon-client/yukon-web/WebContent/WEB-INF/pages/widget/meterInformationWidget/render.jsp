@@ -32,9 +32,15 @@
         </tags:nameValue2>
     </c:if>
     <tags:nameValue2 nameKey=".status">
-    <c:if test='${meter.disabled}'><span class="fwb error"><i:inline key=".disabled"/></span></c:if>
-    <c:if test='${!meter.disabled}'><span class="fwb success"><i:inline key=".enabled"/></span></c:if>
+        <c:if test='${meter.disabled}'><span class="fwb error"><i:inline key=".disabled"/></span></c:if>
+        <c:if test='${!meter.disabled}'><span class="fwb success"><i:inline key=".enabled"/></span></c:if>
     </tags:nameValue2>
+    <c:if test="${hasNotes}">
+        <tags:nameValue2 nameKey=".notes">
+            ${note} (<a href="#"><i:inline key="yukon.common.viewAll"/></a>)
+        </tags:nameValue2>
+    </c:if>
+    
 </tags:nameValueContainer2>
 
 <%-- Edit Popup --%>

@@ -33,6 +33,8 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -82,6 +84,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private MeterValidator meterValidator;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoNotesService paoNotesService;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -104,6 +107,22 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         
         if (paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
             model.addAttribute("supportsPing", true);
+        }
+        
+        /* PAO Note field */
+        boolean hasNotes = paoNotesService.hasNotes(deviceId);
+        model.addAttribute("hasNotes", hasNotes);
+        if (hasNotes) {
+            List<PaoNotesSearchResult> recentNotes = paoNotesService.findMostRecentNotes(deviceId, 1);
+            StringBuilder note = new StringBuilder();
+            String noteText = recentNotes.get(0).getPaoNote().getNoteText();
+            if (noteText.length() <= 40) {
+                note.append(noteText);
+            } else {
+                note.append(noteText.substring(0, 39));
+                note.append("...");
+            }
+            model.addAttribute("note", note.toString());
         }
         
         return "meterInformationWidget/render.jsp";

@@ -14,6 +14,7 @@
     <entry key="yukon.web.widgets.meterInformationWidget.serialNumber">Serial Number</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.model">Model</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.manufacturer">Manufacturer</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.notes">Notes</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.status">Status</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.createPoints">Create Points</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.ports">Comm Channel</entry>
