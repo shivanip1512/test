@@ -97,12 +97,10 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                     msgBuilder.append("\n");
                     msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
                 }
-
-                for (String email : sendToEmailIds) {
-                    EmailMessage emailMessage =
-                        new EmailMessage(InternetAddress.parse(email), subject, msgBuilder.toString());
-                    emailService.sendMessage(emailMessage);
-                }
+                String emails = String.join(",", sendToEmailIds);
+                EmailMessage emailMessage =
+                    new EmailMessage(InternetAddress.parse(emails), subject, msgBuilder.toString());
+                emailService.sendMessage(emailMessage);
             } catch (Exception e) {
                 log.error("Watch dog is unable to send Internal Notification " + e);
             }
