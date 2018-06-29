@@ -38,8 +38,6 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private static final String baseKey = "yukon.web.widgets.paoNotesWidget";
-
     @Autowired
     public PaoNotesWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
@@ -71,7 +69,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     public String deletePaoNote(ModelMap model, int noteId, int deviceId, YukonUserContext userContext,
             FlashScope flash) {
         paoNotesService.delete(noteId, userContext.getYukonUser());
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".delete.successful"));
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.common.paoNote.delete.successful"));
         setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
         return "paoNotesWidget/render.jsp";
     }

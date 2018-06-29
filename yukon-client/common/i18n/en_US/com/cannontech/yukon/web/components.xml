@@ -186,6 +186,10 @@
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.title">Confirm Delete</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.message">Are you sure you want to delete "{0}" ?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.ok">Delete</entry>
+    
+    <entry key="yukon.web.components.ajaxConfirm.noteText.confirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.components.ajaxConfirm.noteText.confirmDelete.message">Are you sure you want to delete this note ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.noteText.confirmDelete.ok">Delete</entry>
 
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.title">Confirm Action</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.message">Are you sure you want to perform this action?</entry>
