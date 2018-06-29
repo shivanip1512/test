@@ -108,38 +108,31 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
 
         if (rfnIdentifier.isBlank()) {
-            return null;
+            throw new NotFoundException("Cannot look up blank RfnIdentifier");
         }
-        
-        RfnDevice rfnDevice = null;
 
         RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);
         if (mm != null) {
-            rfnDevice = Optional
-                    .ofNullable(rfnIdentifierCache.getPaoIdFor(mm, rfnIdentifier.getSensorSerialNumber()))
+            return Optional.ofNullable(rfnIdentifierCache.getPaoIdFor(mm, rfnIdentifier.getSensorSerialNumber()))
                     .map(paoId -> cache.getAllPaosMap().get(paoId))
                     .map(litePao -> new RfnDevice(litePao.getPaoName(), litePao, rfnIdentifier))
-                    .orElse(null);
-        } else {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-            sql.append("from YukonPaObject ypo");
-            sql.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
-            sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
-            sql.append("and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
-            sql.append("and rfn.Model").eq(rfnIdentifier.getSensorModel());
-
-            try {
-                rfnDevice = jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
-            } catch (EmptyResultDataAccessException e) {
-                log.debug("Empty result set for query " + sql + sql.getArgumentList());
-            }
+                    .orElseThrow(() -> new NotFoundException("No cache results for " + rfnIdentifier));
         }
 
-        if (rfnDevice == null) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("from YukonPaObject ypo");
+        sql.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+        sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
+        sql.append("and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
+        sql.append("and rfn.Model").eq(rfnIdentifier.getSensorModel());
+
+        try {
+            return jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("Empty result set for query " + sql + sql.getArgumentList());
             throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier);
         }
-        return rfnDevice;
     }
 
     @Override
