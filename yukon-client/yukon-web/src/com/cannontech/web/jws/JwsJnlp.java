@@ -92,7 +92,7 @@ public enum JwsJnlp {
                 "joda-time-2.3.jar",
                 "jradius-client.jar",
                 "jtds-1.3.1.jar",
-                "libthrift-0.9.0.jar",
+                "libthrift-0.11.0.jar",
                 "log4j-api-2.9.1.jar",
                 "log4j-core-2.9.1.jar",
                 "log4j-jcl-2.9.1.jar",
