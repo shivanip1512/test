@@ -143,7 +143,7 @@ public enum RfnManufacturerModel {
      */
     public static RfnManufacturerModel of(RfnIdentifier rfnIdentifier) {
         String manufacturer = rfnIdentifier.getSensorManufacturer();
-        String model        = rfnIdentifier.getSensorModel();
+        String model = rfnIdentifier.getSensorModel();
         if (StringUtils.isBlank(manufacturer) || 
             StringUtils.isBlank(model)) {
             return null;
