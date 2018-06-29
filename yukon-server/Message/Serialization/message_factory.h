@@ -131,7 +131,7 @@ template<class ThriftMsg_t>
 std::vector<unsigned char> SerializeThriftBytes(const ThriftMsg_t &omsg)
 {
     // create memory buffer and binary protocol
-    boost::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport(new apache::thrift::transport::TMemoryBuffer());
+    std::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport(new apache::thrift::transport::TMemoryBuffer());
     apache::thrift::protocol::TBinaryProtocol protocol(transport);
 
     // write message to buffer with the protocol
@@ -210,7 +210,7 @@ ThriftMsg_t DeserializeThriftBytes( const std::vector<unsigned char>& ibytes )
     ThriftMsg_t imsg;
 
     // create memory buffer and binary protocol
-    boost::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport( new apache::thrift::transport::TMemoryBuffer( const_cast<uint8_t*>(&(ibytes.front())), ibytes.size() ));
+    std::shared_ptr<apache::thrift::transport::TMemoryBuffer> transport( new apache::thrift::transport::TMemoryBuffer( const_cast<uint8_t*>(&(ibytes.front())), ibytes.size() ));
     apache::thrift::protocol::TBinaryProtocol protocol( transport );
 
     // read protocol and populate thrift message

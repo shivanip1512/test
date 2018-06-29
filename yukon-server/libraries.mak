@@ -78,9 +78,9 @@ TCL_DLL         = tcl86t.dll
 
 XERCES_BIN      = $(XERCES)\$(CONFIGURATION)\bin
 !IF "$(CONFIGURATION)"=="DEBUG"
-XERCES_DLL      = xerces-c_3_1D.dll
+XERCES_DLL      = xerces-c_3_2D.dll
 !ELSE
-XERCES_DLL      = xerces-c_3_1.dll
+XERCES_DLL      = xerces-c_3_2.dll
 !ENDIF
 
 ALL: $(BIN) $(LIB) $(PDB) \
