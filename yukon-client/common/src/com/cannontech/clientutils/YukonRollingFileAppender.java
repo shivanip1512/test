@@ -192,6 +192,8 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 this.getManager().checkRollover(event);
                 // Do any necessary log cleanup in the directory.
                 cleanUpOldLogFiles();
+                // Rename zipped file from .log.zip format to .zip format
+                renameZippedFiles();
 
                 // append a header including version info at the start of the new log file
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
@@ -263,6 +265,18 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         }
     }
 
+    /**
+     * Rename .log.zip files to .zip format in the log directory. 
+     */
+    private void renameZippedFiles() {
+        File currentDirectory = new File(directory);
+        File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
+        for (File file : filesForRename) {
+            String[] output = file.getAbsolutePath().split("\\.");
+            file.renameTo(new File(output[0] + ".zip"));
+        }
+    }
+
     private void setStartDate() {
         Date currentDate = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -277,18 +291,32 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * Files which PASS this filter will be deleted.
      */
     private class LogFilesToDeleteFilter implements FileFilter {
-        String regex = "^" + prefix + "([0-9]{2}|[0-9]{8})" + suffix;
-
+        String regex = "^" + prefix + "([0-9]{2}|[0-9]{8})";
         @Override
         public boolean accept(File file) {
             Calendar retentionDate = Calendar.getInstance();
             retentionDate.setTime(calendar.getTime());
             retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
 
-            return (file.getName().matches(regex) || file.getName().matches(regex + ".zip")) && getLogCreationDate(file).before(retentionDate.getTime());
+            return (file.getName().matches(regex + suffix) || 
+                    file.getName().matches(regex + suffix + ".zip") || 
+                    file.getName().matches(regex + ".zip")) && getLogCreationDate(file).before(retentionDate.getTime());
         }
     }
 
+    /**
+     * Filter files based on file name format i.e files in .log.zip format (Webserver_YYYYMMDD.log.zip)
+     * 
+     * Files which PASS this filter will be renamed.
+     */
+    private class LogFilesToRenameFilter implements FileFilter {
+        String regex = "^" + prefix + "([0-9]{2}|[0-9]{8})" + suffix + ".zip";
+
+        @Override
+        public boolean accept(File file) {
+            return (file.getName().matches(regex));
+        }
+    }
     /**
      * Returns the log creation date. First tries to use date in log filename, if the format isn't correct
      * it will return the file creation date.
