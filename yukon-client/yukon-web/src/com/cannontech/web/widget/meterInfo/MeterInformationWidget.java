@@ -116,10 +116,10 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             List<PaoNotesSearchResult> recentNotes = paoNotesService.findMostRecentNotes(deviceId, 1);
             StringBuilder note = new StringBuilder();
             String noteText = recentNotes.get(0).getPaoNote().getNoteText();
-            if (noteText.length() <= 40) {
+            if (noteText.length() <= 35) {
                 note.append(noteText);
             } else {
-                note.append(noteText.substring(0, 39));
+                note.append(noteText.substring(0, 34));
                 note.append("...");
             }
             model.addAttribute("note", note.toString());

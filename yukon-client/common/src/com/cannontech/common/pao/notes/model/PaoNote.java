@@ -81,11 +81,11 @@ public class PaoNote {
         this.editDate = editDate;
     }
     
-    public Date getFormattedCreateDate(){
+    public Date getCreateDateAsUtilDate(){
         return createDate.toDate();
     }
     
-    public Date getFormattedEditDate(){
+    public Date getEditDateAsUtilDate(){
         return editDate.toDate();
     } 
     
