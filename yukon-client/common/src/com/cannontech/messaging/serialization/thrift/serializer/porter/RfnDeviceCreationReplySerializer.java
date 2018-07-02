@@ -1,6 +1,6 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import com.cannontech.message.DeviceCreationDescriptor;
 import com.cannontech.message.porter.message.RfnDeviceCreationReply;
@@ -37,7 +37,7 @@ public class RfnDeviceCreationReplySerializer extends ThriftSerializer<RfnDevice
                                                    com.cannontech.messaging.serialization.thrift.generated.RfnDeviceCreationReply entity,
                                                    com.cannontech.message.porter.message.RfnDeviceCreationReply msg) {
         //  We do not expect to receive these
-        throw new NotImplementedException();
+        throw new NotImplementedException("Cannot receive " + getMessageType());
     }
 
     @Override
