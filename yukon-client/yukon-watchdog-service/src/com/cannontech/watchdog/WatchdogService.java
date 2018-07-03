@@ -17,21 +17,25 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.watchdog.base.Watchdog;
 
 public class WatchdogService {
+
+    private static class LogHolder {
+        static final Logger log = YukonLogManager.getLogger(WatchdogService.class);
+    }
+
     private List<Watchdog> watchdog;
     private static ScheduledFuture<?> schdfuture;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     
     public static void main(String args[]) {
-        Logger log = YukonLogManager.getLogger(WatchdogService.class);
         CtiUtilities.setClientAppName(ApplicationId.WATCHDOG);
         YukonSpringHook.setDefaultContext(YukonSpringHook.WATCHDOG_BEAN_FACTORY_KEY);
         try {
-            log.info("Starting watchdog service from main method");
+            getLogger().info("Starting watchdog service from main method");
             WatchdogService service = YukonSpringHook.getBean(WatchdogService.class);
             service.start();
-            log.info("Started watchdog service.");
+            getLogger().info("Started watchdog service.");
         } catch (Throwable t) {
-            log.error("Error in watchdog service", t);
+            getLogger().error("Error in watchdog service", t);
             System.exit(1);
         }
     }
@@ -62,4 +66,7 @@ public class WatchdogService {
         this.watchdog = watchdog;
     }
 
+    private static Logger getLogger() {
+        return LogHolder.log;
+    }
 }
