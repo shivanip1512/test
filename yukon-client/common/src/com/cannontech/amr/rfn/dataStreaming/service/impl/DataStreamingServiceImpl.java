@@ -73,7 +73,6 @@ import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
-import com.cannontech.common.events.loggers.DataStreamingEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -689,18 +688,19 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         
         return verificationInfo;
     }
-
+        
+    
     @Override
     public int read(int deviceId, YukonUserContext context) {
         log.info("Reading configuration for device=" + deviceId);
         DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
-        LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
-        inputs.put(CollectionActionInput.SELECTED_COMMAND.name(), "Read Data Streaming Configuration");
-        int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, inputs, deviceCollection,
-            "getconfig behavior rfndatastreaming", CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, null, context);
-        return cacheKey;
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.READ_DATA_STREAMING_CONFIG, null,
+            deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, context);
+        int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+        sendConfiguration(result, new DeviceSummary(deviceCollection), requestSeqNumber, null);
+        return result.getCacheKey();
     }
-        
+    
     @Override
     public CollectionActionResult resend(List<Integer> deviceIds, SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) throws DataStreamingConfigException{
         log.info("Re-sending configuration for devices=" + deviceIds);
@@ -1078,6 +1078,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             CommandRequestType.DEVICE, DeviceRequestType.DATA_STREAMING_CONFIG, context);
         return sendConfiguration(result, summary, requestSeqNumber, alertCallback);
     }
+    
     private CollectionActionResult sendConfiguration(CollectionActionResult result, DeviceSummary summary, int requestSeqNumber , SimpleCallback<CollectionActionResult> alertCallback) {
         List<SimpleDevice> unsupportedDevices = summary.unsupportedDevices;
         List<SimpleDevice> supportedDevices = summary.supportedDevices;
@@ -1137,7 +1138,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
         if (supportedDevices.isEmpty()) {
             callback.complete();
         } else {
-            List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(supportedDevices);
+            List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(supportedDevices, result.getAction());
             porterConn.sendConfiguration(commands, result, callback, result.getContext().getYukonUser());
         }
         updateRequestCount(result.getExecution(), supportedDevices.size());

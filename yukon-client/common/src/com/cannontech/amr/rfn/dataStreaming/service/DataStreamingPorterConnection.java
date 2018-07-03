@@ -14,6 +14,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
@@ -32,6 +33,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 public class DataStreamingPorterConnection {
     private static final Logger log = YukonLogManager.getLogger(DataStreamingPorterConnection.class);
     private static final String sendCommand = "putconfig behavior rfndatastreaming";
+    private static final String readCommand = "getconfig behavior rfndatastreaming";
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private CommandExecutionService commandExecutionService;
 
@@ -39,9 +41,9 @@ public class DataStreamingPorterConnection {
      * Build a list of data streaming configuration commands for the specified devices. Porter will use the
      * configurations currently in the database for those devices.
      */
-    public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices) {
+    public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices, CollectionAction action) {
         List<CommandRequestDevice> commands = devices.stream().map(device -> {
-            return new CommandRequestDevice(sendCommand, device);
+            return new CommandRequestDevice(action == CollectionAction.READ_DATA_STREAMING_CONFIG ? readCommand : sendCommand, device);
         }).collect(Collectors.toList());
 
         return commands;

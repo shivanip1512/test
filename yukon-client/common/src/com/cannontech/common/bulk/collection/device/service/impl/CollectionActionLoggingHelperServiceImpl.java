@@ -79,6 +79,7 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
             logUnassignConfig(result);
             break;
         case CONFIGURE_DATA_STREAMING:
+        case READ_DATA_STREAMING_CONFIG:
             logConfigDataStreaming(result);
             break;
         case REMOVE_DATA_STREAMING:
