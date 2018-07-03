@@ -42,8 +42,20 @@ public class DataStreamingPorterConnection {
      * configurations currently in the database for those devices.
      */
     public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices, CollectionAction action) {
+        String command;
+        switch (action) {
+        case READ_DATA_STREAMING_CONFIG:
+            command = readCommand;
+            break;
+        case CONFIGURE_DATA_STREAMING:
+            command = sendCommand;
+            break;
+        default:
+            throw new UnsupportedOperationException(action.toString());
+            
+        }
         List<CommandRequestDevice> commands = devices.stream().map(device -> {
-            return new CommandRequestDevice(action == CollectionAction.READ_DATA_STREAMING_CONFIG ? readCommand : sendCommand, device);
+            return new CommandRequestDevice(command, device);
         }).collect(Collectors.toList());
 
         return commands;
