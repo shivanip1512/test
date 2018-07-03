@@ -52,7 +52,6 @@ public class DataStreamingPorterConnection {
             break;
         default:
             throw new UnsupportedOperationException(action.toString());
-            
         }
         List<CommandRequestDevice> commands = devices.stream().map(device -> {
             return new CommandRequestDevice(command, device);
