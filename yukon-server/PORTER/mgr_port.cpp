@@ -263,7 +263,7 @@ void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr)
                 //  If the IP or port changed, disconnect
                 if( tempPortTCP->getIPAddress().compare(oldIP) || (tempPortTCP->getIPPort() != oldPort) )
                 {
-                    tempPortTCP->shutdownClose();
+                    tempPortTCP->shutdownClose(CALLSITE);
 
                     CTILOG_INFO(dout, "Port "<< tempPortTCP->getName() <<" reconnecting due to DBChange");
                 }

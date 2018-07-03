@@ -95,7 +95,7 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
     {
         CTILOG_ERROR(dout, "Could not create a Socket for Terminal Server: "<< WSAGetLastError() <<" "<< getName());
 
-        shutdownClose(__FILE__, __LINE__);
+        shutdownClose(CALLSITE);
         status = ClientErrors::TcpConnect;
     }
     else
@@ -132,7 +132,7 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
         {
             CTILOG_ERROR(dout, "Could not connect to Terminal Server: "<< WSAGetLastError() <<" "<< getName());
 
-            shutdownClose(__FILE__, __LINE__);
+            shutdownClose(CALLSITE);
             return ClientErrors::TcpConnect;
         }
         else
@@ -195,7 +195,7 @@ INT CtiPortTCPIPDirect::close(INT trace)
         _dialable->disconnect(CtiDeviceSPtr(), trace);
     }
 
-    return shutdownClose(__FILE__, __LINE__);
+    return shutdownClose(CALLSITE);
 }
 
 YukonError_t CtiPortTCPIPDirect::inClear() const
@@ -321,7 +321,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
 
             if( status )
             {
-                shutdownClose(__FILE__, __LINE__);
+                shutdownClose(CALLSITE);
             }
         }
 
@@ -383,7 +383,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
                 {
                     if(status == ClientErrors::BadSocket)
                     {
-                        shutdownClose(__FILE__, __LINE__);
+                        shutdownClose(CALLSITE);
                     }
                 }
 
@@ -399,7 +399,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
             {
                 if(status == ClientErrors::BadSocket)
                 {
-                    shutdownClose(__FILE__, __LINE__);
+                    shutdownClose(CALLSITE);
                 }
             }
         }
@@ -415,7 +415,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
             {
                 if(status == ClientErrors::BadSocket)
                 {
-                    shutdownClose(__FILE__, __LINE__);
+                    shutdownClose(CALLSITE);
                 }
             }
 
@@ -505,7 +505,7 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
             outClear();
             if( inClear() != ClientErrors::None )
             {
-                shutdownClose(__FILE__, __LINE__);
+                shutdownClose(CALLSITE);
             }
 
             /* Key the radio */
@@ -523,7 +523,7 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
 
             if( sendData(Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
             {
-                shutdownClose(__FILE__, __LINE__);
+                shutdownClose(CALLSITE);
                 status = ClientErrors::PortWrite;
             }
 
@@ -565,7 +565,7 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
 }
 
 
-INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
+INT CtiPortTCPIPDirect::shutdownClose(Cti::CallSite callSite)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
@@ -576,10 +576,7 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
         Cti::StreamBuffer output;
         output <<"Port "<< getName() <<" closing socket "<< _socket;
 
-        if(Label != NULL)
-        {
-            output <<" from "<< Label <<" ("<< Line <<")";
-        }
+        output <<" from "<< callSite.func << " @ " << callSite.file <<" ("<< callSite.line <<")";
 
         CTILOG_INFO(dout, output)
 
@@ -657,7 +654,7 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
         if((*ReceiveLength = recv(_socket, (CHAR*)Message, Length, 0)) <= 0)
         {
             const int error = WSAGetLastError();
-            shutdownClose(__FILE__, __LINE__);
+            shutdownClose(CALLSITE);
             CTILOG_ERROR(dout, "Read from Terminal Server failed: "<< error);
             return ClientErrors::TcpRead;
         }
@@ -690,7 +687,7 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
         if((*ReceiveLength = recv(_socket, (CHAR*)Message, -Length, 0)) <= 0)
         {
             const int error = WSAGetLastError();
-            shutdownClose(__FILE__, __LINE__);
+            shutdownClose(CALLSITE);
             CTILOG_ERROR(dout, "Read from Terminal Server failed: "<< error);
 
             return ClientErrors::TcpRead;
@@ -715,7 +712,7 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
     if( (bytesSent = send (_socket, (CHAR*)Message, Length, 0)) == SOCKET_ERROR )
     {
         const int error = WSAGetLastError();
-        shutdownClose(__FILE__, __LINE__);
+        shutdownClose(CALLSITE);
 
         CTILOG_ERROR(dout, "Could not send message to Terminal Server: "<< error);
 
@@ -804,7 +801,7 @@ bool CtiPortTCPIPDirect::isViable()
 
     if( isSocketBroken() )
     {
-        shutdownClose(__FILE__, __LINE__);
+        shutdownClose(CALLSITE);
     }
 
     return _socket != INVALID_SOCKET;

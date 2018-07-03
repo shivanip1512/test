@@ -55,7 +55,7 @@ public:
    virtual INT writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten);
    virtual INT readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead);
 
-   INT shutdownClose(PCHAR Label = NULL, ULONG Line = 0);
+   INT shutdownClose(Cti::CallSite callSite);
    YukonError_t receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength);
    INT sendData(PBYTE Message, ULONG Length, PULONG Written);
 };
