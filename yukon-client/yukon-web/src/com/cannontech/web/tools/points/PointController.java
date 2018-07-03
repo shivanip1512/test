@@ -156,10 +156,18 @@ public class PointController {
                     "yukon.common.copyof", copyPointModel.getPointName()));
                 copyPointModel.setPointName(newPointName);
                 
-                // set next valid physical offset.
-                int pointOffset = PointOffsetUtils.getValidPointOffset(copyPointModel.getPaoId(), copyPointModel.getPointType());
-                copyPointModel.setPointOffset(pointOffset);
-                
+                boolean isCalcType = false;
+                if (copyPointModel.getPointType().isCalcPoint()) {
+                    isCalcType = true;
+                    // calculated type points should have no point offset.
+                    copyPointModel.setPointOffset(0);
+                } else {
+                    // set next valid physical offset.
+                    int pointOffset =
+                        PointOffsetUtils.getValidPointOffset(copyPointModel.getPaoId(), copyPointModel.getPointType());
+                    copyPointModel.setPointOffset(pointOffset);
+                }
+                model.addAttribute("isCalcType", isCalcType);
                 model.addAttribute("copyPointModel", copyPointModel);
                 
                 // Add paoType to model

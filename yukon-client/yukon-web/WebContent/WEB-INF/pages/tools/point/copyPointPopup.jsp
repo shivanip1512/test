@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -30,17 +31,19 @@
                                    destinationFieldId="paoId"
                                    allowEmptySelection="false"/>
             </tags:nameValue2>
-            
-            <input type="hidden" id="isPhysicalOffset" value="${copyPointModel.physicalOffset}"/>
-            <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
-                <tags:switchButton path="physicalOffset" offClasses="M0"
-                                   toggleGroup="copy-point-physicalOffset" toggleAction="hide" 
-                                   offNameKey=".physicalOffset.pseudo" id="copy-point-physicalOffset-toggle"/>
 
-                <%-- The physical offset value within the current device or parent this point belongs to --%>
-                <tags:input path="pointOffset" size="6" toggleGroup="copy-point-physicalOffset"
-                            id="copy-point-physicalOffset-txt" displayValidationToRight="true"/>
-            </tags:nameValue2>
+            <c:if test = "${not isCalcType}">
+                <input type="hidden" id="isPhysicalOffset" value="${copyPointModel.physicalOffset}"/>
+                <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
+                    <tags:switchButton path="physicalOffset" offClasses="M0"
+                                       toggleGroup="copy-point-physicalOffset" toggleAction="hide" 
+                                       offNameKey=".physicalOffset.pseudo" id="copy-point-physicalOffset-toggle"/>
+
+                    <%-- The physical offset value within the current device or parent this point belongs to --%>
+                    <tags:input path="pointOffset" size="6" toggleGroup="copy-point-physicalOffset"
+                                id="copy-point-physicalOffset-txt" displayValidationToRight="true"/>
+                </tags:nameValue2>
+            </c:if>
         </tags:nameValueContainer2>
     </form:form>
 </cti:msgScope>
