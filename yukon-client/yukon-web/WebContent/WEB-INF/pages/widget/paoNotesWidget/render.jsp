@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -47,15 +46,13 @@
                                 </div>
                                 <c:if test="${not empty recentNote.paoNote.editDate}">
                                     <div class="small-font-orange-color-text fr">
-                                        <fmt:formatDate var="editDate" type="both" dateStyle="short" timeStyle="short" 
-                                                        value="${recentNote.paoNote.editDateAsUtilDate}"/>
+                                        <cti:formatDate type="BOTH" value="${recentNote.paoNote.editDate}" var="editDate"/>
                                         <i:inline key=".editedBy"/> ${fn:escapeXml(recentNote.paoNote.editUserName)} - ${editDate}
                                     </div>
                                 </c:if>
                                 <br>
                                 <div class="fr small-font-gray-color-text">
-                                    <fmt:formatDate var="createDate" type="both" dateStyle="short" timeStyle="short" 
-                                                    value="${recentNote.paoNote.createDateAsUtilDate}"/>
+                                    <cti:formatDate type="BOTH" value="${recentNote.paoNote.createDate}" var="createDate"/>
                                     ${fn:escapeXml(recentNote.paoNote.createUserName)} - ${createDate}
                                 </div>
                             </div>
