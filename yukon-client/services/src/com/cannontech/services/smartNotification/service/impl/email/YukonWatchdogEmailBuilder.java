@@ -95,7 +95,7 @@ public class YukonWatchdogEmailBuilder extends SmartNotificationEmailBuilder {
         if (events.size() == 1) {
             SmartNotificationEvent event = events.get(0);
             WatchdogWarningType warningType = WatchdogAssembler.getWarningType(event.getParameters());
-            argumentList.add(warningType.getWatchdogName());
+            argumentList.add(warningType);
         } else {
             argumentList.add(events.size());
         }
