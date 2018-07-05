@@ -2,6 +2,7 @@ package com.cannontech.watchdogs.impl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
@@ -35,7 +36,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
             URL url = new URL(webServerUrl);
             log.debug("Web server url " + webServerUrl);
 
-            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
             httpConn.setReadTimeout(5000); // 5 sec for timeout
             httpConn.connect();
             log.debug("Response code from web server " + httpConn.getResponseCode());
