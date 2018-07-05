@@ -165,14 +165,26 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                     {
                         if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
                         {
-                            e2edt_packet replyPacket;
+                            std::vector<unsigned char> e2edtReply;
 
-                            replyPacket.id      = e2edtRequest->id;
-                            replyPacket.token   = e2edtRequest->token;
-                            replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
-                            replyPacket.status  = COAP_RESPONSE_205_CONTENT;
+                            //  Request Unacceptable
+                            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
+                            {
+                                CTILOG_INFO(dout, "Sending E2E Request Unacceptable for " << requestMsg->rfnIdentifier);
 
-                            auto e2edtReply = buildE2eDtReplyPayload(replyPacket);
+                                e2edtReply = buildE2eRequestNotAcceptable(e2edtRequest->id);
+                            }
+                            else
+                            {
+                                e2edt_packet replyPacket;
+
+                                replyPacket.id = e2edtRequest->id;
+                                replyPacket.token = e2edtRequest->token;
+                                replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
+                                replyPacket.status = COAP_RESPONSE_205_CONTENT;
+
+                                e2edtReply = buildE2eDtReplyPayload(replyPacket);
+                            }
 
                             sendE2eDataIndication(*requestMsg, e2edtReply);
                         }
@@ -334,13 +346,6 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
 
 std::vector<unsigned char> E2eSimulator::buildRfnResponse(const std::vector<unsigned char> &request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId)
 {
-    //  Request Unacceptable
-    if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
-    {
-        CTILOG_INFO(dout, "Sending E2E Request Unacceptable for " << rfnId);
-        return buildE2eRequestNotAcceptable();
-    }
-
     switch( applicationServiceId )
     {
         case static_cast<unsigned char>(ApplicationServiceIdentifiers::ChannelManager):
