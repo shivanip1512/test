@@ -298,6 +298,17 @@ std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_pack
 }
 
 
+std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned id) const
+{
+    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_406_NOT_ACCEPTABLE, id, COAP_MAX_PDU_SIZE));
+
+    const unsigned char *raw_reply_pdu = reinterpret_cast<unsigned char *>(reply_pdu->hdr);
+
+    return { raw_reply_pdu,
+        raw_reply_pdu + reply_pdu->length };
+}
+
+
 void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, const std::vector<unsigned char>& payload)
 {
     E2eDataIndicationMsg indication;
@@ -323,6 +334,13 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
 
 std::vector<unsigned char> E2eSimulator::buildRfnResponse(const std::vector<unsigned char> &request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId)
 {
+    //  Request Unacceptable
+    if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
+    {
+        CTILOG_INFO(dout, "Sending E2E Request Unacceptable for " << rfnId);
+        return buildE2eRequestNotAcceptable();
+    }
+
     switch( applicationServiceId )
     {
         case static_cast<unsigned char>(ApplicationServiceIdentifiers::ChannelManager):
@@ -336,6 +354,7 @@ std::vector<unsigned char> E2eSimulator::buildRfnResponse(const std::vector<unsi
                         return RfnMeter::DataStreamingConfig(request, rfnId);
                 }
             }
+            break;
         }
         case static_cast<unsigned char>(ApplicationServiceIdentifiers::HubMeterCommandSet):
         {
@@ -347,8 +366,10 @@ std::vector<unsigned char> E2eSimulator::buildRfnResponse(const std::vector<unsi
                         return RfDa::Dnp3Address(request, rfnId);
                 }
             }
+            break;
         }
     }
+
     return {};
 }
 
