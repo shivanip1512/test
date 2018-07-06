@@ -7,6 +7,7 @@
 #include "boostutil.h"
 #include "critical_section.h"
 #include "streamBuffer.h"
+#include "CallSite.h"
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -30,14 +31,10 @@ class IM_EX_CTIBASE Logger : private boost::noncopyable
     friend class LogManager;
 
     struct LoggerObj; // forward declaration
-    boost::scoped_ptr<LoggerObj> _logger;
-
-    typedef std::map<const char *, std::string> MethodLookup;
-     MethodLookup      _formattedMethodNames;
-    CtiCriticalSection _formattedMethodNameMux;
+    std::unique_ptr<LoggerObj> _logger;
 
     struct LogEvent;  // forward declaration
-    boost::ptr_vector<LogEvent> _preBufferedLogEvents;
+    std::vector<std::unique_ptr<LogEvent>> _preBufferedLogEvents;
     CtiCriticalSection          _preBufferMux;
 
     const char * const _newline;
@@ -60,7 +57,7 @@ public:
         Trace,
     };
 
-    void formatAndForceLog (Level level, StreamBufferSink& logStream, const char* file, const char* func, int line);
+    void formatAndForceLog (Level level, StreamBufferSink& logStream, const Cti::CallSite callSite);
     bool isLevelEnable     (Level level) const;
     void poke();
 };
@@ -114,7 +111,7 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
         if( logger->isLevelEnable(level) ) { \
             Cti::StreamBufferSink logStream_; \
             logStream_ << message; \
-            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+            logger->formatAndForceLog(level, logStream_, CALLSITE); \
         }}
 
 #define CTILOG_FATAL(logger, message) CTILOG_LOG(Cti::Logging::Logger::Fatal, logger, message)
@@ -134,7 +131,7 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
             if( ! cause_.empty() ) { \
                 logStream_ <<" - "<< cause_; \
             } \
-            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+            logger->formatAndForceLog(level, logStream_, CALLSITE); \
         }}
 
 #define CTILOG_EXCEPTION_LOG_4(level, logger, ex, message) { \
@@ -145,7 +142,7 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
             if( ! cause_.empty() ) { \
                 logStream_ <<" - "<< cause_; \
             } \
-            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+            logger->formatAndForceLog(level, logStream_, CALLSITE); \
         }}
 
 #define CTILOG_EXCEPTION_LOG(...) \
@@ -161,14 +158,14 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
         if( logger->isLevelEnable(level) ) { \
             Cti::StreamBufferSink logStream_; \
             logStream_ <<"caused by "<< Cti::Logging::getUnknownExceptionCause(); \
-            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+            logger->formatAndForceLog(level, logStream_, CALLSITE); \
         }}
 
 #define CTILOG_UNKNOWN_EXCEPTION_LOG_3(level, logger, message) { \
         if( logger->isLevelEnable(level) ) { \
             Cti::StreamBufferSink logStream_; \
             logStream_ << message <<"\ncaused by "<< Cti::Logging::getUnknownExceptionCause(); \
-            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+            logger->formatAndForceLog(level, logStream_, CALLSITE); \
         }}
 
 #define CTILOG_UNKNOWN_EXCEPTION_LOG(...) \
@@ -181,12 +178,12 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
 #define CTILOG_ENTRY(logger, message) \
     Cti::StreamBufferSink logStream_; \
     logStream_ << message; \
-    Cti::Logging::LogMethodEntry<int> log_entry(logger, __FUNCTION__, logStream_.extractToString(), __FILE__, __FUNCSIG__, __LINE__);
+    Cti::Logging::LogMethodEntry<int> log_entry(logger, logStream_.extractToString(), CALLSITE);
 
 #define CTILOG_ENTRY_RC(logger, message, rc) \
     Cti::StreamBufferSink logStream_; \
     logStream_ << message; \
-    Cti::Logging::LogMethodEntry<decltype(rc)> log_entry(logger, __FUNCTION__, logStream_.extractToString(), __FILE__, __FUNCSIG__, __LINE__, rc);
+    Cti::Logging::LogMethodEntry<decltype(rc)> log_entry(logger, logStream_.extractToString(), CALLSITE, rc);
 
 namespace Cti {
     namespace Logging {
@@ -194,46 +191,35 @@ namespace Cti {
         class LogMethodEntry
         {
             Cti::Logging::LoggerPtr logger;
-            const char* func;
-            const char* func_sig;
-            const char* file;
-            int line;
+            const CallSite callSite;
             bool rcDefined = false;
             RC rc;
 
         public:
-            LogMethodEntry(Cti::Logging::LoggerPtr logger, const char* func, std::string message, char *file, char *func_sig, int line)
+            LogMethodEntry(Cti::Logging::LoggerPtr logger, std::string message, CallSite callSite_) : callSite { callSite_ }
             {
                 if(logger == nullptr || !logger->isLevelEnable(Cti::Logging::Logger::Trace)) return;
 
                 this->logger = logger;
-                this->func = func;
-                this->func_sig = func_sig;
-                this->file = file;
-                this->line = line;
 
                 Cti::StreamBufferSink logStream;
-                logStream << "Entry " << func << "(" << message << ")";
+                logStream << "Entry " << callSite.getFunc() << "(" << message << ")";
 
-                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, file, func_sig, line);
+                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, callSite);
             }
 
-            LogMethodEntry(Cti::Logging::LoggerPtr logger, const char* func, std::string message, char *file, char *func_sig, int line, RC &rc)
+            LogMethodEntry(Cti::Logging::LoggerPtr logger, std::string message, CallSite callSite_, RC &rc) : callSite{ callSite_ }
             {
                 if(logger == nullptr || !logger->isLevelEnable(Cti::Logging::Logger::Trace)) return;
 
                 this->logger = logger;
-                this->func = func;
-                this->func_sig = func_sig;
-                this->file = file;
-                this->line = line;
                 this->rc = rc;
                 rcDefined = true;
 
                 Cti::StreamBufferSink logStream;
-                logStream << "Entry " << func << "(" << message << ")";
+                logStream << "Entry " << callSite.getFunc() << "(" << message << ")";
 
-                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, file, func_sig, line);
+                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, callSite);
             }
 
             ~LogMethodEntry()
@@ -244,13 +230,13 @@ namespace Cti {
 
                 if(rcDefined)
                 {
-                    logStream << "Exit " << func << "() rc=" << rc;
+                    logStream << "Exit " << callSite.getFunc() << "() rc=" << rc;
                 }
                 else
                 {
-                    logStream << "Exit " << func << "()";
+                    logStream << "Exit " << callSite.getFunc() << "()";
                 }
-                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, file, func_sig, line);
+                logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, callSite);
             }
         };
     }

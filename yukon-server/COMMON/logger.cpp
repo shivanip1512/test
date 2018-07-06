@@ -37,39 +37,6 @@ log4cxx::LevelPtr getLogLevel(Logger::Level levelIn)
     return levelOut;
 }
 
-/**
- *  Preformat the method name to avoid bad logging.
- *  The formatting will be completed by log4cxx::LocationInfo::getMethodName()
- *
- *  Example:
- *  "void __cdecl Cti::foobar(const BazQuux &)"
- *  will be formatted to:
- *  "::Cti::foobar(const BazQuux &)"
- *
- *  formatting done by log4cxx::LocationInfo::getMethodName() removes the initial double colons "::"
- *  and arguments:
- *  "Cti::foobar"
- */
-std::string preformatMethodName(const char * func)
-{
-    std::string methodName(func);
-    const size_t parenPos = methodName.find('(');
-    const size_t spacePos = methodName.rfind(' ', parenPos);
-    if( spacePos != std::string::npos )
-    {
-        if( methodName.compare(spacePos+1, 2, "::") == 0)
-        {
-            methodName.erase(0, spacePos+1);
-        }
-        else
-        {
-            methodName.replace(0, spacePos+1, "::");
-        }
-    }
-
-    return methodName;
-}
-
 } // namespace anonymous
 
 struct Logger::LoggerObj
@@ -115,7 +82,7 @@ struct minute_tz
 
 std::atomic<minute_tz> currentTz { minute_tz{ 1'000'000, { 0 } } };
 
-void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const char* file, const char* func, int line)
+void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const CallSite callSite)
 {
     if( LogManager::inShutdown )
     {
@@ -133,21 +100,6 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
     boost::replace_all(message, "\n", _newline);
 
     LOG4CXX_DECODE_CHAR(msg, message);
-
-    const char *methodName = 0;
-
-    {
-        CtiLockGuard<CtiCriticalSection> guard(_formattedMethodNameMux);
-
-        MethodLookup::iterator itr = _formattedMethodNames.find(func);
-
-        if( itr == _formattedMethodNames.end() )
-        {
-            itr = _formattedMethodNames.insert(make_pair(func, preformatMethodName(func))).first;
-        }
-
-        methodName = itr->second.c_str();
-    }
 
     auto tz = currentTz.load();
     const unsigned quarterHours = std::time(nullptr) / 900 % 1'000'000;  //  around 3 years of quarter-hours before wraparound
@@ -173,7 +125,7 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
                     _logger->_logger->getName(),
                     getLogLevel(level),
                     msg,
-                    log4cxx::spi::LocationInfo(trimPath(file), methodName, line));
+                    log4cxx::spi::LocationInfo(callSite.getFile(), callSite.getFunc(), callSite.getLine()));
     
     event->getMDCCopy();
 
@@ -187,7 +139,7 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
             {
                 // no appenders are available, the logManager has not been started yet.
                 // save the logging event for later!
-                std::unique_ptr<LogEvent> logEvent(new LogEvent());
+                auto logEvent = std::make_unique<LogEvent>();
 
                 logEvent->event = event;
 
@@ -199,9 +151,9 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
             // the logManager has just been started!
             // log all saved events before logging the new event
             log4cxx::helpers::Pool pool;
-            for each(const LogEvent& event in _preBufferedLogEvents)
+            for( const auto & event : _preBufferedLogEvents )
             {
-                _logger->_logger->callAppenders(event.event, pool);
+                _logger->_logger->callAppenders(event->event, pool);
             }
 
             _preBufferedLogEvents.clear();

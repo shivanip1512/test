@@ -453,7 +453,7 @@ void CtiCalculateThread::onUpdateThread( void )
     }
 }
 
-bool wasPausedOrInterrupted(Cti::CalcLogic::CalcWorkerThread &thread, const size_t previousPauseCount, const Cti::CallSite cs)
+bool wasPausedOrInterrupted(Cti::CalcLogic::CalcWorkerThread &thread, const size_t previousPauseCount, const Cti::CallSite callSite)
 {
     //  This will throw if we've been interrupted or terminated.
     Cti::WorkerThread::interruptionPoint();
@@ -462,7 +462,7 @@ bool wasPausedOrInterrupted(Cti::CalcLogic::CalcWorkerThread &thread, const size
 
     if( previousPauseCount < currentPauseCount )
     {
-        CTILOG_WARN(dout, "Called from " << cs.func << ":" << cs.file << ":" << cs.line << " - "
+        CTILOG_WARN(dout, "Called from " << callSite << " - "
             << "Thread was paused since calculation began"
             " (previousPauseCount < currentPauseCount; "
             << previousPauseCount << " < " << currentPauseCount << ")"

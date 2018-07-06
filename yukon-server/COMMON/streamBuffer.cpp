@@ -170,6 +170,17 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 }
 
 template<class StreamBufferT>
+StreamBufferT& StreamBufferBase<StreamBufferT>::operator<<(const Cti::CallSite cs)
+{
+    appendCString(cs.getFunc());
+    appendCString("@");
+    appendCString(cs.getFile());
+    appendCString(":");
+    appendDigit(cs.getLine());
+    return static_cast<StreamBufferT&>(*this);
+}
+
+template<class StreamBufferT>
 StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const Cti::Loggable& loggable)
 {
     swapOrAppend(loggable.toString());

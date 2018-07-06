@@ -5,43 +5,52 @@
 #include "dllbase.h"
 
 template<class T>
-void CtiLockGuard<T>::acquireLock( T& resource, unsigned long millis, char *resourceName, char *file, char *func, int line )
+void CtiLockGuard<T>::acquireLock( unsigned long millis )
 {
-    _file = file;
-    _func = func;
-    _line = line;
-    _resourceName = resourceName;
-
-    if( file != 0 && (DebugLevel & DEBUGLEVEL_GUARD) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    if( _callSite.getLine() && (DebugLevel & DEBUGLEVEL_GUARD) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {
         Cti::StreamBufferSink logStream_;
         logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
         logStream_ << " owned by " << std::hex << _res.lastAcquiredByTID();
         // We call formatAndForceLog directly so that we can insert the caller's context
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _callSite );
     }
 
     _acquired = _res.acquire(millis);
 
-    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    if( _callSite.getLine() && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {
         Cti::StreamBufferSink logStream_;
         logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _callSite );
     }
 }
 
 template<class T>
-CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char *func, int line ) : _res( resource )
+CtiLockGuard<T>::CtiLockGuard(T& resource) : CtiLockGuard(resource, nullptr, { "(null)", "(null)", 0 })
+{
+}
+
+template<class T>
+CtiLockGuard<T>::CtiLockGuard(T& resource, unsigned long millis) : CtiLockGuard(resource, millis, nullptr, { "(null)", "(null)", 0 })
+{
+}
+
+template<class T>
+CtiLockGuard<T>::CtiLockGuard(T& resource, Cti::CallSite callSite) : CtiLockGuard(resource, nullptr, callSite)
+{
+}
+
+template<class T>
+CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, Cti::CallSite callSite ) : _res( resource ), _resourceName( resourceName ), _callSite( callSite )
 {
     static bool hasDumped = false;
 
-    while (acquireLock(resource, 900000, resourceName, file, func, line), _acquired == 0)  //  try to acquire for up to 15 minutes
+    while (acquireLock(900000), _acquired == 0)  //  try to acquire for up to 15 minutes
     {
         CTILOG_WARN(dout, "guard is unable to lock " << (_resourceName!=0?_resourceName:"resource") 
             << " FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
-        CTILOG_WARN(dout, "Acquiring lock from " << (func != nullptr ? func : "(null)") 
-            << ":" << (file != nullptr ? file : "(null)") << ":" << line);
+        CTILOG_WARN(dout, "Acquiring lock from " << _callSite);
 
         if( !hasDumped )
         {
@@ -57,9 +66,9 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, char *file, char
 }
 
 template<class T>
-CtiLockGuard<T>::CtiLockGuard( T& resource, unsigned long millis, char *resourceName, char *file, char *func, int line ) : _res( resource )
+CtiLockGuard<T>::CtiLockGuard( T& resource, unsigned long millis, char *resourceName, Cti::CallSite callSite ) : _res( resource ), _resourceName(resourceName), _callSite(callSite)
 {
-    acquireLock(resource, millis, resourceName, file, func, line);
+    acquireLock(millis);
 }
 
 template<class T>
@@ -70,12 +79,12 @@ CtiLockGuard<T>::~CtiLockGuard()
 
     _acquired = false;
 
-    if( _file != 0 && (DebugLevel & DEBUGLEVEL_GUARD) &&  dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    if( _callSite.getLine() && (DebugLevel & DEBUGLEVEL_GUARD) &&  dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {
         Cti::StreamBufferSink logStream_;
         logStream_ << "Released lock for " << _resourceName << " @ " << std::hex << &_res;
         // We call formatAndForceLog directly so that we can insert the caller's context
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        dout->formatAndForceLog(Cti::Logging::Logger::Debug, logStream_, _callSite );
     }
 }
 
@@ -103,7 +112,7 @@ template class CtiLockGuard<Cti::readers_writer_lock_t>;
 //  Specialization for CtiCriticalSection
 
 template<>
-CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, char *resourceName, char *file, char *func, int line ) : _res( resource )
+CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, char *resourceName, Cti::CallSite callSite ) : _res( resource ), _callSite( callSite )
 {
     //  CtiCriticalSection has an internal timeout controlled by
     //        HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\CriticalSectionTimeout
@@ -111,29 +120,26 @@ CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, ch
     //
     //  See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682608.aspx
     static bool hasDumped = false;
-    _file = file;
-    _func = func;
-    _line = line;
     _resourceName = resourceName;
 
-    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    if( _callSite.getLine() && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {
         Cti::StreamBufferSink logStream_;
         logStream_ << "Acquiring lock for " << _resourceName << " @ " << std::hex << &_res;
         logStream_ << " owned by " << std::hex << _res.lastAcquiredByTID();
         // We call formatAndForceLog directly so that we can insert the caller's context
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _callSite );
     }
 
     _res.acquire();
 
     _acquired = true;
 
-    if( file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    if( _callSite.getLine() && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {
         Cti::StreamBufferSink logStream_;
         logStream_ << "Acquired lock for " << _resourceName << " @ " << std::hex << &_res;
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _callSite);
     }
 }
 
@@ -144,12 +150,22 @@ CtiLockGuard<CtiCriticalSection>::~CtiLockGuard()
 {
     _res.release();
 
-    if( _file != 0 && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
+    if( _callSite.getLine() && ( DebugLevel & DEBUGLEVEL_GUARD ) && dout->isLevelEnable( Cti::Logging::Logger::Debug ) )
     {
         Cti::StreamBufferSink logStream_;
         logStream_ << "Released lock for " << _resourceName << " @ " << std::hex << &_res;
-        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _file, _func, _line );
+        dout->formatAndForceLog( Cti::Logging::Logger::Debug, logStream_, _callSite);
     }
+}
+
+template<>
+CtiLockGuard<CtiCriticalSection>::CtiLockGuard(CtiCriticalSection& resource, Cti::CallSite callSite) : CtiLockGuard(resource, nullptr, callSite)
+{
+}
+
+template<>
+CtiLockGuard<CtiCriticalSection>::CtiLockGuard(CtiCriticalSection& resource) : CtiLockGuard(resource, nullptr, { "", "", 0 })
+{
 }
 
 template<>

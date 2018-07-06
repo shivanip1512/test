@@ -754,7 +754,7 @@ void CtiPointManager::addPoint( CtiPointBase *point )
 }
 
 
-void CtiPointManager::loadPao(const long paoId, const Cti::CallSite cs)
+void CtiPointManager::loadPao(const long paoId, const Cti::CallSite callSite)
 {
     if( ! paoId )
     {
@@ -772,7 +772,7 @@ void CtiPointManager::loadPao(const long paoId, const Cti::CallSite cs)
 
     if( DebugLevel & DEBUGLEVEL_MGR_POINT )
     {
-        CTILOG_DEBUG(dout, "Called from " << cs.func << ":" << cs.file << ":" << cs.line << " - refreshing points for paoid " << paoId);
+        CTILOG_DEBUG(dout, "Called from " << callSite << " - refreshing points for paoid " << paoId);
     }
 
     refreshList(0, paoId);

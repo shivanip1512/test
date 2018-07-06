@@ -349,6 +349,7 @@
     <ClCompile Include="BeatThePeakAlertLevel.cpp">
     </ClCompile>
     <ClCompile Include="boost_assert.cpp" />
+    <ClCompile Include="CallSite.cpp" />
     <ClCompile Include="cmdparse.cpp">
     </ClCompile>
     <ClCompile Include="connectionHandle.cpp" />
@@ -521,6 +522,7 @@
     <ClInclude Include="include\boost_test_helpers.h" />
     <ClInclude Include="include\boost_time.h" />
     <ClInclude Include="include\boostutil.h" />
+    <ClInclude Include="include\CallSite.h" />
     <ClInclude Include="include\cmdparse.h" />
     <ClInclude Include="include\collectable.h" />
     <ClInclude Include="include\COLOR.H" />

@@ -2,6 +2,7 @@
 
 #include "dlldefs.h"
 #include "loggable.h"
+#include "CallSite.h"
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/range/iterator_range.hpp>
@@ -83,6 +84,8 @@ public:
     StreamBufferT& operator<< (const CtiTime& time);
     StreamBufferT& operator<< (const std::chrono::seconds val);
     StreamBufferT& operator<< (const std::chrono::minutes val);
+
+    StreamBufferT& operator<< (const Cti::CallSite cs);
 
     StreamBufferT& operator<< (const Loggable& loggable);
 

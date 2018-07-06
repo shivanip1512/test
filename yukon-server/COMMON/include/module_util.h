@@ -40,22 +40,7 @@ static LONG WINAPI MinidumpExceptionFilter( LPEXCEPTION_POINTERS pExceptionPtrs 
 
 IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter(const Cti::compileinfo_t &info, const LPEXCEPTION_POINTERS &pExceptionPtrs );
 
-struct IM_EX_CTIBASE CallSite
-{
-    CallSite(const char * func, const char * file, const unsigned line);
-
-    const char *func;
-    const char *file;
-    const unsigned line;
-};
-
-//  update __FUNCTION__ to __func__ in VS2015
-#define CALLSITE (::Cti::CallSite{__FUNCTION__, __FILE__, __LINE__})
-
 } // namespace Cti
-
-IM_EX_CTIBASE std::ostream& operator<< (std::ostream&, const Cti::CallSite&);
-IM_EX_CTIBASE Cti::StreamBufferSink& operator<< (Cti::StreamBufferSink &, const Cti::CallSite&);
 
 extern Cti::compileinfo_t CompileInfo;
 

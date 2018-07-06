@@ -132,7 +132,7 @@ void LogLayout::appendFooter(log4cxx::LogString& output, log4cxx::helpers::Pool&
 }
 
 GeneralLogLayout::GeneralLogLayout(const OwnerInfo &ownerInfo) :
-    LogLayout(ownerInfo, LOG4CXX_STR("%d{ISO8601} %X{tz} [%t] %p %M:%F:%L - %m%n"))  //  include date/time, timezone, thread, log level, call site, message, and a newline
+    LogLayout(ownerInfo, LOG4CXX_STR("%d{ISO8601} %X{tz} [%t] %p %C::%M:%F:%L - %m%n"))  //  include date/time, timezone, thread, log level, call site, message, and a newline
 {
 }
 

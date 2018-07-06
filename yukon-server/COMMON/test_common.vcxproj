@@ -335,6 +335,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="boost_assert.cpp" />
+    <ClCompile Include="test_CallSite.cpp" />
     <ClCompile Include="test_DeviceAttributeLookup.cpp" />
     <ClCompile Include="test_cmdparse.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp14</LanguageStandard>

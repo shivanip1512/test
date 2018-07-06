@@ -270,6 +270,9 @@
     <ClCompile Include="error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CallSite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">
@@ -654,6 +657,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\DeviceCreationDescriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CallSite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

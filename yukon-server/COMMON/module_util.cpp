@@ -12,13 +12,6 @@ using std::endl;
 
 namespace Cti {
 
-CallSite::CallSite(const char * func_, const char * file_, const unsigned line_) 
-    :   func { func_ },
-        file { trimPath(file_) },
-        line { line }
-{
-}
-
 void identifyProject(const compileinfo_t &info)
 {
     if( isDebugLudicrous() && info.date )
@@ -190,15 +183,3 @@ IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter( const Cti::compileinfo_t &inf
 
 
 } // namespace Cti
-
-IM_EX_CTIBASE std::ostream &operator<<(std::ostream &o, const Cti::CallSite &cs)
-{
-    return o << " (called from " << cs.func << ":" << cs.file << ":" << cs.line << ")";
-}
-
-IM_EX_CTIBASE Cti::StreamBufferSink &operator<<(Cti::StreamBufferSink  &o, const Cti::CallSite &cs)
-{
-    return o << " (called from " << cs.func << ":" << cs.file << ":" << cs.line << ")";
-}
-
-

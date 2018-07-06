@@ -576,7 +576,7 @@ INT CtiPortTCPIPDirect::shutdownClose(Cti::CallSite callSite)
         Cti::StreamBuffer output;
         output <<"Port "<< getName() <<" closing socket "<< _socket;
 
-        output <<" from "<< callSite.func << " @ " << callSite.file <<" ("<< callSite.line <<")";
+        output <<" from "<< callSite;
 
         CTILOG_INFO(dout, output)
 

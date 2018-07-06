@@ -550,11 +550,11 @@ YukonError_t CtiConnection::WriteConnQue(CtiMessage *QEnt, ::Cti::CallSite cs, u
  * @param timeout timeout in millisec, if the queue is full
  * @return NORMAL if the message is queued, QUEUE_WRITE if there was a timeout
  */
-YukonError_t CtiConnection::WriteConnQue(std::unique_ptr<CtiMessage> msg, ::Cti::CallSite cs, unsigned timeoutMillis)
+YukonError_t CtiConnection::WriteConnQue(std::unique_ptr<CtiMessage> msg, ::Cti::CallSite callSite, unsigned timeoutMillis)
 {
     if( ! msg )
     {
-        CTILOG_ERROR(dout, who() << "WriteConnQue: Caller passed in null pointer from " << cs.func << ":" << cs.file << ":" << cs.line);
+        CTILOG_ERROR(dout, who() << "WriteConnQue: Caller passed in null pointer from " << callSite);
     }
 
     if( ! isConnectionUsable() )
