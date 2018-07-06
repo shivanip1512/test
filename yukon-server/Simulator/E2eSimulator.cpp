@@ -144,35 +144,43 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                 return;
             }
 
-            float delay = dist(rd) * gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_DELAY_SECONDS");
+            float delay = dist(rd) * gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_DELAY_SECONDS", 3);
 
             std::async(std::launch::async,
-                [this](float delay, std::unique_ptr<E2eDataRequestMsg>&& requestMsg) {
+                [this](float delay, E2eDataRequestMsg requestMsg) {
 
                     CTILOG_INFO(dout, "Delaying " << delay << " seconds");
                     Sleep(delay * 1000);
 
-                    sendE2eDataConfirm(*requestMsg);
+                    sendE2eDataConfirm(requestMsg);
 
                     //  E2E timeout
                     if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
                     {
-                        CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg->rfnIdentifier);
+                        CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg.rfnIdentifier);
                         return;
                     }
 
-                    if( isAsid_E2eDt(requestMsg->applicationServiceId) )
+                    if( isAsid_E2eDt(requestMsg.applicationServiceId) )
                     {
-                        if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
+                        if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg.payload, requestMsg.rfnIdentifier) )
                         {
                             std::vector<unsigned char> e2edtReply;
 
                             //  Request Unacceptable
                             if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
                             {
-                                CTILOG_INFO(dout, "Sending E2E Request Unacceptable for " << requestMsg->rfnIdentifier);
+                                CTILOG_INFO(dout, "Sending E2E Request Not Acceptable for " << requestMsg.rfnIdentifier);
 
                                 e2edtReply = buildE2eRequestNotAcceptable(e2edtRequest->id);
+
+                                sendE2eDataIndication(requestMsg, e2edtReply);
+
+                                CTILOG_INFO(dout, "Delaying 4 seconds for E2E Request Not Acceptable repeat");
+
+                                Sleep(4000);
+
+                                CTILOG_INFO(dout, "Sending E2E Request Not Acceptable repeat");
                             }
                             else
                             {
@@ -180,33 +188,33 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
                                 replyPacket.id = e2edtRequest->id;
                                 replyPacket.token = e2edtRequest->token;
-                                replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
+                                replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg.applicationServiceId, requestMsg.rfnIdentifier);
                                 replyPacket.status = COAP_RESPONSE_205_CONTENT;
 
                                 e2edtReply = buildE2eDtReplyPayload(replyPacket);
                             }
 
-                            sendE2eDataIndication(*requestMsg, e2edtReply);
+                            sendE2eDataIndication(requestMsg, e2edtReply);
                         }
                         else
                         {
-                            CTILOG_INFO(dout, "Could not parse E2EDT request for " << requestMsg->rfnIdentifier);
+                            CTILOG_INFO(dout, "Could not parse E2EDT request for " << requestMsg.rfnIdentifier);
                         }
                     }
-                    else if( isAsid_Dnp3(requestMsg->applicationServiceId) )
+                    else if( isAsid_Dnp3(requestMsg.applicationServiceId) )
                     {
-                        auto dnp3Response = buildDnp3Response(requestMsg->payload);
+                        auto dnp3Response = buildDnp3Response(requestMsg.payload);
 
                         if( ! dnp3Response.empty() )
                         {
-                            sendE2eDataIndication(*requestMsg, dnp3Response);
+                            sendE2eDataIndication(requestMsg, dnp3Response);
                         }
                         else
                         {
-                            CTILOG_INFO(dout, "Not sending DNP3 response for " << requestMsg->rfnIdentifier);
+                            CTILOG_INFO(dout, "Not sending DNP3 response for " << requestMsg.rfnIdentifier);
                         }
                     }
-                }, delay, std::move(requestMsg));
+                }, delay, *requestMsg);
         }
     }
 }
