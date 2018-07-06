@@ -273,7 +273,14 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         
         // parentId would still be null if no parent was specified.
         if (parentId != null) {
-            capbankControllerDao.assignController(parentId, paoId);
+            try {
+                capbankControllerDao.assignController(parentId, paoId);
+            } catch (NotFoundException ex) {
+                if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL) {
+                    results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
+                    return;
+                }
+            }
         }
 
         results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.SUCCESS));
@@ -397,7 +404,14 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         int paoId = template.getPaObjectId();
         
         if (parentId != null) {
-            capbankControllerDao.assignController(parentId, paoId);
+            try {
+                capbankControllerDao.assignController(parentId, paoId);
+            } catch (NotFoundException ex) {
+                if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL) {
+                    results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
+                    return;
+                }
+            }
         }
 
         results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.SUCCESS));
@@ -493,7 +507,14 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             capbankControllerDao.unassignController(yukonPao.getPaoIdentifier().getPaoId());
         }
         if (parentId != null) {
-            capbankControllerDao.assignController(parentId, yukonPao.getPaoIdentifier().getPaoId());
+            try {
+                capbankControllerDao.assignController(parentId, yukonPao.getPaoIdentifier().getPaoId());
+            } catch (NotFoundException ex) {
+                if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL) {
+                    results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
+                    return;
+                }
+            }
         }
 
         results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.SUCCESS));
