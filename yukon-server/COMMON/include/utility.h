@@ -300,8 +300,6 @@ inline bool list_contains( const std::list<T> &V, T x )
 
 namespace Cti
 {
-    IM_EX_CTIBASE const char * trimPath(const char * file);
-
     template <class Container>
     inline std::string join(const Container &V, std::string sep)
     {

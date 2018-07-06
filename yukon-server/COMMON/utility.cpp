@@ -32,17 +32,6 @@ using Cti::Database::DatabaseWriter;
 
 static std::atomic_bool bypassDatabase = false;
 
-namespace Cti {
-
-const char * trimPath(const char * file)
-{
-    auto pos = std::strrchr(file, '\\');
-
-    return pos ? pos + 1 : file;
-}
-
-}
-
 void BypassDatabaseForIdGen(Cti::Test::use_in_unit_tests_only&)
 {
     bypassDatabase = true;
