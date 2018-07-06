@@ -39,6 +39,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
+import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,6 +60,8 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             createRowMapper(SmartNotificationEventType.DEVICE_DATA_MONITOR);
     private static final YukonRowMapper<SmartNotificationEventData> createInfrastructureWarningEventDetailRowMapper =
             createRowMapper(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+    private static final YukonRowMapper<SmartNotificationEventData> createWatchdogWarningEventDetailRowMapper =
+            createRowMapperWatchdog(SmartNotificationEventType.YUKON_WATCHDOG);
                 
    
     @PostConstruct
@@ -89,6 +92,20 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         return mapper;
     }
 
+    private static YukonRowMapper<SmartNotificationEventData> createRowMapperWatchdog(final SmartNotificationEventType smartNotificationEventType) {
+        final YukonRowMapper<SmartNotificationEventData> mapper = new YukonRowMapper<SmartNotificationEventData>() {
+            @Override
+            public SmartNotificationEventData mapRow(YukonResultSet rs) throws SQLException {
+                SmartNotificationEventData row = new SmartNotificationEventData();
+                row.setEventId(rs.getInt("EventId"));
+                row.setTimestamp(rs.getInstant("Timestamp"));
+                row.setStatus(rs.getString("Status") != null ? WatchdogWarningType.fromObject(rs.getString("Status")).toString() : "");
+                row.setWarningType(rs.getString("WarningType") != null ? WatchdogWarningType.fromObject(rs.getString("WarningType")).toString() : "");
+                return row;
+            }
+        };
+        return mapper;
+    }
     private static final YukonRowMapper<SmartNotificationEvent> eventMapper = r -> {
         Integer id = r.getInt("EventId");
         Instant timestamp = r.getInstant("Timestamp");
@@ -379,5 +396,74 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             addParameters(events);
         }
         return events;
+    }
+
+    @Override
+    public SearchResults<SmartNotificationEventData> getWatchdogWarningEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange) {
+        DateTime from = dateRange.getMin().withZone(timeZone);
+        DateTime to = dateRange.getMax().withZone(timeZone);
+        
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+        
+        if (sortBy == null) {
+            sortBy = SortBy.TIMESTAMP;
+        }
+        if (direction == null) {
+            direction = Direction.desc;
+        }
+        
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT sne.Timestamp As Timestamp, sne.EventId, sne.Type, snep.WarningType As WarningType, snep.Argument0 As Status ");
+        sql.append("FROM SmartNotificationEvent sne");
+        sql.append("    INNER JOIN ("); 
+        sql.append("        SELECT * FROM (");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
+        sql.append("        ) snep");
+        if (isOracle) {
+            sql.append("        PIVOT ( Max(Value) FOR Name IN ('WarningType' AS WarningType, 'Argument0' As Argument0)) P");
+        } 
+        else {
+            sql.append("        PIVOT ( Max(Value) FOR Name IN (WarningType, Argument0)) P");
+        }
+        sql.append("        ) snep ON sne.EventId = snep.EventId ");
+        sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.YUKON_WATCHDOG);
+        sql.append("    AND Timestamp").gte(from);
+        sql.append("    AND Timestamp").lt(to);
+        sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        
+        PagingResultSetExtractor<SmartNotificationEventData> rse = new PagingResultSetExtractor<>(start, count, createWatchdogWarningEventDetailRowMapper);
+        jdbcTemplate.query(sql, rse);
+        SearchResults<SmartNotificationEventData> retVal = new SearchResults<>();
+        retVal.setBounds(start, count, getWatchdogWarningEventDetailCount(from, to));
+        retVal.setResultList(rse.getResultList());
+        return retVal;
+    }
+
+    @Override
+    public int getWatchdogWarningEventDetailCount(DateTime from, DateTime to) {
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT count(*)");
+        sql.append("FROM SmartNotificationEvent sne");
+        sql.append("    INNER JOIN ("); 
+        sql.append("        SELECT * FROM (");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
+        sql.append("        ) snep");
+        if (isOracle) {
+            sql.append("        PIVOT ( Max(Value) FOR Name IN ('WarningType' AS WarningType)) P");
+        } 
+        else {
+            sql.append("        PIVOT ( Max(Value) FOR Name IN (WarningType)) P");
+        }
+        sql.append("        ) snep ON sne.EventId = snep.EventId ");
+        sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.YUKON_WATCHDOG);
+        sql.append("    AND Timestamp").gte(from);
+        sql.append("    AND Timestamp").lt(to);
+        return jdbcTemplate.queryForInt(sql);
     }
 }

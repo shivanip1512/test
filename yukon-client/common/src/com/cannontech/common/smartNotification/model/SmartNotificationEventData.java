@@ -14,6 +14,7 @@ public class SmartNotificationEventData {
     private String argument3;
     private String type;
     private String deviceName;
+    private String warningType;
     
     public int getMonitorId() {
         return monitorId;
@@ -102,4 +103,13 @@ public class SmartNotificationEventData {
     public void setEventId(int eventId) {
         this.eventId = eventId;
     }
+
+    public String getWarningType() {
+        return warningType;
+    }
+
+    public void setWarningType(String warningType) {
+        this.warningType = warningType;
+    }
+
 }

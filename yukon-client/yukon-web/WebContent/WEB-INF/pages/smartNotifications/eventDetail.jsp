@@ -8,9 +8,9 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="smartNotifications" page="detail">
-
+    <c:set var="infraOrDDMEvent" value="${eventType == 'INFRASTRUCTURE_WARNING' || eventType == 'DEVICE_DATA_MONITOR'}"/>
+    <c:set var="watchdogEvent" value="${eventType == 'YUKON_WATCHDOG'}"/>
     <cti:toJson id="eventsjson" object="${events.resultList}"/>
-    <c:set var="showTypeColumn" value="${eventType == 'INFRASTRUCTURE_WARNING'}"/>
     <c:set var="urlPath" value="/notifications/events/${eventType.urlPath}"/>
     <c:if test="${!empty parameter}">
         <c:set var="urlPath" value="${urlPath}/${parameter}"/>
@@ -23,7 +23,7 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".type">
                         <i:inline key="${eventType.formatKey}"/>
-                        <input type="hidden" name="eventType" value="${eventType}"/>
+                        <input type="hidden" id = "eventType" name="eventType" value="${eventType}"/>
                     </tags:nameValue2>
                     <c:if test="${!empty monitorName}">
                         <tags:nameValue2 nameKey=".monitor">
@@ -68,13 +68,16 @@
     <c:if test="${events.hitCount > 0}">
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
+             <c:if test="${infraOrDDMEvent}">
                 <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
                     <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                         <cti:param name="${cp.key}" value="${cp.value}"/>
                     </c:forEach>
                 </cti:url>
                 <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/> 
+             </c:if>
                 <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
+             <c:if test="${infraOrDDMEvent}">
                 <cti:url var="mapUrl" value="/tools/map">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
@@ -82,76 +85,32 @@
                 <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                     <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                         <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>                
+                    </c:forEach>
                 </cti:url>
-                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>          
+                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>
                 <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
                     <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                         <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>                
-                </cti:url>
+                    </c:forEach>
+                </cti:url>	
                 <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
+             </c:if>
             </cm:dropdown>
         </span>
     </c:if>
 
-    <cti:url var="detailUrl" value="${urlPath}">
-        <cti:param name="startDate" value="${filter.startDate}"/>
-        <cti:param name="endDate" value="${filter.endDate}"/>
-        <c:forEach var="category" items="${filter.categories}">
-            <cti:param name="categories" value="${category}"/>
-        </c:forEach>    
-    </cti:url>
-    
-    <div id="events-detail" data-url="${detailUrl}" data-static>
-        <table class="compact-results-table has-actions row-highlighting">
-            <tr>
-                <tags:sort column="${deviceName}" />
-                <c:if test="${showTypeColumn}">
-                    <tags:sort column="${type}" />
-                </c:if>
-                <tags:sort column="${status}" />
-                <tags:sort column="${timestamp}" />        
-            </tr>
-            <tbody>
-                <c:forEach var="event" items="${events.resultList}">
-                    <tr class="js-event-${event.eventId}">
-                        <td>
-                            <cti:paoDetailUrl paoId="${event.deviceId}" newTab="true">
-                                ${fn:escapeXml(event.deviceName)}
-                            </cti:paoDetailUrl>
-                        </td>
-                        <c:if test="${showTypeColumn}">
-                            <td>${event.type}</td>
-                        </c:if>
-                        <td class="js-status-${event.eventId}">
-                            <c:choose>
-                                <c:when test="${eventType == 'INFRASTRUCTURE_WARNING'}">
-                                    <c:set var="warningColor" value="warning"/>
-                                    <c:if test="${event.severity == 'HIGH'}">
-                                        <c:set var="warningColor" value="error"/>
-                                    </c:if>
-                                    <c:set var="arguments" value="${[event.argument1, event.argument2, event.argument3]}"/>
-                                    <span class="${warningColor}"><cti:msg2 key="yukon.web.widgets.infrastructureWarnings.warningType.${event.status}.${event.severity}" arguments="${arguments}"/></span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span style="text-transform:capitalize"><cti:msg2 key=".${eventType}.${event.status}"/></span>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td class="js-timestamp"><cti:formatDate value="${event.timestamp}" type="FULL"/></td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-        <tags:pagingResultsControls result="${events}" adjustPageCount="true" thousands="true"/>
-    </div>
-               
+    <c:if test="${infraOrDDMEvent}">
+        <jsp:include page="/WEB-INF/pages/smartNotifications/ddmAndInfraWarnEventDetails.jsp" />
+    </c:if>
+
+    <c:if test="${watchdogEvent}">
+        <jsp:include page="/WEB-INF/pages/smartNotifications/watchdogWarningEventDetails.jsp" />
+    </c:if>
+
     <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
-    
+
     <script>
         yukon.smart.notifications.initEventsTimeline();
     </script>
-                
 
 </cti:standardPage>

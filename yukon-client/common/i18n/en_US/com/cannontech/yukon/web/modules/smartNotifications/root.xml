@@ -24,6 +24,7 @@
     <entry key="yukon.web.modules.smartNotifications.detail.pageTitle">Event Detail: {0}</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.dateRange">Date Range</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.deviceName">Device</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.warningType">Warning Type</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.type">Type</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.status">Status</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.timestamp">Timestamp</entry>

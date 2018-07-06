@@ -26,6 +26,7 @@ public interface SmartNotificationEventDao {
         TYPE("DeviceType"),
         STATUS("Status"),
         TIMESTAMP("Timestamp"),
+        WARNING_TYPE("WarningType"),
         ;
         
         private SortBy(String dbString) {
@@ -76,5 +77,12 @@ public interface SmartNotificationEventDao {
     SearchResults<SmartNotificationEventData> getDeviceDataMonitorEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange,
                                                                             int monitorId);
 
-    List<SmartNotificationEvent> getEventsByTypeAndDate(SmartNotificationEventType eventType, Range<Instant> range); 
+    List<SmartNotificationEvent> getEventsByTypeAndDate(SmartNotificationEventType eventType, Range<Instant> range);
+
+    SearchResults<SmartNotificationEventData> getWatchdogWarningEventData(DateTimeZone timeZone, 
+                                                                          PagingParameters paging, 
+                                                                          SortBy sortBy, 
+                                                                          Direction direction, 
+                                                                          Range<DateTime> dateRange);
+    int getWatchdogWarningEventDetailCount(DateTime from, DateTime to);
 }

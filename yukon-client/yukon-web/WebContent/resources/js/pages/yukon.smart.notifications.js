@@ -35,7 +35,8 @@ yukon.smart.notifications = (function () {
             toAdd = [],
             options = {},
             startDateInstant = $('#startInstant').val(),
-            endDateInstant = $('#endInstant').val();
+            endDateInstant = $('#endInstant').val(),
+            eventType = $('#eventType').val();
         
         options.begin = new Date(startDateInstant).getTime();
         options.end = new Date (endDateInstant).getTime();
@@ -46,7 +47,11 @@ yukon.smart.notifications = (function () {
                 eventMessageSpan = $('<span />');
             event.id = event.eventId;
             eventMessageSpan.append('<strong></strong>');
-            eventMessageSpan.find('strong').text(event.deviceName);
+            if (eventType == 'YUKON_WATCHDOG') {
+                 eventMessageSpan.find('strong').text(event.warningType);	
+            } else {
+                 eventMessageSpan.find('strong').text(event.deviceName);
+            }
             event.message = eventMessageSpan.html() + " - " + statusMessage.text();
             event.timestamp = event.timestamp.millis;
             //change the timezone if needed

@@ -146,7 +146,7 @@ public class SmartNotificationsController {
         Range<DateTime> range = new Range<DateTime>(new DateTime(filter.getStartDate()), true, new DateTime(filter.getEndDate()), true);
         SearchResults<SmartNotificationEventData> allDetail = new SearchResults<>();
         model.addAttribute("description", eventType);
-        if (eventType.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
+        if (eventType == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
             int id = Integer.parseInt(parameter);
             eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, id);
             allDetail = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range, id);
@@ -158,7 +158,7 @@ public class SmartNotificationsController {
             sb.append(monitorName);
             sb.append(")");
             model.addAttribute("description", sb.toString());
-        } else if (eventType.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
+        } else if (eventType == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
             InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
             if (filter.getCategories().isEmpty()) {
                 filter.setCategories(Arrays.asList(categories));
@@ -180,6 +180,9 @@ public class SmartNotificationsController {
             }
             eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, allTypes);
             allDetail = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range, allTypes);
+        } else if (eventType == SmartNotificationEventType.YUKON_WATCHDOG) {
+            eventData = eventDao.getWatchdogWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range);
+            allDetail = eventDao.getWatchdogWarningEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range);
         }
         List<SimpleDevice> devices = new ArrayList<>();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
@@ -400,39 +403,72 @@ public class SmartNotificationsController {
     @RequestMapping(value="download", method=RequestMethod.GET)
     public void download(@ModelAttribute("filter") SmartNotificationEventFilter filter, YukonUserContext userContext, 
                           @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, ModelMap model,
-                          String eventType, String parameter, HttpServletResponse response) throws IOException {
+            String eventType, String parameter, HttpServletResponse response) throws IOException {
         SmartNotificationEventType type = SmartNotificationEventType.valueOf(eventType);
-        SearchResults<SmartNotificationEventData> eventData = retrieveEventData(userContext, PagingParameters.EVERYTHING, type, parameter, sorting, filter, model);
-
-        boolean includeTypeRow = type.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+        SearchResults<SmartNotificationEventData> eventData =
+            retrieveEventData(userContext, PagingParameters.EVERYTHING, type, parameter, sorting, filter, model);
+        List<String[]> dataRows = Lists.newArrayList();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = null;
+        if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR
+            || type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
+            headerRow = devicedataMonitorAndInfraWarningData(userContext, dataRows, eventData, type, eventType, accessor);
+        } else if (type == SmartNotificationEventType.YUKON_WATCHDOG) {
+            headerRow = watchdogWarningData(userContext, dataRows, eventData, type, eventType, accessor);
+        }
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "notificationEvents_" + eventType + "_" + now + ".csv");
+    }
+
+    private String[] devicedataMonitorAndInfraWarningData(YukonUserContext userContext, List<String[]> dataRows,
+            SearchResults<SmartNotificationEventData> eventData, SmartNotificationEventType type, String eventType,
+            MessageSourceAccessor accessor) {
+        boolean includeTypeRow = type == SmartNotificationEventType.INFRASTRUCTURE_WARNING;
         String deviceNameHeader = accessor.getMessage(EventSortBy.deviceName);
         String typeHeader = accessor.getMessage(EventSortBy.type);
         String statusHeader = accessor.getMessage(EventSortBy.status);
         String timestampHeader = accessor.getMessage(EventSortBy.timestamp);
-        String[] headerRow = includeTypeRow ? new String[]{deviceNameHeader, typeHeader, statusHeader, timestampHeader} : new String[]{deviceNameHeader, statusHeader, timestampHeader};
+        String[] headerRow =
+            includeTypeRow ? new String[] { deviceNameHeader, typeHeader, statusHeader, timestampHeader }
+                : new String[] { deviceNameHeader, statusHeader, timestampHeader };
 
-        List<String[]> dataRows = Lists.newArrayList();
         for (SmartNotificationEventData event : eventData.getResultList()) {
             String name = event.getDeviceName();
             String deviceType = event.getType();
             String status = event.getStatus();
             if (type.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
-                Object[] arguments = new String[]{event.getArgument1(), event.getArgument2(), event.getArgument3()};
-                status = accessor.getMessage("yukon.web.widgets.infrastructureWarnings.warningType." + status + "." + event.getSeverity(), arguments);
+                Object[] arguments = new String[] { event.getArgument1(), event.getArgument2(), event.getArgument3() };
+                status = accessor.getMessage(
+                    "yukon.web.widgets.infrastructureWarnings.warningType." + status + "." + event.getSeverity(),
+                    arguments);
             } else {
                 status = WordUtils.capitalizeFully(accessor.getMessage(baseKey + eventType + "." + status));
             }
 
             String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
-            String[] dataRow = includeTypeRow ? new String[]{name, deviceType, status, timestamp} : new String[]{name, status, timestamp};
+            String[] dataRow = includeTypeRow ? new String[] { name, deviceType, status, timestamp }
+                : new String[] { name, status, timestamp };
             dataRows.add(dataRow);
         }
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "notificationEvents_" + eventType + "_" + now + ".csv");
-      }
-
+        return headerRow;
+    }
     
+    private String[] watchdogWarningData(YukonUserContext userContext, List<String[]> dataRows,
+            SearchResults<SmartNotificationEventData> eventData, SmartNotificationEventType type, String eventType, MessageSourceAccessor accessor) {
+        String warningTypeHeader = accessor.getMessage(EventSortBy.warningType);
+        String statusHeader = accessor.getMessage(EventSortBy.status);
+        String timestampHeader = accessor.getMessage(EventSortBy.timestamp);
+        String[] headerRow = new String[] { warningTypeHeader, statusHeader, timestampHeader };
+
+        for (SmartNotificationEventData event : eventData.getResultList()) {
+            String warningType = event.getWarningType();
+            String status = event.getStatus();
+            String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
+            String[] dataRow = new String[] { warningType, status, timestamp };
+            dataRows.add(dataRow);
+        }
+        return headerRow;
+    }
     public enum SubscriptionSortBy implements DisplayableEnum {
 
         type,
@@ -452,7 +488,8 @@ public class SmartNotificationsController {
         deviceName(SortBy.DEVICE_NAME),
         type(SortBy.TYPE),
         status(SortBy.STATUS),
-        timestamp(SortBy.TIMESTAMP);
+        timestamp(SortBy.TIMESTAMP),
+        warningType(SortBy.WARNING_TYPE);
         
         private EventSortBy(SortBy value) {
             this.value = value;
