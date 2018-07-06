@@ -276,7 +276,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             try {
                 capbankControllerDao.assignController(parentId, paoId);
             } catch (NotFoundException ex) {
-                if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL) {
+                if (cbcImportData.getCbcType().isLogicalCBC()) {
                     results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
                     return;
                 }
@@ -407,7 +407,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             try {
                 capbankControllerDao.assignController(parentId, paoId);
             } catch (NotFoundException ex) {
-                if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL) {
+                if (cbcImportData.getCbcType().isLogicalCBC()) {
                     results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
                     return;
                 }
@@ -510,7 +510,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             try {
                 capbankControllerDao.assignController(parentId, yukonPao.getPaoIdentifier().getPaoId());
             } catch (NotFoundException ex) {
-                if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL) {
+                if (cbcImportData.getCbcType().isLogicalCBC()) {
                     results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
                     return;
                 }
