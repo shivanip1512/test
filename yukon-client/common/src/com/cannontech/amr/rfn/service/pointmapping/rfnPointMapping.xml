@@ -1955,7 +1955,7 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Power Factor">
+        <point name="Average Power Factor (Quadrants 1 2 4)">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4945,7 +4945,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Sum Power Factor">
+        <point name="Average Power Factor">
             <uom>PF</uom>
             <parseSiPrefix/>
             <modifiers match="equal">

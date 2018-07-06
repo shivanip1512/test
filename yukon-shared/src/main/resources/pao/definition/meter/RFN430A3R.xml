@@ -28,6 +28,7 @@
         <pointInfo name="Amps Phase B" init="true" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Amps Phase C" init="true" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Average Delivered Power Factor" attributes="AVERAGE_DELIVERED_POWER_FACTOR"/>
+        <pointInfo name="Average Power Factor (Quadrants 1 2 4)" attributes="AVERAGE_POWER_FACTOR_Q124"/>
         <pointInfo name="Average Received Power Factor" attributes="AVERAGE_RECEIVED_POWER_FACTOR"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
@@ -58,7 +59,6 @@
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Delivered Power Factor" attributes="DELIVERED_POWER_FACTOR"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Threshold Exceeded Warning" attributes="DEMAND_THRESHOLD_EXCEEDED_WARNING"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>

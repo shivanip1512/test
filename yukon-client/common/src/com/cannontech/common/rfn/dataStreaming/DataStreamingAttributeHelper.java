@@ -354,7 +354,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.DELIVERED_KVAR,  //metric 32
                 BuiltInAttribute.RECEIVED_KVAR,   //metric 33
-                BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
+                BuiltInAttribute.AVERAGE_POWER_FACTOR_Q124,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102

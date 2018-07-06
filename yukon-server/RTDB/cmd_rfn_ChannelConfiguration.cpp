@@ -93,9 +93,9 @@ const MetricInfo metricInfos[] = {
         {  78,  TouRates,  "Average Delivered Power Factor"        },
         {  79,  TouRates,  "Average Received Power Factor"         },
         {  80,  TouRates,  "Power Factor"                          },
-        {  81,  TouRates,  "Power Factor kWh(del)/kVar(del)"       },
-        {  82,  TouRates,  "Power Factor kWh(rec)/kVar(rec)"       },
-        {  83,  TouRates,  "Power Factor kWh(total)/kVar(total)"   },
+        {  81,  TouRates,  "Average Power Factor (Quadrants 1 2 4)"},
+        {  82,  TouRates,  "Average Power Factor (Quadrants 2 3 4)"},
+        {  83,  TouRates,  "Average Power Factor"                  },
 
         { 100,  TouRates,  "Voltage Phase A"                       },
         { 101,  TouRates,  "Voltage Phase B"                       },
@@ -157,17 +157,17 @@ const MetricInfo metricInfos[] = {
         { 330,  None,      "Sum Watts" },
         { 331,  None,      "Net Watts" },
 
-        { 340,  None,      "Quadrant 1, Quadrant 3 Vars" },
-        { 341,  None,      "Quadrant 2, Quadrant 4 Vars" },
-        { 342,  None,      "Quadrant 1, Quadrant 4 Vars" },
-        { 343,  None,      "Quadrant 2, Quadrant 3 Vars" },
+        { 340,  None,      "kVAr (Quadrants 1 3)" },
+        { 341,  None,      "kVAr (Quadrants 2 4)" },
+        { 342,  None,      "kVAr (Quadrants 1 4)" },
+        { 343,  None,      "kVAr (Quadrants 2 3)" },
         { 344,  None,      "Sum Vars" },
         { 345,  None,      "Net Vars" },
 
-        { 350,  None,      "Quadrant 1, Quadrant 2 VA" },
-        { 351,  None,      "Quadrant 3, Quadrant 4 VA" },
-        { 352,  None,      "Quadrant 1, Quadrant 3 VA" },
-        { 353,  None,      "Quadrant 2, Quadrant 4 VA" },
+        { 350,  None,      "kVA (Quadrants 1 2)" },
+        { 351,  None,      "kVA (Quadrants 3 4)" },
+        { 352,  None,      "kVA (Quadrants 1 3)" },
+        { 353,  None,      "kVA (Quadrants 2 4)" },
         { 354,  None,      "Sum VA" },
         { 355,  None,      "Net VA" }};
 
