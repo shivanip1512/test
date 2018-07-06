@@ -191,6 +191,13 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             {
                 CTILOG_ERROR(dout, "Endpoint indicated request not acceptable for device "<< indication.rfnIdentifier);
 
+                if( ! optRequest )
+                {
+                    CTILOG_DEBUG(dout, "No active request for device " << indication.rfnIdentifier);
+
+                    continue;
+                }
+
                 boost::insert(
                     commandResults,
                     commandResults.end(),
