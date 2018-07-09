@@ -4,10 +4,11 @@
 
 namespace Cti {
 
-CallSite::CallSite(const char * func_, const char * file_, const unsigned line_) 
+CallSite::CallSite(const char * func_, const char * file_, const long line_) 
     :   func { func_ },
-        file { trimPath(file_) },
-        line { line }
+        filename { trimPath(file_) },
+        fullpath { file_ },
+        line { line_ }
 {
 }
 
@@ -18,8 +19,9 @@ const char * CallSite::trimPath(const char * file)
     return pos ? pos + 1 : file;
 }
 
-const char * CallSite::getFunc() const { return func; }
-const char * CallSite::getFile() const { return file; }
-unsigned     CallSite::getLine() const { return line; }
+const char * CallSite::getFunction()     const { return func; }
+const char * CallSite::getFilename() const { return filename; }
+const char * CallSite::getFullPath() const { return fullpath; }
+long         CallSite::getLine()     const { return line; }
 
 }

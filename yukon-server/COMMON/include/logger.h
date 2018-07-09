@@ -203,7 +203,7 @@ namespace Cti {
                 this->logger = logger;
 
                 Cti::StreamBufferSink logStream;
-                logStream << "Entry " << callSite.getFunc() << "(" << message << ")";
+                logStream << "Entry " << callSite.getFunction() << "(" << message << ")";
 
                 logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, callSite);
             }
@@ -217,7 +217,7 @@ namespace Cti {
                 rcDefined = true;
 
                 Cti::StreamBufferSink logStream;
-                logStream << "Entry " << callSite.getFunc() << "(" << message << ")";
+                logStream << "Entry " << callSite.getFunction() << "(" << message << ")";
 
                 logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, callSite);
             }
@@ -230,11 +230,11 @@ namespace Cti {
 
                 if(rcDefined)
                 {
-                    logStream << "Exit " << callSite.getFunc() << "() rc=" << rc;
+                    logStream << "Exit " << callSite.getFunction() << "() rc=" << rc;
                 }
                 else
                 {
-                    logStream << "Exit " << callSite.getFunc() << "()";
+                    logStream << "Exit " << callSite.getFunction() << "()";
                 }
                 logger->formatAndForceLog(Cti::Logging::Logger::Trace, logStream, callSite);
             }

@@ -127,7 +127,7 @@ std::string commaFormatted(long long value)
     std::string formatted;
     formatted.reserve(digits * 4 / 3);
 
-    for each( const char digit in plain )
+    for( const char digit : plain )
     {
         formatted += digit;
         if( ! (--digits % 3) && digits )
@@ -1095,7 +1095,7 @@ std::string FormattedList::toString() const
 
     StringFormatter formatter;
 
-    for each(const Item& item in _itemList)
+    for(const Item& item : _itemList)
     {
         formatter.width(_maxNameLen + item._additionalNameLines);
 

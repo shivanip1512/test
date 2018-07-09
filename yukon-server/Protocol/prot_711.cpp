@@ -458,7 +458,7 @@ void CtiProtocol711::describeMasterRequest() const
             case CMND_RQDIR:
             default:
                 {
-                    outLog << endl <<" **** ACH: Command type not yet decoded **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                    outLog << endl <<" **** ACH: Command type not yet decoded **** line " << __LINE__;
                     break;
                 }
             }
@@ -706,7 +706,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostrin
 
     if(shortformat)
     {
-        outlog << endl <<" **** ACH: short format does not compute **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+        outlog << endl <<" **** ACH: short format does not compute **** line " << __LINE__;
     }
     else  // long format LGRPQ
     {
@@ -714,7 +714,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostrin
 
         if(data[9] & 0x80)
         {
-            outlog << endl <<" **** ACH: does not compute **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+            outlog << endl <<" **** ACH: does not compute **** line " << __LINE__;
         }
         else
         {
@@ -767,7 +767,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostrin
                 {
                 case 0x00:
                     {
-                        outlog << endl <<" **** ACH: UNUSED/ERROR! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: UNUSED/ERROR! **** line " << __LINE__;
                         break;
                     }
                 case 0x02:
@@ -777,16 +777,16 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostrin
                     }
                 case 0x03:
                     {
-                        outlog << endl <<" **** ACH: Word type GWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: Word type GWORD **** line " << __LINE__;
                     }
                 case 0x01:
                     {
-                        outlog << endl <<" **** ACH: Word type AWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: Word type AWORD **** line " << __LINE__;
                     }
                     // FIXME break missing here?
                 default:
                     {
-                        outlog << endl <<" **** ACH: Word type not yet decoded! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: Word type not yet decoded! **** line " << __LINE__;
                         break;
                     }
                 }
@@ -822,7 +822,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostrin
                 {
                 case 0x00:
                     {
-                        outlog << endl <<" **** ACH: UNUSED/ERROR! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: UNUSED/ERROR! **** line " << __LINE__;
                         break;
                     }
                 case 0x02:
@@ -833,15 +833,15 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostrin
                     }
                 case 0x03:
                     {
-                        outlog << endl <<" **** ACH: Word type GWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: Word type GWORD **** line " << __LINE__;
                     }
                 case 0x01:
                     {
-                        outlog << endl <<" **** ACH: Word type AWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: Word type AWORD **** line " << __LINE__;
                     }
                 default:
                     {
-                        outlog << endl <<" **** ACH: Word type not yet decoded! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        outlog << endl <<" **** ACH: Word type not yet decoded! **** line " << __LINE__;
                         break;
                     }
                 }
@@ -858,7 +858,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostrin
         }
         else
         {
-            outlog << endl <<" **** ACH: Unknown CTL function Vol. 1 / pp. 4-96 **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+            outlog << endl <<" **** ACH: Unknown CTL function Vol. 1 / pp. 4-96 **** line " << __LINE__;
         }
     }
 }

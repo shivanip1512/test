@@ -44,8 +44,7 @@ void readers_writer_lock_t::acquireWrite()
     {
         if( current_thread_owns_reader() )
         {
-            //  upgrades not currently allowed
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE, nullptr, "upgrades not currently allowed");
             terminate_program();
         }
 
@@ -82,8 +81,7 @@ bool readers_writer_lock_t::acquireWrite(unsigned long milliseconds)
     {
         if( current_thread_owns_reader() )
         {
-            //  upgrades not currently allowed
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE, nullptr, "upgrades not currently allowed");
             terminate_program();
         }
 
@@ -119,8 +117,7 @@ bool readers_writer_lock_t::tryAcquireWrite()
     {
         if( current_thread_owns_reader() )
         {
-            //  upgrades not currently allowed
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE, nullptr, "upgrades not currently allowed");
             terminate_program();
         }
 
@@ -186,8 +183,7 @@ void readers_writer_lock_t::add_reader()
 
         if( reader_index == MaxThreadCount )
         {
-            //  Out of thread storage space!
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE, nullptr, "Out of thread storage space!");
             terminate_program();
         }
 
@@ -216,15 +212,13 @@ bool readers_writer_lock_t::remove_reader()
 
     if( _reader_ids[reader_index] != tid )
     {
-        //  It wasn't in the list - never inserted?
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE, nullptr, "Reader ID wasn't in the list - never inserted?");
         terminate_program();
     }
 
     if( !_reader_recursion[reader_index] )
     {
-        //  clear_tid() called one too many times
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE, nullptr, "clear_tid() called one too many times");
         terminate_program();
     }
 
@@ -275,8 +269,7 @@ unsigned readers_writer_lock_t::find_reader_index(thread_id_t tid) const
 
     if( ! first_empty_index )
     {
-        //  Out of thread storage space!
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE, nullptr, "Out of thread storage space!");
         terminate_program();
     }
 

@@ -6,19 +6,21 @@ namespace Cti {
 
 struct IM_EX_CTIBASE CallSite
 {
-    CallSite(const char * func, const char * file, const unsigned line);
+    CallSite(const char * func, const char * file, const long line);
 
-    const char * getFunc() const;
-    const char * getFile() const;
-    unsigned getLine() const;
+    const char * getFunction() const;
+    const char * getFilename() const;
+    const char * getFullPath() const;
+    long getLine() const;
 
 protected:
     static const char * trimPath(const char * file);
 
 private:
     const char *func;
-    const char *file;
-    const unsigned line;
+    const char *filename;
+    const char *fullpath;
+    const long line;
 };
 
 }

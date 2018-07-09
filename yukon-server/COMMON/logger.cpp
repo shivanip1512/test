@@ -125,7 +125,7 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const C
                     _logger->_logger->getName(),
                     getLogLevel(level),
                     msg,
-                    log4cxx::spi::LocationInfo(callSite.getFile(), callSite.getFunc(), callSite.getLine()));
+                    log4cxx::spi::LocationInfo(callSite.getFilename(), callSite.getFunction(), callSite.getLine()));
     
     event->getMDCCopy();
 

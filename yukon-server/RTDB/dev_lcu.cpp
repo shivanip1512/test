@@ -897,7 +897,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS &InMessage)
                 }
                 else
                 {
-                    resultString = "Error " + string(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
+                    resultString = "Device is not LCU";
                 }
 
                 pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
@@ -966,7 +966,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS &InMessage)
                     }
                     else
                     {
-                        resultString = "Error " + string(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
+                        resultString = "Device is not LCU";
                     }
 
                     pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
@@ -1207,7 +1207,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS &InMessage)
                     }
                     else
                     {
-                        resultString = "Error " + string(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
+                        resultString = "Device is not LCU";
                     }
 
                     pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);

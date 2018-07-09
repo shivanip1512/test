@@ -7,13 +7,12 @@ namespace boost
 {
     void assertion_failed(char const * expr, char const * function, char const * file, long line)
     {
-        autopsy(file, line);
+        autopsy(Cti::CallSite { function, file, line }, expr);
     }
 
     void assertion_failed_msg(char const * expr, char const * msg, char const * function, char const * file, long line)
     {
-        std::cerr << expr << ": " << msg << " at " << function << " (" << file << ":" << line << ")" << std::endl;
-        autopsy(file, line);
+        autopsy(Cti::CallSite { function, file, line }, expr, msg);
     }
 } // namespace boost
 

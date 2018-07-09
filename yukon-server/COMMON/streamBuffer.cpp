@@ -172,9 +172,9 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 template<class StreamBufferT>
 StreamBufferT& StreamBufferBase<StreamBufferT>::operator<<(const Cti::CallSite cs)
 {
-    appendCString(cs.getFunc());
+    appendCString(cs.getFunction());
     appendCString("@");
-    appendCString(cs.getFile());
+    appendCString(cs.getFilename());
     appendCString(":");
     appendDigit(cs.getLine());
     return static_cast<StreamBufferT&>(*this);

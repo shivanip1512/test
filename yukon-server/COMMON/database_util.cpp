@@ -13,7 +13,7 @@ namespace Database {
  * @return true if no error, false otherwise
  */
 template <class T>
-bool executeCommand( T& command, const char* file, const int line, const LogDebug::Options logDebug )
+bool executeCommand( T& command, const CallSite callSite, const LogDebug::Options logDebug )
 {
     if( logDebug == LogDebug::Enable )
     {
@@ -29,28 +29,28 @@ bool executeCommand( T& command, const char* file, const int line, const LogDebu
     return true;
 }
 
-template bool DLLEXPORT executeCommand<DatabaseWriter>( DatabaseWriter &command, const char* file, const int line, const LogDebug::Options logDebug);
-template bool DLLEXPORT executeCommand<DatabaseReader>( DatabaseReader &command, const char* file, const int line, const LogDebug::Options logDebug);
+template bool DLLEXPORT executeCommand<DatabaseWriter>( DatabaseWriter &command, const CallSite callSite, const LogDebug::Options logDebug);
+template bool DLLEXPORT executeCommand<DatabaseReader>( DatabaseReader &command, const CallSite callSite, const LogDebug::Options logDebug);
 
 /**
  * Overload of executeCommand() with default LogDebug
  */
 template <class T>
-bool executeCommand( T& command, const char* file, const int line )
+bool executeCommand( T& command, const CallSite callSite )
 {
-    return executeCommand( command, file, line, LogDebug::Disable );
+    return executeCommand( command, callSite, LogDebug::Disable );
 }
 
-template bool DLLEXPORT executeCommand<DatabaseWriter>( DatabaseWriter &command, const char* file, const int line);
-template bool DLLEXPORT executeCommand<DatabaseReader>( DatabaseReader &command, const char* file, const int line);
+template bool DLLEXPORT executeCommand<DatabaseWriter>( DatabaseWriter &command, const CallSite callSite);
+template bool DLLEXPORT executeCommand<DatabaseReader>( DatabaseReader &command, const CallSite callSite);
 
 /**
  * Execute a database update command
  * @return true if no error and rows have been affected, false otherwise
  */
-bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, const LogDebug::Options logDebug, const LogNoRowsAffected::Options logNoRowsAffected )
+bool executeUpdater( DatabaseWriter& updater, const CallSite callSite, const LogDebug::Options logDebug, const LogNoRowsAffected::Options logNoRowsAffected )
 {
-    if( ! executeCommand( updater, file, line, logDebug ))
+    if( ! executeCommand( updater, callSite, logDebug ))
     {
         return false;
     }
@@ -70,24 +70,24 @@ bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, 
 /**
  * Overload of executeUpdater() with default LogDebug and LogNoRowsAffected
  */
-bool executeUpdater( DatabaseWriter& updater, const char* file, const int line )
+bool executeUpdater( DatabaseWriter& updater, const CallSite callSite )
 {
-    return executeUpdater( updater, file, line, LogDebug::Disable, LogNoRowsAffected::Enable  );
+    return executeUpdater( updater, callSite, LogDebug::Disable, LogNoRowsAffected::Enable  );
 }
 
 /**
  * Overload of executeUpdater() with default LogNoRowsAffected
  */
-bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, const LogDebug::Options logDebug )
+bool executeUpdater( DatabaseWriter& updater, const CallSite callSite, const LogDebug::Options logDebug )
 {
-    return executeUpdater( updater, file, line, logDebug, LogNoRowsAffected::Enable );
+    return executeUpdater( updater, callSite, logDebug, LogNoRowsAffected::Enable );
 }
 
 /**
  * Execute a database write command with exceptions, rethrow the 
  *      caught exception. 
  */
-void executeWriter( DatabaseWriter &writer, const char* file, const int line, const LogDebug::Options logDebug )
+void executeWriter( DatabaseWriter &writer, const CallSite callSite, const LogDebug::Options logDebug )
 {
     if( logDebug == LogDebug::Enable )
     {
@@ -166,7 +166,7 @@ void executeUpsert(DatabaseConnection &conn,
                    const std::function<void (DatabaseWriter &)> &initInserter,
                    const std::function<void (DatabaseWriter &)> &initUpdater,
                    const TryInsertFirst::Options tryInsertFirst,
-                   const char* file, const int line, const LogDebug::Options logDebug )
+                   const CallSite callSite, const LogDebug::Options logDebug )
 {
     if( tryInsertFirst == TryInsertFirst::Enable )
     {
@@ -175,7 +175,7 @@ void executeUpsert(DatabaseConnection &conn,
             DatabaseWriter inserter(conn);
             initInserter( inserter );
 
-            executeWriter(inserter, file, line, logDebug);
+            executeWriter(inserter, callSite, logDebug);
         }
         catch( PrimaryKeyViolationException& /*ex*/ )
         {
@@ -185,7 +185,7 @@ void executeUpsert(DatabaseConnection &conn,
             }
 
             // if the error is a primary violation the row could already be there, retry with update first
-            executeUpsert(conn, initInserter, initUpdater, TryInsertFirst::Disable, file, line, logDebug);
+            executeUpsert(conn, initInserter, initUpdater, TryInsertFirst::Disable, callSite, logDebug);
         }
     }
     else
@@ -193,7 +193,7 @@ void executeUpsert(DatabaseConnection &conn,
         DatabaseWriter updater(conn);
         initUpdater( updater );
 
-        executeWriter(updater, file, line, logDebug);
+        executeWriter(updater, callSite, logDebug);
 
         if( ! updater.rowsAffected() )
         {
@@ -205,7 +205,7 @@ void executeUpsert(DatabaseConnection &conn,
             DatabaseWriter inserter(conn);
             initInserter( inserter );
 
-            executeWriter(inserter, file, line, logDebug);
+            executeWriter(inserter, callSite, logDebug);
         }
     }
 }

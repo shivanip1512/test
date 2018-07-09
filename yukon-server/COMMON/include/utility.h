@@ -64,7 +64,9 @@ IM_EX_CTIBASE std::string& traceBuffer(std::string &str, BYTE *Message, ULONG Le
 
 IM_EX_CTIBASE CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate );
 
-IM_EX_CTIBASE void autopsy(const char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
+IM_EX_CTIBASE void autopsy(const Cti::CallSite callSite);
+IM_EX_CTIBASE void autopsy(const Cti::CallSite callSite, const char *expr);
+IM_EX_CTIBASE void autopsy(const Cti::CallSite callSite, const char *expr, const char *msg);
 
 IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
 

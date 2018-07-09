@@ -114,14 +114,14 @@ IM_EX_CTIBASE INT VConfigGetEqual (VERSACONFIG *);
 
 INT CheckUtilID (USHORT a)
 {
-   std::cout <<" Progress: " << __FILE__ << " " << __LINE__ << std::endl;
-   return 0;
+    CTILOG_ERROR(dout, "Not yet implemented");
+    return 0;
 }
 
 INT GetUtilID (PUSHORT a)
 {
-   std::cout <<" Progress: " << __FILE__ << " " << __LINE__ << std::endl;
-   return 0;
+    CTILOG_ERROR(dout, "Not yet implemented");
+    return 0;
 }
 
 

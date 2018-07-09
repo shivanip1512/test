@@ -479,7 +479,7 @@ INT SynchronizedIdGen(string name, int values_needed)
 
             updater << values_needed << name;
 
-            status = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+            status = Cti::Database::executeUpdater( updater, CALLSITE );
 
             if(status)
             {
@@ -834,7 +834,7 @@ INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, CtiPointType_t type
     rdr << offset;
     rdr << desolvePointType(type);
 
-    if( Cti::Database::executeCommand(rdr, __FILE__, __LINE__) )
+    if( Cti::Database::executeCommand(rdr, CALLSITE) )
     {
         if(rdr())
         {
@@ -990,7 +990,6 @@ int threadAbortFlag = 0;
 HANDLE hTapTapTap = NULL;
 
 
-void autopsy_to_sstream       (std::ostringstream& out, const char *calleefile, int calleeline);
 void ShowStack                (std::ostringstream& out, HANDLE hThread, CONTEXT& c ); // dump a stack
 void enumAndLoadModuleSymbols (std::ostringstream& out, HANDLE hProcess, DWORD pid );
 void fillModuleList           (std::ostringstream& out, ModuleList& modules, DWORD pid, HANDLE hProcess );
@@ -1009,15 +1008,20 @@ typedef struct _MODULEINFO
     LPVOID EntryPoint;
 } MODULEINFO, *LPMODULEINFO;
 
-void autopsy(const char *calleefile, int calleeline)
+void autopsy(const Cti::CallSite callSite)
 {
-    std::ostringstream out;
-    autopsy_to_sstream(out, calleefile, calleeline);
-    CTILOG_INFO(dout, out);
+    autopsy(callSite, nullptr, nullptr);
 }
 
-void autopsy_to_sstream(std::ostringstream& out, const char *calleefile, int calleeline)
+void autopsy(const Cti::CallSite callSite, const char *expr)
 {
+    autopsy(callSite, expr, nullptr);
+}
+
+void autopsy(const Cti::CallSite callSite, const char *expr, const char *msg)
+{
+    std::ostringstream out;
+
     HANDLE hThread;
     CONTEXT c;
 
@@ -1031,11 +1035,26 @@ void autopsy_to_sstream(std::ostringstream& out, const char *calleefile, int cal
 
         if( ! GetThreadContext( hThread, &c ) )
         {
-            out << "GetThreadContext(): gle = " << gle << endl;
+            out << "GetThreadContext() failed: GetLastError = " << gle << endl;
             return;
         }
 
-        out << endl << CtiTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
+        out << endl << CtiTime() << " **** STACK TRACE **** " << endl;
+        {
+            Cti::FormattedList l;
+            l.add("Function") << callSite.getFunction();
+            l.add("File") << callSite.getFullPath();
+            l.add("Line") << callSite.getLine();
+            if( expr )
+            {
+                l.add("Expression") << expr;
+            }
+            if( msg )
+            {
+                l.add("Message") << msg;
+            }
+            out << l.toString();
+        }
         out << endl << "Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
         ShowStack(out, hThread, c );
         out << endl << CtiTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
@@ -1047,6 +1066,8 @@ void autopsy_to_sstream(std::ostringstream& out, const char *calleefile, int cal
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         out << "Exception thrown while generating stack trace";
     }
+
+    CTILOG_ERROR(dout, out.str());
 }
 
 void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
@@ -1060,7 +1081,7 @@ void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
         hImagehlpDll = LoadLibrary( "imagehlp.dll" );
         if( hImagehlpDll == NULL )
         {
-            out << "LoadLibrary( \"imagehlp.dll\" ): gle = " << gle << endl;
+            out << "LoadLibrary( \"imagehlp.dll\" ) failed: GetLastError = " << gle << endl;
             return;
         }
 
@@ -1156,7 +1177,7 @@ void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
     // init symbol handler stuff (SymInitialize())
     if( ! pSI( hProcess, tt, false ) )
     {
-        out << "SymInitialize(): gle = " <<  gle << endl;
+        out << "SymInitialize() failed: GetLastError = " <<  gle << endl;
 
         goto cleanup;
     }
@@ -1212,7 +1233,7 @@ void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
             {
                 if( gle != 487 )
                 {
-                    out << "SymGetSymFromAddr(): gle = " << gle << endl;
+                    out << "SymGetSymFromAddr() failed: GetLastError = " << gle << endl;
                 }
             }
             else
@@ -1230,7 +1251,7 @@ void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
                         {
                             if( gle != 487 )
                             {
-                                out << "SymGetLineFromAddr(): gle = " << gle << endl;
+                                out << "SymGetLineFromAddr() failed: GetLastError = " << gle << endl;
                             }
                         }
                         else
@@ -1246,7 +1267,7 @@ void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
             // show module info (SymGetModuleInfo())
             if( ! pSGMI( hProcess, s.AddrPC.Offset, &Module ) )
             {
-                out << "SymGetModuleInfo): gle = " << gle << endl;
+                out << "SymGetModuleInfo() failed: GetLastError = " << gle << endl;
             }
             else
             { // got module info OK
@@ -1293,7 +1314,7 @@ void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
 
     if( gle != 0 )
     {
-        out << "StackWalk(): gle = " << gle << endl;
+        out << "StackWalk() failed: GetLastError = " << gle << endl;
     }
 
 cleanup:
@@ -1397,7 +1418,7 @@ void fillModuleListPSAPI(std::ostringstream& out, ModuleList& modules, DWORD pid
 
     if( ! pEPM( hProcess, hMods, TTBUFLEN, &cbNeeded ) )
     {
-        out << "EPM failed, gle = " << gle << endl;
+        out << "EnumProcessModules() failed, GetLastError = " << gle << endl;
 
         goto cleanup;
     }

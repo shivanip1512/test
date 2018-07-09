@@ -493,7 +493,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS &InMessage)
          }
          else
          {
-            sprintf(temp,"Error %s (%d)", __FILE__, __LINE__);
+            sprintf(temp,"Device is not TCU");
          }
 
          pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),

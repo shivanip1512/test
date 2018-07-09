@@ -79,35 +79,35 @@ struct ColumnDefinition
  * @return true if no error, false otherwise
  */
 template <class T>
-bool IM_EX_CTIBASE executeCommand( T& command, const char* file, const int line, const LogDebug::Options logDebug );
+bool IM_EX_CTIBASE executeCommand( T& command, const CallSite callSite, const LogDebug::Options logDebug );
 
 /**
  * Overload of executeCommand() with default LogDebug
  */
 template <class T>
-bool IM_EX_CTIBASE executeCommand( T& command, const char* file, const int line );
+bool IM_EX_CTIBASE executeCommand( T& command, const CallSite callSite );
 
 /**
  * Execute a database update command
  * @return true if no error and rows have been affected, false otherwise
  */
-bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const char* file, const int line, const LogDebug::Options logDebug, const LogNoRowsAffected::Options logNoRowsAffected );
+bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const CallSite callSite, const LogDebug::Options logDebug, const LogNoRowsAffected::Options logNoRowsAffected );
 
 /**
  * Overload of executeUpdater() with default LogDebug and LogNoRowsAffected
  */
-bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const char* file, const int line );
+bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const CallSite callSite );
 
 /**
  * Overload of executeUpdater() with default LogNoRowsAffected
  */
-bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const char* file, const int line, const LogDebug::Options logDebug );
+bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const CallSite callSite, const LogDebug::Options logDebug );
 
 /**
  * Execute a database insert command
  * @throws DatabaseException
  */
-IM_EX_CTIBASE void executeWriter( DatabaseWriter &writer, const char* file, const int line, const LogDebug::Options logDebug );
+IM_EX_CTIBASE void executeWriter( DatabaseWriter &writer, const CallSite callSite, const LogDebug::Options logDebug );
 
 /**
  * Helper method to create a string of the format
@@ -132,7 +132,7 @@ IM_EX_CTIBASE void executeUpsert(
         const std::function<void (DatabaseWriter &)> &initInserter,
         const std::function<void (DatabaseWriter &)> &initUpdater,
         const TryInsertFirst::Options tryInsertFirst,
-        const char* file, const int line, const LogDebug::Options logDebug );
+        const CallSite callSite, const LogDebug::Options logDebug );
 
 } // namespace Database
 } // namespace Cti

@@ -222,7 +222,7 @@ struct timeSyncTDMarkV
         OutMessage->Buffer.OutMessage[Index++] = '\0';
 
         /* Load the password into the buffer */
-        cerr << __FILE__ << " (" << __LINE__ << ") This may break.. CGP 072599" << endl;
+        CTILOG_WARN(dout, "This may break.. CGP 072599");
 
         for(int i = 0; i < STANDNAMLEN; i++)
         {
