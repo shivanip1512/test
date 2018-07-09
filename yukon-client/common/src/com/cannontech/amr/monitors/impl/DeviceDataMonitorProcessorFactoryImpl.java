@@ -43,52 +43,53 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             @Override
             
             public void pointDataReceived(RichPointData richPointData) {
-                try {
-                    handlePointDataReceived(monitor, richPointData);
-                } catch (Exception e) {
-                    StringWriter stack = new StringWriter();
-                    e.printStackTrace(new PrintWriter(stack));
-                    log.warn("Version one: " + stack.toString());
-                    log.warn("Version two: ", e);
-                }
+                handlePointDataReceived(monitor, richPointData);
             }
         };
     }
     
     @Override
     public void handlePointDataReceived(DeviceDataMonitor monitor, RichPointData richPointData) {
-
-        if (richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType() == PaoType.SYSTEM
-            || richPointData.getPointValue().getPointQuality().isInvalid() || !monitor.isEnabled()
-            || monitor.getAttributes().isEmpty()) {
-            if (richPointData.getPointValue().getPointQuality().isInvalid()) {
-                log.debug("monitor {} discarded point data {} because point quality is invalid", monitor,
-                    richPointData.getPointValue());
-            }
-            return;
-        }
-
-        SimpleDevice device;
         try {
-            device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
-        } catch (Exception e) {
-            // device type is invalid for this monitor
-            return;
-        }
-
-        Pair<SimpleDevice, Integer> pair = Pair.of(device, monitor.getId());
-        Boolean isValidDeviceForMonitor = devicesToMonitors.getIfPresent(pair);
-        // Not cached, find the answer and cache it
-        if (isValidDeviceForMonitor == null) {
-            isValidDeviceForMonitor = deviceGroupService.isDeviceInGroup(monitor.getGroup(), device);
-            devicesToMonitors.put(pair, isValidDeviceForMonitor);
-        }
-
-        if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
-            boolean success = deviceDataMonitorCalculationService.recalculateViolation(monitor, device, richPointData.getPointValue());
-            if (!success) {
-                devicesToMonitors.put(pair, false);
+            if (richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType() == PaoType.SYSTEM
+                || richPointData.getPointValue().getPointQuality().isInvalid() || !monitor.isEnabled()
+                || monitor.getAttributes().isEmpty()) {
+                if (richPointData.getPointValue().getPointQuality().isInvalid()) {
+                    log.debug("monitor {} discarded point data {} because point quality is invalid", monitor,
+                        richPointData.getPointValue());
+                }
+                return;
             }
+
+            SimpleDevice device;
+            try {
+                device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+            } catch (Exception e) {
+                // device type is invalid for this monitor
+                return;
+            }
+
+            Pair<SimpleDevice, Integer> pair = Pair.of(device, monitor.getId());
+            Boolean isValidDeviceForMonitor = devicesToMonitors.getIfPresent(pair);
+            // Not cached, find the answer and cache it
+            if (isValidDeviceForMonitor == null) {
+                isValidDeviceForMonitor = deviceGroupService.isDeviceInGroup(monitor.getGroup(), device);
+                devicesToMonitors.put(pair, isValidDeviceForMonitor);
+            }
+
+            if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
+                boolean success = deviceDataMonitorCalculationService.recalculateViolation(monitor, device,
+                    richPointData.getPointValue());
+                if (!success) {
+                    devicesToMonitors.put(pair, false);
+                }
+            }
+
+        } catch (Exception e) {
+            StringWriter stack = new StringWriter();
+            e.printStackTrace(new PrintWriter(stack));
+            log.warn("Version one: " + stack.toString());
+            log.warn("Version two: ", e);
         }
     }
 }
