@@ -1,5 +1,7 @@
 package com.cannontech.amr.monitors.impl;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -41,12 +43,18 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             @Override
             
             public void pointDataReceived(RichPointData richPointData) {
-                handlePointDataReceived(monitor, richPointData);
+                try {
+                    handlePointDataReceived(monitor, richPointData);
+                } catch (Exception e) {
+                    StringWriter stack = new StringWriter();
+                    e.printStackTrace(new PrintWriter(stack));
+                    log.warn("Version one: " + stack.toString());
+                    log.warn("Version two: ", e);
+                }
             }
         };
     }
     
-
     @Override
     public void handlePointDataReceived(DeviceDataMonitor monitor, RichPointData richPointData) {
 
