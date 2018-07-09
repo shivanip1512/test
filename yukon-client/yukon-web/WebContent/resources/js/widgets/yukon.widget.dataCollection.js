@@ -206,7 +206,7 @@ yukon.widget.dataCollection = (function () {
                 window.open(yukon.url('/amr/dataCollection/detail?' + $.param(data) + "&ranges=" + ranges));
             });
 
-            $(document).on('dialogclose', '.js-device-group-picker-dialog', function (ev, ui) {
+            $(document).on('yukon:device:group:picker:selection', function (ev, group) {
                 _update(true);
             });
             
