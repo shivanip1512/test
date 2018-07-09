@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.service.CbcHelperService;
+import com.cannontech.common.exception.NoControlPointException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -37,8 +38,12 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     @Override
     public boolean assignController(int capbankId, int controllerId) {
         YukonPao controller = paoDao.getYukonPao(controllerId);
-
-        int pointId = cbcHelperService.getControlPointIdForCbc(controllerId);
+        int pointId;
+        try {
+            pointId = cbcHelperService.getControlPointIdForCbc(controllerId);
+        } catch (NotFoundException ex) {
+            throw new NoControlPointException("Control point not found for control device ID " + controllerId, ex);
+        }
 
         unassignController(controllerId);
 

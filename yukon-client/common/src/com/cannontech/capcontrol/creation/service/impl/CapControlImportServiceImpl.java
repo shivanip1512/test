@@ -30,6 +30,7 @@ import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.exception.NoControlPointException;
 import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoCategory;
@@ -275,7 +276,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         if (parentId != null) {
             try {
                 capbankControllerDao.assignController(parentId, paoId);
-            } catch (NotFoundException ex) {
+            } catch (NoControlPointException ex) {
                 if (cbcImportData.getCbcType().isLogicalCBC()) {
                     results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
                     return;
@@ -406,7 +407,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         if (parentId != null) {
             try {
                 capbankControllerDao.assignController(parentId, paoId);
-            } catch (NotFoundException ex) {
+            } catch (NoControlPointException ex) {
                 if (cbcImportData.getCbcType().isLogicalCBC()) {
                     results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
                     return;
@@ -509,7 +510,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         if (parentId != null) {
             try {
                 capbankControllerDao.assignController(parentId, yukonPao.getPaoIdentifier().getPaoId());
-            } catch (NotFoundException ex) {
+            } catch (NoControlPointException ex) {
                 if (cbcImportData.getCbcType().isLogicalCBC()) {
                     results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.NO_CONTROL_POINT_CBC_LOGICAL));
                     return;
