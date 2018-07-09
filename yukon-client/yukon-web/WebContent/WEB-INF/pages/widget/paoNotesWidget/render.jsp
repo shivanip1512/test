@@ -85,7 +85,7 @@
     <div class="action-area">
         <a href="#"><i:inline key="yukon.common.viewAll"/></a>
         &nbsp;|&nbsp;
-        <cti:url value="/tools/paoNote/search" var="searchUrl"/>
+        <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
         <a href="${searchUrl}"><i:inline key="yukon.common.search"/></a>
     </div>
     

@@ -50,8 +50,8 @@ import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
-@RequestMapping("/paoNote/*")
-public class PaoNoteSearchController {
+@RequestMapping("/paoNotes/*")
+public class PaoNotesSearchController {
 
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -118,7 +118,7 @@ public class PaoNoteSearchController {
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String deviceNameHeader = accessor.getMessage(PaoNoteSortBy.deviceName);
-        String typeHeader = accessor.getMessage(PaoNoteSortBy.type);
+        String typeHeader = accessor.getMessage(PaoNoteSortBy.deviceType);
         String noteTextHeader = accessor.getMessage(PaoNoteSortBy.noteText);
         String createdByHeader = accessor.getMessage(PaoNoteSortBy.createdBy);
         String createDateHeader = accessor.getMessage(PaoNoteSortBy.createDate);
@@ -154,7 +154,7 @@ public class PaoNoteSearchController {
     public enum PaoNoteSortBy implements DisplayableEnum {
 
         deviceName(SortBy.PAO_NAME),
-        type(SortBy.PAO_TYPE),
+        deviceType(SortBy.PAO_TYPE),
         noteText(SortBy.NOTE_TEXT),
         createdBy(SortBy.CREATE_USERNAME),
         createDate(SortBy.CREATE_DATE),

@@ -7,12 +7,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="tools" page="paoNoteSearch">
-    <cti:msgScope paths="common.paoNote, common.paoNoteSearch, menu.tools, yukon.common">
+<cti:standardPage module="tools" page="paoNotesSearch">
+    <cti:msgScope paths="common.paoNote, common.paoNotesSearch, menu.tools, yukon.common">
         <hr>
         <div class="filter-section dib">
             <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
-            <cti:url var="url" value="/tools/paoNote/search"/>
+            <cti:url var="url" value="/tools/paoNotes/search"/>
             <form:form id="filter-pao-notes-form" action="${url}" modelAttribute="paoNoteFilter" method="GET">
                 <i:inline key="yukon.common.filterBy"/>
                 <tags:textarea rows="2" cols="46" path="text" isResizable="false" placeholder="${noteTextPlaceholder}"/>
@@ -98,7 +98,7 @@
                         <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
                     </cm:dropdown>
                 </span>
-                <cti:url var="searchUrl" value="/tools/paoNote/search">
+                <cti:url var="searchUrl" value="/tools/paoNotes/search">
                     <cti:param name="text" value="${paoNoteFilter.text}"/>
                     <cti:param name="user" value="${paoNoteFilter.user}"/>
                     <cti:formatDate type="DATE" value="${paoNoteFilter.startDate}" var="startDate"/>
@@ -119,7 +119,7 @@
                         <thead>
                             <tr>
                                 <tags:sort column="${deviceName}" />
-                                <tags:sort column="${type}" />
+                                <tags:sort column="${deviceType}" />
                                 <tags:sort column="${noteText}" />
                                 <tags:sort column="${createdBy}" />
                                 <tags:sort column="${createDate}" />
@@ -175,5 +175,5 @@
             </c:otherwise>
         </c:choose>
     </cti:msgScope>
-    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotesearch.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotessearch.js"/>
 </cti:standardPage>

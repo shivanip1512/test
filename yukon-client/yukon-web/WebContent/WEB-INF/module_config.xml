@@ -361,7 +361,7 @@
           </page>
         </pages>
       </page>
-      <page name="paoNoteSearch" type="BASIC"/>
+      <page name="paoNotesSearch" type="BASIC"/>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 

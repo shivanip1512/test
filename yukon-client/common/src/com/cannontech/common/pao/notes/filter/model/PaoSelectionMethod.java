@@ -6,7 +6,7 @@ public enum PaoSelectionMethod implements DisplayableEnum {
 
     allDevices,
     selectIndividually,
-    byDeviceGroup;
+    byDeviceGroups;
 
     @Override
     public String getFormatKey() {

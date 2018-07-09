@@ -1,13 +1,13 @@
-yukon.namespace('yukon.tools.paonotesearch.js');
+yukon.namespace('yukon.tools.paonotessearch.js');
  
 /** 
  * Module to handle pao notes search functionality.
  * 
- * @module yukon.tools.paonotesearch 
+ * @module yukon.tools.paonotessearch 
  * @requires JQUERY 
  * @requires yukon 
  */
-yukon.tools.paonotesearch = (function () {
+yukon.tools.paonotessearch = (function () {
  
     'use strict';
  
@@ -32,7 +32,7 @@ yukon.tools.paonotesearch = (function () {
             $("#js-note-create-dates").css({"margin-left":"6%", "margin-top":"1%"});
             $("#js-note-create-by").removeAttr("style");
             $("#js-device-group-picker").find("input[name='deviceGroupNames']").val('');
-        } else if (selectDevices === 'byDeviceGroup') {
+        } else if (selectDevices === 'byDeviceGroups') {
             $('#js-picker-dialog').addClass('dn');
             $('#js-device-group-picker').removeClass('dn');
             $("#js-note-create-dates").css({"margin-left":"6%", "margin-top":"1%"});
@@ -55,7 +55,7 @@ yukon.tools.paonotesearch = (function () {
             $(document).on('click', '.js-download', function () {
                 var form = $('#filter-pao-notes-form');
                 var data = form.serialize();
-                window.location = yukon.url('/tools/paoNote/download?' + data);
+                window.location = yukon.url('/tools/paoNotes/download?' + data);
             });
 
             _togglePickerDisplay();
@@ -68,4 +68,4 @@ yukon.tools.paonotesearch = (function () {
     return mod;
 })();
  
-$(function () { yukon.tools.paonotesearch.init(); });
+$(function () { yukon.tools.paonotessearch.init(); });
