@@ -1,6 +1,7 @@
 package com.cannontech.common.pao.notes.filter.model;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -12,7 +13,8 @@ public class PaoNotesFilter {
     private Date startDate;
     private Date endDate;
     private String user;
-    private DeviceGroup deviceGroup;
+    private List<DeviceGroup> deviceGroups;
+    private PaoSelectionMethod paoSelectionMethod;
     
     public Set<Integer> getPaoIds() {
         return paoIds;
@@ -53,13 +55,21 @@ public class PaoNotesFilter {
     public void setUser(String user) {
         this.user = user;
     }
-    
-    public DeviceGroup getDeviceGroup() {
-        return deviceGroup;
+
+    public List<DeviceGroup> getDeviceGroups() {
+        return deviceGroups;
     }
-    
-    public void setDeviceGroup(DeviceGroup deviceGroup) {
-        this.deviceGroup = deviceGroup;
+
+    public void setDeviceGroups(List<DeviceGroup> deviceGroups) {
+        this.deviceGroups = deviceGroups;
+    }
+
+    public PaoSelectionMethod getPaoSelectionMethod() {
+        return paoSelectionMethod;
+    }
+
+    public void setPaoSelectionMethod(PaoSelectionMethod paoSelectionMethod) {
+        this.paoSelectionMethod = paoSelectionMethod;
     }
     
 }

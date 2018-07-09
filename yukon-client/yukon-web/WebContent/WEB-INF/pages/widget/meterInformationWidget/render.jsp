@@ -37,7 +37,7 @@
     </tags:nameValue2>
     <c:if test="${hasNotes}">
         <tags:nameValue2 nameKey=".notes">
-            ${note} (<a href="#"><i:inline key="yukon.common.viewAll"/></a>)
+            ${fn:escapeXml(note)} (<a href="#"><i:inline key="yukon.common.viewAll"/></a>)
         </tags:nameValue2>
     </c:if>
     

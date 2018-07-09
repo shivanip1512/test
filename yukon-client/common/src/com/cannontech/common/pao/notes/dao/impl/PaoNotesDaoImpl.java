@@ -193,7 +193,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         if (StringUtils.isNotEmpty(filter.getText())) {
             sql.append("AND UPPER(pn.NoteText)").contains(filter.getText().toUpperCase());
         }
-        if (filter.getUser() != null) {
+        if (StringUtils.isNotEmpty(filter.getUser())) {
             sql.append("AND pn.CreateUserName").eq(filter.getUser());
         }
         if (filter.getStartDate() != null) {

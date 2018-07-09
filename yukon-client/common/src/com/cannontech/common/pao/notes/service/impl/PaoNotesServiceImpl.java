@@ -1,6 +1,5 @@
 package com.cannontech.common.pao.notes.service.impl;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,8 @@ public class PaoNotesServiceImpl implements PaoNotesService {
                                                       Direction direction, 
                                                       PagingParameters paging) {
         
-        if (filter.getDeviceGroup() != null) {
-            filter.setPaoIds(deviceGroupService.getDeviceIds(Collections.singleton(filter.getDeviceGroup())));
+        if (filter.getDeviceGroups() != null) {
+            filter.setPaoIds(deviceGroupService.getDeviceIds(filter.getDeviceGroups()));
         }
         return paoNotesDao.getAllNotesByFilter(filter, sortBy, direction, paging);
     }

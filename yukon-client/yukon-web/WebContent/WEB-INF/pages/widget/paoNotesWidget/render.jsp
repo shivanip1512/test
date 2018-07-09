@@ -7,9 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="common.paoNote, web.components.ajaxConfirm">
-
-    <cti:flashScopeMessages/>
-
+    
     <form:form id="create-note-form" method="POST" modelAttribute="createPaoNote">
         <cti:csrfToken/>
         <form:hidden path="paoId" id="deviceId"/>
@@ -87,7 +85,8 @@
     <div class="action-area">
         <a href="#"><i:inline key="yukon.common.viewAll"/></a>
         &nbsp;|&nbsp;
-        <a href="#"><i:inline key="yukon.common.search"/></a>
+        <cti:url value="/tools/paoNote/search" var="searchUrl"/>
+        <a href="${searchUrl}"><i:inline key="yukon.common.search"/></a>
     </div>
     
 </cti:msgScope>

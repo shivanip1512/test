@@ -20,7 +20,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -59,7 +58,6 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     public String deletePaoNote(ModelMap model, int noteId, int deviceId, YukonUserContext userContext,
             FlashScope flash) {
         paoNotesService.delete(noteId, userContext.getYukonUser());
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.common.paoNote.delete.successful"));
         setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
         return "paoNotesWidget/render.jsp";
     }
