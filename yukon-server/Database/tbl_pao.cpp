@@ -239,7 +239,7 @@ bool CtiTblPAO::Insert()
         << getDisableFlagStr()
         << getStatisticsStr();
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeCommand( inserter, CALLSITE ))
     {
         return false;
     }
@@ -276,7 +276,7 @@ bool CtiTblPAO::Update()
         << getStatisticsStr()
         << getID();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE ))
     {
         return false;
     }
@@ -295,7 +295,7 @@ bool CtiTblPAO::Delete()
 
     deleter << getID();
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( deleter, CALLSITE );
 }
 
 

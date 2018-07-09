@@ -108,7 +108,7 @@ bool CtiTblDeviceReadRequestLog::Insert()
         << getStopTime()
         << getReadJobId();
 
-    return Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( inserter, CALLSITE );
 }
 
 bool CtiTblDeviceReadRequestLog::Update()
@@ -134,6 +134,6 @@ bool CtiTblDeviceReadRequestLog::Update()
         << getReadJobId()
         << getRequestLogId();
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+    return Cti::Database::executeUpdater( updater, CALLSITE );
 }
 

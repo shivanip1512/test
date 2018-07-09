@@ -372,7 +372,7 @@ bool CtiTableLMControlHistory::deleteOutstandingControls()
 
     deleter << LMAR_DISPATCH_SHUTDOWN;
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( deleter, CALLSITE );
 }
 
 /*
@@ -395,7 +395,7 @@ bool CtiTableLMControlHistory::updateCompletedOutstandingControls()
         << LMAR_DISPATCH_SHUTDOWN
         << CtiTime();
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+    return Cti::Database::executeUpdater( updater, CALLSITE, Cti::Database::LogDebug::Enable );
 }
 
 
@@ -583,7 +583,7 @@ bool CtiTableLMControlHistory::Update()
         << getControlPriority()
         << getPAOID();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE ))
     {
         return false;
     }
@@ -840,7 +840,7 @@ bool CtiTableLMControlHistory::UpdateDynamic(Cti::Database::DatabaseConnection &
         << getControlPriority()
         << getPAOID();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug::Disable,  Cti::Database::LogNoRowsAffected::Disable ))
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE, Cti::Database::LogDebug::Disable,  Cti::Database::LogNoRowsAffected::Disable ))
     {
         return InsertDynamic(conn);        // Try a vanilla insert if the update failed!
     }

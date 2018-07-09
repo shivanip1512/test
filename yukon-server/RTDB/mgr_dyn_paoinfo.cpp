@@ -63,7 +63,7 @@ bool deleteIndexedInfo(const std::string& ownerString, const long paoId, CtiTabl
     deleter << paoId
             << ownerString;
 
-    return Database::executeCommand( deleter, __FILE__, __LINE__ );
+    return Database::executeCommand( deleter, CALLSITE );
 }
 
 /**
@@ -180,7 +180,7 @@ void DynamicPaoInfoManager::loadInfo(const long paoId)
     rdr << *ownerString
         << paoId;
 
-    Database::executeCommand(rdr, __FILE__, __LINE__, Database::LogDebug(DebugLevel & 0x00020000));
+    Database::executeCommand(rdr, CALLSITE, Database::LogDebug(DebugLevel & 0x00020000));
 
     if(rdr.isValid())
     {
@@ -287,7 +287,7 @@ void DynamicPaoInfoManager::purgeInfo(const long paoId)
 
     deleter << paoId << *ownerString;
 
-    Database::executeCommand( deleter, __FILE__, __LINE__ );
+    Database::executeCommand( deleter, CALLSITE );
 }
 
 void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInfoKeys key)
@@ -334,7 +334,7 @@ void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInf
             << keyString
             << *ownerString;
 
-    Database::executeCommand( deleter, __FILE__, __LINE__ );
+    Database::executeCommand( deleter, CALLSITE );
 }
 
 Database::id_set DynamicPaoInfoManager::writeInfo( void )
@@ -567,7 +567,7 @@ DynamicPaoInfoManager::PaoIds DynamicPaoInfoManager::getPaoIdsHavingInfo(PaoInfo
 
     rdr << CtiTableDynamicPaoInfo::getKeyString(k);
 
-    Database::executeCommand(rdr,  __FILE__, __LINE__, Database::LogDebug(DebugLevel & 0x00020000));
+    Database::executeCommand(rdr, CALLSITE, Database::LogDebug(DebugLevel & 0x00020000));
 
     PaoIds ids;
 

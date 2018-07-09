@@ -789,7 +789,7 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy( __FILE__, __LINE__ );
+        autopsy(CALLSITE );
     }
 
 

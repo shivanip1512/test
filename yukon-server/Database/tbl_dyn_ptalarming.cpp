@@ -76,7 +76,7 @@ bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &con
     getLogType() <<
     getUser();
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() )))
+    if( ! Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug( isDebugLudicrous() )))
     {
         return false;
     }
@@ -152,7 +152,7 @@ bool CtiTableDynamicPointAlarming::Update( Cti::Database::DatabaseConnection &co
         << getPointID()
         << getAlarmCondition();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::LogDebug( isDebugLudicrous() ), Cti::Database::LogNoRowsAffected::Disable ))
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE , Cti::Database::LogDebug( isDebugLudicrous() ), Cti::Database::LogNoRowsAffected::Disable ))
     {
         return Insert(conn); // Try a vanilla insert if the update failed!
     }
@@ -172,7 +172,7 @@ bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
         << pointid
         << alarm_condition;
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() ));
+    return Cti::Database::executeCommand( deleter, CALLSITE, Cti::Database::LogDebug( isDebugLudicrous() ));
 }
 
 string CtiTableDynamicPointAlarming::getSQLCoreStatement() const

@@ -161,7 +161,7 @@ void CtiProtocolANSI::reinitialize( void )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
 
     CTILOG_INFO(dout, "Ansi reinit finished");
@@ -196,7 +196,7 @@ int CtiProtocolANSI::recvOutbound( OUTMESS *OutMessage )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
 
     return( getScanOperation() == loopBack ? 1 : _header->numTablesRequested );   //just a val
@@ -240,7 +240,7 @@ void CtiProtocolANSI::buildWantedTableList( BYTE *aPtr )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
 }
 
@@ -315,7 +315,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                {
                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-                   autopsy(__FILE__, __LINE__);
+                   autopsy(CALLSITE);
 
                    _ansiAbortOperation = TRUE;
                    _index = _header->numTablesRequested - 1;
@@ -348,7 +348,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
 
         _ansiAbortOperation = TRUE;
         _index = _header->numTablesRequested - 1;
@@ -1050,7 +1050,7 @@ void CtiProtocolANSI::convertToTable(  )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
 
         _ansiAbortOperation = TRUE;
         _index = _header->numTablesRequested - 1;
@@ -1420,7 +1420,7 @@ void CtiProtocolANSI::updateBytesExpected( )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
 
         _ansiAbortOperation = TRUE;
     }
@@ -1623,7 +1623,7 @@ bool CtiProtocolANSI::retrieveDemand( int offset, double *value, double *timesta
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return false;
 }
@@ -1685,7 +1685,7 @@ bool CtiProtocolANSI::retrieveSummation( int offset, double *value,  double *tim
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return false;
 }
@@ -1745,7 +1745,7 @@ bool CtiProtocolANSI::retrievePresentValue( int offset, double *value )
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE);
         }
     }
     return success;
@@ -1771,7 +1771,7 @@ bool CtiProtocolANSI::retrievePresentDemand( int offset, double *value )
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE);
         }
     }
     else
@@ -1813,7 +1813,7 @@ bool CtiProtocolANSI::retrievePresentDemand( int offset, double *value )
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE);
         }
     }
     return success;
@@ -1856,7 +1856,7 @@ bool CtiProtocolANSI::retrieveBatteryLife( int offset, double *value )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return false;
 }
@@ -1895,7 +1895,7 @@ bool CtiProtocolANSI::retrieveMeterTimeDiffStatus( int offset, double *status )
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-            autopsy(__FILE__, __LINE__);
+            autopsy(CALLSITE);
         }
     }
 
@@ -2022,7 +2022,7 @@ bool CtiProtocolANSI::retrieveLPDemand( int offset, int dataSet )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     if (lpDemandSelect != NULL)
     {
@@ -2435,7 +2435,7 @@ int CtiProtocolANSI::getSizeOfLastLPDataBlock(int dataSetNbr)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return 0;
 }
@@ -2470,7 +2470,7 @@ int CtiProtocolANSI::getSizeOfLPDataBlock(int dataSetNbr)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return 0;
 }
@@ -2495,7 +2495,7 @@ int CtiProtocolANSI::getSizeOfLPReadingsRcd()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return 0;
 }
@@ -2520,7 +2520,7 @@ int CtiProtocolANSI::getSizeOfLPIntSetRcd(int dataSetNbr)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return 0;
 }
@@ -2567,7 +2567,7 @@ int CtiProtocolANSI::getSizeOfLPIntFmtRcd(int dataSetNbr)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
     return 0;
 }
@@ -2627,7 +2627,7 @@ int CtiProtocolANSI::proc09RemoteReset(UINT8 actionFlag)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
 
     return 1;
@@ -2783,7 +2783,7 @@ void CtiProtocolANSI::setTablesAvailable(unsigned char * stdTblsUsed, int dimStd
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
-        autopsy(__FILE__, __LINE__);
+        autopsy(CALLSITE);
     }
 
     return;

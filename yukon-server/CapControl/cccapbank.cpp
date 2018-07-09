@@ -2094,7 +2094,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             << _partialPhaseInfo
             << getPaoId();
 
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
+            if( Cti::Database::executeCommand( updater, CALLSITE ))
             {
                 _dirty = false; // No error occured!
             }
@@ -2128,7 +2128,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             << _reportedCBCLastControlReason
             << _partialPhaseInfo;
 
-            if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
+            if( Cti::Database::executeCommand( dbInserter, CALLSITE, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
                 _dirty = false; // No error occured!

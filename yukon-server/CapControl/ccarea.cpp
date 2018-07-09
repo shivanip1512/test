@@ -102,7 +102,7 @@ bool CtiCCArea::updateDynamicData( Cti::Database::DatabaseConnection & conn, Cti
         << getVoltReductionControlValue()
         << getPaoId();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( writer, CALLSITE );
 }
 
 bool CtiCCArea::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
@@ -122,7 +122,7 @@ bool CtiCCArea::insertDynamicData( Cti::Database::DatabaseConnection & conn, Cti
         << formatFlags()
         << getVoltReductionControlValue();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
+    return Cti::Database::executeCommand( writer, CALLSITE, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
 /*

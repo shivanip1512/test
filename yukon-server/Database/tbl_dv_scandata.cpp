@@ -197,7 +197,7 @@ bool CtiTableDeviceScanData::Update(Cti::Database::DatabaseConnection &conn)
         << getNextScan(3)
         << getDeviceID();
 
-    if ( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
+    if ( ! Cti::Database::executeUpdater( updater, CALLSITE ))
     {
         return false;
     }
@@ -234,7 +234,7 @@ bool CtiTableDeviceScanData::Insert()
         << getNextScan(2)
         << getNextScan(3);
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeCommand( inserter, CALLSITE ))
     {
         return false;
     }

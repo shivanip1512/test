@@ -40,7 +40,7 @@ using namespace std;
 
 void __cdecl Purecall(void)
 {
-    autopsy( __FILE__, __LINE__);
+    autopsy(CALLSITE);
 }
 
 

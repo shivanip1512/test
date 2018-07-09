@@ -150,7 +150,7 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
 
             DatabaseWriter creator{ conn, getTempTableCreationSql() };
 
-            executeWriter(creator, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
+            executeWriter(creator, CALLSITE, Cti::Database::LogDebug::Disable);
         }
 
         transaction.emplace(conn);
@@ -176,7 +176,7 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
                 record->fillRowWriter(inserter);
             }
 
-            executeWriter(inserter, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
+            executeWriter(inserter, CALLSITE, Cti::Database::LogDebug::Disable);
 
             rowsWritten += chunk.size();
 

@@ -381,7 +381,7 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
         << getNameOfAcceptPerson()
         << getEnergyExchangeNotes();
 
-    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
+    Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
 /*---------------------------------------------------------------------------
@@ -418,7 +418,7 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
         << getOfferId()
         << getRevisionNumber();
 
-    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
+    Cti::Database::executeCommand( updater, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
 /*---------------------------------------------------------------------------

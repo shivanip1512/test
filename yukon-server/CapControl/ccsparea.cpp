@@ -76,7 +76,7 @@ bool CtiCCSpecial::updateDynamicData( Cti::Database::DatabaseConnection & conn, 
         << getVoltReductionControlValue()
         << getPaoId();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( writer, CALLSITE );
 }
 
 bool CtiCCSpecial::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
@@ -96,7 +96,7 @@ bool CtiCCSpecial::insertDynamicData( Cti::Database::DatabaseConnection & conn, 
         << formatFlags()
         << getVoltReductionControlValue();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
+    return Cti::Database::executeCommand( writer, CALLSITE, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
 void CtiCCSpecial::handleSpecializedPointData( const CtiPointDataMsg & message )

@@ -148,7 +148,7 @@ bool CtiCCSubstation::updateDynamicData( Cti::Database::DatabaseConnection & con
         << getSaEnabledId()
         << getPaoId();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( writer, CALLSITE );
 }
 
 bool CtiCCSubstation::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
@@ -168,7 +168,7 @@ bool CtiCCSubstation::insertDynamicData( Cti::Database::DatabaseConnection & con
         << formatFlags()
         << getSaEnabledId();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
+    return Cti::Database::executeCommand( writer, CALLSITE, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
 /*

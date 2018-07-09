@@ -132,7 +132,7 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
                               == (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE);
 
     // if Nothing to update. Quietly return false;
-    return executeUpdater( dbUpdater, __FILE__, __LINE__, logDebug, LogNoRowsAffected::Disable );
+    return executeUpdater( dbUpdater, CALLSITE, logDebug, LogNoRowsAffected::Disable );
 }
 
 bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse)
@@ -154,7 +154,7 @@ bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databas
                << pointResponse.getDelta()
                << tempString;
 
-    return executeCommand( dbInserter, __FILE__, __LINE__, LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) );
+    return executeCommand( dbInserter, CALLSITE, LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) );
 }
 
 bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse)
@@ -177,7 +177,7 @@ bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseC
 
 bool PointResponseDatabaseDao::performDatabaseOperation(DatabaseReader& reader, vector<PointResponse>& pointResponses)
 {
-    if( ! executeCommand( reader, __FILE__, __LINE__, LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
+    if( ! executeCommand( reader, CALLSITE, LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
     {
         return false;
     }

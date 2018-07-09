@@ -131,7 +131,7 @@ void CtiTableSignal::Insert(Cti::Database::DatabaseConnection &conn)
         << getUser()
         << getMillis();
 
-    Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
+    Cti::Database::executeCommand( inserter, CALLSITE );
 }
 
 void CtiTableSignal::Insert()

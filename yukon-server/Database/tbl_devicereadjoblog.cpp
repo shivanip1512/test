@@ -82,7 +82,7 @@ bool CtiTblDeviceReadJobLog::Insert()
         << getStartTime()
         << getStopTime();
 
-    return Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( inserter, CALLSITE );
 }
 
 bool CtiTblDeviceReadJobLog::UpdateStopTime()
@@ -100,6 +100,6 @@ bool CtiTblDeviceReadJobLog::UpdateStopTime()
         << getStopTime()
         << getJobLogId();
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+    return Cti::Database::executeUpdater( updater, CALLSITE );
 }
 

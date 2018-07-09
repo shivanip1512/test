@@ -792,7 +792,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
         << getPAOId()
         << getCurtailReferenceId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
         // If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
 
@@ -840,7 +840,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
                 << getRunStatus()
                 << getAdditionalInfo();
 
-            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
+            Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
         }
     }
 }

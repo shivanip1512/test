@@ -221,7 +221,7 @@ bool CtiTableVersacomLoadGroup::Delete()
 
     deleter << getDeviceID();
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( deleter, CALLSITE );
 }
 
 string CtiTableVersacomLoadGroup::getTableName()

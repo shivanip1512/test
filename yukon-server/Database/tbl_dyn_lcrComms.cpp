@@ -54,7 +54,7 @@ bool CtiTableDynamicLcrCommunications::prepareTableForUpdates()
         Cti::Database::DatabaseConnection   connection;
         Cti::Database::DatabaseWriter       writer( connection, sql );
 
-        _needPreInsert = ! Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+        _needPreInsert = ! Cti::Database::executeCommand( writer, CALLSITE, Cti::Database::LogDebug::Enable );
     }
 
     return ! _needPreInsert;
@@ -105,7 +105,7 @@ void CtiTableDynamicLcrCommunications::updateTime( const std::string column_name
             << new_time
             << new_time;
 
-        Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+        Cti::Database::executeCommand( writer, CALLSITE, Cti::Database::LogDebug::Enable );
     }
 }
 

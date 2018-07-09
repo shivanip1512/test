@@ -913,7 +913,7 @@ boost::optional<long> CtiPointManager::getIdForOffsetAndType(long pao, int offse
 
     Cti::Database::DatabaseReader rdr(conn, sql);
 
-    Cti::Database::executeCommand(rdr, __FILE__,  __LINE__);
+    Cti::Database::executeCommand(rdr, CALLSITE);
 
     rdr << pao;
     rdr << desolvePointType(type);

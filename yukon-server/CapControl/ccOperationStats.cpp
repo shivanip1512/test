@@ -346,7 +346,7 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
                     << _monthlyConfFail
                     << _paoid;
 
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
+            if( Cti::Database::executeCommand( updater, CALLSITE ))
             {
                 _dirty = false; // No error occured!
             }
@@ -372,7 +372,7 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
                 CTILOG_DEBUG(dout, inserter.asString());
             }
 
-            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
+            if( Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
                 _dirty = false; // No error occured!

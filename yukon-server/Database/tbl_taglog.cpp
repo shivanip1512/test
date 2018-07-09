@@ -87,7 +87,7 @@ bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() )))
+    if( ! Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug( isDebugLudicrous() )))
     {
         return false;
     }
@@ -148,7 +148,7 @@ bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
         << getTaggedForStr()
         << getLogId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, 
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE, 
         Cti::Database::LogDebug(isDebugLudicrous()), Cti::Database::LogNoRowsAffected::Disable))
     {
         return Insert(conn); // Try a vanilla insert if the update failed!

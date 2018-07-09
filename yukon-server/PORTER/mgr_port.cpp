@@ -119,7 +119,7 @@ bool CtiPortManager::RefreshType(const std::string name, const std::string sql, 
     DatabaseConnection connection;
     DatabaseReader rdr(connection, sql);
 
-    executeCommand(rdr, __FILE__, __LINE__, LogDebug(DebugLevel & 0x00080000));
+    executeCommand(rdr, CALLSITE, LogDebug(DebugLevel & 0x00080000));
 
     bool rowFound = false;
 

@@ -731,7 +731,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     << Cti::Database::DatabaseWriter::Null
                         ;
 
-                Cti::Database::executeWriter( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+                Cti::Database::executeWriter( writer, CALLSITE, Cti::Database::LogDebug::Enable );
             }
 
             state->setState( IVVCState::DMV_TEST_DATA_GATHERING_START );
@@ -4561,7 +4561,7 @@ void updateDmvTestStatus( const long            executionID,
         << testID
             ;
 
-    Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+    Cti::Database::executeUpdater( updater, CALLSITE, Cti::Database::LogDebug::Enable );
 }
 
 
@@ -4671,7 +4671,7 @@ bool processDmvScanData( IVVCStatePtr           state,
 
             try
             {
-                Cti::Database::executeWriter( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+                Cti::Database::executeWriter( writer, CALLSITE, Cti::Database::LogDebug::Enable );
             }
             catch ( ... )
             {

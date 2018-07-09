@@ -285,7 +285,7 @@ bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
     writer
         << _row_id;
 
-    return Cti::Database::executeUpdater( writer, __FILE__, __LINE__ );
+    return Cti::Database::executeUpdater( writer, CALLSITE );
 }
 
 bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
@@ -321,7 +321,7 @@ bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
         << getStatisticTypeString(_type)
         << _interval_start;
 
-    return Database::executeUpdater( writer, __FILE__, __LINE__, Database::LogDebug::Disable, Database::LogNoRowsAffected::Disable );
+    return Database::executeUpdater( writer, CALLSITE, Database::LogDebug::Disable, Database::LogNoRowsAffected::Disable );
 }
 
 bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)

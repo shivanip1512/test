@@ -12,7 +12,6 @@ using namespace std;
 #include "dllbase.h"
 
 static void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous);
-extern void autopsy(const char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
 
 static void DefibBlockSem(HCTIQUEUE QueueHandle)
 {
@@ -40,7 +39,7 @@ IM_EX_CTIBASE INT GetRequestCount(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG 
     {
         CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
-        //autopsy(__FILE__, __LINE__);
+        //autopsy(CALLSITE);
 
         if(++dlcnt > 10)
         {
@@ -162,7 +161,7 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     {
         CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
-        //autopsy(__FILE__, __LINE__);
+        //autopsy(CALLSITE);
 
         if(++dlcnt > 10)
         {
@@ -298,7 +297,7 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
     {
         CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
-        //autopsy(__FILE__, __LINE__);
+        //autopsy(CALLSITE);
 
         if(++dlcnt > 10)
         {
@@ -385,7 +384,7 @@ IM_EX_CTIBASE INT ReadElementById(HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID
     {
         CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
-        //autopsy(__FILE__, __LINE__);
+        //autopsy(CALLSITE);
 
         if(++dlcnt > 10)
         {
@@ -464,7 +463,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     {
         CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
-        //autopsy(__FILE__, __LINE__);
+        //autopsy(CALLSITE);
 
         if(++dlcnt > 10)
         {
@@ -534,7 +533,7 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
                         catch(...)
                         {
                             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-                            autopsy( __FILE__, __LINE__ );
+                            autopsy(CALLSITE );
                         }
 
                         Entry = Entry->Next;
@@ -599,7 +598,7 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                     catch(...)
                     {
                         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-                        autopsy( __FILE__, __LINE__ );
+                        autopsy(CALLSITE );
                     }
                 }
             }

@@ -72,7 +72,7 @@ bool CtiTableLMProgramHistory::Insert()
             << _programName
             << _programID;
 
-        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
+        if( ! Cti::Database::executeCommand( inserter, CALLSITE ))
         {
             //We had an error, force a reload
             CurrentLMProgramHistoryId = 0;
@@ -96,7 +96,7 @@ bool CtiTableLMProgramHistory::Insert()
         << _gearID
         << _reason;
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeCommand( inserter, CALLSITE ))
     {
         //We had an error, force a reload
         CurrentLMProgramHistoryId = 0;

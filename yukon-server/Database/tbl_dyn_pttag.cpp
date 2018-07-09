@@ -113,7 +113,7 @@ bool CtiTableDynamicTag::Insert(Cti::Database::DatabaseConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() )))
+    if( ! Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug( isDebugLudicrous() )))
     {
         return false; 
     }
@@ -174,7 +174,7 @@ bool CtiTableDynamicTag::Update(Cti::Database::DatabaseConnection &conn)
         << getTaggedForStr()
         << getInstanceId();
 
-    if( ! executeUpdater( updater, __FILE__, __LINE__ , LogDebug(isDebugLudicrous()), LogNoRowsAffected::Disable ))
+    if( ! executeUpdater( updater, CALLSITE , LogDebug(isDebugLudicrous()), LogNoRowsAffected::Disable ))
     {
         return Insert(conn); // Try a vanilla insert if the update failed!
     }
@@ -197,7 +197,7 @@ bool CtiTableDynamicTag::Delete(int instance)
 
     deleter << instance;
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() ));
+    return Cti::Database::executeCommand( deleter, CALLSITE, Cti::Database::LogDebug( isDebugLudicrous() ));
 }
 
 string CtiTableDynamicTag::getSQLCoreStatement()

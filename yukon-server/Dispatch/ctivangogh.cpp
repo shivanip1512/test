@@ -4815,7 +4815,7 @@ bool CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, 
                 << ( TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            paobjectSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+            paobjectSuccess = Cti::Database::executeUpdater( updater, CALLSITE );
         }
 
         {
@@ -4827,7 +4827,7 @@ bool CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, 
                 << ( TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            deviceSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+            deviceSuccess = Cti::Database::executeUpdater( updater, CALLSITE );
         }
     }
 
@@ -4863,7 +4863,7 @@ bool CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_POINT_BY_POINT & setmask ? "Y" : "N" )
                 << pid;
 
-            pointSuccess = executeUpdater( updater, __FILE__, __LINE__ );
+            pointSuccess = executeUpdater( updater, CALLSITE );
         }
 
         if (TAG_DISABLE_CONTROL_BY_POINT & tagmask)
@@ -4878,7 +4878,7 @@ bool CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, s
                 << pid;
 
             //  no error if the point doesn't have a control table entry
-            pointStatusSuccess = executeUpdater( updater, __FILE__, __LINE__, LogDebug(isDebugLudicrous()), LogNoRowsAffected::Disable );
+            pointStatusSuccess = executeUpdater( updater, CALLSITE, LogDebug(isDebugLudicrous()), LogNoRowsAffected::Disable );
         }
     }
 

@@ -4629,7 +4629,7 @@ bool CtiCCFeeder::updateDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getPhaseCValueBeforeControl()
         << getPaoId();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( writer, CALLSITE );
 }
 
 bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, CtiTime & currentDateTime )
@@ -4688,7 +4688,7 @@ bool CtiCCFeeder::insertDynamicData( Cti::Database::DatabaseConnection & conn, C
         << getPhaseBValueBeforeControl()
         << getPhaseCValueBeforeControl();
 
-    return Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
+    return Cti::Database::executeCommand( writer, CALLSITE, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
 
 /*---------------------------------------------------------------------------

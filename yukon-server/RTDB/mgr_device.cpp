@@ -437,7 +437,7 @@ Devices::RfnDeviceSPtr CtiDeviceManager::getDeviceByRfnIdentifier(const RfnIdent
 
     rdr << rfnId.serialNumber << rfnId.manufacturer << rfnId.model;
 
-    Cti::Database::executeCommand(rdr, __FILE__, __LINE__);
+    Cti::Database::executeCommand(rdr, CALLSITE);
 
     if( rdr() )
     {

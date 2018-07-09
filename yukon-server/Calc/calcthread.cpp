@@ -1776,7 +1776,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
         for( iter = unlistedPoints.begin(); iter != unlistedPoints.end(); iter++ )
         {
             writer << iter->first << iter->second;
-            if( ! Cti::Database::executeCommand( writer, __FILE__, __LINE__ ))
+            if( ! Cti::Database::executeCommand( writer, CALLSITE ))
             {
                 CTILOG_ERROR(dout, "Failed to insert in CalcHistoricalUpdatedTime");
                 break;
@@ -1789,7 +1789,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
         for( iter = updatedPoints.begin(); iter != updatedPoints.end(); iter++ )
         {
             writer << iter->second << iter->first;
-            Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
+            Cti::Database::executeCommand( writer, CALLSITE );
         }
 
     }

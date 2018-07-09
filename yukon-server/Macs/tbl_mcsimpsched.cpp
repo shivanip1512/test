@@ -123,7 +123,7 @@ bool CtiTableMCSimpleSchedule::Update()
         << getRepeatInterval()
         << getScheduleID();
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+    return Cti::Database::executeUpdater( updater, CALLSITE );
 }
 
 bool CtiTableMCSimpleSchedule::Insert()
@@ -140,7 +140,7 @@ bool CtiTableMCSimpleSchedule::Insert()
         << getStopCommand()
         << getRepeatInterval();
 
-    return Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( inserter, CALLSITE );
 }
 
 bool CtiTableMCSimpleSchedule::Delete()
@@ -152,7 +152,7 @@ bool CtiTableMCSimpleSchedule::Delete()
 
     deleter << getScheduleID();
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( deleter, CALLSITE );
 }
 
 CtiTableMCSimpleSchedule::~CtiTableMCSimpleSchedule()

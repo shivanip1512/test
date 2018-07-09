@@ -394,7 +394,7 @@ bool CtiTableDynamicPaoInfoBase::Insert(Cti::Database::DatabaseConnection &conn,
         << _value
         << CtiTime();
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() )))
+    if( ! Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug( isDebugLudicrous() )))
     {
         return false;
     }
@@ -434,7 +434,7 @@ bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn,
         << owner
         << keyString;
 
-    if( ! Cti::Database::executeCommand(updater, __FILE__, __LINE__) )
+    if( ! Cti::Database::executeCommand(updater, CALLSITE) )
     {
         return false;
     }

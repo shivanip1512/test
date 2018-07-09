@@ -195,7 +195,7 @@ bool CtiTableMCSchedule::Update()
         << getTemplateType()
         << getScheduleID();
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+    return Cti::Database::executeUpdater( updater, CALLSITE );
 }
 
 bool CtiTableMCSchedule::Insert()
@@ -254,7 +254,7 @@ bool CtiTableMCSchedule::Insert()
 
     inserter << getTemplateType();
 
-    return Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( inserter, CALLSITE );
 }
 
 bool CtiTableMCSchedule::Delete()
@@ -266,7 +266,7 @@ bool CtiTableMCSchedule::Delete()
 
     deleter << getScheduleID();
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    return Cti::Database::executeCommand( deleter, CALLSITE );
 }
 /*========Setters and Getters Below========*/
 

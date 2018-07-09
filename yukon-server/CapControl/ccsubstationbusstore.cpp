@@ -3022,7 +3022,7 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
 
     updater << (string)(bus->getVerificationFlag()?"Y":"N") << bus->getPaoId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE ))
     {
         return false;
     }
@@ -3047,7 +3047,7 @@ bool CtiCCSubstationBusStore::updateDisableFlag(unsigned int paoid, bool isDisab
 
     updater << (string)(isDisabled?"Y":"N") << paoid;
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+    return Cti::Database::executeUpdater( updater, CALLSITE );
 }
 
 
@@ -3109,7 +3109,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
 
     updater << capbank->getOperationalState() << capbank->getPaoId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeUpdater( updater, CALLSITE ))
     {
         return false;
     }
@@ -3145,7 +3145,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
             << capbank->getPaoDescription().c_str()
             << capbank->getPaoId();
 
-    bool paobjectUpdateSuccessful = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+    bool paobjectUpdateSuccessful = Cti::Database::executeUpdater( updater, CALLSITE );
 
     static const string capbankUpdateSql = "update capbank set banksize = ?, operationalstate = ?"
                                            " where deviceid = ?";
@@ -3155,7 +3155,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
             << capbank->getOperationalState()
             << capbank->getPaoId();
 
-    bool capbankUpdateSuccessful = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
+    bool capbankUpdateSuccessful = Cti::Database::executeUpdater( updater, CALLSITE );
 
     if ( paobjectUpdateSuccessful || capbankUpdateSuccessful )
     {
@@ -3189,7 +3189,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 
         deleter << feeder->getPaoId();
 
-        Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+        Cti::Database::executeCommand( deleter, CALLSITE );
     }
 
     static const std::string insertSql = "insert into ccfeederbanklist values(?, ?, ?, ?, ?)";
@@ -3206,7 +3206,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
                  << currentCapBank->getCloseOrder()
                  << currentCapBank->getTripOrder();
 
-        if( ! Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__ ))
+        if( ! Cti::Database::executeCommand( dbInserter, CALLSITE ))
         {
             insertSuccessful = false;
         }

@@ -718,7 +718,7 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
                         << currentSchedule->getLastRunTime()
                         << currentSchedule->getScheduleId();
 
-                    if( Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
+                    if( Cti::Database::executeUpdater( updater, CALLSITE ))
                     {
                         currentSchedule->setDirty(false);
                     }
