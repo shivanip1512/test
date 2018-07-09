@@ -15,7 +15,7 @@ public enum CbcImportResultType implements DatabaseRepresentationSource {
 	ILLEGAL_CHARS("Invalid CBC name", 11), 
 	INVALID_PARENT_RTU("Invalid Parent RTU name", 12),
     ACTION_NOT_SUPPORTED_CBC_LOGICAL("Assignment of Cap Bank to CBC Logical is currently unsupported for import action ADD ", 13),
-    NO_CONTROL_POINT_CBC_LOGICAL("CBC Logical does not have a Control Point Attribute ", 14);
+    NO_CONTROL_POINT_CBC_LOGICAL("CBC Logical missing its required Control Point attribute", 14);
 	
 	private final String dbString;
 	private final int errorCode;
