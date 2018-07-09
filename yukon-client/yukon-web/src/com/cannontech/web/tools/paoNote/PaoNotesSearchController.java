@@ -142,7 +142,7 @@ public class PaoNotesSearchController {
             dataRows.add(dataRow);
         }
 
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Notes.csv");
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Device Notes.csv");
     }
 
     @InitBinder
