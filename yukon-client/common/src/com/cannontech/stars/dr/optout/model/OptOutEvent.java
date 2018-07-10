@@ -89,8 +89,11 @@ public class OptOutEvent {
 			return null;
 		}
 
-		// Use Joda to get correct duration in hours
-		Period period = new Period(startDate, stopDate, PeriodType.time());
+        // Use Joda to get correct duration in hours
+        // Add 15 min offset to stopDate to get correct duration in hours.(startDate change to
+        // current instant and it impact duration hours).
+        // We are rounding off the difference between opt out start and stop date.
+        Period period = new Period(startDate, stopDate.plus(Period.minutes(15).toStandardDuration()), PeriodType.time());
 		
 		return period.get(DurationFieldType.hours());
 	}
