@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--Highest Status OFFSET=1000 @ 2016-08-12-->
-<!--Highest Analog OFFSET=373 @ 2018-05-29-->
+<!--Highest Analog OFFSET=376 @ 2018-07-10-->
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
 <!-- Point Name naming convention: 
-[Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #] 
+[Net|Sum] [Delivered|Received] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #] 
 Examples: 
 Net kWh OR Net Delivered kWh 
 Received kWh Rate A 
 Note: [Delivered] - can be omitted/assumed where it make sense; Peak kW or kVar for examples 
+Note: For attributes that reference the modifiers of "Quadrant" directly, the modifiers will follow the UOM in format "(Quadrants # #)". Example: kVA (Quadrants 1 2)
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

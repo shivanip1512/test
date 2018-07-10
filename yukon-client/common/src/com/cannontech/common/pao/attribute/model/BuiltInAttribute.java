@@ -29,7 +29,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
      /** 
        * Point Name naming convention: 
-       * [Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #] 
+       * [Net|Sum] [Delivered|Received] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #] 
        * Examples: 
        * Net kWh OR Net Delivered kWh 
        * Received kWh Rate A 
