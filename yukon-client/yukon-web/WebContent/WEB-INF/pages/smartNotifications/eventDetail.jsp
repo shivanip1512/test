@@ -100,11 +100,11 @@
     </c:if>
 
     <c:if test="${infraOrDDMEvent}">
-        <jsp:include page="/WEB-INF/pages/smartNotifications/ddmAndInfraWarnEventDetails.jsp" />
+        <%@ include file="ddmAndInfraWarnEventDetails.jsp" %>
     </c:if>
 
     <c:if test="${watchdogEvent}">
-        <jsp:include page="/WEB-INF/pages/smartNotifications/watchdogWarningEventDetails.jsp" />
+        <%@ include file="watchdogWarningEventDetails.jsp" %>
     </c:if>
 
     <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>

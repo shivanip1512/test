@@ -79,10 +79,16 @@ public interface SmartNotificationEventDao {
 
     List<SmartNotificationEvent> getEventsByTypeAndDate(SmartNotificationEventType eventType, Range<Instant> range);
 
+    /**
+     * Returns watchdog event data to be displayed on UI.
+     */
     SearchResults<SmartNotificationEventData> getWatchdogWarningEventData(DateTimeZone timeZone, 
                                                                           PagingParameters paging, 
                                                                           SortBy sortBy, 
                                                                           Direction direction, 
                                                                           Range<DateTime> dateRange);
+    /**
+     * Returns watchdog event count based on selected from and to time range.
+     */
     int getWatchdogWarningEventDetailCount(DateTime from, DateTime to);
 }

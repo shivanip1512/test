@@ -158,6 +158,7 @@ public class SmartNotificationsController {
             sb.append(monitorName);
             sb.append(")");
             model.addAttribute("description", sb.toString());
+            addDeviceCollectionToModelMap(allDetail, model);
         } else if (eventType == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
             InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
             if (filter.getCategories().isEmpty()) {
@@ -180,20 +181,23 @@ public class SmartNotificationsController {
             }
             eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, allTypes);
             allDetail = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range, allTypes);
+            addDeviceCollectionToModelMap(allDetail, model);
         } else if (eventType == SmartNotificationEventType.YUKON_WATCHDOG) {
             eventData = eventDao.getWatchdogWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range);
-            allDetail = eventDao.getWatchdogWarningEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range);
         }
+        return eventData;
+    }
+
+    private void addDeviceCollectionToModelMap(SearchResults<SmartNotificationEventData> allDetail, ModelMap model) {
         List<SimpleDevice> devices = new ArrayList<>();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         allDetail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getDeviceId())));
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
-        
+
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
         model.addAttribute("deviceCollection", deviceCollection);
-        return eventData;
     }
-    
+
     @RequestMapping(value="subscriptions", method=RequestMethod.GET)
     public String subscriptions(@ModelAttribute("filter") SmartNotificationFilter filter, BindingResult bindingResult,
                                 @DefaultSort(dir=Direction.asc, sort="type") SortingParameters sorting, 
