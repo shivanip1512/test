@@ -9,7 +9,9 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
 import com.cannontech.amr.statusPointMonitoring.service.impl.StatusPointMonitorServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.message.DbChangeManager;
@@ -21,6 +23,8 @@ public class PorterResponseMonitorServiceImpl implements PorterResponseMonitorSe
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
+    @Autowired private UserPageDao userPageDao;
+    
     private final Logger log = YukonLogManager.getLogger(StatusPointMonitorServiceImpl.class);
 
     @Override
@@ -39,6 +43,7 @@ public class PorterResponseMonitorServiceImpl implements PorterResponseMonitorSe
     public boolean delete(int monitorId) throws NotFoundException {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.PORTER_RESPONSE_MONITOR, monitorId);
         boolean deleted = porterResponseMonitorDao.deleteMonitor(monitorId);
+        userPageDao.deleteUserPages(monitorId, UserPageType.MONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.PORTER_RESPONSE_MONITOR, monitorId);
         return deleted;
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.userpage.model.UserPage.Key;
@@ -56,10 +57,9 @@ public interface UserPageDao {
      */
     List<DisplayablePao> getDrRecentViewed(LiteYukonUser user);
 
-    void deletePagesForPoint(int pointId);
-
     /**
-     * Delete all references to trend in page history/favorites.
+     * Delete all references to the user page in page history/favorites.
      */
-    void deletePagesForTrend(int trendId);
+    void deleteUserPages(int id, UserPageType type);
+
 }

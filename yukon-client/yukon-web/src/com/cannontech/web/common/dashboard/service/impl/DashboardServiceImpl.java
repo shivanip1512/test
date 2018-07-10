@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.events.loggers.DashboardEventLogService;
+import com.cannontech.common.userpage.dao.UserPageDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -34,6 +36,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired YukonUserDao userDao;
     @Autowired DashboardEventLogService dashboardEventLogService;
     @Autowired private WidgetService widgetService;
+    @Autowired private UserPageDao userPageDao;
  
     @Override
     public Dashboard getAssignedDashboard(int userId, DashboardPageType dashboardType) {
@@ -187,6 +190,7 @@ public class DashboardServiceImpl implements DashboardService {
     public void delete(LiteYukonUser yukonUser, int dashboardId) {
         String dashboardName = dashboardDao.getDashboard(dashboardId).getName();
         dashboardDao.deleteDashboard(dashboardId);
+        userPageDao.deleteUserPages(dashboardId, UserPageType.DASHBOARD);
         dashboardEventLogService.dashboardDeleted(yukonUser, dashboardName);
     }
 

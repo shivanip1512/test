@@ -8,7 +8,9 @@ import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.service.StatusPointMonitorService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.message.DbChangeManager;
@@ -20,6 +22,7 @@ public class StatusPointMonitorServiceImpl implements StatusPointMonitorService 
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private StatusPointMonitorDao statusPointMonitorDao;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
+    @Autowired private UserPageDao userPageDao;
     private final Logger log = YukonLogManager.getLogger(StatusPointMonitorServiceImpl.class);
 
     @Override
@@ -38,6 +41,7 @@ public class StatusPointMonitorServiceImpl implements StatusPointMonitorService 
     public boolean delete(int statusPointMonitorId) throws NotFoundException {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.STATUS_POINT_MONITOR, statusPointMonitorId);
         boolean deleted = statusPointMonitorDao.deleteStatusPointMonitor(statusPointMonitorId);
+        userPageDao.deleteUserPages(statusPointMonitorId, UserPageType.MONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.STATUS_POINT_MONITOR, statusPointMonitorId);
         return deleted;
     }

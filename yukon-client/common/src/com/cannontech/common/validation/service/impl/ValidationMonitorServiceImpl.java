@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
@@ -20,6 +22,7 @@ public class ValidationMonitorServiceImpl implements ValidationMonitorService {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private ValidationMonitorDao validationMonitorDao;
+    @Autowired private UserPageDao userPageDao;
     private final Logger log = YukonLogManager.getLogger(ValidationMonitorServiceImpl.class);
 
     @Override
@@ -40,6 +43,7 @@ public class ValidationMonitorServiceImpl implements ValidationMonitorService {
         // delete monitor
 
         boolean deleted = validationMonitorDao.delete(validationMonitorId);
+        userPageDao.deleteUserPages(validationMonitorId, UserPageType.MONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.VALIDATION_MONITOR, validationMonitorId);
         return deleted;
     }

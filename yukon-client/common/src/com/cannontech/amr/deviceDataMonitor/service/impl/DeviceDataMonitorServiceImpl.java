@@ -20,7 +20,9 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.jms.RequestTemplateImpl;
 import com.cannontech.core.dao.DuplicateException;
@@ -32,6 +34,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     @Autowired private ConfigurationSource configSource;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private SmartNotificationSubscriptionService smartNotificationSubscriptionService;
+    @Autowired private UserPageDao userPageDao;
 
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
     private JmsTemplate jmsTemplate;
@@ -62,6 +65,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
                                                                  monitor.getId().toString(), 
                                                                  monitor.getName(), userContext);
         deviceDataMonitorDao.deleteMonitor(monitor);
+        userPageDao.deleteUserPages(monitor.getId(), UserPageType.MONITOR);
     }
     
     @Override

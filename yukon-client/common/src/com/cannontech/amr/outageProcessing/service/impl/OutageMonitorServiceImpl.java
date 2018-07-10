@@ -11,7 +11,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
@@ -25,6 +27,8 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
     @Autowired private OutageMonitorDao outageMonitorDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
+    @Autowired private UserPageDao userPageDao;
+    
     private final Logger log = YukonLogManager.getLogger(OutageMonitorServiceImpl.class);
 
     @Override
@@ -61,6 +65,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.OUTAGE_MONITOR, outageMonitorId);
         // delete processor
         boolean deleted = outageMonitorDao.delete(outageMonitorId);
+        userPageDao.deleteUserPages(outageMonitorId, UserPageType.MONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.OUTAGE_MONITOR, outageMonitorId);
         return deleted;
     }

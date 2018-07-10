@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.userpage.dao.UserPageDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointLogicalGroups;
@@ -76,7 +77,7 @@ public class Point extends DBPersistent {
         delete(TABLE_NAME, CONSTRAINT_COLUMNS[0], getPointID());
 
         UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
-        userPageDao.deletePagesForPoint(getPointID());
+        userPageDao.deleteUserPages(getPointID(), UserPageType.POINT);
     }
 
     public Character getAlarmInhibit() {

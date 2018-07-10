@@ -22,15 +22,16 @@ import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.common.userpage.model.UserPage;
 import com.cannontech.common.userpage.model.UserPage.Key;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.AdvancedFieldMapper;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -38,7 +39,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 
 /**
@@ -363,9 +363,6 @@ public class UserPageDaoImpl implements UserPageDao {
         paoUrls.addAll(otherDeviceUrls);
     }
     
-    private static Pattern pointUrl = Pattern.compile("/tools/points/(\\d+).*");
-    private static Pattern trendUrl = Pattern.compile("/tools/trends/(\\d+).*");
-
     @Override
     public void deletePagesForPao(YukonPao pao) {
         List<UserPage> pages = getPages(null, null);
@@ -404,23 +401,12 @@ public class UserPageDaoImpl implements UserPageDao {
     }
     
     @Override
-    public void deletePagesForPoint(int pointId) {
+    public void deleteUserPages(int id, UserPageType type) {
         List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
-            Integer pagePointId = idInPath(page.getPath(), ImmutableList.of(pointUrl));
-            if (pagePointId != null && pagePointId == pointId) {
-                delete(page.getKey());
-            }
-        }
-    }
-
-    @Override
-    public void deletePagesForTrend(int trendId) {
-        List<UserPage> pages = getPages(null, null);
-        for (UserPage page : pages) {
-            Integer pageTrendId = idInPath(page.getPath(), ImmutableList.of(trendUrl));
-            if (pageTrendId != null && pageTrendId == trendId) {
+            Integer pageId = idInPath(page.getPath(), type.getUrl());
+            if (pageId != null && pageId == id) {
                 delete(page.getKey());
             }
         }

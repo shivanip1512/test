@@ -11,7 +11,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
+import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
@@ -25,6 +27,7 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private TamperFlagMonitorDao tamperFlagMonitorDao;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
+    @Autowired private UserPageDao userPageDao;
     private final Logger log = YukonLogManager.getLogger(TamperFlagMonitorServiceImpl.class);
 
     @Override
@@ -62,6 +65,7 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.TAMPER_FLAG_MONITOR, tamperFlagMonitorId);
         // delete monitor
         boolean deleted = tamperFlagMonitorDao.delete(tamperFlagMonitorId);
+        userPageDao.deleteUserPages(tamperFlagMonitorId, UserPageType.MONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.TAMPER_FLAG_MONITOR, tamperFlagMonitorId);
         return deleted;
     }
