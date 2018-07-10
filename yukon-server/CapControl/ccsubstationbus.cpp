@@ -7028,50 +7028,44 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
     return ! oorPoint;
 }
 
-
 bool CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime)
 {
     bool analysisNeeded = false;
 
-    if ( ( getStrategy()->getUnitType() == ControlStrategy::MultiVolt ||
-           getStrategy()->getUnitType() == ControlStrategy::MultiVoltVar ) &&
-           ! getVerificationFlag() )
+    if( ( getStrategy()->getUnitType() == ControlStrategy::MultiVolt ||
+          getStrategy()->getUnitType() == ControlStrategy::MultiVoltVar ) &&
+          ! getVerificationFlag() )
     {
-        if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
-             getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
+        if( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+            getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder )
         {
-            for (long i = 0; i < _ccfeeders.size();i++)
+            for( auto currentFeeder : _ccfeeders )
             {
-                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-
-                if (currentFeeder->getStrategy()->getControlInterval() > 0)
+                if( currentFeeder->getStrategy()->getControlInterval() > 0 )
                 {
-                    analysisNeeded |= (getNextCheckTime().seconds() <= currentDateTime.seconds());
+                    analysisNeeded |= ( getNextCheckTime().seconds() <= currentDateTime.seconds() );
                 }
-                else if (currentFeeder->getNewPointDataReceivedFlag())
+                else if( currentFeeder->getNewPointDataReceivedFlag() )
                 {
                     analysisNeeded = true;
                 }
             }
         }
-        else
+        else if( getStrategy()->getControlInterval() > 0 )
         {
-            if (getStrategy()->getControlInterval() > 0)
-            {
-                analysisNeeded |= (getNextCheckTime().seconds() <= currentDateTime.seconds());
-            }
-            else if (getNewPointDataReceivedFlag())
-            {
-                analysisNeeded = true;
-            }
+            analysisNeeded |= ( getNextCheckTime().seconds() <= currentDateTime.seconds() );
+        }
+        else if( getNewPointDataReceivedFlag() )
+        {
+            analysisNeeded = true;
         }
     }
 
     if( analysisNeeded )
     {
-        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+        if( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
         {
-            CTILOG_DEBUG(dout, "MULTIVOLT ANALYSIS on Sub: " << getPaoName());
+            CTILOG_DEBUG( dout, "MULTIVOLT ANALYSIS on Sub: " << getPaoName() );
         }
     }
 
