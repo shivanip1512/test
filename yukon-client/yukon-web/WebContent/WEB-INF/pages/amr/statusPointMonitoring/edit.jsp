@@ -103,7 +103,7 @@
                 
                 <%-- State Group --%>
                 <tags:nameValue2 nameKey=".stateGroup">
-                    ${statusPointMonitor.stateGroup}
+                    ${fn:escapeXml(statusPointMonitor.stateGroup)}
                 </tags:nameValue2>
                 
                 <%-- enable/disable monitoring --%>

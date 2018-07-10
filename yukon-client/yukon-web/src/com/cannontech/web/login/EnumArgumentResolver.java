@@ -1,5 +1,6 @@
 package com.cannontech.web.login;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -19,7 +20,7 @@ public class EnumArgumentResolver implements HandlerMethodArgumentResolver {
         @SuppressWarnings("rawtypes")
         Class parameterType = methodParameter.getParameterType();
         @SuppressWarnings("unchecked")
-        Object result = Enum.valueOf(parameterType, parameter);
+        Object result = Enum.valueOf(parameterType, StringEscapeUtils.escapeXml11(parameter));
         return result;
     }
 }

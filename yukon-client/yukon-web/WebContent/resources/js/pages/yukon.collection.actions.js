@@ -45,7 +45,7 @@ yukon.collection.actions = (function () {
                 var deviceCollection = yukon.fromJson('#collectionjson');
                 selectedHeader = 1;
                 $('.js-count').html($('#deviceCollectionCount').val());
-                $('.js-device-description').html($('#deviceCollectionDescription').val());
+                $('.js-device-description').text($('#deviceCollectionDescription').val());
             }
             if ($('#action').length) {
                 selectedHeader = 2;

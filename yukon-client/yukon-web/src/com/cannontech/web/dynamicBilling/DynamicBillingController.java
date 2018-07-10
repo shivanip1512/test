@@ -320,6 +320,7 @@ public class DynamicBillingController {
                                                  String delimiter, String fieldArray) throws IOException {
         
         DynamicFormat format = new DynamicFormat();
+        fieldArray = StringEscapeUtils.escapeXml11(fieldArray);
         
         List<DynamicBillingField> fieldList = format.getFieldList();
         

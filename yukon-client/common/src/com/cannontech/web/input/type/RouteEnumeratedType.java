@@ -3,6 +3,7 @@ package com.cannontech.web.input.type;
 import java.beans.PropertyEditor;
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.core.dao.PaoDao;
@@ -29,7 +30,7 @@ public class RouteEnumeratedType extends BaseEnumeratedType<String> {
 
             String routeName = route.getPaoName();
 
-            optionList.add( new InputOption(routeName, routeName));
+            optionList.add( new InputOption(routeName, StringEscapeUtils.escapeXml11(routeName)));
         }
 
         return optionList;

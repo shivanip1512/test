@@ -43,7 +43,7 @@ yukon.ui.bulk.device.selection = (function () {
             var numDevices = $('#deviceCollectionCount').val();
             $('.js-device-separator').removeClass('dn');
             $('.js-count').html(numDevices);
-            $('.js-device-description').html($('#deviceCollectionDescription').val());
+            $('.js-device-description').text($('#deviceCollectionDescription').val());
             //if no devices were selected, show message
             if (numDevices == 0) {
                 var noDevicesSelectedMsg = $('#noDevicesSelectedMessage').val();

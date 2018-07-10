@@ -15,6 +15,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -196,7 +197,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public Attribute resolveAttributeName(String name) {
         // some day this should also "lookup" user defined attributes
-        return BuiltInAttribute.valueOf(name);
+        return BuiltInAttribute.valueOf(StringEscapeUtils.escapeXml11(name));
     }
 
     @Override

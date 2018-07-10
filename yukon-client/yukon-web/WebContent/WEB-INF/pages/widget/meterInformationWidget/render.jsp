@@ -16,7 +16,7 @@
             <c:if test='${meter.address == null}'><i:inline key=".notApplicable"/></c:if>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".route">
-            <c:if test='${meter.route != null}'>${meter.route}</c:if>
+            <c:if test='${meter.route != null}'>${fn:escapeXml(meter.route)}</c:if>
             <c:if test='${meter.route == null}'><i:inline key=".notApplicable"/></c:if>
         </tags:nameValue2>
     </c:if>
