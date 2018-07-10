@@ -7031,7 +7031,8 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
 
 bool CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime)
 {
-    bool retVal = false;
+    bool analysisNeeded = false;
+
     if ( ( getStrategy()->getUnitType() == ControlStrategy::MultiVolt ||
            getStrategy()->getUnitType() == ControlStrategy::MultiVoltVar ) &&
            ! getVerificationFlag() )
@@ -7042,36 +7043,39 @@ bool CtiCCSubstationBus::isMultiVoltBusAnalysisNeeded(const CtiTime& currentDate
             for (long i = 0; i < _ccfeeders.size();i++)
             {
                 CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-                if (currentFeeder->getNewPointDataReceivedFlag())
+
+                if (currentFeeder->getStrategy()->getControlInterval() > 0)
                 {
-                    if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                    {
-                        CTILOG_DEBUG(dout, "MULTIVOLT ANALYSIS on Sub: "<<getPaoName());
-                    }
-                    retVal = true;
-                    return retVal;
+                    analysisNeeded |= (getNextCheckTime().seconds() <= currentDateTime.seconds());
                 }
-                //if (currentFeeder->getPostOperationMonitorPointScanFlag() )
+                else if (currentFeeder->getNewPointDataReceivedFlag())
+                {
+                    analysisNeeded = true;
+                }
             }
         }
-
-        if ( getNewPointDataReceivedFlag() )
+        else
         {
-            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+            if (getStrategy()->getControlInterval() > 0)
             {
-                CTILOG_DEBUG(dout, "MULTIVOLT ANALYSIS on Sub: "<<getPaoName());
+                analysisNeeded |= (getNextCheckTime().seconds() <= currentDateTime.seconds());
             }
-            retVal = true;
-
-        }
-        else if( getStrategy()->getControlInterval() > 0 )
-        {
-            retVal = (getNextCheckTime().seconds() <= currentDateTime.seconds());
-
+            else if (getNewPointDataReceivedFlag())
+            {
+                analysisNeeded = true;
+            }
         }
     }
 
-    return retVal;
+    if( analysisNeeded )
+    {
+        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+        {
+            CTILOG_DEBUG(dout, "MULTIVOLT ANALYSIS on Sub: " << getPaoName());
+        }
+    }
+
+    return analysisNeeded;
 }
 
 bool CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
