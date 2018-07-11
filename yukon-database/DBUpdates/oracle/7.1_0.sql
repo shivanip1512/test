@@ -454,7 +454,7 @@ END sp_UpdateAttributeName;
 /* @start-block */
 BEGIN
 /* Delivered Power Factor / DELIVERED_POWER_FACTOR -> Average Power Factor (Quadrants 1 2 4) / AVERAGE_POWER_FACTOR_Q124 */
-sp_UpdatePointName('Delivered Power Factor','Average Power Factor (Quadrants 1 2 4)','Analog',172,'RFN-430A3R');
+sp_UpdatePointName(v_CurrentPointName=>'Delivered Power Factor',v_NewPointName=>'Average Power Factor (Quadrants 1 2 4)',v_PointType=>'Analog',v_PointOffset=>172,v_DeviceType=>'RFN-430A3R');
 sp_UpdateAttributeName(v_CurrentAttributeName=>'DELIVERED_POWER_FACTOR',v_NewAttributeName=>'AVERAGE_POWER_FACTOR_Q124',v_DeviceType=>'RFN-430A3R');
 
 /* Sum Power Factor / SUM_POWER_FACTOR -> Average Power Factor / AVERAGE_POWER_FACTOR */
