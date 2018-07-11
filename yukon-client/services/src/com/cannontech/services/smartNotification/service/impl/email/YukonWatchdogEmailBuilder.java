@@ -57,7 +57,7 @@ public class YukonWatchdogEmailBuilder extends SmartNotificationEmailBuilder {
         }
         String warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs);
         argumentList.add(warningTypeString);
-        argumentList.add(getUrl("watchDogWarnings"));
+        argumentList.add(getUrl("watchdogWarnings"));
         return argumentList;
     }
 
@@ -78,7 +78,7 @@ public class YukonWatchdogEmailBuilder extends SmartNotificationEmailBuilder {
         } else if (verbosity == SmartNotificationVerbosity.EXPANDED) {
             argumentList.add(getWatchdogWarningArgumentsForDetailed(events, verbosity));
         }
-        argumentList.add(getUrl("watchDogWarnings"));
+        argumentList.add(getUrl("watchdogWarnings"));
         return argumentList;
     }
 

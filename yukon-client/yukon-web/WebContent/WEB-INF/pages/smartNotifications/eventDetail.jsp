@@ -59,54 +59,56 @@
             </div>
         </div>
     </form:form>
-    
-    <div class="js-events-timeline clear" style="margin-top:30px;margin-bottom:30px;"></div>
-    
-    <span class="fwn"><i:inline key=".filteredResults"/></span>
-    <span class="badge">${events.hitCount}</span>&nbsp;<i:inline key=".events"/>
-    
-    <c:if test="${events.hitCount > 0}">
-        <span class="js-cog-menu">
-            <cm:dropdown icon="icon-cog">
-             <c:if test="${infraOrDDMEvent}">
-                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                        <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>
-                </cti:url>
-                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/> 
-             </c:if>
-                <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
-             <c:if test="${infraOrDDMEvent}">
-                <cti:url var="mapUrl" value="/tools/map">
-                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                </cti:url>
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
-                <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
-                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                        <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>
-                </cti:url>
-                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>
-                <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
-                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                        <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>
-                </cti:url>	
-                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
-             </c:if>
-            </cm:dropdown>
-        </span>
-    </c:if>
 
-    <c:if test="${infraOrDDMEvent}">
-        <%@ include file="ddmAndInfraWarnEventDetails.jsp" %>
-    </c:if>
+    <c:choose>
+        <c:when test="${events.hitCount == 0}">
+            <span class="empty-list"><i:inline key=".noEvents"/></span>
+        </c:when>
+        <c:otherwise>
+            <div class="js-events-timeline clear" style="margin-top:30px;margin-bottom:30px;"></div>
+            <span class="fwn"><i:inline key=".filteredResults"/></span>
+            <span class="badge">${events.hitCount}</span>&nbsp;<i:inline key=".events"/>
+            <span class="js-cog-menu">
+                <cm:dropdown icon="icon-cog">
+                    <c:if test="${infraOrDDMEvent}">
+                        <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                <cti:param name="${cp.key}" value="${cp.value}"/>
+                            </c:forEach>
+                        </cti:url>
+                        <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/> 
+                    </c:if>
+                        <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
+                    <c:if test="${infraOrDDMEvent}">
+                        <cti:url var="mapUrl" value="/tools/map">
+                            <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                        </cti:url>
+                        <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                        <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
+                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                <cti:param name="${cp.key}" value="${cp.value}"/>
+                            </c:forEach>
+                        </cti:url>
+                        <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>
+                        <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
+                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                <cti:param name="${cp.key}" value="${cp.value}"/>
+                            </c:forEach>
+                        </cti:url>	
+                        <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
+                     </c:if>
+                </cm:dropdown>
+            </span>
 
-    <c:if test="${watchdogEvent}">
-        <%@ include file="watchdogWarningEventDetails.jsp" %>
-    </c:if>
+            <c:if test="${infraOrDDMEvent}">
+                <%@ include file="ddmAndInfraWarnEventDetails.jsp" %>
+            </c:if>
 
+            <c:if test="${watchdogEvent}">
+                <%@ include file="watchdogWarningEventDetails.jsp" %>
+            </c:if>
+        </c:otherwise>
+    </c:choose>
     <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
 
     <script>

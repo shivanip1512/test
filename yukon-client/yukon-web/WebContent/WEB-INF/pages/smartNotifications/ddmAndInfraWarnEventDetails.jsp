@@ -1,6 +1,5 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
@@ -22,7 +21,7 @@
                     <tags:sort column="${type}" />
                 </c:if>
                 <tags:sort column="${status}" />
-                <tags:sort column="${timestamp}" />        
+                <tags:sort column="${timestamp}" />
             </tr>
             <tbody>
                 <c:forEach var="event" items="${events.resultList}">

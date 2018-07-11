@@ -36,6 +36,7 @@
     <entry key="yukon.web.modules.smartNotifications.detail.download">Download</entry>    
     <entry key="yukon.web.modules.smartNotifications.detail.readAttribute">Read Attribute</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.sendCommand">Send Command</entry>
+    <entry key="yukon.web.modules.smartNotifications.noEvents">No events found</entry>
     
     <!-- Subscription popup -->
     <entry key="yukon.web.modules.smartNotifications.existingSubscriptions.message">Select from an existing subscription to edit or click on the Add button to add a new subscription.</entry>
