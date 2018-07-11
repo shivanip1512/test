@@ -19,7 +19,7 @@ ALTER TABLE CollectionActionCommandRequest RENAME CONSTRAINT FK_CollectionAction
 ALTER TABLE CollectionActionCommandRequest RENAME CONSTRAINT FK_CollectionActionR_CollectionAction TO FK_CARequest_CollectionAction;
 ALTER TABLE CollectionActionCommandRequest RENAME CONSTRAINT FK_CollectionActionR_YukonPAObject TO FK_CARequest_YukonPAObject;
 
-INSERT INTO DBUpdates VALUES ('YUK-18086', '7.1.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-18086', '7.1.0', SYSDATE);
 /* @end YUK-18086 */
 
 /* @start YUK-18086 */
@@ -374,505 +374,133 @@ INSERT INTO DBUpdates VALUES ('YUK-18371-1', '7.1.0', SYSDATE);
 /* @end YUK-18371-1 */
 
 /* @start YUK-18487 */
+/* Create some temporary stored procedures */
+/* @start-block */
+CREATE OR REPLACE PROCEDURE sp_UpdatePointName( 
+    v_CurrentPointName IN VARCHAR2,
+    v_NewPointName IN VARCHAR2,
+    v_PointType IN VARCHAR2,
+    v_PointOffset IN NUMBER,
+    v_DeviceType IN VARCHAR2) AS
+BEGIN
+    UPDATE POINT 
+    SET POINTNAME = v_NewPointName
+    WHERE POINTID IN (
+        SELECT POINTID 
+        FROM POINT P 
+        JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
+        WHERE Y.Type = v_DeviceType
+        AND P.POINTTYPE = v_PointType
+        AND P.POINTOFFSET = v_PointOffset
+        AND P.POINTNAME = v_CurrentPointName
+    );
+END sp_UpdatePointName;
+/
+/* @end-block */
+
+/* @start-block */
+CREATE OR REPLACE PROCEDURE sp_UpdateAttributeName(
+    v_CurrentAttributeName IN VARCHAR2,
+    v_NewAttributeName IN VARCHAR2,
+    v_DeviceType IN VARCHAR2) AS
+BEGIN
+    UPDATE BehaviorReportValue BRV
+    SET BRV.Value = v_NewAttributeName
+    WHERE BRV.BehaviorReportId IN (
+        SELECT BR.BehaviorReportId 
+        FROM BehaviorReport BR 
+        JOIN YukonPAObject Y 
+            ON BR.DeviceID = Y.PAObjectID
+        WHERE Y.Type = v_DeviceType 
+    )
+    AND BRV.Value = v_CurrentAttributeName;
+    
+    UPDATE BehaviorValue BV
+    SET BV.Value = v_NewAttributeName
+    WHERE BV.BehaviorId IN (
+        SELECT DISTINCT BV.BehaviorId
+        FROM BehaviorValue BV
+        JOIN Behavior B 
+            ON BV.BehaviorId = B.BehaviorId
+        JOIN DeviceBehaviorMap DBM 
+            ON B.BehaviorId = DBM.BehaviorId
+        JOIN YukonPAObject Y 
+            ON DBM.DeviceId = Y.PAObjectID
+        WHERE B.BehaviorType = 'DATA_STREAMING'
+        AND Y.Type = v_DeviceType
+    )
+    AND BV.Value = v_CurrentAttributeName;
+    
+    UPDATE DeviceConfigCategoryItem DCCI
+    SET ItemValue = v_NewAttributeName
+    WHERE DCCI.DeviceConfigCategoryId IN (
+        SELECT DISTINCT DCC.DeviceConfigCategoryId 
+        FROM DeviceConfigCategory DCC
+        JOIN DeviceConfigCategoryMap DCCM 
+            ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId
+        JOIN DeviceConfiguration DC 
+            ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationID
+        JOIN DeviceConfigDeviceTypes DCDT 
+            ON DC.DeviceConfigurationID = DCDT.DeviceConfigurationId
+        WHERE DCC.CategoryType='rfnChannelConfiguration'
+        AND DCDT.PaoType = v_DeviceType
+    )
+    AND DCCI.ItemName LIKE 'enabledChannels%attribute'
+    AND DCCI.ItemValue = v_CurrentAttributeName;
+END sp_UpdateAttributeName;
+/
+/* @end-block */
+
+/* @start-block */
+BEGIN
 /* Delivered Power Factor / DELIVERED_POWER_FACTOR -> Average Power Factor (Quadrants 1 2 4) / AVERAGE_POWER_FACTOR_Q124 */
-UPDATE POINT 
-SET POINTNAME = 'Average Power Factor (Quadrants 1 2 4)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-430A3R'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 172
-    AND P.POINTNAME = 'Delivered Power Factor'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'AVERAGE_POWER_FACTOR_Q124'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-430A3R' 
-)
-AND BRV.Value='DELIVERED_POWER_FACTOR';
-
-UPDATE BehaviorValue BV
-SET BV.Value='AVERAGE_POWER_FACTOR_Q124'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-430A3R'
-)
-AND BV.Value='DELIVERED_POWER_FACTOR';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='AVERAGE_POWER_FACTOR_Q124'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-430A3R'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='DELIVERED_POWER_FACTOR';
+sp_UpdatePointName('Delivered Power Factor','Average Power Factor (Quadrants 1 2 4)','Analog',172,'RFN-430A3R');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'DELIVERED_POWER_FACTOR',v_NewAttributeName=>'AVERAGE_POWER_FACTOR_Q124',v_DeviceType=>'RFN-430A3R');
 
 /* Sum Power Factor / SUM_POWER_FACTOR -> Average Power Factor / AVERAGE_POWER_FACTOR */
-UPDATE POINT 
-SET POINTNAME = 'Average Power Factor'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type IN ('RFN-430A3R', 'RFN-530S4x')
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 373
-    AND P.POINTNAME = 'Sum Power Factor'
-);
+sp_UpdatePointName(v_CurrentPointName=>'Sum Power Factor',v_NewPointName=>'Average Power Factor',v_PointType=>'Analog',v_PointOffset=>373,v_DeviceType=>'RFN-430A3R');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'SUM_POWER_FACTOR',v_NewAttributeName=>'AVERAGE_POWER_FACTOR',v_DeviceType=>'RFN-430A3R');
 
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'AVERAGE_POWER_FACTOR'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type IN ('RFN-430A3R', 'RFN-530S4x')
-)
-AND BRV.Value='SUM_POWER_FACTOR';
-
-UPDATE BehaviorValue BV
-SET BV.Value='AVERAGE_POWER_FACTOR'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type IN ('RFN-430A3R', 'RFN-530S4x')
-)
-AND BV.Value='SUM_POWER_FACTOR';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='AVERAGE_POWER_FACTOR'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType IN ('RFN-430A3R', 'RFN-530S4x')
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='SUM_POWER_FACTOR';
+sp_UpdatePointName(v_CurrentPointName=>'Sum Power Factor',v_NewPointName=>'Average Power Factor',v_PointType=>'Analog',v_PointOffset=>373,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'SUM_POWER_FACTOR',v_NewAttributeName=>'AVERAGE_POWER_FACTOR',v_DeviceType=>'RFN-530S4x'); 
 
 /* Quadrant 1 Quadrant 3 kVAr / Q1_Q3_KVAR -> kVAr (Quadrants 1 3) / KVAR_Q13 */
-UPDATE POINT 
-SET POINTNAME = 'kVAr (Quadrants 1 3)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 363
-    AND P.POINTNAME = 'Quadrant 1 Quadrant 3 kVAr'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVAR_Q13'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x' 
-)
-AND BRV.Value='Q1_Q3_KVAR';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVAR_Q13'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q1_Q3_KVAR';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVAR_Q13'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q1_Q3_KVAR';
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 1 Quadrant 3 kVAr',v_NewPointName=>'kVAr (Quadrants 1 3)',v_PointType=>'Analog',v_PointOffset=>363,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q1_Q3_KVAR',v_NewAttributeName=>'KVAR_Q13',v_DeviceType=>'RFN-430A3R');
 
 /* Quadrant 2 Quadrant 4 kVAr / Q2_Q4_KVAR -> kVAr (Quadrants 2 4) / KVAR_Q24 */
-UPDATE POINT 
-SET POINTNAME = 'kVAr (Quadrants 2 4)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 364
-    AND P.POINTNAME = 'Quadrant 2 Quadrant 4 kVAr'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVAR_Q24'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x' 
-)
-AND BRV.Value='Q2_Q4_KVAR';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVAR_Q24'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q2_Q4_KVAR';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVAR_Q24'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q2_Q4_KVAR';
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 2 Quadrant 4 kVAr',v_NewPointName=>'kVAr (Quadrants 2 4)',v_PointType=>'Analog',v_PointOffset=>364,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q2_Q4_KVAR',v_NewAttributeName=>'KVAR_Q24',v_DeviceType=>'RFN-430A3R');
 
 /* Quadrant 1 Quadrant 4 kVAr / Q1_Q4_KVAR -> kVAr (Quadrants 1 4) / KVAR_Q14 */
-UPDATE POINT 
-SET POINTNAME = 'kVAr (Quadrants 1 4)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 365
-    AND P.POINTNAME = 'Quadrant 1 Quadrant 4 kVAr'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVAR_Q14'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-)
-AND BRV.Value='Q1_Q4_KVAR';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVAR_Q14'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q1_Q4_KVAR';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVAR_Q14'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q1_Q4_KVAR';
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 1 Quadrant 4 kVAr',v_NewPointName=>'kVAr (Quadrants 1 4)',v_PointType=>'Analog',v_PointOffset=>365,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q1_Q4_KVAR',v_NewAttributeName=>'KVAR_Q14',v_DeviceType=>'RFN-430A3R');
 
 /* Quadrant 2 Quadrant 3 kVAr / Q2_Q3_KVAR -> kVAr (Quadrants 2 3) / KVAR_Q23 */
-UPDATE POINT 
-SET POINTNAME = 'kVAr (Quadrants 2 3)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 366
-    AND P.POINTNAME = 'Quadrant 2 Quadrant 3 kVAr'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVAR_Q23'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x' 
-)
-AND BRV.Value='Q2_Q3_KVAR';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVAR_Q23'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q2_Q3_KVAR';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVAR_Q23'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q2_Q3_KVAR';
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 2 Quadrant 3 kVAr',v_NewPointName=>'kVAr (Quadrants 2 3)',v_PointType=>'Analog',v_PointOffset=>366,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q2_Q3_KVAR',v_NewAttributeName=>'KVAR_Q23',v_DeviceType=>'RFN-430A3R');
 
 /* Quadrant 1 Quadrant 2 kVA / Q1_Q2_KVA -> kVA (Quadrants 1 2) / KVA_Q12 */
-UPDATE POINT 
-SET POINTNAME = 'kVA (Quadrants 1 2)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 368
-    AND P.POINTNAME = 'Quadrant 1 Quadrant 2 kVA'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVA_Q12'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x' 
-)
-AND BRV.Value='Q1_Q2_KVA';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVA_Q12'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q1_Q2_KVA';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVA_Q12'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q1_Q2_KVA';
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 1 Quadrant 2 kVA',v_NewPointName=>'kVA (Quadrants 1 2)',v_PointType=>'Analog',v_PointOffset=>368,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q1_Q2_KVA',v_NewAttributeName=>'KVA_Q12',v_DeviceType=>'RFN-430A3R');
 
 /* Quadrant 3 Quadrant 4 kVA / Q3_Q4_KVA -> kVA (Quadrants 3 4) / KVA_Q34 */
-UPDATE POINT 
-SET POINTNAME = 'kVA (Quadrants 3 4)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 369
-    AND P.POINTNAME = 'Quadrant 3 Quadrant 4 kVA'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVA_Q34'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x' 
-)
-AND BRV.Value='Q3_Q4_KVA';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVA_Q34'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q3_Q4_KVA';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVA_Q34'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q3_Q4_KVA';
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 3 Quadrant 4 kVA',v_NewPointName=>'kVA (Quadrants 3 4)',v_PointType=>'Analog',v_PointOffset=>369,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q3_Q4_KVA',v_NewAttributeName=>'KVA_Q34',v_DeviceType=>'RFN-430A3R');
 
 /* Quadrant 1 Quadrant 3 kVA / Q1_Q3_KVA -> kVA (Quadrants 1 3) / KVA_Q13 */
-UPDATE POINT 
-SET POINTNAME = 'kVA (Quadrants 1 3)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 370
-    AND P.POINTNAME = 'Quadrant 1 Quadrant 3 kVA'
-);
-
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVA_Q13'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x' 
-)
-AND BRV.Value='Q1_Q3_KVA';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVA_Q13'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q1_Q3_KVA';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVA_Q13'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q1_Q3_KVA';
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 1 Quadrant 3 kVA',v_NewPointName=>'kVA (Quadrants 1 3)',v_PointType=>'Analog',v_PointOffset=>370,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q1_Q3_KVA',v_NewAttributeName=>'KVA_Q13',v_DeviceType=>'RFN-430A3R');
 
 /* Quadrant 2 Quadrant 4 kVA / Q2_Q4_KVA -> kVA (Quadrants 2 4) / KVA_Q24 */
-UPDATE POINT 
-SET POINTNAME = 'kVA (Quadrants 2 4)'
-WHERE POINTID IN (
-    SELECT POINTID 
-    FROM POINT P 
-    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x'
-    AND P.POINTTYPE = 'Analog'
-    AND P.POINTOFFSET = 371
-    AND P.POINTNAME = 'Quadrant 2 Quadrant 4 kVA'
-);
+sp_UpdatePointName(v_CurrentPointName=>'Quadrant 2 Quadrant 4 kVA',v_NewPointName=>'kVA (Quadrants 2 4)',v_PointType=>'Analog',v_PointOffset=>371,v_DeviceType=>'RFN-530S4x');
+sp_UpdateAttributeName(v_CurrentAttributeName=>'Q2_Q4_KVA',v_NewAttributeName=>'KVA_Q24',v_DeviceType=>'RFN-430A3R');
+END;
+/
+/* @end-block */
 
-UPDATE BehaviorReportValue BRV
-SET BRV.Value = 'KVA_Q24'
-WHERE BRV.BehaviorReportId IN (
-    SELECT BR.BehaviorReportId 
-    FROM BehaviorReport BR 
-    JOIN YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
-    WHERE Y.Type = 'RFN-530S4x' 
-)
-AND BRV.Value='Q2_Q4_KVA';
-
-UPDATE BehaviorValue BV
-SET BV.Value='KVA_Q24'
-WHERE BV.BehaviorId IN (
-    SELECT DISTINCT BV.BehaviorId
-    FROM BehaviorValue BV
-    JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-    JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-    WHERE B.BehaviorType='DATA_STREAMING'
-    AND Y.Type = 'RFN-530S4x'
-)
-AND BV.Value='Q2_Q4_KVA';
-
-UPDATE DeviceConfigCategoryItem DCCI
-SET ItemValue='KVA_Q24'
-WHERE DCCI.DeviceConfigCategoryId IN (
-    SELECT DISTINCT DCC.DeviceConfigCategoryId 
-    FROM DeviceConfigCategory DCC
-    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-    WHERE DCC.CategoryType='rfnChannelConfiguration'
-    AND DCDT.PaoType = 'RFN-530S4x'
-)
-AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-AND DCCI.ItemValue='Q2_Q4_KVA';
+DROP PROCEDURE sp_UpdatePointName;
+DROP PROCEDURE sp_UpdateAttributeName;
 
 INSERT INTO DBUpdates VALUES ('YUK-18487', '7.1.0', SYSDATE);
 /* @end YUK-18487 */
