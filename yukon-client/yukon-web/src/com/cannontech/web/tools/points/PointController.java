@@ -156,18 +156,10 @@ public class PointController {
                     "yukon.common.copyof", copyPointModel.getPointName()));
                 copyPointModel.setPointName(newPointName);
                 
-                boolean isCalcType = false;
-                if (copyPointModel.getPointType().isCalcPoint()) {
-                    isCalcType = true;
-                    // calculated type points should have no point offset.
-                    copyPointModel.setPointOffset(0);
-                } else {
-                    // set next valid physical offset.
-                    int pointOffset =
-                        PointOffsetUtils.getValidPointOffset(copyPointModel.getPaoId(), copyPointModel.getPointType());
-                    copyPointModel.setPointOffset(pointOffset);
-                }
-                model.addAttribute("isCalcType", isCalcType);
+                // set next valid physical offset.
+                int pointOffset = PointOffsetUtils.getValidPointOffset(copyPointModel.getPaoId(), copyPointModel.getPointType());
+                copyPointModel.setPointOffset(pointOffset);
+                model.addAttribute("isCalcType",copyPointModel.getPointType().isCalcPoint());
                 model.addAttribute("copyPointModel", copyPointModel);
                 
                 // Add paoType to model
@@ -275,7 +267,7 @@ public class PointController {
         model.addAttribute("pointModel", pointModel);
 
         LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
-        model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
+        model.addAttribute("parentName", parent.getPaoName());
         model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
         
         FdrInterfaceType[] interfaceTypes = FdrInterfaceType.values();

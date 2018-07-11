@@ -275,6 +275,11 @@ public class PointDaoImpl implements PointDao {
 
     @Override
     public int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type) {
+
+        if (type.isCalcPoint()) {
+            return 0;
+        }
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(PointOffset)");
         sql.append("FROM Point");

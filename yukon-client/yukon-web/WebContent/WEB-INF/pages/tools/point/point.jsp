@@ -76,7 +76,7 @@
                                 <span>${parentName}</span>
                             </c:if>
                             <c:if test="${not empty parentLink }">
-                                <a href="${parentLink}">${parentName}</a>
+                                <a href="${parentLink}">${fn:escapeXml(parentName)}</a>
                             </c:if>
                     </tags:nameValue2>
 
