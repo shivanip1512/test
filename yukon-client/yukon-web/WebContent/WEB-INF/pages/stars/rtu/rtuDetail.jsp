@@ -77,6 +77,12 @@
                                 itemValue="liteID" itemLabel="paoName"
                                 inputClass="with-option-hiding" />
                         </tags:nameValue2>
+                        <tags:nameValue2 nameKey="yukon.common.ipaddress" rowClass="dn" data-tcp-port="true">
+                            <tags:input path="ipAddress"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".port" rowClass="dn" data-tcp-port="true">
+                            <tags:input path="port"/>
+                        </tags:nameValue2>
                          <tags:nameValue2 nameKey=".postCommWait">
                             <tags:input path="deviceAddress.postCommWait" />
                         </tags:nameValue2>
@@ -200,6 +206,6 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
-    
+    <cti:toJson id="tcp-comm-ports" object="${tcpCommPorts}"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.rtu.js" />
 </cti:standardPage>

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -296,7 +297,13 @@ public class RtuController {
         } else {
             model.addAttribute("isDnpConfigCategoryAssigned", true);
         }
-        
+
+        Set<Integer> tcpPorts = cache.getAllPorts().stream()
+                                                   .filter(port -> port.getPaoType() == PaoType.TCPPORT)
+                                                   .map(LiteYukonPAObject::getLiteID)
+                                                   .collect(Collectors.toSet());
+
+        model.addAttribute("tcpCommPorts", tcpPorts);
         model.addAttribute("dnpConfig", dnpConfig);
         
         return "/rtu/rtuDetail.jsp";

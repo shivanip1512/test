@@ -12,7 +12,18 @@ yukon.assets.rtu = (function() {
     
     var
     _initialized = false,
-    
+
+    /**
+     * @type Array.number
+     * Array of ids of comm ports that use tcp fields
+     */
+    tcpCommPorts = [];
+    var updateCommPortFields = function () {
+        var commPort = +$('#comm-port').val();
+        var isTcp = tcpCommPorts.indexOf(commPort) !== -1;
+        $('[data-tcp-port]').toggleClass('dn', !isTcp);
+    };
+
     mod = {
         
         /** Initialize this module. */
@@ -41,6 +52,12 @@ yukon.assets.rtu = (function() {
                     });
                 }
             });
+            
+            tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
+            
+            /** User change comm channel dropdown value */
+            $('#comm-port').on('change', updateCommPortFields);
+            updateCommPortFields();
             
             /** User clicked on the All Points tab */
             $(document).on('click', '.js-all-points-tab', function () {

@@ -21,6 +21,7 @@ import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rtu.dao.RtuDnpDao;
 import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
@@ -33,6 +34,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.device.DNPBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.RTUDnp;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
@@ -65,6 +67,8 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         rtu.setDeviceWindow(dnpBase.getDeviceWindow());
         rtu.setDeviceAddress(dnpBase.getDeviceAddress());
         rtu.setDeviceDirectCommSettings(dnpBase.getDeviceDirectCommSettings());
+        rtu.setIpAddress(dnpBase.getIpAddress());
+        rtu.setPort(dnpBase.getPort());
         LightDeviceConfiguration config =
             configurationDao.findConfigurationForDevice(new SimpleDevice(pao.getPaoIdentifier()));
         Integer configId = null;
@@ -187,6 +191,14 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         dnpBase.setDeviceScanRateMap(new HashMap<String, DeviceScanRate>());
         setScanRate(dnpBase, rtuDnp, DeviceScanRate.TYPE_INTEGRITY);
         setScanRate(dnpBase, rtuDnp, DeviceScanRate.TYPE_EXCEPTION);
+        PaoType paoType = rtuDnp.getPaoType();
+        int portId = dnpBase.getDeviceDirectCommSettings().getPortID();
+
+        if (paoType.isTcpPortEligible() && DeviceTypesFuncs.isTcpPort(portId)) {
+            dnpBase.setIpAddress(rtuDnp.getIpAddress());
+            dnpBase.setPort(rtuDnp.getPort());
+        }
+
         return dnpBase;
     }
 }

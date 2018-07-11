@@ -9,6 +9,7 @@ import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceScanRate;
@@ -27,6 +28,8 @@ public class RtuDnp implements YukonPao {
     private DeviceDirectCommSettings deviceDirectCommSettings;
     private List<DisplayableDevice> childDevices;
     private Integer dnpConfigId;
+    private String ipAddress = CtiUtilities.STRING_NONE;
+    private String port = CtiUtilities.STRING_NONE;
   
     public Integer getId() {
         return id;
@@ -150,5 +153,21 @@ public class RtuDnp implements YukonPao {
 
     public void setDnpConfigId(Integer dnpConfigId) {
         this.dnpConfigId = dnpConfigId;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
     }
 }
