@@ -91,7 +91,7 @@ public enum SiteMapPage implements DisplayableEnum {
     ACCOUNTS_AND_INVENTORY(SiteMapCategory.ASSETS, "yukon.web.modules.operator.inventory.home.pageName", "/stars/operator/inventory/home",
             MatchStyle.any, YukonRole.INVENTORY, YukonRole.CONSUMER_INFO),
     OPT_OUT(SiteMapCategory.ASSETS, "yukon.web.modules.operator.optOutAdmin.pageName", "/stars/operator/optOut/admin",
-            MatchStyle.any, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS),
+            MatchStyle.any, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT),
     WORK_ORDERS(SiteMapCategory.ASSETS, "yukon.web.workOrders", "/operator/WorkOrder/WorkOrder.jsp",
             MatchStyle.all, YukonRole.WORK_ORDER),
     PURCHASING(SiteMapCategory.ASSETS, "yukon.web.purchasing", "/operator/Hardware/PurchaseTrack.jsp",
