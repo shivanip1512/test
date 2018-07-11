@@ -90,9 +90,9 @@ public class OptOutEvent {
 		}
 
         // Use Joda to get correct duration in hours
-        // Add 15 min offset to stopDate to get correct duration in hours.(startDate change to
-        // current instant and it impact duration hours).
-        // We are rounding off the difference between opt out start and stop date.
+        // Add 15 min offset to stopDate to prevent rounding errors. For scheduled opt outs, scheduler to start
+        // within minutes, the 5 minute delay caused by the scheduler guarantees we would round down and lose
+        // an hour of opt out time.
         Period period = new Period(startDate, stopDate.plus(Period.minutes(15).toStandardDuration()), PeriodType.time());
 		
 		return period.get(DurationFieldType.hours());
