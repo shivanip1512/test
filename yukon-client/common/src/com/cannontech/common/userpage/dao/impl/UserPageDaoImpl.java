@@ -312,67 +312,9 @@ public class UserPageDaoImpl implements UserPageDao {
         userPageTemplate.setAdvancedFieldMapper(userPageMapper);
     }
 
-    private static List<Pattern> paoUrls = new ArrayList<>();
-    private static List<Pattern> drFavoritesUrls = new ArrayList<>();
-    private static List<Pattern> capControlUrls = new ArrayList<>();
-    private static List<Pattern> meterUrls = new ArrayList<>();
-    private static List<Pattern> otherDeviceUrls = new ArrayList<>();
-
-    private static Pattern compileUrlParam(String url, String param){
-        String regex = url + "\\?.*" + param + "=(\\d+).*";
-        return Pattern.compile(regex);
-    }
-
-    static {
-        drFavoritesUrls.add(compileUrlParam("/dr/program/detail", "programId"));
-        drFavoritesUrls.add(compileUrlParam("/dr/scenario/detail", "scenarioId"));
-        drFavoritesUrls.add(compileUrlParam("/dr/loadGroup/detail", "loadGroupId"));
-        drFavoritesUrls.add(compileUrlParam("/dr/controlArea/detail", "controlAreaId"));
-
-        paoUrls.addAll(drFavoritesUrls);
-
-        capControlUrls.add(Pattern.compile("/capcontrol/areas/(\\d+)"));
-        capControlUrls.add(compileUrlParam("/capcontrol/tier/feeders", "substationId"));
-        capControlUrls.add(compileUrlParam("/capcontrol/ivvc/bus/detail", "subBusId"));
-        capControlUrls.add(Pattern.compile("/capcontrol/regulators/(\\d+)"));
-        capControlUrls.add(Pattern.compile("/capcontrol/feeders/(\\d+)"));
-        capControlUrls.add(Pattern.compile("/capcontrol/substations/(\\d+)"));
-        capControlUrls.add(Pattern.compile("/capcontrol/buses/(\\d+)"));
-        capControlUrls.add(Pattern.compile("/capcontrol/cbc/(\\d+)"));
-        capControlUrls.add(Pattern.compile("/capcontrol/capbanks/(\\d+)"));
-        capControlUrls.add(Pattern.compile("/capcontrol/strategies/(\\d+)"));
-
-        paoUrls.addAll(capControlUrls);
-
-        meterUrls.add(Pattern.compile("/common/pao/(\\d+).*"));
-        meterUrls.add(compileUrlParam("/meter/home", "deviceId"));
-        meterUrls.add(compileUrlParam("/meter/moveIn", "deviceId"));
-        meterUrls.add(compileUrlParam("/meter/moveOut", "deviceId"));
-        meterUrls.add(compileUrlParam("/meter/highBill/view", "deviceId"));
-        meterUrls.add(compileUrlParam("/amr/profile/home", "deviceId"));
-        meterUrls.add(compileUrlParam("/amr/voltageAndTou/home", "deviceId"));
-        meterUrls.add(compileUrlParam("/amr/manualCommand/home", "deviceId"));
-        meterUrls.add(Pattern.compile("/bulk/routeLocate/home\\?.*?idList.ids=(\\d+(?:,\\d+)).*?"));
-
-        paoUrls.addAll(meterUrls);
-
-        otherDeviceUrls.add(compileUrlParam("/stars/relay/home", "deviceId"));
-        otherDeviceUrls.add(Pattern.compile("/stars/gateways/(\\d+)"));
-        otherDeviceUrls.add(Pattern.compile("/stars/rtu/(\\d+)"));
-
-        paoUrls.addAll(otherDeviceUrls);
-    }
-    
     @Override
     public void deletePagesForPao(YukonPao pao) {
-        List<UserPage> pages = getPages(null, null);
-
-        for (UserPage page : pages) {
-            Integer pagePaoId = idInPath(page.getPath(), paoUrls);
-            if (pagePaoId != null && pagePaoId == pao.getPaoIdentifier().getPaoId()) {
-                delete(page.getKey());
-            }
-        }
+        deleteUserPages(pao.getPaoIdentifier().getPaoId(), UserPageType.PAO);
     }
     
     @Override
@@ -380,7 +322,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<UserPage> pages = getPages(null, null);
 
         for (UserPage page : pages) {
-            Integer pagePaoId = idInPath(page.getPath(), paoUrls);
+            Integer pagePaoId = idInPath(page.getPath(), UserPageType.PAO.getUrl());
             if (pagePaoId != null && pagePaoId == pao.getPaoIdentifier().getPaoId()) {
                 List<String> args = Arrays.asList(paoName);
                 page = new UserPage(page.getId(), page.getKey(), page.getModule(), page.getName(), args,
@@ -418,7 +360,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<Integer> paoIds = new ArrayList<>();
         for (UserPage page : pages) {
             if (page.isFavorite()){
-                Integer paoId = idInPath(page.getPath(), drFavoritesUrls);
+                Integer paoId = idInPath(page.getPath(), UserPageType.DEMANDRESPONSE.getUrl());
                 if (paoId != null) {
                     paoIds.add(paoId);
                 }
@@ -437,7 +379,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<Integer> recentPaoIds = new ArrayList<>();
 
         for (UserPage page : pages) {
-                Integer paoId = idInPath(page.getPath(), drFavoritesUrls);
+                Integer paoId = idInPath(page.getPath(), UserPageType.DEMANDRESPONSE.getUrl());
                 if (paoId != null) {
                     recentPaoIds.add(paoId);
                 }

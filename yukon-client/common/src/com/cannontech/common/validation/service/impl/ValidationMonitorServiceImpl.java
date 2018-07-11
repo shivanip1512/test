@@ -43,7 +43,7 @@ public class ValidationMonitorServiceImpl implements ValidationMonitorService {
         // delete monitor
 
         boolean deleted = validationMonitorDao.delete(validationMonitorId);
-        userPageDao.deleteUserPages(validationMonitorId, UserPageType.MONITOR);
+        userPageDao.deleteUserPages(validationMonitorId, UserPageType.VALIDATIONMONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.VALIDATION_MONITOR, validationMonitorId);
         return deleted;
     }

@@ -65,7 +65,7 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.TAMPER_FLAG_MONITOR, tamperFlagMonitorId);
         // delete monitor
         boolean deleted = tamperFlagMonitorDao.delete(tamperFlagMonitorId);
-        userPageDao.deleteUserPages(tamperFlagMonitorId, UserPageType.MONITOR);
+        userPageDao.deleteUserPages(tamperFlagMonitorId, UserPageType.TAMPERFLAGMONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.TAMPER_FLAG_MONITOR, tamperFlagMonitorId);
         return deleted;
     }

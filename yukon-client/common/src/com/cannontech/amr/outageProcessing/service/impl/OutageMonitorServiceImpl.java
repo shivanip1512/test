@@ -65,7 +65,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.OUTAGE_MONITOR, outageMonitorId);
         // delete processor
         boolean deleted = outageMonitorDao.delete(outageMonitorId);
-        userPageDao.deleteUserPages(outageMonitorId, UserPageType.MONITOR);
+        userPageDao.deleteUserPages(outageMonitorId, UserPageType.OUTAGEMONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.OUTAGE_MONITOR, outageMonitorId);
         return deleted;
     }
