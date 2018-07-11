@@ -32,20 +32,14 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
 
     private ServiceStatus getWebServerStatus() {
         try {
-            String webServerUrl = webserverUrlResolver.getUrlBase();
-            URL url = new URL(webServerUrl);
-            log.debug("Web server url " + webServerUrl);
-
-            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
-            httpConn.setReadTimeout(5000); // 5 sec for timeout
-            httpConn.connect();
-            log.debug("Response code from web server " + httpConn.getResponseCode());
-
-            if (httpConn.getResponseCode() == 200) {
-                return ServiceStatus.RUNNING;
-            } else {
-                return ServiceStatus.STOPPED;
+            // Try to send a request with proxy, if it fails try without proxy.
+            if (sendRequest(true) != 200) {
+                if (sendRequest(false) != 200) {
+                    return ServiceStatus.STOPPED;
+                }
             }
+            return ServiceStatus.RUNNING;
+
         } catch (SocketTimeoutException e) {
             log.debug("Yukon web server may be starting ");
             return ServiceStatus.UNKNOWN;
@@ -53,6 +47,23 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
             log.debug("Yukon web server is down ");
             return ServiceStatus.STOPPED;
         }
+
+    }
+    
+    private int sendRequest(boolean useProxy) throws SocketTimeoutException, IOException {
+        String webServerUrl = webserverUrlResolver.getUrlBase();
+        URL url = new URL(webServerUrl);
+        log.debug("Web server url " + webServerUrl);
+        HttpURLConnection httpConn;
+        if(useProxy) {
+            httpConn = (HttpURLConnection) url.openConnection();
+        } else {
+            httpConn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+        }
+        httpConn.setReadTimeout(5000); // 5 sec for timeout
+        httpConn.connect();
+        log.debug("Response code from web server " + httpConn.getResponseCode());
+        return httpConn.getResponseCode();
     }
 
     @Override
