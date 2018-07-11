@@ -184,27 +184,23 @@
     <entry key="yukon.web.components.dialog.devicePoints.timestamp">Timestamp</entry>
     
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.title">Confirm Delete</entry>
-    <entry key="yukon.web.components.ajaxConfirm.confirmDelete.message">Are you sure you want to delete "{0}" ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmDelete.message">Are you sure you want to delete "{0}"?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.ok">Delete</entry>
     
-    <entry key="yukon.web.components.ajaxConfirm.noteText.confirmDelete.title">Confirm Delete</entry>
-    <entry key="yukon.web.components.ajaxConfirm.noteText.confirmDelete.message">Are you sure you want to delete this note ?</entry>
-    <entry key="yukon.web.components.ajaxConfirm.noteText.confirmDelete.ok">Delete</entry>
-
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.title">Confirm Action</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.message">Are you sure you want to perform this action?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.ok">Ok</entry>
 
     <entry key="yukon.web.components.ajaxConfirm.confirmEnable.title">Confirm Enable</entry>
-    <entry key="yukon.web.components.ajaxConfirm.confirmEnable.message">Are you sure you want to enable "{0}" ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmEnable.message">Are you sure you want to enable "{0}"?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmEnable.ok">Enable</entry>
     
     <entry key="yukon.web.components.ajaxConfirm.confirmDisable.title">Confirm Disable</entry>
-    <entry key="yukon.web.components.ajaxConfirm.confirmDisable.message">Are you sure you want to disable "{0}" ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmDisable.message">Are you sure you want to disable "{0}"?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmDisable.ok">Disable</entry>
     
     <entry key="yukon.web.components.ajaxConfirm.confirmUpdate.title">Confirm Update</entry>
-    <entry key="yukon.web.components.ajaxConfirm.confirmUpdate.message">Are you sure you want to update "{0}" ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmUpdate.message">Are you sure you want to update "{0}"?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmUpdate.ok">Update</entry>
     
     <entry key="yukon.web.components.ajaxConfirm.confirmSync.title">Request RF Data Sync</entry>

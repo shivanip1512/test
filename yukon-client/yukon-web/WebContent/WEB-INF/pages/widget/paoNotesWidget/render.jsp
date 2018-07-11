@@ -67,7 +67,7 @@
                                         data-note-id="${noteId}"/>
                             <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
                                         data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
-                            <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="noteText.confirmDelete"/>
+                            <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
                         </div>
                         <div id="js-save-note-group-${noteId}" class="button-group dn">
                             <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 

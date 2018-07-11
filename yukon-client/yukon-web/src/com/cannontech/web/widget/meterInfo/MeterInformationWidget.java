@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -114,15 +115,8 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("hasNotes", hasNotes);
         if (hasNotes) {
             List<PaoNotesSearchResult> recentNotes = paoNotesService.findMostRecentNotes(deviceId, 1);
-            StringBuilder note = new StringBuilder();
             String noteText = recentNotes.get(0).getPaoNote().getNoteText();
-            if (noteText.length() <= 35) {
-                note.append(noteText);
-            } else {
-                note.append(noteText.substring(0, 34));
-                note.append("...");
-            }
-            model.addAttribute("note", note.toString());
+            model.addAttribute("note", StringUtils.abbreviate(noteText, 35));
         }
         
         return "meterInformationWidget/render.jsp";
