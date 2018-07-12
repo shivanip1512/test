@@ -34,6 +34,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
        * Net kWh OR Net Delivered kWh 
        * Received kWh Rate A 
        * Note: [Delivered] - can be omitted/assumed where it make sense; Peak kW or kVar for examples  
+       * Note: For attributes that reference the modifiers of "Quadrant" directly, the modifiers will follow the UOM in format "(Quadrants # #)". Example: kVA (Quadrants 1 2)
        */
     BLINK_COUNT("Blink Count", AttributeGroup.BLINK_AND_OUTAGE),
     COMM_STATUS("Communication Status", AttributeGroup.STATUS, false),   // updated directly by port activity only
