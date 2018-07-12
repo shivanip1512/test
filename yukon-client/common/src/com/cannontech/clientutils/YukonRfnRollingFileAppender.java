@@ -50,9 +50,10 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
             @PluginElement("Strategy") RolloverStrategy strategy) {
 
         String directory = BootstrapUtils.getServerLogDir();
-        String applicationName = "RfnCommsLog";
+        // Create RfnComms log for each application separately. Example : ServiceManagerRfnComms.log and WebserverRfnComms.log
+        String applicationName = BootstrapUtils.getApplicationName() + "RfnComms";
         String fileName = directory + applicationName + ".log";
-
+        checkForTimeBasedRollover(directory, applicationName);
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
         }
@@ -62,7 +63,7 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
         }
 
         if (strategy == null) {
-            DefaultRolloverStrategy.newBuilder().withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
+            strategy = DefaultRolloverStrategy.newBuilder().withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
                                                 .withConfig(((Logger) LogManager.getLogger(
                                                             YukonRollingFileAppender.class)).getContext().getConfiguration()).build();
         }
