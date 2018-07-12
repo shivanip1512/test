@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -53,8 +54,10 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.DbChangeManager;
@@ -84,6 +87,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private PointDao pointDao;
 
     private JmsTemplate jmsTemplate;
     private DispatchClientConnection dispatchConnection;
@@ -302,50 +306,32 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
     }
     
-    @Override
-    public boolean recalculateViolation(DeviceDataMonitor monitor, SimpleDevice device, PointValueQualityHolder receivedValue){
-
-        //find all points for monitored attributes
-        Map<BuiltInAttribute, LitePoint> attributeToPoint = new HashMap<>();
-        monitor.getAttributes().forEach(attribute -> {
-            attributeToPoint.put(attribute, attributeService.findPointForAttribute(device, attribute));
-        });
-        
-        //true if monitor is monitoring the attribute for which we received point data
-        boolean containsAttributeForPoint = attributeToPoint.values().stream()
-                .filter(p -> p.getLiteID() == receivedValue.getId()).findFirst().isPresent();
-   
-        if (attributeToPoint.isEmpty()) {
-            log.debug("{} recalculation of violation for device {} is skipped. Device doesn't support {} attributes",
-                monitor, device, monitor.getAttributes());
-            return false;
-        }
-
-        if (!containsAttributeForPoint) {
-            log.debug("{} recalculation of violation for device {} is skipped. The monitor is not monitoring for point id {}",
-                monitor, device, receivedValue.getId());
-            return false;
-        }
-        
-        log.debug("{} recalculating violations for {} attributes {}", monitor, device, monitor.getAttributes());
-        
-        Set<Integer> otherPoints = attributeToPoint.values().stream()
-                .filter(p -> p.getLiteID() != receivedValue.getId())
-                .map(p -> p.getLiteID()).collect(Collectors.toSet());
-        
-        Map<Integer, PointValueQualityHolder> pointValues = new HashMap<>();
-        
-        if(!otherPoints.isEmpty()) {
-            log.debug("{} asking dispatch for point data {}", monitor, otherPoints);
-            pointValues.putAll(asyncDynamicDataSource.getPointDataOnce(otherPoints).stream()
-                .collect(Collectors.toMap(p -> p.getId(), p -> p)));
-        }
-                
+    /**
+     * Check if any attribute, other then an attribute we got the point data for, is violating.
+     */
+    private boolean isOtherAttributeViolating(DeviceDataMonitor monitor, BuiltInAttribute attributeToExclude,
+            SimpleDevice device) {
         boolean foundViolation = false;
+        // find all points for monitored attributes, excluding the attribute we received the point data for
+        Map<BuiltInAttribute, LitePoint> attributeToPoint = new HashMap<>();
+        for (BuiltInAttribute attribute : monitor.getAttributes()) {
+            if (attribute != attributeToExclude) {
+                attributeToPoint.put(attribute, attributeService.findPointForAttribute(device, attribute));
+            }
+        }
+        Set<Integer> otherPoints = attributeToPoint.values().stream().map(p -> p.getLiteID()).collect(Collectors.toSet());
+
+        Map<Integer, PointValueQualityHolder> pointValues = new HashMap<>();
+
+        if (!otherPoints.isEmpty()) {
+            log.debug("{} asking dispatch for point data {}", monitor, otherPoints);
+            pointValues.putAll(asyncDynamicDataSource.getPointDataOnce(otherPoints).stream().collect(
+                Collectors.toMap(p -> p.getId(), p -> p)));
+        }
 
         for (Map.Entry<BuiltInAttribute, LitePoint> entry : attributeToPoint.entrySet()) {
             int pointId = entry.getValue().getPointID();
-            PointValueQualityHolder pointValue = pointId == receivedValue.getId() ? receivedValue : pointValues.get(pointId);
+            PointValueQualityHolder pointValue = pointValues.get(pointId);
             if (pointValue != null) {
                 DeviceDataMonitorProcessor processor = monitor.getProcessor(entry.getKey());
                 foundViolation = isViolating(processor, entry.getValue().getStateGroupID(), pointValue);
@@ -354,8 +340,36 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                 }
             }
         }
+        return foundViolation;
+    }
+    
+    @Override 
+    public void recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData){
 
+        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        PointValueQualityHolder receivedValue = richPointData.getPointValue();
+        
+        Optional<BuiltInAttribute> attribute = monitor.getAttributes().stream()
+                .filter(a -> attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), a))
+                .findFirst();
+        if (!attribute.isPresent()) {
+            log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
+                monitor, device, receivedValue.getId());
+        }
+        
+        LitePoint point = pointDao.getLitePoint(receivedValue.getId());
+        DeviceDataMonitorProcessor processor = monitor.getProcessor(attribute.get());
+        
+        boolean foundViolation = isViolating(processor, point.getStateGroupID(), receivedValue);
         boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(monitor.getViolationGroup(), device);
+        
+        // no violation found but device is in violation group and this monitor is monitoring for more then 1
+        // attribute
+        if (!foundViolation && inViolationsGroup && monitor.getAttributes().size() > 1) {
+            // check other processors for violation
+            // if other violations found, keep the device in the group
+            foundViolation = isOtherAttributeViolating(monitor, attribute.get(), device);
+        }
         
         //found violation and device is not in violation group
         if(foundViolation && !inViolationsGroup) {
@@ -375,7 +389,6 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         
         updateViolationCacheCount(monitor);
         log.debug("{} recalculation of violation for {} is complete, violation found:{}",  monitor, device, foundViolation);
-        return true;
     }
     
     /**
