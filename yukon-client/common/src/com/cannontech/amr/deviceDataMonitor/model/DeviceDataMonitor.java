@@ -78,9 +78,8 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         return processors;
     }
     
-    public DeviceDataMonitorProcessor getProcessor(BuiltInAttribute attribute) {
-        Optional<DeviceDataMonitorProcessor> processor = processors.stream().filter(p -> attribute == p.getAttribute()).findFirst();
-        return processor.isPresent() ? processor.get(): null;
+    public List<DeviceDataMonitorProcessor> getProcessors(BuiltInAttribute attribute) {
+        return processors.stream().filter(p -> attribute == p.getAttribute()).collect(Collectors.toList());
     }
     
     public List<DeviceDataMonitorProcessor> getStateProcessors() {

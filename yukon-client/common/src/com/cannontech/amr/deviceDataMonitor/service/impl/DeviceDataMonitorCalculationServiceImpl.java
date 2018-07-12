@@ -333,8 +333,8 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             int pointId = entry.getValue().getPointID();
             PointValueQualityHolder pointValue = pointValues.get(pointId);
             if (pointValue != null) {
-                DeviceDataMonitorProcessor processor = monitor.getProcessor(entry.getKey());
-                foundViolation = isViolating(processor, entry.getValue().getStateGroupID(), pointValue);
+                List<DeviceDataMonitorProcessor> processors = monitor.getProcessors(entry.getKey());
+                foundViolation = isViolating(processors, entry.getValue().getStateGroupID(), pointValue);
                 if (foundViolation) {
                     break;
                 }
@@ -355,12 +355,13 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         if (!attribute.isPresent()) {
             log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
                 monitor, device, receivedValue.getId());
+
         }
         
         LitePoint point = pointDao.getLitePoint(receivedValue.getId());
-        DeviceDataMonitorProcessor processor = monitor.getProcessor(attribute.get());
+        List<DeviceDataMonitorProcessor> processors = monitor.getProcessors(attribute.get());
         
-        boolean foundViolation = isViolating(processor, point.getStateGroupID(), receivedValue);
+        boolean foundViolation = isViolating(processors, point.getStateGroupID(), receivedValue);
         boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(monitor.getViolationGroup(), device);
         
         // no violation found but device is in violation group and this monitor is monitoring for more then 1
@@ -436,7 +437,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
  
         if (!pointValues.isEmpty()) {
             for (Entry<BuiltInAttribute, Map<Integer, SimpleDevice>> entry : attributeToPoints.entrySet()) {
-                DeviceDataMonitorProcessor processor = monitor.getProcessor(entry.getKey());
+                List<DeviceDataMonitorProcessor> processor = monitor.getProcessors(entry.getKey());
                 for (Entry<Integer, SimpleDevice> pointToDevice : entry.getValue().entrySet()) {
                     SimpleDevice device = pointToDevice.getValue();
                     int pointId = pointToDevice.getKey();
@@ -456,28 +457,33 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     /**
      * Returns true if violation found
      */
+    private boolean isViolating(List<DeviceDataMonitorProcessor> processors, Integer stateGroupId,
+            PointValueQualityHolder pointValue) {
+
+        if (pointValue != null && pointValue.getPointQuality().isInvalid()) {
+            log.debug("Point Quality is invalid - Point value:{}.", pointValue);
+            return false;
+        }
+        return processors.stream().anyMatch(processor -> isViolating(processor, stateGroupId, pointValue));
+    }
+    
+    /**
+     * Returns true if violation found
+     */
     private boolean isViolating(DeviceDataMonitorProcessor processor, Integer stateGroupId,
             PointValueQualityHolder pointValue) {
-        
-        if (pointValue != null && pointValue.getPointQuality().isInvalid()) {
-            log.debug("Point Quality is invalid - Attribute {} Processor type:{} Point value:{}.", processor.getAttribute(),
-                processor.getType(), pointValue);
-        }
-        
-        if (pointValue != null && !pointValue.getPointQuality().isInvalid()) {
-            PointType type = PointType.getForId(pointValue.getType());
-            if (processor.getType() == ProcessorType.STATE
-                && processor.getStateGroup().getStateGroupID() == stateGroupId && type.isStatus()) {
-                return processor.getState().getStateRawState() == (int) pointValue.getValue();
-            } else if (processor.getType() == ProcessorType.RANGE && type.isValuePoint()) {
-                return Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
-            } else if (processor.getType() == ProcessorType.OUTSIDE && type.isValuePoint()) {
-                return !Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
-            }else if (processor.getType() == ProcessorType.LESS && type.isValuePoint()) {
-                return pointValue.getValue() < processor.getProcessorValue();
-            } else if (processor.getType() == ProcessorType.GREATER && type.isValuePoint()) {
-                return pointValue.getValue() > processor.getProcessorValue();
-            }
+        PointType type = PointType.getForId(pointValue.getType());
+        if (processor.getType() == ProcessorType.STATE && processor.getStateGroup().getStateGroupID() == stateGroupId
+            && type.isStatus()) {
+            return processor.getState().getStateRawState() == (int) pointValue.getValue();
+        } else if (processor.getType() == ProcessorType.RANGE && type.isValuePoint()) {
+            return Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
+        } else if (processor.getType() == ProcessorType.OUTSIDE && type.isValuePoint()) {
+            return !Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
+        } else if (processor.getType() == ProcessorType.LESS && type.isValuePoint()) {
+            return pointValue.getValue() < processor.getProcessorValue();
+        } else if (processor.getType() == ProcessorType.GREATER && type.isValuePoint()) {
+            return pointValue.getValue() > processor.getProcessorValue();
         }
         return false;
     }
