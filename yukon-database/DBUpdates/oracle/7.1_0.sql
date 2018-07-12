@@ -447,6 +447,19 @@ BEGIN
     )
     AND DCCI.ItemName LIKE 'enabledChannels%attribute'
     AND DCCI.ItemValue = v_CurrentAttributeName;
+
+    UPDATE ArchiveValuesExportAttribute
+    SET AttributeName = v_NewAttributeName
+    WHERE AttributeName = v_CurrentAttributeName;
+
+    UPDATE DeviceDataMonitorProcessor
+    SET Attribute = v_NewAttributeName
+    WHERE Attribute = v_CurrentAttributeName;
+
+    UPDATE JOBPROPERTY
+    SET value = REPLACE(value, v_CurrentAttributeName, v_NewAttributeName)
+    WHERE name = 'attributes'
+    AND value LIKE CONCAT( CONCAT( '%', v_CurrentAttributeName ), '%' );
 END sp_UpdateAttributeName;
 /
 /* @end-block */

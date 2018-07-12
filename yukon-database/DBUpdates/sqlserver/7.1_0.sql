@@ -441,6 +441,19 @@ AS
     ) SentinelDC ON DCCI.DeviceConfigCategoryId = SentinelDC.DeviceConfigCategoryId
     WHERE DCCI.ItemName LIKE 'enabledChannels%attribute'
     AND DCCI.ItemValue = @CurrentAttributeName;
+
+    UPDATE ArchiveValuesExportAttribute
+    SET AttributeName = @NewAttributeName
+    WHERE AttributeName = @CurrentAttributeName;
+
+    UPDATE DeviceDataMonitorProcessor
+    SET Attribute = @NewAttributeName
+    WHERE Attribute = @CurrentAttributeName;
+
+    UPDATE JOBPROPERTY
+    SET value = REPLACE(value, @CurrentAttributeName, @NewAttributeName)
+    WHERE name = 'attributes'
+    AND value LIKE CONCAT('%', @CurrentAttributeName, '%');
 GO
 /* @end-block */
 
