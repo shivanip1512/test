@@ -10,6 +10,7 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="isResizable" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="placeholder" required="false" type="java.lang.String"%>
+<%@ attribute name="maxLength" required="false" type="java.lang.Integer"%>
 
 <spring:bind path="${path}">
 
@@ -35,7 +36,7 @@
     </c:if>
     
     <form:textarea path="${path }" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
-                   cssStyle="${resizable}" placeholder="${placeholder}"/>
+                   cssStyle="${resizable}" placeholder="${placeholder}" maxlength="${maxLength}"/>
 	
 	<c:if test="${status.error}">
 		<br>

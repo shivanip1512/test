@@ -14,10 +14,10 @@
         <form:hidden path="createUserName" />
         <table style="width:100%">
             <tr>
-                <td width="80%">
+                <td width="80%" class="P0">
                     <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
                     <tags:textarea rows="3" cols="46" path="noteText" id="createNoteTextarea" isResizable="false"
-                                   placeholder="${noteTextPlaceholder}"/>
+                                   placeholder="${noteTextPlaceholder}" maxLength="255"/>
                 </td>
                 <td width="20%" class="vam">
                     <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr"/>
@@ -47,8 +47,8 @@
                                         <cti:formatDate type="BOTH" value="${recentNote.paoNote.editDate}" var="editDate"/>
                                         <i:inline key=".editedBy"/> ${fn:escapeXml(recentNote.paoNote.editUserName)} - ${editDate}
                                     </div>
+                                    <br>
                                 </c:if>
-                                <br>
                                 <div class="fr small-font-gray-color-text">
                                     <cti:formatDate type="BOTH" value="${recentNote.paoNote.createDate}" var="createDate"/>
                                     ${fn:escapeXml(recentNote.paoNote.createUserName)} - ${createDate}
@@ -72,7 +72,7 @@
                         <div id="js-save-note-group-${noteId}" class="button-group dn">
                             <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
                                         data-note-id="${noteId}"/>
-                            <cti:button id="js-cancel-btn-${noteId}" renderMode="buttonImage" icon="icon-cancel" 
+                            <cti:button id="js-cancel-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
                                         data-note-id="${noteId}" title="${cancelText}"/>
                         </div>
                     </td>
@@ -90,4 +90,4 @@
     </div>
     
 </cti:msgScope>
-<cti:includeScript link="/resources/js/widgets/yukon.paonotes.widget.js"/>
+<cti:includeScript link="/resources/js/widgets/yukon.widget.paonotes.js"/>

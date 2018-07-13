@@ -1,14 +1,13 @@
-yukon.namespace('yukon.paonotes.widget');
+yukon.namespace('yukon.widget.paonotes.js');
  
 /**
  * Module to handle pao notes functionality.
  * 
- * @module yukon.paonotes.widget
+ * @module yukon.widget.paonotes
  * @requires yukon
  * @requires JQUERY
- * @requires OPEN_LAYERS
  */
-yukon.paonotes.widget = (function () {
+yukon.widget.paonotes = (function () {
     
     'use strict';
  
@@ -115,4 +114,4 @@ yukon.paonotes.widget = (function () {
     return mod;
 })();
  
-$(function () { yukon.paonotes.widget.init(); });
+$(function () { yukon.widget.paonotes.init(); });

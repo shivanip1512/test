@@ -22,7 +22,6 @@ import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.paonote.validator.PaoNoteValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
@@ -55,8 +54,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     }
 
     @RequestMapping(value = "deletePaoNote", method = RequestMethod.POST)
-    public String deletePaoNote(ModelMap model, int noteId, int deviceId, YukonUserContext userContext,
-            FlashScope flash) {
+    public String deletePaoNote(ModelMap model, int noteId, int deviceId, YukonUserContext userContext) {
         paoNotesService.delete(noteId, userContext.getYukonUser());
         setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
         return "paoNotesWidget/render.jsp";
