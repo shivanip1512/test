@@ -20,9 +20,15 @@ public class GatewayFirmwareVersionParserTest {
         assertEquals("Failed to parse version string without revision", expectedVersion, actualVersion);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test_invalidFirmwareVersion_tooManyParts() {
-        GatewayFirmwareVersion.parse("6.3.2.1");
+        GatewayFirmwareVersion actualVersion1 = GatewayFirmwareVersion.parse("6.3.2.1");
+        GatewayFirmwareVersion actualVersion2 = GatewayFirmwareVersion.parse("6.3.2.9");
+        GatewayFirmwareVersion actualVersion3 = GatewayFirmwareVersion.parse("6.3.2.0.0");
+        GatewayFirmwareVersion expectedVersion = new GatewayFirmwareVersion(6, 3, 2);
+        assertEquals("Failed to truncate 4-part version string into 3 parts", expectedVersion, actualVersion1);
+        assertEquals("Failed to truncate 4-part version string into 3 parts", expectedVersion, actualVersion2);
+        assertEquals("Failed to truncate 5-part version string into 3 parts", expectedVersion, actualVersion3);
     }
 
     @Test(expected = IllegalArgumentException.class)

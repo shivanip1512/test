@@ -1,9 +1,16 @@
 package com.cannontech.common.rfn.model;
 
+import java.util.Arrays;
+
+import org.apache.logging.log4j.core.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
+
 /**
  * Utility class representing a gateway firmware version number. This is a three-part version in the form "X.Y.Z".
  */
 public final class GatewayFirmwareVersion implements Comparable<GatewayFirmwareVersion> {
+    private static final Logger log = YukonLogManager.getLogger(GatewayFirmwareVersion.class);
     private final int major;
     private final int minor;
     private final int revision;
@@ -37,8 +44,14 @@ public final class GatewayFirmwareVersion implements Comparable<GatewayFirmwareV
         int partsLength = parts.length;
         
         // Check for valid format - either x.y or x.y.z
-        if (partsLength < 2 || partsLength > 3) {
+        // If it has more than 3 parts, but is correctly formatted, truncate to 3 parts
+        // (QA test versions have 4 parts, but we want to ignore the 4th part)
+        if (partsLength < 2) {
             throw new IllegalArgumentException("Invalid firmware version string: " + versionString);
+        } else if (partsLength > 4) {
+            parts = Arrays.copyOf(parts, 3);
+            partsLength = 3;
+            log.info("Truncated long firmware version string (" + versionString + ")");
         }
         
         // Attempt to assemble a new GatewayFirmwareVersion object from the parts
