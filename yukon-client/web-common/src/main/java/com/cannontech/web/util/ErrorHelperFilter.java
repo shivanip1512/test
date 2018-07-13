@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -47,6 +48,7 @@ public class ErrorHelperFilter implements Filter {
     private Set<Class<? extends Throwable>> exceptionToIgnore = new HashSet<Class<? extends Throwable>>();
     {
         exceptionToIgnore.add(HttpSessionRequiredException.class);
+        exceptionToIgnore.add(ClientAbortException.class);
     }
 
     public void init(FilterConfig arg0) throws ServletException {
