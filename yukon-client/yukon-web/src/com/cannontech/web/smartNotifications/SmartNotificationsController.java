@@ -414,17 +414,20 @@ public class SmartNotificationsController {
         List<String[]> dataRows = Lists.newArrayList();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = null;
-        if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR
-            || type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
-            headerRow = devicedataMonitorAndInfraWarningData(userContext, dataRows, eventData, type, eventType, accessor);
-        } else if (type == SmartNotificationEventType.YUKON_WATCHDOG) {
-            headerRow = watchdogWarningData(userContext, dataRows, eventData, type, eventType, accessor);
+        if (type == SmartNotificationEventType.YUKON_WATCHDOG) {
+            headerRow = populateWatchdogWarningData(userContext, dataRows, eventData, type, eventType, accessor);
+        } else {
+            headerRow = populateData(userContext, dataRows, eventData, type, eventType, accessor);
         }
         String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "notificationEvents_" + eventType + "_" + now + ".csv");
     }
 
-    private String[] devicedataMonitorAndInfraWarningData(YukonUserContext userContext, List<String[]> dataRows,
+    /**
+     * This method will populate the device data monitor and infrastructure warning events data.
+     * Based on the SmartNotificationEventType it will populate events data and return header columns accordingly.
+     */
+    private String[] populateData(YukonUserContext userContext, List<String[]> dataRows,
             SearchResults<SmartNotificationEventData> eventData, SmartNotificationEventType type, String eventType,
             MessageSourceAccessor accessor) {
         boolean includeTypeRow = type == SmartNotificationEventType.INFRASTRUCTURE_WARNING;
@@ -440,7 +443,7 @@ public class SmartNotificationsController {
             String name = event.getDeviceName();
             String deviceType = event.getType();
             String status = event.getStatus();
-            if (type.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
+            if (type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
                 Object[] arguments = new String[] { event.getArgument1(), event.getArgument2(), event.getArgument3() };
                 status = accessor.getMessage(
                     "yukon.web.widgets.infrastructureWarnings.warningType." + status + "." + event.getSeverity(),
@@ -456,8 +459,11 @@ public class SmartNotificationsController {
         }
         return headerRow;
     }
-    
-    private String[] watchdogWarningData(YukonUserContext userContext, List<String[]> dataRows,
+
+    /**
+     * This method will populate the watchdog warning events data and return header columns.
+     */
+    private String[] populateWatchdogWarningData(YukonUserContext userContext, List<String[]> dataRows,
             SearchResults<SmartNotificationEventData> eventData, SmartNotificationEventType type, String eventType, MessageSourceAccessor accessor) {
         String warningTypeHeader = accessor.getMessage(EventSortBy.warningType);
         String statusHeader = accessor.getMessage(EventSortBy.status);
