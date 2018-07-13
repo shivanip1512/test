@@ -50,8 +50,8 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
             @PluginElement("Strategy") RolloverStrategy strategy) {
 
         String directory = BootstrapUtils.getServerLogDir();
-        // Create RfnComms log for each application separately. Example : ServiceManagerRfnComms.log and WebserverRfnComms.log
-        String applicationName = BootstrapUtils.getApplicationName() + "RfnComms";
+        // Create RfnComms log for each application separately. Example : ServiceManager_RfnComms.log and Webserver_RfnComms.log
+        String applicationName = BootstrapUtils.getApplicationName() + "_" + "RfnComms";
         String fileName = directory + applicationName + ".log";
         checkForTimeBasedRollover(directory, applicationName);
         if (layout == null) {
