@@ -395,7 +395,7 @@ public class NmIntegrationController {
                 flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Invalid Serial Number range."), FlashScopeMessageType.ERROR);
             } else {
             flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode(numberSent + " of " + totalMessages + " RFN Config Notification messages sent."), 
-                                  numberSent == totalMessages ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
+                                  numberSent.equals(totalMessages) ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
             }
         }
 
