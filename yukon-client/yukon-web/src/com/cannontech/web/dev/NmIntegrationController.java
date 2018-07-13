@@ -86,12 +86,16 @@ import com.cannontech.simulators.message.request.RfnLcrSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStartRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopRequest;
+import com.cannontech.simulators.message.request.RfnNetworkManagerSimulatorStartRequest;
+import com.cannontech.simulators.message.request.RfnNetworkManagerSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.RfnNetworkManagerSimulatorStopRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
 import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
+import com.cannontech.simulators.message.response.RfnNetworkManagerSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -391,7 +395,7 @@ public class NmIntegrationController {
                 flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Invalid Serial Number range."), FlashScopeMessageType.ERROR);
             } else {
             flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode(numberSent + " of " + totalMessages + " RFN Config Notification messages sent."), 
-                                  numberSent.equals(totalMessages) ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
+                                  numberSent == totalMessages ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
             }
         }
 
@@ -465,6 +469,30 @@ public class NmIntegrationController {
         }
     }
 
+    @RequestMapping("startMetersDisconnectRequest")
+    public void startMetersDisconnectRequest(SimulatorSettings settings, FlashScope flash) { 
+        try {
+            simulatorsCommunicationService.sendRequest(new RfnNetworkManagerSimulatorStartRequest(),
+                SimulatorResponseBase.class);
+        } catch (Exception e) {
+            log.error(e);
+            flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
+    }
+    
+    @RequestMapping("stopMetersDisconnectRequest")
+    public void stopMetersDisconnectRequest(SimulatorSettings settings, FlashScope flash) { 
+        try {
+            simulatorsCommunicationService.sendRequest(new RfnNetworkManagerSimulatorStopRequest(),
+                SimulatorResponseBase.class);
+        } catch (Exception e) {
+            log.error(e);
+            flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
+    }
+    
     @RequestMapping("testMeterArchiveRequest")
     public void testMeterArchiveRequest(SimulatorSettings settings, FlashScope flash) {
         try {
@@ -493,19 +521,35 @@ public class NmIntegrationController {
         model.addAttribute("paoTypes", paoTypes);
         model.addAttribute("rfnMeterReportingIntervals",ReportingInterval.values());
 
-        RfnMeterDataSimulatorStatusResponse response = getRfnMeterSimulatorStatusResponse().response;
-        if (response == null) {
+        RfnMeterDataSimulatorStatusResponse rfnMeterResponse = getRfnMeterSimulatorStatusResponse().response;
+        RfnNetworkManagerSimulatorStatusResponse rfnNetworkManagerResponse = getRfnNetworkManagerStatusResponse().response;
+        
+        if (rfnMeterResponse == null) {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
             return "redirect:viewBase";
         }
-        model.addAttribute("currentSettings", response.getSettings());
-        model.addAttribute("selectedReportingInterval", response.getSettings().getReportingInterval());
+        model.addAttribute("currentSettings", rfnMeterResponse.getSettings());
+        model.addAttribute("selectedReportingInterval", rfnMeterResponse.getSettings().getReportingInterval());
 
-        model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(response.getStatus()));
+        model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(rfnMeterResponse.getStatus()));
         
         return "rfn/rfnMeterSimulator.jsp";
     }
 
+    private RfnNetworkManagerSimStatusResponseOrError getRfnNetworkManagerStatusResponse() {
+        try {
+            RfnNetworkManagerSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
+                new RfnNetworkManagerSimulatorStatusRequest(), RfnNetworkManagerSimulatorStatusResponse.class);
+            return new RfnNetworkManagerSimStatusResponseOrError(response);
+        } catch (Exception e) {
+            log.error(e);
+            Map<String, Object> json = new HashMap<>();
+            json.put("hasError", true);
+            json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
+            return new RfnNetworkManagerSimStatusResponseOrError(json);
+        }
+    }
+    
     @RequestMapping("viewLcrDataSimulator")
     public String viewLcrDataSimulator(ModelMap model, FlashScope flash) {
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;
@@ -960,6 +1004,21 @@ public class NmIntegrationController {
         }
 
         public MeterSimStatusResponseOrError(Map<String, Object> errorJson) {
+            response = null;
+            this.errorJson = errorJson;
+        }
+    }
+    
+    private static class RfnNetworkManagerSimStatusResponseOrError {
+        public final RfnNetworkManagerSimulatorStatusResponse response;
+        public final Map<String, Object> errorJson;
+
+        public RfnNetworkManagerSimStatusResponseOrError(RfnNetworkManagerSimulatorStatusResponse response) {
+            this.response = response;
+            errorJson = null;
+        }
+
+        public RfnNetworkManagerSimStatusResponseOrError(Map<String, Object> errorJson) {
             response = null;
             this.errorJson = errorJson;
         }

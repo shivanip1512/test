@@ -45,9 +45,10 @@
                        <cti:button id="stop-send-message" nameKey="stopSendingIvvcMessages" classes="dn"/>
                     </div>
                     <div class="button-group button-group-toggle">
-                       <div class="js-sim-startup" data-simulator-type="IVVC"></div>
+                       <div class="js-sim-startup" data-simulator-type="IVVC">
                        <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
                        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                       </div>
                     </div>
                 </tags:sectionContainer2>
             </form>

@@ -434,9 +434,10 @@
                                 <cti:button label="Disable All" type="button" href="disableAll"/>
                             </c:if>
                             <div class="button-group button-group-toggle">
-                                <div class="js-sim-startup" data-simulator-type="GATEWAY"></div>
+                                <div class="js-sim-startup" data-simulator-type="GATEWAY">
                                 <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-                                <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                                <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>
+                                </div>  
                             </div>
                         </td>
                         <td>Activates all gateway simulator functions with either the user's saved parameters or the default parameter values if the user has never started a given simulator function.</td>

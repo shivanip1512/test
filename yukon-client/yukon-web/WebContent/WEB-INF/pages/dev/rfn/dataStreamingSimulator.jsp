@@ -57,9 +57,10 @@
         <cti:button label="Stop Simulator" href="stopDataStreamingSimulator"/>
     </c:if>
     <div class="button-group button-group-toggle">
-        <div class="js-sim-startup" data-simulator-type="DATA_STREAMING"></div>
+        <div class="js-sim-startup" data-simulator-type="DATA_STREAMING">
         <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>
+        </div>  
     </div>
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.dataStreamingSimulator.js" />
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.simulatorStartup.js" />

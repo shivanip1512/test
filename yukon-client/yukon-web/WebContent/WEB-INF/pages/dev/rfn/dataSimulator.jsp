@@ -39,9 +39,10 @@
             <cti:button id="stop-simulator" nameKey="stopSimulator" classes="dn"/>
         </div>
         <div class="button-group button-group-toggle">
-            <div class="js-sim-startup" data-simulator-type="RFN_LCR"></div>
+            <div class="js-sim-startup" data-simulator-type="RFN_LCR">
             <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-            <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+            <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>
+            </div>
         </div>
         <br><br>
         <div>

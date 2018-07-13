@@ -18,7 +18,7 @@ yukon.dev.simulators.simulatorStartup = ( function() {
     _updateStartup = function (event) {
         
         var
-        startupData = {simulatorType: _simType};
+        startupData = {simulatorType: $(event.target).closest(".js-sim-startup").data("simulatorType")};
         if ($(this).attr('id') === 'enable-startup') {
             startupData.runOnStartup = true;
             $.ajax({
@@ -91,7 +91,7 @@ yukon.dev.simulators.simulatorStartup = ( function() {
             if (_initialized) return;
             _simType = $(".js-sim-startup").data("simulatorType");
             _checkStartupStatus(null, {simulatorType: _simType});
-            $('#enable-startup, #disable-startup').click(_updateStartup);
+            $('#enable-startup, #disable-startup').on('click', _updateStartup);
             _initialized = true;
         },
     };

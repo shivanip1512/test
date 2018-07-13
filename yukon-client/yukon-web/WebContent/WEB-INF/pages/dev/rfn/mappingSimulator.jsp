@@ -117,9 +117,10 @@
     </c:if>
     
     <div class="button-group button-group-toggle">
-        <div class="js-sim-startup" data-simulator-type="RFN_NETWORK"></div>
+        <div class="js-sim-startup" data-simulator-type="RFN_NETWORK">
         <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>
+        </div>  
     </div>
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.mappingSimulator.js" />
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.simulatorStartup.js" />
