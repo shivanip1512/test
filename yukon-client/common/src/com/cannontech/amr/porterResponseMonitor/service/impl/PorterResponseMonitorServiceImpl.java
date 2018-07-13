@@ -43,7 +43,7 @@ public class PorterResponseMonitorServiceImpl implements PorterResponseMonitorSe
     public boolean delete(int monitorId) throws NotFoundException {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.PORTER_RESPONSE_MONITOR, monitorId);
         boolean deleted = porterResponseMonitorDao.deleteMonitor(monitorId);
-        userPageDao.deleteUserPages(monitorId, UserPageType.PORTERRESPONSEMONITOR);
+        userPageDao.deleteUserPages(monitorId, UserPageType.PORTER_RESPONSE_MONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.PORTER_RESPONSE_MONITOR, monitorId);
         return deleted;
     }

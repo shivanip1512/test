@@ -360,7 +360,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<Integer> paoIds = new ArrayList<>();
         for (UserPage page : pages) {
             if (page.isFavorite()){
-                Integer paoId = idInPath(page.getPath(), UserPageType.DEMANDRESPONSE.getUrl());
+                Integer paoId = idInPath(page.getPath(), UserPageType.DEMAND_RESPONSE.getUrl());
                 if (paoId != null) {
                     paoIds.add(paoId);
                 }
@@ -379,7 +379,7 @@ public class UserPageDaoImpl implements UserPageDao {
         List<Integer> recentPaoIds = new ArrayList<>();
 
         for (UserPage page : pages) {
-                Integer paoId = idInPath(page.getPath(), UserPageType.DEMANDRESPONSE.getUrl());
+                Integer paoId = idInPath(page.getPath(), UserPageType.DEMAND_RESPONSE.getUrl());
                 if (paoId != null) {
                     recentPaoIds.add(paoId);
                 }

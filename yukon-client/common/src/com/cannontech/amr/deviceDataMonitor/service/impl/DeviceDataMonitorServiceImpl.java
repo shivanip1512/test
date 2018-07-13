@@ -65,7 +65,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
                                                                  monitor.getId().toString(), 
                                                                  monitor.getName(), userContext);
         deviceDataMonitorDao.deleteMonitor(monitor);
-        userPageDao.deleteUserPages(monitor.getId(), UserPageType.DEVICEDATAMONITOR);
+        userPageDao.deleteUserPages(monitor.getId(), UserPageType.DEVICE_DATA_MONITOR);
     }
     
     @Override

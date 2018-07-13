@@ -41,7 +41,7 @@ public class StatusPointMonitorServiceImpl implements StatusPointMonitorService 
     public boolean delete(int statusPointMonitorId) throws NotFoundException {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.STATUS_POINT_MONITOR, statusPointMonitorId);
         boolean deleted = statusPointMonitorDao.deleteStatusPointMonitor(statusPointMonitorId);
-        userPageDao.deleteUserPages(statusPointMonitorId, UserPageType.STATUSPOINTMONITOR);
+        userPageDao.deleteUserPages(statusPointMonitorId, UserPageType.STATUS_POINT_MONITOR);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.STATUS_POINT_MONITOR, statusPointMonitorId);
         return deleted;
     }
