@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.model;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
@@ -294,8 +295,13 @@ public final class RfnGatewayData {
         return ipv6PrefixSuggested + sb.toString().substring(0, 4);
     }
     
+    /**
+     * @return The formatted prefix, or an empty String if the prefix is null.
+     */
     public String getFormattedIpv6Prefix() {
-        return ipv6Prefix.replaceAll("....(?!$)", "$0:") + " ::/64";
+        return Optional.ofNullable(ipv6Prefix)
+                       .map(prefix -> prefix.replaceAll("....(?!$)", "$0:") + " ::/64")
+                       .orElse("");
     }
 
     @Override
