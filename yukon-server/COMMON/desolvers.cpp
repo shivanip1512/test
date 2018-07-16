@@ -186,6 +186,9 @@ string desolveDeviceType( int aType )
         case TYPE_RFW201:       Ret = "rfw-201";        break;
         case TYPE_RFW205:       Ret = "rfw-205";        break;
 
+        case TYPE_RFG201:       Ret = "rfg-201";        break;
+        case TYPE_RFG205:       Ret = "rfg-205";        break;
+
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 
         case TYPE_LOAD_TAP_CHANGER:             Ret = "ltc";   break;

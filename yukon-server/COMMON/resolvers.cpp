@@ -289,6 +289,10 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "rfw-201",            TYPE_RFW201 },
     { "rfw-205",            TYPE_RFW205 },
 
+    //  --- RF gas meters ---
+    { "rfg-201",            TYPE_RFG201 },
+    { "rfg-205",            TYPE_RFG205 },
+
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },
     { "rtu-dnp",            TYPE_DNPRTU },
@@ -425,7 +429,8 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "honeywell wi-fi focuspro",
         "honeywell wi-fi thermostat",
         "honeywell wi-fi visionpro 8000",
-        "rfn relay"
+        "rfn relay",
+        "rfg-205"
     };
 
     return unsupported_devices.count( sanitizeInput( typeStr ) );
@@ -691,6 +696,8 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFN1200,
         TYPE_RFW201,
         TYPE_RFW205,
+        TYPE_RFG201,
+        TYPE_RFG205,
         TYPE_RFN410FL,
         TYPE_RFN410FX,
         TYPE_RFN410FD,

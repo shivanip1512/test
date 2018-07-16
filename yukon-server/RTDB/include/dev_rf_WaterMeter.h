@@ -5,7 +5,7 @@
 namespace Cti       {
 namespace Devices   {
 
-class IM_EX_DEVDB RfWaterMeterDevice :
+class IM_EX_DEVDB RfBatteryNodeDevice :
     public RfnDevice
 {
 protected:
@@ -19,8 +19,10 @@ private:
     YukonError_t executeGetConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 };
 
-typedef RfWaterMeterDevice Rfw201Device;
-typedef RfWaterMeterDevice Rfw205Device;
+typedef RfBatteryNodeDevice Rfw201Device;
+typedef RfBatteryNodeDevice Rfw205Device;
+typedef RfBatteryNodeDevice Rfg201Device;
+typedef RfBatteryNodeDevice Rfg205Device;
 
 }
 }

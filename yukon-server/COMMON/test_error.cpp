@@ -247,10 +247,10 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Channel not enabled in RF node.")
     ("Channel not supported by meter.")
     //  300
-    ("Invalid water node device.")
-    ("Unknown water node.")
+    ("Invalid battery node device.")
+    ("Unknown battery node.")
     ("Unknown gateway.")
-    ("Unspecified water node failure.")
+    ("Unspecified battery node failure.")
     ("Function code not supported.")
     ("Unknown object.")
     ("Parameter error, not all points in the index range or object index prefixes exist.")

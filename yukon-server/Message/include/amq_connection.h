@@ -51,8 +51,8 @@ struct IM_EX_MSG OutboundQueue
     static const OutboundQueue NetworkManagerE2eDataRequest;
     static const OutboundQueue ScannerOutMessages;
     static const OutboundQueue ScannerInMessages;
-    static const OutboundQueue GetWaterChannelConfigRequest;
-    static const OutboundQueue SetWaterChannelConfigRequest;
+    static const OutboundQueue GetBatteryChannelConfigRequest;
+    static const OutboundQueue SetBatteryChannelConfigRequest;
     static const OutboundQueue DeviceCreationRequest;
     static const OutboundQueue RfnDataStreamingUpdate;
 

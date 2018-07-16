@@ -380,11 +380,11 @@ struct ClientErrors
         ChannelDisabled,
         ChannelUnsupported,
 
-        // Water node errors
-        InvalidWaterNode,
-        UnknownWaterNode,
+        // Battery node errors
+        InvalidBatteryNode,
+        UnknownBatteryNode,
         UnknownGateway,
-        WaterNodeFailure,
+        BatteryNodeFailure,
 
         // DNP IIN bit errors
         FunctionCodeNotImplemented,

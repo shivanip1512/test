@@ -14,14 +14,14 @@
 namespace Cti       {
 namespace Devices   {
 
-YukonError_t RfWaterMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
             executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
-                                        bindConfigMethod( &RfWaterMeterDevice::executePutConfigIntervals, this ) );
+                                        bindConfigMethod( &RfBatteryNodeDevice::executePutConfigIntervals, this ) );
             
             return ClientErrors::None;
         }
@@ -30,14 +30,14 @@ YukonError_t RfWaterMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiComman
     return ClientErrors::NoMethod; 
 }
 
-YukonError_t RfWaterMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfBatteryNodeDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
             executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
-                                        bindConfigMethod( &RfWaterMeterDevice::executeGetConfigIntervals, this ) );
+                                        bindConfigMethod( &RfBatteryNodeDevice::executeGetConfigIntervals, this ) );
 
             return ClientErrors::None;
         }
@@ -54,11 +54,11 @@ YukonError_t processChannelConfigReply( const Cti::Messaging::Rfn::RfnSetChannel
 
     static const std::map<int, YukonError_t>  replyCodeToYukonError
     {
-        { 0, ClientErrors::None             },
-        { 1, ClientErrors::InvalidWaterNode },
-        { 2, ClientErrors::UnknownWaterNode },
-        { 3, ClientErrors::UnknownGateway   },
-        { 4, ClientErrors::WaterNodeFailure }
+        { 0, ClientErrors::None               },
+        { 1, ClientErrors::InvalidBatteryNode },
+        { 2, ClientErrors::UnknownBatteryNode },
+        { 3, ClientErrors::UnknownGateway     },
+        { 4, ClientErrors::BatteryNodeFailure }
     };
 
     return mapFindOrDefault( replyCodeToYukonError, reply.replyCode, ClientErrors::Unknown ); 
@@ -91,7 +91,7 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurati
         };
 
     ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(
-            OutboundQueue::GetWaterChannelConfigRequest,
+            OutboundQueue::GetBatteryChannelConfigRequest,
             serialized,
             msgReceivedCallback,
             std::chrono::seconds{ 5 },
@@ -100,7 +100,7 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurati
     return consumer.get();
 }
 
-YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfBatteryNodeDevice::executePutConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
@@ -214,7 +214,7 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
                 };
 
             ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(
-                    OutboundQueue::SetWaterChannelConfigRequest,
+                    OutboundQueue::SetBatteryChannelConfigRequest,
                     serialized,
                     msgReceivedCallback,
                     std::chrono::seconds{ 5 },
@@ -239,7 +239,7 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
     return ClientErrors::None;
 }
 
-YukonError_t RfWaterMeterDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfBatteryNodeDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
@@ -257,10 +257,10 @@ YukonError_t RfWaterMeterDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, 
 
             static const std::map<int, YukonError_t>  replyCodeToYukonError
             {
-                { 0, ClientErrors::None             },
-                { 1, ClientErrors::InvalidWaterNode },
-                { 2, ClientErrors::UnknownWaterNode },
-                { 3, ClientErrors::WaterNodeFailure }
+                { 0, ClientErrors::None               },
+                { 1, ClientErrors::InvalidBatteryNode },
+                { 2, ClientErrors::UnknownBatteryNode },
+                { 3, ClientErrors::BatteryNodeFailure }
             };
 
             return mapFindOrDefault( replyCodeToYukonError, configInfo->replyCode, ClientErrors::Unknown ); 

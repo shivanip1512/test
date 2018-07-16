@@ -1720,15 +1720,15 @@
     
     <error code="300" type="SYSTEM">
         <category>N/A</category>
-        <porter>Invalid water node device.</porter>
-        <description>Invalid water node device.</description>
+        <porter>Invalid battery node device.</porter>
+        <description>Invalid battery node device.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     
     <error code="301" type="SYSTEM">
         <category>N/A</category>
-        <porter>Unknown water node.</porter>
-        <description>Unknown water node.</description>
+        <porter>Unknown battery node.</porter>
+        <description>Unknown battery node.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     
@@ -1741,8 +1741,8 @@
     
     <error code="303" type="SYSTEM">
         <category>N/A</category>
-        <porter>Unspecified water node failure.</porter>
-        <description>Unspecified water node failure.</description>
+        <porter>Unspecified battery node failure.</porter>
+        <description>Unspecified battery node failure.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     
