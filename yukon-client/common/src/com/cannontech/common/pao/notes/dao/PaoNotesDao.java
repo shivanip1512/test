@@ -45,11 +45,9 @@ public interface PaoNotesDao {
     int edit(PaoNote note, LiteYukonUser user);
     
     /**
-     * Delete the note by noteId. This will not remove the note from the database. Instead it will 
-     * update the status of the note to 'D' as well as the EditDate and EditUsername to reflect the 
-     * deletion event instead of the last edit.
+     * Delete the note with the given noteId from the PaoNote table.
      */
-    int delete(int noteId, LiteYukonUser user);
+    void delete(int noteId);
 
     List<PaoNotesSearchResult> findMostRecentNotes(int paoId, int numOfNotes);
     

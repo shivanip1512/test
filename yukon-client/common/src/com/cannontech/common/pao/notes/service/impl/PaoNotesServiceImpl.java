@@ -32,8 +32,8 @@ public class PaoNotesServiceImpl implements PaoNotesService {
     }
 
     @Override
-    public void delete(int noteId, LiteYukonUser user) {
-        paoNotesDao.delete(noteId, user);
+    public void delete(int noteId) {
+        paoNotesDao.delete(noteId);
     }
     
     @Override

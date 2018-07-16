@@ -195,7 +195,7 @@ public class PaoNotesSearchController {
     
     @RequestMapping(value = "deletePaoNote", method = RequestMethod.POST)
     public String deletePaoNote(ModelMap model, int noteId, int paoId, YukonUserContext userContext) {
-        paoNotesService.delete(noteId, userContext.getYukonUser());
+        paoNotesService.delete(noteId);
         setupModel(paoId, userContext.getYukonUser().getUsername(), model);
         return "paoNote/paoNotesPopup.jsp";
     }

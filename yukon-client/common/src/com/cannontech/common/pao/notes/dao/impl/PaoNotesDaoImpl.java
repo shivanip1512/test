@@ -98,16 +98,11 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     }
 
     @Override
-    public int delete(int noteId, LiteYukonUser user) {
-        SqlStatementBuilder updateSql = new SqlStatementBuilder();
-        SqlParameterSink sink = updateSql.update("PaoNote");
-        sink.addValue("Status", PaoNoteStatus.DELETED);
-        sink.addValue("EditUserName", user.getUsername());
-        sink.addValue("EditDate", new Instant());
-        updateSql.append("WHERE NoteId").eq(noteId);
-        
-        yukonJdbcTemplate.update(updateSql);
-        return noteId;
+    public void delete(int noteId) {
+        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+        deleteSql.append("DELETE FROM PaoNote");
+        deleteSql.append("WHERE NoteId").eq(noteId);
+        yukonJdbcTemplate.update(deleteSql);
     }
 
     @Override
@@ -118,7 +113,6 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         sql.append("SELECT NoteId, PAObjectId, NoteText, Status, CreateUserName, CreateDate, EditUserName, EditDate");
         sql.append("FROM PaoNote");
         sql.append("WHERE PAObjectId").eq(paoId);
-        sql.append("AND Status").neq_k(PaoNoteStatus.DELETED);
         sql.append("ORDER BY COALESCE(EditDate, CreateDate) DESC");
         
         return yukonJdbcTemplate.queryForLimitedResults(sql, paoNotesRowMapper, numOfNotes);
@@ -202,7 +196,6 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         if (filter.getEndDate() != null) {
             sql.append("AND pn.CreateDate").lte(filter.getEndDate());
         }
-        sql.append("AND pn.Status").neq_k(PaoNoteStatus.DELETED);
         return sql;
     }
 }

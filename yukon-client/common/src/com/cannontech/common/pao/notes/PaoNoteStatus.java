@@ -5,8 +5,7 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 public enum PaoNoteStatus implements DatabaseRepresentationSource {
 
     CREATED("C"),
-    EDITED("E"),
-    DELETED("D");
+    EDITED("E");
     
     private final String dbString;
     

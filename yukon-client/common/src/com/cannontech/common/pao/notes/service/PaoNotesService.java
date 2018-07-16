@@ -26,10 +26,9 @@ public interface PaoNotesService {
     int edit(PaoNote note, LiteYukonUser user);
     
     /**
-     * "Delete" the PaoNote associated with the noteId. The note remains
-     * in the database but it's status is now 'D'.
+     * "Delete the PaoNote associated with the noteId.
      */
-    void delete(int noteId, LiteYukonUser user);
+    void delete(int noteId);
     
     /**
      * @param filter will be used to determine how to query for List of PaoIds, if deviceGroup is not null

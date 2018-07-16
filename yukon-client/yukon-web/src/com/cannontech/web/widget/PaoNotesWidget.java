@@ -55,7 +55,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
 
     @RequestMapping(value = "deletePaoNote", method = RequestMethod.POST)
     public String deletePaoNote(ModelMap model, int noteId, int deviceId, YukonUserContext userContext) {
-        paoNotesService.delete(noteId, userContext.getYukonUser());
+        paoNotesService.delete(noteId);
         setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
         return "paoNotesWidget/render.jsp";
     }
