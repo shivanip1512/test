@@ -21,14 +21,22 @@ public class GatewayFirmwareVersionParserTest {
     }
 
     @Test
-    public void test_invalidFirmwareVersion_tooManyParts() {
+    public void test_firmwareVersion_moreThan3Parts() {
         GatewayFirmwareVersion actualVersion1 = GatewayFirmwareVersion.parse("6.3.2.1");
         GatewayFirmwareVersion actualVersion2 = GatewayFirmwareVersion.parse("6.3.2.9");
         GatewayFirmwareVersion actualVersion3 = GatewayFirmwareVersion.parse("6.3.2.0.0");
+        GatewayFirmwareVersion actualVersion4 = GatewayFirmwareVersion.parse("6.3.2.somethingotherthandecimal ");
         GatewayFirmwareVersion expectedVersion = new GatewayFirmwareVersion(6, 3, 2);
         assertEquals("Failed to truncate 4-part version string into 3 parts", expectedVersion, actualVersion1);
         assertEquals("Failed to truncate 4-part version string into 3 parts", expectedVersion, actualVersion2);
         assertEquals("Failed to truncate 5-part version string into 3 parts", expectedVersion, actualVersion3);
+        assertEquals("Failed to truncate version string with non-numerics after the 3rd segment", expectedVersion, actualVersion4);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_invalidFirmwareVersion_alphaInFirstThreeSegments() {
+        // Non-numerics in the first 3 segments will cause a parsing error
+        GatewayFirmwareVersion.parse("6.3.2alpha");
     }
 
     @Test(expected = IllegalArgumentException.class)
