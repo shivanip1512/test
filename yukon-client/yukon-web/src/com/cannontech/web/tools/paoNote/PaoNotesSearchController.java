@@ -1,10 +1,14 @@
 package com.cannontech.web.tools.paoNote;
 
+import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,11 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -37,6 +43,7 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao.SortBy;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.filter.model.PaoSelectionMethod;
+import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
@@ -46,6 +53,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.paonote.validator.PaoNoteValidator;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
@@ -61,6 +69,8 @@ public class PaoNotesSearchController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private PaoNoteValidator paoNoteValidator;
+
 
     private static final String baseKey = "yukon.web.common.paoNote.";
 
@@ -175,5 +185,67 @@ public class PaoNotesSearchController {
         public String getFormatKey() {
             return baseKey + name();
         }
+    }
+    
+    @RequestMapping(value = "viewAllNotes", method = RequestMethod.GET)
+    public String viewAllNotes(ModelMap model, YukonUserContext userContext, int paoId) {
+        setupModel(paoId, userContext.getYukonUser().getUsername(), model);
+        return "paoNote/paoNotesPopup.jsp";
+    }
+    
+    @RequestMapping(value = "deletePaoNote", method = RequestMethod.POST)
+    public String deletePaoNote(ModelMap model, int noteId, int paoId, YukonUserContext userContext) {
+        paoNotesService.delete(noteId, userContext.getYukonUser());
+        setupModel(paoId, userContext.getYukonUser().getUsername(), model);
+        return "paoNote/paoNotesPopup.jsp";
+    }
+    
+    @RequestMapping(value = "editPaoNote", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> editPaoNote(ModelMap model, YukonUserContext userContext, PaoNote paoNote) {
+        Map<String, Object> jsonResponse = new HashMap<>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        if (StringUtils.isBlank(paoNote.getNoteText())) {
+            jsonResponse.put("hasError", true);
+            jsonResponse.put("errorMessage", accessor.getMessage("yukon.web.error.isBlank"));
+        } else if (paoNote.getNoteText().length() > MAX_CHARACTERS_IN_NOTE) {
+            jsonResponse.put("hasError", true);
+            jsonResponse.put("errorMessage", accessor.getMessage("yukon.web.error.exceedsMaximumLength", MAX_CHARACTERS_IN_NOTE));
+        } else {
+            jsonResponse.put("hasError", false);
+            paoNotesService.edit(paoNote, userContext.getYukonUser());
+        }
+        return jsonResponse;
+    }
+    
+    @RequestMapping(value = "createPaoNote", method = RequestMethod.POST)
+    public String createNote(ModelMap model, YukonUserContext userContext,
+            @ModelAttribute("paoNote") PaoNote paoNote, BindingResult result) {
+        paoNoteValidator.validate(paoNote, result);
+        if (result.hasErrors()) {
+            setupModel(paoNote.getPaoId(), userContext.getYukonUser().getUsername(), model);
+            return "paoNote/paoNotesPopup.jsp";
+        }
+        paoNotesService.create(paoNote, userContext.getYukonUser());
+        return "redirect:viewAllNotes?paoId=" + paoNote.getPaoId();
+    }
+    
+    private void setupModel(int paoId, String userName, ModelMap model) {
+        PaoNote createPaoNote = null;
+        if (model.containsAttribute("paoNote")) {
+            createPaoNote = (PaoNote) model.get("paoNote");
+        } else {
+            createPaoNote = new PaoNote();
+            createPaoNote.setCreateUserName(userName);
+            createPaoNote.setPaoId(paoId);
+        }
+        model.addAttribute("paoNote", createPaoNote);
+        List<PaoNotesSearchResult> searchResults = null;
+        if (model.containsAttribute("searchResults")) {
+            searchResults = (List<PaoNotesSearchResult>) model.get("searchResults");
+        } else {
+            searchResults = paoNotesService.getAllNotesByPaoId(paoId).getResultList();
+        }
+        model.addAttribute("searchResults", searchResults);
     }
 }

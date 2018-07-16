@@ -62,9 +62,10 @@
                     <td width="20%" class="vam js-note-actions">
                         <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
                         <cti:msg2 var="deleteText" key=".delete.hoverText"/>
+                        <cti:msg2 var="editText" key=".edit.hoverText"/>
                         <div id="js-edit-note-btn-group-${noteId}" class="button-group">
                             <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
-                                        data-note-id="${noteId}"/>
+                                        data-note-id="${noteId}" title="${editText}"/>
                             <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
                                         data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
                             <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
@@ -86,7 +87,7 @@
         <a href="#"><i:inline key="yukon.common.viewAll"/></a>
         &nbsp;|&nbsp;
         <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
-        <a href="${searchUrl}"><i:inline key="yukon.common.search"/></a>
+        <a href="${searchUrl}"><i:inline key="common.paoNotesSearch.pageName"/></a>
     </div>
     
 </cti:msgScope>

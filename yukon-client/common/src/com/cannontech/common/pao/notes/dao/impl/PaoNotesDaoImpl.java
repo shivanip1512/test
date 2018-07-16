@@ -129,9 +129,9 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         PaoNotesFilter filter = new PaoNotesFilter();
         filter.setPaoIds(Collections.singleton((Integer)paoId));
         return getAllNotesByFilter(filter,
-                                    null,
-                                    null,
-                                    null);
+                                    SortBy.CREATE_DATE,
+                                    Direction.desc,
+                                    PagingParameters.EVERYTHING);
     }
 
     @Override
