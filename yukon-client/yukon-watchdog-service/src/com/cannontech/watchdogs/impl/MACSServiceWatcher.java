@@ -73,12 +73,12 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
             return macsConnection;
         }
 
-        for (int retry = 0; retry < 5; retry++) {
+        for (int retry = 0; retry < 3; retry++) {
             if (macsConnection.isValid()) {
                 break;
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {}
         }
 

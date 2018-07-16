@@ -77,12 +77,12 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
         clientConnection.setConnectionFactory(connectionFactorySvc.findConnectionFactory("CBC"));
         clientConnection.connectWithoutWait();
 
-        for (int retry = 0; retry < 5; retry++) {
+        for (int retry = 0; retry < 3; retry++) {
             if (clientConnection.isValid()) {
                 break;
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {}
         }
         return clientConnection;

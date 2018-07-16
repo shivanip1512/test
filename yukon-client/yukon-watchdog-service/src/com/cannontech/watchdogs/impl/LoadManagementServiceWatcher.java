@@ -78,7 +78,7 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
         clientConnection.setConnectionFactory(connectionFactorySvc.findConnectionFactory("LC"));
         clientConnection.connectWithoutWait();
 
-        for (int retry = 0; retry < 5; retry++) {
+        for (int retry = 0; retry < 3; retry++) {
             if (clientConnection.isValid()) {
                 break;
             }

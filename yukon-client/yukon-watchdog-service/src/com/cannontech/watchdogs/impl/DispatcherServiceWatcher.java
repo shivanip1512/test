@@ -80,12 +80,12 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
             return dispatchConnection;
         }
 
-        for (int retry = 0; retry < 5; retry++) {
+        for (int retry = 0; retry < 3; retry++) {
             if (dispatchConnection.isValid()) {
                 break;
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {}
         }
         return dispatchConnection;

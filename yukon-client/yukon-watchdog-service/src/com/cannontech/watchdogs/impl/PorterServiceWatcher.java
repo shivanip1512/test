@@ -79,12 +79,12 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
             return porterClientConnection;
         }
 
-        for (int retry = 0; retry < 5; retry++) {
+        for (int retry = 0; retry < 3; retry++) {
             if (porterClientConnection.isValid()) {
                 break;
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {}
         }
         return porterClientConnection;
