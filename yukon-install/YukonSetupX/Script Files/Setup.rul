@@ -67,6 +67,11 @@ begin
     // Format date pattern in YYYYMMDD
     formattedDateString = FormatDatePattern(sDateString);
     BackupLoggingConfigFiles(formattedDateString);
+    if(IsInstalledVersionLesser("7.1.0")) then
+        RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
+    endif;
+    // Create list off all Java services (except watch dog)
+
 	//make sure we have enough space for the selected features
 	TARGETDIR = sDir;
 	FeatureCompareSizeRequired(MEDIA, TARGETDIR, nSize);
@@ -264,7 +269,7 @@ end;
 function OnUpdateUIBefore()
 number nResult ;
 BOOL bOptYes, bOptNo, bOpt;
-string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName, shortcutDir;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName, shortcutDir, sDateString, formattedDateString;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -350,7 +355,11 @@ begin
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
     // Take backup of logging config files if installedVersion < "7.1.0"
     if(IsInstalledVersionLesser("7.1.0")) then 
-    BackupLoggingConfigFiles(sOldVersion);
+        BackupLoggingConfigFiles(sOldVersion);
+        GetSystemInfo(DATE, nResult, sDateString);
+        // Format date pattern in YYYYMMDD
+        formattedDateString = FormatDatePattern(sDateString);
+        RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
     endif;
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly

@@ -20,6 +20,15 @@
 #define JAVA_CALC_HIST  "CalcHist"
 #define IncludeLogs		1303
 #define DirectoryName	715
+#define WEB_SERVER       "Webserver"
+#define NOTIF_SRV        "NotificationServer"
+#define SERVICE_MGR      "ServiceManager"
+#define MSG_BROKER       "MessageBroker"
+#define EIM_SRV          "WebServices"
+#define DB_EDITOR        "DBEditor"
+#define COMMANDER        "Commander"
+#define TRENDING         "Trending"
+#define TDC              "TDC"
 #include "BackupSelectionDialog.rul"
 
 //global variable used to store service settings across the upgrade process
@@ -878,4 +887,46 @@ szFile = TARGETDIR ^ "\\Server\\Config\\yukonLogging.xml";
 DeleteFile ( szFile );
 szFile = TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml";
 DeleteFile ( szFile );
+end;
+
+//--------------------------------------------------------------------------------
+// Helper function to build up a list of the Yukon java
+// services And Yukon clients application names in the provided string array.
+//--------------------------------------------------------------------------------
+export prototype void PopulateJavaServiceAndClientNameList(BYREF VARIANT); //array parameters must
+function void PopulateJavaServiceAndClientNameList(javaServicesAndClientsNameArray) //be prototyped as VARIANT
+begin
+    //if the array is too small, increase the size
+    if(SizeOf(javaServicesAndClientsNameArray) < 9) then
+        Resize(javaServicesAndClientsNameArray, 9);
+    endif;
+    //populate
+    javaServicesAndClientsNameArray(0) = WEB_SERVER;
+    javaServicesAndClientsNameArray(1) = NOTIF_SRV;
+    javaServicesAndClientsNameArray(2) = SERVICE_MGR;
+    javaServicesAndClientsNameArray(3) = MSG_BROKER;
+    javaServicesAndClientsNameArray(4) = EIM_SRV;
+    javaServicesAndClientsNameArray(5) = DB_EDITOR;
+    javaServicesAndClientsNameArray(6) = COMMANDER;
+    javaServicesAndClientsNameArray(7) = TRENDING;
+    javaServicesAndClientsNameArray(8) = TDC;
+end;
+
+//--------------------------------------------------------------------------------
+// Rename Installation day java services and client logs files.
+// For eg. On Installation day we have log file for service manager as ServiceManager_yyyyMMdd.log format
+// than that file will be rename as ServiceManager_0_yyyyMMdd.log file . 
+//
+export prototype void RenameInstalledDateJavaServicesAndClientLog(string);
+function void RenameInstalledDateJavaServicesAndClientLog(formattedDateString)
+number nCount;
+string sJavaServicesAndClientsNameArray(9), sLogPath, sResult;
+begin
+        PopulateJavaServiceAndClientNameList(sJavaServicesAndClientsNameArray);
+        sLogPath = TARGETDIR + "\\Server\\Log\\";
+        for nCount = 0 to (SizeOf(sJavaServicesAndClientsNameArray)-1)
+           if (FindFile (sLogPath, sJavaServicesAndClientsNameArray(nCount) + "_" + formattedDateString + ".log", sResult ) == 0) then
+                RenameFile (sLogPath + sJavaServicesAndClientsNameArray(nCount) + "_" + formattedDateString + ".log", sLogPath + sJavaServicesAndClientsNameArray(nCount) + "_0" + "_" + formattedDateString + ".log" );
+           endif;
+        endfor;
 end;
