@@ -26,20 +26,6 @@ public class PqrConfigValidator extends SimpleValidator<PqrConfig> {
         validateMinimumEventSeparation(config, errors);
     }
     
-    public boolean isEmpty(PqrConfig config) {
-        if (config.getPqrEnable() == null &&
-                config.getMinimumEventSeparation() == null &&
-                !config.hasLofDelayDurations() &&
-                !config.hasLofEventDurations() &&
-                !config.hasLofParams() &&
-                !config.hasLovDelayDurations() &&
-                !config.hasLovEventDurations() &&
-                !config.hasLovParams()) {
-            return true;
-        }
-        return false;
-    }
-    
     private void validateLovParameters(PqrConfig config, Errors errors) {
         
         Object[] lovParameterFields = {config.getLovTrigger(), config.getLovRestore(), 

@@ -136,8 +136,10 @@ public class PowerQualityResponseActionsController {
                                   @ModelAttribute("config") PqrConfig config, BindingResult result, LiteYukonUser user, 
                                   HttpServletRequest req, FlashScope flash) {
         
-        if (pqrConfigValidator.isEmpty(config)) {
+        if (config.isEmpty()) {
             flash.setError(new YukonMessageSourceResolvable(PqrConfigValidator.keyBase + "emptyConfig"));
+            inventoryCollectionFactory.addCollectionToModelMap(req, model);
+            model.addAttribute("config", config);
             return "operator/inventory/pqrConfig/pqrConfigSetup.jsp";
         } else {
             pqrConfigValidator.doValidation(config, result);

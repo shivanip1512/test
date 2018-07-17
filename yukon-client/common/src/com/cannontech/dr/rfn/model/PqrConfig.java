@@ -290,6 +290,27 @@ public class PqrConfig {
                getLofEndRandomTimeOptional().isPresent();
     }
 
+    public boolean isEmpty() {
+        return pqrEnable == null &&
+               lovTrigger == null &&
+               lovRestore == null &&
+               lovTriggerTime == null &&
+               lovRestoreTime == null &&
+               lovMinEventDuration == null &&
+               lovMaxEventDuration == null &&
+               lovStartRandomTime == null &&
+               lovEndRandomTime == null &&
+               lofTrigger == null &&
+               lofRestore == null &&
+               lofTriggerTime == null &&
+               lofRestoreTime == null &&
+               lofMinEventDuration == null &&
+               lofMaxEventDuration == null &&
+               lofStartRandomTime == null &&
+               lofEndRandomTime == null &&
+               minimumEventSeparation == null;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
