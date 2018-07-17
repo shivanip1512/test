@@ -31,13 +31,13 @@
                     <th colspan="2"><i:inline key="yukon.web.common.paoNote.noteText"/></th>
                     <th><i:inline key="yukon.web.common.paoNote.createdBy"/></th>
                     <th><i:inline key="yukon.web.common.paoNote.createDate"/></th>
-                    <th><i:inline key="yukon.web.common.paoNote.modifiedBy"/></th>
-                    <th colspan="2"><i:inline key="yukon.web.common.paoNote.modifiedDate"/></th>
+                    <th><i:inline key="yukon.web.common.paoNote.editedBy"/></th>
+                    <th colspan="2"><i:inline key="yukon.web.common.paoNote.editDate"/></th>
             </thead>
             <tbody>
                 <c:forEach var="paoNoteSearchResult" items="${searchResults}">
                     <c:set var="noteId" value="${paoNoteSearchResult.paoNote.noteId}"/>
-                    <tr id="js-note-row-${noteId}">                    
+                    <tr id="js-note-row-${noteId}">
                         <td width="30%" class="vam js-note-actions">
                             <div id="js-note-${noteId}">
                                 <div id="js-note-content-${noteId}">
@@ -51,7 +51,7 @@
                         </td>
                         <td width="10%" class="js-note-actions">
                             <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
-                            <cti:msg2 var="saveText" key="yukon.common.save"/>                        
+                            <cti:msg2 var="saveText" key="yukon.common.save"/>
                             <div id="js-save-note-group-${noteId}" class="button-group dn">
                                 <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
                                             data-note-id="${noteId}" title="${saveText}" data-pao-id="${paoNoteSearchResult.paoNote.paoId}"/>
