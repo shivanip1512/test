@@ -190,11 +190,11 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         if (StringUtils.isNotEmpty(filter.getUser())) {
             sql.append("AND pn.CreateUserName").eq(filter.getUser());
         }
-        if (filter.getStartDate() != null) {
-            sql.append("AND pn.CreateDate").gt(filter.getStartDate());
+        if (filter.getDateRange().getMin() != null) {
+            sql.append("AND pn.CreateDate").gt(filter.getDateRange().getMin());
         }
-        if (filter.getEndDate() != null) {
-            sql.append("AND pn.CreateDate").lte(filter.getEndDate());
+        if (filter.getDateRange().getMax() != null) {
+            sql.append("AND pn.CreateDate").lte(filter.getDateRange().getMax());
         }
         return sql;
     }

@@ -13,33 +13,6 @@ yukon.tools.paonotessearch = (function () {
  
     var
     _initialized = false,
-    
-    _togglePickerDisplay = function () {
-        var selectDevices = $('#js-select-devices').val();
-        
-        if (selectDevices === 'allDevices') {
-            $('#js-picker-dialog').addClass('dn');
-            $('#js-device-group-picker').addClass('dn');
-            $('input[name="deviceGroupName"]').val('');
-            $("#js-note-create-dates").removeAttr("style");
-            $("#js-note-create-by").css({"margin-left":"6%", "margin-top":"1%"});
-            $("#js-picker-dialog #picker-paoPicker-input-area").find('input[type="hidden"][name="paoIds"]').remove();
-            $("#js-device-group-picker").find("input[name='deviceGroupNames']").val('');
-        } else if (selectDevices === 'selectIndividually') {
-            $('#js-picker-dialog').removeClass('dn');
-            $('#js-device-group-picker').addClass('dn');
-            $('input[name="deviceGroupName"]').val('');
-            $("#js-note-create-dates").css({"margin-left":"6%", "margin-top":"1%"});
-            $("#js-note-create-by").removeAttr("style");
-            $("#js-device-group-picker").find("input[name='deviceGroupNames']").val('');
-        } else if (selectDevices === 'byDeviceGroups') {
-            $('#js-picker-dialog').addClass('dn');
-            $('#js-device-group-picker').removeClass('dn');
-            $("#js-note-create-dates").css({"margin-left":"6%", "margin-top":"1%"});
-            $("#js-note-create-by").removeAttr("style");
-            $("#js-picker-dialog #picker-paoPicker-input-area").find('input[type="hidden"][name="paoIds"]').remove();
-        }
-    },
  
     mod = {
  
@@ -48,18 +21,19 @@ yukon.tools.paonotessearch = (function () {
  
             if (_initialized) return;
             
-            $(document).on('change', '#js-select-devices', function () {
-                _togglePickerDisplay();
-            });
-            
             $(document).on('click', '.js-download', function () {
                 var form = $('#filter-pao-notes-form');
                 var data = form.serialize();
                 window.location = yukon.url('/tools/paoNotes/download?' + data);
             });
-
-            _togglePickerDisplay();
             
+            if ($("#deviceGroups\\.errors").length === 1) {
+                $("#deviceGroups\\.errors").prev().remove();
+            }
+            if ($("#paoIds\\.errors").length === 1) {
+                $("#paoIds\\.errors").prev().remove();
+            }
+
             _initialized = true;
         }
  

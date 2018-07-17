@@ -2,8 +2,8 @@ package com.cannontech.web.tools.paoNote;
 
 import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
 
+import java.beans.PropertyEditor;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -47,12 +47,17 @@ import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.paonote.validator.PaoNoteValidator;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
@@ -69,28 +74,37 @@ public class PaoNotesSearchController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private PaoNotesFilterValidator validator;
     @Autowired private PaoNoteValidator paoNoteValidator;
-
 
     private static final String baseKey = "yukon.web.common.paoNote.";
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
-    public String search(@ModelAttribute("paoNoteFilter") PaoNotesFilter filter, ModelMap model,
+    public String search(@ModelAttribute("paoNoteFilter") PaoNotesFilter filter, BindingResult bindingResult,
+            ModelMap model, FlashScope flashScope,
             @DefaultSort(dir = Direction.desc, sort = "createDate") SortingParameters sorting,
             @DefaultItemsPerPage(value = 25) PagingParameters paging, YukonUserContext userContext,
             String deviceGroupNames) {
         
         if (StringUtils.isNotEmpty(deviceGroupNames)) {
             List<DeviceGroup> deviceGroups = Lists.newArrayList();
-            for(String deviceGroupName : deviceGroupNames.split(",")) {
+            for (String deviceGroupName : deviceGroupNames.split(",")) {
                 deviceGroups.add(deviceGroupService.resolveGroupName(deviceGroupName));
             }
             filter.setDeviceGroups(deviceGroups);
             model.addAttribute("deviceGroupNames", deviceGroupNames);
         }
+        
+        validator.validate(filter, bindingResult);
 
-        SearchResults<PaoNotesSearchResult> searchResults = paoNotesService.getAllNotesByFilter(filter,
-            PaoNoteSortBy.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
+        SearchResults<PaoNotesSearchResult> searchResults = new SearchResults<>();
+        searchResults.setResultList(Lists.newArrayList());
+        
+        if (!bindingResult.hasErrors()) {
+            searchResults = paoNotesService.getAllNotesByFilter(filter,
+                PaoNoteSortBy.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
+        }
         model.addAttribute("searchResults", searchResults);
         
         if (filter.getPaoSelectionMethod() != PaoSelectionMethod.selectIndividually) {
@@ -115,6 +129,20 @@ public class PaoNotesSearchController {
         model.addAttribute("deviceCollection", deviceCollection);
 
         model.addAttribute("paoSelectionMethods", PaoSelectionMethod.values());
+
+        if (bindingResult.hasErrors()) {
+            if (bindingResult.hasFieldErrors("paoIds") || bindingResult.hasFieldErrors("deviceGroups")) {
+                model.addAttribute("hasDeviceFilterErrors", true);
+            } 
+            if (bindingResult.hasFieldErrors("dateRange.min")) {
+                model.addAttribute("hasDateFilterErrors", true);
+            } 
+            
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
+
         return "paoNote/list.jsp";
     }
 
@@ -132,10 +160,10 @@ public class PaoNotesSearchController {
         String noteTextHeader = accessor.getMessage(PaoNoteSortBy.noteText);
         String createdByHeader = accessor.getMessage(PaoNoteSortBy.createdBy);
         String createDateHeader = accessor.getMessage(PaoNoteSortBy.createDate);
-        String modifiedByHeader = accessor.getMessage(PaoNoteSortBy.modifiedBy);
-        String modifiedDateHeader = accessor.getMessage(PaoNoteSortBy.modifiedDate);
+        String editedByHeader = accessor.getMessage(PaoNoteSortBy.editedBy);
+        String editDateHeader = accessor.getMessage(PaoNoteSortBy.editDate);
         String[] headerRow = new String[] { deviceNameHeader, typeHeader, noteTextHeader, createdByHeader,
-            createDateHeader, modifiedByHeader, modifiedDateHeader };
+            createDateHeader, editedByHeader, editDateHeader };
 
         List<String[]> dataRows = Lists.newArrayList();
         for (PaoNotesSearchResult event : searchResults.getResultList()) {
@@ -152,13 +180,18 @@ public class PaoNotesSearchController {
             dataRows.add(dataRow);
         }
 
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Device Notes.csv");
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "notes_" + now + ".csv");
     }
 
     @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        PropertyEditor dayStartDateEditor =
+            datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.START_OF_DAY, userContext);
+        PropertyEditor dayEndDateEditor =
+            datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
+        binder.registerCustomEditor(Date.class, "dateRange.min", dayStartDateEditor);
+        binder.registerCustomEditor(Date.class, "dateRange.max", dayEndDateEditor);
     }
 
     public enum PaoNoteSortBy implements DisplayableEnum {
@@ -168,8 +201,8 @@ public class PaoNotesSearchController {
         noteText(SortBy.NOTE_TEXT),
         createdBy(SortBy.CREATE_USERNAME),
         createDate(SortBy.CREATE_DATE),
-        modifiedBy(SortBy.EDIT_USERNAME),
-        modifiedDate(SortBy.EDIT_DATE);
+        editedBy(SortBy.EDIT_USERNAME),
+        editDate(SortBy.EDIT_DATE);
 
         private final SortBy value;
 

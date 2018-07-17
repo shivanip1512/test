@@ -1,20 +1,20 @@
 package com.cannontech.common.pao.notes.filter.model;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.DateRange;
 
 public class PaoNotesFilter {
     
     private Set<Integer> paoIds;
     private String text;
-    private Date startDate;
-    private Date endDate;
+    private DateRange dateRange = new DateRange();
     private String user;
     private List<DeviceGroup> deviceGroups;
     private PaoSelectionMethod paoSelectionMethod;
+    private String deviceGroupNames;
     
     public Set<Integer> getPaoIds() {
         return paoIds;
@@ -30,22 +30,6 @@ public class PaoNotesFilter {
     
     public void setText(String text) {
         this.text = text;
-    }
-    
-    public Date getStartDate() {
-        return startDate;
-    }
-    
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-    
-    public Date getEndDate() {
-        return endDate;
-    }
-    
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
     
     public String getUser() {
@@ -71,5 +55,20 @@ public class PaoNotesFilter {
     public void setPaoSelectionMethod(PaoSelectionMethod paoSelectionMethod) {
         this.paoSelectionMethod = paoSelectionMethod;
     }
-    
+
+    public DateRange getDateRange() {
+        return dateRange;
+    }
+
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
+    }
+
+    public String getDeviceGroupNames() {
+        return deviceGroupNames;
+    }
+
+    public void setDeviceGroupNames(String deviceGroupNames) {
+        this.deviceGroupNames = deviceGroupNames;
+    }
 }

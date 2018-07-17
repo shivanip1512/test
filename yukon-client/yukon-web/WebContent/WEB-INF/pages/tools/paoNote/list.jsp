@@ -8,6 +8,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="paoNotesSearch">
+    <style>
+        .MT1 {
+            margin-top: 1%;
+        }
+    </style>
     <cti:msgScope paths="common.paoNote, common.paoNotesSearch, menu.tools, yukon.common">
         <hr>
         <div class="filter-section dib">
@@ -15,42 +20,29 @@
             <cti:url var="url" value="/tools/paoNotes/search"/>
             <form:form id="filter-pao-notes-form" action="${url}" modelAttribute="paoNoteFilter" method="GET">
                 <i:inline key="yukon.common.filterBy"/>
-                <tags:textarea rows="2" cols="46" path="text" isResizable="false" placeholder="${noteTextPlaceholder}"/>
-                &nbsp;
-                <form:select id="js-select-devices" path="paoSelectionMethod">
-                    <c:forEach var="paoSelectionMethod" items="${paoSelectionMethods}">
-                        <form:option id="js-${paoSelectionMethod}" value="${paoSelectionMethod}">
-                            <i:inline key=".${paoSelectionMethod}"/>
-                        </form:option>
-                    </c:forEach>
-                </form:select>
-                <div id="js-picker-dialog" class="dib dn">
-                    <tags:bind path="paoIds">
-                        <tags:pickerDialog type="paoPicker" 
-                                       id="paoPicker"
-                                       linkType="selection"
-                                       selectionProperty="paoName"
-                                       destinationFieldName="paoIds"
-                                       allowEmptySelection="true"
-                                       multiSelectMode="true"
-                                       initialIds="${paoNoteFilter.paoIds}"/>
-                    </tags:bind>
+                <form:input path="text" placeholder="${noteTextPlaceholder}" size="35" maxlength="40" cssStyle="${marignTopDeviceFilters}"/>
+                <div id="notes-search-help-popup" class="dn" data-title='<i:inline key="yukon.web.modules.tools.paoNotesSearch.pageName"/>' 
+                     data-width="600">
+                    <div class="scroll-lg"><i:inline key=".helpText"/></div>
                 </div>
-                <div id="js-device-group-picker" class="dib dn">
-                    <cti:list var="groups">
-                        <c:forEach var="subGroup" items="${deviceGroupNames}">
-                            <cti:item value="${subGroup}"/>
-                        </c:forEach>
-                    </cti:list>
-                    <tags:deviceGroupPicker inputName="deviceGroupNames" inputValue="${groups}" multi="true"/>
-                </div>
-                <div id="js-note-create-dates" class="dib">
+                <cti:button renderMode="image" icon="icon-help" classes="widget-controls fr" data-popup="#notes-search-help-popup"/>
+                
+                <%@ include file="../../common/paoNotes/selectPaos.jsp" %>
+                
+                <c:if test="${hasDateFilterErrors}">
+                    <c:set var="marginTop" value="margin-top: -5%;"/>
+                </c:if>
+                <c:if test="${hasDeviceFilterErrors}">
+                    <c:set var="marignTopDeviceFilters" value="margin-top: -5%;"/>
+                </c:if>
+
+                <div id="js-note-create-dates" class="dib MT1" style="margin-left: 6%;">
                     <i:inline key=".createDate"/> :
-                    <dt:date path="startDate" wrapperClass="fn vam" displayValidationToRight="true"/>
+                    <dt:date path="dateRange.min" wrapperClass="fn vam" displayValidationToRight="true"/>
                     <i:inline key="yukon.common.to"/>
-                    <dt:date path="endDate" wrapperClass="fn vam" displayValidationToRight="true"/>
+                    <dt:date path="dateRange.max" wrapperClass="fn vam"/>
                 </div>
-                <div id="js-note-create-by" class="dib">
+                <div id="js-note-create-by" class="dib vam" style="${marginTop}">
                     <cti:yukonUser var="currentUser"/>
                     <i:inline key=".createdBy"/> :
                     <form:select path="user">
@@ -58,11 +50,10 @@
                         <form:option value="${currentUser.username}"><i:inline key=".currentUser"/></form:option>
                     </form:select>
                 </div>
-                <cti:button nameKey="filter" classes="primary action fr vab" type="submit"/>
+                <cti:button nameKey="filter" classes="primary action fr MT1" type="submit"/>
             </form:form>
         </div>
         <hr>
-        <br>
         <c:choose>
             <c:when test="${searchResults.hitCount == 0}">
                 <span class="empty-list"><i:inline key=".noResults"/></span>
@@ -101,10 +92,10 @@
                 <cti:url var="searchUrl" value="/tools/paoNotes/search">
                     <cti:param name="text" value="${paoNoteFilter.text}"/>
                     <cti:param name="user" value="${paoNoteFilter.user}"/>
-                    <cti:formatDate type="DATE" value="${paoNoteFilter.startDate}" var="startDate"/>
-                    <cti:param name="startDate" value="${startDate}"/>
-                    <cti:formatDate type="DATE" value="${paoNoteFilter.endDate}" var="endDate"/>
-                    <cti:param name="endDate" value="${endDate}"/>
+                    <cti:formatDate type="DATE" value="${paoNoteFilter.dateRange.min}" var="startDate"/>
+                    <cti:formatDate type="DATE" value="${paoNoteFilter.dateRange.max}" var="endDate"/>
+                    <cti:param name="dateRange.min" value="${startDate}"/>
+                    <cti:param name="dateRange.max" value="${endDate}"/>
                     <cti:param name="deviceGroupNames" value="${deviceGroupNames}"/>
                     <c:if test="${paoNoteFilter.paoSelectionMethod == 'selectIndividually'}">
                         <c:forEach var="paoId" items="${paoNoteFilter.paoIds}">
@@ -123,8 +114,8 @@
                                 <tags:sort column="${noteText}" />
                                 <tags:sort column="${createdBy}" />
                                 <tags:sort column="${createDate}" />
-                                <tags:sort column="${modifiedBy}" />
-                                <tags:sort column="${modifiedDate}" />
+                                <tags:sort column="${editedBy}" />
+                                <tags:sort column="${editDate}" />
                                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                             </tr>
                         </thead>
@@ -143,8 +134,8 @@
                                     <td>${fn:escapeXml(paoNoteSearchResult.paoNote.createUserName)}</td>
                                     <td>
                                         <cti:formatDate type="BOTH" value="${paoNoteSearchResult.paoNote.createDate}" 
-                                                        var="createDate"/>
-                                        ${createDate}
+                                                        var="createdDate"/>
+                                        ${createdDate}
                                     </td>
                                     <td>${fn:escapeXml(paoNoteSearchResult.paoNote.editUserName)}</td>
                                     <td>
