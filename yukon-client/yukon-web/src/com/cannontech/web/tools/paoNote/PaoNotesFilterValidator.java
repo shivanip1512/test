@@ -20,7 +20,7 @@ public class PaoNotesFilterValidator extends SimpleValidator<PaoNotesFilter> {
 
     @Override
     protected void doValidation(PaoNotesFilter filter, Errors errors) {
-        if (!filter.getDateRange().isValid()) {
+        if (!filter.getDateRange().isValid() || filter.getDateRange().isEmpty()) {
             YukonValidationUtils.rejectValues(errors, baseKey + "invalidDateRange", "dateRange.min", "dateRange.max");
         }
         if (filter.getPaoSelectionMethod() == PaoSelectionMethod.selectIndividually
