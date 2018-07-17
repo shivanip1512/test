@@ -139,10 +139,10 @@ public:
         RfnCentronLcdConfigurationCommand::metric_map_t displayItems;
         boost::optional<uint8_t> lcdCycleTime;
         boost::optional<uint8_t> displayDigits;
-        boost::optional<bool> disconnectDisplay;
+        boost::optional<bool> disconnectDisplayDisabled;
 
         RfnCentronLcdConfigurationCommand::metric_map_t getDisplayMetrics() const override { return displayItems; }
-        boost::optional<bool> getDisconnectDisplayDisabled()   const override { return disconnectDisplay; }
+        boost::optional<bool> getDisconnectDisplayDisabled()   const override { return disconnectDisplayDisabled; }
         boost::optional<unsigned char> getDigitConfiguration() const override { return displayDigits;     }
         boost::optional<unsigned char> getLcdCycleTime()       const override { return lcdCycleTime;      }
     };

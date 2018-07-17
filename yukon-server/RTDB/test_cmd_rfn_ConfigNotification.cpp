@@ -43,11 +43,11 @@ extern const std::vector<uint8_t> payload {
         0x00, 0x07, 
         0x00, 0x09, 
         //  Schedule 4 switch times
-        0x00, 0x03, 
-        0x00, 0x02, 
-        0x00, 0x03, 
-        0x00, 0x08, 
-        0x00, 0x04, 
+        0x05, 0xa0,  //  24 hours
+        0x00, 0x00, 
+        0x00, 0x00, 
+        0x00, 0x00, 
+        0x00, 0x00, 
         //  Schedule 1 rates
         0xc1, 0x14, 0x00,  //  A B C D A B
         //  Schedule 2 rates
@@ -112,7 +112,7 @@ extern const std::vector<uint8_t> payload {
         0x02, 0x0c,
         0xfd, 0x05,
         0xfe, 0x07,
-        0xff, 0x00,
+        0xff, 0x00,  //  disconnect display = 0 (disabled)
     //  TLV 10
     0x00, 0x0a,  //  Focus AL Display
     0x00, 0x0b,
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Schedule 1 switch times : 00:00, 00:03, 00:01, 00:04, 00:01, 00:05"
         "\n    Schedule 2 switch times : 00:00, 00:09, 00:02, 00:06, 00:05, 00:03"
         "\n    Schedule 3 switch times : 00:00, 00:05, 00:08, 00:09, 00:07, 00:09"
-        "\n    Schedule 4 switch times : 00:00, 00:03, 00:02, 00:03, 00:08, 00:04"
+        "\n    Schedule 4 switch times : 00:00, 00:00, 00:00, 00:00, 00:00, 00:00"
         "\n    Schedule 1 rates        : B, A, D, C, B, A"
         "\n    Schedule 2 rates        : D, C, B, A, D, C"
         "\n    Schedule 3 rates        : C, B, A, D, C, B"
@@ -461,7 +461,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     BOOST_CHECK_EQUAL(result[0].description, expected);
 
     BOOST_REQUIRE(cmd.c2sxDisplay);
-    BOOST_CHECK_EQUAL(cmd.c2sxDisplay->disconnectDisplay.value(), false);
+    BOOST_CHECK_EQUAL(cmd.c2sxDisplay->disconnectDisplayDisabled.value(), true);
     BOOST_CHECK_EQUAL(cmd.c2sxDisplay->displayDigits.value(), 5);
     BOOST_CHECK_EQUAL(cmd.c2sxDisplay->lcdCycleTime.value(), 7);
     BOOST_CHECK_EQUAL(cmd.c2sxDisplay->displayItems[0], 4);
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         const auto times0 = { "00:00", "00:03", "00:01", "00:04", "00:01", "00:05" };
         const auto times1 = { "00:00", "00:09", "00:02", "00:06", "00:05", "00:03" };
         const auto times2 = { "00:00", "00:05", "00:08", "00:09", "00:07", "00:09" };
-        const auto times3 = { "00:00", "00:03", "00:02", "00:03", "00:08", "00:04" };
+        const auto times3 = { "00:00", "00:00", "00:00", "00:00", "00:00", "00:00" };
         auto itr = cmd.touSchedule->_times.cbegin();
         BOOST_CHECK_EQUAL(itr->first, 0);
         BOOST_CHECK_EQUAL_RANGES(itr->second, times0);

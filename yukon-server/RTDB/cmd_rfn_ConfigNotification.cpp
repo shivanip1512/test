@@ -171,6 +171,12 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
         {
             uint16_t minutes = payload[pos] << 8 | payload[pos + 1];
 
+            //  Special case for 24 hours, same as no switches
+            if( minutes == 1440 )
+            {
+                minutes = 0;
+            }
+
             pos += 2;
 
             switchTimes.emplace_back(CtiNumStr(minutes / 60).zpad(2) + ":" + CtiNumStr(minutes % 60).zpad(2));
@@ -431,7 +437,7 @@ std::string RfnConfigNotificationCommand::decodeC2sxDisplay(Bytes payload)
             l.add("Display digits") << value;
             break;
         case RfnCentronLcdConfigurationCommand::Slot_DisconnectDisplay:
-            d.disconnectDisplay = value;
+            d.disconnectDisplayDisabled = ! value;
             l.add("Disconnect display") << value;
             break;
         default:

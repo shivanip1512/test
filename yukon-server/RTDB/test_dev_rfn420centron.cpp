@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     {
         { PI::Key_RFN_LcdCycleTime, 7 },
         { PI::Key_RFN_LcdDisplayDigits, 5 },
-        { PI::Key_RFN_LcdDisconnectDisplayDisabled, 0 },
+        { PI::Key_RFN_LcdDisconnectDisplayDisabled, 1 },
 
         { PI::Key_DisplayItem01, "4" },
         { PI::Key_DisplayItem02, "8" },
@@ -253,11 +253,11 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_Schedule3Time3, "00:09" },
         { PI::Key_RFN_Schedule3Time4, "00:07" },
         { PI::Key_RFN_Schedule3Time5, "00:09" },
-        { PI::Key_RFN_Schedule4Time1, "00:03" },
-        { PI::Key_RFN_Schedule4Time2, "00:02" },
-        { PI::Key_RFN_Schedule4Time3, "00:03" },
-        { PI::Key_RFN_Schedule4Time4, "00:08" },
-        { PI::Key_RFN_Schedule4Time5, "00:04" },
+        { PI::Key_RFN_Schedule4Time1, "00:00" },
+        { PI::Key_RFN_Schedule4Time2, "00:00" },
+        { PI::Key_RFN_Schedule4Time3, "00:00" },
+        { PI::Key_RFN_Schedule4Time4, "00:00" },
+        { PI::Key_RFN_Schedule4Time5, "00:00" },
 
         { PI::Key_RFN_Schedule1Rate0, "B" },
         { PI::Key_RFN_Schedule1Rate1, "A" },
