@@ -90,7 +90,7 @@
 #include "rte_xcu.h"
 #include "rte_versacom.h"
 #include "rte_expresscom.h"
-#include "dev_rf_WaterMeter.h"
+#include "dev_rf_BatteryNode.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"

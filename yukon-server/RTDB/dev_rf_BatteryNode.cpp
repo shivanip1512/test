@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "dev_rf_WaterMeter.h"
+#include "dev_rf_BatteryNode.h"
 #include "RfnWaterNodeMessaging.h"
 
 #include "config_data_rfn.h"

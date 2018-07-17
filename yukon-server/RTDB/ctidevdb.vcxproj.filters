@@ -429,9 +429,6 @@
     <ClCompile Include="dev_rfn_LgyrFocus_al.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dev_rf_WaterMeter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="config_helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -460,6 +457,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cmd_rfn_DemandInterval.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dev_rf_BatteryNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1004,9 +1004,6 @@
     <ClInclude Include="include\dev_rfn_LgyrFocus_al.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\dev_rf_WaterMeter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\dev_cbclogical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1035,6 +1032,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\cmd_rfn_DemandInterval.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\dev_rf_BatteryNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

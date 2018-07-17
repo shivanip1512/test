@@ -561,6 +561,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="dev_rfnResidentialVoltage.cpp" />
     <ClCompile Include="dev_rfn_LgyrFocus_al.cpp" />
+    <ClCompile Include="dev_rf_BatteryNode.cpp" />
     <ClCompile Include="dev_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfn.cpp">
@@ -573,7 +574,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="dev_rfnResidential.cpp">
     </ClCompile>
-    <ClCompile Include="dev_rf_WaterMeter.cpp" />
     <ClCompile Include="dev_rtc.cpp">
     </ClCompile>
     <ClCompile Include="dev_rtm.cpp">
@@ -759,6 +759,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_repeater850.h" />
     <ClInclude Include="include\dev_rfnResidentialVoltage.h" />
     <ClInclude Include="include\dev_rfn_LgyrFocus_al.h" />
+    <ClInclude Include="include\dev_rf_BatteryNode.h" />
     <ClInclude Include="include\dev_rf_da.h" />
     <ClInclude Include="include\dev_rfn.h" />
     <ClInclude Include="include\dev_rfn410centron.h" />
@@ -766,7 +767,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_rfnCommercial.h" />
     <ClInclude Include="include\dev_rfnMeter.h" />
     <ClInclude Include="include\dev_rfnResidential.h" />
-    <ClInclude Include="include\dev_rf_WaterMeter.h" />
     <ClInclude Include="include\dev_rtc.h" />
     <ClInclude Include="include\dev_rtm.h" />
     <ClInclude Include="include\dev_schlum.h" />
