@@ -287,7 +287,7 @@
                                         </td>
                                         <td>
                                             <tags:selectWithItems inputClass="js-processor-type" path="processors[${status.index}].type" items="${processorTypes}"/>
-                                            <c:set var="rangeClass" value="${(processor.type != 'RANGE' or processor.type != 'OUTSIDE') ? 'dn' : ''}"/>
+                                            <c:set var="rangeClass" value="${(processor.type != 'RANGE' and processor.type != 'OUTSIDE') ? 'dn' : ''}"/>
                                             <c:set var="notRangeClass" value="${(processor.type == 'RANGE' or processor.type == 'OUTSIDE') ? 'dn' : ''}"/>
                                             <span class="js-processor-value ${notRangeClass}">
                                                 <i:inline key=".value"/>:
