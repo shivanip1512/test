@@ -14,6 +14,11 @@ using namespace Cti::Config;
 struct test_RfnResidentialVoltageDevice : RfnResidentialVoltageDevice
 {
     using CtiDeviceBase::setDeviceType;
+
+    bool areAggregateCommandsSupported() const override 
+    {
+        return false;
+    }
 };
 
 struct test_state_rfnResidentialVoltage
@@ -1395,11 +1400,11 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_Schedule3Time3, "00:09" },
         { PI::Key_RFN_Schedule3Time4, "00:07" },
         { PI::Key_RFN_Schedule3Time5, "00:09" },
-        { PI::Key_RFN_Schedule4Time1, "00:03" },
-        { PI::Key_RFN_Schedule4Time2, "00:02" },
-        { PI::Key_RFN_Schedule4Time3, "00:03" },
-        { PI::Key_RFN_Schedule4Time4, "00:08" },
-        { PI::Key_RFN_Schedule4Time5, "00:04" },
+        { PI::Key_RFN_Schedule4Time1, "00:00" },
+        { PI::Key_RFN_Schedule4Time2, "00:00" },
+        { PI::Key_RFN_Schedule4Time3, "00:00" },
+        { PI::Key_RFN_Schedule4Time4, "00:00" },
+        { PI::Key_RFN_Schedule4Time5, "00:00" },
 
         { PI::Key_RFN_Schedule1Rate0, "B" },
         { PI::Key_RFN_Schedule1Rate1, "A" },

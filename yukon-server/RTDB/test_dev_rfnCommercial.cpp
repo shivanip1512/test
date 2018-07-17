@@ -14,6 +14,11 @@ using namespace Cti::Config;
 struct test_RfnCommercialDevice : RfnCommercialDevice
 {
     using CtiDeviceBase::setDeviceType;
+
+    bool areAggregateCommandsSupported() const override
+    {
+        return false;
+    }
 };
 
 struct test_state_rfnCommercial
