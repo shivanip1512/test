@@ -518,6 +518,13 @@ DROP PROCEDURE sp_UpdateAttributeName;
 INSERT INTO DBUpdates VALUES ('YUK-18487', '7.1.0', SYSDATE);
 /* @end YUK-18487 */
 
+/* @start YUK-18517 */
+DELETE FROM PaoNote 
+WHERE Status = 'D';
+
+INSERT INTO DBUpdates VALUES ('YUK-18517', '7.1.0', SYSDATE);
+/* @end YUK-18517 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
