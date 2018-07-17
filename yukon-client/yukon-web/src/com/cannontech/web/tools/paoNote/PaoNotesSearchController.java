@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -226,8 +227,8 @@ public class PaoNotesSearchController {
         return "paoNote/paoNotesPopup.jsp";
     }
     
-    @RequestMapping(value = "deletePaoNote", method = RequestMethod.POST)
-    public String deletePaoNote(ModelMap model, int noteId, int paoId, YukonUserContext userContext) {
+    @RequestMapping(value = "deletePaoNote/{noteId}", method = RequestMethod.DELETE)
+    public String deletePaoNote(ModelMap model, @PathVariable int noteId, int paoId, YukonUserContext userContext) {
         paoNotesService.delete(noteId);
         setupModel(paoId, userContext.getYukonUser().getUsername(), model);
         return "paoNote/paoNotesPopup.jsp";
@@ -252,7 +253,7 @@ public class PaoNotesSearchController {
     }
     
     @RequestMapping(value = "createPaoNote", method = RequestMethod.POST)
-    public String createNote(ModelMap model, YukonUserContext userContext,
+    public String createPaoNote(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("paoNote") PaoNote paoNote, BindingResult result) {
         paoNoteValidator.validate(paoNote, result);
         if (result.hasErrors()) {

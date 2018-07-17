@@ -287,7 +287,7 @@
                                         </td>
                                         <td>
                                             <tags:selectWithItems inputClass="js-processor-type" path="processors[${status.index}].type" items="${processorTypes}"/>
-                                            <c:set var="rangeClass" value="${(processor.type != 'RANGE' or processor.type != 'OUTSIDE') ? 'dn' : ''}"/>
+                                            <c:set var="rangeClass" value="${(processor.type != 'RANGE' and processor.type != 'OUTSIDE') ? 'dn' : ''}"/>
                                             <c:set var="notRangeClass" value="${(processor.type == 'RANGE' or processor.type == 'OUTSIDE') ? 'dn' : ''}"/>
                                             <span class="js-processor-value ${notRangeClass}">
                                                 <i:inline key=".value"/>:
@@ -295,9 +295,9 @@
                                                     displayValidationToRight="true" inputClass="MR10"/>
                                             </span>
                                             <span class="js-range-values ${rangeClass}">
-                                                <i:inline key="yukon.common.min"/>: <tags:input size="8" path="processors[${status.index}].rangeMin" 
+                                                <i:inline key="yukon.common.min"/>: <tags:input size="7" path="processors[${status.index}].rangeMin" 
                                                     displayValidationToRight="true" inputClass="MR10"/>
-                                                <i:inline key="yukon.common.max"/>: <tags:input size="8" path="processors[${status.index}].rangeMax" 
+                                                <i:inline key="yukon.common.max"/>: <tags:input size="7" path="processors[${status.index}].rangeMax" 
                                                     displayValidationToRight="true" inputClass="MR10"/>
                                             </span>
                                         </td>

@@ -149,7 +149,7 @@
                                         <cm:dropdown>
                                             <cm:dropdownOption icon="icon-notes-pin" key=".viewAllNotes" classes="js-gw-connect js-view-all-notes" 
                                                 data-pao-id="${paoNoteSearchResult.paoNote.paoId}" 
-                                                data-pao-name="${paoNoteSearchResult.paoName}"/>
+                                                data-pao-name="${fn:escapeXml(paoNoteSearchResult.paoName)}"/>
                                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions">
                                                 <cti:param name="collectionType" value="idList"/>
                                                 <cti:param name="idList.ids" value="${paoNoteSearchResult.paoNote.paoId}"/>

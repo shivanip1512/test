@@ -7,7 +7,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="common.paoNote, web.components.ajaxConfirm">
-    <form:form id="create-note-form" method="POST" modelAttribute="paoNote">
+    <cti:url var="url" value="/tools/paoNotes/createPaoNote"/>
+    <form:form id="create-note-form" method="POST" modelAttribute="paoNote" action="${url}">
         <cti:csrfToken/>
         <form:hidden path="paoId"/>
         <form:hidden path="createUserName"/>
@@ -37,6 +38,7 @@
             <tbody>
                 <c:forEach var="paoNoteSearchResult" items="${searchResults}">
                     <c:set var="noteId" value="${paoNoteSearchResult.paoNote.noteId}"/>
+                    <c:set var="paoId" value="${paoNoteSearchResult.paoNote.paoId}"/>
                     <tr id="js-note-row-${noteId}">
                         <td width="30%" class="vam js-note-actions">
                             <div id="js-note-${noteId}">
@@ -54,7 +56,7 @@
                             <cti:msg2 var="saveText" key="yukon.common.save"/>
                             <div id="js-save-note-group-${noteId}" class="button-group dn">
                                 <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
-                                            data-note-id="${noteId}" title="${saveText}" data-pao-id="${paoNoteSearchResult.paoNote.paoId}"/>
+                                            data-note-id="${noteId}" title="${saveText}" data-pao-id="${paoId}"/>
                                 <cti:button id="js-cancel-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
                                             data-note-id="${noteId}" title="${cancelText}"/>
                             </div>
@@ -80,9 +82,13 @@
                                 <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
                                             data-note-id="${noteId}" title="${editText}"/>
                                 <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
-                                            data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"
-                                            data-pao-id="${paoNoteSearchResult.paoNote.paoId}"/>
+                                            data-ok-event="yukon:note:delete" title="${deleteText}"/>
                                 <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
+                                <cti:url var="url" value="deletePaoNote/${noteId}"/>
+                                <form:form id="delete-note-form" method="DELETE" action="${url}">
+                                    <input type="hidden" name="paoId" value="${paoId}"/>
+                                    <cti:csrfToken/>
+                                </form:form>
                             </div>
                         </td>
                     </tr>
