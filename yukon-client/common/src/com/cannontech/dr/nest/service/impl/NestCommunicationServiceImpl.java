@@ -164,8 +164,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
 
     @Override
     public void uploadExisting(List<NestExisting> existing, Date date) {
-        try {
-            CloseableHttpClient httpclient = HttpClients.createDefault();
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httppost = new HttpPost(NestFileType.EXISTING.getUrl());
             httppost.addHeader("content-type", "text/csv");
             httppost.addHeader("Accept", "application/json");
@@ -188,10 +187,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
                 String str =EntityUtils.toString(resEntity);
                 log.debug(str);
             }
-            httpclient.close();
         } catch (NestCommunicationException | IOException e) {
             log.error(e);
         }
-        
     }
 }

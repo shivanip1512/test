@@ -54,9 +54,9 @@ public enum NestFileType {
         this.schema = schema;
     }
     
-    String url;
-    String file;
-    CsvSchema schema;
+    private String url;
+    private String file;
+    private CsvSchema schema;
     
     public String getUrl() {
         return url;
