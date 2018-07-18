@@ -189,7 +189,7 @@ public class SubstationController {
                             StreamableCapObject streamable = ccCache.getStreamableArea(parentAreaId);
                             
                             String areaLinkHtml = "<a href='" + contextPath + "/capcontrol/areas/" + streamable.getCcId() + "'>" + StringEscapeUtils.escapeXml11(streamable.getCcName()) + "</a>";
-                            String subBusLinkHtml = "<a href='" + contextPath + "/capcontrol/buses/" + bus.getCcId() + "'>" + bus.getCcName() + "</a>";
+                            String subBusLinkHtml = "<a href='" + contextPath + "/capcontrol/buses/" + bus.getCcId() + "'>" + StringEscapeUtils.escapeXml11(bus.getCcName()) + "</a>";
 
                             areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
                             subBusLinkHtml = "<strong>" + subBusLinkHtml + "</strong>";
