@@ -269,7 +269,7 @@ end;
 function OnUpdateUIBefore()
 number nResult ;
 BOOL bOptYes, bOptNo, bOpt;
-string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName, shortcutDir, sDateString, formattedDateString;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName, shortcutDir;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -356,10 +356,6 @@ begin
     // Take backup of logging config files if installedVersion < "7.1.0"
     if(IsInstalledVersionLesser("7.1.0")) then 
         BackupLoggingConfigFiles(sOldVersion);
-        GetSystemInfo(DATE, nResult, sDateString);
-        // Format date pattern in YYYYMMDD
-        formattedDateString = FormatDatePattern(sDateString);
-        RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
     endif;
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
@@ -410,7 +406,7 @@ end;
 //-----------------------------------------------------------------------------
 function OnUpdateUIAfter()
 number nResult, nNewVersion, nVMajor, nVMinor, nVBuild;
-string sCMD, sProg, sVTemp;
+string sCMD, sProg, sVTemp, sDateString, formattedDateString;
 BOOL bOpt, bOptYes, bOptNo;
 begin
 	//get the DWORD representing the new version number
@@ -478,6 +474,12 @@ begin
     endif;
     Enable(BACKBUTTON);
 	CleanupTomcatWebapps();
+    if(IsInstalledVersionLesser("7.1.0")) then 
+        GetSystemInfo(DATE, nResult, sDateString);
+        // Format date pattern in YYYYMMDD
+        formattedDateString = FormatDatePattern(sDateString);
+        RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
+    endif;
 	Dialog_StartServices:
 	
 	//only give the option to start services if services were installed

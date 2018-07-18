@@ -916,7 +916,7 @@ end;
 // Rename Installation day java services and client logs files.
 // For eg. On Installation day we have log file for service manager as ServiceManager_yyyyMMdd.log format
 // than that file will be rename as ServiceManager_0_yyyyMMdd.log file . 
-//
+//--------------------------------------------------------------------------------
 export prototype void RenameInstalledDateJavaServicesAndClientLog(string);
 function void RenameInstalledDateJavaServicesAndClientLog(formattedDateString)
 number nCount;
