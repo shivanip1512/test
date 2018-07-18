@@ -7,12 +7,15 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.WebserverUrlResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
@@ -22,6 +25,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     private static final Logger log = YukonLogManager.getLogger(WebServerWatcher.class);
 
     @Autowired private WebserverUrlResolver webserverUrlResolver;
+    @Autowired GlobalSettingDao globalSettingDao;
 
     @Override
     public List<WatchdogWarnings> watch() {
@@ -51,7 +55,10 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     }
     
     private int sendRequest(boolean useProxy) throws SocketTimeoutException, IOException {
-        String webServerUrl = webserverUrlResolver.getUrlBase();
+        String webServerUrl = globalSettingDao.getString(GlobalSettingType.YUKON_INTERNAL_URL);
+        if (StringUtils.isEmpty(webServerUrl)) {
+            webServerUrl = webserverUrlResolver.getUrlBase();
+        }
         URL url = new URL(webServerUrl);
         log.debug("Web server url " + webServerUrl);
         HttpURLConnection httpConn;

@@ -344,7 +344,9 @@
     
     <entry key="yukon.common.setting.YUKON_EXTERNAL_URL">Yukon External URL</entry>
     <entry key="yukon.common.setting.YUKON_EXTERNAL_URL.description">The base URL used to generate links to Yukon web pages in emails and other external communications.</entry>
-    
+    <entry key="yukon.common.setting.YUKON_INTERNAL_URL">Yukon Internal URL</entry>
+    <entry key="yukon.common.setting.YUKON_INTERNAL_URL.description">The URL of web server. This should be set when URL used for email is different than URL of web server.</entry>
+
     <entry key="yukon.common.setting.OADR_REQUEST_INTERVAL">Request Interval</entry>
     <entry key="yukon.common.setting.OADR_REQUEST_INTERVAL.description">The number of milliseconds between OpenADR pull requests.</entry>
     <entry key="yukon.common.setting.OADR_VEN_ID">VEN ID</entry>
