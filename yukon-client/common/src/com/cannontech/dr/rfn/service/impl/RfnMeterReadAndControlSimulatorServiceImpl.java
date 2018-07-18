@@ -253,12 +253,10 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     private RfnMeterDisconnectInitialReply setUpDisconnectInitialResponse(RfnMeterReadAndControlDisconnectSimulatorSettings settings) {
         RfnMeterDisconnectInitialReply response = new RfnMeterDisconnectInitialReply();
         
-        response.setReplyType(settings.getDisconnectReply1());
-        
         // Calculates Fail Rates for disconnect and connect
-        if(settings.getDisconnectReply1() == RfnMeterDisconnectInitialReplyType.OK && generateFailOrNot(settings.getDisconnectReply1FailPercent())) {
-            response.setReplyType(RfnMeterDisconnectInitialReplyType.FAILURE);
-        } else if (settings.getDisconnectReply1() == RfnMeterDisconnectInitialReplyType.FAILURE && generateFailOrNot(settings.getDisconnectReply1FailPercent())) {
+        if(replyWithFailure(settings.getDisconnectReply1FailPercent())) {
+            response.setReplyType(settings.getDisconnectReply1());
+        } else {
             response.setReplyType(RfnMeterDisconnectInitialReplyType.OK);
         }
         
@@ -268,13 +266,11 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     private RfnMeterDisconnectConfirmationReply setUpDisconnectConfirmationResponse(RfnMeterDisconnectRequest request, RfnMeterReadAndControlDisconnectSimulatorSettings settings) {
         RfnMeterDisconnectConfirmationReply response = new RfnMeterDisconnectConfirmationReply();
         
-        response.setReplyType(settings.getDisconnectReply2());
-        
         // Calculates Fail Rates for disconnect and connect
-        if(settings.getDisconnectReply2() == RfnMeterDisconnectConfirmationReplyType.SUCCESS && generateFailOrNot(settings.getDisconnectReply2FailPercent())) {
-             response.setReplyType(RfnMeterDisconnectConfirmationReplyType.FAILURE);
-        } else if (settings.getDisconnectReply2() == RfnMeterDisconnectConfirmationReplyType.FAILURE && generateFailOrNot(settings.getDisconnectReply2FailPercent())) {
-             response.setReplyType(RfnMeterDisconnectConfirmationReplyType.SUCCESS);
+        if(replyWithFailure(settings.getDisconnectReply2FailPercent())) {
+            response.setReplyType(settings.getDisconnectReply2());
+        } else {
+            response.setReplyType(RfnMeterDisconnectConfirmationReplyType.SUCCESS);
         }
         
         // Echo back of whatever user provides
@@ -283,16 +279,11 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
         return response;
     }
     
-    // Returns true if reply should fail, false otherwise
-    private boolean generateFailOrNot(int failureRate) {
+    // Returns true if reply should take user inputed failure, false otherwise
+    private boolean replyWithFailure(int failureRate) {
         Random r = new Random();
         int n = r.nextInt(100) + 1; // Generates a random number between 1 and 100
-        
-        if (n <= failureRate) { // If the number is under the fail rate, then the test fails
-            return true;
-        } else {
-            return false;
-        }
+        return n <= failureRate;    // If the number is over the fail rate, then the test succeeds
     }
     
     @Override
