@@ -355,7 +355,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         if (!attribute.isPresent()) {
             log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
                 monitor, device, receivedValue.getId());
-
+            return;
         }
         
         LitePoint point = pointDao.getLitePoint(receivedValue.getId());
