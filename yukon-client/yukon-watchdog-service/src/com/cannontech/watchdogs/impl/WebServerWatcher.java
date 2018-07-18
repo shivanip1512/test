@@ -123,9 +123,9 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     public YukonServices getServiceName() {
         return YukonServices.WEBSERVER;
     }
-    
+
     @Override
     public boolean shouldRun() {
-        return configurationSource.getBoolean(MasterConfigBoolean.WATCHDOG_WEB_SERVER_HTTP_CHECK);
+        return configurationSource.getBoolean(MasterConfigBoolean.WATCHDOG_WEB_SERVER_HTTP_CHECK_ENABLED, true);
     }
 }
