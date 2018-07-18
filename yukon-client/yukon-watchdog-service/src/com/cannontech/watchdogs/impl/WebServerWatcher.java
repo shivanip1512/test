@@ -56,7 +56,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     
     private int sendRequest(boolean useProxy) throws SocketTimeoutException, IOException {
         String webServerUrl = globalSettingDao.getString(GlobalSettingType.YUKON_INTERNAL_URL);
-        if (StringUtils.isEmpty(webServerUrl)) {
+        if (StringUtils.isBlank(webServerUrl)) {
             webServerUrl = webserverUrlResolver.getUrlBase();
         }
         URL url = new URL(webServerUrl);

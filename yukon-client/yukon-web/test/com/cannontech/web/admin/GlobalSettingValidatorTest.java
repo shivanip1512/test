@@ -241,6 +241,22 @@ public class GlobalSettingValidatorTest {
 
         service.doValidation(command, errors);
         assertTrue(errors.hasErrors());
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.WEB_SERVER);
+        globalSettings.put(GlobalSettingType.YUKON_INTERNAL_URL, "http://127.0.0.1");
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertFalse(errors.hasErrors());
+
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.WEB_SERVER);
+        globalSettings.put(GlobalSettingType.YUKON_INTERNAL_URL, "http127.0.1");
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
 
     }
 }
