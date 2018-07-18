@@ -7,12 +7,19 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -26,7 +33,9 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
 
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired GlobalSettingDao globalSettingDao;
-
+    @Autowired private ConfigurationSource configurationSource;
+    private volatile boolean isHttpsSettingInitialized = false;
+    
     @Override
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getWebServerStatus();
@@ -59,22 +68,64 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
         if (StringUtils.isBlank(webServerUrl)) {
             webServerUrl = webserverUrlResolver.getUrlBase();
         }
+        boolean isHttps = StringUtils.containsIgnoreCase(webServerUrl, "https");
         URL url = new URL(webServerUrl);
         log.debug("Web server url " + webServerUrl);
-        HttpURLConnection httpConn;
-        if(useProxy) {
-            httpConn = (HttpURLConnection) url.openConnection();
-        } else {
-            httpConn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+        HttpURLConnection conn;
+        
+        if (isHttps && !isHttpsSettingInitialized) {
+            initializeHttpsSetting();
         }
-        httpConn.setReadTimeout(5000); // 5 sec for timeout
-        httpConn.connect();
-        log.debug("Response code from web server " + httpConn.getResponseCode());
-        return httpConn.getResponseCode();
+
+        if (useProxy) {
+            conn = (HttpURLConnection) url.openConnection();
+        } else {
+            conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+        }
+
+        conn.setReadTimeout(5000); // 5 sec for timeout
+        conn.connect();
+        log.debug("Response code from web server " + conn.getResponseCode());
+        return conn.getResponseCode();
+    }
+    
+    // Initialize settings for a https connection.
+    private void initializeHttpsSetting() throws IOException {
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+        } };
+
+        javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
+            public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
+                return true;
+            }
+        });
+
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            isHttpsSettingInitialized = true;
+        } catch (Exception e) {
+            log.debug("Could not initialze HTTPS settings");
+        }
     }
 
     @Override
     public YukonServices getServiceName() {
         return YukonServices.WEBSERVER;
+    }
+    
+    @Override
+    public boolean shouldRun() {
+        return configurationSource.getBoolean(MasterConfigBoolean.WATCHDOG_WEB_SERVER_HTTP_CHECK);
     }
 }
