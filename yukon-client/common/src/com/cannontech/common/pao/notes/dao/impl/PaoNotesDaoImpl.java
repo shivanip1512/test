@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
@@ -30,8 +31,8 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-
-    
+    @Autowired private DeviceGroupService deviceGroupService;
+   
     private final YukonRowMapper<PaoNotesSearchResult> paoNotesRowMapper = new YukonRowMapper<PaoNotesSearchResult>() {
 
         @Override
@@ -183,6 +184,9 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         sql.append("WHERE 1=1");
         if (filter.getPaoIds() != null) {
             sql.append("AND pn.PaObjectId").in(filter.getPaoIds());
+        } else if (filter.getDeviceGroups() != null && !filter.getDeviceGroups().isEmpty()) {
+            sql.append("AND").appendFragment(
+                deviceGroupService.getDeviceGroupSqlWhereClause(filter.getDeviceGroups(), "pn.PaobjectId"));
         }
         if (StringUtils.isNotEmpty(filter.getText())) {
             sql.append("AND UPPER(pn.NoteText)").contains(filter.getText().toUpperCase());

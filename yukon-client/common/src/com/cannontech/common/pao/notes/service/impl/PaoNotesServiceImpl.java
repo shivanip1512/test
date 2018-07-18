@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao;
@@ -19,8 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class PaoNotesServiceImpl implements PaoNotesService {
     
     @Autowired private PaoNotesDao paoNotesDao;
-    @Autowired private DeviceGroupService deviceGroupService;
-    
+
     @Override
     public int create(PaoNote note, LiteYukonUser user) {
         return paoNotesDao.create(note, user);
@@ -41,10 +39,6 @@ public class PaoNotesServiceImpl implements PaoNotesService {
                                                       SortBy sortBy, 
                                                       Direction direction, 
                                                       PagingParameters paging) {
-        
-        if (filter.getDeviceGroups() != null) {
-            filter.setPaoIds(deviceGroupService.getDeviceIds(filter.getDeviceGroups()));
-        }
         return paoNotesDao.getAllNotesByFilter(filter, sortBy, direction, paging);
     }
 
