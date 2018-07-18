@@ -271,7 +271,11 @@
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.rfnMeterType">RFN Meter Type</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceId">Device Id</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulatorTest.title">RFN Meter Simulator Test</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnNetwrokManagerMeterSimulator.title">RFN Network Manager Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.title">RFN Read and Control Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStartFailed">Failed to start simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStartSuccess">Simulator started</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopFailed">Failed to stop simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopSuccess">Simulator stopped</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6200">RFN LCR 6200 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600">RFN LCR 6600 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6700">RFN LCR 6700 Serial Number Range</entry>
@@ -477,6 +481,17 @@
     
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.helpText"><![CDATA[RFN Meter Simulator tool generates the  read archive requests with the point data for the existing all RFN meter device types or the chosen RFN meter types, as per the Reporting interval selected.
     <br>The duplicate read archive request will be generated as per the percentage of duplicity mentioned while starting the simulator.]]></entry>
+    
+    <entry key="yukon.web.modules.dev.rfnMeterReadAndControlMeterSimulator.helpText"><![CDATA[
+    This simulator is designed to mock the functionality of the network manager in respect to sending and receiving messages along with the generation of meter data.
+    It functions in a similar manner to the NM Gateway Simulator pertaining to activating and deactivating simulators.
+    <h3>Current Simulators:</h3>
+    <ul>
+        <li><b>Read Simulator</b> - When running, it will simulate an NM response when reading an RFN Meter in Yukon via reading on the Meter Readings widget or through a Collection Action.</li>
+        <li><b>Disconnect Simulator</b> - When running, it will simulate an NM response when changing the connection status of an RFN Meter in Yukon via disconnecting on the Disconnect widget or through a Collection Action.</li>
+    </ul>
+    ]]></entry>
+    
     
     <entry key="yukon.web.modules.dev.systemMetricsSimulator.pageName">System Metrics Simulator</entry>
     <entry key="yukon.web.modules.dev.systemMetricsSimulator.active">Activate Fake Metrics</entry>

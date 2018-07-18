@@ -62,18 +62,18 @@ public enum YukonSimulatorSettingsKey {
     RFN_METER_SIMULATOR_REPORTING_INTERVAL("REPORTING_INTERVAL_1_HOURS", InputTypeFactory.stringType(), SimulatorType.RFN_METER),
     RFN_METER_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER),
 
-    //RFN Meter Network Simulator
-    RFN_METER_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER_NETWORK),
+    //RFN Read and Control Simulator
+    RFN_METER_READ_AND_CONTROL_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
     //Simulated Reads
-    RFN_METER_NETWORK_SIMULATOR_READ_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_NETWORK),
-    RFN_METER_NETWORK_SIMULATOR_READ_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_NETWORK),
-    RFN_METER_NETWORK_SIMULATOR_READ_REPLY2("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_NETWORK),
-    RFN_METER_NETWORK_SIMULATOR_READ_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_NETWORK),
+    RFN_METER_READ_SIMULATOR_READ_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_READ_SIMULATOR_READ_REPLY2("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
     //Simulated Disconnects
-    RFN_METER_NETWORK_SIMULATOR_DISCONNECT_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_NETWORK),
-    RFN_METER_NETWORK_SIMULATOR_DISCONNECT_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_NETWORK),
-    RFN_METER_NETWORK_SIMULATOR_DISCONNECT_REPLY2("SUCCESS", InputTypeFactory.stringType(), SimulatorType.RFN_METER_NETWORK),
-    RFN_METER_NETWORK_SIMULATOR_DISCONNECT_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_NETWORK),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY2("SUCCESS", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
     
     //RFN Network Simulator (SimulatorSettings)
     //NeighborData

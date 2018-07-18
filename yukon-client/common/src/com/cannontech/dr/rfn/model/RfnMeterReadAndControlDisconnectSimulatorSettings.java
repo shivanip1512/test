@@ -5,17 +5,17 @@ import java.io.Serializable;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 
-public class RfnNetworkManagerSimulatorSettings implements Serializable {
+public class RfnMeterReadAndControlDisconnectSimulatorSettings implements Serializable {
 
     private RfnMeterDisconnectInitialReplyType disconnectReply1;
     private int disconnectReply1FailPercent = 0;
     private RfnMeterDisconnectConfirmationReplyType disconnectReply2;
     private int disconnectReply2FailPercent = 0;
     
-    public RfnNetworkManagerSimulatorSettings() {
+    public RfnMeterReadAndControlDisconnectSimulatorSettings() {
     }
     
-    public RfnNetworkManagerSimulatorSettings(RfnMeterDisconnectInitialReplyType disconnectReply1, int disconnectReply1FailPercent, RfnMeterDisconnectConfirmationReplyType disconnectReply2, int disconnectReply2FailPercent) {
+    public RfnMeterReadAndControlDisconnectSimulatorSettings(RfnMeterDisconnectInitialReplyType disconnectReply1, int disconnectReply1FailPercent, RfnMeterDisconnectConfirmationReplyType disconnectReply2, int disconnectReply2FailPercent) {
         this.disconnectReply1 = disconnectReply1;
         this.disconnectReply1FailPercent = disconnectReply1FailPercent;
         this.disconnectReply2 = disconnectReply2;

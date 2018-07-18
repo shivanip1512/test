@@ -16,22 +16,6 @@ yukon.dev.simulators.rfnMeterSimulator = (function() {
     _sendMessageButtonClick = function(event) {
         var formData = $('#formData').serialize();
         
-        if($(this).attr('id') === 'disconnect-message') {
-            $.ajax({
-                url: yukon.url('/dev/rfn/startMetersDisconnectRequest'),
-                type: 'post',
-                data: formData
-            });
-        }
-        
-        if($(this).attr('id') === 'stop-disconnect-message') {
-            $.ajax({
-                url: yukon.url('/dev/rfn/stopMetersDisconnectRequest'),
-                type: 'post',
-                data: formData
-            });
-        }
-        
         if($(this).attr('id') === 'send-message') {
             $.ajax({
                 url: yukon.url('/dev/rfn/startMetersArchiveRequest'),
@@ -120,7 +104,7 @@ yukon.dev.simulators.rfnMeterSimulator = (function() {
     mod = {
         init : function() {
             if (_initialized) return;
-            $('#send-test, #send-message, #stop-send-message, #disconnect-message, #stop-disconnect-message').click(_sendMessageButtonClick);
+            $('#send-test, #send-message, #stop-send-message').click(_sendMessageButtonClick);
             _checkExistingDeviceStatus();
             _initialized = true;
         },

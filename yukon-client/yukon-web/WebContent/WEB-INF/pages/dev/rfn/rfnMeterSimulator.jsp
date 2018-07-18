@@ -95,7 +95,59 @@
             </div>
         </cti:tab>
     
-        <cti:tab title="RFN Network Manager Simulator" >
+        <cti:tab title="RFN Read and Control Simulator">
+        
+            <div id="read-simulator-popup" class="dn" data-title="Read Simulator Parameters" data-width="800">
+                <tags:nameValueContainer tableClass="natural-width">
+                    <tags:nameValue name="Reply1">
+                        This is the initial reply that will be contained in the simulated Network Manager response for read.
+                        The available options are from the enum RfnMeterReadingReplyType.
+                    </tags:nameValue>
+                    <tags:nameValue name="Reply1 Fail Rate">
+                        This value is used to calculate the chance of the inputed response failing. It's meant to deliver this rate over time,
+                        so for a 10% fail rate, it is expected that 1 out of the next 10 read requests will fail, 
+                        but it's not guaranteed that 1 out of 10 request will fail. It could end up being more or less.
+                    </tags:nameValue>
+                    <tags:nameValue name="Reply2">
+                        This is the data reply that will be contained in the simulated Network Manager response for read.
+                        The available options are from the enum RfnMeterReadingDataReplyType.
+                    </tags:nameValue>
+                    <tags:nameValue name="Reply2 Fail Rate">
+                        This value is used to calculate the chance of the inputed response failing. It's meant to deliver this rate over time,
+                        so for a 10% fail rate, it is expected that 1 out of the next 10 read requests will fail, 
+                        but it's not guaranteed that 1 out of 10 request will fail. It could end up being more or less.
+                    </tags:nameValue>
+                    <tags:nameValue name="Note">
+                        Reply1 and Reply2 refer to the Reply1 and Reply2 referenced from the class RfnMeterReadService.
+                    </tags:nameValue>
+                </tags:nameValueContainer>
+            </div>
+        
+            <div id="disconnect-simulator-popup" class="dn" data-title="Disconnect Simulator Parameters" data-width="800">
+                <tags:nameValueContainer tableClass="natural-width">
+                    <tags:nameValue name="Reply1">
+                        This is the initial reply that will be contained in the simulated Network Manager response for disconnect.
+                        The available options are from the enum RfnMeterDisconnectInitialReplyType.
+                    </tags:nameValue>
+                    <tags:nameValue name="Reply1 Fail Rate">
+                        This value is used to calculate the chance of the inputed response failing. It's meant to deliver this rate over time,
+                        so for a 10% fail rate, it is expected that 1 out of the next 10 disconnect requests will fail, 
+                        but it's not guaranteed that 1 out of 10 request will fail. It could end up being more or less.
+                    </tags:nameValue>
+                    <tags:nameValue name="Reply2">
+                        This is the confirmation reply that will be contained in the simulated Network Manager response for disconnect.
+                        The available options are from the enum RfnMeterDisconnectConfirmationReplyType.
+                    </tags:nameValue>
+                    <tags:nameValue name="Reply2 Fail Rate">
+                        This value is used to calculate the chance of the inputed response failing. It's meant to deliver this rate over time,
+                        so for a 10% fail rate, it is expected that 1 out of the next 10 disconnect requests will fail, 
+                        but it's not guaranteed that 1 out of 10 request will fail. It could end up being more or less.
+                    </tags:nameValue>
+                    <tags:nameValue name="Note">
+                        Reply1 and Reply2 refer to the Reply1 and Reply2 referenced from the class RfnMeterDisconnectService.
+                    </tags:nameValue>
+                </tags:nameValueContainer>
+            </div>
         
             <table class="compact-results-table">
                 <thead>
@@ -104,77 +156,165 @@
                         <th>Status</th>
                         <th>Actions</th>
                         <th>Parameters</th>
-                        <th>Description</th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
-                <tbody>
-                    <tags:sectionContainer2 nameKey="rfnNetwrokManagerMeterSimulator">
-                        <td>Read</td>
+                <tags:sectionContainer2 nameKey="rfnMeterReadAndControlMeterSimulator" helpText="yukon.web.modules.dev.rfnMeterReadAndControlMeterSimulator.helpText">
+                    <tr>
+                        <form action="startMetersReadRequest" method="POST">
+                            <cti:csrfToken/>
+                            <td>Read</td>
                             <td>
-                                <c:if test="${autoDataReplyActive}">
+                                <c:if test="${meterReadReplyActive}">
                                     <div class="user-message pending">Active</div>
                                 </c:if>
-                                <c:if test="${not autoDataReplyActive}">
+                                <c:if test="${not meterReadReplyActive}">
                                     <div class="user-message error">Off</div>
                                 </c:if>
                             </td>
                             <td>
-                                 <c:if test="${autoDataReplyActive}">
-                                    <cti:button label="Disable" type="button" href="disableGatewayDataReply"/>
+                                <c:if test="${meterReadReplyActive}">
+                                    <cti:button label="Disable"  type="button" href="stopMetersReadRequest"/>
                                 </c:if>
-                                <c:if test="${not autoDataReplyActive}">
-                                    <cti:button label="Enable" type="submit"/>
+                                <c:if test="${not meterReadReplyActive}">
+                                    <cti:button label="Enable" type="submit" />
                                 </c:if>
                             </td>
                             <td>
-                                <tags:nameValueContainer tableClass="natural-width">
+                                <c:if test="${meterReadReplyActive}">
+                                    <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Reply1">
+                                            <tags:selectWithItems path="currentRfnMeterReadAndControlReadSimulatorSettings.readReply1"
+                                                    items="${rfnMeterReadReplies}" disabled="true"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply1 Fail Rate" style="background-color: white;">
+                                            <input type="text" name="readReply1FailPercent"  style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlReadSimulatorSettings.readReply1FailPercent}" disabled="true"/>%
                                         </tags:nameValue>
                                         <tags:nameValue name="Reply2">
+                                           <tags:selectWithItems path="currentRfnMeterReadAndControlReadSimulatorSettings.readReply2"
+                                                    items="${rfnMeterReadDataReplies}" disabled="true"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply2 Fail Rate" style="background-color: white;">
+                                            <input type="text" name="readReply2FailPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlReadSimulatorSettings.readReply2FailPercent}" disabled="true"/>%
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
-                                    <div>
-                                    <br/>
-                                    <cti:button id="send-message" nameKey="sendRfnMeterMessages" />
-                                    <cti:button id="stop-send-message" nameKey="stopSendingRfnMeterMessages"
-                                        classes="dn" />
-                                </div>
+                                </c:if>
+                                <c:if test="${not meterReadReplyActive}">
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Reply1">
+                                            <tags:selectWithItems path="currentRfnMeterReadAndControlReadSimulatorSettings.readReply1"
+                                                    items="${rfnMeterReadReplies}"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply1 Fail Rate" style="background-color: white;">
+                                            <input type="text" name="readReply1FailPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlReadSimulatorSettings.readReply1FailPercent}"/>%
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply2">
+                                           <tags:selectWithItems path="currentRfnMeterReadAndControlReadSimulatorSettings.readReply2" 
+                                                    items="${rfnMeterReadDataReplies}"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply2 Fail Rate" style="background-color: white;">
+                                            <input type="text" name="readReply2FailPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlReadSimulatorSettings.readReply2FailPercent}"/>%
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                </c:if>
+                                <cti:button renderMode="labeledImage" icon="icon-help" data-popup="#read-simulator-popup" label="Parameter Details"/>
                             </td>
+                        </form>
+                    </tr>
+                    <tr>
+                        <form action="startMetersDisconnectRequest" method="POST">
+                            <cti:csrfToken/>
+                            <td>Disconnect</td>
                             <td>
-                            <div class="button-group button-group-toggle">
-                                <div class="js-sim-startup" data-simulator-type="RFN_METER_NETWORK">
-                                <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-                                <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
-                                </div>
-                            </div>
-                            </td>
-                    </tags:sectionContainer2>
-                </tbody>
-                <tbody>
-                <td>Disconnect</td>
-                            <td>
-                                <c:if test="${autoUpdateReplyActive}">
+                                <c:if test="${meterDisconnectReplyActive}">
                                     <div class="user-message pending">Active</div>
                                 </c:if>
-                                <c:if test="${not autoUpdateReplyActive}">
+                                <c:if test="${not meterDisconnectReplyActive}">
                                     <div class="user-message error">Off</div>
                                 </c:if>
                             </td>
                             <td>
-                                
-                                 <cti:button id="disconnect-message" nameKey="sendRfnDisconnectMessage" />
-                                 <cti:button id="stop-disconnect-message" nameKey="stopRfnDisconnectMessage" />
-                                <c:if test="${autoUpdateReplyActive}">
-                                    <cti:button label="Disable" type="button" href="disableGatewayUpdateReply"/>
+                                <c:if test="${meterDisconnectReplyActive}">
+                                    <cti:button label="Disable"  type="button" href="stopMetersDisconnectRequest"/>
                                 </c:if>
-                                <c:if test="${not autoUpdateReplyActive}">
-                                    <cti:button label="Enable" type="submit"/>
+                                <c:if test="${not meterDisconnectReplyActive}">
+                                    <cti:button label="Enable" type="submit" />
                                 </c:if>
                             </td>
-                </tbody>
+                            <td>
+                                <c:if test="${meterDisconnectReplyActive}">
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Reply1">
+                                            <tags:selectWithItems path="currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply1"
+                                                    items="${rfnMeterDisconnectInitialReplies}" disabled="true"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply1 Fail Rate">
+                                            <input type="text" name="disconnectReply1FailPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply1FailPercent}" disabled="true"/>%
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply2">
+                                           <tags:selectWithItems path="currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply2" 
+                                                    items="${rfnMeterDisconnectConfirmationReplies}" disabled="true"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply2 Fail Rate">
+                                            <input type="text" name="disconnectReply2FailPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply2FailPercent}" disabled="true"/>%
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                </c:if>
+                                <c:if test="${not meterDisconnectReplyActive}">
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Reply1">
+                                            <tags:selectWithItems path="currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply1"
+                                                    items="${rfnMeterDisconnectInitialReplies}"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply1 Fail Rate">
+                                            <input type="text" name="disconnectReply1FailPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply1FailPercent}"/>%
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply2">
+                                           <tags:selectWithItems path="currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply2" 
+                                                    items="${rfnMeterDisconnectConfirmationReplies}"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Reply2 Fail Rate">
+                                            <input type="text" name="disconnectReply2FailPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply2FailPercent}"/>%
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                </c:if>
+                                <cti:button renderMode="labeledImage" icon="icon-help" data-popup="#disconnect-simulator-popup" label="Parameter Details"/>
+                            </td>
+                        </form>
+                    </tr>
+                    <tr>
+                        <td>All Simulators</td>
+                        <c:set var="maxSimulators" value="2"/>
+                        <td>
+                            <c:set var="clazz" value="${numberOfSimulatorsRunning eq 0 ? 'error' : 'pending'}"/>
+                            <div class="user-message ${clazz}">${numberOfSimulatorsRunning}/${maxSimulators}</div>
+                        </td>
+                        <td colspan="2">
+                            <c:if test="${numberOfSimulatorsRunning lt maxSimulators}">
+                                <cti:button id="enable-all" label="Enable All" type="button"/>
+                            </c:if>
+                            <c:if test="${numberOfSimulatorsRunning gt 0}">
+                                <cti:button label="Disable All" type="button" href="disableAll"/>
+                            </c:if>
+                            <div class="button-group button-group-toggle">
+                                <div class="js-sim-startup" data-simulator-type="RFN_METER_READ_AND_CONTROL">
+                                    <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+                                    <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </tags:sectionContainer2>
             </table>
-        
         </cti:tab>
     </cti:tabs>
     

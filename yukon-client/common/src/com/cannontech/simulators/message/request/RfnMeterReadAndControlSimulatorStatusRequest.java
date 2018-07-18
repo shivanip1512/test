@@ -2,11 +2,11 @@ package com.cannontech.simulators.message.request;
 
 import com.cannontech.simulators.SimulatorType;
 
-public class RfnNetworkManagerSimulatorStopRequest implements SimulatorRequest {
+public class RfnMeterReadAndControlSimulatorStatusRequest implements SimulatorRequest {
 
     @Override
     public SimulatorType getRequestType() {
-        return SimulatorType.RFN_METER_NETWORK;
+        return SimulatorType.RFN_METER_READ_AND_CONTROL;
     }
     
 }
