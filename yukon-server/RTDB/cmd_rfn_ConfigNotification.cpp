@@ -167,9 +167,13 @@ std::string RfnConfigNotificationCommand::decodeTouSchedule(Bytes payload)
 
         switchTimes.emplace_back("00:00");
 
+        auto minutes = 0;
+
         for( auto switchTime = 0; switchTime < 5; switchTime++ )
         {
-            uint16_t minutes = payload[pos] << 8 | payload[pos + 1];
+            uint16_t delta = payload[pos] << 8 | payload[pos + 1];
+
+            minutes += delta;
 
             //  Special case for 24 hours, same as no switches
             if( minutes == 1440 )
@@ -503,16 +507,18 @@ std::string RfnConfigNotificationCommand::decodeFocusAlDisplay(Bytes payload)
         return '?';
     };
 
-    for( auto pos = 2; pos < payloadSize - 3; pos += 3 )
+    for( auto pos = 2; pos <= (payloadSize - 3); pos += 3 )
     {
-        auto metric = mapFind(focusMetricLookup, payload[pos]);
+        const auto metricId = payload[pos];
+
+        auto metric = mapFind(focusMetricLookup, metricId);
 
         validate( Condition( !! metric, ClientErrors::InvalidData )
-            << "Unknown display metric (" << payload[pos] << ")");
+            << "Unknown display metric (" << metricId << ")");
 
         d.displayItems.emplace_back(*metric);
 
-        l.add("Slot " + std::to_string(payload[pos]))
+        l.add("Metric " + std::to_string(metricId))
             << convertChar(payload[pos + 1]) << " "
             << convertChar(payload[pos + 2]);
     }

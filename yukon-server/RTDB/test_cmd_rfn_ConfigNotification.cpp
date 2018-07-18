@@ -363,9 +363,9 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    TOU enabled"
         "\nTOU schedule configuration:"
         "\n    Day table               : 1, 2, 3, 4, 4, 3, 2, 1"
-        "\n    Schedule 1 switch times : 00:00, 00:03, 00:01, 00:04, 00:01, 00:05"
-        "\n    Schedule 2 switch times : 00:00, 00:09, 00:02, 00:06, 00:05, 00:03"
-        "\n    Schedule 3 switch times : 00:00, 00:05, 00:08, 00:09, 00:07, 00:09"
+        "\n    Schedule 1 switch times : 00:00, 00:03, 00:04, 00:08, 00:09, 00:14"
+        "\n    Schedule 2 switch times : 00:00, 00:09, 00:11, 00:17, 00:22, 00:25"
+        "\n    Schedule 3 switch times : 00:00, 00:05, 00:13, 00:22, 00:29, 00:38"
         "\n    Schedule 4 switch times : 00:00, 00:00, 00:00, 00:00, 00:00, 00:00"
         "\n    Schedule 1 rates        : B, A, D, C, B, A"
         "\n    Schedule 2 rates        : D, C, B, A, D, C"
@@ -403,8 +403,9 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Disconnect display : 0"
         "\nFocus AL display:"
         "\n    Display time : 6 seconds"
-        "\n    Slot 0       : > U"
-        "\n    Slot 2       : A *"
+        "\n    Metric 0     : > U"
+        "\n    Metric 2     : A *"
+        "\n    Metric 8     : G G"
         "\nOV/UV configuration:"
         "\n    Meter ID                     : 127"
         "\n    Event ID                     : 2023"
@@ -485,7 +486,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
 
     BOOST_REQUIRE(cmd.focusDisplay);
     BOOST_CHECK_EQUAL(cmd.focusDisplay->displayItemDuration, 6);
-    const auto focusDisplayExpected = { 0, 2 };
+    const auto focusDisplayExpected = { 0, 2, 8 };
     BOOST_CHECK_EQUAL_RANGES(cmd.focusDisplay->displayItems, focusDisplayExpected);
 
     BOOST_REQUIRE(cmd.intervalRecording);
@@ -554,9 +555,9 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     }
     {
         BOOST_REQUIRE_EQUAL(cmd.touSchedule->_times.size(), 4);
-        const auto times0 = { "00:00", "00:03", "00:01", "00:04", "00:01", "00:05" };
-        const auto times1 = { "00:00", "00:09", "00:02", "00:06", "00:05", "00:03" };
-        const auto times2 = { "00:00", "00:05", "00:08", "00:09", "00:07", "00:09" };
+        const auto times0 = { "00:00", "00:03", "00:04", "00:08", "00:09", "00:14" };
+        const auto times1 = { "00:00", "00:09", "00:11", "00:17", "00:22", "00:25" };
+        const auto times2 = { "00:00", "00:05", "00:13", "00:22", "00:29", "00:38" };
         const auto times3 = { "00:00", "00:00", "00:00", "00:00", "00:00", "00:00" };
         auto itr = cmd.touSchedule->_times.cbegin();
         BOOST_CHECK_EQUAL(itr->first, 0);
