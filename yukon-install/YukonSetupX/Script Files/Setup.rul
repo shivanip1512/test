@@ -67,10 +67,7 @@ begin
     // Format date pattern in YYYYMMDD
     formattedDateString = FormatDatePattern(sDateString);
     BackupLoggingConfigFiles(formattedDateString);
-    if(IsInstalledVersionLesser("7.1.0")) then
-        RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
-    endif;
-    // Create list off all Java services (except watch dog)
+    RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
 
 	//make sure we have enough space for the selected features
 	TARGETDIR = sDir;
