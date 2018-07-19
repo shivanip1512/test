@@ -26,7 +26,7 @@ public interface PaoNotesService {
     int edit(PaoNote note, LiteYukonUser user);
     
     /**
-     * "Delete the PaoNote associated with the noteId.
+     * Delete the PaoNote associated with the noteId.
      */
     void delete(int noteId);
     
