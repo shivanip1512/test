@@ -615,6 +615,22 @@ WHERE Status = 'D';
 INSERT INTO DBUpdates VALUES ('YUK-18517', '7.1.0', GETDATE());
 /* @end YUK-18517 */
 
+/* @start YUK-18477 */
+UPDATE YukonRoleProperty 
+SET Description = 'Controls the ability to edit, delete, or manually add point data values.' 
+WHERE RolePropertyID = -21405
+AND RoleID = -214;
+
+UPDATE YukonRoleProperty 
+SET Description = 'Controls the ability to view, create, edit, or delete points.' 
+WHERE RolePropertyID = -21406
+AND RoleID = -214;
+
+INSERT INTO YukonRoleProperty VALUES(-21407, -214, 'Manage Notes', 'OWNER', 'Controls the ability to view, create, edit, or delete notes.');
+
+INSERT INTO DBUpdates VALUES ('YUK-18477', '7.1.0', GETDATE());
+/* @end YUK-18477 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
