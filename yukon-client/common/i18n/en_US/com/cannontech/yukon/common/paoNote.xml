@@ -17,8 +17,8 @@
     <entry key="yukon.web.common.paoNote.deviceName">Device Name</entry>
     <entry key="yukon.web.common.paoNote.deviceType">Type</entry>
     <entry key="yukon.web.common.paoNotesSearch.invalidDateRange">Beginning of date range must be before or equal to end.</entry>
-    <entry key="yukon.web.common.paoNotesSearch.noDeviceSelected">Please select atleast one device.</entry>
-    <entry key="yukon.web.common.paoNotesSearch.noDeviceGroupSelected">Please select atleast one device group.</entry>
+    <entry key="yukon.web.common.paoNotesSearch.noDeviceSelected">Please select at least one device.</entry>
+    <entry key="yukon.web.common.paoNotesSearch.noDeviceGroupSelected">Please select at least one device group.</entry>
     
     <entry key="yukon.web.common.paoNotesSearch.noResults">No results found.</entry>
     <entry key="yukon.web.common.paoNotesSearch.viewAllNotes">View All Notes</entry>
