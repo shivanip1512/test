@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 
     //  --- RF gas meters ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rfg-201"), TYPE_RFG201);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-205"), TYPE_RFG205);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-205"), TYPE_NONE);
 
     //  --- RTU devices ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dart"),    TYPE_DARTRTU);

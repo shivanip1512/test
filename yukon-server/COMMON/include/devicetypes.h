@@ -109,7 +109,6 @@ enum DeviceTypes {
 
     // RF gas meters
     TYPE_RFG201,
-    TYPE_RFG205,
 
     // Substation device identifiers
     TYPE_CCU700,

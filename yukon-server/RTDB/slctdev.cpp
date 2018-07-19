@@ -270,7 +270,6 @@ const DeviceLookup deviceFactory {
     { TYPE_RFW205,       MakeDeviceFunc(makeDevice<Rfw205Device>) },
     //  RF gas meters
     { TYPE_RFG201,       MakeDeviceFunc(makeDevice<Rfg201Device>) },
-    { TYPE_RFG205,       MakeDeviceFunc(makeDevice<Rfg205Device>) },
     //  Electronic meters
     { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
     { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },

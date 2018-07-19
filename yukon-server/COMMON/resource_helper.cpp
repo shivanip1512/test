@@ -198,7 +198,6 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 
         //  --- RF gas meters ---
         { "RFG201",                      TYPE_RFG201 },
-        { "RFG205",                      TYPE_RFG205 },
 
         //  --- RTU devices ---
         { "RTU_DART",                    TYPE_DARTRTU },

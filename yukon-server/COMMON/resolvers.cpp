@@ -291,7 +291,6 @@ static const std::map<std::string, DeviceTypes> device_lookups
 
     //  --- RF gas meters ---
     { "rfg-201",            TYPE_RFG201 },
-    { "rfg-205",            TYPE_RFG205 },
 
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },
@@ -697,7 +696,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFW201,
         TYPE_RFW205,
         TYPE_RFG201,
-        TYPE_RFG205,
         TYPE_RFN410FL,
         TYPE_RFN410FX,
         TYPE_RFN410FD,

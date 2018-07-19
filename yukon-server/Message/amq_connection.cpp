@@ -944,10 +944,10 @@ const IM_EX_MSG OutboundQueue
         OutboundQueue::ScannerInMessages
                 ("com.eaton.eas.yukon.scanner.inmessages");
 const IM_EX_MSG OutboundQueue
-        OutboundQueue::GetBatteryChannelConfigRequest
+        OutboundQueue::GetBatteryNodeChannelConfigRequest
                 ("com.eaton.eas.yukon.networkmanager.batterynode.GetChannelConfiguration");
 const IM_EX_MSG OutboundQueue
-        OutboundQueue::SetBatteryChannelConfigRequest
+        OutboundQueue::SetBatteryNodeChannelConfigRequest
                 ("com.eaton.eas.yukon.networkmanager.batterynode.SetChannelConfiguration");
 const IM_EX_MSG OutboundQueue
         OutboundQueue::DeviceCreationRequest

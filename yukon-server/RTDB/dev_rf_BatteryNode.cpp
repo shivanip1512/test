@@ -91,7 +91,7 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurati
         };
 
     ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(
-            OutboundQueue::GetBatteryChannelConfigRequest,
+            OutboundQueue::GetBatteryNodeChannelConfigRequest,
             serialized,
             msgReceivedCallback,
             std::chrono::seconds{ 5 },
@@ -214,7 +214,7 @@ YukonError_t RfBatteryNodeDevice::executePutConfigIntervals(CtiRequestMsg *pReq,
                 };
 
             ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(
-                    OutboundQueue::SetBatteryChannelConfigRequest,
+                    OutboundQueue::SetBatteryNodeChannelConfigRequest,
                     serialized,
                     msgReceivedCallback,
                     std::chrono::seconds{ 5 },

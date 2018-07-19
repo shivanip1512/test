@@ -102,7 +102,6 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("RFW-201")
         ("RFW-205")
         ("RFG-201")
-        ("RFG-205")
         ("CCU-700")
         ("CCU-710A")
         ("CCU-711")
@@ -184,7 +183,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9831, empty);
+            .repeat(9832, empty);
 
     std::vector<std::string> results;
 
