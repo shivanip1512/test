@@ -4651,23 +4651,46 @@ bool processDmvScanData( IVVCStatePtr           state,
     {
         Cti::Database::DatabaseConnection   connection;
 
-        static const std::string sql =
-            "INSERT INTO "
-                "DmvMeasurementData "
-            "VALUES "
-                "(?, ?, ?, ?, ?)";
+        std::string sql =
+
+            "INSERT INTO DmvMeasurementData (ExecutionId, PointId, Timestamp, Quality, Value) "
+            "SELECT "
+                "? AS ExecutionId, "
+                "? AS PointId, "
+                "? AS Timestamp, "
+                "? AS Quality, "
+                "? AS Value ";
+
+        if ( connection.getClientType() == Cti::Database::DatabaseConnection::ClientType::Oracle )
+        {
+        sql +=
+
+            "FROM dual ";
+        }
+
+        sql +=
+
+            "WHERE ? NOT IN ( "
+                "SELECT D.TimeStamp "
+                "FROM DmvMeasurementData D "
+                "WHERE ? = D.PointId "
+                "AND ? = D.ExecutionId "
+            ")";
 
         Cti::Database::DatabaseWriter   writer( connection, sql );
 
-        for ( auto pointData : dataToRecord )
-        {                    
+        for ( auto [pointid, pointdata] : dataToRecord )
+        {
             writer
                 << dmvTestSettings.ExecutionID
-                << pointData.first
-                << pointData.second.timestamp
-                << pointData.second.quality
-                << pointData.second.value
-                    ;
+                << pointid
+                << pointdata.timestamp
+                << pointdata.quality
+                << pointdata.value
+                << pointdata.timestamp
+                << pointid
+                << dmvTestSettings.ExecutionID
+                ;
 
             try
             {
