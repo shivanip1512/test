@@ -84,11 +84,12 @@
     </c:choose>
 
     <div class="action-area">
-        <a href="#"><i:inline key="yukon.common.viewAll"/></a>
+        <a class="js-view-all-notes" href="javascript:void(0)" data-pao-id="${createPaoNote.paoId}"><i:inline key="yukon.common.viewAll"/></a>
         &nbsp;|&nbsp;
         <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
         <a href="${searchUrl}"><i:inline key="common.paoNotesSearch.pageName"/></a>
     </div>
-    
 </cti:msgScope>
+<div class="dn" id="js-pao-notes-popup"></div>
+<cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 <cti:includeScript link="/resources/js/widgets/yukon.widget.paonotes.js"/>

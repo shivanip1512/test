@@ -50,6 +50,7 @@ import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -78,6 +79,7 @@ public class PaoNotesSearchController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private PaoNotesFilterValidator validator;
     @Autowired private PaoNoteValidator paoNoteValidator;
+    @Autowired private PaoDao paoDao;
 
     private static final String baseKey = "yukon.web.common.paoNote.";
 
@@ -223,14 +225,14 @@ public class PaoNotesSearchController {
     
     @RequestMapping(value = "viewAllNotes", method = RequestMethod.GET)
     public String viewAllNotes(ModelMap model, YukonUserContext userContext, int paoId) {
-        setupModel(paoId, userContext.getYukonUser().getUsername(), model);
+        setupModel(paoId, userContext, model);
         return "paoNote/paoNotesPopup.jsp";
     }
     
     @RequestMapping(value = "deletePaoNote/{noteId}", method = RequestMethod.DELETE)
     public String deletePaoNote(ModelMap model, @PathVariable int noteId, int paoId, YukonUserContext userContext) {
         paoNotesService.delete(noteId);
-        setupModel(paoId, userContext.getYukonUser().getUsername(), model);
+        setupModel(paoId, userContext, model);
         return "paoNote/paoNotesPopup.jsp";
     }
     
@@ -257,20 +259,21 @@ public class PaoNotesSearchController {
             @ModelAttribute("paoNote") PaoNote paoNote, BindingResult result) {
         paoNoteValidator.validate(paoNote, result);
         if (result.hasErrors()) {
-            setupModel(paoNote.getPaoId(), userContext.getYukonUser().getUsername(), model);
+            setupModel(paoNote.getPaoId(), userContext, model);
             return "paoNote/paoNotesPopup.jsp";
         }
         paoNotesService.create(paoNote, userContext.getYukonUser());
         return "redirect:viewAllNotes?paoId=" + paoNote.getPaoId();
     }
     
-    private void setupModel(int paoId, String userName, ModelMap model) {
+    private void setupModel(int paoId, YukonUserContext userContext, ModelMap model) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         PaoNote createPaoNote = null;
         if (model.containsAttribute("paoNote")) {
             createPaoNote = (PaoNote) model.get("paoNote");
         } else {
             createPaoNote = new PaoNote();
-            createPaoNote.setCreateUserName(userName);
+            createPaoNote.setCreateUserName(userContext.getYukonUser().getUsername());
             createPaoNote.setPaoId(paoId);
         }
         model.addAttribute("paoNote", createPaoNote);
@@ -281,5 +284,7 @@ public class PaoNotesSearchController {
             searchResults = paoNotesService.getAllNotesByPaoId(paoId).getResultList();
         }
         model.addAttribute("searchResults", searchResults);
+        model.addAttribute("popupTitle", accessor.getMessage("yukon.web.common.paoNotesPopup.title", 
+                                                             paoDao.getLiteYukonPAO(paoId).getPaoName()));
     }
 }
