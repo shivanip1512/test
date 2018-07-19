@@ -16,7 +16,7 @@
         <div class="column-14-10 clearfix">
             <div class="column one">
                 <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
-                <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="73" isResizable="false" 
+                <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
                           maxLength="255" placeholder="${noteTextPlaceholder}"/>
             </div>
             <div class="column two nogutter">
@@ -33,7 +33,7 @@
                 <span class="empty-list"><i:inline key=".noNotes"/></span>
             </c:when>
             <c:otherwise>
-                <table class="compact-results-table has-actions row-highlighting">
+                <table class="compact-results-table has-actions row-highlighting wbba" style="width:100%;">
                     <thead>
                             <th colspan="2"><i:inline key="yukon.web.common.paoNote.noteText"/></th>
                             <th><i:inline key="yukon.web.common.paoNote.createdBy"/></th>

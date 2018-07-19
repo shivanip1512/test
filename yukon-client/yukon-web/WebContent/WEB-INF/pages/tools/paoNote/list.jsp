@@ -108,7 +108,7 @@
                 </cti:url>
                 <div id="pao-notes-list-container" data-url="${searchUrl}" data-static>
                     <br>
-                    <table class="compact-results-table has-actions row-highlighting">
+                    <table class="compact-results-table has-actions row-highlighting wbba">
                         <thead>
                             <tr>
                                 <tags:sort column="${deviceName}" />

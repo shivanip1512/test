@@ -33,7 +33,7 @@
             <span class="empty-list"><i:inline key=".noNotes"/></span>
         </c:when>
         <c:otherwise>
-            <table class="row-highlighting striped bordered-div " style="width:100%">
+            <table class="row-highlighting striped bordered-div wbba" style="width:100%">
                 <c:forEach var="recentNote" items="${recentNotes}" varStatus="status">
                     <c:set var="noteId" value="${recentNote.paoNote.noteId}"/>
                     <tr>
@@ -63,6 +63,7 @@
                         <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
                         <cti:msg2 var="deleteText" key=".delete.hoverText"/>
                         <cti:msg2 var="editText" key=".edit.hoverText"/>
+                        <cti:msg2 var="saveText" key="yukon.common.save"/>
                         <div id="js-edit-note-btn-group-${noteId}" class="button-group">
                             <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
                                         data-note-id="${noteId}" title="${editText}"/>
@@ -72,7 +73,7 @@
                         </div>
                         <div id="js-save-note-group-${noteId}" class="button-group dn">
                             <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
-                                        data-note-id="${noteId}"/>
+                                        data-note-id="${noteId}" title="${saveText}"/>
                             <cti:button id="js-cancel-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
                                         data-note-id="${noteId}" title="${cancelText}"/>
                         </div>
