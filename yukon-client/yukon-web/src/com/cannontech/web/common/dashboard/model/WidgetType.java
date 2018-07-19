@@ -58,7 +58,7 @@ public enum WidgetType implements DisplayableEnum {
     
     static {
         Builder<WidgetType, String> javascriptBuilder = new ImmutableListMultimap.Builder<WidgetType, String>()
-            .put(SYSTEM_MESSAGING, baseJSPath + "yukon.support.systemHealth.js")
+            .put(SYSTEM_MESSAGING, "/resources/js/pages/yukon.support.systemHealth.js")
             .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
                                      "HIGH_STOCK")
             .put(INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js")
