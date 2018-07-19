@@ -22,7 +22,7 @@
             <div class="column two nogutter">
                 <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl"/>
                 <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
-                <div class="fr"><a href="${searchUrl}"><i:inline key="common.paoNotesSearch.search"/></a></div>
+                <div class="fr"><a href="${searchUrl}"><i:inline key="yukon.common.search"/></a></div>
             </div>
         </div>
     </form:form>

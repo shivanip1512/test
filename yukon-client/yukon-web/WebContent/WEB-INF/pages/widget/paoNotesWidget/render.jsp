@@ -87,7 +87,7 @@
         <a class="js-view-all-notes" href="javascript:void(0)" data-pao-id="${createPaoNote.paoId}"><i:inline key="yukon.common.viewAll"/></a>
         &nbsp;|&nbsp;
         <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
-        <a href="${searchUrl}"><i:inline key="common.paoNotesSearch.pageName"/></a>
+        <a href="${searchUrl}"><i:inline key="yukon.common.search"/></a>
     </div>
 </cti:msgScope>
 <div class="dn" id="js-pao-notes-popup"></div>
