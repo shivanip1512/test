@@ -4652,7 +4652,6 @@ bool processDmvScanData( IVVCStatePtr           state,
         Cti::Database::DatabaseConnection   connection;
 
         std::string sql =
-
             "INSERT INTO DmvMeasurementData (ExecutionId, PointId, Timestamp, Quality, Value) "
             "SELECT "
                 "? AS ExecutionId, "
@@ -4663,13 +4662,11 @@ bool processDmvScanData( IVVCStatePtr           state,
 
         if ( connection.getClientType() == Cti::Database::DatabaseConnection::ClientType::Oracle )
         {
-        sql +=
-
+            sql +=
             "FROM dual ";
         }
 
         sql +=
-
             "WHERE ? NOT IN ( "
                 "SELECT D.TimeStamp "
                 "FROM DmvMeasurementData D "
