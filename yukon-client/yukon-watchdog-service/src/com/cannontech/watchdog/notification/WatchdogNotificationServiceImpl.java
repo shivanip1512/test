@@ -1,6 +1,5 @@
 package com.cannontech.watchdog.notification;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +22,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.WatchdogAssembler;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
+import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.email.EmailMessage;
@@ -40,6 +40,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @Autowired private EmailService emailService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
+    @Autowired private WebserverUrlResolver webserverUrlResolver;
     
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
@@ -88,7 +89,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
         } else {
             try {
                 List<String> sendToEmailIds = getSubscribedUsersEmailId();
-                String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject", InetAddress.getLocalHost().getHostName());
+                String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
                 StringBuilder msgBuilder = new StringBuilder();
                 String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
                 msgBuilder.append(message + "\n");
@@ -97,6 +98,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                     msgBuilder.append("\n");
                     msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
                 }
+                msgBuilder.append("\n\nSee " + webserverUrlResolver.getUrlBase());
                 String emails = String.join(",", sendToEmailIds);
                 EmailMessage emailMessage =
                     new EmailMessage(InternetAddress.parse(emails), subject, msgBuilder.toString());
