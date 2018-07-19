@@ -65,7 +65,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
 
     @Override
     public void start() {
-        executor.scheduleAtFixedRate(this::doWatchAction, 0, 5, TimeUnit.MINUTES);
+        executor.scheduleAtFixedRate(this::doWatchAction, 1, 5, TimeUnit.MINUTES);
     }
 
     /**
