@@ -90,7 +90,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     }
     
     // Initialize settings for a https connection.
-    private void initializeHttpsSetting() throws IOException {
+    private void initializeHttpsSetting() {
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
             public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                 return null;
@@ -103,11 +103,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
             }
         } };
 
-        javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
-            public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
-                return true;
-            }
-        });
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> true);
 
         try {
             SSLContext sc = SSLContext.getInstance("SSL");
@@ -115,7 +111,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             isHttpsSettingInitialized = true;
         } catch (Exception e) {
-            log.debug("Could not initialze HTTPS settings");
+            log.debug("Could not initialze HTTPS settings " + e);
         }
     }
 
