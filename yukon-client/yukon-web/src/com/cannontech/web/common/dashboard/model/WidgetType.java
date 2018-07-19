@@ -22,6 +22,7 @@ public enum WidgetType implements DisplayableEnum {
     MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER, "subscribedMonitorsWidget", "image-monitor-subscriptions"),
     SYSTEM_MESSAGING(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemMessagingWidget", "image-system-messaging"),
     INFRASTRUCTURE_WARNINGS(DashboardScope.GENERAL, WidgetCategory.OTHER, "infrastructureWarningsWidget", "image-infrastructure-warnings"),
+    PAO_NOTES_SEARCH(DashboardScope.GENERAL, WidgetCategory.OTHER, "paoNotesSearchWidget", "image-notes-search"),
 
     TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-trends"), 
     PORTER_QUEUE_COUNTS(DashboardScope.GENERAL, WidgetCategory.AMI, "porterQueueCountsWidget", "image-porter-queue-counts"),

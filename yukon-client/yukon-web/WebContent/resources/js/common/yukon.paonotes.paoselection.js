@@ -16,6 +16,7 @@ yukon.paonotes.paoselection = (function () {
     _initialized = false,
     
     _clearIndividualDeviceSelection = function () {
+        yukon.pickers['paoPicker'].clearEntireSelection();
         $("#js-picker-dialog #picker-paoPicker-input-area").find('input[type="hidden"][name="paoIds"]').remove();
         var pickerBtn = $("#js-picker-dialog").find("#picker-paoPicker-btn");
         pickerBtn.find('span.b-label').text(pickerBtn.attr('aria-label'));

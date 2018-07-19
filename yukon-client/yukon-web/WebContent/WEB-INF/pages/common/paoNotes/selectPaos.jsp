@@ -12,7 +12,7 @@
         </form:option>
     </c:forEach>
 </form:select>
-<div id="js-picker-dialog" class="dib dn">
+<div id="js-picker-dialog" class="dib dn push-down-3">
     <tags:bind path="paoIds">
         <tags:pickerDialog type="meterPicker"
                        id="paoPicker"
@@ -24,7 +24,7 @@
                        initialIds="${paoNoteFilter.paoIds}"/>
     </tags:bind>
 </div>
-<div id="js-device-group-picker" class="dib dn">
+<div id="js-device-group-picker" class="dib dn push-down-3">
     <cti:list var="groups">
         <c:forEach var="subGroup" items="${deviceGroupNames}">
             <cti:item value="${subGroup}"/>
@@ -33,5 +33,4 @@
     <tags:deviceGroupPicker inputName="deviceGroupNames" inputValue="${groups}" multi="true"/>
     <tags:bind path="deviceGroups"/>
 </div>
-
 <cti:includeScript link="/resources/js/common/yukon.paonotes.paoselection.js"/>

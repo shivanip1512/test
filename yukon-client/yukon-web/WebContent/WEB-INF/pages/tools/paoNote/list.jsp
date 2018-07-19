@@ -23,7 +23,9 @@
                 <form:input path="text" placeholder="${noteTextPlaceholder}" size="35" maxlength="40" cssStyle="${marignTopDeviceFilters}"/>
                 <div id="notes-search-help-popup" class="dn" data-title='<i:inline key="yukon.web.modules.tools.paoNotesSearch.pageName"/>' 
                      data-width="600">
-                    <div class="scroll-lg"><i:inline key=".helpText"/></div>
+                    <div class="scroll-lg">
+                        <i:inline key="yukon.web.widgets.paoNotesSearchWidget.helpText"/>
+                    </div>
                 </div>
                 <cti:button renderMode="image" icon="icon-help" classes="widget-controls fr" data-popup="#notes-search-help-popup"/>
                 

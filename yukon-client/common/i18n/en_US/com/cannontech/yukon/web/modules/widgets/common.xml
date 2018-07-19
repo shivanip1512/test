@@ -37,6 +37,26 @@
         </ul>
     ]]>
 </entry>
+<entry key="yukon.web.widgets.paoNotesSearchWidget.helpText"><![CDATA[
+        Displays all Notes matching the filter values selected. You can apply any of the following filters to the report:
+        <ul>
+            <li><b>Note Text</b> - text contained within a note, case is ignored.</li>
+            <li><b>Device Selection</b> - select one to many devices to filter the results.</li>
+                <ul>
+                    <li><b>All Devices</b> - no filtering by device.</li>
+                    <li><b>Select Individually</b> - filter notes attached to one or more individual device(s).</li>
+                    <li><b>By Device Groups</b> - filter notes attached to any device within a device group.</li>
+                </ul>
+            </li>
+            <li><b>Create Date range</b> - filter notes created between the start date and the end date.</li>
+            <li><b>Created by</b> - filter notes created by any user or by a specific user.
+                <ul>
+                    <li><b>Any User</b></li>
+                    <li><b>Current User</b></li>
+                </ul>
+            </li>
+        </ul>
+    ]]></entry>
 <entry key="yukon.web.widgets.accountInformationWidget">CIS Information</entry>
 <entry key="yukon.web.widgets.cayentaAccountInformationWidget">CIS Information (Cayenta)</entry>
 <entry key="yukon.web.widgets.deviceGroupWidget">Device Groups</entry>
@@ -67,6 +87,7 @@
 <entry key="yukon.web.widgets.allMonitorsWidget">Monitors</entry>
 <entry key="yukon.web.widgets.allMonitorsWidget.create">Create Monitor</entry>
 <entry key="yukon.web.widgets.subscribedMonitorsWidget">Monitor Subscriptions</entry>
+<entry key="yukon.web.widgets.paoNotesSearchWidget">Notes Search</entry>
 <entry key="yukon.web.widgets.porterResponseMonitorsWidget">Porter Response Monitor</entry>
 <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget">Configuration Tasks</entry>
 <entry key="yukon.web.widgets.commandScheduleWidget">Command Schedules</entry>

@@ -22,6 +22,7 @@
     description="Set a minimum selectable date via an object consumable by the DateFormatingService#format method (Date, ReadablePartial, ReadableInstant, Long)." %>
 <%@ attribute name="hideErrors" type="java.lang.Boolean" description="Default: false. If true, will not display validation error messages." %>
 <%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
+<%@ attribute name="displayPickerInViewMode" required="false" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
 
 <dt:pickerIncludes/>
 
@@ -73,7 +74,7 @@
         <spring:bind path="${path}">
             <c:if test="${status.error}"><c:set var="cssClass">${pageScope.cssClass} error</c:set></c:if>
             <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
-            <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <c:if test="${mode == 'EDIT' or mode == 'CREATE' or displayPickerInViewMode or empty mode}">
                 <span class="datetimeEntry_wrap ${wrapperClass}">
                     <form:input id="${id}" 
                         path="${path}"
@@ -88,7 +89,7 @@
                         data-class="${pageScope.cssDialogClass}"
                         autocomplete="off" />
                 </span>
-            </cti:displayForPageEditModes>
+            </c:if>
             <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
                 <c:if test="${!displayValidationToRight}">
                     <br>
