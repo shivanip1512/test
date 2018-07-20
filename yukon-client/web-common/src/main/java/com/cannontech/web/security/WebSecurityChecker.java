@@ -8,6 +8,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -93,6 +94,15 @@ public class WebSecurityChecker {
     
     public void checkLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel) {
         rolePropertyDao.verifyLevel(property, minLevel, getYukonUser());
+    }
+    
+    public void checkAccessLevel(YukonRoleProperty property, AccessLevel minLevel) {
+        AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(property, AccessLevel.class, getYukonUser());
+        if (userLevel.grantAccess(minLevel)) {
+            return;
+        }
+        throw new NotAuthorizedException("User " + getYukonUser() + " is not authorized to access this page.");
+
     }
     
     private LiteYukonUser getYukonUser() {

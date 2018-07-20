@@ -3,6 +3,7 @@ package com.cannontech.core.roleproperties.dao;
 import java.util.Set;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -346,6 +347,7 @@ public interface RolePropertyDao {
      */
     
     boolean checkLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user);
+    boolean checkLevel(YukonRoleProperty property, AccessLevel minLevel, LiteYukonUser user);
 
     /**
      * Equivalent to calling checkProperty and returning if true, and throwing

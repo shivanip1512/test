@@ -54,4 +54,9 @@ public interface PaoNotesService {
      */
     boolean hasNotes(int paoId);
     
+    /**
+     * Checks if user has permission to update or delete note
+     */
+    boolean canUpdateNote(int noteId, LiteYukonUser user);
+    
 }

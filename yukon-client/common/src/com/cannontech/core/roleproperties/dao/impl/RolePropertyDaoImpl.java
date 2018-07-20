@@ -25,6 +25,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.BadPropertyTypeException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.InputTypeFactory;
@@ -214,6 +215,16 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     public boolean checkLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user) {
         try {
             HierarchyPermissionLevel level = getPropertyEnumValue(property, HierarchyPermissionLevel.class, user);
+            return level.grantAccess(minLevel);
+        } catch (UserNotInRoleException e) {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean checkLevel(YukonRoleProperty property, AccessLevel minLevel, LiteYukonUser user) {
+        try {
+            AccessLevel level = getPropertyEnumValue(property, AccessLevel.class, user);
             return level.grantAccess(minLevel);
         } catch (UserNotInRoleException e) {
             return false;

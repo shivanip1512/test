@@ -291,6 +291,7 @@ public enum YukonRoleProperty {
     ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
     MANAGE_POINT_DATA(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 5, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
     MANAGE_POINTS(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 6, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
+    MANAGE_NOTES(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 7, InputTypeFactory.enumType(AccessLevel.class)),
     ;
     
     private final YukonRole role;

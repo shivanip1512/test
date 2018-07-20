@@ -20,9 +20,13 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.paonote.validator.PaoNoteValidator;
+import com.cannontech.web.security.annotation.CheckAccessLevel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
 @Controller
@@ -32,7 +36,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    @Autowired private RolePropertyDao rolePropertyDao;
     @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
         setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
@@ -52,20 +56,27 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         paoNotesService.create(paoNote, userContext.getYukonUser());
         return "redirect:render?deviceId=" + paoNote.getPaoId();
     }
-
+    
+    @CheckAccessLevel(property = YukonRoleProperty.MANAGE_NOTES, level = AccessLevel.OWNER)
     @RequestMapping(value = "deletePaoNote", method = RequestMethod.POST)
     public String deletePaoNote(ModelMap model, int noteId, int deviceId, YukonUserContext userContext) {
-        paoNotesService.delete(noteId);
+        if (paoNotesService.canUpdateNote(noteId, userContext.getYukonUser())) {
+            paoNotesService.delete(noteId);
+        }
         setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
         return "paoNotesWidget/render.jsp";
     }
-
+    
+    @CheckAccessLevel(property = YukonRoleProperty.MANAGE_NOTES, level = AccessLevel.OWNER)
     @RequestMapping(value = "editPaoNote", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> editPaoNote(ModelMap model, YukonUserContext userContext, PaoNote paoNote) {
         Map<String, Object> jsonResponse = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        if (StringUtils.isBlank(paoNote.getNoteText())) {
+        if (!paoNotesService.canUpdateNote(paoNote.getNoteId(), userContext.getYukonUser())) {
+            jsonResponse.put("hasError", true);
+            jsonResponse.put("errorMessage", accessor.getMessage("yukon.web.error.notOwner"));
+        } else if (StringUtils.isBlank(paoNote.getNoteText())) {
             jsonResponse.put("hasError", true);
             jsonResponse.put("errorMessage", accessor.getMessage("yukon.web.error.isBlank"));
         } else if (paoNote.getNoteText().length() > MAX_CHARACTERS_IN_NOTE) {

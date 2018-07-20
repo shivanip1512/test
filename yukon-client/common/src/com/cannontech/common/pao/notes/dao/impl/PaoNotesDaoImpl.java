@@ -33,7 +33,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DeviceGroupService deviceGroupService;
    
-    private final YukonRowMapper<PaoNotesSearchResult> paoNotesRowMapper = new YukonRowMapper<PaoNotesSearchResult>() {
+    private final YukonRowMapper<PaoNotesSearchResult> paoNotesSearchResultRowMapper = new YukonRowMapper<PaoNotesSearchResult>() {
 
         @Override
         public PaoNotesSearchResult mapRow(YukonResultSet rs) throws SQLException {
@@ -57,6 +57,25 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
             if (rs.hasColumn("Type")) {
                 row.setPaoType(rs.getEnum("Type", PaoType.class));
             }
+            
+            return row;
+        }
+        
+    };
+    
+    private final YukonRowMapper<PaoNote> paoNoteRowMapper = new YukonRowMapper<PaoNote>() {
+
+        @Override
+        public PaoNote mapRow(YukonResultSet rs) throws SQLException {
+            PaoNote row = new PaoNote();
+            row.setNoteId(rs.getInt("NoteId"));
+            row.setPaoId(rs.getInt("PAObjectId"));
+            row.setNoteText(rs.getString("NoteText"));
+            row.setStatus(rs.getEnum("Status", PaoNoteStatus.class));
+            row.setCreateUserName(rs.getString("CreateUserName"));
+            row.setCreateDate(rs.getInstant("CreateDate"));
+            row.setEditUserName(rs.getString("EditUserName"));
+            row.setEditDate(rs.getInstant("EditDate"));
             
             return row;
         }
@@ -116,7 +135,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         sql.append("WHERE PAObjectId").eq(paoId);
         sql.append("ORDER BY COALESCE(EditDate, CreateDate) DESC");
         
-        return yukonJdbcTemplate.queryForLimitedResults(sql, paoNotesRowMapper, numOfNotes);
+        return yukonJdbcTemplate.queryForLimitedResults(sql, paoNotesSearchResultRowMapper, numOfNotes);
     }
 
     @Override
@@ -150,7 +169,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
         
-        PagingResultSetExtractor<PaoNotesSearchResult> rse = new PagingResultSetExtractor<>(start, count, paoNotesRowMapper);
+        PagingResultSetExtractor<PaoNotesSearchResult> rse = new PagingResultSetExtractor<>(start, count, paoNotesSearchResultRowMapper);
         yukonJdbcTemplate.query(sql, rse);
 
         SearchResults<PaoNotesSearchResult> searchResults = new SearchResults<>();
@@ -201,5 +220,16 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
             sql.append("AND pn.CreateDate").lte(filter.getDateRange().getMax());
         }
         return sql;
+    }
+    
+    @Override
+    public PaoNote getNote(int noteId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("SELECT NoteId, PAObjectId, NoteText, Status, CreateUserName, CreateDate, EditUserName, EditDate");
+        sql.append("FROM PaoNote");
+        sql.append("WHERE NoteId").eq(noteId);
+        
+        return yukonJdbcTemplate.queryForObject(sql, paoNoteRowMapper);
     }
 }

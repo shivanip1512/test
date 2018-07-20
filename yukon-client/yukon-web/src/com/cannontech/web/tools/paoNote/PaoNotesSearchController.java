@@ -51,6 +51,8 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -61,6 +63,7 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.paonote.validator.PaoNoteValidator;
+import com.cannontech.web.security.annotation.CheckAccessLevel;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
@@ -228,20 +231,27 @@ public class PaoNotesSearchController {
         setupModel(paoId, userContext, model);
         return "paoNote/paoNotesPopup.jsp";
     }
-    
+
+    @CheckAccessLevel(property = YukonRoleProperty.MANAGE_NOTES, level = AccessLevel.OWNER)
     @RequestMapping(value = "deletePaoNote/{noteId}", method = RequestMethod.DELETE)
     public String deletePaoNote(ModelMap model, @PathVariable int noteId, int paoId, YukonUserContext userContext) {
-        paoNotesService.delete(noteId);
+        if (paoNotesService.canUpdateNote(noteId, userContext.getYukonUser())) {
+            paoNotesService.delete(noteId);
+        }
         setupModel(paoId, userContext, model);
         return "paoNote/paoNotesPopup.jsp";
     }
     
+    @CheckAccessLevel(property = YukonRoleProperty.MANAGE_NOTES, level = AccessLevel.OWNER)
     @RequestMapping(value = "editPaoNote", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> editPaoNote(ModelMap model, YukonUserContext userContext, PaoNote paoNote) {
         Map<String, Object> jsonResponse = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        if (StringUtils.isBlank(paoNote.getNoteText())) {
+        if (!paoNotesService.canUpdateNote(paoNote.getNoteId(), userContext.getYukonUser())) {
+            jsonResponse.put("hasError", true);
+            jsonResponse.put("errorMessage", accessor.getMessage("yukon.web.error.notOwner"));
+        } else if (StringUtils.isBlank(paoNote.getNoteText())) {
             jsonResponse.put("hasError", true);
             jsonResponse.put("errorMessage", accessor.getMessage("yukon.web.error.isBlank"));
         } else if (paoNote.getNoteText().length() > MAX_CHARACTERS_IN_NOTE) {

@@ -60,4 +60,6 @@ public interface PaoNotesDao {
     SearchResults<PaoNotesSearchResult> getAllNotesByFilter(PaoNotesFilter filter, SortBy sortBy,
                                                 Direction direction, PagingParameters paging);
 
+    PaoNote getNote(int noteId);
+
 }
