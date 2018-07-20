@@ -14,7 +14,8 @@ public class JmxHelper {
         builder.put(ApplicationId.MESSAGE_BROKER, 1097);
         builder.put(ApplicationId.SIMULATORS_SERVICE, 1096);
         builder.put(ApplicationId.NOTIFICATION, 1095);
-        builder.put(ApplicationId.WATCHDOG, 1094);
+        // JMX for watchdog is set in watchdog.conf wrapper file.
+        //builder.put(ApplicationId.WATCHDOG, 1094);
 
         jmxPorts = builder.build();
     }
