@@ -68,17 +68,17 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
         try {
             int webServerReponse = getWebServerResponse(webServerUrl, useProxy);
             if (webServerReponse != 200) {
-                log.debug("Response from Web server is not running. Trying once again with External URL");
+                log.debug("Response from Internal Web Server URL - " + webServerUrl + " is not running. Trying once again with External URL - " + webserverUrlResolver.getUrlBase());
                 webServerUrl = webserverUrlResolver.getUrlBase();
                 webServerReponse = getWebServerResponse(webServerUrl, useProxy);
             }
-            log.debug("Response code from Web server " + webServerReponse);
+            log.debug("Response code from Web Server URL - " + webServerUrl + " is " + webServerReponse);
             return webServerReponse;
         } catch (IOException e) {
-            log.debug("Response from Web server is not running. Trying once again with External URL");
+            log.debug("Response from Internal Web Server URL - " + webServerUrl + " is not running. Trying once again with External URL - " + webserverUrlResolver.getUrlBase());
             webServerUrl = webserverUrlResolver.getUrlBase();
             int webServerReponse = getWebServerResponse(webServerUrl, useProxy);
-            log.debug("Response code from Web Server " + webServerReponse);
+            log.debug("Response code from Web Server URL - " + webServerUrl + " is " + webServerReponse);
             return webServerReponse;
         }
     }
