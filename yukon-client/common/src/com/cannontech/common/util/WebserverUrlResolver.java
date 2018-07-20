@@ -68,7 +68,14 @@ public class WebserverUrlResolver {
     public String getUrl(String postfix) {
         return getUrlBase() + prependSeparatorIfAbsent(postfix);
     }
-    
+
+    /**
+     * Returns the Yukon Internal Url.
+     */
+    public String getYukonInternalUrl() {
+        return globalSettingDao.getString(GlobalSettingType.YUKON_INTERNAL_URL);
+    }
+
     private String prependSeparatorIfAbsent(String postfix) {
         if (postfix.startsWith("/")) {
             return postfix;

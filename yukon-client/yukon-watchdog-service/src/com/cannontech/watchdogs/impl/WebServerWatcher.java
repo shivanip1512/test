@@ -21,8 +21,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.util.WebserverUrlResolver;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
@@ -32,7 +30,6 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     private static final Logger log = YukonLogManager.getLogger(WebServerWatcher.class);
 
     @Autowired private WebserverUrlResolver webserverUrlResolver;
-    @Autowired GlobalSettingDao globalSettingDao;
     @Autowired private ConfigurationSource configurationSource;
     private volatile boolean isHttpsSettingInitialized = false;
     
@@ -62,12 +59,32 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
         }
 
     }
-    
+
     private int sendRequest(boolean useProxy) throws SocketTimeoutException, IOException {
-        String webServerUrl = globalSettingDao.getString(GlobalSettingType.YUKON_INTERNAL_URL);
+        String webServerUrl = webserverUrlResolver.getYukonInternalUrl();
         if (StringUtils.isBlank(webServerUrl)) {
             webServerUrl = webserverUrlResolver.getUrlBase();
         }
+        try {
+            int webServerReponse = getWebServerResponse(webServerUrl, useProxy);
+            if (webServerReponse != 200) {
+                log.debug("Response from Web server is not running. Trying once again with External URL");
+                webServerUrl = webserverUrlResolver.getUrlBase();
+                webServerReponse = getWebServerResponse(webServerUrl, useProxy);
+            }
+            log.debug("Response code from Web server " + webServerReponse);
+            return webServerReponse;
+        } catch (IOException e) {
+            log.debug("Response from Web server is not running. Trying once again with External URL");
+            webServerUrl = webserverUrlResolver.getUrlBase();
+            int webServerReponse = getWebServerResponse(webServerUrl, useProxy);
+            log.debug("Response code from Web Server " + webServerReponse);
+            return webServerReponse;
+        }
+    }
+
+    //Returns the response of Web Server.
+    private int getWebServerResponse(String webServerUrl, boolean useProxy) throws SocketTimeoutException, IOException{
         boolean isHttps = StringUtils.containsIgnoreCase(webServerUrl, "https");
         URL url = new URL(webServerUrl);
         log.debug("Web server url " + webServerUrl);
@@ -85,7 +102,6 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
 
         conn.setReadTimeout(5000); // 5 sec for timeout
         conn.connect();
-        log.debug("Response code from web server " + conn.getResponseCode());
         return conn.getResponseCode();
     }
     
