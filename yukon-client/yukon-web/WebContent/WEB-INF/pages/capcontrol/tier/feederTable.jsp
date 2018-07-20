@@ -64,10 +64,10 @@
                         <span data-tooltip="#feeder-target-msg-${feederId}">
                             <c:choose>
                                 <c:when test="${viewfeeder.ivvcControlled}">
-                                    <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
-                                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
                                     <span class="ivvcTargetLabel"><i:inline key=".ivvcLower"/></span>
                                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_PEAKLAG"/>
+                                    <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
+                                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
                                     <br>
                                     <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
                                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>

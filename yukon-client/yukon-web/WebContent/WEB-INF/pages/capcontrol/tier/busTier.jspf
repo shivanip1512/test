@@ -103,10 +103,10 @@
                             <span data-tooltip="#bus-target-msg-${subbusId}">
                                 <c:choose>
                                     <c:when test="${viewableSubBus.ivvcControlled}">
-                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
-                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/>
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcLower"/></span>
                                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_PEAKLAG"/>
+                                        <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
+                                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/>
                                         <br>
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
                                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/>

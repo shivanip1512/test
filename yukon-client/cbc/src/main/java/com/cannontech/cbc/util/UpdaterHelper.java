@@ -545,6 +545,9 @@ public class UpdaterHelper {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
         int decPlaces = subBus.getDecimalPlaces();
+        NumberFormat voltagePointFormatter = NumberFormat.getNumberInstance();
+        voltagePointFormatter.setMinimumFractionDigits(1);
+        voltagePointFormatter.setMaximumFractionDigits(3);
 
         switch (dataType) {
         
@@ -595,11 +598,11 @@ public class UpdaterHelper {
         }
 
         case SUB_TARGET_COLUMN_PEAKLEAD: {
-            return CommonUtils.formatDecimalPlaces(subBus.getPeakLead(), 0);
+            return voltagePointFormatter.format(subBus.getPeakLead());
         }
         
         case SUB_TARGET_COLUMN_PEAKLAG: {
-            return CommonUtils.formatDecimalPlaces(subBus.getPeakLag(), 0);
+            return voltagePointFormatter.format(subBus.getPeakLag());
         }
         
         case SUB_TARGET_COLUMN_CLOSEOPENPERCENT: {
@@ -637,10 +640,17 @@ public class UpdaterHelper {
                     
                     return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
-                    String lead = CommonUtils.formatDecimalPlaces(subBus.getPeakLead(), 0); 
-                    String lag = CommonUtils.formatDecimalPlaces(subBus.getPeakLag(), 0);
-                    
-                    return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
+                    double peakLead = subBus.getPeakLead();
+                    double peakLag = subBus.getPeakLag();
+                    String lead = voltagePointFormatter.format(peakLead);
+                    String lag = voltagePointFormatter.format(peakLag);
+                    // In case of ControlAlgo = KVar : Lag > Lead 
+                    // when ControlAlgo = Volt : Lead > Lag
+                    if (peakLead <= peakLag) {
+                        return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
+                    } else {
+                        return accessor.getMessage(keyPrefix + "peakLeadLag", lag, lead);
+                    }
                 }
                 
             } else {
@@ -652,10 +662,17 @@ public class UpdaterHelper {
                     
                     return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
-                    String lead = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead() ,0); 
-                    String lag = CommonUtils.formatDecimalPlaces(subBus.getOffPkLag(), 0);
-                    
-                    return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
+                    double offPeakLead = subBus.getOffPkLead();
+                    double offPeakLag = subBus.getOffPkLag();
+                    String lead = voltagePointFormatter.format(offPeakLead);
+                    String lag = voltagePointFormatter.format(offPeakLag);
+                    // In case of ControlAlgo = KVar : Lag > Lead 
+                    // when ControlAlgo = Volt : Lead > Lag
+                    if (offPeakLead <= offPeakLag) {
+                        return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
+                    } else {
+                        return accessor.getMessage(keyPrefix + "offPeakLeadLag", lag, lead);
+                    }
                 }
             }
         }
@@ -833,6 +850,9 @@ public class UpdaterHelper {
         }
         
         int decPlaces = feeder.getDecimalPlaces();
+        NumberFormat voltagePointFormatter = NumberFormat.getNumberInstance();
+        voltagePointFormatter.setMinimumFractionDigits(1);
+        voltagePointFormatter.setMaximumFractionDigits(3);
         switch (dataType) {
         
         case FDR_NAME_COLUMN: {
@@ -880,11 +900,11 @@ public class UpdaterHelper {
         }
 
         case FDR_TARGET_COLUMN_PEAKLEAD: {
-            return CommonUtils.formatDecimalPlaces(feeder.getPeakLead(), 0);
+            return voltagePointFormatter.format(feeder.getPeakLead());
         }
         
         case FDR_TARGET_COLUMN_PEAKLAG: {
-            return CommonUtils.formatDecimalPlaces(feeder.getPeakLag(), 0);
+            return voltagePointFormatter.format(feeder.getPeakLag());
         }
         
         case FDR_TARGET_COLUMN_CLOSEOPENPERCENT: {
@@ -920,9 +940,17 @@ public class UpdaterHelper {
                     String open = CommonUtils.formatDecimalPlaces(feeder.getPeakLead(), 0);
                     return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
-                    String lead = CommonUtils.formatDecimalPlaces(feeder.getPeakLead(), 0); 
-                    String lag = CommonUtils.formatDecimalPlaces(feeder.getPeakLag(), 0); 
-                    return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
+                    double peakLead = feeder.getPeakLead();
+                    double peakLag = feeder.getPeakLag();
+                    String lead = voltagePointFormatter.format(peakLead);
+                    String lag = voltagePointFormatter.format(peakLag);
+                    // In case of ControlAlgo = KVar : Lag > Lead 
+                    // when ControlAlgo = Volt : Lead > Lag
+                    if (peakLead <= peakLag) {
+                        return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
+                    } else {
+                        return accessor.getMessage(keyPrefix + "peakLeadLag", lag, lead);
+                    }
                 }
                 
             } else {
@@ -933,9 +961,17 @@ public class UpdaterHelper {
                     String open = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead(), 0);
                     return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
-                    String lead = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead(), 0); 
-                    String lag = CommonUtils.formatDecimalPlaces(feeder.getOffPkLag(), 0); 
-                    return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
+                    double offPeakLead = feeder.getOffPkLead();
+                    double offPeakLag = feeder.getOffPkLag();
+                    String lead = voltagePointFormatter.format(offPeakLead);
+                    String lag = voltagePointFormatter.format(offPeakLag);
+                    // In case of ControlAlgo = KVar : Lag > Lead 
+                    // when ControlAlgo = Volt : Lead > Lag
+                    if (offPeakLead <= offPeakLag) {
+                        return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
+                    } else {
+                        return accessor.getMessage(keyPrefix + "offPeakLeadLag", lag, lead);
+                    }
                 }
                 
             }
