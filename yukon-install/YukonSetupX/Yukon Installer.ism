@@ -106,6 +106,7 @@
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>API Extras</td><td>{9F298104-0C82-4336-861C-0DC4F1C845E5}</td><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>API WAR</td><td>{3D76E4FF-BB3E-45B6-A48E-19B1C3052BDD}</td><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Backup</td><td>{99690BE2-467C-42C1-8766-8239DD16EC6C}</td><td>BACKUP</td><td>16</td><td/><td/><td>51729</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Calc Logic</td><td>{FE9D3324-9F22-4D15-8E92-E6D07060AAE4}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Cap Control</td><td>{54196791-2CE5-462C-9568-2D2319AA539D}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Client Base</td><td>{9C16CA21-4F40-404D-9ED0-B565427AFE1D}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -349,6 +350,7 @@
 		<col def="S255">ISFolderName</col>
 		<row><td>ALLUSERSPROFILE</td><td>TARGETDIR</td><td>.:ALLUSE~1|All Users</td><td/><td>0</td><td/></row>
 		<row><td>BACKUP</td><td>CONFIG</td><td>Backup</td><td/><td>0</td><td/></row>
+		<row><td>BACKUPTEST</td><td>CONFIG</td><td>BackupTest</td><td/><td>0</td><td/></row>
 		<row><td>BIN</td><td>CLIENT</td><td>bin</td><td/><td>0</td><td/></row>
 		<row><td>BIN1</td><td>SERVER</td><td>bin</td><td/><td>0</td><td/></row>
 		<row><td>CLIENT</td><td>TARGETDIR</td><td>Client</td><td/><td>0</td><td/></row>
@@ -439,12 +441,14 @@
 		<row><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td>Scanner</td></row>
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>Calc Logic</td></row>
 		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td>Prophecy Examples</td></row>
+		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Backup</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Default Master Config</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>ExportArchive</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Master Config Example</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Server Base</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Shortcut Holder</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>MACS</td></row>
+		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Backup</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Client Base</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Log Config Files</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
@@ -521,6 +525,7 @@
 		<col def="S0">Miscellaneous</col>
 		<row><td>API Extras</td><td/><td/><td>_59BB2DEA_6FA0_4383_8D92_2C01F848D412_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>API WAR</td><td/><td/><td>_F56FFCBB_7560_471E_8402_5F76C4B2DB8A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Backup</td><td/><td/><td>_CDE79BEA_6CBA_4CB8_8487_93E8E431C147_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Calc Logic</td><td/><td/><td>_B341430A_4821_43D6_BB7D_E151EAF36DBB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Cap Control</td><td/><td/><td>_EE47412D_D3F8_40E2_955F_8C4694472B84_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Client Base</td><td/><td/><td>_3E938811_D624_46B2_B3EC_A3D950B1BFA9_FILTER</td><td/><td/><td/><td/></row>
