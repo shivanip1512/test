@@ -33,7 +33,7 @@
             <span class="empty-list"><i:inline key=".noNotes"/></span>
         </c:when>
         <c:otherwise>
-            <table class="row-highlighting striped bordered-div wbba" style="width:100%">
+            <table class="row-highlighting striped bordered-div wrbw" style="width:100%; table-layout:fixed;">
                 <c:forEach var="recentNote" items="${recentNotes}" varStatus="status">
                     <c:set var="noteId" value="${recentNote.paoNote.noteId}"/>
                     <tr>

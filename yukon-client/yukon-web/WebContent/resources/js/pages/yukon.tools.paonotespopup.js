@@ -15,14 +15,21 @@ yukon.tools.paonotespopup = (function () {
     _initialized = false,
     
     _toggleClasses = function (noteId) {
-        var editButton = $('#js-edit-popup-note-btn-' + noteId);
+        var editButton = $('#js-edit-popup-note-btn-' + noteId),
+            saveNoteGroup = $('#js-save-popup-note-group-' + noteId),
+            saveNoteGroupTd = saveNoteGroup.closest('td'),
+            popupNote = $('#js-popup-note-' + noteId),
+            popupNoteTd = popupNote.closest('td');
+            
         if ($(editButton).is(':disabled')) {
             $(editButton).prop('disabled', false);
         } else {
             $(editButton).prop('disabled', true);
         }
-        $('#js-save-popup-note-group-' + noteId).toggleClass('dn');
-        $('#js-popup-note-' + noteId).toggleClass('dn');
+        saveNoteGroup.toggleClass('dn');
+        saveNoteGroupTd.toggleClass('dn');
+        popupNote.toggleClass('dn');
+        popupNoteTd.attr('colspan') ? popupNoteTd.removeAttr('colspan') : popupNoteTd.attr('colspan', '2');
         $('#js-edit-popup-note-' + noteId).toggleClass('dn');
     },
     

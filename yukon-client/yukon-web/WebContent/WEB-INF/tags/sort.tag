@@ -10,11 +10,13 @@
 <%@ attribute name="classes" description="CSS class names applied to the anchor element." %>
 <%@ attribute name="column" required="true" type="com.cannontech.web.common.sort.SortableColumn" %>
 <%@ attribute name="colspan" description="The html colspan attribute for the th element." %>
+<%@ attribute name="width" description="The html width attribute for the th element." %>
 
 <c:if test="${column.active}">
     <c:set var="classes" value="${classes} ${column.dir}"/>
 </c:if>
-<th <c:if test="${not empty pageScope.colspan}">colspan="${colspan}"</c:if>>
+<th <c:if test="${not empty pageScope.colspan}">colspan="${colspan}"</c:if>
+    <c:if test="${not empty pageScope.width}">width="${width}"</c:if>>
 <a class="wsnw sortable ${pageScope.classes}" data-sort="${column.param}" <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
 ${fn:escapeXml(column.text)}<cti:icon icon="icon-blank"/>
 </a>

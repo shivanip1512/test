@@ -123,17 +123,17 @@
                 </cti:url>
                 <div id="pao-notes-list-container" data-url="${searchUrl}" data-static>
                     <br>
-                    <table class="compact-results-table has-actions row-highlighting wbba">
+                    <table class="compact-results-table has-actions row-highlighting wrbw" style="table-layout:fixed;">
                         <thead>
                             <tr>
-                                <tags:sort column="${deviceName}" />
-                                <tags:sort column="${deviceType}" />
-                                <tags:sort column="${noteText}" />
-                                <tags:sort column="${createdBy}" />
-                                <tags:sort column="${createDate}" />
-                                <tags:sort column="${editedBy}" />
-                                <tags:sort column="${editDate}" />
-                                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
+                                <tags:sort width="12%" column="${deviceName}" />
+                                <tags:sort width="12%" column="${deviceType}" />
+                                <tags:sort width="35%" column="${noteText}" />
+                                <tags:sort width="10%" column="${createdBy}" />
+                                <tags:sort width="10%" column="${createDate}" />
+                                <tags:sort width="10%" column="${editedBy}" />
+                                <tags:sort width="10%" column="${editDate}" />
+                                <th width="1%" class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -146,7 +146,7 @@
                                             </c:if>
                                         </cti:paoDetailUrl>
                                     </td>
-                                    <td style="width:10%"><i:inline key="${paoNoteSearchResult.paoType}"/></td>
+                                    <td><i:inline key="${paoNoteSearchResult.paoType}"/></td>
                                     <td>${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}</td>
                                     <td>${fn:escapeXml(paoNoteSearchResult.paoNote.createUserName)}</td>
                                     <td>

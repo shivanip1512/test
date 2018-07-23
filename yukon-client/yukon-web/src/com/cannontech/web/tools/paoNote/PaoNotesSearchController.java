@@ -57,6 +57,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -82,7 +83,7 @@ public class PaoNotesSearchController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private PaoNotesFilterValidator validator;
     @Autowired private PaoNoteValidator paoNoteValidator;
-    @Autowired private PaoDao paoDao;
+    @Autowired private ServerDatabaseCache databaseCache;
 
     private static final String baseKey = "yukon.web.common.paoNote.";
 
@@ -295,6 +296,6 @@ public class PaoNotesSearchController {
         }
         model.addAttribute("searchResults", searchResults);
         model.addAttribute("popupTitle", accessor.getMessage("yukon.web.common.paoNotesPopup.title", 
-                                                             paoDao.getLiteYukonPAO(paoId).getPaoName()));
+                                                             databaseCache.getAllPaosMap().get(paoId).getPaoName()));
     }
 }

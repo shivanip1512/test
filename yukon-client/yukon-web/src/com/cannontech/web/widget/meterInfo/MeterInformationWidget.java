@@ -116,7 +116,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         if (hasNotes) {
             List<PaoNotesSearchResult> recentNotes = paoNotesService.findMostRecentNotes(deviceId, 1);
             String noteText = recentNotes.get(0).getPaoNote().getNoteText();
-            model.addAttribute("note", StringUtils.abbreviate(noteText, 35));
+            model.addAttribute("note", StringUtils.abbreviate(noteText, 28));
         }
         
         return "meterInformationWidget/render.jsp";

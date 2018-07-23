@@ -33,31 +33,33 @@
                 <span class="empty-list"><i:inline key=".noNotes"/></span>
             </c:when>
             <c:otherwise>
-                <table class="compact-results-table has-actions row-highlighting wbba" style="width:100%;">
+                <table class="compact-results-table has-actions row-highlighting wrbw" style="width:100%; table-layout:fixed;">
                     <thead>
-                            <th colspan="2"><i:inline key="yukon.web.common.paoNote.noteText"/></th>
-                            <th><i:inline key="yukon.web.common.paoNote.createdBy"/></th>
-                            <th><i:inline key="yukon.web.common.paoNote.createDate"/></th>
-                            <th><i:inline key="yukon.web.common.paoNote.editedBy"/></th>
-                            <th colspan="2"><i:inline key="yukon.web.common.paoNote.editDate"/></th>
+                            <th width="36%"><i:inline key="yukon.web.common.paoNote.noteText"/></th>
+                            <th width="10%"/>
+                            <th width="11%"><i:inline key="yukon.web.common.paoNote.createdBy"/></th>
+                            <th width="11%"><i:inline key="yukon.web.common.paoNote.createDate"/></th>
+                            <th width="11%"><i:inline key="yukon.web.common.paoNote.editedBy"/></th>
+                            <th width="11%"><i:inline key="yukon.web.common.paoNote.editDate"/></th>
+                            <th width="10%"/>
                     </thead>
                     <tbody>
                         <c:forEach var="paoNoteSearchResult" items="${searchResults}">
                             <c:set var="noteId" value="${paoNoteSearchResult.paoNote.noteId}"/>
                             <c:set var="paoId" value="${paoNoteSearchResult.paoNote.paoId}"/>
                             <tr id="js-popup-note-row-${noteId}">
-                                <td width="30%" class="vam js-popup-note-actions">
+                                <td class="vam js-popup-note-actions" colspan="2">
                                     <div id="js-popup-note-${noteId}">
                                         <div id="js-popup-note-content-${noteId}">
                                             ${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}
                                         </div>
                                     </div>
                                     <div id="js-edit-popup-note-${noteId}" class="dn">
-                                        <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" cols="37" style="resize: none;" 
+                                        <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="resize: none; width:100%" 
                                             maxlength="255" value="${paoNoteSearchResult.paoNote.noteText}"></textarea>
                                     </div>
                                 </td>
-                                <td width="10%" class="vam js-popup-note-actions">
+                                <td class="vam js-popup-note-actions dn">
                                     <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
                                     <cti:msg2 var="saveText" key="yukon.common.save"/>
                                     <div id="js-save-popup-note-group-${noteId}" class="button-group dn">
@@ -67,21 +69,21 @@
                                                     data-note-id="${noteId}" title="${cancelText}"/>
                                     </div>
                                 </td>
-                                <td width="10%">${fn:escapeXml(paoNoteSearchResult.paoNote.createUserName)}</td>
-                                <td width="15%">
+                                <td>${fn:escapeXml(paoNoteSearchResult.paoNote.createUserName)}</td>
+                                <td>
                                     <cti:formatDate type="BOTH" value="${paoNoteSearchResult.paoNote.createDate}" 
                                                     var="createDate"/>
                                     ${createDate}
                                 </td>
-                                <td width="10%">${fn:escapeXml(paoNoteSearchResult.paoNote.editUserName)}</td>
-                                <td width="15%">
+                                <td>${fn:escapeXml(paoNoteSearchResult.paoNote.editUserName)}</td>
+                                <td>
                                     <c:if test="${not empty paoNoteSearchResult.paoNote.editDate}">
                                         <cti:formatDate type="BOTH" value="${paoNoteSearchResult.paoNote.editDate}" 
                                                         var="editDate"/>
                                         ${editDate}
                                     </c:if>
                                 </td>
-                                <td width="10%" class="vam js-popup-note-actions">
+                                <td class="vam js-popup-note-actions">
                                     <cti:msg2 var="editText" key=".edit.hoverText"/>
                                     <cti:msg2 var="deleteText" key=".delete.hoverText"/>
                                     <div id="js-edit-popup-note-btn-group-${noteId}" class="button-group fr">
