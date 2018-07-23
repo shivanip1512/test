@@ -201,8 +201,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_440_2133TD));
         
         groupedMeterTypesBuilder.put("Eaton Gas 2", ImmutableList.of(
-            RfnManufacturerModel.RFG201_PULSE,
-            RfnManufacturerModel.RFG205_PULSE));
+            RfnManufacturerModel.RFG201_PULSE));
         
         groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);
     }
