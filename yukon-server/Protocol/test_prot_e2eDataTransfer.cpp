@@ -89,6 +89,44 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
     BOOST_CHECK_EQUAL_RANGES(payloadExpected, er.data);
 }
 
+BOOST_AUTO_TEST_CASE(test_handleIndication_repeat)
+{
+    test_E2eDataTransferProtocol e2e;
+
+    e2e.id = 0x7301;
+
+    Cti::Test::byte_str outboundPayload =
+        "78 02";
+
+    const Cti::RfnIdentifier endpointId{ "FOO", "BAR", "BAZ" };
+    const unsigned long token = 0x5ad6;
+
+    const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
+    const std::vector<unsigned char> msg = e2e.sendRequest(outboundPayloadVector, endpointId, token);
+
+    Cti::Test::byte_str expected =
+        "42 01 02 73 5a d6 ff 78 02";
+
+    BOOST_CHECK_EQUAL_RANGES(expected, msg);
+
+    Cti::Test::byte_str inboundBytes =
+        "62 45 02 73 5a d6 ff 79 02";
+
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
+
+    const auto er = e2e.handleIndication(inbound, endpointId);
+
+    try
+    {
+        e2e.handleIndication(inbound, endpointId);
+        BOOST_FAIL("Did not throw");
+    }
+    catch( Cti::Protocols::E2eDataTransferProtocol::RequestInactive &ex )
+    {
+        BOOST_CHECK_EQUAL(ex.reason, "Response received for inactive token 23254");
+    }
+}
+
 BOOST_AUTO_TEST_CASE( test_handleTimeout )
 {
     test_E2eDataTransferProtocol e2e;
@@ -138,9 +176,9 @@ BOOST_AUTO_TEST_CASE( test_handleTimeout )
         e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
-    catch( Cti::Protocols::E2eDataTransferProtocol::UnexpectedAck &ex )
+    catch( Cti::Protocols::E2eDataTransferProtocol::RequestInactive &ex )
     {
-        BOOST_CHECK_EQUAL(ex.reason, "Unexpected ACK: 29442, expected 29443");
+        BOOST_CHECK_EQUAL(ex.reason, "Response received for inactive token 23254");
     }
 }
 
@@ -211,15 +249,9 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )
         "ff";
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    try
-    {
-        e2e.handleIndication(inbound, endpointId);
-        BOOST_FAIL("Did not throw");
-    }
-    catch( Cti::Protocols::E2eDataTransferProtocol::RequestNotAcceptable &ex )
-    {
-        BOOST_CHECK_EQUAL(ex.reason, "Request not acceptable");
-    }
+    auto message = e2e.handleIndication(inbound, endpointId);
+
+    BOOST_CHECK_EQUAL(message.status, ClientErrors::E2eRequestNotAcceptable);
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
@@ -250,15 +282,9 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
         "ff";
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    try
-    {
-        e2e.handleIndication(inbound, endpointId);
-        BOOST_FAIL("Did not throw");
-    }
-    catch( Cti::Protocols::E2eDataTransferProtocol::BadRequest &ex )
-    {
-        BOOST_CHECK_EQUAL(ex.reason, "Bad request: 407");
-    }
+    auto message = e2e.handleIndication(inbound, endpointId);
+
+    BOOST_CHECK_EQUAL(message.status, ClientErrors::E2eBadRequest);
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )

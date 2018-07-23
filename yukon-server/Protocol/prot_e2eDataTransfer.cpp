@@ -45,14 +45,17 @@ unsigned short E2eDataTransferProtocol::getOutboundId()
 
 unsigned short E2eDataTransferProtocol::getOutboundIdForEndpoint(const RfnIdentifier endpointId)
 {
-    auto outbound_itr = _outboundIds.find(endpointId);
-
-    if( outbound_itr == _outboundIds.end() )
+    if( auto existingId = mapFindRef(_outboundIds, endpointId) )
     {
-        outbound_itr = _outboundIds.emplace(endpointId, getOutboundId()).first;
+        existingId->active = true;
+        return ++existingId->id;
     }
 
-    return ++(outbound_itr->second);
+    const unsigned short newId = getOutboundId() + 1;
+
+    _outboundIds.emplace(endpointId, RequestId { newId, true });
+
+    return newId;
 }
 
 
@@ -89,19 +92,29 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
 
     scoped_pdu_ptr indication_pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
 
-    coap_pdu_parse(&mutable_raw_pdu.front(), mutable_raw_pdu.size(), indication_pdu);
+    coap_pdu_parse(mutable_raw_pdu.data(), mutable_raw_pdu.size(), indication_pdu);
 
-    if( indication_pdu->hdr->code == COAP_RESPONSE_406_NOT_ACCEPTABLE )
+    //  Decode the token
+    message.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
+    
+    if( indication_pdu->hdr->code == COAP_RESPONSE_205_CONTENT )
     {
-        throw RequestNotAcceptable();
+        message.status = ClientErrors::None;
     }
-    if( indication_pdu->hdr->code >= COAP_RESPONSE_400_BAD_REQUEST )
+    else if( indication_pdu->hdr->code == COAP_RESPONSE_406_NOT_ACCEPTABLE )
     {
-        const unsigned human_readable =
-            indication_pdu->hdr->code / 32 * 100 +
-            indication_pdu->hdr->code % 32;
+        CTILOG_ERROR(dout, "Endpoint indicated Request Not Acceptable for device " << endpointId);
 
-        throw BadRequest(human_readable);
+        message.status = ClientErrors::E2eRequestNotAcceptable;
+    }
+    else
+    {
+        CTILOG_DEBUG(dout, "Unexpected response code " << COAP_CODE(indication_pdu->hdr->code) << " for rfnIdentifier " << endpointId);
+
+        message.status =
+            indication_pdu->hdr->code >= COAP_RESPONSE_400_BAD_REQUEST
+                ? ClientErrors::E2eBadRequest
+                : ClientErrors::None;
     }
 
     switch( indication_pdu->hdr->type )
@@ -110,22 +123,29 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
         {
             message.nodeOriginated = false;
 
-            const auto outbound_itr = _outboundIds.find(endpointId);
+            const auto existingId = mapFindRef(_outboundIds, endpointId);
 
-            if( outbound_itr == _outboundIds.end() )
+            if( ! existingId )
             {
                 throw UnexpectedAck(indication_pdu->hdr->id);
             }
-            else if( indication_pdu->hdr->id != outbound_itr->second )
+            if( indication_pdu->hdr->id != existingId->id )
             {
-                throw UnexpectedAck(indication_pdu->hdr->id, _outboundIds[endpointId]);
+                throw UnexpectedAck(indication_pdu->hdr->id, existingId->id);
             }
+            if( ! existingId->active )
+            {
+                throw RequestInactive(message.token);
+            }
+
+            existingId->active = false;
 
             break;
         }
         case COAP_MESSAGE_NON:
         case COAP_MESSAGE_CON:
         {
+            //  This is the behavior at present.  Nodes only send "piggybacked responses" in an ACK to Yukon requests, and do not send CoAP "separate responses" yet.
             message.nodeOriginated = true;
 
             const bool confirmable = indication_pdu->hdr->type == COAP_MESSAGE_CON;
@@ -133,9 +153,7 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
 
             CTILOG_INFO(dout, "Received " << type << " packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
-            const auto inbound_itr = _inboundIds.find(endpointId);
-
-            if( inbound_itr != _inboundIds.end() && inbound_itr->second == indication_pdu->hdr->id )
+            if( indication_pdu->hdr->id == mapFind(_inboundIds, endpointId) )
             {
                 CTILOG_WARN(dout, type << " packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
@@ -157,9 +175,6 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
             throw ResetReceived();
         }
     }
-
-    //  Decode the token
-    message.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
 
     //  Extract the data from the packet
     unsigned char *data;
@@ -215,11 +230,9 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendAck(const unsigned short
 
 void E2eDataTransferProtocol::handleTimeout(const RfnIdentifier endpointId)
 {
-    auto itr = _outboundIds.find(endpointId);
-
-    if( itr != _outboundIds.end() )
+    if( auto existingId = mapFindRef(_outboundIds, endpointId) )
     {
-        itr->second++;  //  invalidate the ID so we ignore any late replies
+        existingId->active = false;  //  timed out, ignore any late replies
     }
 }
 

@@ -11,6 +11,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/count.hpp>
 #include <boost/range/algorithm/heap_algorithm.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/numeric.hpp>
 
 using Cti::Devices::Commands::DeviceCommand;
@@ -35,6 +36,8 @@ enum
 };
 
 Rfn::E2eStatistics stats;
+unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTING_INTERVAL", E2EDT_STATS_REPORTING_INTERVAL);
+CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
 
 void RfnRequestManager::start()
 {
@@ -57,12 +60,9 @@ void RfnRequestManager::tick()
     RfnIdentifierSet devicesToInspect;
 
     //  combine the sets of interesting devices
-    devicesToInspect.insert(rejected .begin(),
-                            rejected .end());
-    devicesToInspect.insert(completed.begin(),
-                            completed.end());
-    devicesToInspect.insert(expired  .begin(),
-                            expired  .end());
+    boost::insert(devicesToInspect, rejected);
+    boost::insert(devicesToInspect, completed);
+    boost::insert(devicesToInspect, expired);
 
     //  provide a hint as to which devices are ready for a new request
     handleNewRequests(devicesToInspect);
@@ -70,7 +70,12 @@ void RfnRequestManager::tick()
     //  make the results available to Porter
     postResults();
 
-    handleStatistics();
+    if( CtiTime::now() > nextStatisticsReport )
+    {
+        nextStatisticsReport = nextScheduledTimeAlignedOnRate(nextStatisticsReport, statsReportFrequency);
+
+        reportStatistics();
+    }
 }
 
 
@@ -97,14 +102,10 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         const CtiTime Now;
 
-        for( auto &indication : recentIndications )
+        for( const auto & indication : recentIndications )
         {
             CTILOG_INFO(dout, "Indication message received for device "<< indication.rfnIdentifier <<
                     std::endl << "rfnId: " << indication.rfnIdentifier << ": " << indication.payload);
-
-            auto optRequest = mapFindRef(_activeRequests, indication.rfnIdentifier);
-
-            std::vector<RfnCommandResult> commandResults;
 
             try
             {
@@ -114,118 +115,165 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 {
                     CTILOG_INFO(dout, "Unsolicited report received for device " << indication.rfnIdentifier);
 
-                    if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
+                    if( auto command = handleUnsolicitedReport(Now, indication.rfnIdentifier, message) )
                     {
-						if( ! message.ack.empty() )
-						{
-							sendE2eDataAck(
-								message.ack,
-								command->getApplicationServiceId(),
-								indication.rfnIdentifier);
-
-							stats.incrementAcks(indication.rfnIdentifier, Now);
-						}
-                        
                         _unsolicitedReportsPerTick.emplace_back(indication.rfnIdentifier, std::move(command));
                     }
-
-                    continue;
                 }
-
-                if( ! optRequest )
+                else if( auto response = handleResponse(Now, indication.rfnIdentifier, message) )
                 {
-                    CTILOG_WARN(dout, "Indication message received for inactive device " << indication.rfnIdentifier);
-                    continue;
+                    CTILOG_INFO(dout, "Results for device " << indication.rfnIdentifier << " token " << message.token << std::endl
+                         << boost::join(response->results 
+                              | boost::adaptors::transformed([](const RfnCommandResult & result) {
+                                    return std::to_string(result.status) + ": " + result.description;  }), 
+                              "\n"));
+
+                    _resultsPerTick.emplace_back(std::move(response->request), std::move(response->results));
+
+                    completedDevices.insert(indication.rfnIdentifier);
                 }
-
-                ActiveRfnRequest &activeRequest = *optRequest;
-
-                if( message.token != activeRequest.request.rfnRequestId )
-                {
-                    CTILOG_ERROR(dout, "Indication received for inactive request token "<< message.token <<" for device "<< activeRequest.request.parameters.rfnIdentifier);
-                    continue;
-                }
-
-                CTILOG_INFO(dout, "Response received for token "<< message.token <<" for device "<< activeRequest.request.parameters.rfnIdentifier <<
-                        std::endl <<"rfnId: "<< activeRequest.request.parameters.rfnIdentifier << ": " << message.data);
-
-                activeRequest.response.insert(
-                        activeRequest.response.end(),
-                        message.data.begin(),
-                        message.data.end());
-
-                if( ! message.blockContinuation.empty() )
-                {
-                    const CtiTime  previousBlockTimeSent   = activeRequest.currentPacket.timeSent;
-                    const unsigned previousRetransmitCount = activeRequest.currentPacket.retransmits;
-
-                    activeRequest.currentPacket =
-                            sendE2eDataRequestPacket(
-                                    message.blockContinuation,
-                                    activeRequest.request.command->getApplicationServiceId(),
-                                    activeRequest.request.parameters.rfnIdentifier,
-                                    activeRequest.request.parameters.priority,
-                                    activeRequest.request.parameters.groupMessageId,
-                                    activeRequest.timeout);
-
-                    stats.incrementBlockContinuation(activeRequest.request.parameters.deviceId, previousRetransmitCount, activeRequest.currentPacket.timeSent, previousBlockTimeSent);
-
-                    CTILOG_INFO(dout, "Block continuation sent for device "<< activeRequest.request.parameters.rfnIdentifier <<
-                            std::endl <<"rfnId: "<< activeRequest.request.parameters.rfnIdentifier <<": "<< activeRequest.currentPacket.payloadSent);
-
-                    continue;
-                }
-
-                stats.incrementCompletions(activeRequest.request.parameters.deviceId, activeRequest.currentPacket.retransmits, Now);
-
-                boost::insert(
-                    commandResults, 
-                    commandResults.end(), 
-                    activeRequest.request.command->handleResponse(Now, activeRequest.response));
             }
-            catch( const DeviceCommand::CommandException &ce )
+            catch( const Protocols::E2eDataTransferProtocol::E2eException &ex )
             {
-                commandResults.emplace_back(ce.error_description, ce.error_code);
+                CTILOG_EXCEPTION_WARN(dout, ex, "E2E exception for device " << indication.rfnIdentifier);
             }
-            catch( const Protocols::E2eDataTransferProtocol::RequestNotAcceptable &rne )
-            {
-                CTILOG_ERROR(dout, "Endpoint indicated request not acceptable for device "<< indication.rfnIdentifier);
-
-                if( ! optRequest )
-                {
-                    CTILOG_DEBUG(dout, "No active request for device " << indication.rfnIdentifier);
-
-                    continue;
-                }
-
-                boost::insert(
-                    commandResults,
-                    commandResults.end(),
-                    optRequest->request.command->handleError(Now, ClientErrors::E2eRequestNotAcceptable));
-            }
-            catch( Protocols::E2eDataTransferProtocol::E2eException &ex )
-            {
-                CTILOG_EXCEPTION_WARN(dout, ex, "device " << indication.rfnIdentifier);
-
-                continue;
-            }
-
-            for( const auto & commandResult : commandResults )
-            {
-                CTILOG_INFO(dout, "Result ["<< commandResult.status <<", "<< commandResult.description <<"] for device "<< indication.rfnIdentifier);
-            }
-
-            _resultsPerTick.emplace_back(std::move(optRequest->request), std::move(commandResults));
-
-            completedDevices.insert(indication.rfnIdentifier);
-
-            CTILOG_INFO(dout, "Erasing active request for device " << indication.rfnIdentifier);
-
-            _activeRequests.erase(indication.rfnIdentifier);
         }
     }
 
     return completedDevices;
+}
+
+
+auto RfnRequestManager::handleUnsolicitedReport(const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message) -> ConfigNotificationPtr
+{
+    try
+    {
+        if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
+        {
+            if( ! message.ack.empty() )
+            {
+                sendE2eDataAck(
+                    message.ack,
+                    command->getApplicationServiceId(),
+                    rfnIdentifier);
+
+                stats.incrementAcks(rfnIdentifier, Now);
+            }
+
+            return command;
+        }
+    }
+    catch( const DeviceCommand::CommandException & ex )
+    {
+        CTILOG_WARN(dout, "Error while processing unsolicited report:" << FormattedList::of(
+            "RFN identifier", rfnIdentifier,
+            "Error code", ex.error_code,
+            "Error description", ex.error_description));
+    }
+
+    return nullptr;
+}
+
+
+auto RfnRequestManager::handleResponse(const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message) -> OptionalResults
+{
+    if( auto optRequest = mapFindRef(_activeRequests, rfnIdentifier) )
+    {
+        if( message.token == optRequest->request.rfnRequestId )
+        {
+            auto results = message.status
+                ? handleCommandError   (Now, rfnIdentifier, *optRequest, message.status)
+                : handleCommandResponse(Now, rfnIdentifier, *optRequest, message);
+
+            if( results )
+            {
+                CTILOG_INFO(dout, "Erasing active request for device " << rfnIdentifier);
+
+                _activeRequests.erase(rfnIdentifier);
+
+                return results;
+            }
+
+            CTILOG_INFO(dout, "No results returned for device " << rfnIdentifier);
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Indication received for inactive request token " << message.token << " for device " << rfnIdentifier);
+        }
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Indication message received for inactive device " << rfnIdentifier);
+    }
+
+    return std::nullopt;
+}
+
+auto RfnRequestManager::handleCommandResponse(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message) -> OptionalResults
+{
+    RfnCommandResultList commandResults;
+
+    CTILOG_INFO(dout, "Response received for token " << message.token << " for device " << rfnIdentifier <<
+        std::endl << "rfnId: " << rfnIdentifier << ": " << message.data);
+
+    boost::push_back(activeRequest.response, message.data);
+
+    if( ! message.blockContinuation.empty() )
+    {
+        const CtiTime  previousBlockTimeSent = activeRequest.currentPacket.timeSent;
+        const unsigned previousRetransmitCount = activeRequest.currentPacket.retransmits;
+
+        activeRequest.currentPacket =
+            sendE2eDataRequestPacket(
+                message.blockContinuation,
+                activeRequest.request.command->getApplicationServiceId(),
+                activeRequest.request.parameters.rfnIdentifier,
+                activeRequest.request.parameters.priority,
+                activeRequest.request.parameters.groupMessageId,
+                activeRequest.timeout);
+
+        stats.incrementBlockContinuation(activeRequest.request.parameters.deviceId, previousRetransmitCount, activeRequest.currentPacket.timeSent, previousBlockTimeSent);
+
+        CTILOG_INFO(dout, "Block continuation sent for device " << rfnIdentifier <<
+            std::endl << "rfnId: " << rfnIdentifier << ": " << activeRequest.currentPacket.payloadSent);
+
+        return std::nullopt;
+    }
+
+    stats.incrementCompletions(activeRequest.request.parameters.deviceId, activeRequest.currentPacket.retransmits, Now);
+
+    try
+    {
+        commandResults = activeRequest.request.command->handleResponse(Now, activeRequest.response);
+    }
+    catch( const DeviceCommand::CommandException &ce )
+    {
+        commandResults.emplace_back(ce.error_description, ce.error_code);
+    }
+
+    return RequestResults { std::move(activeRequest.request), std::move(commandResults) };
+}
+
+
+auto RfnRequestManager::handleCommandError(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error) -> OptionalResults
+{
+    RfnCommandResultList commandResults;
+
+    CTILOG_INFO(dout, "Error received for device " << rfnIdentifier <<
+        std::endl << "rfnId: " << rfnIdentifier << ": " << error);
+
+    stats.incrementFailures(activeRequest.request.parameters.deviceId);
+
+    try
+    {
+        commandResults = activeRequest.request.command->handleError(Now, error);
+    }
+    catch( const DeviceCommand::CommandException &ce )
+    {
+        commandResults.emplace_back(ce.error_description, ce.error_code);
+    }
+
+    return RequestResults { std::move(activeRequest.request), std::move(commandResults) };
 }
 
 
@@ -725,87 +773,78 @@ void RfnRequestManager::sendE2eDataAck(
 }
 
 
-unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTING_INTERVAL", E2EDT_STATS_REPORTING_INTERVAL);
-CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
-
-
-void RfnRequestManager::handleStatistics()
+void RfnRequestManager::reportStatistics()
 {
-    if( CtiTime::now() > nextStatisticsReport )
+    StreamBuffer report;
+
+    report << "RFN statistics report:" << std::endl;
+    report << "Attempted communication with # nodes: " << stats.nodeStatistics.size() << std::endl;
+    report << "Node, # requests, avg time/message, # of block tx, avg # blocks/block tx, avg time/block tx, avg time-to-ack, avg attempts/success, success/1 tx, success/2 tx, success/3 tx, failures";
+
+    for( const auto & spn : stats.nodeStatistics )
     {
-        nextStatisticsReport = nextScheduledTimeAlignedOnRate(nextStatisticsReport, statsReportFrequency);
+        report << std::endl;
+        report << spn.first;
 
-        StreamBuffer report;
+        const Rfn::E2eNodeStatistics &nodeStats = spn.second;
 
-        report << "RFN statistics report:" << std::endl;
-        report << "Attempted communication with # nodes: " << stats.nodeStatistics.size() << std::endl;
-        report << "Node, # requests, avg time/message, # of block tx, avg # blocks/block tx, avg time/block tx, avg time-to-ack, avg attempts/success, success/1 tx, success/2 tx, success/3 tx, failures";
-
-        for( const auto & spn : stats.nodeStatistics )
+        report << "," << nodeStats.uniqueMessages;
+        if( nodeStats.firstRequest && nodeStats.lastRequest && (nodeStats.uniqueMessages > 1) )
         {
-            report << std::endl;
-            report << spn.first;
+            report << "," << static_cast<double>(nodeStats.lastRequest->seconds() - nodeStats.firstRequest->seconds()) / (nodeStats.uniqueMessages - 1);
+        }
+        else
+        {
+            report << ",0";
+        }
+        report << "," << nodeStats.blockTransfers;
+        if( nodeStats.blockTransfers )
+        {
+            report << "," << static_cast<double>(nodeStats.blocksReceived) / nodeStats.blockTransfers;
+            report << "," << static_cast<double>(nodeStats.cumulativeBlockTransferDelay) / nodeStats.blockTransfers;
+        }
+        else
+        {
+            report << ",0,0";
+        }
 
-            const Rfn::E2eNodeStatistics &nodeStats = spn.second;
+        unsigned totalSuccesses = 0;
+        unsigned totalTransmits = 0;
 
-            report << "," << nodeStats.uniqueMessages;
-            if( nodeStats.firstRequest && nodeStats.lastRequest && (nodeStats.uniqueMessages > 1) )
+        for( int i = 0; i < nodeStats.successes.size(); ++i )
+        {
+            totalSuccesses += nodeStats.successes[i];
+            totalTransmits += nodeStats.successes[i] * (i + 1);
+        }
+
+        if( totalSuccesses )
+        {
+            report << "," << static_cast<double>(nodeStats.cumulativeSuccessfulDelay) / totalSuccesses;
+            report << "," << static_cast<double>(totalTransmits) / totalSuccesses;
+        }
+        else
+        {
+            report << ",0,0";
+        }
+
+        for( int i = 0; i < 3; ++i )
+        {
+            if( nodeStats.successes.size() > i )
             {
-                report << "," << static_cast<double>(nodeStats.lastRequest->seconds() - nodeStats.firstRequest->seconds()) / (nodeStats.uniqueMessages - 1);
+                report << "," << nodeStats.successes[i];
             }
             else
             {
                 report << ",0";
             }
-            report << "," << nodeStats.blockTransfers;
-            if( nodeStats.blockTransfers )
-            {
-                report << "," << static_cast<double>(nodeStats.blocksReceived) / nodeStats.blockTransfers;
-                report << "," << static_cast<double>(nodeStats.cumulativeBlockTransferDelay) / nodeStats.blockTransfers;
-            }
-            else
-            {
-                report << ",0,0";
-            }
-
-            unsigned totalSuccesses = 0;
-            unsigned totalTransmits = 0;
-
-            for( int i = 0; i < nodeStats.successes.size(); ++i )
-            {
-                totalSuccesses += nodeStats.successes[i];
-                totalTransmits += nodeStats.successes[i] * (i + 1);
-            }
-
-            if( totalSuccesses )
-            {
-                report << "," << static_cast<double>(nodeStats.cumulativeSuccessfulDelay) / totalSuccesses;
-                report << "," << static_cast<double>(totalTransmits) / totalSuccesses;
-            }
-            else
-            {
-                report << ",0,0";
-            }
-
-            for( int i = 0; i < 3; ++i )
-            {
-                if( nodeStats.successes.size() > i )
-                {
-                    report << "," << nodeStats.successes[i];
-                }
-                else
-                {
-                    report << ",0";
-                }
-            }
-
-            report << "," << nodeStats.totalFailures;
         }
 
-        CTILOG_INFO(dout, report);
-
-        stats.nodeStatistics.clear();
+        report << "," << nodeStats.totalFailures;
     }
+
+    CTILOG_INFO(dout, report);
+
+    stats.nodeStatistics.clear();
 }
 
 }

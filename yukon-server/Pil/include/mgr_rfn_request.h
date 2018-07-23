@@ -102,14 +102,14 @@ protected:
 
 private:
 
-    typedef std::set<RfnIdentifier> RfnIdentifierSet;
+    using RfnIdentifierSet = std::set<RfnIdentifier>;
 
     RfnIdentifierSet handleConfirms();
     RfnIdentifierSet handleIndications();
     RfnIdentifierSet handleTimeouts();
     void             handleNewRequests(const RfnIdentifierSet &recentCompletions);
     void             postResults();
-    void             handleStatistics();
+    void             reportStatistics();
 
     typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
 
@@ -183,6 +183,19 @@ private:
 
     Mutex                _activeRequestsMux;
     RfnIdToActiveRequest _activeRequests;
+
+    struct RequestResults
+    {
+        RfnDeviceRequest request;
+        Devices::Commands::RfnCommandResultList results;
+    };
+
+    using OptionalResults = std::optional<RequestResults>;
+
+    ConfigNotificationPtr handleUnsolicitedReport  (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    OptionalResults       handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    OptionalResults       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    OptionalResults       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
 };
 
 }

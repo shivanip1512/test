@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dlldefs.h"
+#include "yukon.h"  //  for YukonError_t
 #include "rfn_identifier.h"
 
 #include <boost/optional.hpp>
@@ -25,6 +26,8 @@ public:
     {
         bool nodeOriginated;
 
+        YukonError_t status;
+
         unsigned long token;
 
         std::vector<unsigned char> data;  //  bytes payload
@@ -37,7 +40,7 @@ public:
     {
         const std::string reason;
 
-        E2eException(std::string &&reason_) : reason(reason_) {}
+        E2eException(std::string reason_) : reason(reason_) {}
 
         const char * what() const override
         {
@@ -53,11 +56,10 @@ public:
             E2eException("Unexpected ACK: " + std::to_string(unexpected) + ", no outbounds recorded")
         {}
     };
-    struct ResetReceived        : E2eException { ResetReceived()         : E2eException("Reset packet received")     {} };
-    struct PayloadTooLarge      : E2eException { PayloadTooLarge()       : E2eException("Payload too large")         {} };
-    struct RequestNotAcceptable : E2eException { RequestNotAcceptable()  : E2eException("Request not acceptable")    {} };
-    struct BadRequest           : E2eException { BadRequest(int code)    : E2eException("Bad request: " + std::to_string(code)) {} };
-    struct DuplicatePacket      : E2eException { DuplicatePacket(int id) : E2eException("Duplicate packet, id: " + std::to_string(id)) {} };
+    struct ResetReceived   : E2eException { ResetReceived()                      : E2eException("Reset packet received") {} };
+    struct PayloadTooLarge : E2eException { PayloadTooLarge()                    : E2eException("Payload too large")     {} };
+    struct DuplicatePacket : E2eException { DuplicatePacket(int id)              : E2eException("Duplicate packet, id: " + std::to_string(id)) {} };
+    struct RequestInactive : E2eException { RequestInactive(unsigned long token) : E2eException("Response received for inactive token " + std::to_string(token)) {} };
 
     enum
     {
@@ -80,9 +82,16 @@ protected:
 
 private:
 
-    using EndpointIds = std::map<RfnIdentifier, unsigned short>;
+    struct RequestId
+    {
+        unsigned short id;
+        bool active;
+    };
 
-    EndpointIds _outboundIds;
+    using EndpointIds = std::map<RfnIdentifier, unsigned short>;
+    using RequestIds = std::map<RfnIdentifier, RequestId>;
+
+    RequestIds  _outboundIds;
     EndpointIds _inboundIds;
 
     boost::random::mt19937 _generator;

@@ -919,19 +919,21 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
             // build a device creation call to Java
             void operator()(const RfnDeviceCreationReplyMessage & reply) const override
             {
-                if ( reply.success && reply.descriptor )
+                if( reply.success && reply.descriptor )
                 {
                     CTILOG_DEBUG(dout, "Received device creation service call response for " << reply.descriptor->toString());
                     // force a device reload of the new device
-                    boost::optional<DeviceCreationDescriptor> descriptor = reply.descriptor;
-                    DeviceManager->refreshDeviceByID(descriptor->paoId, descriptor->category, descriptor->deviceType);
+                    auto & descriptor = *reply.descriptor;
+                    DeviceManager->refreshDeviceByID(descriptor.paoId, descriptor.category, descriptor.deviceType);
 
                     // attempt to get the device again
-                    auto newDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId);
-
-                    if (newDevice)
+                    if( auto newDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId) )
                     {
                         invokeCommand(*newDevice, *command);
+                    }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "Couldn't find device after device creation service call")
                     }
                 } 
                 else
