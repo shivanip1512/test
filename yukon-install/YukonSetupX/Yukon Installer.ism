@@ -106,6 +106,7 @@
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>API Extras</td><td>{9F298104-0C82-4336-861C-0DC4F1C845E5}</td><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>API WAR</td><td>{3D76E4FF-BB3E-45B6-A48E-19B1C3052BDD}</td><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Backup</td><td>{8E2199F3-C540-4DD8-A378-01FC8DDAD17B}</td><td>CONFIG</td><td>16</td><td/><td/><td>49681</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Calc Logic</td><td>{FE9D3324-9F22-4D15-8E92-E6D07060AAE4}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Cap Control</td><td>{54196791-2CE5-462C-9568-2D2319AA539D}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Client Base</td><td>{9C16CA21-4F40-404D-9ED0-B565427AFE1D}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -118,7 +119,7 @@
 		<row><td>Java Runtime</td><td>{2CC1FA0A-82AB-4F8D-8F4E-36D42D067EC6}</td><td>RUNTIME</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Service Wrapper</td><td>{24F3BE7F-396F-45C3-A5B8-8EE07F0615D4}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Load Management</td><td>{DCAB7374-0931-45D3-9156-8E62EB3BD7DF}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Log Config Files</td><td>{EF25096A-11B1-4303-8F1F-832FA2491155}</td><td>CONFIG</td><td>24</td><td/><td/><td>10769</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Log Config Files</td><td>{EF25096A-11B1-4303-8F1F-832FA2491155}</td><td>CONFIG</td><td>8</td><td/><td/><td>10769</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>MACS</td><td>{5C3D4FD9-B0F5-4A89-BBE8-1C5E5E05C074}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Master Config Example</td><td>{1689C282-6025-4B5B-97A9-90A18AF2E99E}</td><td>SERVER</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Message Broker</td><td>{49105FC9-2898-4EBF-BC18-3407E79CAE59}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -348,6 +349,7 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S255">ISFolderName</col>
 		<row><td>ALLUSERSPROFILE</td><td>TARGETDIR</td><td>.:ALLUSE~1|All Users</td><td/><td>0</td><td/></row>
+		<row><td>BACKUP</td><td>CONFIG</td><td>Backup</td><td/><td>0</td><td/></row>
 		<row><td>BIN</td><td>CLIENT</td><td>bin</td><td/><td>0</td><td/></row>
 		<row><td>BIN1</td><td>SERVER</td><td>bin</td><td/><td>0</td><td/></row>
 		<row><td>CLIENT</td><td>TARGETDIR</td><td>Client</td><td/><td>0</td><td/></row>
@@ -520,6 +522,7 @@
 		<col def="S0">Miscellaneous</col>
 		<row><td>API Extras</td><td/><td/><td>_59BB2DEA_6FA0_4383_8D92_2C01F848D412_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>API WAR</td><td/><td/><td>_F56FFCBB_7560_471E_8402_5F76C4B2DB8A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Backup</td><td/><td/><td>_E4D13794_C506_412E_B40D_39B17BA0D11D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Calc Logic</td><td/><td/><td>_B341430A_4821_43D6_BB7D_E151EAF36DBB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Cap Control</td><td/><td/><td>_EE47412D_D3F8_40E2_955F_8C4694472B84_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Client Base</td><td/><td/><td>_3E938811_D624_46B2_B3EC_A3D950B1BFA9_FILTER</td><td/><td/><td/><td/></row>
@@ -611,7 +614,7 @@
 		<row><td>Java Runtime</td><td>&lt;PATH_TO_JRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Java Service Wrapper</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>*.*</td><td>notifserver.conf;appserver.conf</td><td>0</td></row>
 		<row><td>Load Management</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>loadmanagement.exe</td><td/><td>0</td></row>
-		<row><td>Log Config Files</td><td>&lt;PATH_TO_LOG_CONFIG_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Log Config Files</td><td>&lt;PATH_TO_LOG_CONFIG_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>0</td></row>
 		<row><td>MACS</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>macs.exe</td><td/><td>0</td></row>
 		<row><td>Master Config Example</td><td>&lt;PATH_TO_MASTER_CFG_EXAMPLE&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Message Broker</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>yukonmessagebroker.conf</td><td/><td>0</td></row>
