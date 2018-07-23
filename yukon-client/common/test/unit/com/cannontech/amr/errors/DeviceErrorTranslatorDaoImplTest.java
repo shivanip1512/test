@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -18,7 +18,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -29,7 +28,6 @@ import com.cannontech.amr.errors.dao.DeviceErrorCategory;
 import com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 
-@Ignore
 public class DeviceErrorTranslatorDaoImplTest {
     private DeviceErrorTranslatorDaoImpl translator;
     private Document errorCodeDocument, deviceErrorsDocument;
