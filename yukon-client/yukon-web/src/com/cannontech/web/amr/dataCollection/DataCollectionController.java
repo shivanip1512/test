@@ -43,6 +43,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
@@ -71,6 +72,7 @@ public class DataCollectionController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private PaoNotesService paoNotesService;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     private final static String widgetKey = "yukon.web.widgets.";
@@ -166,6 +168,9 @@ public class DataCollectionController {
         }
 
         model.addAttribute("detail", detail);
+        
+        List<DeviceCollectionDetail> hasNotesList = detail.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("hasNotesList", hasNotesList);
         
     }
     

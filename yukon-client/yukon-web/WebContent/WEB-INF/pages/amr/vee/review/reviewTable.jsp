@@ -16,6 +16,7 @@
             <table class="compact-results-table row-highlighting stacked has-alerts">
                 <thead>
                     <th></th>
+					<th class="row-icon"/>
                     <th><i:inline key="yukon.web.modules.consumer.alternateEnrollment.device"/></th>
                     <th><i:inline key=".previous"/></th>
                     <th><i:inline key=".flagged"/></th>
@@ -32,6 +33,11 @@
                                     <c:forEach var="rphTag" items="${p.reviewPoint.rphTags}">
                                         <cti:icon icon="${rphTag.iconClass}" classes="fn"/>
                                     </c:forEach> 
+                                </td>
+                                <td>
+                                    <c:if test="${hasNotesList.contains(p)}">
+                                        <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${p.reviewPoint.displayablePao.paoIdentifier.paoId}"/>
+                                    </c:if>    
                                 </td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${p.reviewPoint.displayablePao}">
@@ -84,4 +90,6 @@
             <span class="empty-list"><i:inline key=".emptyList"/></span>
         </c:otherwise>
     </c:choose>
+    <div class="dn" id="js-pao-notes-popup"></div>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:msgScope>

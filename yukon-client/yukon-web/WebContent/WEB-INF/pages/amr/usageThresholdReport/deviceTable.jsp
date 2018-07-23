@@ -65,6 +65,7 @@
             
         <table class="compact-results-table row-highlighting has-alerts has-actions">
             <th></th>
+			<th class="row-icon"/>
             <tags:sort column="${deviceName}" />                
             <tags:sort column="${meterNumber}" />                
             <tags:sort column="${deviceType}" />                
@@ -79,6 +80,11 @@
                     <td>
                         <cti:msg2 var="availabilityText" key=".dataAvailability.${device.availability}"/>
                         <div class="small-circle" title="${availabilityText}" style="background-color:${device.availability.color}"></div>
+                    </td>
+                    <td>
+                        <c:if test="${hasNotesList.contains(device)}">
+                            <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${device.paoIdentifier.paoId}"/>
+                        </c:if>  
                     </td>
                     <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
                     <td>${device.meterNumber}</td>
@@ -165,6 +171,6 @@
         <tags:pagingResultsControls result="${report.detail}" adjustPageCount="true" thousands="true"/>
 
     </div>
-
+    <div class="dn" id="js-pao-notes-popup"></div>
 </cti:msgScope>
 

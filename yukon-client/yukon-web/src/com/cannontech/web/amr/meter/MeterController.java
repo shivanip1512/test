@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,6 +55,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.meter.model.MeterTypeHelper;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -127,7 +129,8 @@ public class MeterController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-
+    @Autowired private PaoNotesService paoNotesService;
+    
     private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
 
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
@@ -187,6 +190,9 @@ public class MeterController {
         model.addAttribute("deviceGroupCollection", deviceGroupCollection);
         model.addAttribute("meterSearchResults", results);
         model.addAttribute("filterByList", filterByList);
+        
+        List<YukonMeter> hasNotesList = results.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("hasNotesList", hasNotesList);
         
         ImmutableMap<String, YukonMeter> paoIdToMeterMap = 
             Maps.uniqueIndex(results.getResultList(), new Function<YukonMeter, String>() {

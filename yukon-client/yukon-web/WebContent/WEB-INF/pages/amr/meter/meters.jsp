@@ -47,6 +47,7 @@
                 <table class="compact-results-table has-actions">
                     <thead>
                         <tr>
+                            <th class="row-icon"/>
                             <tags:sort column="${nameColumn}"/>
                             <tags:sort column="${meterNumberColumn}"/>
                             <tags:sort column="${typeColumn}"/>
@@ -60,8 +61,15 @@
                         <c:forEach var="row" items="${meterSearchResults.resultList}">
                             <tr>
                                 <td>
+                                    <c:if test="${hasNotesList.contains(row)}">
+                                        <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${row.paoIdentifier.paoId}"/>
+                                    </c:if>    
+                                </td>
+                                <td>                                        
                                     <cti:paoDetailUrl yukonPao="${row}">
-                                        <c:if test="${!empty row.name}">${fn:escapeXml(row.name)}</c:if>
+                                    <c:if test="${!empty row.name}">
+                                    	${fn:escapeXml(row.name)}
+                                    </c:if>
                                     </cti:paoDetailUrl>
                                 </td>
                                 <td><c:if test="${!empty row.meterNumber}">${fn:escapeXml(row.meterNumber)}</c:if></td>
@@ -82,5 +90,6 @@
     </c:choose>
         
     <cti:includeScript link="/resources/js/pages/yukon.ami.search.js"/>
-    
+<div class="dn" id="js-pao-notes-popup"></div>
+<cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:standardPage>

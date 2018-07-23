@@ -72,5 +72,6 @@
     </div>
 
     <cti:includeScript link="/resources/js/pages/yukon.ami.usage.threshold.report.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>    
 
 </cti:standardPage>

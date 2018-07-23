@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
@@ -40,6 +42,7 @@ public class VeeReviewController {
     @Autowired private RphTagUiDao rphTagUiDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private ValidationHelperService validationHelperService;
+    @Autowired private PaoNotesService paoNotesService;
     
     private static enum ActionType {
         DELETE,
@@ -142,6 +145,9 @@ public class VeeReviewController {
         model.addAttribute("result", pagedRows);
         
         model.addAttribute("paging", paging);
+        
+        List<ExtendedReviewPoint> hasNotesList = pagedRows.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.reviewPoint.getDisplayablePao().getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("hasNotesList", hasNotesList);
     }
     
     private int addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {

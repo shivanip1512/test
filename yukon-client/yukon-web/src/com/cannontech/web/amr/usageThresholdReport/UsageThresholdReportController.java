@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +45,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
@@ -85,7 +87,8 @@ public class UsageThresholdReportController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointFormattingService pointFormattingService;
-
+    @Autowired private PaoNotesService paoNotesService;
+    
     @RequestMapping(value="report", method = RequestMethod.GET)
     public String report(ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -169,6 +172,11 @@ public class UsageThresholdReportController {
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
         
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
+        List<ThresholdReportDetail> hasNotesList = report.getDetail().getResultList().stream()
+                                                                          .filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId()))
+                                                                          .collect(Collectors.toList());
+        
+        model.addAttribute("hasNotesList", hasNotesList);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("filter", filter);
         model.addAttribute("reportId", reportId);

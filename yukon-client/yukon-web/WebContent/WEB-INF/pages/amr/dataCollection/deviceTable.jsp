@@ -10,6 +10,7 @@
 
 <table class="compact-results-table row-highlighting has-alerts has-actions">
     <th></th>
+    <th class="row-icon"/>
     <tags:sort column="${deviceName}" />                
     <tags:sort column="${meterNumber}" />                
     <tags:sort column="${deviceType}" />                
@@ -32,6 +33,11 @@
                 </c:if>
                 <cti:msg2 var="rangeText" key=".rangeType.${device.range}"/>
                 <div class="small-circle ${circleColor}" title="${rangeText}"></div>
+            </td>
+            <td>
+                <c:if test="${hasNotesList.contains(device)}">
+                    <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${device.paoIdentifier.paoId}"/>
+                </c:if>    
             </td>
             <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
             <td>${device.meterNumber}</td>
@@ -91,5 +97,6 @@
     </c:forEach>
 </table>
 <tags:pagingResultsControls result="${detail}" adjustPageCount="true" thousands="true"/>
-
+    <div class="dn" id="js-pao-notes-popup"></div>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:msgScope>
