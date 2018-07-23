@@ -18,6 +18,8 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorTransaction;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -35,6 +37,7 @@ public class PorterResponseMessageListener implements MessageListener {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private MonitorCacheService monitorCacheService;
+    @Autowired private DeviceGroupService deviceGroupService;
     private static final Logger log = YukonLogManager.getLogger(PorterResponseMessageListener.class);
   
 
@@ -110,15 +113,34 @@ public class PorterResponseMessageListener implements MessageListener {
 
     private void processTransaction(PorterResponseMonitorTransaction transaction) {
         for (PorterResponseMonitor monitor : monitorCacheService.getEnabledPorterResponseMonitors()) {
-            for (PorterResponseMonitorRule rule : monitor.getRules()) {
-                if(shouldSendPointData(transaction, rule)) {
-                    sendPointData(monitor, rule, transaction);
-                    break;
+            if (shouldProcessDevice(monitor, transaction.getPaoId())) {
+                for (PorterResponseMonitorRule rule : monitor.getRules()) {
+                    if (shouldSendPointData(transaction, rule)) {
+                        sendPointData(monitor, rule, transaction);
+                        break;
+                    }
                 }
             }
         }
     }
-
+    // Checks if device is RFN or not. Also checks if it belongs to device group of monitor.
+    private boolean shouldProcessDevice(PorterResponseMonitor monitor, Integer paoId) {
+        
+        // Do not do further processing as the device is of type RFN
+        YukonPao yukonPao = databaseCache.getAllPaosMap().get(paoId);
+        if (yukonPao.getPaoIdentifier().getPaoType().isRfn()) {
+            log.debug("Device was of type RFN, not processing further " + yukonPao);
+            return false;
+        }
+        
+        // Do not do further processing as device do not belong to the device group of monitor
+        DeviceGroup deviceGroup = deviceGroupService.findGroupName(monitor.getGroupName());
+        if (deviceGroup != null) {
+            return deviceGroupService.isDeviceInGroup(deviceGroup, yukonPao);
+        }
+        return false;
+    }
+    
     private boolean shouldSendPointData(PorterResponseMonitorTransaction transaction, PorterResponseMonitorRule rule) {
         Set<Integer> ruleErrorCodes = rule.getErrorCodesAsIntegers();
 

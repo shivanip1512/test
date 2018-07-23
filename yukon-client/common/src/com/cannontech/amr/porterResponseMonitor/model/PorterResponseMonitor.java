@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -21,11 +20,12 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
 	private MonitorEvaluatorStatus evaluatorStatus;
 	private List<PorterResponseMonitorRule> rules = Lists.newArrayList();
 
-	public PorterResponseMonitor() {
-	    groupName = DeviceGroupService.ROOT;
-	    attribute = BuiltInAttribute.OUTAGE_STATUS;
-	    evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
-	}
+    public PorterResponseMonitor() {
+        // Setting default group to All MCT Meters.
+        groupName = "/System/Meters/All Meters/All MCT Meters";
+        attribute = BuiltInAttribute.OUTAGE_STATUS;
+        evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
+    }
 
 	public PorterResponseMonitor(PorterResponseMonitorDto monitorDto) {
 	    monitorId = monitorDto.getMonitorId();

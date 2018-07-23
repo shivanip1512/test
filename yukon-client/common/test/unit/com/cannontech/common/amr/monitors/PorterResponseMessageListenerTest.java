@@ -1,10 +1,13 @@
 package com.cannontech.common.amr.monitors;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.impl.MonitorCacheServiceImpl;
@@ -15,6 +18,17 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatch
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorTransaction;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMessageListener;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.impl.DeviceGroupServiceImpl;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.StubServerDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
@@ -34,6 +48,8 @@ public class PorterResponseMessageListenerTest {
     private PorterResponseMessage message1;
     private PorterResponseMessage message2;
     private PorterResponseMessage message3;
+    private PorterResponseMessage message4;
+    private PorterResponseMessage message5;
     private final List<Integer> sentPointData = Lists.newArrayList();
     
     @Before
@@ -50,6 +66,8 @@ public class PorterResponseMessageListenerTest {
         message1 = getMessage(1,1,1);
         message2 = getMessage(2,2,2);
         message3 = getMessage(3,3,3);
+        message4 = getMessage(4,4,4);
+        message5 = getMessage(5,5,5);
         
         listener = new PorterResponseMessageListener() {
             @Override
@@ -62,7 +80,57 @@ public class PorterResponseMessageListenerTest {
         MonitorCacheServiceImpl cache = new MonitorCacheServiceImpl();
         listener.setMonitorCache(cache);
         cache.setMonitors(ImmutableMap.of(1, standard));
-    }
+        
+        final LiteYukonPAObject pao1 = new LiteYukonPAObject(1, "pao1", 
+            PaoCategory.DEVICE, 
+            PaoClass.METER, 
+            PaoType.MCT410CL, 
+            "", "");
+        
+        final LiteYukonPAObject pao4 = new LiteYukonPAObject(4, "pao4", 
+            PaoCategory.DEVICE, 
+            PaoClass.RFMESH, 
+            PaoType.RFN420CL, 
+            "", "");
+        
+        final LiteYukonPAObject pao5 = new LiteYukonPAObject(5, "pao5", 
+            PaoCategory.DEVICE, 
+            PaoClass.METER, 
+            PaoType.MCT430SL, 
+            "", "");
+        
+        final IDatabaseCache databaseCache = new StubServerDatabaseCache() {
+            @Override
+            public Map<Integer, LiteYukonPAObject> getAllPaosMap() {
+                Map<Integer, LiteYukonPAObject> allPaos = new HashMap<>();
+                allPaos.put(1, pao1);
+                allPaos.put(2, pao1);
+                allPaos.put(3, pao1);
+                allPaos.put(4, pao4);
+                allPaos.put(5, pao5);
+                return allPaos;
+            }
+        };
+        DeviceGroupService deviceGroupService = new DeviceGroupServiceImpl() {
+            @Override
+            public DeviceGroup findGroupName(String groupName) {
+                return new StoredDeviceGroup();
+            }
+
+            @Override
+            public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao) {
+                if (pao.getPaoIdentifier().getPaoId() == 5) {
+                    return false;
+                } else
+                    return true;
+            }
+
+        };
+        
+        
+        ReflectionTestUtils.setField(listener, "databaseCache", databaseCache);
+        ReflectionTestUtils.setField(listener, "deviceGroupService", deviceGroupService);
+}
     
     @Test
     public void test_single_msg_success() {
@@ -151,6 +219,22 @@ public class PorterResponseMessageListenerTest {
         Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0)); //message 3
         Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1)); //message 2
         Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(2)); //message 1
+    }
+    
+    @Test
+    public void test_Device() {
+        sentPointData.clear();
+
+        handleMockMessage(message4, 0, true);
+        Assert.assertEquals(0, sentPointData.size());
+    }
+
+    @Test
+    public void test_Group() {
+        sentPointData.clear();
+
+        handleMockMessage(message5, 0, true);
+        Assert.assertEquals(0, sentPointData.size());
     }
 
     private void handleMockMessage(PorterResponseMessage message, int errorCode, boolean isFinalMsg) {
