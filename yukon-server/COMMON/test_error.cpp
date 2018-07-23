@@ -256,7 +256,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Parameter error, not all points in the index range or object index prefixes exist.")
     ("Requested operation is already executing.")
     ("Aggregate response did not include an entry for the command.")
-    .repeat(41, UnknownErrorHelper(309));
+    ("Endpoint indicated a bad request.")
+    .repeat(40, UnknownErrorHelper(310));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {

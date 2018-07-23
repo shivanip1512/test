@@ -1684,6 +1684,7 @@
             The end device rejected the request.
         </description>
         <troubleshooting>
+            The firmware on the end device does not support the requested feature. Verify that the device has received the latest firmware update.
         </troubleshooting>
     </error>
     
@@ -1780,6 +1781,13 @@
         <description>Aggregate response did not include an entry for the command.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>    
+    
+    <error code="309" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>Endpoint indicated a bad request.</porter>
+        <description>The end device rejected the request.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
     
     <error code="1024" type="NONE">
         <category>Network Manager</category>

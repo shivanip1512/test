@@ -393,6 +393,8 @@ struct ClientErrors
         OperationAlreadyExecuting,
 
         NoAggregateResponseEntry,
+
+        E2eBadRequest,
     };
 };
 

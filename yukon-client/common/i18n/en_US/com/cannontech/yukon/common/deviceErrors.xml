@@ -1122,7 +1122,7 @@
         
     <entry key="yukon.web.error.code.295.porter">Endpoint indicated request not acceptable.</entry>
     <entry key="yukon.web.error.code.295.description">The end device rejected the request.</entry>
-    <entry key="yukon.web.error.code.295.troubleshooting"><![CDATA[]]></entry>
+    <entry key="yukon.web.error.code.295.troubleshooting">The firmware on the end device does not support the requested feature. Verify that the device has received the latest firmware update.</entry>
     
     <entry key="yukon.web.error.code.296.porter">The device has no points attached.</entry>
     <entry key="yukon.web.error.code.296.description">The device has no points attached.</entry>
@@ -1140,20 +1140,20 @@
     <entry key="yukon.web.error.code.299.description">Channel not supported by meter.</entry>
     <entry key="yukon.web.error.code.299.troubleshooting">No troubleshooting is available for this error.</entry>
     
-    <entry key="yukon.web.error.code.300.porter">Invalid water node device.</entry>
-    <entry key="yukon.web.error.code.300.description">Invalid water node device.</entry>
+    <entry key="yukon.web.error.code.300.porter">Invalid battery node device.</entry>
+    <entry key="yukon.web.error.code.300.description">Invalid battery node device.</entry>
     <entry key="yukon.web.error.code.300.troubleshooting">No troubleshooting is available for this error.</entry>
     
-    <entry key="yukon.web.error.code.301.porter">Unknown water node.</entry>
-    <entry key="yukon.web.error.code.301.description">Unknown water node.</entry>
+    <entry key="yukon.web.error.code.301.porter">Unknown battery node.</entry>
+    <entry key="yukon.web.error.code.301.description">Unknown battery node.</entry>
     <entry key="yukon.web.error.code.301.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.302.porter">Unknown gateway.</entry>
     <entry key="yukon.web.error.code.302.description">Unknown gateway.</entry>
     <entry key="yukon.web.error.code.302.troubleshooting">No troubleshooting is available for this error.</entry>
     
-    <entry key="yukon.web.error.code.303.porter">Unspecified water node failure.</entry>
-    <entry key="yukon.web.error.code.303.description">Unspecified water node failure.</entry>
+    <entry key="yukon.web.error.code.303.porter">Unspecified battery node failure.</entry>
+    <entry key="yukon.web.error.code.303.description">Unspecified battery node failure.</entry>
     <entry key="yukon.web.error.code.303.troubleshooting">No troubleshooting is available for this error.</entry>
     
     <entry key="yukon.web.error.code.304.porter">Function code not supported.</entry>
@@ -1175,7 +1175,11 @@
     <entry key="yukon.web.error.code.308.porter">Aggregate response did not include an entry for the command.</entry>
     <entry key="yukon.web.error.code.308.description">Aggregate response did not include an entry for the command.</entry>
     <entry key="yukon.web.error.code.308.troubleshooting">No troubleshooting is available for this error.</entry>
-                                                                                                            
+
+    <entry key="yukon.web.error.code.309.porter">Endpoint indicated a bad request.</entry>
+    <entry key="yukon.web.error.code.309.description">The end device rejected the request.</entry>
+    <entry key="yukon.web.error.code.309.troubleshooting">No troubleshooting is available for this error.</entry>
+
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
         currently associated with this device in Yukon.</entry>
