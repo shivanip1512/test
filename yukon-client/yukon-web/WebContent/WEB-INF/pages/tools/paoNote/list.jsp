@@ -65,30 +65,45 @@
                 <span class="badge">${searchResults.hitCount}</span>&nbsp;<i:inline key=".notes"/>
                 <span class="js-cog-menu">
                     <cm:dropdown icon="icon-cog">
-                        <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                            <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
-                                <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
-                            </c:forEach>
-                        </cti:url>
-                        <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" 
-                                           newTab="true"/> 
+                        <!-- Collection Actions -->
+                        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+                            <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                                <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
+                                    <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" 
+                                               newTab="true"/>
+                        </cti:checkRolesAndProperties>
+                        
+                        <!-- Download -->
                         <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>
-                        <cti:url var="mapUrl" value="/tools/map">
-                            <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                        </cti:url>
-                        <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
-                        <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
-                            <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
-                                <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
-                            </c:forEach>
-                        </cti:url>
-                        <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>
-                        <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
-                            <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
-                                <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
-                            </c:forEach>
-                        </cti:url>
-                        <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
+                        
+                        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+                            <!-- Map Devices -->
+                            <cti:url var="mapUrl" value="/tools/map">
+                                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                            
+                            <!-- Read Attribute -->
+                            <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
+                                <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
+                                    <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>
+                            
+                            <!-- Send Command -->
+                            <cti:checkRolesAndProperties value="GROUP_COMMANDER">
+                                <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
+                                    <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
+                                        <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
+                                    </c:forEach>
+                                </cti:url>
+                                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
+                            </cti:checkRolesAndProperties>
+                        </cti:checkRolesAndProperties>
                     </cm:dropdown>
                 </span>
                 <cti:url var="searchUrl" value="/tools/paoNotes/search">
