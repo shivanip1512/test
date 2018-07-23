@@ -30,10 +30,10 @@ public class RfnMeterReadAndControlSimulatorMessageHandler extends SimulatorMess
             if (request instanceof ModifyRfnMeterReadAndControlSimulatorRequest) {
                 ModifyRfnMeterReadAndControlSimulatorRequest simulatorRequest = (ModifyRfnMeterReadAndControlSimulatorRequest) request;
                 
-                // Stop any gateway simulators with a stop request
+                // Stop any RfnMeterReadAndControl simulators with a stop request
                 stopSimulators(simulatorRequest);
                 
-                // Start any gateway simulators that have non-null start settings in the request
+                // Start any RfnMeterReadAndControl simulators that have non-null start settings in the request
                 boolean success = startSimulators(simulatorRequest);
                 
                 return new SimulatorResponseBase(success);
@@ -46,35 +46,6 @@ public class RfnMeterReadAndControlSimulatorMessageHandler extends SimulatorMess
             log.error("Exception handling request: " + request);
             throw e;
         }
-        
-        // This is the old way that I would handle messaging. This will be deleted once I have proven the new way works fully, and this is no longer needed.
-        
-        /*
-        try {
-                        
-            if (simulatorRequest instanceof RfnMeterReadAndControlSimulatorStartRequest) {
-                ModifyRfnMeterReadAndControlSimulatorRequest request = (ModifyRfnMeterReadAndControlSimulatorRequest) simulatorRequest;
-                simulator.startMeterDisconnectReply(request.getSettings());
-                return new SimulatorResponseBase(true);
-            } else if (simulatorRequest instanceof RfnMeterReadAndControlSimulatorStopRequest) {
-                simulator.stopMeterDisconnectReply();
-                return new SimulatorResponseBase(true);
-            } else if (simulatorRequest instanceof RfnMeterReadAndControlSimulatorStatusRequest) {
-                RfnMeterReadAndControlDisconnectSimulatorSettings settings = simulator.getCurrentSettings();
-                RfnDataSimulatorStatus status = simulator.getStatus();
-                return new RfnMeterReadAndControlSimulatorStatusResponse(status, settings);
-            } 
-            else {
-                throw new IllegalArgumentException(
-                    "Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());
-            }
-        } catch (Exception e) {
-            log.error("Exception handling request: " + simulatorRequest);
-            throw e;
-        }
-        */
-        
-        
     }
     
     private void stopSimulators(ModifyRfnMeterReadAndControlSimulatorRequest request) {
@@ -111,10 +82,10 @@ public class RfnMeterReadAndControlSimulatorMessageHandler extends SimulatorMess
     private RfnMeterReadAndControlSimulatorStatusResponse getStatus() {
         RfnMeterReadAndControlSimulatorStatusResponse response = new RfnMeterReadAndControlSimulatorStatusResponse();
         
-        response.setReadSettings(simulator.getCurrentReadSettings());
+        response.setReadSettings(simulator.getReadSettings());
         response.setMeterReadReplyActive(simulator.isMeterReadReplyActive() && (!simulator.isMeterReadReplyStopping()));
         
-        response.setDisconnectSettings(simulator.getCurrentDisconnectSettings());
+        response.setDisconnectSettings(simulator.getDisconnectSettings());
         response.setMeterDisconnectReplyActive(simulator.isMeterDisconnectReplyActive() && (!simulator.isMeterDisconnectReplyStopping()));
         
         response.setSuccessful(true);

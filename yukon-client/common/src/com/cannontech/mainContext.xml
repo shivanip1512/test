@@ -408,6 +408,7 @@
     <bean class="com.cannontech.common.rfn.simulation.service.impl.RfnGatewaySimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.DataStreamingSimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.NmNetworkSimulatorServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnMeterReadAndControlSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>

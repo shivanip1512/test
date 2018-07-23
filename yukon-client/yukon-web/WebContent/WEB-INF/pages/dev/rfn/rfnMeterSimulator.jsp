@@ -46,8 +46,8 @@
                             </div>
                             <div class="button-group button-group-toggle">
                                 <div class="js-sim-startup" data-simulator-type="RFN_METER">
-                                <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-                                <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                                    <cti:button nameKey="runSimulatorOnStartup.automatic" classes="yes enable-startup"/>
+                                    <cti:button nameKey="runSimulatorOnStartup.manual" classes="no disable-startup"/>  
                                 </div>
                             </div>
                         </tags:sectionContainer2>
@@ -302,12 +302,12 @@
                                 <cti:button id="enable-all" label="Enable All" type="button"/>
                             </c:if>
                             <c:if test="${numberOfSimulatorsRunning gt 0}">
-                                <cti:button label="Disable All" type="button" href="disableAll"/>
+                                <cti:button label="Disable All" type="button" href="disableAllRfnReadAndControl"/>
                             </c:if>
                             <div class="button-group button-group-toggle">
                                 <div class="js-sim-startup" data-simulator-type="RFN_METER_READ_AND_CONTROL">
-                                    <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-                                    <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                                    <cti:button nameKey="runSimulatorOnStartup.automatic" classes="yes enable-startup"/>
+                                    <cti:button nameKey="runSimulatorOnStartup.manual" classes="no disable-startup"/>
                                 </div>
                             </div>
                         </td>

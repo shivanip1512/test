@@ -1,14 +1,12 @@
 package com.cannontech.dr.rfn.service.impl;
 
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
@@ -22,7 +20,6 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnMeterReadAndControlSimulatorService;
@@ -34,7 +31,6 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     private static final Logger log = YukonLogManager.getLogger(RfnMeterReadAndControlSimulatorServiceImpl.class);
     private static final String meterReadRequestQueue = "yukon.qr.obj.amr.rfn.MeterReadRequest";
     private static final String meterDisconnectRequestQueue = "yukon.qr.obj.amr.rfn.MeterDisconnectRequest";
-    private RfnDataSimulatorStatus status = new RfnDataSimulatorStatus();
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     private RfnMeterReadAndControlDisconnectSimulatorSettings disconnectSettings;
@@ -58,28 +54,15 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
         jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
     }
     
-    // Currently unused
-    @Override
-    public synchronized void startSimulator(RfnMeterReadAndControlDisconnectSimulatorSettings settings) {
-        if (!status.isRunning().get()) {
-            status = new RfnDataSimulatorStatus();
-            status.setRunning(new AtomicBoolean(true));
-            status.setStartTime(new Instant());
-        }
-    }
-    
-    // Currently unused
-    @Override
-    public void stopSimulator() {
-        status.setStopTime(new Instant());
-        status.setRunning(new AtomicBoolean(false));
-    }
-    
     @Override
     public boolean startMeterReadReply(RfnMeterReadAndControlReadSimulatorSettings settings) {
         if (meterReadReplyActive) {
             return false;
         } else {
+            
+            saveReadSettings(settings);
+            readSettings = settings;
+            
             Thread meterReadThread = getMeterReadThread(settings);
             meterReadThread.start();
             
@@ -102,11 +85,8 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
         if (meterDisconnectReplyActive) {
             return false;
         } else {
-            
             saveDisconnectSettings(settings);
-            if (disconnectSettings == null) {
-                disconnectSettings = settings;
-            }
+            disconnectSettings = settings;
             
             Thread meterDisconnectThread = getMeterDisconnectThread(settings);
             meterDisconnectThread.start();
@@ -133,7 +113,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     }
     
     @Override
-    public RfnMeterReadAndControlDisconnectSimulatorSettings getCurrentDisconnectSettings() {
+    public RfnMeterReadAndControlDisconnectSimulatorSettings getDisconnectSettings() {
         if (disconnectSettings == null) {
             log.debug("Getting RFN_METER_READ_AND_CONTROL SimulatorSettings from db.");
             RfnMeterReadAndControlDisconnectSimulatorSettings simulatorSettings = new RfnMeterReadAndControlDisconnectSimulatorSettings();
@@ -155,7 +135,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     }
     
     @Override
-    public RfnMeterReadAndControlReadSimulatorSettings getCurrentReadSettings() {
+    public RfnMeterReadAndControlReadSimulatorSettings getReadSettings() {
         if (readSettings == null) {
             log.debug("Getting RFN_METER_READ_AND_CONTROL SimulatorSettings from db.");
             RfnMeterReadAndControlReadSimulatorSettings simulatorSettings = new RfnMeterReadAndControlReadSimulatorSettings();
@@ -168,16 +148,10 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
         return readSettings;
     }
     
-    // Will be used for auto start of simulator
     @Override
     public void startSimulatorWithCurrentSettings() {
-        startSimulator(getCurrentSettings());
-    }
-    
-    @Override
-    public RfnMeterReadAndControlDisconnectSimulatorSettings getCurrentSettings() {
-        // Read settings not added yet, will be added as part of read implementation
-        return getCurrentDisconnectSettings();
+        startMeterDisconnectReply(getDisconnectSettings());
+        startMeterReadReply(getReadSettings());
     }
 
     /**
@@ -279,7 +253,11 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
         return response;
     }
     
-    // Returns true if reply should take user inputed failure, false otherwise
+    /**
+     * This method is used to calculate the chance of a request failing with the inputed failure message instead of succeeding.
+     * @param failureRate Integer that is the inputed failure rate.
+     * @return True if the reply should take the user inputed failure, and false otherwise.
+     */
     private boolean replyWithFailure(int failureRate) {
         Random r = new Random();
         int n = r.nextInt(100) + 1; // Generates a random number between 1 and 100
@@ -304,10 +282,5 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     @Override
     public boolean isMeterDisconnectReplyStopping() {
         return meterDisconnectReplyStopping;
-    }
-
-    @Override
-    public RfnDataSimulatorStatus getStatus() {
-        return status;
     }
 }

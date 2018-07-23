@@ -25,6 +25,7 @@ import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
+import com.cannontech.dr.rfn.service.RfnMeterReadAndControlSimulatorService;
 import com.cannontech.simulators.AutoStartableSimulator;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
@@ -55,6 +56,7 @@ public class SimulatorsService {
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;
     @Autowired private IvvcSimulatorService ivvcSimulatorService;
     @Autowired private SmartNotificationSimulatorService smartNotificationSimulatorService;
+    @Autowired private RfnMeterReadAndControlSimulatorService rfnMeterReadAndControlSimulatorService;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
     private SimulatorMessageListener messageListener;
@@ -119,6 +121,7 @@ public class SimulatorsService {
             .put(SimulatorType.RFN_NETWORK, nmNetworkSimulatorService)
             .put(SimulatorType.IVVC, ivvcSimulatorService)
             .put(SimulatorType.RFN_LCR, rfnLcrDataSimulatorService)
+            .put(SimulatorType.RFN_METER_READ_AND_CONTROL, rfnMeterReadAndControlSimulatorService)
             .build();
     }
 

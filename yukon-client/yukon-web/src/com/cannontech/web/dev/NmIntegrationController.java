@@ -73,6 +73,7 @@ import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
+import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
@@ -208,8 +209,8 @@ public class NmIntegrationController {
         return "redirect:gatewaySimulator";
     }
 
-    @RequestMapping("enableAll")
-    public String enableAllSimulators(SimulatedGatewayDataSettings dataSettings,
+    @RequestMapping("enableAllGatewaySimulators")
+    public String enableAllGatewaySimulators(SimulatedGatewayDataSettings dataSettings,
                                       SimulatedUpdateReplySettings updateSettings,
                                       SimulatedCertificateReplySettings certSettings,
                                       SimulatedFirmwareReplySettings firmwareSettings,
@@ -229,8 +230,8 @@ public class NmIntegrationController {
         return "redirect:gatewaySimulator";
     }
 
-    @RequestMapping("disableAll") 
-    public String disableAllSimulators(FlashScope flash) {
+    @RequestMapping("disableAllGatewaySimulators") 
+    public String disableAllGatewaySimulators(FlashScope flash) {
 
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setAllStop();
@@ -388,6 +389,11 @@ public class NmIntegrationController {
         }
     }
 
+    /**
+     * Sends a request to modify a RfnMeterReadAndControl simulator.
+     * @param request The request to start or stop simulators.
+     * @param isStartRequest Is this a request to start a simulator (true) or stop a simulator(false).
+     */
     private void sendRfnMeterReadAndControlStartStopRequest(ModifyRfnMeterReadAndControlSimulatorRequest request, FlashScope flash, boolean isStartRequest) {
         String successKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStartSuccess" :
                                              "yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopSuccess";
@@ -579,6 +585,32 @@ public class NmIntegrationController {
             json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
             return new RfnMeterReadAndControlSimStatusResponseOrError(json);
         }
+    }
+    
+    @RequestMapping("enableAllRfnReadAndControl")
+    public String enableAllRfnReadAndControlSimulators(RfnMeterReadAndControlReadSimulatorSettings readSettings,
+                                                       RfnMeterReadAndControlDisconnectSimulatorSettings disconnectSettings,
+                                                       FlashScope flash) {
+        
+        ModifyRfnMeterReadAndControlSimulatorRequest request = new ModifyRfnMeterReadAndControlSimulatorRequest();
+
+        request.setReadSettings(readSettings);
+        request.setDisconnectSettings(disconnectSettings);
+        
+        sendRfnMeterReadAndControlStartStopRequest(request, flash, true);
+
+        return "redirect:viewRfnMeterSimulator";
+    }
+
+    @RequestMapping("disableAllRfnReadAndControl") 
+    public String disableAllRfnReadAndControlSimulators(FlashScope flash) {
+
+        ModifyRfnMeterReadAndControlSimulatorRequest request = new ModifyRfnMeterReadAndControlSimulatorRequest();
+        request.setAllStop();
+            
+        sendRfnMeterReadAndControlStartStopRequest(request, flash, false);
+        
+        return "redirect:viewRfnMeterSimulator";
     }
     
     @RequestMapping("viewLcrDataSimulator")

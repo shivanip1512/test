@@ -13,13 +13,12 @@ yukon.dev.simulators.simulatorStartup = ( function() {
     
     var
     _initialized = false,
-    _simType = null,
 
     _updateStartup = function (event) {
         
         var
         startupData = {simulatorType: $(event.target).closest(".js-sim-startup").data("simulatorType")};
-        if ($(this).attr('id') === 'enable-startup') {
+        if ($(this).hasClass('enable-startup')) {
             startupData.runOnStartup = true;
             $.ajax({
                 url: yukon.url('/dev/updateStartup'),
@@ -34,7 +33,7 @@ yukon.dev.simulators.simulatorStartup = ( function() {
             }).fail(function () {
                 _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
             });
-        } else if ($(this).attr('id') === 'disable-startup') {
+        } else if ($(this).hasClass('disable-startup')) {
             startupData.runOnStartup = false;
             $.ajax({
                 url: yukon.url('/dev/updateStartup'),
@@ -52,7 +51,7 @@ yukon.dev.simulators.simulatorStartup = ( function() {
         }
     },
      
-    _checkStartupStatus = function (prevErrorMessage, startupData) {
+    _checkStartupStatus = function (prevErrorMessage, startupData, button) {
         $.ajax({
             url: yukon.url('/dev/existingStartupStatus'),
             type: 'post',
@@ -60,28 +59,28 @@ yukon.dev.simulators.simulatorStartup = ( function() {
         }).done(function(data) {
             if (data.hasError) {
                 yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
-                $('#enable-startup').attr("disabled", "true");
-                $('#disable-startup').attr("disabled", "true");
-                $('#enable-startup').removeClass('on');
-                $('#disable-startup').removeClass('on');
+                button.find('.enable-startup').attr("disabled", "true");
+                button.find('.disable-startup').attr("disabled", "true");
+                button.find('.enable-startup').removeClass('on');
+                button.find('.disable-startup').removeClass('on');
             } else {
                 if (prevErrorMessage) {
                     yukon.ui.alertError(prevErrorMessage);
                 }
                 if (data.runOnStartup) {
-                    $('#enable-startup').addClass('on');
-                    $('#disable-startup').removeClass('on');
+                    button.find('.enable-startup').addClass('on');
+                    button.find('.disable-startup').removeClass('on');
                 } else {
-                    $('#enable-startup').removeClass('on');
-                    $('#disable-startup').addClass('on');
+                    button.find('.enable-startup').removeClass('on');
+                    button.find('.disable-startup').addClass('on');
                 }
             }
         }).fail(function () {
             yukon.ui.alertError(prevErrorMessage + " Error communicating with NmIntegrationController. Refresh the page to try again.");
-            $('#enable-startup').attr("disabled", "true");
-            $('#disable-startup').attr("disabled", "true");
-            $('#enable-startup').removeClass('on');
-            $('#disable-startup').removeClass('on');
+            button.find('.enable-startup').attr("disabled", "true");
+            button.find('.disable-startup').attr("disabled", "true");
+            button.find('.enable-startup').removeClass('on');
+            button.find('.disable-startup').removeClass('on');
         });
     },
         
@@ -89,9 +88,13 @@ yukon.dev.simulators.simulatorStartup = ( function() {
         
         init: function () {
             if (_initialized) return;
-            _simType = $(".js-sim-startup").data("simulatorType");
-            _checkStartupStatus(null, {simulatorType: _simType});
-            $('#enable-startup, #disable-startup').on('click', _updateStartup);
+            
+            $(".js-sim-startup").each( function() {
+                var simType = $( this ).data("simulatorType");
+                _checkStartupStatus(null, {simulatorType: simType}, $(this));
+            });
+            
+            $(document).on('click', '.enable-startup, .disable-startup', _updateStartup);
             _initialized = true;
         },
     };

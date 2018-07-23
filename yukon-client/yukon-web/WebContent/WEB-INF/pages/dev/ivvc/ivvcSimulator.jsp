@@ -46,8 +46,8 @@
                     </div>
                     <div class="button-group button-group-toggle">
                        <div class="js-sim-startup" data-simulator-type="IVVC">
-                       <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-                       <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                            <cti:button nameKey="runSimulatorOnStartup.automatic" classes="yes enable-startup"/>
+                            <cti:button nameKey="runSimulatorOnStartup.manual" classes="no disable-startup"/>  
                        </div>
                     </div>
                 </tags:sectionContainer2>

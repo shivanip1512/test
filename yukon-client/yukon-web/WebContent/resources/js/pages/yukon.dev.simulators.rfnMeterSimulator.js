@@ -100,12 +100,25 @@ yukon.dev.simulators.rfnMeterSimulator = (function() {
             });
         }
     },
+    
+    _enableAll = function (event) {
+        var formData = $("form").serializeArray();
+        console.log(formData);
+        $.ajax({
+            url: yukon.url('enableAllRfnReadAndControl'),
+            type: 'post',
+            data: formData
+        }).done(function() {
+            window.location.href = yukon.url('/dev/rfn/viewRfnMeterSimulator');
+        });
+    },
       
     mod = {
         init : function() {
             if (_initialized) return;
             $('#send-test, #send-message, #stop-send-message').click(_sendMessageButtonClick);
             _checkExistingDeviceStatus();
+            $('#enable-all').click(_enableAll);
             _initialized = true;
         },
     };
