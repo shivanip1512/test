@@ -65,11 +65,25 @@
                         <cti:msg2 var="editText" key=".edit.hoverText"/>
                         <cti:msg2 var="saveText" key="yukon.common.save"/>
                         <div id="js-edit-note-btn-group-${noteId}" class="button-group">
-                            <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
+                            <c:choose>
+                                <c:when test="${userLevel == 'ADMIN'}">
+                                    <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
                                         data-note-id="${noteId}" title="${editText}"/>
-                            <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
+                                    <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
                                         data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
-                            <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
+                                    <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
+                                </c:when>
+                                <c:when test="${userLevel == 'OWNER'}">
+                                    <c:if test="${recentNote.paoNote.createUserName == username}">
+                                        <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
+                                                    data-note-id="${noteId}" title="${editText}"/>
+                                        <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
+                                                    data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
+                                        <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>               
+                                    </c:if>
+                                </c:when>
+                                <c:otherwise/>
+                            </c:choose>         
                         </div>
                         <div id="js-save-note-group-${noteId}" class="button-group dn">
                             <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 

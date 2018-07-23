@@ -23,6 +23,7 @@ import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.paonote.validator.PaoNoteValidator;
@@ -39,7 +40,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private RolePropertyDao rolePropertyDao;
     @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
-        setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
+        setupModel(deviceId, userContext.getYukonUser(), model);
         return "paoNotesWidget/render.jsp";
     }
 
@@ -50,7 +51,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         paoNoteValidator.validate(paoNote, result);
 
         if (result.hasErrors()) {
-            setupModel(paoNote.getPaoId(), userContext.getYukonUser().getUsername(), model);
+            setupModel(paoNote.getPaoId(), userContext.getYukonUser(), model);
             return "paoNotesWidget/render.jsp";
         }
         paoNotesService.create(paoNote, userContext.getYukonUser());
@@ -63,7 +64,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         if (paoNotesService.canUpdateNote(noteId, userContext.getYukonUser())) {
             paoNotesService.delete(noteId);
         }
-        setupModel(deviceId, userContext.getYukonUser().getUsername(), model);
+        setupModel(deviceId, userContext.getYukonUser(), model);
         return "paoNotesWidget/render.jsp";
     }
     
@@ -90,17 +91,21 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         return jsonResponse;
     }
 
-    private void setupModel(int deviceId, String userName, ModelMap model) {
+    private void setupModel(int deviceId, LiteYukonUser user, ModelMap model) {
         PaoNote createPaoNote = null;
         if (model.containsAttribute("createPaoNote")) {
             createPaoNote = (PaoNote) model.get("createPaoNote");
         } else {
             createPaoNote = new PaoNote();
-            createPaoNote.setCreateUserName(userName);
+            createPaoNote.setCreateUserName(user.getUsername());
             createPaoNote.setPaoId(deviceId);
         }
         model.addAttribute("createPaoNote", createPaoNote);
-
+        
+        AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_NOTES, AccessLevel.class, user);
+        model.addAttribute("userLevel", userLevel);
+        model.addAttribute("username", user.getUsername());
+        
         List<PaoNotesSearchResult> recentNotes = null;
         if (model.containsAttribute("recentNotes")) {
             recentNotes = (List<PaoNotesSearchResult>) model.get("recentNotes");

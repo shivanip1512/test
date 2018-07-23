@@ -53,6 +53,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -84,7 +85,8 @@ public class PaoNotesSearchController {
     @Autowired private PaoNotesFilterValidator validator;
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private ServerDatabaseCache databaseCache;
-
+    @Autowired private RolePropertyDao rolePropertyDao;
+    
     private static final String baseKey = "yukon.web.common.paoNote.";
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
@@ -297,5 +299,9 @@ public class PaoNotesSearchController {
         model.addAttribute("searchResults", searchResults);
         model.addAttribute("popupTitle", accessor.getMessage("yukon.web.common.paoNotesPopup.title", 
                                                              databaseCache.getAllPaosMap().get(paoId).getPaoName()));
+        
+        AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_NOTES, AccessLevel.class, userContext.getYukonUser());
+        model.addAttribute("userLevel", userLevel);
+        model.addAttribute("username", userContext.getYukonUser().getUsername());
     }
 }
