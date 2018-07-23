@@ -1,6 +1,8 @@
 package com.cannontech.web.stars.gateway.listener;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -9,12 +11,14 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
@@ -29,6 +33,7 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
@@ -39,6 +44,7 @@ import com.cannontech.core.dao.NotFoundException;
 public class GatewayDataTopicListener implements MessageListener {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDataTopicListener.class);
+    private static final int minReadyNodeArchiveFrequencyMinutes = 60;
     
     @Autowired private RfnGatewayDataCache cache;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
@@ -46,7 +52,10 @@ public class GatewayDataTopicListener implements MessageListener {
     @Autowired private ConfigurationSource configSource;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private NmSyncServiceImpl nmSyncService;
+    
     private boolean isDataStreamingEnabled;
+    private Map<PaoIdentifier, Instant> deviceReadyNodeLastArchiveTimes = new HashMap<>();
+    
     
     @PostConstruct
     public void init() {
@@ -78,21 +87,41 @@ public class GatewayDataTopicListener implements MessageListener {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             log.debug("Handling gateway data message: " + message);
             RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
+            
             nmSyncService.syncGatewayName(rfnDevice, message.getName());
+            
             cache.put(rfnDevice.getPaoIdentifier(), data);
+            
+            // Archive data streaming point values only if data streaming is enabled and gateway supports it
             if (isDataStreamingEnabled && rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
                 rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
                     data.getDataStreamingLoadingPercent(), false);
             }
-            rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.READY_NODES, message.getGwTotalReadyNodes(),
-                true);
+            
+            // Archive ready nodes values, at most, once per hour
+            archiveReadyNodesValue(rfnDevice, message.getGwTotalReadyNodes());
+            
+            // Always archive comm status
             int commStatus = message.getConnectionStatus() == ConnectionStatus.CONNECTED ? 0 : 1;
             rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.COMM_STATUS, commStatus, true);
         } catch (NotFoundException e) {
             log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
         }
     }
-
+    
+    private void archiveReadyNodesValue(RfnDevice rfnDevice, int gwTotalReadyNodes) {
+        Instant previousArchiveTime = deviceReadyNodeLastArchiveTimes.get(rfnDevice.getPaoIdentifier());
+        
+        if (previousArchiveTime == null || TimeUtil.isXMinutesBeforeNow(minReadyNodeArchiveFrequencyMinutes, previousArchiveTime)) {
+            // Update time exceeded, so flag as "must archive"
+            deviceReadyNodeLastArchiveTimes.put(rfnDevice.getPaoIdentifier(), Instant.now());
+            rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.READY_NODES, gwTotalReadyNodes, true);
+        } else {
+            // Send to dispatch, but don't flag as "must archive"
+            rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.READY_NODES, gwTotalReadyNodes, false);
+        }
+    }
+    
     private void handleGatewayUpgradeMessage(RfnGatewayUpgradeResponse gatewayUpgradeMessage) {
         
         String certificateId = gatewayUpgradeMessage.getUpgradeId();
