@@ -21,9 +21,9 @@
                 <%@ include file="../../common/paoNotes/selectPaos.jsp" %>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".createDate" nameClass="namecolumnWidth">
-                <dt:date path="dateRange.min" wrapperClass="fn vam" displayPickerInViewMode="true" id="startDate"/>
+                <dt:date path="dateRange.min" wrapperClass="fn vam" forceDisplayPicker="true" id="startDate_${id}"/>
                 <i:inline key="yukon.common.to"/>
-                <dt:date path="dateRange.max" wrapperClass="fn vam" displayPickerInViewMode="true" id="endDate"/>
+                <dt:date path="dateRange.max" wrapperClass="fn vam" forceDisplayPicker="true" id="endDate_${id}"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".createdBy" nameClass="namecolumnWidth">
                 <cti:yukonUser var="currentUser"/>
