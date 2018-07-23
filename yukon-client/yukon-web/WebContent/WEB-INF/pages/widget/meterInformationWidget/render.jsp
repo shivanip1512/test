@@ -37,7 +37,8 @@
     </tags:nameValue2>
     <c:if test="${hasNotes}">
         <tags:nameValue2 nameKey=".notes">
-            ${fn:escapeXml(note)} (<a href="#"><i:inline key="yukon.common.viewAll"/></a>)
+            ${fn:escapeXml(note)} (<a class="js-view-all-notes" href="javascript:void(0)" 
+                                      data-pao-id="${meter.deviceId}"><i:inline key="yukon.common.viewAll"/></a>)
         </tags:nameValue2>
     </c:if>
     
@@ -65,5 +66,6 @@
         <cti:button nameKey="edit" icon="icon-pencil" data-popup="#meter-info-popup"/>
     </cti:checkRolesAndProperties>
 </div>
-
+<div class="dn" id="js-pao-notes-popup"></div>
+<cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 <cti:includeScript link="/resources/js/widgets/yukon.widget.meter.info.js"/>
