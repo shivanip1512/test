@@ -62,7 +62,7 @@ private:
     std::unique_ptr<e2edt_packet> parseE2eDtRequestPayload(const std::vector<unsigned char>&, const RfnIdentifier&);
 
     std::vector<unsigned char> buildE2eDtReplyPayload(const e2edt_packet&);
-    std::vector<unsigned char> buildE2eRequestNotAcceptable(unsigned id) const;
+    std::vector<unsigned char> buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const;
 
     void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const std::vector<unsigned char>&);
 

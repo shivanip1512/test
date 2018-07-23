@@ -172,7 +172,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                             {
                                 CTILOG_INFO(dout, "Sending E2E Request Not Acceptable for " << requestMsg.rfnIdentifier);
 
-                                e2edtReply = buildE2eRequestNotAcceptable(e2edtRequest->id);
+                                e2edtReply = buildE2eRequestNotAcceptable(e2edtRequest->id, e2edtRequest->token);
 
                                 sendE2eDataIndication(requestMsg, e2edtReply);
 
@@ -318,14 +318,21 @@ std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_pack
 }
 
 
-std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned id) const
+std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const
 {
     Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_406_NOT_ACCEPTABLE, id, COAP_MAX_PDU_SIZE));
+
+    //  add token to reply
+    unsigned char reply_token_buf[4];
+
+    const unsigned reply_token_len = coap_encode_var_bytes(reply_token_buf, token);
+
+    coap_add_token(reply_pdu, reply_token_len, reply_token_buf);
 
     const unsigned char *raw_reply_pdu = reinterpret_cast<unsigned char *>(reply_pdu->hdr);
 
     return { raw_reply_pdu,
-        raw_reply_pdu + reply_pdu->length };
+             raw_reply_pdu + reply_pdu->length };
 }
 
 
