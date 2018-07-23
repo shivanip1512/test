@@ -123,12 +123,12 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 else if( auto response = handleResponse(Now, indication.rfnIdentifier, message) )
                 {
                     CTILOG_INFO(dout, "Results for device " << indication.rfnIdentifier << " token " << message.token << std::endl
-                         << boost::join(response->results 
+                         << boost::join(response->commandResults
                               | boost::adaptors::transformed([](const RfnCommandResult & result) {
                                     return std::to_string(result.status) + ": " + result.description;  }), 
                               "\n"));
 
-                    _resultsPerTick.emplace_back(std::move(response->request), std::move(response->results));
+                    _resultsPerTick.emplace_back(std::move(*response));
 
                     completedDevices.insert(indication.rfnIdentifier);
                 }
@@ -251,7 +251,7 @@ auto RfnRequestManager::handleCommandResponse(const CtiTime Now, const RfnIdenti
         commandResults.emplace_back(ce.error_description, ce.error_code);
     }
 
-    return RequestResults { std::move(activeRequest.request), std::move(commandResults) };
+    return RfnDeviceResult { std::move(activeRequest.request), std::move(commandResults) };
 }
 
 
@@ -273,7 +273,7 @@ auto RfnRequestManager::handleCommandError(const CtiTime Now, const RfnIdentifie
         commandResults.emplace_back(ce.error_description, ce.error_code);
     }
 
-    return RequestResults { std::move(activeRequest.request), std::move(commandResults) };
+    return RfnDeviceResult { std::move(activeRequest.request), std::move(commandResults) };
 }
 
 

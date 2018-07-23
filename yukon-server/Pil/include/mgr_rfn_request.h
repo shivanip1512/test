@@ -184,13 +184,7 @@ private:
     Mutex                _activeRequestsMux;
     RfnIdToActiveRequest _activeRequests;
 
-    struct RequestResults
-    {
-        RfnDeviceRequest request;
-        Devices::Commands::RfnCommandResultList results;
-    };
-
-    using OptionalResults = std::optional<RequestResults>;
+    using OptionalResults = std::optional<RfnDeviceResult>;
 
     ConfigNotificationPtr handleUnsolicitedReport  (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
     OptionalResults       handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
