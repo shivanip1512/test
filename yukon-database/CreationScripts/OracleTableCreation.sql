@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2018 3:40:02 PM                         */
+/* Created on:     7/24/2018 12:57:19 AM                        */
 /*==============================================================*/
 
 
@@ -7831,7 +7831,7 @@ create table PorterResponseMonitor  (
    constraint PK_PortRespMonId primary key (MonitorId)
 );
 
-INSERT INTO PorterResponseMonitor VALUES (1, 'Default All Meters', '/', -14, 'OUTAGE_STATUS', 'DISABLED');
+INSERT INTO PorterResponseMonitor VALUES (1, 'Default All PLC Meters', '/System/Meters/All Meters/All MCT Meters', -14, 'OUTAGE_STATUS', 'DISABLED');
 
 /*==============================================================*/
 /* Index: Indx_PortRespMon_Name_UNQ                             */

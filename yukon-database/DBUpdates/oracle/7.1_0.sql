@@ -541,6 +541,14 @@ INSERT INTO YukonRoleProperty VALUES(-21407, -214, 'Manage Notes', 'OWNER', 'Con
 INSERT INTO DBUpdates VALUES ('YUK-18477', '7.1.0', SYSDATE);
 /* @end YUK-18477 */
 
+/* @start YUK-18489 */
+UPDATE PorterResponseMonitor 
+SET Name = 'Default All PLC Meters', GroupName = '/System/Meters/All Meters/All MCT Meters' 
+WHERE Name = 'Default All Meters';
+
+INSERT INTO DBUpdates VALUES ('YUK-18489', '7.1.0', GETDATE());
+/* @end YUK-18489 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
