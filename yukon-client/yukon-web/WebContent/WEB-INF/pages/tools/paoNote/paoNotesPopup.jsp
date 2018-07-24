@@ -26,13 +26,13 @@
             </div>
         </div>
     </form:form>
-    <div class="scroll-lg" id="pao-notes-list-container" data-url="${searchUrl}" data-static>
-        <br>
-        <c:choose>
-            <c:when test="${empty searchResults}">
-                <span class="empty-list"><i:inline key=".noNotes"/></span>
-            </c:when>
-            <c:otherwise>
+    <br>
+    <c:choose>
+        <c:when test="${empty searchResults}">
+            <span class="empty-list"><i:inline key=".noNotes"/></span>
+        </c:when>
+        <c:otherwise>
+            <div class="scroll-lg" id="pao-notes-list-container" data-url="${searchUrl}" data-static>
                 <table class="compact-results-table has-actions row-highlighting wrbw" style="width:100%; table-layout:fixed;">
                     <thead>
                             <th width="36%"><i:inline key="yukon.web.common.paoNote.noteText"/></th>
@@ -117,7 +117,7 @@
                         </c:forEach>
                     </tbody>
                 </table>
-            </c:otherwise>
-        </c:choose>
-    </div>
+            </div>
+        </c:otherwise>
+    </c:choose>
 </cti:msgScope>
