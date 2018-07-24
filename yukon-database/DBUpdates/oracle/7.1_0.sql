@@ -546,7 +546,7 @@ UPDATE PorterResponseMonitor
 SET Name = 'Default All PLC Meters', GroupName = '/System/Meters/All Meters/All MCT Meters' 
 WHERE Name = 'Default All Meters';
 
-INSERT INTO DBUpdates VALUES ('YUK-18489', '7.1.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-18489', '7.1.0', SYSDATE);
 /* @end YUK-18489 */
 
 /**************************************************************/
