@@ -179,6 +179,9 @@ public:
     void updatePointResponseDeltas(std::set<long> pointIds);
 
     bool areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
+
+    bool areCapbankMonitorPointsNewerThan( const CtiTime & timestamp );
+
     bool isScanFlagSet();
     bool scanAllMonitorPoints();
     bool isBusAnalysisNeeded(const CtiTime& currentDateTime);

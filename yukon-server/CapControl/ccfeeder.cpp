@@ -3017,7 +3017,10 @@ bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, Cti
                 setLastVerificationMsgSentSuccessfulFlag(true);
                 setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
                 setLastOperationTime(currentDateTime);
-               //((CtiCCFeeder*)_ccfeeders[currentPosition])->setLastOperationTime(currentDateTime);
+                if ( getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                {
+                    updatePointResponsePreOpValues( currentCapBank );
+                }
                 setVarValueBeforeControl(getCurrentVarLoadPointValue());
                 setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                 figureEstimatedVarLoadPointValue();
@@ -3134,6 +3137,10 @@ bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                 setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
                 setLastOperationTime(currentDateTime);
                 setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                if ( getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                {
+                    updatePointResponsePreOpValues( currentCapBank );
+                }
                 setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                 setLastVerificationMsgSentSuccessfulFlag(true);
                 setWaitForReCloseDelayFlag(false);

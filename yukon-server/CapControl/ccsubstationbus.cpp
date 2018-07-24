@@ -4401,8 +4401,11 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                         setLastFeederControlled(currentFeeder->getPaoId());
                         currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
                         currentFeeder->setLastOperationTime(currentDateTime);
-                       ((CtiCCFeeder*)_ccfeeders.at(i))->setLastOperationTime(currentDateTime);
                         setVarValueBeforeControl(getCurrentVarLoadPointValue() );
+                        if ( getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                        {
+                            updatePointResponsePreOpValues( currentCapBank );
+                        }
                         setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
@@ -4525,6 +4528,10 @@ void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTi
                         currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
                         currentFeeder->setLastOperationTime(currentDateTime);
                         setVarValueBeforeControl(getCurrentVarLoadPointValue() );
+                        if ( getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                        {
+                            updatePointResponsePreOpValues( currentCapBank );
+                        }
                         setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
@@ -5661,6 +5668,25 @@ CtiCCCapBankPtr CtiCCSubstationBus::canConsiderPoint( const CtiCCMonitorPoint & 
 
     return nullptr;
 }
+
+bool CtiCCSubstationBus::areCapbankMonitorPointsNewerThan( const CtiTime & timestamp )
+{
+    for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
+    {
+        if ( CtiCCCapBankPtr bank = canConsiderPoint( *point ) )
+        {
+            if ( point->getTimeStamp() < timestamp )
+            {
+                // found one that is older than the timestamp
+
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 
 bool CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 {

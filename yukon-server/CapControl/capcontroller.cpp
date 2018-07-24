@@ -68,6 +68,8 @@ extern bool  _ALLOW_PARALLEL_TRUING;
 extern bool  _ENABLE_IVVC;
 extern bool  _AUTO_VOLT_REDUCTION;
 extern long  _VOLT_REDUCTION_SYSTEM_POINTID;
+extern unsigned long _POST_CONTROL_WAIT;
+extern unsigned long _SCAN_WAIT_EXPIRE;
 
 using Cti::ThreadStatusKeeper;
 using std::endl;
@@ -1108,6 +1110,14 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                             CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
                             CtiMultiMsg_vec& capMessages)
 {
+    // shim out IVVC bus verification to its own function
+    if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+    {
+        analyzeVerificationBusIvvc(currentSubstationBus, currentDateTime,pointChanges, ccEvents, pilMessages, capMessages );
+
+        return;
+    }
+
     try
     {
         if (currentSubstationBus->isBusPerformingVerification())
@@ -4086,3 +4096,373 @@ void CtiCapController::enqueueEventLogEntries(const EventLogEntries &events)
         enqueueEventLogEntry(event);
     }
 }
+
+void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr currentSubstationBus,
+                                                   const CtiTime &       currentDateTime,
+                                                   CtiMultiMsg_vec &     pointChanges,
+                                                   EventLogEntries &     ccEvents,
+                                                   CtiMultiMsg_vec &     pilMessages,
+                                                   CtiMultiMsg_vec &     capMessages )
+{
+    struct LocalScanState
+    {
+        long    state;
+        CtiTime scanTime;
+        CtiTime expirationTime;
+    };
+
+    const long busID = currentSubstationBus->getPaoId();
+
+    currentSubstationBus->setLastVerificationCheck(currentDateTime);
+
+    try
+    {
+        if (currentSubstationBus->isBusPerformingVerification())
+        {
+            static std::map<long, LocalScanState>   states;
+
+            switch ( states[ busID ].state )
+            {
+                default:
+                case 0:
+                {
+                    if( (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                         currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder) &&
+                         _ALLOW_PARALLEL_TRUING)
+                    {
+                        try
+                        {
+#if     0
+                            currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
+#else
+                            CTILOG_ERROR( dout, "_ALLOW_PARALLEL_TRUING unsupported for IVVC Verification on bus: "
+                                            << currentSubstationBus->getPaoName() );
+
+                            //reset VerificationFlag
+                            currentSubstationBus->setVerificationFlag(false);
+                            currentSubstationBus->setBusUpdatedFlag(true);
+                            capMessages.push_back(new VerifyBanks(currentSubstationBus->getPaoId(),currentSubstationBus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
+                            capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
+                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                            {
+                               CTILOG_DEBUG(dout, "DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) ");
+                            }
+#endif
+                        }
+                        catch(...)
+                        {
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                        }
+                    }
+                    else if (currentSubstationBus->isVerificationAlreadyControlled() ||
+                             currentSubstationBus->isVerificationPastMaxConfirmTime(currentDateTime))
+                    {
+                        if( (currentSubstationBus->getStrategy()->getControlSendRetries() > 0 ||
+                                 currentSubstationBus->getLastFeederControlledSendRetries() > 0) &&
+                                 !currentSubstationBus->isVerificationAlreadyControlled() &&
+                                 (currentDateTime.seconds() < currentSubstationBus->getLastOperationTime().seconds() + currentSubstationBus->getStrategy()->getMaxConfirmTime()))
+
+                        {
+                            try
+                            {
+                                if (currentSubstationBus->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages))
+                                    currentSubstationBus->setBusUpdatedFlag(true);
+                            }
+                            catch(...)
+                            {
+                                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                            }
+                        }
+                        else if(  currentSubstationBus->getWaitForReCloseDelayFlag() ||
+                                ( !currentSubstationBus->capBankVerificationStatusUpdate(pointChanges, ccEvents)  &&
+                                   currentSubstationBus->getCurrentVerificationCapBankId() != -1)  )
+                        {
+                            states[ busID ].state = 1;
+                            states[ busID ].expirationTime = currentDateTime;
+                            states[ busID ].expirationTime.addSeconds( _POST_CONTROL_WAIT );
+                        }
+                        else
+                        {
+                            states[ busID ].state = 4;
+                            states[ busID ].expirationTime = currentDateTime;
+                            states[ busID ].expirationTime.addSeconds( _POST_CONTROL_WAIT );
+                        }
+                    }
+                    break;
+                }
+                case 1:
+                {
+                    if ( currentDateTime < states[ busID ].expirationTime )
+                    {
+                        break;      // waiting...
+                    }
+
+                    // _POST_CONTROL_WAIT reached, now scan for post-op voltages for delta voltage calculations
+
+                    states[ busID ].state = 2;
+                    states[ busID ].scanTime = currentDateTime;
+                    states[ busID ].expirationTime = currentDateTime;
+                    states[ busID ].expirationTime.addMinutes( _SCAN_WAIT_EXPIRE );
+
+                    CTILOG_DEBUG( dout, "Performing VERIFICATION Post-Op Scan on bus: " << currentSubstationBus->getPaoName() );
+
+                    currentSubstationBus->scanAllMonitorPoints();
+                }
+                case 2:
+                {
+                    if ( ! currentSubstationBus->areCapbankMonitorPointsNewerThan( states[ busID ].scanTime ) 
+                         && ( currentDateTime < states[ busID ].expirationTime ) )
+                    {
+                        break;      // waiting...
+                    }
+
+                    // update delta voltages
+
+                    currentSubstationBus->updatePointResponseDeltas();
+
+                    // issue new scan requests for new pre-op voltages
+
+                    states[ busID ].state = 3;
+                    states[ busID ].scanTime = currentDateTime;
+                    states[ busID ].expirationTime = currentDateTime;
+                    states[ busID ].expirationTime.addMinutes( _SCAN_WAIT_EXPIRE );
+
+                    CTILOG_DEBUG( dout, "Performing VERIFICATION Pre-Op Scan on bus: " << currentSubstationBus->getPaoName() );
+
+                    currentSubstationBus->scanAllMonitorPoints();
+                }
+                case 3:
+                {
+                    if ( ! currentSubstationBus->areCapbankMonitorPointsNewerThan( states[ busID ].scanTime ) 
+                         && ( currentDateTime < states[ busID ].expirationTime ) )
+                    {
+                        break;      // waiting...
+                    }
+
+                    // issue return to original state control
+
+                    try
+                    {
+                        if (currentSubstationBus->sendNextCapBankVerificationControl(currentDateTime, pointChanges, ccEvents, pilMessages))
+                        {
+                            currentSubstationBus->setWaitForReCloseDelayFlag(false);
+                        }
+                        else
+                        {
+                            currentSubstationBus->setWaitForReCloseDelayFlag(true);
+                        }
+                    }
+                    catch(...)
+                    {
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                    }
+
+                    states[ busID ].state = 0;
+
+                    break;
+                }
+                case 4:
+                {
+                    if ( currentDateTime < states[ busID ].expirationTime )
+                    {
+                        break;      // waiting...
+                    }
+
+                    // _POST_CONTROL_WAIT reached, now scan for post-op voltages for delta voltage calculations
+
+                    states[ busID ].state = 5;
+                    states[ busID ].scanTime = currentDateTime;
+                    states[ busID ].expirationTime = currentDateTime;
+                    states[ busID ].expirationTime.addMinutes( _SCAN_WAIT_EXPIRE );
+
+                    CTILOG_DEBUG( dout, "Performing VERIFICATION Post-Op Scan on bus: " << currentSubstationBus->getPaoName() );
+
+                    currentSubstationBus->scanAllMonitorPoints();
+                }
+                case 5:
+                {
+                    if ( ! currentSubstationBus->areCapbankMonitorPointsNewerThan( states[ busID ].scanTime ) 
+                         && ( currentDateTime < states[ busID ].expirationTime ) )
+                    {
+                        break;      // waiting...
+                    }
+
+                    // update delta voltages
+
+                    currentSubstationBus->updatePointResponseDeltas();
+
+                    // issue new scan requests for new pre-op voltages
+
+                    states[ busID ].state = 6;
+                    states[ busID ].scanTime = currentDateTime;
+                    states[ busID ].expirationTime = currentDateTime;
+                    states[ busID ].expirationTime.addMinutes( _SCAN_WAIT_EXPIRE );
+
+                    CTILOG_DEBUG( dout, "Performing VERIFICATION Pre-Op Scan on bus: " << currentSubstationBus->getPaoName() );
+
+                    currentSubstationBus->scanAllMonitorPoints();
+                }
+                case 6:
+                {
+                    if ( ! currentSubstationBus->areCapbankMonitorPointsNewerThan( states[ busID ].scanTime ) 
+                         && ( currentDateTime < states[ busID ].expirationTime ) )
+                    {
+                        break;      // waiting...
+                    }
+
+                    // issue control for next bank if applicable
+
+                    try
+                    {
+                        if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
+                        {
+                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                            {
+                                    CTILOG_DEBUG(dout, "CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) CB-"<<currentSubstationBus->getCurrentVerificationCapBankId());
+                            }
+
+                            currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
+                        }
+                        else
+                        {
+
+                            //reset VerificationFlag
+                            currentSubstationBus->setVerificationFlag(false);
+                            currentSubstationBus->setBusUpdatedFlag(true);
+                            capMessages.push_back(new VerifyBanks(currentSubstationBus->getPaoId(),currentSubstationBus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
+                            capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
+                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                            {
+                               CTILOG_DEBUG(dout, "DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) ");
+                            }
+                        }
+                    }
+                    catch(...)
+                    {
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                    }
+
+                    states.erase( busID );      // reset state machine
+                    break;
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                static std::map<long, LocalScanState>   localState;
+
+                switch ( localState[ busID ].state )
+                {
+                    case 0:     // issue scans...
+                    {
+                        localState[ busID ].state = 1;
+                        localState[ busID ].expirationTime.addMinutes( _SCAN_WAIT_EXPIRE );
+
+                        CTILOG_DEBUG( dout, "Performing VERIFICATION Pre-Op Scan on bus: " << currentSubstationBus->getPaoName() );
+
+                        currentSubstationBus->scanAllMonitorPoints();
+                        return;
+                    }
+                    default:
+                    case 1:     // wait for up to _SCAN_WAIT_EXPIRE minutes for new data
+                    {
+                        if ( ! currentSubstationBus->areCapbankMonitorPointsNewerThan( localState[ busID ].scanTime ) 
+                             && ( currentDateTime < localState[ busID ].expirationTime ) )
+                        {
+                            return;     // no -- keep waiting
+                        }
+                    }
+                }
+
+                // falling through the switch means its time to do the verification
+                //  we don't need the LocalScanState for this bus anymore
+
+                localState.erase( busID );
+
+                if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                {
+                   CTILOG_DEBUG(dout, "Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName());
+                }
+                int strategy = (long)currentSubstationBus->getVerificationStrategy();
+
+                currentSubstationBus->setCapBanksToVerifyFlags(strategy, ccEvents);
+
+                if( (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder ||
+                     currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::BusOptimizedFeeder) &&
+                     _ALLOW_PARALLEL_TRUING)
+                {
+                    try
+                    {
+#if     0
+                            currentSubstationBus->analyzeVerificationByFeeder(currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
+#else
+                            CTILOG_ERROR( dout, "_ALLOW_PARALLEL_TRUING unsupported for IVVC Verification on bus: "
+                                            << currentSubstationBus->getPaoName() );
+
+                            //reset VerificationFlag
+                            currentSubstationBus->setVerificationFlag(false);
+                            currentSubstationBus->setBusUpdatedFlag(true);
+                            capMessages.push_back(new VerifyBanks(currentSubstationBus->getPaoId(),currentSubstationBus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
+                            capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
+                            if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                            {
+                               CTILOG_DEBUG(dout, "DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) ");
+                            }
+#endif
+                    }
+                    catch(...)
+                    {
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                    }
+                }
+                else if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
+                {
+                    try
+                    {
+                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                        {
+                             CTILOG_DEBUG(dout, "CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId());
+                        }
+                        currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
+                        currentSubstationBus->setBusUpdatedFlag(true);
+                    }
+                    catch(...)
+                    {
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        //reset VerificationFlag
+                        currentSubstationBus->setVerificationFlag(false);
+                        currentSubstationBus->setBusUpdatedFlag(true);
+                        capMessages.push_back(new VerifyBanks(currentSubstationBus->getPaoId(),currentSubstationBus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION));
+                        capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
+
+                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
+                        {
+                           CTILOG_DEBUG(dout, "DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName());
+                        }
+                    }
+                    catch(...)
+                    {
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                    }
+                }
+            }
+            catch(...)
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+            }
+        }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+    }
+}
+

@@ -28,8 +28,6 @@ class IVVCAlgorithm
 
         void setPointDataRequestFactory(const PointDataRequestFactoryPtr& factory);
 
-      //  typedef std::map<Zone::IdSet::value_type, int>  TapOperationZoneMap;
-
     protected:
 
         bool checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus );
@@ -110,7 +108,6 @@ class IVVCAlgorithm
 
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
-        bool busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
         void setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, Cti::CapControl::EventLogEntries &ccEvents);
         bool allRegulatorsInRemoteMode(const long subbusId) const;
 
@@ -154,6 +151,7 @@ class IVVCAlgorithm
 
         bool regulatorsReadyForDmvTest( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );
 
+        bool executeBusVerification( IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy );
 
         PointDataRequestFactoryPtr _requestFactory;
 };

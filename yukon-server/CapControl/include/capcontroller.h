@@ -79,6 +79,10 @@ class CtiCapController : public MessageListener
 
         void porterReturnMsg(const CtiReturnMsg &retMsg);
 
+        void analyzeVerificationBusIvvc( CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
+                                         CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
+                                         CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
+
     private:
 
         //Thread Functions
