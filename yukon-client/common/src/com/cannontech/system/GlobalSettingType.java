@@ -69,6 +69,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     MSP_RFN_PING_FORCE_CHANNEL_READ(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),      //YUK-13818
     MSP_DISABLE_DISCONNECT_STATUS(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     CIS_DETAIL_TYPE(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(CisDetailRolePropertyEnum.class), CisDetailRolePropertyEnum.NONE),
+    MSP_REMOVE_DEVICE_FROM_CIS_GROUP(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     
     // OpenADR
     OADR_REQUEST_INTERVAL(GlobalSettingSubCategory.OPEN_ADR, integerType(), 60000),

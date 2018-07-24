@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTypeInfo;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -42,6 +44,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.UserUtils;
 import com.google.common.collect.ImmutableList;
 
@@ -62,7 +66,7 @@ public class MultispeakMeterServiceBase {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao substationToRouteMappingDao;
-    
+    @Autowired private GlobalSettingDao globalSettingDao;
     /**
      * Updates the billingCycle device group.
      * The exact parent group to update is configured in MultiSpeak global settings.
@@ -447,4 +451,42 @@ public class MultispeakMeterServiceBase {
             }
         }
     }
+
+    /**
+     * Remove device from Device Group (BillingCycle, CIS Substation & Alternate) and its
+     * child device groups
+     * 
+     */
+
+    public void removeDeviceFromGroups(YukonMeter meter, String mspMethod, MultispeakVendor mspVendor) {
+        List<DeviceGroup> deviceGroupList = new ArrayList<>();
+
+        boolean checkRemoveDeviceFromCISGroup = globalSettingDao.getBoolean(GlobalSettingType.MSP_REMOVE_DEVICE_FROM_CIS_GROUP);
+        if (checkRemoveDeviceFromCISGroup) {
+            DeviceGroup billingCycledeviceGroup = multispeakFuncs.getBillingCycleDeviceGroup();
+            deviceGroupList.add(billingCycledeviceGroup);
+
+            DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_SUBSTATION);
+            deviceGroupList.add(substationNameDeviceGroup);
+
+            boolean updateAltGroup = configurationSource.getBoolean(MasterConfigBoolean.MSP_ENABLE_ALTGROUP_EXTENSION);
+            if (updateAltGroup) {
+                DeviceGroup altGroupDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
+                deviceGroupList.add(altGroupDeviceGroup);
+            }
+        }
+
+        deviceGroupList.forEach(deviceGroup -> {
+            StoredDeviceGroup storedDeviceGroup = deviceGroupEditorDao.getStoredGroup(deviceGroup);
+            Set<StoredDeviceGroup> storedDeviceGroups = deviceGroupMemberEditorDao.getGroupMembership(storedDeviceGroup, meter);
+            storedDeviceGroups.forEach(group -> {
+                int numAffected = deviceGroupMemberEditorDao.removeDevices(group, meter);
+                if (numAffected > 0) {
+                    multispeakEventLogService.removeMeterFromGroup(meter.getMeterNumber(), deviceGroup.getFullName(),
+                        mspMethod, mspVendor.getCompanyName());
+                }
+            });
+        });
+    }
+
 }

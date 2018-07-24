@@ -320,7 +320,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             YukonMeter meter;
             try {
                 meter = getMeterByMeterNumber(mspMeter.getPrimaryIdentifier().getValue());
-
+                removeDeviceFromGroups(meter, METER_UNINSTALL_STRING, mspVendor);
                 // Added meter to Inventory
                 addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_UNINSTALL_STRING, mspVendor);
                 if (!meter.isDisabled()) {// enabled

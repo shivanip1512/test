@@ -223,6 +223,8 @@
     <entry key="yukon.common.setting.MSP_RFN_PING_FORCE_CHANNEL_READ.description">Force an attribute read for RFN meter types, otherwise latest archived outage status will be used.</entry>
     <entry key="yukon.common.setting.MSP_DISABLE_DISCONNECT_STATUS">Disable Disconnect Status</entry>
     <entry key="yukon.common.setting.MSP_DISABLE_DISCONNECT_STATUS.description">When true, disable the meters in initiateDisconnectStatus request or enable the meters in cancelDisconnectStatus request.</entry>
+    <entry key="yukon.common.setting.MSP_REMOVE_DEVICE_FROM_CIS_GROUP">Remove Device From CIS Device Group</entry>
+    <entry key="yukon.common.setting.MSP_REMOVE_DEVICE_FROM_CIS_GROUP.description">When true, remove device from CIS Device Group(Billing Cycle, Alternate, CIS Substation).</entry>
     <entry key="yukon.common.setting.CIS_DETAIL_TYPE">CIS Information Type</entry>
     <entry key="yukon.common.setting.CIS_DETAIL_TYPE.description">Defines the type of CIS Information widget to display.</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE">Default Rounding Mode</entry>
