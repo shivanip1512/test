@@ -453,6 +453,26 @@ public class MultispeakMeterServiceBase {
     }
 
     /**
+     * Create cisDeviceClass Device group if it is not exist and also remove meter from any other
+     * device group of the same parent.
+     */
+    public boolean updateCISDeviceClassGroup(String meterNumber, String cisDeviceClass, YukonDevice yukonDevice,
+            String mspMethod, MultispeakVendor mspVendor) {
+        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
+        if (usesExtension) {
+            String extensionName = multispeakFuncs.getPaoNameAliasExtension();
+            if (extensionName.equalsIgnoreCase("DeviceClass")) {
+                // Remove from all CIS deviceClass membership groups
+                DeviceGroup cisDeviceClassDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_DEVICECLASS);
+                StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(cisDeviceClassDeviceGroup);
+                return updatePrefixGroup(cisDeviceClass, meterNumber, yukonDevice, mspMethod, mspVendor, deviceGroupParent);
+
+            }
+        }
+        return false;
+    }
+
+    /**
      * Remove extension " [alphanumeric]" from DeviceName
      */
 
@@ -469,7 +489,7 @@ public class MultispeakMeterServiceBase {
     }
 
     /**
-     * Remove device from Device Group (BillingCycle, CIS Substation & Alternate) and its
+     * Remove device from Device Group (BillingCycle, CIS DeviceClass, CIS Substation & Alternate) and its
      * child device groups
      * 
      */
@@ -489,6 +509,16 @@ public class MultispeakMeterServiceBase {
             if (updateAltGroup) {
                 DeviceGroup altGroupDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
                 deviceGroupList.add(altGroupDeviceGroup);
+            }
+        }
+
+        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
+        if (usesExtension) {
+            String extensionName = multispeakFuncs.getPaoNameAliasExtension();
+            if (extensionName.equalsIgnoreCase("DeviceClass")) {
+                // Custom for WHE to remove the device class extension value from the device name.
+                DeviceGroup cisDeviceClassGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_DEVICECLASS);
+                deviceGroupList.add(cisDeviceClassGroup);
             }
         }
 

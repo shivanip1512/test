@@ -369,7 +369,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         }
 
                         removeFromGroup(newMeter, SystemGroupEnum.INVENTORY, METER_INSTALLED_STRING, mspVendor);
-
+                        if (!StringUtils.isBlank(mspMeter.getDeviceClass())) {
+                            updateCISDeviceClassGroup(mspMeter.getPrimaryIdentifier().getValue(), mspMeter.getDeviceClass(), newMeter, METER_INSTALLED_STRING, mspVendor);
+                        }
                         String billingCycle = mspMeter.getBillingCycle();
                         updateBillingCyle(billingCycle, newMeter.getMeterNumber(), newMeter, METER_INSTALLED_STRING,
                             mspVendor);
@@ -475,7 +477,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         multispeakEventLogService.disableDevice(existingMeter.getMeterNumber(),
                                             existingMeter, METER_EXCHANGED_STRING, mspVendor.getCompanyName());
                                     }
-
+                                    if (!StringUtils.isBlank(replacementMspMeter.getDeviceClass())) {
+                                        updateCISDeviceClassGroup(replacementMspMeter.getPrimaryIdentifier().getValue(),
+                                            replacementMspMeter.getDeviceClass(), replacementMeter, METER_EXCHANGED_STRING, mspVendor);
+                                    }
                                     String billingCycle = replacementMspMeter.getBillingCycle();
                                     updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(),
                                         replacementMeter, METER_EXCHANGED_STRING, mspVendor);
@@ -555,6 +560,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             meterToChange =
                                 updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING,
                                     mspVendor, false);
+
+                            if (!StringUtils.isBlank(mspMeter.getDeviceClass())) {
+                                updateCISDeviceClassGroup(mspMeter.getPrimaryIdentifier().getValue(),
+                                    mspMeter.getDeviceClass(), meterToChange, METER_CHANGED_STRING, mspVendor);
+                            }
                             verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter,
                                 SERV_LOC_CHANGED_STRING);
                         } catch (NotFoundException e) {
@@ -961,6 +971,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
                                         verifyAndUpdatePaoName(newPaoName, meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
+                                        if (!StringUtils.isBlank(mspMeter.getDeviceClass())) {
+                                            updateCISDeviceClassGroup(mspMeter.getPrimaryIdentifier().getValue(),
+                                                mspMeter.getDeviceClass(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                        }
                                         String billingCycle = mspMeter.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
                                         verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, mspMeter, SERV_LOC_CHANGED_STRING);

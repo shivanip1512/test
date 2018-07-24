@@ -1303,7 +1303,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         }
 
                         removeFromGroup(newMeter, SystemGroupEnum.INVENTORY, METER_ADD_STRING, mspVendor);
-
+                        if (!StringUtils.isBlank(mspMeter.getDeviceClass())) {
+                            updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeter.getDeviceClass(), newMeter, METER_ADD_STRING, mspVendor);
+                        }
                         // TODO Consider moving this stuff out of this transaction....requesting serviceLocaiton could fail and shouldn't roll back the rest of this.
                         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(mspMeter.getMeterNo(), mspVendor);
 
@@ -1673,6 +1675,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
                                         verifyAndUpdatePaoName(newPaoName, meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
+                                        if (!StringUtils.isBlank(mspMeter.getDeviceClass())) {
+                                            updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeter.getDeviceClass(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                        }
+
                                         String billingCycle = mspServiceLocation.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
                                         updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
@@ -1746,7 +1752,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                 templateMeter = meterToChange;
                             }
                             meterToChange = updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING, mspVendor, false);
-
+                            if (!StringUtils.isBlank(mspMeter.getDeviceClass())) {
+                                updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeter.getDeviceClass(), meterToChange, METER_CHANGED_STRING, mspVendor);
+                            }
                             // using null for mspServiceLocation. See comments in getSubstationNameFromMspMeter(...)
                             verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter, null, SERV_LOC_CHANGED_STRING);
                         } catch (NotFoundException e) {

@@ -53,6 +53,7 @@ public enum SystemGroupEnum {
     DEMAND_RESPONSE,
     LOAD_GROUPS,
     LOAD_PROGRAMS,
+    CIS_DEVICECLASS,
     ;
 }
 
