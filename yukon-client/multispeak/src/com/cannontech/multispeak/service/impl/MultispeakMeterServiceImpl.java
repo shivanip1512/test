@@ -1593,6 +1593,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 YukonMeter meter;
                 try {
                     meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
+                    removeDeviceNameExtension(meter, METER_REMOVE_STRING, mspVendor);
                     removeDeviceFromGroups(meter, METER_REMOVE_STRING, mspVendor);
                     // Added meter to Inventory
                     addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
@@ -1927,6 +1928,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             String extensionName = multispeakFuncs.getPaoNameAliasExtension();
             if (extensionName.equalsIgnoreCase("meterno")) { // specific field
                 return mspMeter.getMeterNo();
+            } else if (extensionName.equalsIgnoreCase("deviceclass")) { // specific field (WHE custom)
+                return mspMeter.getDeviceClass();
             } else { // use extensions
                 return getExtensionValue(mspMeter.getExtensionsList(), extensionName, null);
             }

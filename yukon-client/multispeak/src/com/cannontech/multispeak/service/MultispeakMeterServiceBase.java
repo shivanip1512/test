@@ -453,6 +453,22 @@ public class MultispeakMeterServiceBase {
     }
 
     /**
+     * Remove extension " [alphanumeric]" from DeviceName
+     */
+
+    public void removeDeviceNameExtension(YukonMeter meter, String mspMethod, MultispeakVendor mspVendor) {
+        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
+        if (usesExtension) {
+            String extensionName = multispeakFuncs.getPaoNameAliasExtension();
+            if (extensionName.equalsIgnoreCase("DeviceClass")) { 
+                // Custom for WHE to remove the device class extension value from the device name.
+                String newPaoName = StringUtils.removePattern(meter.getName(), "\\s+\\[[a-zA-Z0-9]+\\]").trim();
+                verifyAndUpdatePaoName(newPaoName, meter, mspMethod, mspVendor);
+            }
+        }
+    }
+
+    /**
      * Remove device from Device Group (BillingCycle, CIS Substation & Alternate) and its
      * child device groups
      * 
