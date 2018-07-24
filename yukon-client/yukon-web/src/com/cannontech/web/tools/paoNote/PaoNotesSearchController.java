@@ -296,12 +296,17 @@ public class PaoNotesSearchController {
         } else {
             searchResults = paoNotesService.getAllNotesByPaoId(paoId).getResultList();
         }
+        
+        AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_NOTES, AccessLevel.class, userContext.getYukonUser());
+        searchResults.stream().forEach(note -> {
+            if (userLevel == AccessLevel.ADMIN 
+                    || (userLevel == AccessLevel.OWNER && note.getPaoNote().getCreateUserName().equals(userContext.getYukonUser().getUsername()))) {
+                note.setModifiable(true);
+            }
+         });
+        
         model.addAttribute("searchResults", searchResults);
         model.addAttribute("popupTitle", accessor.getMessage("yukon.web.common.paoNotesPopup.title", 
                                                              databaseCache.getAllPaosMap().get(paoId).getPaoName()));
-        
-        AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_NOTES, AccessLevel.class, userContext.getYukonUser());
-        model.addAttribute("userLevel", userLevel);
-        model.addAttribute("username", userContext.getYukonUser().getUsername());
     }
 }

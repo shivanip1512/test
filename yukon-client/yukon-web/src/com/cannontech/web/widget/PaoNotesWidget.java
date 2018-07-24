@@ -103,8 +103,6 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("createPaoNote", createPaoNote);
         
         AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_NOTES, AccessLevel.class, user);
-        model.addAttribute("userLevel", userLevel);
-        model.addAttribute("username", user.getUsername());
         
         List<PaoNotesSearchResult> recentNotes = null;
         if (model.containsAttribute("recentNotes")) {
@@ -112,6 +110,12 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         } else {
             recentNotes = paoNotesService.findMostRecentNotes(deviceId, 3);
         }
+        recentNotes.stream().forEach(note -> {
+           if (userLevel == AccessLevel.ADMIN 
+                   || (userLevel == AccessLevel.OWNER && note.getPaoNote().getCreateUserName().equals(user.getUsername()))) {
+               note.setModifiable(true);
+           }
+        });
         model.addAttribute("recentNotes", recentNotes);
     }
 
