@@ -48,6 +48,10 @@
     <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span><i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>
 
+<c:if test="${!empty errorMsg}">
+    <div class="error">${fn:escapeXml(errorMsg)}</div>
+</c:if>
+
 <c:forEach items="${attributes}" var="attr">
     <div>
         <h4><i:inline key="${attr}"/></h4>

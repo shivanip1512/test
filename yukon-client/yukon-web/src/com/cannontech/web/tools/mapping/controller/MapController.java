@@ -135,7 +135,9 @@ public class MapController {
     }
     
     @RequestMapping("/map/device/{id}/info")
-    public String info(ModelMap model, @PathVariable int id) {
+    public String info(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        String networkErrorMsg = messageSourceResolver.getMessageSourceAccessor(userContext)
+                                                      .getMessage("yukon.web.modules.tools.map.network.error");
         
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
         PaoType type = pao.getPaoIdentifier().getPaoType();
@@ -157,7 +159,8 @@ public class MapController {
                 RfnGatewayData gateway = gatewayDataCache.get(pao.getPaoIdentifier());
                 model.addAttribute("gatewayIPAddress", gateway.getIpAddress());
             } catch (NmCommunicationException e) {
-                log.error("Failed to get gateway data for " + id, e);           
+                log.error("Failed to get gateway data for " + id, e);
+                model.addAttribute("errorMsg", networkErrorMsg);
             }
         }
         if (type.isRfn()) {
@@ -182,7 +185,8 @@ public class MapController {
                     }
                 }
             } catch (NmCommunicationException e) {
-                log.error("Failed to get metadata for " + id, e);           
+                log.error("Failed to get metadata for " + id, e);
+                model.addAttribute("errorMsg", networkErrorMsg);
             } catch (NotFoundException e) {
                 log.error("Failed to find RFN Device for " + id, e);           
             }
