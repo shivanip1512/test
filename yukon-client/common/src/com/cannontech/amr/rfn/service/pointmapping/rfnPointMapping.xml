@@ -2256,7 +2256,6 @@
 
     <pointGroup>
         <paoType value="RFW201"/>
-        <paoType value="RFW205"/>
         <point name="Water Usage"> 
             <uom>-</uom>
             <parseSiPrefix/>
@@ -2296,7 +2295,6 @@
         
         <pointGroup>
         <paoType value="RFG201"/>
-        <paoType value="RFG205"/>
         <point name="Gas Usage"> 
             <uom>-</uom>
             <parseSiPrefix/>

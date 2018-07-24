@@ -268,10 +268,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     HONEYWELL_THERMOSTAT(DeviceTypes.HONEYWELL_THERMOSTAT, "Honeywell Wi-Fi Thermostat", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
 
     RFW201(DeviceTypes.RFW201, "RFW-201", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFW205(DeviceTypes.RFW205, "RFW-205", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFG201(DeviceTypes.RFG201, "RFG-201", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFG205(DeviceTypes.RFG205, "RFG-205", PaoCategory.DEVICE, PaoClass.RFMESH),
     ;
     
     private final int deviceTypeId;
@@ -481,9 +479,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN530S4ERXR,
             RFWMETER,
             RFW201,
-            RFW205,
             RFG201,
-            RFG205,
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
@@ -529,9 +525,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN530S4ERXR,
             RFWMETER,
             RFW201,
-            RFW205,
             RFG201,
-            RFG205,
             RFN_1200,
             LCR6200_RFN,
             LCR6600_RFN,
@@ -693,12 +687,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
         waterMeterTypes = ImmutableSet.of(
         	RFWMETER, 
-        	RFW201, 
-        	RFW205
+        	RFW201
         	);
         gasMeterTypes = ImmutableSet.of(
-            RFG201, 
-            RFG205
+            RFG201
             );
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
     }

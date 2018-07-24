@@ -254,14 +254,14 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_HONEYWELL_PROGRAM = DEVICE_OFFSET + 192;
     public final static int RFN_RELAY = DEVICE_OFFSET + 193;
     public final static int RFW201 = DEVICE_OFFSET + 194;
-    public final static int RFW205 = DEVICE_OFFSET + 195;
+    //public final static int RFW205 = DEVICE_OFFSET + 195;
     public final static int ECOBEE_3_LITE = DEVICE_OFFSET + 196;
     public final static int LCR6700_RFN = DEVICE_OFFSET + 197;
 
     public final static int CBC_LOGICAL = DEVICE_OFFSET + 198;
     
     public final static int RFG201 = DEVICE_OFFSET + 199;
-    public final static int RFG205 = DEVICE_OFFSET + 200;
+    //public final static int RFG205 = DEVICE_OFFSET + 200;
 
     
     
@@ -415,8 +415,6 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_HONEYWELL_THERMOSTAT = {"Honeywell Wi-Fi Thermostat"};
     public static final String[] STRING_RFN_RELAY = {"RFN Relay"};
     public static final String[] STRING_RFW201 = {"RFW-201", "RFW 201" };
-    public static final String[] STRING_RFW205 = {"RFW-205", "RFW 205" };
     public static final String[] STRING_CBC_LOGICAL  = {"CBC Logical"};
     public static final String[] STRING_RFG201 = {"RFG-201", "RFG 201" };
-    public static final String[] STRING_RFG205 = {"RFG-205", "RFG 205" };
 }

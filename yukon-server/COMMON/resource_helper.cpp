@@ -194,7 +194,6 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 
         //  --- RF water meters ---
         { "RFW201",                      TYPE_RFW201 },
-        { "RFW205",                      TYPE_RFW205 },
 
         //  --- RF gas meters ---
         { "RFG201",                      TYPE_RFG201 },

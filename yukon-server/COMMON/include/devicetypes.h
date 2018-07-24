@@ -105,7 +105,6 @@ enum DeviceTypes {
 
     // RF water meters
     TYPE_RFW201,
-    TYPE_RFW205,
 
     // RF gas meters
     TYPE_RFG201,

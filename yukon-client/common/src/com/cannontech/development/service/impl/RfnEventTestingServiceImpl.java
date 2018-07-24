@@ -188,9 +188,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
 
         groupedMeterTypesBuilder.put("Eaton Water 2", ImmutableList.of(
             RfnManufacturerModel.RFW201_PULSE,
-            RfnManufacturerModel.RFW201_ENCODER,
-            RfnManufacturerModel.RFW205_PULSE,
-            RfnManufacturerModel.RFW205_ENCODER));
+            RfnManufacturerModel.RFW201_ENCODER));
 
         groupedMeterTypesBuilder.put("Legacy Water", ImmutableList.of(
             RfnManufacturerModel.RFN_WATER_SENSOR));

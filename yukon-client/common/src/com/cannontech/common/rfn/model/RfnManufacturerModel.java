@@ -45,11 +45,8 @@ public enum RfnManufacturerModel {
     
     RFW201_PULSE(PaoType.RFW201, "WTR2", "Pulse-201"),
     RFW201_ENCODER(PaoType.RFW201, "WTR2", "Encoder-201"),
-    RFW205_PULSE(PaoType.RFW205, "WTR2", "Pulse-205"),
-    RFW205_ENCODER(PaoType.RFW205, "WTR2", "Encoder-205"),
     
     RFG201_PULSE(PaoType.RFG201, "GAS2", "Pulse-201"),
-//    RFG205_PULSE(PaoType.RFG205, "GAS2", "Pulse-205"),
     
     RFN_430KV(PaoType.RFN430KV, "GE", "kV2"),
     

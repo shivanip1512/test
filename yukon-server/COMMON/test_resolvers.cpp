@@ -238,11 +238,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 
     //  --- RF water meters ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rfw-201"),     TYPE_RFW201);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfw-205"),     TYPE_RFW205);
 
     //  --- RF gas meters ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rfg-201"), TYPE_RFG201);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-205"), TYPE_NONE);
 
     //  --- RTU devices ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dart"),    TYPE_DARTRTU);
@@ -356,7 +354,6 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi thermostat"));
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi visionpro 8000"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn relay"));
-    BOOST_CHECK(isKnownUnsupportedDevice("rfg-205"));
     // Make sure it doesn't always return true
     BOOST_CHECK( ! isKnownUnsupportedDevice("alpha power plus"));
 }

@@ -76,7 +76,7 @@ public class WaterMeterController {
             mav.addObject("showEvents", true);
         }
         
-        if (deviceType == PaoType.RFW201 || deviceType == PaoType.RFW205) {
+        if (deviceType == PaoType.RFW201) {
         	mav.addObject("deviceConfigSupported", true);
         	mav.addObject("configurableDevice", true);
         }

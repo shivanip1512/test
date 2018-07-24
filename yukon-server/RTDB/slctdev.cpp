@@ -267,7 +267,6 @@ const DeviceLookup deviceFactory {
     { TYPE_RFN1200,      MakeDeviceFunc(makeDevice<RfDaDevice>) },
     //  RF water meters
     { TYPE_RFW201,       MakeDeviceFunc(makeDevice<Rfw201Device>) },
-    { TYPE_RFW205,       MakeDeviceFunc(makeDevice<Rfw205Device>) },
     //  RF gas meters
     { TYPE_RFG201,       MakeDeviceFunc(makeDevice<Rfg201Device>) },
     //  Electronic meters
