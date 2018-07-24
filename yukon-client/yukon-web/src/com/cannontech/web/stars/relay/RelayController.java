@@ -27,6 +27,7 @@ import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.model.RfnRelay;
 import com.cannontech.common.rfn.service.RfnRelayService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -39,6 +40,7 @@ import com.google.common.collect.Lists;
 @Controller
 public class RelayController {
     
+    @Autowired private PaoDao paoDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnRelayService rfnRelayService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -92,7 +94,15 @@ public class RelayController {
     
     @RequestMapping("/relay/home")
     public String home(ModelMap model, int deviceId) {
-        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        RfnDevice device;
+        
+        try {
+            device = rfnDeviceDao.getDeviceForId(deviceId);
+        } catch (Exception e) {
+         // Allows clicking on an Rfn Relay Template to not throw a Yukon Exception
+            device = new RfnDevice(paoDao.getYukonPAOName(deviceId), paoDao.getYukonPao(deviceId), null);
+        }
+        
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("deviceName", device.getName());
 

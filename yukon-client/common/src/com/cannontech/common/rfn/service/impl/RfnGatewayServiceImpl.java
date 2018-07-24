@@ -68,6 +68,7 @@ import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -99,6 +100,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RfnDeviceCreationService creationService;
     private RfnDeviceDao rfnDeviceDao;
     private RfnGatewayDataCache dataCache;
+    @Autowired private PaoDao paoDao;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
     @Autowired private AsyncDynamicDataSource dataSource;
     @Autowired private AttributeService attributeService;
@@ -223,7 +225,14 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public RfnGateway getGatewayByPaoId(int paoId) {
         
         // Get base RfnDevice
-        RfnDevice device = rfnDeviceDao.getDeviceForId(paoId);
+        RfnDevice device;
+        try {
+            device = rfnDeviceDao.getDeviceForId(paoId);
+        } catch (Exception e) {
+            // Allows clicking on a Gateway Template to not throw a Yukon Exception
+            return new RfnGateway(paoDao.getYukonPAOName(paoId), paoDao.getYukonPao(paoId), null, null);
+        }
+        
         // Get RfnGatewayData from cache
         RfnGatewayData data = dataCache.getIfPresent(device.getPaoIdentifier());
         
