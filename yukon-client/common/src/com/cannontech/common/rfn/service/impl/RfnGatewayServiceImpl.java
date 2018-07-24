@@ -68,13 +68,13 @@ import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -100,11 +100,10 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RfnDeviceCreationService creationService;
     private RfnDeviceDao rfnDeviceDao;
     private RfnGatewayDataCache dataCache;
-    @Autowired private PaoDao paoDao;
+    @Autowired private IDatabaseCache cache;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
     @Autowired private AsyncDynamicDataSource dataSource;
     @Autowired private AttributeService attributeService;
-
        
     // Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
@@ -230,7 +229,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             device = rfnDeviceDao.getDeviceForId(paoId);
         } catch (Exception e) {
             // Allows clicking on a Gateway Template to not throw a Yukon Exception
-            return new RfnGateway(paoDao.getYukonPAOName(paoId), paoDao.getYukonPao(paoId), null, null);
+            return new RfnGateway(cache.getAllDevices().stream().filter(pao -> paoId == pao.getLiteID()).findFirst().get().getPaoName(),
+                                  cache.getAllDevices().stream().filter(pao -> paoId == pao.getLiteID()).findFirst().get().getPaoIdentifier(),
+                                  null, null);
         }
         
         // Get RfnGatewayData from cache
