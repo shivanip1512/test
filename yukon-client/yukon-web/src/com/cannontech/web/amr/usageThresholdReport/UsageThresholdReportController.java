@@ -172,11 +172,11 @@ public class UsageThresholdReportController {
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
         
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
-        List<ThresholdReportDetail> hasNotesList = report.getDetail().getResultList().stream()
+        List<ThresholdReportDetail> notesList = report.getDetail().getResultList().stream()
                                                                           .filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId()))
                                                                           .collect(Collectors.toList());
         
-        model.addAttribute("hasNotesList", hasNotesList);
+        model.addAttribute("notesList", notesList);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("filter", filter);
         model.addAttribute("reportId", reportId);

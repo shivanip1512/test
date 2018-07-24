@@ -35,14 +35,15 @@
                 <div class="small-circle ${circleColor}" title="${rangeText}"></div>
             </td>
             <td>
-                <c:if test="${hasNotesList.contains(device)}">
-                    <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${device.paoIdentifier.paoId}"/>
+                <c:if test="${notesList.contains(device)}">
+                    <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                    <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${device.paoIdentifier.paoId}"/>
                 </c:if>    
             </td>
             <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
-            <td>${device.meterNumber}</td>
-            <td>${device.paoIdentifier.paoType.paoTypeName}</td>
-            <td>${device.addressSerialNumber}</td>
+            <td>${fn:escapeXml(device.meterNumber)}</td>
+            <td>${fn:escapeXml(device.paoIdentifier.paoType.paoTypeName)}</td>
+            <td>${fn:escapeXml(device.addressSerialNumber)}</td>
             <td>
                 <c:choose>
                     <c:when test="${device.value != null}">

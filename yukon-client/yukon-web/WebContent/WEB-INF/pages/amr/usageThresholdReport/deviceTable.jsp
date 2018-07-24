@@ -65,7 +65,7 @@
             
         <table class="compact-results-table row-highlighting has-alerts has-actions">
             <th></th>
-			<th class="row-icon"/>
+            <th class="row-icon"/>
             <tags:sort column="${deviceName}" />                
             <tags:sort column="${meterNumber}" />                
             <tags:sort column="${deviceType}" />                
@@ -82,14 +82,15 @@
                         <div class="small-circle" title="${availabilityText}" style="background-color:${device.availability.color}"></div>
                     </td>
                     <td>
-                        <c:if test="${hasNotesList.contains(device)}">
-                            <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${device.paoIdentifier.paoId}"/>
+                        <c:if test="${notesList.contains(device)}">
+                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="viewAllNotesTitle" data-pao-id="${device.paoIdentifier.paoId}"/>
                         </c:if>  
                     </td>
                     <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
-                    <td>${device.meterNumber}</td>
-                    <td>${device.paoIdentifier.paoType.paoTypeName}</td>
-                    <td>${device.addressSerialNumber}</td>
+                    <td>${fn:escapeXml(device.meterNumber)}</td>
+                    <td>${fn:escapeXml(device.paoIdentifier.paoType.paoTypeName)}</td>
+                    <td>${fn:escapeXml(device.addressSerialNumber)}</td>
                     <td class="wsnw">
                         <fmt:formatNumber pattern="###.#" value="${device.delta}"/>
                          <c:if test="${device.earliestReading != null}">

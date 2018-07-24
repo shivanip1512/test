@@ -61,8 +61,9 @@
                         <c:forEach var="row" items="${meterSearchResults.resultList}">
                             <tr>
                                 <td>
-                                    <c:if test="${hasNotesList.contains(row)}">
-                                        <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${row.paoIdentifier.paoId}"/>
+                                    <c:if test="${notesList.contains(row)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${row.paoIdentifier.paoId}"/>
                                     </c:if>    
                                 </td>
                                 <td>                                        

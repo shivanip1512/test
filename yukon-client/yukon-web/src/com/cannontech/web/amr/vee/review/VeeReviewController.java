@@ -146,8 +146,8 @@ public class VeeReviewController {
         
         model.addAttribute("paging", paging);
         
-        List<ExtendedReviewPoint> hasNotesList = pagedRows.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.reviewPoint.getDisplayablePao().getPaoIdentifier().getPaoId())).collect(Collectors.toList());
-        model.addAttribute("hasNotesList", hasNotesList);
+        List<ExtendedReviewPoint> notesList = pagedRows.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.reviewPoint.getDisplayablePao().getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("notesList", notesList);
     }
     
     private int addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {

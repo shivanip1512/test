@@ -169,8 +169,8 @@ public class DataCollectionController {
 
         model.addAttribute("detail", detail);
         
-        List<DeviceCollectionDetail> hasNotesList = detail.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
-        model.addAttribute("hasNotesList", hasNotesList);
+        List<DeviceCollectionDetail> notesList = detail.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("notesList", notesList);
         
     }
     

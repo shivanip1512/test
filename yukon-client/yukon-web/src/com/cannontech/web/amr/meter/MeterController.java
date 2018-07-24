@@ -191,8 +191,8 @@ public class MeterController {
         model.addAttribute("meterSearchResults", results);
         model.addAttribute("filterByList", filterByList);
         
-        List<YukonMeter> hasNotesList = results.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
-        model.addAttribute("hasNotesList", hasNotesList);
+        List<YukonMeter> notesList = results.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("notesList", notesList);
         
         ImmutableMap<String, YukonMeter> paoIdToMeterMap = 
             Maps.uniqueIndex(results.getResultList(), new Function<YukonMeter, String>() {

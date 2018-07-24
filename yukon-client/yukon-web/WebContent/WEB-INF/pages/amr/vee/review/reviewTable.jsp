@@ -35,8 +35,10 @@
                                     </c:forEach> 
                                 </td>
                                 <td>
-                                    <c:if test="${hasNotesList.contains(p)}">
-                                        <cti:icon icon="icon-note" classes="js-view-all-notes" data-pao-id="${p.reviewPoint.displayablePao.paoIdentifier.paoId}"/>
+                                    <c:if test="${notesList.contains(p)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                    
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${p.reviewPoint.displayablePao.paoIdentifier.paoId}"/>
                                     </c:if>    
                                 </td>
                                 <td>
