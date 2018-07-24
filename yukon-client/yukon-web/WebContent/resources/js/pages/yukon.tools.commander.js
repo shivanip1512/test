@@ -405,6 +405,9 @@ yukon.tools.commander = (function () {
                 }
                 // Update the recent targets
                 _updateTarget(target, result.recentTargets, params);
+                if (result.showLoopCountMessage == true) {
+                    $('#commander-results').append(result.maxLoopCountExceededMsg);
+                }
             }).fail(function (xhr, status, errorThrown) {
                 var 
                 requests = xhr.responseJSON.requests,

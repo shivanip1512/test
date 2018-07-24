@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import com.cannontech.web.tools.commander.model.CommandRequestExceptionType;
 import com.cannontech.web.tools.commander.model.CommandResponse;
 import com.cannontech.web.tools.commander.model.CommandTarget;
 import com.cannontech.yukon.BasicServerConnection;
+import com.google.common.collect.Maps;
 
 /**
  * Service to enable sending of commands to porter from the web commander page and handle
@@ -72,14 +74,14 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Autowired private ServerDatabaseCache cache;
     
     @Override
-    public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params) throws CommandRequestException {
+    public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandWithLoopCount) throws CommandRequestException {
         
         LiteYukonUser user = userContext.getYukonUser();
         
         log.debug("User: " + user + " attempting command: " + params);
         // TODO log the attempt with event log service
         
-        List<CommandRequest> commands = buildCommands(params, userContext);
+        List<CommandRequest> commands = buildCommands(params, userContext, commandWithLoopCount);
         
         if (!porter.isValid()) {
             for (CommandRequest command : commands) {
@@ -98,7 +100,22 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         
         return commands;
     }
-    
+
+    @Override
+    public Map<String, Integer> parseCommand(CommandParams params, YukonUserContext userContext) {
+        Map<String, Integer> commandWithLoopCount = Maps.newConcurrentMap();
+        int loopCount = 1;
+        List<String> commands = splitCommands(params);
+        for (String command : commands) {
+            if (command.trim().startsWith("loop")) {
+                loopCount = praseLoopCommand(command);
+                commandWithLoopCount.put(command, loopCount);
+            } else {
+                commandWithLoopCount.put(command, loopCount);
+            }
+        }
+        return commandWithLoopCount;
+    }
     @Override
     public Map<Integer, CommandRequest> getRequests(LiteYukonUser user) {
         
@@ -198,48 +215,76 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     
     /**
      * Build a {@link CommandRequest} for all commands in the parameters.
-     * (Mulitiple commands can be specified in the same text by using an '&')
+     * For loop command we will build command request based on the loop count 
+     * and if the loop count is more than 10 than we are building only 10 command request
+     * and ignoring the rest.
+     * While for command other than loop command we will build a single command request.
      */
-    private List<CommandRequest> buildCommands(CommandParams params, YukonUserContext userContext) {
-        
+    private List<CommandRequest> buildCommands(CommandParams params, YukonUserContext userContext,
+            Map<String, Integer> commandWithLoopCount) {
         List<CommandRequest> reqs = new ArrayList<>();
-        List<String> commands = splitCommands(params);
-        
-        for (String command : commands) {
-            
-            int messageId = requestIds.nextInt();
-            CommandParams copy = params.copy();
-            copy.setCommand(command);
-            
-            // Add 'update'
-            if (!copy.getCommand().contains("update")) {
-                copy.setCommand(copy.getCommand() + " update");
-            }
-            
-            //If queue command is not opted, add 'noqueue'
-            if(!copy.isQueueCommand()){
-                if (!copy.getCommand().contains("noqueue")) {
-                    copy.setCommand(copy.getCommand() + " noqueue");
+        for (Map.Entry<String, Integer> entry : commandWithLoopCount.entrySet()) {
+            String command = entry.getKey();
+            if (command.trim().startsWith("loop")) {
+                int loopCount = entry.getValue() <= 10 ? entry.getValue() : 10;
+                for (int i = 0; i < loopCount; i++) {
+                    command = "loop";
+                    buildCommandRequest(params, userContext, reqs, command);
                 }
+            } else {
+                buildCommandRequest(params, userContext, reqs, command);
             }
-            
-            // Add Serial Number
-            if (params.getTarget().isSerialNumber()) {
-                copy.setCommand(setSerialNumber(copy.getCommand(), copy.getSerialNumber()));
-            }
-            
-            CommandRequest cr = new CommandRequest();
-            cr.setId(messageId);
-            cr.setParams(copy);
-            cr.setTimestamp(Instant.now().getMillis());
-            cr.setRequestText(buildRequestPrintout(userContext, copy));
-            
-            getRequests(userContext.getYukonUser()).put(messageId, cr);
-            reqs.add(cr);
-            
         }
-        
         return reqs;
+    }
+
+    /** Parse the loop command , retrieve the count from the command string.*/
+    private int praseLoopCommand(String command) {
+        String valueSubstring = null;
+        int loopCount = 1;
+        for (int j = command.indexOf("loop") + 4; j < command.length(); j++) {
+            if (command.charAt(j) != ' ' && command.charAt(j) != '\t') {
+                valueSubstring = command.substring(j);
+                break;
+            }
+        }
+        if (valueSubstring != null && StringUtils.isNumeric(valueSubstring)) {
+            loopCount = Integer.parseInt(valueSubstring);
+        }
+        return loopCount;
+    }
+    
+    private void buildCommandRequest(CommandParams params, YukonUserContext userContext, List<CommandRequest> reqs,
+            String command) {
+        int messageId = requestIds.nextInt();
+        CommandParams copy = params.copy();
+        copy.setCommand(command);
+
+        // Add 'update'
+        if (!copy.getCommand().contains("update")) {
+            copy.setCommand(copy.getCommand() + " update");
+        }
+
+        // If queue command is not opted, add 'noqueue'
+        if (!copy.isQueueCommand()) {
+            if (!copy.getCommand().contains("noqueue")) {
+                copy.setCommand(copy.getCommand() + " noqueue");
+            }
+        }
+
+        // Add Serial Number
+        if (params.getTarget().isSerialNumber()) {
+            copy.setCommand(setSerialNumber(copy.getCommand(), copy.getSerialNumber()));
+        }
+
+        CommandRequest cr = new CommandRequest();
+        cr.setId(messageId);
+        cr.setParams(copy);
+        cr.setTimestamp(Instant.now().getMillis());
+        cr.setRequestText(buildRequestPrintout(userContext, copy));
+
+        getRequests(userContext.getYukonUser()).put(messageId, cr);
+        reqs.add(cr);
     }
     
     @Override

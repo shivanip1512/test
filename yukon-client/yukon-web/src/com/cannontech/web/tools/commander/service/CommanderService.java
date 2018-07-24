@@ -3,7 +3,6 @@ package com.cannontech.web.tools.commander.service;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.commander.model.CommandParams;
@@ -18,7 +17,7 @@ public interface CommanderService {
      * {@link CommandRequestException} if thrown. 
      * @throws {@link CommandRequestException} when the connection to porter is invalid, contains the {@link CommandRequest}s.
      */
-    List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params) throws CommandRequestException;
+    List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandWithLoopCount) throws CommandRequestException;
     
     /**
      * Removes the requests stored for this user from the internal concurrent hash map.
@@ -43,5 +42,13 @@ public interface CommanderService {
 
     Map<String, Boolean> authorizeCommand(CommandParams params, YukonUserContext userContext,
             Object obj);
+
+    /**
+     * Returns a map with command as key and loop count as value .For loop command it will parse the count from command string
+     * and add into the map value , for other command it will add loop count as 1 into the map value.
+     * For eg :- For loopback 5 command it will form the map entry as {"loop", 5} while for other command
+     * it will form the map entry as {command_name , 1}.
+     */
+    Map<String, Integer> parseCommand(CommandParams params, YukonUserContext userContext);
     
 }

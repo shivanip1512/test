@@ -80,6 +80,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER)
@@ -348,6 +349,8 @@ public class CommanderController {
         List<String> authorizedCommand = new ArrayList<>();
         Map<Integer, String> unAuthorizedCommand = new HashMap<>();
         Map<String, Boolean> commandWithAuthorization = new HashMap<>();
+        Map<String, Integer> commandWithLoopCount = Maps.newConcurrentMap();
+        MessageSourceAccessor accessor = null;
 
         if (params.getPaoId() != null) {
             LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
@@ -366,7 +369,8 @@ public class CommanderController {
         if (authorizedCommand.size() != 0) {
             params.setCommand(Joiner.on('&').join(authorizedCommand));
             try {
-                commands = commanderService.sendCommand(userContext, params);
+                commandWithLoopCount = commanderService.parseCommand(params, userContext);
+                commands = commanderService.sendCommand(userContext, params, commandWithLoopCount);
 
                 if (params.getTarget() == CommandTarget.DEVICE || params.getTarget() == CommandTarget.LOAD_GROUP) {
                     LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
@@ -386,7 +390,7 @@ public class CommanderController {
             } catch (CommandRequestException e) {
                 commands = e.getRequests();
                 if (e.getType() == CommandRequestExceptionType.PORTER_CONNECTION_INVALID) {
-                    MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                    accessor = messageResolver.getMessageSourceAccessor(userContext);
                     String reason = accessor.getMessage(keyBase + ".error.porter.invalid",
                                                         commanderService.getPorterHost());
                     result.put("reason", reason);
@@ -397,6 +401,20 @@ public class CommanderController {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
             }
 
+            // if loop count for loopback command is more than 10 , show message on console .
+            if (!commandWithLoopCount.isEmpty()) {
+                for (Map.Entry<String, Integer> entry : commandWithLoopCount.entrySet()) {
+                    if (entry.getKey().trim().startsWith("loop") && entry.getValue() > 10) {
+                        result.put("showLoopCountMessage", true);
+                        accessor = messageResolver.getMessageSourceAccessor(userContext);
+                        String msg = accessor.getMessage(keyBase + ".maxLoopCountExceeded");
+                        result.put("maxLoopCountExceededMsg", msg);
+                        break;
+                    } else {
+                        result.put("showLoopCountMessage", false);
+                    }
+                }
+            }
             List<Map<String, CommandRequest>> requests = new ArrayList<>();
             for (CommandRequest command : commands) {
                 ImmutableMap<String, CommandRequest> request = ImmutableMap.of("request", command);
@@ -406,7 +424,7 @@ public class CommanderController {
         }
 
         if (!unAuthorizedCommand.isEmpty()) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            accessor = messageResolver.getMessageSourceAccessor(userContext);
             String unAuthorizedMessage = accessor.getMessage(keyBase + ".error.unAuthorizedMessage",
                                                              commanderService.getPorterHost());
             result.put("unAuthorizedCommand", unAuthorizedCommand);
