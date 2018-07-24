@@ -549,6 +549,94 @@ WHERE GroupName = '/';
 INSERT INTO DBUpdates VALUES ('YUK-18489', '7.1.0', SYSDATE);
 /* @end YUK-18489 */
 
+/* @start YUK-18551 */
+/* Delete RFW-205 */
+DELETE FROM DeviceAddress WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205');
+
+DELETE FROM DeviceCBC WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205');
+
+DELETE FROM DeviceDirectCommSettings WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205');
+
+DELETE FROM DeviceWindow WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205');
+
+DELETE FROM DEVICE WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205');
+
+DELETE FROM POINTSTATUS WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205'));
+
+DELETE FROM PointAlarming WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205'));
+
+DELETE FROM POINT WHERE PAObjectID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFW-205');
+
+DELETE FROM YukonPAObject WHERE TYPE = 'RFW-205';
+
+DELETE FROM DeviceConfigDeviceTypes WHERE PaoType = 'RFW-205';
+
+DELETE FROM DeviceTypeCommand WHERE DeviceType = 'RFW-205';
+
+
+/* Delete RFG-205 */
+DELETE FROM DeviceAddress WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205');
+
+DELETE FROM DeviceCBC WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205');
+
+DELETE FROM DeviceDirectCommSettings WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205');
+
+DELETE FROM DeviceWindow WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205');
+
+DELETE FROM DEVICE WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205');
+
+DELETE FROM POINTSTATUS WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205'));
+
+DELETE FROM PointAlarming WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+        (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205'));
+
+DELETE FROM POINT WHERE PAObjectID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'RFG-205');
+
+DELETE FROM YukonPAObject WHERE TYPE = 'RFG-205';
+
+DELETE FROM DeviceConfigDeviceTypes WHERE PaoType = 'RFG-205';
+
+DELETE FROM DeviceTypeCommand WHERE DeviceType = 'RFG-205';
+
+
+INSERT INTO DBUpdates VALUES ('YUK-18551', '7.1.0', SYSDATE);
+/* @end YUK-18551 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
