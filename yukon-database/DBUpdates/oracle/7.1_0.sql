@@ -637,6 +637,18 @@ DELETE FROM DeviceTypeCommand WHERE DeviceType = 'RFG-205';
 INSERT INTO DBUpdates VALUES ('YUK-18551', '7.1.0', SYSDATE);
 /* @end YUK-18551 */
 
+/* @start YUK-18526 */
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+SELECT DG1.DeviceGroupId, 'CIS DeviceClass', DG2.ParentDeviceGroupId, 'NOEDIT_MOD', 'STATIC', SYSDATE, 'CIS_DEVICECLASS'
+FROM (SELECT MAX(DG.DeviceGroupId) + 1 AS DeviceGroupId
+      FROM DeviceGroup DG
+      WHERE DG.DeviceGroupId < 100) DG1,
+     (SELECT MAX(DG.DeviceGroupId) AS ParentDeviceGroupId
+      FROM DeviceGroup DG
+      WHERE SystemGroupEnum = 'METERS') DG2;
+
+INSERT INTO DBUpdates VALUES ('YUK-18526', '7.1.0', SYSDATE);
+/* @end YUK-18526 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
