@@ -15,7 +15,7 @@
     </style>
     <cti:msgScope paths="common.paoNote, common.paoNotesSearch, menu.tools, yukon.common">
         <hr>
-        <div class="filter-section dib">
+        <div class="two-column-table filter-section dib">
             <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
             <cti:url var="url" value="/tools/paoNotes/search"/>
             <form:form id="filter-pao-notes-form" action="${url}" modelAttribute="paoNoteFilter" method="GET">
@@ -37,22 +37,23 @@
                 <c:if test="${hasDeviceFilterErrors}">
                     <c:set var="marignTopDeviceFilters" value="margin-top: -5%;"/>
                 </c:if>
-
-                <div id="js-note-create-dates" class="dib MT1" style="margin-left: 6%;">
-                    <i:inline key=".createDate"/> :
-                    <dt:date path="dateRange.min" wrapperClass="fn vam" displayValidationToRight="true"/>
-                    <i:inline key="yukon.common.to"/>
-                    <dt:date path="dateRange.max" wrapperClass="fn vam"/>
+                <div>
+                    <div id="js-note-create-dates" class="dib MT1" style="margin-left: 6%;">
+                        <i:inline key=".createDate"/> :
+                        <dt:date path="dateRange.min" wrapperClass="fn vam" displayValidationToRight="true"/>
+                        <i:inline key="yukon.common.to"/>
+                        <dt:date path="dateRange.max" wrapperClass="fn vam"/>
+                    </div>
+                    <div id="js-note-create-by" class="dib vam" style="${marginTop}">
+                        <cti:yukonUser var="currentUser"/>
+                        <i:inline key=".createdBy"/> :
+                        <form:select path="user">
+                            <form:option value=""><i:inline key=".anyUser"/></form:option>
+                            <form:option value="${currentUser.username}"><i:inline key=".currentUser"/></form:option>
+                        </form:select>
+                    </div>
+                    <cti:button nameKey="filter" classes="primary action fr MT1" type="submit"/>
                 </div>
-                <div id="js-note-create-by" class="dib vam" style="${marginTop}">
-                    <cti:yukonUser var="currentUser"/>
-                    <i:inline key=".createdBy"/> :
-                    <form:select path="user">
-                        <form:option value=""><i:inline key=".anyUser"/></form:option>
-                        <form:option value="${currentUser.username}"><i:inline key=".currentUser"/></form:option>
-                    </form:select>
-                </div>
-                <cti:button nameKey="filter" classes="primary action fr MT1" type="submit"/>
             </form:form>
         </div>
         <hr>
@@ -66,26 +67,24 @@
                 <span class="js-cog-menu">
                     <cm:dropdown icon="icon-cog">
                         <!-- Collection Actions -->
-                        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
-                            <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                                <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
-                                    <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
-                                </c:forEach>
-                            </cti:url>
-                            <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" 
-                                               newTab="true"/>
-                        </cti:checkRolesAndProperties>
+                        <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                            <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
+                                <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
+                            </c:forEach>
+                        </cti:url>
+                        <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" 
+                                           newTab="true"/>
                         
                         <!-- Download -->
                         <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>
-                        
-                        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
-                            <!-- Map Devices -->
-                            <cti:url var="mapUrl" value="/tools/map">
-                                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                            </cti:url>
-                            <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                       
+                        <!-- Map Devices -->
+                        <cti:url var="mapUrl" value="/tools/map">
+                            <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                        </cti:url>
+                        <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
                             
+                        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                             <!-- Read Attribute -->
                             <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                                 <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
@@ -129,8 +128,8 @@
                                 <tags:sort width="12%" column="${deviceName}" />
                                 <tags:sort width="12%" column="${deviceType}" />
                                 <tags:sort width="35%" column="${noteText}" />
-                                <tags:sort width="10%" column="${createdBy}" />
-                                <tags:sort width="10%" column="${createDate}" />
+                                <tags:sort width="12%" column="${createdBy}" />
+                                <tags:sort width="12%" column="${createDate}" />
                                 <tags:sort width="10%" column="${editedBy}" />
                                 <tags:sort width="10%" column="${editDate}" />
                                 <th width="1%" class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
