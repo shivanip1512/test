@@ -458,17 +458,13 @@ public class MultispeakMeterServiceBase {
      */
     public boolean updateCISDeviceClassGroup(String meterNumber, String cisDeviceClass, YukonDevice yukonDevice,
             String mspMethod, MultispeakVendor mspVendor) {
-        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
-        if (usesExtension) {
-            String extensionName = multispeakFuncs.getPaoNameAliasExtension();
-            if (extensionName.equalsIgnoreCase("DeviceClass")) {
-                // Remove from all CIS deviceClass membership groups
-                DeviceGroup cisDeviceClassDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_DEVICECLASS);
-                StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(cisDeviceClassDeviceGroup);
-                return updatePrefixGroup(cisDeviceClass, meterNumber, yukonDevice, mspMethod, mspVendor, deviceGroupParent);
-
-            }
+        if (!StringUtils.isBlank(cisDeviceClass)) {
+            // Remove from all CIS deviceClass membership groups
+            DeviceGroup cisDeviceClassDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_DEVICECLASS);
+            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(cisDeviceClassDeviceGroup);
+            return updatePrefixGroup(cisDeviceClass, meterNumber, yukonDevice, mspMethod, mspVendor, deviceGroupParent);
         }
+
         return false;
     }
 
@@ -512,15 +508,8 @@ public class MultispeakMeterServiceBase {
             }
         }
 
-        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
-        if (usesExtension) {
-            String extensionName = multispeakFuncs.getPaoNameAliasExtension();
-            if (extensionName.equalsIgnoreCase("DeviceClass")) {
-                // Custom for WHE to remove the device class extension value from the device name.
-                DeviceGroup cisDeviceClassGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_DEVICECLASS);
-                deviceGroupList.add(cisDeviceClassGroup);
-            }
-        }
+        DeviceGroup cisDeviceClassGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_DEVICECLASS);
+        deviceGroupList.add(cisDeviceClassGroup);
 
         deviceGroupList.forEach(deviceGroup -> {
             StoredDeviceGroup storedDeviceGroup = deviceGroupEditorDao.getStoredGroup(deviceGroup);
