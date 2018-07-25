@@ -87,13 +87,13 @@
                                     <cti:msg2 var="editText" key=".edit.hoverText"/>
                                     <cti:msg2 var="deleteText" key=".delete.hoverText"/>
                                     <div id="js-edit-popup-note-btn-group-${noteId}" class="button-group fr">
-                                    <c:if test="${paoNoteSearchResult.modifiable}">
-                                        <cti:button id="js-edit-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
-                                                    data-note-id="${noteId}" title="${editText}"/>
-                                        <cti:button id="js-delete-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
-                                                    data-ok-event="yukon:popup:note:delete" title="${deleteText}"/>
-                                        <d:confirm on="#js-delete-popup-note-btn-${noteId}"  nameKey="confirmDelete"/>
-                                    </c:if>
+                                        <c:if test="${paoNoteSearchResult.modifiable}">
+                                            <cti:button id="js-edit-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
+                                                        data-note-id="${noteId}" title="${editText}"/>
+                                            <cti:button id="js-delete-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
+                                                        data-ok-event="yukon:popup:note:delete" title="${deleteText}"/>
+                                            <d:confirm on="#js-delete-popup-note-btn-${noteId}"  nameKey="confirmDelete"/>
+                                        </c:if>
                                         <cti:url var="url" value="/tools/paoNotes/deletePaoNote/${noteId}"/>
                                         <form:form id="delete-popup-note-form" method="DELETE" action="${url}">
                                             <input type="hidden" name="paoId" value="${paoId}"/>
