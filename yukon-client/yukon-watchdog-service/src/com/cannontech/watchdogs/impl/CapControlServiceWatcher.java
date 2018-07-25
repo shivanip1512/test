@@ -63,7 +63,6 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
             log.debug("Invalid connection with CapControl Service");
         }
         watchAndNotify();
-        clientConnection.disconnect();
     }
 
     /**
@@ -71,12 +70,14 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
      */
 
     private WatchdogCapControlClientConnection createConnection() {
-
-        clientConnection = new WatchdogCapControlClientConnection();
-        clientConnection.addWatchdogMessageListener(this);
-        clientConnection.setConnectionFactory(connectionFactorySvc.findConnectionFactory("CBC"));
-        clientConnection.connectWithoutWait();
-
+        if (clientConnection == null) {
+            clientConnection = new WatchdogCapControlClientConnection();
+            clientConnection.addWatchdogMessageListener(this);
+            clientConnection.setConnectionFactory(connectionFactorySvc.findConnectionFactory("CBC"));
+            clientConnection.connectWithoutWait();
+        } else {
+            return clientConnection;
+        }
         for (int retry = 0; retry < 3; retry++) {
             if (clientConnection.isValid()) {
                 break;

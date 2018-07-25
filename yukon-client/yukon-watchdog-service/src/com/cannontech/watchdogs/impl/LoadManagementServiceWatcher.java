@@ -64,7 +64,6 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
             log.debug("Invalid connection with LoadManagement Service ");
         }
         watchAndNotify();
-        clientConnection.disconnect();
     }
 
     /**
@@ -72,12 +71,14 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
      */
 
     private WatchdogLoadManagementClientConnection createConnection() {
-
-        clientConnection = new WatchdogLoadManagementClientConnection();
-        clientConnection.addWatchdogMessageListener(this);
-        clientConnection.setConnectionFactory(connectionFactorySvc.findConnectionFactory("LC"));
-        clientConnection.connectWithoutWait();
-
+        if (clientConnection == null) {
+            clientConnection = new WatchdogLoadManagementClientConnection();
+            clientConnection.addWatchdogMessageListener(this);
+            clientConnection.setConnectionFactory(connectionFactorySvc.findConnectionFactory("LC"));
+            clientConnection.connectWithoutWait();
+        } else {
+            return clientConnection;
+        }
         for (int retry = 0; retry < 6; retry++) {
             if (clientConnection.isValid()) {
                 break;
