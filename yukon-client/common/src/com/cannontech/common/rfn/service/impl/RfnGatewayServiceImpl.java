@@ -70,6 +70,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.system.GlobalSettingType;
@@ -229,9 +230,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             device = rfnDeviceDao.getDeviceForId(paoId);
         } catch (Exception e) {
             // Allows clicking on a Gateway Template to not throw a Yukon Exception
-            return new RfnGateway(cache.getAllDevices().stream().filter(pao -> paoId == pao.getLiteID()).findFirst().get().getPaoName(),
-                                  cache.getAllDevices().stream().filter(pao -> paoId == pao.getLiteID()).findFirst().get().getPaoIdentifier(),
-                                  null, null);
+            LiteYukonPAObject litePao = cache.getAllDevices().stream().filter(pao -> paoId == pao.getLiteID()).findFirst().get();
+            return new RfnGateway(litePao.getPaoName(), litePao.getPaoIdentifier(), null, null);
         }
         
         // Get RfnGatewayData from cache
