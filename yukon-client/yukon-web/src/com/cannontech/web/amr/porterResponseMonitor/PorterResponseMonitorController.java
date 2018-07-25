@@ -31,6 +31,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -257,7 +258,8 @@ public class PorterResponseMonitorController {
     }
 
     private void setupCreatePageModelMap(ModelMap model) {
-        PorterResponseMonitor monitor = new PorterResponseMonitor();
+        PorterResponseMonitor monitor =
+            new PorterResponseMonitor(deviceGroupService.getFullPath(SystemGroupEnum.ALL_MCT_METERS));
         LiteStateGroup outageStatusStageGroup = stateGroupDao.getStateGroup("Outage Status");
         monitor.setStateGroup(outageStatusStageGroup);
         model.addAttribute("monitor", monitor);

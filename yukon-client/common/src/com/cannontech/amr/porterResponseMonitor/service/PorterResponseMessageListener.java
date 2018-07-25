@@ -1,5 +1,6 @@
 package com.cannontech.amr.porterResponseMonitor.service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -8,6 +9,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.StreamMessage;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +20,6 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorTransaction;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -112,33 +113,27 @@ public class PorterResponseMessageListener implements MessageListener {
     }
 
     private void processTransaction(PorterResponseMonitorTransaction transaction) {
-        for (PorterResponseMonitor monitor : monitorCacheService.getEnabledPorterResponseMonitors()) {
-            if (shouldProcessDevice(monitor, transaction.getPaoId())) {
-                for (PorterResponseMonitorRule rule : monitor.getRules()) {
-                    if (shouldSendPointData(transaction, rule)) {
-                        sendPointData(monitor, rule, transaction);
-                        break;
-                    }
-                }
-            }
-        }
+        monitorCacheService.getEnabledPorterResponseMonitors().stream()
+        .filter(monitor -> shouldProcessDevice(monitor, transaction.getPaoId()))
+        .flatMap(monitor -> monitor.getRules().stream().map(rule -> ImmutablePair.of(monitor, rule)))
+        .filter(mr -> shouldSendPointData(transaction, mr.right))
+        .findFirst()
+        .ifPresent(mr -> sendPointData(mr.left, mr.right, transaction));
     }
-    // Checks if device is RFN or not. Also checks if it belongs to device group of monitor.
+    
+    // Checks if device is PLC or not. Also checks if it belongs to device group of monitor.
     private boolean shouldProcessDevice(PorterResponseMonitor monitor, Integer paoId) {
         
-        // Do not do further processing as the device is of type RFN
-        YukonPao yukonPao = databaseCache.getAllPaosMap().get(paoId);
-        if (yukonPao.getPaoIdentifier().getPaoType().isRfn()) {
-            log.debug("Device was of type RFN, not processing further " + yukonPao);
-            return false;
-        }
-        
-        // Do not do further processing as device do not belong to the device group of monitor
-        DeviceGroup deviceGroup = deviceGroupService.findGroupName(monitor.getGroupName());
-        if (deviceGroup != null) {
-            return deviceGroupService.isDeviceInGroup(deviceGroup, yukonPao);
-        }
-        return false;
+        return Optional.of(paoId)
+                .map(databaseCache.getAllPaosMap()::get)
+                // Process further if the device is of PLC type
+                .filter(yukonPao -> yukonPao.getPaoIdentifier().getPaoType().isPlc())
+                // Do not do further processing as device do not belong to the device group of monitor
+                .filter(yukonPao -> 
+                    Optional.ofNullable(deviceGroupService.findGroupName(monitor.getGroupName()))
+                        .map(group -> deviceGroupService.isDeviceInGroup(group, yukonPao))
+                        .orElse(false))
+                .isPresent();
     }
     
     private boolean shouldSendPointData(PorterResponseMonitorTransaction transaction, PorterResponseMonitorRule rule) {

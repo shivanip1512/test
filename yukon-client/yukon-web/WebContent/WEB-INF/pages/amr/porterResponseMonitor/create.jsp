@@ -8,6 +8,9 @@
     <form:form commandName="monitor" id="basicInfoForm" action="${createPorterURL}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="stateGroup" value="${monitor.stateGroup}">
+        <tags:hidden path="groupName"/>
+        <tags:hidden path="attribute"/>
+        <tags:hidden path="evaluatorStatus"/>
 
         <tags:sectionContainer2 nameKey="setup">
             <tags:nameValueContainer2>

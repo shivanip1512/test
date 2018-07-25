@@ -21,8 +21,11 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
 	private List<PorterResponseMonitorRule> rules = Lists.newArrayList();
 
     public PorterResponseMonitor() {
+    }
+    
+    public PorterResponseMonitor(String groupName) {
         // Setting default group to All MCT Meters.
-        groupName = "/System/Meters/All Meters/All MCT Meters";
+        this.groupName = groupName;
         attribute = BuiltInAttribute.OUTAGE_STATUS;
         evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
     }

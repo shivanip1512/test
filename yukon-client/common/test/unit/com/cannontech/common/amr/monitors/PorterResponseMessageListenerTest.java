@@ -119,10 +119,7 @@ public class PorterResponseMessageListenerTest {
 
             @Override
             public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao) {
-                if (pao.getPaoIdentifier().getPaoId() == 5) {
-                    return false;
-                } else
-                    return true;
+                return (pao.getPaoIdentifier().getPaoId() != 5);
             }
 
         };
