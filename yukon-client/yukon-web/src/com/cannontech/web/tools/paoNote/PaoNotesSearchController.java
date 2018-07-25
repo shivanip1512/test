@@ -50,7 +50,6 @@ import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -85,7 +84,6 @@ public class PaoNotesSearchController {
     @Autowired private PaoNotesFilterValidator validator;
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private ServerDatabaseCache databaseCache;
-    @Autowired private RolePropertyDao rolePropertyDao;
     
     private static final String baseKey = "yukon.web.common.paoNote.";
 
@@ -297,10 +295,8 @@ public class PaoNotesSearchController {
             searchResults = paoNotesService.getAllNotesByPaoId(paoId).getResultList();
         }
         
-        AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_NOTES, AccessLevel.class, userContext.getYukonUser());
         searchResults.stream().forEach(note -> {
-            if (userLevel == AccessLevel.ADMIN 
-                    || (userLevel == AccessLevel.OWNER && note.getPaoNote().getCreateUserName().equals(userContext.getYukonUser().getUsername()))) {
+            if (paoNotesService.canUpdateNote(note.getPaoNote().getNoteId(), userContext.getYukonUser())) {
                 note.setModifiable(true);
             }
          });

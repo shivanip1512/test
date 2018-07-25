@@ -22,7 +22,6 @@ import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -37,7 +36,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private RolePropertyDao rolePropertyDao;
+
     @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
         setupModel(deviceId, userContext.getYukonUser(), model);
@@ -101,9 +100,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
             createPaoNote.setPaoId(deviceId);
         }
         model.addAttribute("createPaoNote", createPaoNote);
-        
-        AccessLevel userLevel = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_NOTES, AccessLevel.class, user);
-        
+                
         List<PaoNotesSearchResult> recentNotes = null;
         if (model.containsAttribute("recentNotes")) {
             recentNotes = (List<PaoNotesSearchResult>) model.get("recentNotes");
@@ -111,8 +108,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
             recentNotes = paoNotesService.findMostRecentNotes(deviceId, 3);
         }
         recentNotes.stream().forEach(note -> {
-           if (userLevel == AccessLevel.ADMIN 
-                   || (userLevel == AccessLevel.OWNER && note.getPaoNote().getCreateUserName().equals(user.getUsername()))) {
+           if (paoNotesService.canUpdateNote(note.getPaoNote().getNoteId(), user)) {
                note.setModifiable(true);
            }
         });
