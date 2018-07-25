@@ -67,6 +67,8 @@ public class MultispeakMeterServiceBase {
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao substationToRouteMappingDao;
     @Autowired private GlobalSettingDao globalSettingDao;
+    
+    public static final String DEVICE_NAME_EXT_REGEX = "\\s+\\[[a-zA-Z0-9]+\\]";
     /**
      * Updates the billingCycle device group.
      * The exact parent group to update is configured in MultiSpeak global settings.
@@ -478,7 +480,7 @@ public class MultispeakMeterServiceBase {
             String extensionName = multispeakFuncs.getPaoNameAliasExtension();
             if (extensionName.equalsIgnoreCase("DeviceClass")) { 
                 // Custom for WHE to remove the device class extension value from the device name.
-                String newPaoName = StringUtils.removePattern(meter.getName(), "\\s+\\[[a-zA-Z0-9]+\\]").trim();
+                String newPaoName = StringUtils.removePattern(meter.getName(), DEVICE_NAME_EXT_REGEX).trim();
                 verifyAndUpdatePaoName(newPaoName, meter, mspMethod, mspVendor);
             }
         }
