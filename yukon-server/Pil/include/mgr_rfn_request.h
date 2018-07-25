@@ -184,12 +184,13 @@ private:
     Mutex                _activeRequestsMux;
     RfnIdToActiveRequest _activeRequests;
 
-    using OptionalResults = std::optional<RfnDeviceResult>;
+    using OptionalResult = std::optional<RfnDeviceResult>;
 
     ConfigNotificationPtr handleUnsolicitedReport  (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
-    OptionalResults       handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
-    OptionalResults       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
-    OptionalResults       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
+    OptionalResult        handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    RfnDeviceResult       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
 };
 
 }
