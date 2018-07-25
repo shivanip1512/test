@@ -8,6 +8,7 @@ public class PaoNotesSearchResult {
     private PaoNote paoNote;
     private PaoType paoType;
     private String paoName;
+    private Boolean modifiable;
     
     public PaoNote getPaoNote() {
         return paoNote;
@@ -33,4 +34,11 @@ public class PaoNotesSearchResult {
         this.paoName = paoName;
     }
     
+    public Boolean getModifiable() {
+        return modifiable;
+    }
+
+    public void setModifiable(Boolean modifiable) {
+        this.modifiable = modifiable;
+    }
 }
