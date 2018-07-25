@@ -494,7 +494,7 @@ public class MultispeakMeterServiceBase {
      * 
      */
 
-    public void removeDeviceFromGroups(YukonMeter meter, String mspMethod, MultispeakVendor mspVendor) {
+    public void removeDeviceFromCISGroups(YukonMeter meter, String mspMethod, MultispeakVendor mspVendor) {
         List<DeviceGroup> deviceGroupList = new ArrayList<>();
 
         boolean checkRemoveDeviceFromCISGroup = globalSettingDao.getBoolean(GlobalSettingType.MSP_REMOVE_DEVICE_FROM_CIS_GROUP);

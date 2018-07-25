@@ -1596,7 +1596,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 try {
                     meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
                     removeDeviceNameExtension(meter, METER_REMOVE_STRING, mspVendor);
-                    removeDeviceFromGroups(meter, METER_REMOVE_STRING, mspVendor);
+                    removeDeviceFromCISGroups(meter, METER_REMOVE_STRING, mspVendor);
                     // Added meter to Inventory
                     addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
                     if (!meter.isDisabled()) {// enabled
