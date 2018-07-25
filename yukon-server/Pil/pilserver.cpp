@@ -933,7 +933,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
                     }
                     else
                     {
-                        CTILOG_ERROR(dout, "Couldn't find device after device creation service call")
+                        CTILOG_ERROR(dout, "Lookup failed after device creation service call for new RFN device " << rfnId);
                     }
                 } 
                 else
