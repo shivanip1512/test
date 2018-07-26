@@ -19,9 +19,6 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
 	private Attribute attribute;
 	private MonitorEvaluatorStatus evaluatorStatus;
 	private List<PorterResponseMonitorRule> rules = Lists.newArrayList();
-
-    public PorterResponseMonitor() {
-    }
     
     public PorterResponseMonitor(String groupName) {
         // Setting default group to All MCT Meters.

@@ -115,10 +115,10 @@ public class PorterResponseMessageListener implements MessageListener {
     private void processTransaction(PorterResponseMonitorTransaction transaction) {
         monitorCacheService.getEnabledPorterResponseMonitors().stream()
         .filter(monitor -> shouldProcessDevice(monitor, transaction.getPaoId()))
-        .flatMap(monitor -> monitor.getRules().stream().map(rule -> ImmutablePair.of(monitor, rule)))
-        .filter(mr -> shouldSendPointData(transaction, mr.right))
-        .findFirst()
-        .ifPresent(mr -> sendPointData(mr.left, mr.right, transaction));
+        .forEach(monitor -> monitor.getRules().stream()
+            .filter(rule -> shouldSendPointData(transaction, rule))
+            .findFirst()
+            .ifPresent(rule -> sendPointData(monitor, rule, transaction)));
     }
     
     // Checks if device is PLC or not. Also checks if it belongs to device group of monitor.

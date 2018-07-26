@@ -18,6 +18,7 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatch
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorTransaction;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMessageListener;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -43,7 +44,7 @@ public class PorterResponseMessageListenerTest {
 //    private final String BAD = "2";
     private final String QUESTIONABLE = "3";
     
-    private PorterResponseMonitor standard; //should eventually add another monitor with NOT standard (more specific / odd) rules
+    private PorterResponseMonitor standard, standard1; //should eventually add another monitor with NOT standard (more specific / odd) rules
     private PorterResponseMessageListener listener;
     private PorterResponseMessage message1;
     private PorterResponseMessage message2;
@@ -59,9 +60,32 @@ public class PorterResponseMessageListenerTest {
         standardRules.add(getRule(true, PorterResponseMonitorMatchStyle.any, GOOD));
         standardRules.add(getRule(false, PorterResponseMonitorMatchStyle.any, GOOD_QUESTIONABLE, 1, 17, 74));
         standardRules.add(getRule(false, PorterResponseMonitorMatchStyle.any, QUESTIONABLE));
-        standard = new PorterResponseMonitor();
+        
+        DeviceGroupService deviceGroupService = new DeviceGroupServiceImpl() {
+            @Override
+            public DeviceGroup findGroupName(String groupName) {
+                return new StoredDeviceGroup();
+            }
+
+            @Override
+            public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao) {
+                return (pao.getPaoIdentifier().getPaoId() != 5);
+            }
+            
+            @Override 
+            public String getFullPath(SystemGroupEnum groupName) {
+                return "/System/Meters/All Meters/All MCT Meters";
+            }
+
+        };
+        
+        standard = new PorterResponseMonitor(deviceGroupService.getFullPath(SystemGroupEnum.ALL_MCT_METERS));
         standard.setRules(standardRules);
         standard.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
+        
+        standard1 = new PorterResponseMonitor(deviceGroupService.getFullPath(SystemGroupEnum.ALL_MCT_METERS));
+        standard1.setRules(standardRules);
+        standard1.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
 
         message1 = getMessage(1,1,1);
         message2 = getMessage(2,2,2);
@@ -79,7 +103,8 @@ public class PorterResponseMessageListenerTest {
         };
         MonitorCacheServiceImpl cache = new MonitorCacheServiceImpl();
         listener.setMonitorCache(cache);
-        cache.setMonitors(ImmutableMap.of(1, standard));
+        cache.setMonitors(ImmutableMap.of(1, standard,
+                                          2, standard1));
         
         final LiteYukonPAObject pao1 = new LiteYukonPAObject(1, "pao1", 
             PaoCategory.DEVICE, 
@@ -111,19 +136,6 @@ public class PorterResponseMessageListenerTest {
                 return allPaos;
             }
         };
-        DeviceGroupService deviceGroupService = new DeviceGroupServiceImpl() {
-            @Override
-            public DeviceGroup findGroupName(String groupName) {
-                return new StoredDeviceGroup();
-            }
-
-            @Override
-            public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao) {
-                return (pao.getPaoIdentifier().getPaoId() != 5);
-            }
-
-        };
-        
         
         ReflectionTestUtils.setField(listener, "databaseCache", databaseCache);
         ReflectionTestUtils.setField(listener, "deviceGroupService", deviceGroupService);
@@ -135,8 +147,9 @@ public class PorterResponseMessageListenerTest {
 
         handleMockMessage(message1, 0, true);
         
-        Assert.assertEquals(1, sentPointData.size());
+        Assert.assertEquals(2, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(1));
     }
     
     @Test
@@ -145,8 +158,9 @@ public class PorterResponseMessageListenerTest {
 
         handleMockMessage(message1, 74, true);
         
-        Assert.assertEquals(1, sentPointData.size());
+        Assert.assertEquals(2, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1));
     }
     
     @Test
@@ -160,8 +174,9 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 0, true);
-        Assert.assertEquals(1, sentPointData.size());
+        Assert.assertEquals(2, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(1));
     }
     @Test
     public void test_default_rule2() {
@@ -171,8 +186,9 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 17, false);
         handleMockMessage(message1, 74, false);
         handleMockMessage(message1, 300, true);
-        Assert.assertEquals(1, sentPointData.size());
+        Assert.assertEquals(2, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1));
     }
     @Test
     public void test_default_rule3() {
@@ -182,8 +198,9 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, true);
-        Assert.assertEquals(1, sentPointData.size());
+        Assert.assertEquals(2, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(1));
     }
     
     @Test
@@ -212,14 +229,22 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 0, true); // sent GOOD
         
-        Assert.assertEquals(3, sentPointData.size());
+        Assert.assertEquals(6, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0)); //message 3
-        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1)); //message 2
-        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(2)); //message 1
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(2)); //message 2
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(4)); //message 1
     }
     
     @Test
     public void test_Device() {
+        sentPointData.clear();
+
+        handleMockMessage(message4, 0, true);
+        Assert.assertEquals(0, sentPointData.size());
+    }
+    
+    @Test
+    public void test_MultipleMonitor() {
         sentPointData.clear();
 
         handleMockMessage(message4, 0, true);

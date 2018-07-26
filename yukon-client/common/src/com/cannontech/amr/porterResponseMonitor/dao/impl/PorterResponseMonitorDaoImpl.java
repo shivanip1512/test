@@ -47,10 +47,10 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
     private final YukonRowMapper<PorterResponseMonitor> monitorRowMapper = new YukonRowMapper<PorterResponseMonitor>() {
         @Override
         public PorterResponseMonitor mapRow(YukonResultSet rs) throws SQLException {
-            PorterResponseMonitor retVal = new PorterResponseMonitor();
+            String groupName = rs.getString("groupName");
+            PorterResponseMonitor retVal = new PorterResponseMonitor(groupName);
             retVal.setMonitorId(rs.getInt("monitorId"));
             retVal.setName(rs.getString("name"));
-            retVal.setGroupName(rs.getString("groupName"));
             retVal.setStateGroup(stateGroupDao.getStateGroup(rs.getInt("stateGroupId")));
             String attributeKey = rs.getString("attribute");
             Attribute attribute = attributeService.resolveAttributeName(attributeKey);
