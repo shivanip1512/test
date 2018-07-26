@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -102,7 +103,9 @@ public class RoleAndPropertyDescriptionService {
             try {
                 YukonRoleProperty property = YukonRoleProperty.valueOf(someEnumName);
                 UserChecker propertyChecker;
-                if (!StringUtils.isEmpty(level)) {
+                if (property.getType().getTypeClass().isEnum() && property.getType().getTypeClass() == AccessLevel.class) {
+                    propertyChecker = userCheckerFactory.createAccessLevelChecker(property, level);
+                } else if(!StringUtils.isEmpty(level)) {
                     propertyChecker = userCheckerFactory.createHeirarchicalLevelChecker(property, level);
                 } else if (inverted) {
                     propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);

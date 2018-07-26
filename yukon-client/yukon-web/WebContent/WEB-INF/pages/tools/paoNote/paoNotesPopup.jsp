@@ -14,13 +14,17 @@
         <form:hidden path="paoId"/>
         <form:hidden path="createUserName"/>
         <div class="column-14-10 clearfix">
-            <div class="column one">
-                <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
-                <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
-                          maxLength="255" placeholder="${noteTextPlaceholder}"/>
-            </div>
+            <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
+                <div class="column one">
+                    <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
+                    <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
+                              maxLength="255" placeholder="${noteTextPlaceholder}"/>
+                </div>
+            </cti:checkRolesAndProperties>
             <div class="column two nogutter">
-                <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl"/>
+                <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
+                    <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl"/>
+                </cti:checkRolesAndProperties>
                 <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
                 <div class="fr"><a href="${searchUrl}"><i:inline key="yukon.common.search"/></a></div>
             </div>

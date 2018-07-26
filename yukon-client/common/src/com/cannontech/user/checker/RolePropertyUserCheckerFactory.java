@@ -3,6 +3,7 @@ package com.cannontech.user.checker;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
@@ -31,6 +32,22 @@ public class RolePropertyUserCheckerFactory {
             @Override
             public boolean check(LiteYukonUser user) {
                 return rolePropertyDao.checkLevel(property, permissionLevel, user);
+            };
+            
+            @Override
+            public String toString() {
+                return YukonRoleProperty.ENDPOINT_PERMISSION + " checker";
+            }
+        };
+        return checker;
+    }
+    
+    public UserChecker createAccessLevelChecker(YukonRoleProperty property, String level) {
+        AccessLevel accessLevel = AccessLevel.valueOf(level);
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return rolePropertyDao.checkLevel(property, accessLevel, user);
             };
             
             @Override

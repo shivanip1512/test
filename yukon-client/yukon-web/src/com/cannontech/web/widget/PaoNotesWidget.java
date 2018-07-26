@@ -20,7 +20,9 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -36,6 +38,12 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
+    @Autowired
+    public PaoNotesWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+        String checkRole = YukonRole.DEVICE_MANAGEMENT.name();
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
+    }
 
     @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, int deviceId, YukonUserContext userContext) {

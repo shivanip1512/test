@@ -82,10 +82,12 @@
                         <div class="small-circle" title="${availabilityText}" style="background-color:${device.availability.color}"></div>
                     </td>
                     <td>
-                        <c:if test="${notesList.contains(device)}">
-                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
-                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="viewAllNotesTitle" data-pao-id="${device.paoIdentifier.paoId}"/>
-                        </c:if>  
+                        <cti:checkRolesAndProperties value="DEVICE_MANAGEMENT">
+                            <c:if test="${notesList.contains(device)}">
+                                <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="viewAllNotesTitle" data-pao-id="${device.paoIdentifier.paoId}"/>
+                            </c:if>
+                        </cti:checkRolesAndProperties>
                     </td>
                     <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
                     <td>${fn:escapeXml(device.meterNumber)}</td>

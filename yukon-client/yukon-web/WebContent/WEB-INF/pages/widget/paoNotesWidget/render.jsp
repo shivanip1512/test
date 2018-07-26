@@ -14,14 +14,16 @@
         <form:hidden path="createUserName" />
         <table style="width:100%">
             <tr>
-                <td width="80%" class="P0">
-                    <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
-                    <tags:textarea rows="3" cols="46" path="noteText" id="createNoteTextarea" isResizable="false"
-                                   placeholder="${noteTextPlaceholder}" maxLength="255"/>
-                </td>
-                <td width="20%" class="vam">
-                    <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr"/>
-                </td>
+                <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
+                    <td width="80%" class="P0">
+                        <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
+                            <tags:textarea rows="3" cols="46" path="noteText" id="createNoteTextarea" isResizable="false"
+                                           placeholder="${noteTextPlaceholder}" maxLength="255"/>
+                    </td>
+                    <td width="20%" class="vam">
+                        <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr"/>
+                    </td>
+                </cti:checkRolesAndProperties>
             </tr>
         </table>
     </form:form>

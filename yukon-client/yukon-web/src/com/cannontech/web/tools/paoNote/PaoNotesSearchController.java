@@ -51,8 +51,8 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -65,10 +65,12 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.paonote.validator.PaoNoteValidator;
 import com.cannontech.web.security.annotation.CheckAccessLevel;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckRole(YukonRole.DEVICE_MANAGEMENT)
 @RequestMapping("/paoNotes/*")
 public class PaoNotesSearchController {
 
