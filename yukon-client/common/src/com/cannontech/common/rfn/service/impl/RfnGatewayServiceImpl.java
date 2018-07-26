@@ -230,7 +230,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             device = rfnDeviceDao.getDeviceForId(paoId);
         } catch (Exception e) {
             // Allows clicking on a Gateway Template to not throw a Yukon Exception
-            LiteYukonPAObject litePao = cache.getAllDevices().stream().filter(pao -> paoId == pao.getLiteID()).findFirst().get();
+            LiteYukonPAObject litePao = cache.getAllPaosMap().get(paoId);
             return new RfnGateway(litePao.getPaoName(), litePao.getPaoIdentifier(), null, null);
         }
         
