@@ -52,7 +52,7 @@
     <entry key="yukon.web.modules.tools.commander.error.unAuthorizedMessage">You do not have permission to execute this command.</entry>
     <entry key="yukon.web.modules.tools.commander.commandPriority.title">Accepted range {0}</entry>
     <entry key="yukon.web.modules.tools.commander.commandPriority.error.invalid">Please enter integer value between {0}</entry>
-    <entry key="yukon.web.modules.tools.commander.maxLoopCountExceeded">Loop command restricted to max 10 count, rest will be skipped.</entry>
+    <entry key="yukon.web.modules.tools.commander.maxLoopCountExceeded">Loop count exceeds limit, the maximum of loop 10 will be sent.</entry>
     
     <!-- Map -->
     <entry key="yukon.web.modules.tools.map.pageTitle">Tools: Map Devices ({0})</entry>

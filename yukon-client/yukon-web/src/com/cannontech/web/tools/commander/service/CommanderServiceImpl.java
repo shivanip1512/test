@@ -108,7 +108,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         List<String> commands = splitCommands(params);
         for (String command : commands) {
             if (command.trim().startsWith("loop")) {
-                loopCount = praseLoopCommand(command);
+                loopCount = parseLoopCommand(command);
                 commandWithLoopCount.put(command, loopCount);
             } else {
                 commandWithLoopCount.put(command, loopCount);
@@ -239,7 +239,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     }
 
     /** Parse the loop command , retrieve the count from the command string.*/
-    private int praseLoopCommand(String command) {
+    private int parseLoopCommand(String command) {
         String valueSubstring = null;
         int loopCount = 1;
         for (int j = command.indexOf("loop") + 4; j < command.length(); j++) {

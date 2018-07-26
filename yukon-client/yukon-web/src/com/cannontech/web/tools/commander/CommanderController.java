@@ -349,7 +349,7 @@ public class CommanderController {
         List<String> authorizedCommand = new ArrayList<>();
         Map<Integer, String> unAuthorizedCommand = new HashMap<>();
         Map<String, Boolean> commandWithAuthorization = new HashMap<>();
-        Map<String, Integer> commandWithLoopCount = Maps.newConcurrentMap();
+        Map<String, Integer> commandCounts = Maps.newConcurrentMap();
         MessageSourceAccessor accessor = null;
 
         if (params.getPaoId() != null) {
@@ -369,8 +369,8 @@ public class CommanderController {
         if (authorizedCommand.size() != 0) {
             params.setCommand(Joiner.on('&').join(authorizedCommand));
             try {
-                commandWithLoopCount = commanderService.parseCommand(params, userContext);
-                commands = commanderService.sendCommand(userContext, params, commandWithLoopCount);
+                commandCounts = commanderService.parseCommand(params, userContext);
+                commands = commanderService.sendCommand(userContext, params, commandCounts);
 
                 if (params.getTarget() == CommandTarget.DEVICE || params.getTarget() == CommandTarget.LOAD_GROUP) {
                     LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
@@ -402,8 +402,8 @@ public class CommanderController {
             }
 
             // if loop count for loopback command is more than 10 , show message on console .
-            if (!commandWithLoopCount.isEmpty()) {
-                for (Map.Entry<String, Integer> entry : commandWithLoopCount.entrySet()) {
+            if (!commandCounts.isEmpty()) {
+                for (Map.Entry<String, Integer> entry : commandCounts.entrySet()) {
                     if (entry.getKey().trim().startsWith("loop") && entry.getValue() > 10) {
                         result.put("showLoopCountMessage", true);
                         accessor = messageResolver.getMessageSourceAccessor(userContext);
