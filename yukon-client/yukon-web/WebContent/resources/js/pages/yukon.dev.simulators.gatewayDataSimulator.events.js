@@ -15,6 +15,7 @@ yukon.dev.simulators.gatewayDataSimulator.events = ( function() {
     _initialized = false,
     
     _enableAll = function (event) {
+        var formData = $("form").serializeArray();
         $.ajax({
             url: yukon.url('enableAllGatewaySimulators'),
             type: 'post',
