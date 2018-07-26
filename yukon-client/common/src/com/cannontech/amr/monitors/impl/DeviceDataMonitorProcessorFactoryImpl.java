@@ -1,7 +1,5 @@
 package com.cannontech.amr.monitors.impl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +76,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         }
 
         if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
-            deviceDataMonitorCalculationService.recalculateViolation(monitor, richPointData);
+            deviceDataMonitorCalculationService.updateViolationsGroupBasedOnNewPointData(monitor, richPointData);
         }
     }
 }

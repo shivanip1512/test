@@ -342,56 +342,91 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         }
         return foundViolation;
     }
-    
-    @Override 
-    public void recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData){
 
-        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
-        PointValueQualityHolder receivedValue = richPointData.getPointValue();
-        
-        Optional<BuiltInAttribute> attribute = monitor.getAttributes().stream()
-                .filter(a -> attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), a))
-                .findFirst();
-        if (!attribute.isPresent()) {
-            log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
-                monitor, device, receivedValue.getId());
+    @Override
+    public void updateViolationsGroupBasedOnNewPointData(DeviceDataMonitor monitor, RichPointData richPointData) {
+        BuiltInAttribute attribute = getValidAttribute(monitor, richPointData);
+        if (attribute == null) {
             return;
         }
-        
-        LitePoint point = pointDao.getLitePoint(receivedValue.getId());
-        List<DeviceDataMonitorProcessor> processors = monitor.getProcessors(attribute.get());
-        
-        boolean foundViolation = isViolating(processors, point.getStateGroupID(), receivedValue);
-        boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(monitor.getViolationGroup(), device);
-        
+        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        Boolean addRemoveFromGroup = recalculateViolation(monitor, richPointData, attribute);
+        if (addRemoveFromGroup != null) {
+            addRemoveFromViolationGroup(monitor, device, addRemoveFromGroup);
+        }
+        updateViolationCacheCount(monitor);
+    }
+
+    /**
+     * Finds attribute for point data and monitor
+     */
+    private BuiltInAttribute getValidAttribute(DeviceDataMonitor monitor, RichPointData richPointData) {
+        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        Optional<BuiltInAttribute> attribute = monitor.getAttributes().stream().filter(
+            a -> attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), a)).findFirst();
+        if (!attribute.isPresent()) {
+            log.debug(
+                "{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
+                monitor, device, richPointData.getPointValue().getId());
+            return null;
+        }
+        return attribute.get();
+    }
+
+    private Boolean recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData, BuiltInAttribute attribute){
+        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        LitePoint point = pointDao.getLitePoint(richPointData.getPointValue().getId());
+        boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(monitor.getViolationGroup(), device);    
+        boolean foundViolation = isViolating(monitor.getProcessors(attribute), point.getStateGroupID(), richPointData.getPointValue());
+
         // no violation found but device is in violation group and this monitor is monitoring for more then 1
         // attribute
         if (!foundViolation && inViolationsGroup && monitor.getAttributes().size() > 1) {
             // check other processors for violation
             // if other violations found, keep the device in the group
-            foundViolation = isOtherAttributeViolating(monitor, attribute.get(), device);
+            foundViolation = isOtherAttributeViolating(monitor, attribute, device);
         }
-        
+        log.debug("{} recalculation of violation for {} is complete, violation found:{}",  monitor, device, foundViolation);
+        return shouldTheGroupBeModified(inViolationsGroup, foundViolation);
+    }
+
+    /**
+     * Returns true if device needs to be added to a group, returns false if it needs to be removed from the
+     * group, returns null if no changes should be made to the group.
+     * (unit test)
+     */
+    private Boolean shouldTheGroupBeModified(boolean inViolationsGroup, boolean foundViolation) {
         //found violation and device is not in violation group
         if(foundViolation && !inViolationsGroup) {
+            return true;
+        }
+        
+        // no violation found but device is in violation group
+        if (!foundViolation && inViolationsGroup) {
+            return false;
+        }
+        return null;
+    }
+
+    /**
+     * Adds or removes device from violation group and sends notification
+     */
+    private void addRemoveFromViolationGroup(DeviceDataMonitor monitor, SimpleDevice device, boolean addToGroup) {
+        //found violation and device is not in violation group
+        if(addToGroup) {
             //add device to group
             deviceGroupMemberEditorDao.addDevices(monitor.getViolationGroup(), device);
             sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
             log.debug("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
         }
-        
-        // no violation found but device is in violation group
-        if (!foundViolation && inViolationsGroup) {
+        else {
             // remove device from group
             deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
             sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
             log.debug("{} removing {} form violation group {}", monitor, device, monitor.getViolationGroup());
         }
-        
-        updateViolationCacheCount(monitor);
-        log.debug("{} recalculation of violation for {} is complete, violation found:{}",  monitor, device, foundViolation);
     }
-    
+
     /**
      * Cache violations count to be used when data updaters send request to SM to get the count.
      */
@@ -408,8 +443,6 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      */
     private Set<SimpleDevice> findViolations(DeviceDataMonitor monitor,
             Multimap<BuiltInAttribute, SimpleDevice> attributeToDevice) {
-
-        Set<SimpleDevice> violatingDevices = Sets.newHashSet();
       
         Map<BuiltInAttribute, Map<Integer, SimpleDevice>> attributeToPoints = new HashMap<>();
         Set<Integer> allPoints = new HashSet<>();
@@ -435,6 +468,16 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         Map<Integer, PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointDataOnce(allPoints).stream()
                 .collect(Collectors.toMap(p -> p.getId(), p -> p));
  
+        return findViolatingDevices(monitor, attributeToPoints, pointIdsToStateGroup, pointValues);
+    }
+
+    /**
+     * Returns violating devices for monitor (unit test)
+     */
+    private Set<SimpleDevice> findViolatingDevices(DeviceDataMonitor monitor,
+            Map<BuiltInAttribute, Map<Integer, SimpleDevice>> attributeToPoints,
+            Map<Integer, Integer> pointIdsToStateGroup, Map<Integer, PointValueQualityHolder> pointValues) {
+        Set<SimpleDevice> violatingDevices = new HashSet<>();
         if (!pointValues.isEmpty()) {
             for (Entry<BuiltInAttribute, Map<Integer, SimpleDevice>> entry : attributeToPoints.entrySet()) {
                 List<DeviceDataMonitorProcessor> processor = monitor.getProcessors(entry.getKey());
@@ -455,7 +498,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     }
 
     /**
-     * Returns true if violation found
+     * Returns true if violation found (unit test)
      */
     private boolean isViolating(List<DeviceDataMonitorProcessor> processors, Integer stateGroupId,
             PointValueQualityHolder pointValue) {
@@ -468,7 +511,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     }
     
     /**
-     * Returns true if violation found
+     * Returns true if violation found (unit test)
      */
     private boolean isViolating(DeviceDataMonitorProcessor processor, Integer stateGroupId,
             PointValueQualityHolder pointValue) {

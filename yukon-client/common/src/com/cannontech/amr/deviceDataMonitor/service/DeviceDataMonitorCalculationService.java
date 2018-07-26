@@ -10,5 +10,5 @@ public interface DeviceDataMonitorCalculationService {
      * found otherwise removes device from violation group.
      */
 
-    void recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData);
+    void updateViolationsGroupBasedOnNewPointData(DeviceDataMonitor monitor, RichPointData richPointData);
 }
