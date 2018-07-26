@@ -632,7 +632,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     {
         if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
-            CTILOG_DEBUG(dout, logNow() <<"Point registration response tag set, point "<< localMsg->getId() <<" will not be sent");
+            CTILOG_DEBUG(dout, logNow() <<"Point registration response tag set, point ID "<< localMsg->getId() <<" will not be sent");
         }
         return false;
     }
@@ -640,15 +640,22 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     CtiFDRPointSPtr point;
     {
         // lock on the send list
-        CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+        CTILOCKGUARD(CtiMutex, sendGuard, getSendToList().getMutex());
+
         point = getSendToList().getPointList()->findFDRPointID(localMsg->getId());
     }
 
     if (!point)
     {
-        if (getDebugLevel () & ERROR_FDR_DEBUGLEVEL)
+        CTILOCKGUARD(CtiMutex, recvGuard, getReceiveFromList().getMutex());
+
+        if (getReceiveFromList().getPointList()->findFDRPointID(localMsg->getId()))
         {
-            CTILOG_ERROR(dout, logNow() <<"Translation for point "<< localMsg->getId() <<" cannot be found");
+            CTILOG_DEBUG(dout, logNow() << "Data not sent for receive-only point ID " << localMsg->getId());
+        }
+        else if( getDebugLevel() & ERROR_FDR_DEBUGLEVEL )
+        {
+            CTILOG_ERROR(dout, logNow() << "Translation for point ID " << localMsg->getId() << " cannot be found");
         }
         return false;
     }
