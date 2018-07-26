@@ -5669,7 +5669,7 @@ CtiCCCapBankPtr CtiCCSubstationBus::canConsiderPoint( const CtiCCMonitorPoint & 
     return nullptr;
 }
 
-bool CtiCCSubstationBus::areCapbankMonitorPointsNewerThan( const CtiTime & timestamp )
+bool CtiCCSubstationBus::areCapbankMonitorPointsNewerThan( const CtiTime timestamp )
 {
     for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
     {

@@ -4932,16 +4932,16 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
                                pointChanges,
                                events );
 
-    if ( pilMessages.size() > 0 )
+    if ( ! pilMessages.empty() )
     {
-        CtiMultiMsg * multiPilMsg = new CtiMultiMsg();
+        auto multiPilMsg = std::make_unique<CtiMultiMsg>();
 
         multiPilMsg->setData( pilMessages );
 
-        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue( multiPilMsg, CALLSITE );
+        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue( multiPilMsg.release(), CALLSITE );
     }
 
-    if ( capMessages.size() > 0 )
+    if ( ! capMessages.empty() )
     {
         for ( auto entry : capMessages )
         {
