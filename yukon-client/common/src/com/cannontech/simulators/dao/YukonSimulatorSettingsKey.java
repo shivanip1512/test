@@ -5,7 +5,7 @@ import com.cannontech.simulators.SimulatorType;
 import com.cannontech.web.input.type.InputType;
 
 public enum YukonSimulatorSettingsKey {
-    AMR_CREATION_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.AMR_CREATION),
+    AMR_CREATION_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.AMR_CREATION),
     
     //SimulatedDataStreamingSettings
     DATA_STREAMING_SIMULATOR_OVERLOAD_VER(false, InputTypeFactory.booleanType(), SimulatorType.DATA_STREAMING),
@@ -19,7 +19,7 @@ public enum YukonSimulatorSettingsKey {
     DATA_STREAMING_SIMULATOR_FAIL_CON(false, InputTypeFactory.booleanType(), SimulatorType.DATA_STREAMING),
     DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_CON(0, InputTypeFactory.integerType(), SimulatorType.DATA_STREAMING),
     DATA_STREAMING_SIMULATOR_ACCEPTED_ERR(false, InputTypeFactory.booleanType(), SimulatorType.DATA_STREAMING),
-    DATA_STREAMING_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.DATA_STREAMING),
+    DATA_STREAMING_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.DATA_STREAMING),
 
     //Gateway Data Simulator
     //SimulatedGatewayDataSettings
@@ -43,7 +43,7 @@ public enum YukonSimulatorSettingsKey {
     //SimulatedFirwareReplySettings
     GATEWAY_SIMULATOR_FIRWARE_RESULT_TYPE("ACCEPTED", InputTypeFactory.stringType(), SimulatorType.GATEWAY),
     //Run on startup for Gateway
-    GATEWAY_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.GATEWAY),
+    GATEWAY_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.GATEWAY),
 
     //RFN LCR Simulator Settings (SimulatorSettings)
     RFN_LCR_SIMULATOR_6200_SERIAL_FROM(100000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
@@ -54,26 +54,26 @@ public enum YukonSimulatorSettingsKey {
     RFN_LCR_SIMULATOR_6700_SERIAL_TO(380000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE(10, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_TLV_VERSION(4, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
-    RFN_LCR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_LCR),
+    RFN_LCR_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_LCR),
 
     //RFN Meter Simulator Settings (SimulatorSettings)
     RFN_METER_SIMULATOR_METER_TYPE("ALL RFN Type", InputTypeFactory.stringType(), SimulatorType.RFN_METER),
     RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE(10, InputTypeFactory.integerType(), SimulatorType.RFN_METER),
     RFN_METER_SIMULATOR_REPORTING_INTERVAL("REPORTING_INTERVAL_1_HOURS", InputTypeFactory.stringType(), SimulatorType.RFN_METER),
-    RFN_METER_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER),
+    RFN_METER_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER),
 
     //RFN Read and Control Simulator
-    RFN_METER_READ_AND_CONTROL_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_READ_CONTROL_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER_READ_CONTROL),
     //Simulated Reads
-    RFN_METER_READ_SIMULATOR_READ_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
-    RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
-    RFN_METER_READ_SIMULATOR_READ_REPLY2("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
-    RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_READ_SIMULATOR_READ_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_CONTROL),
+    RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
+    RFN_METER_READ_SIMULATOR_READ_REPLY2("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_CONTROL),
+    RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
     //Simulated Disconnects
-    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
-    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
-    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY2("SUCCESS", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
-    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_AND_CONTROL),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_CONTROL),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY2("SUCCESS", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_CONTROL),
+    RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
     
     //RFN Network Simulator (SimulatorSettings)
     //NeighborData
@@ -112,11 +112,11 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_PARENT_SN("123", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_PARENT_MAC_ADDR("17:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
 
     //IvvcSimulatorSettings
     IVVC_SIMULATOR_INCREASED_SPEED_MODE(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
-    IVVC_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
+    IVVC_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_SUBSTATION_BUS_KWH(3000.0, InputTypeFactory.doubleType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH(true, InputTypeFactory.booleanType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR(1200.0, InputTypeFactory.doubleType(), SimulatorType.IVVC),

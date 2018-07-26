@@ -102,8 +102,6 @@ yukon.dev.simulators.rfnMeterSimulator = (function() {
     },
     
     _enableAll = function (event) {
-        var formData = $("form").serializeArray();
-        console.log(formData);
         $.ajax({
             url: yukon.url('enableAllRfnReadAndControl'),
             type: 'post',

@@ -305,7 +305,7 @@
                                 <cti:button label="Disable All" type="button" href="disableAllRfnReadAndControl"/>
                             </c:if>
                             <div class="button-group button-group-toggle">
-                                <div class="js-sim-startup" data-simulator-type="RFN_METER_READ_AND_CONTROL">
+                                <div class="js-sim-startup" data-simulator-type="RFN_METER_READ_CONTROL">
                                     <cti:button nameKey="runSimulatorOnStartup.automatic" classes="yes enable-startup"/>
                                     <cti:button nameKey="runSimulatorOnStartup.manual" classes="no disable-startup"/>
                                 </div>

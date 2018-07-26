@@ -121,7 +121,7 @@ public class SimulatorsService {
             .put(SimulatorType.RFN_NETWORK, nmNetworkSimulatorService)
             .put(SimulatorType.IVVC, ivvcSimulatorService)
             .put(SimulatorType.RFN_LCR, rfnLcrDataSimulatorService)
-            .put(SimulatorType.RFN_METER_READ_AND_CONTROL, rfnMeterReadAndControlSimulatorService)
+            .put(SimulatorType.RFN_METER_READ_CONTROL, rfnMeterReadAndControlSimulatorService)
             .build();
     }
 

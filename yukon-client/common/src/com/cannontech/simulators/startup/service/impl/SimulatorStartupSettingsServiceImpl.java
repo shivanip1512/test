@@ -20,7 +20,7 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
     @Override
     public boolean isRunOnStartup(SimulatorType simulatorType) {
         try {
-            YukonSimulatorSettingsKey key = YukonSimulatorSettingsKey.valueOf(simulatorType.name() + "_RUN_ON_STARTUP");
+            YukonSimulatorSettingsKey key = YukonSimulatorSettingsKey.valueOf(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP");
             return yukonSimulatorSettingsDao.getBooleanValue(key);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to get SimulatorStartupSettings for: " + simulatorType.name(), e); 
@@ -30,9 +30,9 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
     @Override
     public void saveStartupSettings(boolean runOnStartup, SimulatorType simulatorType) {
         try {
-            YukonSimulatorSettingsKey key = YukonSimulatorSettingsKey.valueOf(simulatorType.name() + "_RUN_ON_STARTUP");
-                yukonSimulatorSettingsDao.setValue(key, runOnStartup);
-                return;
+            YukonSimulatorSettingsKey key = YukonSimulatorSettingsKey.valueOf(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP");
+            yukonSimulatorSettingsDao.setValue(key, runOnStartup);
+            return;
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to update SimulatorStartupSettings for: " + simulatorType.name(), e);
         }

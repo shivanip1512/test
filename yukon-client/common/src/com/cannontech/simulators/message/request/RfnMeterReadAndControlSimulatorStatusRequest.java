@@ -6,7 +6,7 @@ public class RfnMeterReadAndControlSimulatorStatusRequest implements SimulatorRe
 
     @Override
     public SimulatorType getRequestType() {
-        return SimulatorType.RFN_METER_READ_AND_CONTROL;
+        return SimulatorType.RFN_METER_READ_CONTROL;
     }
     
 }

@@ -20,7 +20,7 @@ public class RfnMeterReadAndControlSimulatorMessageHandler extends SimulatorMess
     @Autowired private RfnMeterReadAndControlSimulatorService simulator;
 
     public RfnMeterReadAndControlSimulatorMessageHandler() {
-        super(SimulatorType.RFN_METER_READ_AND_CONTROL);
+        super(SimulatorType.RFN_METER_READ_CONTROL);
     }
 
     @Override

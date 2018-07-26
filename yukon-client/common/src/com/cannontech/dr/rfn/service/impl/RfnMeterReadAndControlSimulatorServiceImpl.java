@@ -105,7 +105,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     }
     
     public void saveDisconnectSettings(RfnMeterReadAndControlDisconnectSimulatorSettings settings) {
-        log.debug("Saving RFN_METER_READ_AND_CONTROL settings to the YukonSimulatorSettings table.");
+        log.debug("Saving RFN_METER_READ_CONTROL settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY1, settings.getDisconnectReply1());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY2, settings.getDisconnectReply2());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_1, settings.getDisconnectReply1FailPercent());
@@ -115,7 +115,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     @Override
     public RfnMeterReadAndControlDisconnectSimulatorSettings getDisconnectSettings() {
         if (disconnectSettings == null) {
-            log.debug("Getting RFN_METER_READ_AND_CONTROL SimulatorSettings from db.");
+            log.debug("Getting RFN_METER_READ_CONTROL SimulatorSettings from db.");
             RfnMeterReadAndControlDisconnectSimulatorSettings simulatorSettings = new RfnMeterReadAndControlDisconnectSimulatorSettings();
             simulatorSettings.setDisconnectReply1(RfnMeterDisconnectInitialReplyType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY1)));
             simulatorSettings.setDisconnectReply1FailPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_1));
@@ -127,7 +127,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     }
     
     public void saveReadSettings(RfnMeterReadAndControlReadSimulatorSettings settings) {
-        log.debug("Saving RFN_METER_READ_AND_CONTROL settings to the YukonSimulatorSettings table.");
+        log.debug("Saving RFN_METER_READ_CONTROL settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_REPLY1, settings.getReadReply1());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_REPLY2, settings.getReadReply2());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1, settings.getReadReply1FailPercent());
@@ -137,7 +137,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     @Override
     public RfnMeterReadAndControlReadSimulatorSettings getReadSettings() {
         if (readSettings == null) {
-            log.debug("Getting RFN_METER_READ_AND_CONTROL SimulatorSettings from db.");
+            log.debug("Getting RFN_METER_READ_CONTROL SimulatorSettings from db.");
             RfnMeterReadAndControlReadSimulatorSettings simulatorSettings = new RfnMeterReadAndControlReadSimulatorSettings();
             simulatorSettings.setReadReply1(RfnMeterReadingReplyType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_REPLY1)));
             simulatorSettings.setReadReply1FailPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1));
