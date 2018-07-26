@@ -136,10 +136,10 @@ function YukonWidget(shortName, parameters) {
     };
 
     /**
-     * Performs the action for the given command and loads the resulting 
-     * html into the provided container.
+     * Performs the action for the given command and loads the resulting html into the provided container. If a 
+     * successCallback is provided, it will be called after the widget updates.
      */
-    this.doActionUpdate = function (args) {
+    this.doActionUpdate = function (args, successCallback) {
         
         var oldParams = $.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters),
             url = yukon.url('/widget/' + this.shortName + '/' + args.command),
@@ -151,6 +151,9 @@ function YukonWidget(shortName, parameters) {
             method : 'POST'
         }).done(function (data) {
             $(document.getElementById(args.containerID)).html(data);
+            if (successCallback) {
+                successCallback();
+            }
         }).always(function() {
             var button = $('#' + buttonId);
             if (button.length > 0) { // if the cotainer included the button, it won't be there anymore

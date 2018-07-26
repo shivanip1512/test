@@ -21,6 +21,16 @@ yukon.widget.paonotes = (function () {
         $('#js-edit-note-' + noteId).toggleClass('dn');
     },
     
+    _updateNotesWidgets = function () {
+        var widgetId, widget;
+        $('.js-view-all-notes').each(function(index, obj) {
+            widgetId = $(obj).closest('.widgetWrapper').attr('id');
+            widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
+            widget = yukon.widgets[widgetId];
+            widget.render();
+        });
+    }
+    
     mod = {
         
         /** Initialize this module. */
@@ -55,6 +65,7 @@ yukon.widget.paonotes = (function () {
                     'extraParameters' : extraParameters,
                     'containerID' : widget.container
                 });
+                _updateNotesWidgets();
             });
             
             $(document).on('click', 'button[id^="js-save-note-btn-"]', function (event) {
@@ -82,7 +93,7 @@ yukon.widget.paonotes = (function () {
                         noteTextarea.addClass('error');
                         yukon.ui.initContent();
                     } else {
-                        widget.render();
+                        _updateNotesWidgets();
                     }
                 });
             });
@@ -97,6 +108,18 @@ yukon.widget.paonotes = (function () {
                     'command' : 'createPaoNote',
                     'extraParameters' : extraParameters,
                     'containerID' : widget.container
+                }, function () {
+                    var errorSpan = $('#noteText\\.errors'),
+                        widgetId, 
+                        widget;
+                    if (errorSpan && errorSpan.text().length == 0) {
+                        $('.js-view-all-notes').each(function(index, obj) {
+                            widgetId = $(obj).closest('.widgetWrapper').attr('id');
+                            widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
+                            widget = yukon.widgets[widgetId];
+                            widget.render();
+                        });
+                    }
                 });
             });
             
