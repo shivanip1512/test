@@ -127,7 +127,7 @@
                             <tr>
                                 <tags:sort width="12%" column="${deviceName}" />
                                 <tags:sort width="12%" column="${deviceType}" />
-                                <tags:sort width="35%" column="${noteText}" />
+                                <tags:sort width="31%" column="${noteText}" />
                                 <tags:sort width="12%" column="${createdBy}" />
                                 <tags:sort width="12%" column="${createDate}" />
                                 <tags:sort width="10%" column="${editedBy}" />
