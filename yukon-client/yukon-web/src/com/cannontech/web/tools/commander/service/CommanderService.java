@@ -17,7 +17,7 @@ public interface CommanderService {
      * {@link CommandRequestException} if thrown. 
      * @throws {@link CommandRequestException} when the connection to porter is invalid, contains the {@link CommandRequest}s.
      */
-    List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandWithLoopCount) throws CommandRequestException;
+    List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandCounts) throws CommandRequestException;
     
     /**
      * Removes the requests stored for this user from the internal concurrent hash map.

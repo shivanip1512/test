@@ -74,14 +74,14 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Autowired private ServerDatabaseCache cache;
     
     @Override
-    public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandWithLoopCount) throws CommandRequestException {
+    public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandCounts) throws CommandRequestException {
         
         LiteYukonUser user = userContext.getYukonUser();
         
         log.debug("User: " + user + " attempting command: " + params);
         // TODO log the attempt with event log service
         
-        List<CommandRequest> commands = buildCommands(params, userContext, commandWithLoopCount);
+        List<CommandRequest> commands = buildCommands(params, userContext, commandCounts);
         
         if (!porter.isValid()) {
             for (CommandRequest command : commands) {
@@ -103,18 +103,18 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
 
     @Override
     public Map<String, Integer> parseCommand(CommandParams params, YukonUserContext userContext) {
-        Map<String, Integer> commandWithLoopCount = Maps.newConcurrentMap();
+        Map<String, Integer> commandCounts = Maps.newConcurrentMap();
         int loopCount = 1;
         List<String> commands = splitCommands(params);
         for (String command : commands) {
             if (command.trim().startsWith("loop")) {
                 loopCount = parseLoopCommand(command);
-                commandWithLoopCount.put(command, loopCount);
+                commandCounts.put(command, loopCount);
             } else {
-                commandWithLoopCount.put(command, loopCount);
+                commandCounts.put(command, loopCount);
             }
         }
-        return commandWithLoopCount;
+        return commandCounts;
     }
     @Override
     public Map<Integer, CommandRequest> getRequests(LiteYukonUser user) {
@@ -221,9 +221,9 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
      * While for command other than loop command we will build a single command request.
      */
     private List<CommandRequest> buildCommands(CommandParams params, YukonUserContext userContext,
-            Map<String, Integer> commandWithLoopCount) {
+            Map<String, Integer> commandCounts) {
         List<CommandRequest> reqs = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : commandWithLoopCount.entrySet()) {
+        for (Map.Entry<String, Integer> entry : commandCounts.entrySet()) {
             String command = entry.getKey();
             if (command.trim().startsWith("loop")) {
                 int loopCount = entry.getValue() <= 10 ? entry.getValue() : 10;
