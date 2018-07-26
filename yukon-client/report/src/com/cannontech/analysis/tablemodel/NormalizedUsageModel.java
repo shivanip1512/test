@@ -52,7 +52,7 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
         Instant end = new DateTime(stopDate).withTimeAtStartOfDay().plusDays(1).toInstant();
 
-        Range<Instant> instantRange = Range.exclusiveInclusive(start, end);
+        Range<Instant> instantRange = Range.inclusive(start, end);
 
         // get raw data
         List<PointValueHolder> pvhList = rphDao.getPointData(pointId, instantRange, Order.FORWARD);
