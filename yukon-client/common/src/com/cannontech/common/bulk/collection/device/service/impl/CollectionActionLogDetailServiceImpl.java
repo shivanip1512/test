@@ -118,6 +118,11 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
             List<String> data = new ArrayList<>();
             for (CollectionActionLogDetail detail : details) {
                 Set<CollectionActionLogDetail> cachedDetails = cache.getIfPresent(result.getCacheKey());
+                if(cachedDetails == null) {
+                    log.debug("*****hasLog="+hasLog(result.getCacheKey()));
+                    log.debug("*****key="+result.getCacheKey());
+                    cache.put(result.getCacheKey(), new HashSet<>());
+                }
                 if (cachedDetails != null && cachedDetails.contains(detail)) {
                     continue;
                 }
