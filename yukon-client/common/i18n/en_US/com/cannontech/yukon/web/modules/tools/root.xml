@@ -79,7 +79,7 @@
     <entry key="yukon.web.modules.tools.map.deleteCoordinates">Are you sure you want to delete map coordinates for {0}?</entry>
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.title">Delete coordinates?</entry>
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.error">Unable to delete coordinates: {0}</entry>
-    <entry key="yukon.web.modules.tools.map.network.error">&lt;Network Information Not Available&gt;</entry>
+    <entry key="yukon.web.modules.tools.map.network.error">Unable to retrieve network information.</entry>
     <!-- /trend -->  
     <entry key="yukon.web.modules.tools.trend.pageName">Trends</entry>
     <entry key="yukon.web.modules.tools.trend.pageDescription">{0}</entry>

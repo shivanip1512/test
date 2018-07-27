@@ -659,9 +659,10 @@ yukon.map.network = (function () {
                         }
                     } else {
                         var target = ev.originalEvent.target;
-                        //check if user clicked on cog
-                        var cog = $(target).closest('.js-cog-menu');
-                        if (cog.length == 0) {
+                        //check if user clicked on the cog or the error hide-reveal
+                        var cog = $(target).closest('.js-cog-menu'),
+                            error = $(target).closest('.hide-reveal-container');
+                        if (cog.length == 0 && error.length == 0) {
                             $('#marker-info').hide();
                         }
                     }

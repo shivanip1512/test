@@ -7,6 +7,7 @@
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="titleClass" required="false" type="java.lang.String" %>
 
 <cti:uniqueIdentifier prefix="hideReveal_" var="thisId"/>
 
@@ -18,7 +19,7 @@
     <div class="title-bar clearfix">
         <c:choose>
             <c:when test="${pageScope.escapeTitle}"><h3 class="title toggle-title">${fn:escapeXml(pageScope.title)}</h3></c:when>
-            <c:otherwise><h3 id="${thisId}_title" class="title toggle-title">${pageScope.title}</h3></c:otherwise>
+            <c:otherwise><h3 id="${thisId}_title" class="title toggle-title ${pageScope.titleClass}">${pageScope.title}</h3></c:otherwise>
         </c:choose>
     </div>
     <div id="${thisId}_content" class="content"><jsp:doBody/></div>

@@ -8,10 +8,12 @@
 <%@ attribute name="showInitially" type="java.lang.Boolean" %>
 <%@ attribute name="styleClass" %>
 <%@ attribute name="titleKey" required="true" type="java.lang.Object" %>
+<%@ attribute name="titleClass" required="false" type="java.lang.String" %>
 
 <cti:msg2 var="theTitle" key="${titleKey}"/>
 <tags:hideReveal title="${theTitle}" 
     escapeTitle="${pageScope.escapeTitle}" 
     id="${pageScope.id}" 
     showInitially="${pageScope.showInitially}" 
-    styleClass="${pageScope.styleClass}"><jsp:doBody/></tags:hideReveal>
+    styleClass="${pageScope.styleClass}"
+    titleClass="${pageScope.titleClass}"><jsp:doBody/></tags:hideReveal>
