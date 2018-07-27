@@ -882,12 +882,12 @@ string svResult;
 BOOL bResult1, bResult2;
 begin
 // Go to the backup location and check for the config files
-if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "yukonLogging_" + "*.*" + ".xml", svResult ) < 0) then 
+if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "yukonLogging_" + "*.*", svResult ) < 0) then 
     bResult1 = FALSE;
 else 
    bResult1 = TRUE;
 endif;
-if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "remoteLogging_" + "*.*" + ".xml", svResult ) < 0) then 
+if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "remoteLogging_" + "*.*", svResult ) < 0) then 
    bResult2 = FALSE;
 else 
    bResult2 = TRUE;
