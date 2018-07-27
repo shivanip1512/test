@@ -642,17 +642,24 @@ INSERT INTO DBUpdates VALUES ('YUK-18551', '7.1.0', SYSDATE);
 /* @end YUK-18551 */
 
 /* @start YUK-18526 */
+/* @start-block */
+DECLARE 
+    v_MaxDeviceGroupId NUMBER; 
+    v_RootParentGroupId NUMBER; 
+BEGIN
+SELECT MAX(DG.DeviceGroupId) INTO v_MaxDeviceGroupId FROM DeviceGroup DG WHERE DG.DeviceGroupId < 100;
+SELECT MAX(DG.DeviceGroupId) INTO v_RootParentGroupId FROM DeviceGroup DG WHERE SystemGroupEnum = 'METERS';
+
 INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
-SELECT DG1.DeviceGroupId, 'CIS DeviceClass', DG2.ParentDeviceGroupId, 'NOEDIT_MOD', 'STATIC', SYSDATE, 'CIS_DEVICECLASS'
-FROM (SELECT MAX(DG.DeviceGroupId) + 1 AS DeviceGroupId
-      FROM DeviceGroup DG
-      WHERE DG.DeviceGroupId < 100) DG1,
-     (SELECT MAX(DG.DeviceGroupId) AS ParentDeviceGroupId
-      FROM DeviceGroup DG
-      WHERE SystemGroupEnum = 'METERS') DG2;
+    VALUES(v_MaxDeviceGroupId + 1, 'CIS DeviceClass', v_RootParentGroupId, 'NOEDIT_MOD', 'STATIC', SYSDATE, 'CIS_DEVICECLASS');
+
+END;
+/
+/* @end-block */
 
 INSERT INTO DBUpdates VALUES ('YUK-18526', '7.1.0', SYSDATE);
 /* @end YUK-18526 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

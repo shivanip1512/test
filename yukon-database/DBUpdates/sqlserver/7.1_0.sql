@@ -733,14 +733,13 @@ INSERT INTO DBUpdates VALUES ('YUK-18551', '7.1.0', GETDATE());
 /* @end YUK-18551 */
 
 /* @start YUK-18526 */
+BEGIN
+    DECLARE @MaxDeviceGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE DG.DeviceGroupId < 100)
+    DECLARE @RootParentGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE SystemGroupEnum = 'METERS')
+
 INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
-SELECT DG1.DeviceGroupId, 'CIS DeviceClass', DG2.ParentDeviceGroupId, 'NOEDIT_MOD', 'STATIC', GETDATE(), 'CIS_DEVICECLASS'
-FROM (SELECT MAX(DG.DeviceGroupId) + 1 AS DeviceGroupId
-      FROM DeviceGroup DG
-      WHERE DG.DeviceGroupId < 100) DG1,
-     (SELECT MAX(DG.DeviceGroupId) AS ParentDeviceGroupId
-      FROM DeviceGroup DG
-      WHERE SystemGroupEnum = 'METERS') DG2;
+    VALUES(@MaxDeviceGroupId + 1, 'CIS DeviceClass', @RootParentGroupId, 'NOEDIT_MOD', 'STATIC', GETDATE(), 'CIS_DEVICECLASS')
+END;
 GO
 
 INSERT INTO DBUpdates VALUES ('YUK-18526', '7.1.0', GETDATE());
