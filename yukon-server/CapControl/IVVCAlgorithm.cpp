@@ -2154,109 +2154,56 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
     // first send poly phase and phase A
     // wait 1 second, send B, wait 1 s, send C
 
-    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    CtiTime Now;
+    static CtiTime PreviousHeartbeat{ CtiTime::neg_infin };
+    static const Cti::CapControl::Phase PhaseArray[] = { Cti::CapControl::Phase_A, Cti::CapControl::Phase_B, Cti::CapControl::Phase_C };
+    static auto PhaseCounter = 2;
+
+    if ( Now <= PreviousHeartbeat + 1 )
     {
-        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
-
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
-        {
-            try
-            {
-                if ( mapping.first == Cti::CapControl::Phase_Poly || mapping.first == Cti::CapControl::Phase_A )
-                {
-                    VoltageRegulatorManager::SharedPtr regulator =
-                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
-
-                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
-                }
-            }
-            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-            {
-                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
-            }
-            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
-            {
-                if (missingAttribute.complain())
-                {
-                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
-                }
-            }
-        }
+        return;
     }
 
-    Sleep(1000);    // wait 1 second between phases
-
-    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
-    {
-        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
-
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
-        {
-            try
-            {
-                if ( mapping.first == Cti::CapControl::Phase_B )
-                {
-                    VoltageRegulatorManager::SharedPtr regulator =
-                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
-
-                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
-                }
-            }
-            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-            {
-                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
-            }
-            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
-            {
-                if (missingAttribute.complain())
-                {
-                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
-                }
-            }
-        }
-    }
-
-    Sleep(1000);    // wait 1 second between phases
-
-    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
-    {
-        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
-
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
-        {
-            try
-            {
-                if ( mapping.first == Cti::CapControl::Phase_C )
-                {
-                    VoltageRegulatorManager::SharedPtr regulator =
-                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
-
-                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
-                }
-            }
-            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-            {
-                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
-            }
-            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
-            {
-                if (missingAttribute.complain())
-                {
-                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
-                }
-            }
-        }
-    }
-
-    // capbanks
+    PhaseCounter = ++PhaseCounter % 3;
+    auto CurrentPhase = PhaseArray[ PhaseCounter ];
 
     for ( const auto & ID : subbusZoneIds )
     {
-        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+        // regulators
+
+        ZoneManager::SharedPtr  zone = zoneManager.getZone( ID );
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            try
+            {
+                if ( mapping.first == Cti::CapControl::Phase_Poly || mapping.first == CurrentPhase )
+                {
+                    VoltageRegulatorManager::SharedPtr regulator =
+                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CTILOG_EXCEPTION_ERROR( dout, noRegulator );
+            }
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+            {
+                if ( missingAttribute.complain() )
+                {
+                    CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+                }
+            }
+        }
+
+
+        // capbanks
 
         auto bankIDs = zone->getBankIds();
 
-        decltype(bankIDs) disabledBankIDs, heartbeatBankIDs;
+        decltype( bankIDs ) disabledBankIDs, heartbeatBankIDs;
 
         // If the feeder is disabled, we don't want to send a heartbeat to its child banks
         for ( const auto feeder : subbus->getCCFeeders() )
@@ -2264,7 +2211,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             if ( feeder->getDisableFlag() )
             {
                 auto feederBankIds = feeder->getAllCapBankIds();
-                disabledBankIDs.insert( feederBankIds.begin(), feederBankIds.end());
+                disabledBankIDs.insert( feederBankIds.begin(), feederBankIds.end() );
             }
         }
 
@@ -2289,6 +2236,8 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             }
         }
     }
+
+    PreviousHeartbeat = Now;
 }
 
 void IVVCAlgorithm::stopDisabledDeviceHeartbeats( CtiCCSubstationBusPtr subbus )
