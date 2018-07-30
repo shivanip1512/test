@@ -65,32 +65,35 @@
                     </tags:sectionContainer2>
                 </cti:dataGridCell>
                 
-                <cti:dataGridCell>
-                    <tags:sectionContainer2 nameKey="header.configActions" styleClass="w300">
-                        <table>
-                            <%-- DEVICE CONFIGS --%>
-                            <tags:collectionActionTr linkKey=".deviceConfigsLabel" descriptionKey=".deviceConfigsDescription" 
-                                icon="icon-app icon-app-32-cog" action="/bulk/config/deviceConfigsInputs" 
-                                deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
-                                
-                            <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
-                            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                                <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
-                                    <%-- CONFIGURE DATA STREAMING --%>
-                                    <tags:collectionActionTr linkKey=".configureDataStreamingLabel" 
-                                        descriptionKey=".configureDataStreamingDescription" icon="icon-app icon-app-32-datastreaming-configure" 
-                                        action="/bulk/dataStreaming/configureInputs"  deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
-                                        
-                                    <%-- REMOVE DATA STREAMING --%>
-                                    <tags:collectionActionTr linkKey=".removeDataStreamingLabel" 
-                                        descriptionKey=".removeDataStreamingDescription" icon="icon-app icon-app-32-datastreaming-remove"
-                                        action="/bulk/dataStreaming/removeInputs" deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
+                <c:if test="${showConfigSection}">
+                    <cti:dataGridCell>
+                        <tags:sectionContainer2 nameKey="header.configActions" styleClass="w300">
+                            <table>
+                                <cti:checkRolesAndProperties value="MASS_CHANGE">
+                                    <%-- DEVICE CONFIGS --%>
+                                    <tags:collectionActionTr linkKey=".deviceConfigsLabel" descriptionKey=".deviceConfigsDescription" 
+                                        icon="icon-app icon-app-32-cog" action="/bulk/config/deviceConfigsInputs" 
+                                        deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
                                 </cti:checkRolesAndProperties>
-                            </cti:checkRolesAndProperties>
-                            
-                        </table>
-                    </tags:sectionContainer2>
-                </cti:dataGridCell>
+                                
+                                <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
+                                <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                                    <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+                                        <%-- CONFIGURE DATA STREAMING --%>
+                                        <tags:collectionActionTr linkKey=".configureDataStreamingLabel" 
+                                            descriptionKey=".configureDataStreamingDescription" icon="icon-app icon-app-32-datastreaming-configure" 
+                                            action="/bulk/dataStreaming/configureInputs"  deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
+                                        
+                                        <%-- REMOVE DATA STREAMING --%>
+                                        <tags:collectionActionTr linkKey=".removeDataStreamingLabel" 
+                                            descriptionKey=".removeDataStreamingDescription" icon="icon-app icon-app-32-datastreaming-remove"
+                                            action="/bulk/dataStreaming/removeInputs" deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
+                                    </cti:checkRolesAndProperties>
+                                </cti:checkRolesAndProperties>
+                            </table>
+                        </tags:sectionContainer2>
+                    </cti:dataGridCell>
+                </c:if>
                 
                 <cti:checkRolesAndProperties value="MASS_CHANGE,MASS_DELETE">
                     <cti:dataGridCell>
@@ -160,37 +163,38 @@
                         </tags:sectionContainer2>
                     </cti:dataGridCell>
                 </cti:checkRolesAndProperties>
-                
-                <cti:dataGridCell>
-                    <tags:sectionContainer2 nameKey="header.reporting" styleClass="w300">
-                        <table>
-                            <%-- DEVICE REPORT --%>
-                            <tags:collectionActionTr linkKey=".deviceCollectionReportLabel" 
-                                descriptionKey=".deviceCollectionReportDescription" icon="icon-app icon-app-32-database-table" 
-                                action="/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
-                            
+            </cti:checkRolesAndProperties>
+            
+            <cti:dataGridCell>
+                <tags:sectionContainer2 nameKey="header.reporting" styleClass="w300">
+                    <table>
+                        <%-- DEVICE REPORT --%>
+                        <tags:collectionActionTr linkKey=".deviceCollectionReportLabel" 
+                            descriptionKey=".deviceCollectionReportDescription" icon="icon-app icon-app-32-database-table" 
+                            action="/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
+                        
+                        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                             <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS">
                                 <%-- DATA ANALYSIS --%>
                                 <tags:collectionActionTr linkKey=".dataAnalysisLabel" descriptionKey=".dataAnalysisDescription" 
                                     icon="icon-app icon-app-32-report-magnify" action="/bulk/archiveDataAnalysis/home/setup" 
                                     deviceCollection="${deviceCollection}"/>
-                            </cti:checkRolesAndProperties>        
-                            
+                            </cti:checkRolesAndProperties>
+                        
                             <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                                 <%-- ARCHIVED DATA EXPORT --%>
                                 <tags:collectionActionTr linkKey=".archivedValueDataExporterLabel" 
                                     descriptionKey=".archivedValueDataExporterDescription" icon="icon-app icon-app-32-page-excel"
                                     action="/tools/data-exporter/view" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
-                            
-                            <%-- MAP DEVICES --%>
-                            <tags:collectionActionTr linkKey=".deviceCollectionMapLabel" descriptionKey=".deviceCollectionMapDescription" 
-                                icon="icon-app icon-app-32-map" action="/tools/map" deviceCollection="${deviceCollection}"/>
-                        </table>
-                    </tags:sectionContainer2>
-                </cti:dataGridCell>
-    
-            </cti:checkRolesAndProperties>
+                        </cti:checkRolesAndProperties>
+                        
+                        <%-- MAP DEVICES --%>
+                        <tags:collectionActionTr linkKey=".deviceCollectionMapLabel" descriptionKey=".deviceCollectionMapDescription" 
+                            icon="icon-app icon-app-32-map" action="/tools/map" deviceCollection="${deviceCollection}"/>
+                    </table>
+                </tags:sectionContainer2>
+            </cti:dataGridCell>
     
         </cti:dataGrid>
     
