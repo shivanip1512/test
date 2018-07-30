@@ -118,7 +118,7 @@
 		<row><td>Java Runtime</td><td>{2CC1FA0A-82AB-4F8D-8F4E-36D42D067EC6}</td><td>RUNTIME</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Service Wrapper</td><td>{24F3BE7F-396F-45C3-A5B8-8EE07F0615D4}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Load Management</td><td>{DCAB7374-0931-45D3-9156-8E62EB3BD7DF}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Log Config Files</td><td>{EF25096A-11B1-4303-8F1F-832FA2491155}</td><td>CONFIG</td><td>8</td><td/><td/><td>10769</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Log Config Files</td><td>{EF25096A-11B1-4303-8F1F-832FA2491155}</td><td>CONFIG</td><td>16</td><td/><td/><td>10769</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>MACS</td><td>{5C3D4FD9-B0F5-4A89-BBE8-1C5E5E05C074}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Master Config Example</td><td>{1689C282-6025-4B5B-97A9-90A18AF2E99E}</td><td>SERVER</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Message Broker</td><td>{49105FC9-2898-4EBF-BC18-3407E79CAE59}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
