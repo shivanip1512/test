@@ -64,35 +64,35 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
         String webServerUrl = webserverUrlResolver.getYukonInternalUrl();
         if (StringUtils.isBlank(webServerUrl)) {
             webServerUrl = webserverUrlResolver.getUrlBase();
-            int webServerReponse = getWebServerResponse(webServerUrl, useProxy);
-            if (webServerReponse != 200) {
+            int webServerResponse = getWebServerResponse(webServerUrl, useProxy);
+            if (webServerResponse != 200) {
                 log.debug("Response from External Web Server URL - " + webServerUrl + " with Proxy check as " + useProxy
-                    + " is not running. Response code is - " + webServerReponse);
+                    + " is not running. Response code is - " + webServerResponse);
             }
             log.debug("Response code from Web Server URL - " + webServerUrl + " with Proxy check as " + useProxy
-                + " is " + webServerReponse);
-            return webServerReponse;
+                + " is " + webServerResponse);
+            return webServerResponse;
         } else {
             try {
-                int webServerReponse = getWebServerResponse(webServerUrl, useProxy);
-                if (webServerReponse != 200) {
+                int webServerResponse = getWebServerResponse(webServerUrl, useProxy);
+                if (webServerResponse != 200) {
                     log.debug("Response from Internal Web Server URL - " + webServerUrl + " with Proxy check as "
-                        + useProxy + " is not running. Response code is - " + webServerReponse
+                        + useProxy + " is not running. Response code is - " + webServerResponse
                         + ". Trying once again with External URL - " + webserverUrlResolver.getUrlBase());
                     webServerUrl = webserverUrlResolver.getUrlBase();
-                    webServerReponse = getWebServerResponse(webServerUrl, useProxy);
+                    webServerResponse = getWebServerResponse(webServerUrl, useProxy);
                 }
                 log.debug("Response code from Web Server URL - " + webServerUrl + " with Proxy check as " + useProxy
-                    + " is " + webServerReponse);
-                return webServerReponse;
+                    + " is " + webServerResponse);
+                return webServerResponse;
             } catch (IOException e) {
                 log.debug("Response from Internal Web Server URL - " + webServerUrl + " with Proxy check as " + useProxy
                     + " is not running. Trying once again with External URL - " + webserverUrlResolver.getUrlBase());
                 webServerUrl = webserverUrlResolver.getUrlBase();
-                int webServerReponse = getWebServerResponse(webServerUrl, useProxy);
+                int webServerResponse = getWebServerResponse(webServerUrl, useProxy);
                 log.debug("Response code from Web Server URL - " + webServerUrl + " with Proxy check as " + useProxy
-                    + " is " + webServerReponse);
-                return webServerReponse;
+                    + " is " + webServerResponse);
+                return webServerResponse;
             }
         }
     }
