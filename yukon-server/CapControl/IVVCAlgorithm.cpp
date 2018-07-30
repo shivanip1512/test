@@ -2144,6 +2144,8 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
 void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 {
+    using namespace Cti::CapControl;
+
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     ZoneManager & zoneManager = store->getZoneManager();
@@ -2152,19 +2154,20 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
     // need to send each phase seperated by a small delay...
     // first send poly phase and phase A
-    // wait 1 second, send B, wait 1 s, send C
+    // wait at least 1 second, send B, wait at least 1 s, send C
+    // send bank messages after regulator messages every time
 
     CtiTime Now;
     static CtiTime PreviousHeartbeat{ CtiTime::neg_infin };
-    static const Cti::CapControl::Phase PhaseArray[] = { Cti::CapControl::Phase_A, Cti::CapControl::Phase_B, Cti::CapControl::Phase_C };
-    static auto PhaseCounter = 2;
+    static const std::array<Phase, 3> PhaseArray = { Phase_A, Phase_B, Phase_C };
+    static auto PhaseCounter = PhaseArray.size() - 1;
 
     if ( Now <= PreviousHeartbeat + 1 )
     {
         return;
     }
 
-    PhaseCounter = ++PhaseCounter % 3;
+    PhaseCounter = ++PhaseCounter % PhaseArray.size();
     auto CurrentPhase = PhaseArray[ PhaseCounter ];
 
     for ( const auto & ID : subbusZoneIds )
@@ -2173,23 +2176,23 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
         ZoneManager::SharedPtr  zone = zoneManager.getZone( ID );
 
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        for ( const auto & mapping : zone->getRegulatorIds() )
         {
             try
             {
-                if ( mapping.first == Cti::CapControl::Phase_Poly || mapping.first == CurrentPhase )
+                if ( mapping.first == Phase_Poly || mapping.first == CurrentPhase )
                 {
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    regulator->executePeriodicKeepAlive( Cti::CapControl::SystemUser );
+                    regulator->executePeriodicKeepAlive( SystemUser );
                 }
             }
-            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            catch ( const NoVoltageRegulator & noRegulator )
             {
                 CTILOG_EXCEPTION_ERROR( dout, noRegulator );
             }
-            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+            catch ( const MissingAttribute & missingAttribute )
             {
                 if ( missingAttribute.complain() )
                 {
@@ -2223,7 +2226,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             {
                 if ( ! bank->getDisableFlag() )
                 {
-                    bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+                    bank->executeSendHeartbeat( SystemUser );
                 }
             }
             else
