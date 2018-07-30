@@ -132,9 +132,11 @@ yukon.tools.paonotespopup = (function () {
                 var widgetId, widget;
                 $('.js-view-all-notes').each(function(index, obj) {
                     widgetId = $(obj).closest('.widgetWrapper').attr('id');
-                    widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
-                    widget = yukon.widgets[widgetId];
-                    widget.render();
+                    if (widgetId) {
+                        widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
+                        widget = yukon.widgets[widgetId];
+                        widget.render();
+                    }
                 });
             });
             
