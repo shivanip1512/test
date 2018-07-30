@@ -128,7 +128,7 @@ yukon.tools.paonotespopup = (function () {
             
             // Re-render any widgets with notes in them when the notes popup closes, so new or deleted notes will be 
             // picked-up.
-            $('div#js-pao-notes-popup').on('dialogclose', function(event) {
+            $('#js-pao-notes-popup').on('dialogclose', function(event) {
                 var widgetId, widget;
                 $('.js-view-all-notes').each(function(index, obj) {
                     widgetId = $(obj).closest('.widgetWrapper').attr('id');

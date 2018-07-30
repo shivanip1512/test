@@ -112,7 +112,7 @@ yukon.widget.paonotes = (function () {
                     var errorSpan = $('#noteText\\.errors'),
                         widgetId, 
                         widget;
-                    if (errorSpan && errorSpan.text().length == 0) {
+                    if (errorSpan && errorSpan.text().length === 0) {
                         $('.js-view-all-notes').each(function(index, obj) {
                             widgetId = $(obj).closest('.widgetWrapper').attr('id');
                             widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
