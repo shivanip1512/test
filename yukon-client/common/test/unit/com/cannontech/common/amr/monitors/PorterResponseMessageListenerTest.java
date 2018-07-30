@@ -44,7 +44,7 @@ public class PorterResponseMessageListenerTest {
 //    private final String BAD = "2";
     private final String QUESTIONABLE = "3";
     
-    private PorterResponseMonitor standard, standard1; //should eventually add another monitor with NOT standard (more specific / odd) rules
+    private PorterResponseMonitor standard, reversed; //should eventually add another monitor with NOT standard (more specific / odd) rules
     private PorterResponseMessageListener listener;
     private PorterResponseMessage message1;
     private PorterResponseMessage message2;
@@ -60,6 +60,11 @@ public class PorterResponseMessageListenerTest {
         standardRules.add(getRule(true, PorterResponseMonitorMatchStyle.any, GOOD));
         standardRules.add(getRule(false, PorterResponseMonitorMatchStyle.any, GOOD_QUESTIONABLE, 1, 17, 74));
         standardRules.add(getRule(false, PorterResponseMonitorMatchStyle.any, QUESTIONABLE));
+        
+        List<PorterResponseMonitorRule> reversedRules = Lists.newArrayList();
+        reversedRules.add(getRule(true, PorterResponseMonitorMatchStyle.any, GOOD));
+        reversedRules.add(getRule(false, PorterResponseMonitorMatchStyle.any, GOOD_QUESTIONABLE, 1, 17, 74));
+        reversedRules.add(getRule(true, PorterResponseMonitorMatchStyle.any, QUESTIONABLE));
         
         DeviceGroupService deviceGroupService = new DeviceGroupServiceImpl() {
             @Override
@@ -83,9 +88,9 @@ public class PorterResponseMessageListenerTest {
         standard.setRules(standardRules);
         standard.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
         
-        standard1 = new PorterResponseMonitor(deviceGroupService.getFullPath(SystemGroupEnum.ALL_MCT_METERS));
-        standard1.setRules(standardRules);
-        standard1.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
+        reversed = new PorterResponseMonitor(deviceGroupService.getFullPath(SystemGroupEnum.ALL_MCT_METERS));
+        reversed.setRules(reversedRules);
+        reversed.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
 
         message1 = getMessage(1,1,1);
         message2 = getMessage(2,2,2);
@@ -104,7 +109,7 @@ public class PorterResponseMessageListenerTest {
         MonitorCacheServiceImpl cache = new MonitorCacheServiceImpl();
         listener.setMonitorCache(cache);
         cache.setMonitors(ImmutableMap.of(1, standard,
-                                          2, standard1));
+                                          2, reversed));
         
         final LiteYukonPAObject pao1 = new LiteYukonPAObject(1, "pao1", 
             PaoCategory.DEVICE, 
@@ -198,9 +203,8 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, true);
-        Assert.assertEquals(2, sentPointData.size());
+        Assert.assertEquals(1, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0));
-        Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(1));
     }
     
     @Test
@@ -229,7 +233,7 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 0, true); // sent GOOD
         
-        Assert.assertEquals(6, sentPointData.size());
+        Assert.assertEquals(5, sentPointData.size());
         Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0)); //message 3
         Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(2)); //message 2
         Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(4)); //message 1
