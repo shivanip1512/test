@@ -35,20 +35,18 @@
         <c:if test='${meter.disabled}'><span class="fwb error"><i:inline key=".disabled"/></span></c:if>
         <c:if test='${!meter.disabled}'><span class="fwb success"><i:inline key=".enabled"/></span></c:if>
     </tags:nameValue2>
-    <cti:checkRolesAndProperties value="DEVICE_MANAGEMENT">
-        <c:choose>
-            <c:when test="${hasNotes}">
-                <tags:nameValue2 nameKey=".notes">
-                    ${fn:escapeXml(note)} (<a class="js-view-all-notes" href="javascript:void(0)" 
-                                              data-pao-id="${meter.deviceId}"><i:inline key="yukon.common.viewAll"/></a>)
-                </tags:nameValue2>
-            </c:when>
-            <c:otherwise>
-                <%-- This class is used by js to determine which widgets need to be refreshed when notes change--%>
-                <div class="js-view-all-notes"></div>
-            </c:otherwise>
-        </c:choose>
-    </cti:checkRolesAndProperties>
+    <c:choose>
+        <c:when test="${hasNotes}">
+            <tags:nameValue2 nameKey=".notes">
+                ${fn:escapeXml(note)} (<a class="js-view-all-notes" href="javascript:void(0)" 
+                                          data-pao-id="${meter.deviceId}"><i:inline key="yukon.common.viewAll"/></a>)
+            </tags:nameValue2>
+        </c:when>
+        <c:otherwise>
+            <%-- This class is used by js to determine which widgets need to be refreshed when notes change--%>
+            <div class="js-view-all-notes"></div>
+        </c:otherwise>
+    </c:choose>
 
 </tags:nameValueContainer2>
 

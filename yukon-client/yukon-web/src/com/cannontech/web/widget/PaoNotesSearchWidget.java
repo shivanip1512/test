@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.filter.model.PaoSelectionMethod;
-import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -26,12 +24,6 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 public class PaoNotesSearchWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-
-    @Autowired
-    public PaoNotesSearchWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-        String checkRole = YukonRole.DEVICE_MANAGEMENT.name();
-        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
-    }
 
     @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request) {

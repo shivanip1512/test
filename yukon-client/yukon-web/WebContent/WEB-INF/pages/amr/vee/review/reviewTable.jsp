@@ -35,13 +35,10 @@
                                     </c:forEach> 
                                 </td>
                                 <td>
-                                    <cti:checkRolesAndProperties value="DEVICE_MANAGEMENT">
-                                        <c:if test="${notesList.contains(p)}">
-                                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
-                                    
-                                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${p.reviewPoint.displayablePao.paoIdentifier.paoId}"/>
-                                        </c:if>
-                                    </cti:checkRolesAndProperties>
+                                    <c:if test="${notesList.contains(p)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${p.reviewPoint.displayablePao.paoIdentifier.paoId}"/>
+                                    </c:if>
                                 </td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${p.reviewPoint.displayablePao}">

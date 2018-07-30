@@ -22,11 +22,13 @@
                 </div>
             </cti:checkRolesAndProperties>
             <div class="column two nogutter">
+                <c:set var="searchStyle" value="margin-right : -147%;"/>
                 <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
+                    <c:set var="searchStyle" value=""/>
                     <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl"/>
                 </cti:checkRolesAndProperties>
                 <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
-                <div class="fr"><a href="${searchUrl}"><i:inline key="yukon.common.search"/></a></div>
+                <div class="fr" style="${searchStyle}"><a href="${searchUrl}"><i:inline key="yukon.common.search"/></a></div>
             </div>
         </div>
     </form:form>
