@@ -104,14 +104,13 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Override
     public Map<String, Integer> parseCommand(CommandParams params, YukonUserContext userContext) {
         Map<String, Integer> commandCounts = Maps.newConcurrentMap();
-        int loopCount = 1;
         List<String> commands = splitCommands(params);
         for (String command : commands) {
             if (command.trim().startsWith("loop")) {
-                loopCount = parseLoopCommand(command);
+                int loopCount = parseLoopCommand(command);
                 commandCounts.put(command, loopCount);
             } else {
-                commandCounts.put(command, loopCount);
+                commandCounts.put(command, 1);
             }
         }
         return commandCounts;
