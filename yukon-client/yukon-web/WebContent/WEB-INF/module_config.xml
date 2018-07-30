@@ -852,12 +852,17 @@
     </pages>
   </module>
   
-    <module name="smartNotifications">
+  <module name="smartNotifications">
     <skin name="STANDARD" />
     <pages>
-      <page name="detail" type="BASIC">
-        <labelArgument>${description}</labelArgument>
-      </page>
+       <page name="profile" type="BASIC">
+         <link>/user/profile</link>
+         <pages>
+           <page name="detail" type="BASIC">
+            <labelArgument>${description}</labelArgument>
+           </page>
+         </pages>
+       </page>
     </pages>
   </module>
 
