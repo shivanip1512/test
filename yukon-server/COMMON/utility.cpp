@@ -222,7 +222,7 @@ int DynamicPaoStatisticsIdGen()
     static CtiCriticalSection mux;
     CtiLockGuard<CtiCriticalSection> guard(mux);
 
-    static boost::optional<int> id;
+    static std::optional<int> id;
 
     if( ! id )
     {
@@ -238,20 +238,19 @@ int DynamicPaoStatisticsIdGen()
             DatabaseReader rdr(conn, sql);
             rdr.execute();
 
-            if(rdr())
+            if( rdr() )
             {
-                int temp_id;
+                id = rdr.as<int>();
+            }
+            else if( rdr.isValid() )
+            {
+                CTILOG_INFO(dout, "DB read returned no rows for SQL query: " << rdr.asString());
 
-                rdr >> temp_id;
-
-                if( temp_id >= *id )
-                {
-                    id = temp_id;
-                }
+                id = 0;
             }
             else
             {
-                CTILOG_ERROR(dout, "DB read "<< (rdr.isValid() ? "returned no rows":"failed") <<" for SQL query: "<< rdr.asString());
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
 
                 throw std::runtime_error("invalid DB reader in DynamicPaoStatisticsIdGen()");
             }
