@@ -913,11 +913,11 @@ void Conductor::setCurrentVerificationCapBankState( const long state )
     updateDynamicValue( _currentCapBankToVerifyAssumedOrigState, state );
 }
 
-bool Conductor::issueAltScans( std::vector<CtiCCMonitorPointPtr> & points, std::vector<CtiCCCapBankPtr> & banks )
+bool Conductor::issueAltScans( const std::vector<CtiCCMonitorPointPtr> & points, const std::vector<CtiCCCapBankPtr> & banks )
 {
     std::set<CtiCCCapBankPtr>   altScanBanks;
 
-    for ( CtiCCMonitorPointPtr & point : points )
+    for ( const auto & point : points )
     {
         if ( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
         {
@@ -945,17 +945,16 @@ bool Conductor::issueAltScans( std::vector<CtiCCMonitorPointPtr> & points, std::
 
     for ( auto bank : altScanBanks )
     {
-        if ( auto pAltRate = std::make_unique<CtiCommandMsg>( CtiCommandMsg::AlternateScanRate ) )
-        {
-            pAltRate->insert( -1 );                             // token, not yet used.
-            pAltRate->insert( bank->getControlDeviceId() );     // Device to poke.
-            pAltRate->insert( -1 );                             // Seconds since midnight, or NOW if negative.
-            pAltRate->insert( 0 );                              // Duration of zero should cause 1 scan.
+        auto pAltRate = std::make_unique<CtiCommandMsg>( CtiCommandMsg::AlternateScanRate );
 
-            CtiCapController::getInstance()->sendMessageToDispatch( pAltRate.release(), CALLSITE );
+        pAltRate->insert( -1 );                             // token, not yet used.
+        pAltRate->insert( bank->getControlDeviceId() );     // Device to poke.
+        pAltRate->insert( -1 );                             // Seconds since midnight, or NOW if negative.
+        pAltRate->insert( 0 );                              // Duration of zero should cause 1 scan.
 
-            CTILOG_INFO( dout, "Requesting scans at the alternate scan rate for " << bank->getPaoName() );
-        }
+        CtiCapController::getInstance()->sendMessageToDispatch( pAltRate.release(), CALLSITE );
+
+        CTILOG_INFO( dout, "Requesting scans at the alternate scan rate for " << bank->getPaoName() );
     }
 
     return ! altScanBanks.empty();
