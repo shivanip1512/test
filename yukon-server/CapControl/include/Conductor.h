@@ -4,6 +4,8 @@
 #include "DynamicData.h"
 #include "regression.h"
 #include "cctypes.h"
+#include "ccmonitorpoint.h"
+#include "cccapbank.h"
 
 
 namespace Cti
@@ -187,6 +189,8 @@ protected:
     Conductor & operator=( const Conductor & rhs ) = delete;
 
     void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+
+    bool issueAltScans( std::vector<CtiCCMonitorPointPtr> & points, std::vector<CtiCCCapBankPtr> & banks );
 
 private:
 

@@ -5741,56 +5741,9 @@ bool CtiCCSubstationBus::isScanFlagSet()
     return false;
 }
 
-
-
 bool CtiCCSubstationBus::scanAllMonitorPoints()
 {
-    bool retVal = false;
-
-    for (int i = 0; i < _multipleMonitorPoints.size(); i++)
-    {
-        CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
-        if (point.isScannable() && !point.getScanInProgress())
-        {
-            for (long j = 0; j < _ccfeeders.size();j++)
-            {
-                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[j];
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                for(long k = 0; k < ccCapBanks.size(); k++ )
-                {
-
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if (currentCapBank->getPaoId() == point.getDeviceId())
-                    {
-                        CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
-
-                        if(pAltRate)
-                        {
-                            pAltRate->insert(-1);                       // token, not yet used.
-                            pAltRate->insert( currentCapBank->getControlDeviceId() );       // Device to poke.
-
-                            pAltRate->insert( -1 );                      // Seconds since midnight, or NOW if negative.
-
-                            pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
-
-                            CtiCapController::getInstance()->sendMessageToDispatch(pAltRate, CALLSITE);
-
-                            CTILOG_INFO(dout, "Requesting scans at the alternate scan rate for " << currentCapBank->getPaoName());
-
-                            point.setScanInProgress(true);
-                            retVal = true;
-                        }
-                        j = _ccfeeders.size();
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    //set MonitorPointScanTime
-    return retVal;
+    return issueAltScans( _multipleMonitorPoints, getAllCapBanks() );
 }
 
 void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)

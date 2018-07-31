@@ -5,8 +5,12 @@
 #include "ccid.h"
 #include "ccutil.h"
 #include "msg_pdata.h"
+#include "msg_cmd.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
+#include "capcontroller.h"
+
+#include <boost/range/algorithm/find_if.hpp>
 
 using Cti::CapControl::deserializeFlag;
 
@@ -907,5 +911,53 @@ long Conductor::getCurrentVerificationCapBankOrigState() const
 void Conductor::setCurrentVerificationCapBankState( const long state )
 {
     updateDynamicValue( _currentCapBankToVerifyAssumedOrigState, state );
+}
+
+bool Conductor::issueAltScans( std::vector<CtiCCMonitorPointPtr> & points, std::vector<CtiCCCapBankPtr> & banks )
+{
+    std::set<CtiCCCapBankPtr>   altScanBanks;
+
+    for ( CtiCCMonitorPointPtr & point : points )
+    {
+        if ( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
+        {
+            CTILOG_DEBUG( dout, "MULTIVOLT: monPoint: " << point->getPointId()
+                                    << " Scannable? " << point->isScannable()
+                                    << " ScanInProgress? " << point->getScanInProgress() );
+        }
+
+        if ( point->isScannable() && ! point->getScanInProgress() )
+        {
+            if ( auto bankLookup =
+                    boost::find_if( banks,
+                                    [ deviceID = point->getDeviceId() ]( auto bank )
+                                    {
+                                        return bank->getPaoId() == deviceID;
+                                    } );
+                bankLookup != banks.end() )
+            {
+                point->setScanInProgress( true );
+
+                altScanBanks.insert( *bankLookup );
+            }
+        }
+    }
+
+    for ( auto bank : altScanBanks )
+    {
+        if ( auto pAltRate = std::make_unique<CtiCommandMsg>( CtiCommandMsg::AlternateScanRate ) )
+        {
+            pAltRate->insert( -1 );                             // token, not yet used.
+            pAltRate->insert( bank->getControlDeviceId() );     // Device to poke.
+            pAltRate->insert( -1 );                             // Seconds since midnight, or NOW if negative.
+            pAltRate->insert( 0 );                              // Duration of zero should cause 1 scan.
+
+            CtiCapController::getInstance()->sendMessageToDispatch( pAltRate.release(), CALLSITE );
+
+            CTILOG_INFO( dout, "Requesting scans at the alternate scan rate for " << bank->getPaoName() );
+        }
+    }
+
+    return ! altScanBanks.empty();
 }
 

@@ -4476,58 +4476,10 @@ bool CtiCCFeeder::isScanFlagSet()
 
 bool CtiCCFeeder::scanAllMonitorPoints()
 {
-    bool retVal = false;
-    try
-    {
-
-        for (int i = 0; i < _multipleMonitorPoints.size(); i++)
-        {
-            CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
-            if (point.isScannable() && !point.getScanInProgress())
-            {
-                for (long j = 0; j < _cccapbanks.size();j++)
-                {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
-                    if (currentCapBank->getPaoId() == point.getDeviceId())
-                    {
-                        CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
-
-                        if(pAltRate)
-                        {
-                            pAltRate->insert(-1);                       // token, not yet used.
-                            pAltRate->insert( currentCapBank->getControlDeviceId() );       // Device to poke.
-
-                            pAltRate->insert( -1 );                      // Seconds since midnight, or NOW if negative.
-
-                            pAltRate->insert( 0 );                      // Duration of zero should cause 1 scan.
-
-                            CtiCapController::getInstance()->sendMessageToDispatch(pAltRate, CALLSITE);
-                            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                            {
-                                CTILOG_DEBUG(dout, "MULTIVOLT: Requesting scans at the alternate scan rate for " << currentCapBank->getPaoName());
-                            }
-                            //CtiCapController::getInstance()->sendMessageToDispatch(createPorterRequestMsg(currentCapBank->getControlDeviceId(), "scan general"));
-                            point.setScanInProgress(true);
-                            retVal = true;
-                        }
-                        break;
-                    }
-                }
-            }
-            {
-                if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                {
-                    CTILOG_DEBUG(dout, "MULTIVOLT: monPoint: "<<point.getPointId()<< " Scannable? " << point.isScannable() << "ScanInProgress? "<<point.getScanInProgress());
-                }
-            }
-        }
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-    }
-    //set MonitorPointScanTime
-    return retVal;
+    // gah - sorted_vector -> vector
+    std::vector<CtiCCCapBankPtr>    banks{ _cccapbanks.begin(), _cccapbanks.end() };
+    
+    return issueAltScans( _multipleMonitorPoints, banks );
 }
 
 void CtiCCFeeder::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
