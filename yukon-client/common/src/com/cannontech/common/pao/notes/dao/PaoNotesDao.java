@@ -61,5 +61,13 @@ public interface PaoNotesDao {
                                                 Direction direction, PagingParameters paging);
 
     PaoNote getNote(int noteId);
+    
+    /**
+     * This method returns the count of notes for the pao object.
+     * 
+     * @param paoId
+     * @return note count for the pao object
+     */
+    int getNoteCount(int paoId);
 
 }

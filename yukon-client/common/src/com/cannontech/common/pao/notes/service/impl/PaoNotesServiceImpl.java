@@ -79,4 +79,9 @@ public class PaoNotesServiceImpl implements PaoNotesService {
         }
         return false;
     }
+
+    @Override
+    public int getNoteCount(int paoId) {
+        return paoNotesDao.getNoteCount(paoId);
+    }
 }

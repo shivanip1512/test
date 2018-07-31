@@ -26,6 +26,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Sets;
 
 public class PaoNotesDaoImpl implements PaoNotesDao {
 
@@ -133,7 +134,7 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         sql.append("SELECT NoteId, PAObjectId, NoteText, Status, CreateUserName, CreateDate, EditUserName, EditDate");
         sql.append("FROM PaoNote");
         sql.append("WHERE PAObjectId").eq(paoId);
-        sql.append("ORDER BY COALESCE(EditDate, CreateDate) DESC");
+        sql.append("ORDER BY CreateDate DESC");
         
         return yukonJdbcTemplate.queryForLimitedResults(sql, paoNotesSearchResultRowMapper, numOfNotes);
     }
@@ -231,5 +232,12 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         sql.append("WHERE NoteId").eq(noteId);
         
         return yukonJdbcTemplate.queryForObject(sql, paoNoteRowMapper);
+    }
+
+    @Override
+    public int getNoteCount(int paoId) {
+        PaoNotesFilter filter = new PaoNotesFilter();
+        filter.setPaoIds(Sets.newHashSet(paoId));
+        return getAllNotesByFilterCount(filter);
     }
 }

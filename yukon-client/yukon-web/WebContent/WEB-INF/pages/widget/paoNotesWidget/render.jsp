@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="common.paoNote, web.components.ajaxConfirm">
+<cti:msgScope paths="common.paoNote, web.components.ajaxConfirm, yukon.common">
     
     <form:form id="create-note-form" method="POST" modelAttribute="createPaoNote">
         <cti:csrfToken/>
@@ -16,9 +16,9 @@
             <tr>
                 <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
                     <td width="80%" class="P0">
-                        <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
-                            <tags:textarea rows="3" cols="46" path="noteText" id="createNoteTextarea" isResizable="false"
-                                           placeholder="${noteTextPlaceholder}" maxLength="255"/>
+                        <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
+                        <tags:textarea rows="3" cols="46" path="noteText" id="createNoteTextarea" isResizable="false"
+                                       placeholder="${noteTextPlaceholder}" maxLength="${maxCharactersInNote}"/>
                     </td>
                     <td width="20%" class="vam">
                         <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr"/>
@@ -58,7 +58,7 @@
                             </div>
                             <div id="js-edit-note-${noteId}" class="dn">
                                 <textarea id="js-edit-note-textarea-${noteId}" rows="3" cols="46" style="resize: none;" 
-                                          maxlength="255" value="${recentNote.paoNote.noteText}"></textarea>
+                                          maxlength="255" value="${recentNote.paoNote.noteText}" placeholder="${noteTextPlaceholder}"></textarea>
                             </div>
                         </td>
                     <td width="20%" class="vam js-note-actions">
@@ -89,6 +89,10 @@
     </c:choose>
 
     <div class="action-area">
+        <c:set var="count" value="${noteCount - maxNotesToDisplay}"/>
+        <c:if test="${count > 0}">
+            ${count} <i:inline key=".more"/><i:inline key=".moreInfoSuffix"/>&nbsp;|&nbsp;
+        </c:if>
         <a class="js-view-all-notes" href="javascript:void(0)" data-pao-id="${createPaoNote.paoId}"><i:inline key="yukon.common.viewAll"/></a>
         &nbsp;|&nbsp;
         <cti:url value="/tools/paoNotes/search" var="searchUrl"/>

@@ -16,9 +16,9 @@
         <div class="column-14-10 clearfix">
             <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
                 <div class="column one">
-                    <cti:msg2 var="noteTextPlaceholder" key=".noteText"/>
+                    <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
                     <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
-                              maxLength="255" placeholder="${noteTextPlaceholder}"/>
+                                   maxLength="${maxCharactersInNote}" placeholder="${noteTextPlaceholder}"/>
                 </div>
             </cti:checkRolesAndProperties>
             <div class="column two nogutter">

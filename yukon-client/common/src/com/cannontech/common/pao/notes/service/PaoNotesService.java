@@ -59,4 +59,11 @@ public interface PaoNotesService {
      */
     boolean canUpdateNote(int noteId, LiteYukonUser user);
     
+    /**
+     * This method returns the count of notes for the pao object.
+     * 
+     * @param paoId
+     * @return note count for the pao object
+     */
+    int getNoteCount(int paoId);
 }

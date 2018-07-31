@@ -36,6 +36,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private static final int MAX_NOTES_TO_DISPLAY = 3;
 
     @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
@@ -105,7 +106,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         if (model.containsAttribute("recentNotes")) {
             recentNotes = (List<PaoNotesSearchResult>) model.get("recentNotes");
         } else {
-            recentNotes = paoNotesService.findMostRecentNotes(deviceId, 3);
+            recentNotes = paoNotesService.findMostRecentNotes(deviceId, MAX_NOTES_TO_DISPLAY);
         }
         recentNotes.stream().forEach(note -> {
            if (paoNotesService.canUpdateNote(note.getPaoNote().getNoteId(), user)) {
@@ -113,6 +114,11 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
            }
         });
         model.addAttribute("recentNotes", recentNotes);
+        
+        int noteCount = paoNotesService.getNoteCount(deviceId);
+        model.addAttribute("noteCount", noteCount);
+        model.addAttribute("maxNotesToDisplay", MAX_NOTES_TO_DISPLAY);
+        model.addAttribute("maxCharactersInNote", MAX_CHARACTERS_IN_NOTE);
     }
 
 }

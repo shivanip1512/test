@@ -303,5 +303,6 @@ public class PaoNotesSearchController {
         model.addAttribute("searchResults", searchResults);
         model.addAttribute("popupTitle", accessor.getMessage("yukon.web.common.paoNotesPopup.title", 
                                                              databaseCache.getAllPaosMap().get(paoId).getPaoName()));
+        model.addAttribute("maxCharactersInNote", MAX_CHARACTERS_IN_NOTE);
     }
 }
