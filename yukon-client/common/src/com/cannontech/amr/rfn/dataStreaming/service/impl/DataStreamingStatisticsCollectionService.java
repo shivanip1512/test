@@ -22,26 +22,28 @@ public class DataStreamingStatisticsCollectionService {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ConfigurationSource configSource;
-    
+
     @PostConstruct
     public void init() {
-        if (configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false)) {
-            log.info("Scheduling gateway statistics collecton to run every hour.");
-            scheduledExecutor.scheduleAtFixedRate(() -> {
-                try {
-                    log.info("Starting gateway statistics collecton.");
-                    dataStreamingCommunicationService.getGatewayInfo(rfnGatewayService.getAllGateways(), true);
-                    log.info("Finished gateway statistics collecton.");
-                } catch (DataStreamingConfigException e) {
-                    if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
-                        log.info("Data Streaming Simulator is not started, gateway statistics collection is not available.");
-                    } else {
-                        log.error("Error accured during gateway statistics collection", e);
-                    }
-                } catch (Exception e) {
+        if (!configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false)) {
+            log.debug("Not scheduling gateway statistics collection");
+            return;
+        }
+        log.info("Scheduling gateway statistics collecton to run every hour.");
+        scheduledExecutor.scheduleAtFixedRate(() -> {
+            try {
+                log.info("Starting gateway statistics collecton.");
+                dataStreamingCommunicationService.getGatewayInfo(rfnGatewayService.getAllGateways(), true);
+                log.info("Finished gateway statistics collecton.");
+            } catch (DataStreamingConfigException e) {
+                if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
+                    log.info("Data Streaming Simulator is not started, gateway statistics collection is not available.");
+                } else {
                     log.error("Error accured during gateway statistics collection", e);
                 }
-            }, 0, 1, TimeUnit.HOURS);
-        }
+            } catch (Exception e) {
+                log.error("Error accured during gateway statistics collection", e);
+            }
+        }, 0, 1, TimeUnit.HOURS);
     }
 }
