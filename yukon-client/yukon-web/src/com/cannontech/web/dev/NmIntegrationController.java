@@ -291,6 +291,25 @@ public class NmIntegrationController {
         return "redirect:viewRfnMeterSimulator";
     }
 
+    @RequestMapping("stopMetersReadRequest")
+    public String disableMeterReadReply(FlashScope flash) {
+        ModifyRfnMeterReadAndControlSimulatorRequest request = new ModifyRfnMeterReadAndControlSimulatorRequest();
+        request.setStopReadReply(true);
+        
+        sendRfnMeterReadAndControlStartStopRequest(request, flash, false);
+        return "redirect:viewRfnMeterSimulator";
+    }
+
+    @RequestMapping("startMetersReadRequest")
+    public String enableMeterReadReply(RfnMeterReadAndControlReadSimulatorSettings settings, FlashScope flash) {
+        
+        ModifyRfnMeterReadAndControlSimulatorRequest request = new ModifyRfnMeterReadAndControlSimulatorRequest();
+        request.setReadSettings(settings);
+        
+        sendRfnMeterReadAndControlStartStopRequest(request, flash, true);
+        return "redirect:viewRfnMeterSimulator";
+    }
+    
     @RequestMapping("disableGatewayUpdateReply")
     public String disableGatewayUpdateReply(FlashScope flash) {
         
