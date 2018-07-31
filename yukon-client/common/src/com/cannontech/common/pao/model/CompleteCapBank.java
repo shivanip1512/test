@@ -14,7 +14,7 @@ public class CompleteCapBank extends CompleteDevice {
     private int controlDeviceId = 0;
     private int controlPointId = 0;
     private int bankSize = 600;
-    private int recloseDelay = 0;
+    private int recloseDelay = 300;
     private int maxDailyOps = 0;
     private String typeOfSwitch = StringUtils.EMPTY;
     private String controllerType = StringUtils.EMPTY;

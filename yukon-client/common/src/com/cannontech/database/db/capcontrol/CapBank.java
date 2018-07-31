@@ -17,7 +17,7 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 	private String typeOfSwitch = StringUtils.EMPTY;
 	private String switchManufacture = StringUtils.EMPTY;
 	private String mapLocationID = "0";  //old integer default
-	private Integer recloseDelay = new Integer(0);
+	private Integer recloseDelay = new Integer(300);
 	private Integer maxDailyOps = new Integer(0);
 	private Character maxOpDisable = new Character('N');
 	
