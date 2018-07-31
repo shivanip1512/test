@@ -100,7 +100,7 @@ std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigRespons
 
     //  Generate the response as JSON for the Java client to consume
 
-    metricDescription << "json{";
+    metricDescription << "DATA_STREAMING_JSON{";
     metricDescription << "\n\"streamingEnabled\" : " << (response.streamingEnabled ? "true" : "false");
 
     metricDescription << ",\n\"configuredMetrics\" : [";

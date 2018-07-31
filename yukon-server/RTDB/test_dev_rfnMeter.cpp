@@ -672,7 +672,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
 
             const std::string exp =
                 R"SQUID(Data Streaming Set Metrics Request:
-json{
+DATA_STREAMING_JSON{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
@@ -1249,7 +1249,7 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     const auto json = cmd->getDataStreamingJson(dut.getDeviceType());
 
     BOOST_CHECK_EQUAL(json,
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {

@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     const auto json = cmd->getDataStreamingJson(dut.getDeviceType());
 
     BOOST_CHECK_EQUAL(json, 
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {

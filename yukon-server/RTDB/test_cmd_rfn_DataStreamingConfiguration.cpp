@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_430Sentinel)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disable
         const RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_invalid_metric_i
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp = 
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -392,7 +392,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
@@ -457,7 +457,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -510,7 +510,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -621,7 +621,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_enable_f
         catch( const Cti::YukonErrorException& ex )
         {
             const std::string desc_exp =
-                R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
@@ -678,7 +678,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_disable_
         catch( const Cti::YukonErrorException& ex )
         {
             const std::string desc_exp =
-                R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -747,7 +747,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
         catch( const Cti::YukonErrorException& ex )
         {
             const std::string desc_exp =
-                R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -822,7 +822,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
         catch( const Cti::YukonErrorException& ex )
         {
             const std::string desc_exp =
-                R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -889,7 +889,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
         catch( const Cti::YukonErrorException& ex )
         {
             const std::string desc_exp =
-                R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -950,7 +950,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_interval
         catch( const Cti::YukonErrorException& ex )
         {
             const std::string desc_exp =
-                R"SQUID(json{
+R"SQUID(DATA_STREAMING_JSON{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
