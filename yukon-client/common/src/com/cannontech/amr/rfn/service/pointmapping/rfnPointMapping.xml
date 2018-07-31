@@ -944,7 +944,6 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-
         <!-- alternate definition in case of Harmonic being present -->
         <point name="Peak kVA">
             <uom>VA</uom>
