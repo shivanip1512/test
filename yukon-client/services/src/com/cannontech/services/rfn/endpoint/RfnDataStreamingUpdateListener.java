@@ -32,16 +32,15 @@ public class RfnDataStreamingUpdateListener extends ThriftServiceBase<RfnDataStr
     }
 
     public boolean updateDataStreamingConfigReport(int paoId, String json) {
-        if (json.startsWith(DataStreamingPorterUtil.porterJsonPrefix)) {
-            ReportedDataStreamingConfig config;
-            try {
-                config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(json);
+        try {
+            ReportedDataStreamingConfig config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(json);
+            if (config == null){
+                log.error("Could not parse Data Streaming config for paoId " + paoId + " " + json);
+            } else {
                 return dataStreamingService.updateReportedConfig(paoId, config);
-            } catch (IOException e) {
-                log.error("Failed to update Data Streaming config for paoId " + paoId + " " + json, e);
             }
-        } else {
-            log.error("Could not parse Data Streaming config for paoId " + paoId + " " + json);
+        } catch (IOException e) {
+            log.error("Failed to update Data Streaming config for paoId " + paoId + " " + json, e);
         }
         
         return false;

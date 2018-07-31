@@ -84,13 +84,10 @@ public class DataStreamingPorterConnection {
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 log.info("Recieved error for device="+ command.getDevice()+" error="+error);
                 ReportedDataStreamingConfig config = null;
-                //  If the error is a JSON string, it's a config report
-                if (error.getPorter().startsWith(DataStreamingPorterUtil.porterJsonPrefix)) {
-                    try {
-                        config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(error.getPorter());
-                    } catch(IOException e) {
-                        log.debug("Error text appeared to be JSON, but could not be decoded: " + error);
-                    }
+                try {
+                    config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(error.getPorter());
+                } catch (IOException e) {
+                    log.error("Could not extract Data Streaming config", e);
                 }
                 configCallback.receivedConfigError(command.getDevice(), error, config);
             }
@@ -99,10 +96,7 @@ public class DataStreamingPorterConnection {
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
                 try {
-                    ReportedDataStreamingConfig config = null;
-                    if (value.startsWith(DataStreamingPorterUtil.porterJsonPrefix)) {
-                        config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(value);
-                    }
+                    ReportedDataStreamingConfig config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(value);
                     configCallback.receivedConfigSuccess(device, config);
                     log.debug("last result="+value);
                 } catch(IOException e) {

@@ -7,8 +7,7 @@ import com.cannontech.common.util.JsonUtils;
 
 public class DataStreamingPorterUtil {
 
-    private static final String porterJsonTag = "json";
-    public static final String porterJsonPrefix = porterJsonTag + "{";
+    private static final String porterJsonTag = "DATA_STREAMING_JSON";
 
     /**
      * Extracts a JSON-encoded ReportedDataStreamingConfig from a Porter return string.
@@ -19,7 +18,11 @@ public class DataStreamingPorterUtil {
      */
     public static ReportedDataStreamingConfig extractReportedDataStreamingConfig(String porterJson)
             throws IOException {
-        String rawJson = porterJson.substring(DataStreamingPorterUtil.porterJsonTag.length());
+        int index = porterJson.indexOf(porterJsonTag);
+        if (index < 0) {
+            return null;
+        }
+        String rawJson = porterJson.substring(index + DataStreamingPorterUtil.porterJsonTag.length());
         return JsonUtils.fromJson(rawJson, ReportedDataStreamingConfig.class);
     }
 }
