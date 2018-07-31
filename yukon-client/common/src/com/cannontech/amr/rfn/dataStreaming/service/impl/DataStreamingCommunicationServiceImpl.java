@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -78,7 +77,6 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource,
             connectionFactory, requestQueue, false);
         isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
-        collectGatewayStatistics();
     }
    
     @Override
@@ -296,26 +294,5 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         }
 
         return nmConfig;
-    }
-    
-    /**
-     * If data streaming is enabled, schedules gateway statistics collection to run every hour.
-     */
-    private void collectGatewayStatistics() {
-        if (isDataStreamingEnabled) {
-            Runnable gatewayStatistics = new Runnable() {
-                @Override
-                public void run() {
-                    log.debug("Starting gateway statistics collecton.");
-                    try {
-                        getGatewayInfo(rfnGatewayService.getAllGateways(), true);
-                    } catch (Exception e) {
-                        log.error("Error accured during gateway statistics collection", e);
-                    }
-                }
-            };
-            log.info("Scheduling gateway statistics collecton to run every hour.");
-            scheduledExecutor.scheduleAtFixedRate(gatewayStatistics, 0, 1, TimeUnit.HOURS);
-        }
     }
 }
