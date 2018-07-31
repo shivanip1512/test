@@ -2686,7 +2686,14 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
                             currentSubstationBus->figureAndSetTargetVarValue();
                         }
                     }
+                    else if ( timestamp == currentSubstationBus->getLastCurrentVarPointUpdateTime() 
+                                && quality != currentSubstationBus->getCurrentVarPointQuality() )
+                    {
+                        // so we got a point quality update from dispatch... see YUK-18257
 
+                        currentSubstationBus->setCurrentVarPointQuality( quality );
+                        currentSubstationBus->setBusUpdatedFlag( true );
+                    }
                 }
                 else if( currentSubstationBus->getCurrentWattLoadPointId() == pointID )
                 {
@@ -2732,6 +2739,14 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
                         }
                         adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                     }
+                    else if ( timestamp == currentSubstationBus->getLastWattPointTime() 
+                                && quality != currentSubstationBus->getCurrentWattPointQuality() )
+                    {
+                        // so we got a point quality update from dispatch... see YUK-18257
+
+                        currentSubstationBus->setCurrentWattPointQuality( quality );
+                        currentSubstationBus->setBusUpdatedFlag( true );
+                    }
                 }
                 else if( currentSubstationBus->getCurrentVoltLoadPointId() == pointID )
                 {
@@ -2752,6 +2767,14 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
                         adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                         currentSubstationBus->setNewPointDataReceivedFlag(true);
                         currentSubstationBus->figureAndSetTargetVarValue();
+                    }
+                    else if ( timestamp == currentSubstationBus->getLastVoltPointTime() 
+                                && quality != currentSubstationBus->getCurrentVoltPointQuality() )
+                    {
+                        // so we got a point quality update from dispatch... see YUK-18257
+
+                        currentSubstationBus->setCurrentVoltPointQuality( quality );
+                        currentSubstationBus->setBusUpdatedFlag( true );
                     }
                 }
                 else if (currentSubstationBus->getSwitchOverPointId() == pointID)
@@ -3016,6 +3039,14 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, PointQu
                             }
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
+                        else if ( timestamp == currentFeeder->getLastCurrentVarPointUpdateTime() 
+                                    && quality != currentFeeder->getCurrentVarPointQuality() )
+                        {
+                            // so we got a point quality update from dispatch... see YUK-18257
+
+                            currentFeeder->setCurrentVarPointQuality( quality );
+                            currentSubstationBus->setBusUpdatedFlag( true );
+                        }
                     }
                     else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
                     {
@@ -3058,6 +3089,14 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, PointQu
 
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
+                        else if ( timestamp == currentFeeder->getLastWattPointTime() 
+                                    && quality != currentFeeder->getCurrentWattPointQuality() )
+                        {
+                            // so we got a point quality update from dispatch... see YUK-18257
+
+                            currentFeeder->setCurrentWattPointQuality( quality );
+                            currentSubstationBus->setBusUpdatedFlag( true );
+                        }
                     }
                     else if( currentFeeder->getCurrentVoltLoadPointId() == pointID )
                     {
@@ -3073,6 +3112,14 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, PointQu
                             currentFeeder->setCurrentVoltPointQuality(quality);
 
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
+                        }
+                        else if ( timestamp == currentFeeder->getLastVoltPointTime() 
+                                    && quality != currentFeeder->getCurrentVoltPointQuality() )
+                        {
+                            // so we got a point quality update from dispatch... see YUK-18257
+
+                            currentFeeder->setCurrentVoltPointQuality( quality );
+                            currentSubstationBus->setBusUpdatedFlag( true );
                         }
                     }
                     else if (currentFeeder->getDailyOperationsAnalogPointId()  == pointID )
