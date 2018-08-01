@@ -97,6 +97,7 @@ YukonError_t CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, Ct
             parse.parse();  // reparse for xcom specific data items....  This is required in case we got here from a group macro.
         }
 
+        //  extractGroupAddressing sets the OutMessage->ExpirationTime if this is a control message (i.e. not a restore), otherwise leaves it at 0
         if( nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString) )
         {
             // extractGroupAddressing generates its own error return to the caller
@@ -140,7 +141,11 @@ YukonError_t CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, Ct
         std::vector<unsigned char> payload;
         xcom.getFullMessage(payload);
 
-        sendDRMessage(OutMessage->Priority, OutMessage->ExpirationTime - CtiTime::now().seconds(), payload);
+        const auto expiration = OutMessage->ExpirationTime
+            ? OutMessage->ExpirationTime - CtiTime::now().seconds()
+            : 0;
+
+        sendDRMessage(OutMessage->Priority, expiration, payload);
 
         reportAndLogControlStart(parse, vgList, OutMessage->Request.CommandStr);
 
