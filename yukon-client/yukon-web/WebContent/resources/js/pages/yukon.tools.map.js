@@ -458,9 +458,10 @@ yukon.tools.map = (function() {
                     }
                 } else {
                     var target = ev.originalEvent.target;
-                    //check if user clicked on cog
-                    var cog = $(target).closest('.js-cog-menu');
-                    if (cog.length === 0) {
+                    //check if user clicked on the cog or the error hide-reveal
+                    var cog = $(target).closest('.js-cog-menu'),
+                        error = $(target).closest('.hide-reveal-container');
+                    if (cog.length == 0 && error.length == 0) {
                         $('#marker-info').hide();
                     }
                 }
@@ -601,7 +602,7 @@ yukon.tools.map = (function() {
             
             /** Remove the coordinates for the device when the user clicks OK on the confirmation popup. **/
             $(document).on('yukon:tools:map:delete-coordinates', function(event) {
-                var paoId = $('#remove-pin').data("pao"),
+                var paoId = $('#remove-pin').data("device-id"),
                     removeUrl = yukon.url('/tools/map/device/' + paoId);
                 
                 $.ajax({

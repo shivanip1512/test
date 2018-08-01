@@ -19,6 +19,9 @@
                     <cm:dropdownOption key=".viewPrimaryRoute" classes="js-device-route" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                 </c:if>
             </c:if>
+            <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
+                <cm:dropdownOption id="remove-pin" data-device-id="${pao.paoIdentifier.paoId}" key=".deleteCoordinates.delete" data-popup="#confirm-delete" showIcon="false"/>
+            </cti:checkRolesAndProperties>
         </cm:dropdown>
     </tags:nameValue2>
     <c:if test="${showMeterNumber}">
@@ -59,22 +62,15 @@
     </div>
 </c:forEach>
 
-<cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
-<div class="action-area">
+<div class="dn" 
+    data-dialog 
+    id="confirm-delete" 
+    data-title="<cti:msg2 key=".deleteCoordinates.title"/>" 
+    data-ok-text="<cti:msg2 key=".deleteCoordinates.delete"/>" 
+    data-event="yukon:tools:map:delete-coordinates" 
+    data-cancel-class="cancel-delete">
     
-    <div class="dn" 
-        data-dialog 
-        id="confirm-delete" 
-        data-title="<cti:msg2 key=".deleteCoordinates.title"/>" 
-        data-ok-text="<cti:msg2 key=".deleteCoordinates.delete"/>" 
-        data-event="yukon:tools:map:delete-coordinates" 
-        data-cancel-class="cancel-delete">
-        
-        <i:inline key=".deleteCoordinates" arguments="${pao.name}"/>
-    </div>
-    
-    <cti:button id="remove-pin" renderMode="image" icon="icon-map-delete" data-popup="#confirm-delete" data-pao="${pao.paoIdentifier.paoId}" nameKey="deleteCoordinates"/>
+    <i:inline key=".deleteCoordinates" arguments="${pao.name}"/>
 </div>
-</cti:checkRolesAndProperties>
 
 </cti:msgScope>

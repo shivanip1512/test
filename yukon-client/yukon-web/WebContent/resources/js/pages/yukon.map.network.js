@@ -693,7 +693,7 @@ yukon.map.network = (function () {
                 
                 /** Remove the coordinates for the device when the user clicks OK on the confirmation popup. **/
                 $(document).on('yukon:tools:map:delete-coordinates', function(event) {
-                    var paoId = $('#remove-pin').data("pao"),
+                    var paoId = $('#remove-pin').data("device-id"),
                         removeUrl = yukon.url('/tools/map/device/' + paoId);
                     
                     $.ajax({
