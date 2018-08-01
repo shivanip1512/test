@@ -971,7 +971,10 @@ yukon.protoPicker = function (okText,
         .addClass('compact-results-table');
         $(this.selectedItemsDisplayArea).empty();
         $(this.selectedItemsDisplayArea).append(resultTable);
+        $(this.selectedItemsDisplayArea).addClass('scroll-xl');
         $(this.selectedItemsPopup).dialog({ minWidth: 400 });
+        $(this.selectedItemsPopup).css({'max-height' : '', 'height' : ''});
+        $(this.selectedItemsPopup).addClass('scroll-xl');
     };
     
     /** 
