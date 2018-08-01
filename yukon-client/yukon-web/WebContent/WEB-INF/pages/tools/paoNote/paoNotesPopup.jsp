@@ -62,7 +62,7 @@
                                     </div>
                                     <div id="js-edit-popup-note-${noteId}" class="dn">
                                         <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="resize: none; width:100%" 
-                                            maxlength="2000" value="${paoNoteSearchResult.paoNote.noteText}"></textarea>
+                                            maxlength="${noteTextAreaMaxLength}" value="${paoNoteSearchResult.paoNote.noteText}"></textarea>
                                     </div>
                                 </td>
                                 <td class="vam js-popup-note-actions dn">

@@ -119,6 +119,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         int noteCount = paoNotesService.getNoteCount(deviceId);
         model.addAttribute("noteCount", noteCount);
         model.addAttribute("maxNotesToDisplay", MAX_NOTES_TO_DISPLAY);
+        model.addAttribute("maxCharactersInNote", MAX_CHARACTERS_IN_NOTE);
         model.addAttribute("noteTextAreaMaxLength", NOTE_TEXTAREA_MAX_LENGTH);
     }
 
