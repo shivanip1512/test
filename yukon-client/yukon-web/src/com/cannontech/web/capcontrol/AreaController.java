@@ -251,7 +251,6 @@ public class AreaController {
         
         if (result.hasErrors()) {
             // Failure
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
             return bindAndForward(area, result, redirectAttributes);
         }
         
