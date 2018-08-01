@@ -660,6 +660,81 @@ END;
 INSERT INTO DBUpdates VALUES ('YUK-18526', '7.1.0', SYSDATE);
 /* @end YUK-18526 */
 
+/* @start YUK-18095 */
+/* Remove invalid points */
+DELETE FROM DynamicPointDispatch
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    AND PointType = 'Analog'
+    AND PointOffset = 151);
+DELETE FROM PointUnit
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    AND PointType = 'Analog'
+    AND PointOffset = 151);
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    AND PointType = 'Analog'
+    AND PointOffset = 151);
+DELETE FROM PointAnalog
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    AND PointType = 'Analog'
+    AND PointOffset = 151);
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    AND PointType = 'Analog'
+    AND PointOffset = 151);
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    AND PointType = 'Analog'
+    AND PointOffset = 151);
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    AND PointType = 'Analog'
+    AND PointOffset = 151);
+
+/* Remove invalid configurations */
+DELETE FROM DeviceConfigCategoryItem 
+WHERE DeviceConfigCategoryId IN (
+    SELECT DISTINCT DCC.DeviceConfigCategoryId 
+    FROM DeviceConfigCategory DCC
+    JOIN DeviceConfigCategoryMap DCCM 
+        ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId
+    JOIN DeviceConfiguration DC 
+        ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationID
+    JOIN DeviceConfigDeviceTypes DCDT 
+        ON DC.DeviceConfigurationID = DCDT.DeviceConfigurationId
+    WHERE DCC.CategoryType='rfnChannelConfiguration'
+    AND DCDT.PaoType IN ('RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4') )
+AND DeviceConfigCategoryId NOT IN (
+    SELECT DISTINCT DCC.DeviceConfigCategoryId 
+    FROM DeviceConfigCategory DCC
+    JOIN DeviceConfigCategoryMap DCCM 
+        ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId
+    JOIN DeviceConfiguration DC 
+        ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationID
+    JOIN DeviceConfigDeviceTypes DCDT 
+        ON DC.DeviceConfigurationID = DCDT.DeviceConfigurationId
+    WHERE DCC.CategoryType='rfnChannelConfiguration'
+    AND DCDT.PaoType IN ('RFN-420cD', 'RFN-420cL', 'RFN-430A3K', 'RFN-430A3R', 'RFN-430KV', 'RFN-520fRX', 'RFN-520fRXD', 'RFN-530fRX', 'RFN-530S4x') )
+AND ItemName LIKE 'enabledChannels%attribute'
+AND ItemValue = 'RECEIVED_KVAH';
+
+INSERT INTO DBUpdates VALUES ('YUK-18095', '7.1.0', SYSDATE);
+/* @end YUK-18095 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
