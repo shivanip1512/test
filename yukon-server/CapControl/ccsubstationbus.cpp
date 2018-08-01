@@ -25,6 +25,7 @@ using Cti::CapControl::Database::DatabaseDaoFactory;
 using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
 using Cti::CapControl::populateFlag;
+using Cti::CapControl::calculateKVARSolution;
 
 using std::endl;
 using std::set;
@@ -1155,7 +1156,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                     setPoint = (getPeakTimeFlag()?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
                 }
 
-                setKVARSolution(calculateKVARSolution(getStrategy()->getControlUnits(),setPoint, getIVControl(), getIWControl()));
+                setKVARSolution(calculateKVARSolution(getStrategy()->getControlUnits(),setPoint, getIVControl(), getIWControl(), *this));
                 setTargetVarValue( getKVARSolution() + getIVControl());
 
 
@@ -1338,58 +1339,9 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
     }
 }
 
-/*---------------------------------------------------------------------------
-    calculateKVARSolution
-
-
----------------------------------------------------------------------------*/
-double CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, double setPoint, double varValue, double wattValue)
-{
-    double returnKVARSolution = 0.0;
-    if( ciStringEqual(controlUnits,ControlStrategy::KVarControlUnit) )
-    {
-        returnKVARSolution = setPoint - varValue;
-    }
-    else if( ciStringEqual(controlUnits,ControlStrategy::PFactorKWKVarControlUnit) ||
-             ciStringEqual(controlUnits,ControlStrategy::PFactorKWKQControlUnit))
-    {
-        double targetKVAR = 0.0;
-        if (setPoint != 0)
-        {
-            double targetKVA = wattValue / (setPoint/100.0);
-            double NaNDefenseDouble = (targetKVA*targetKVA)-(wattValue*wattValue);
-            if( NaNDefenseDouble > 0.0 )
-            {
-                targetKVAR = sqrt(NaNDefenseDouble);
-                if (setPoint < 0)
-                {
-                    targetKVAR = 0 - targetKVAR;
-                }
-            }
-        }
-
-        returnKVARSolution = targetKVAR - varValue;
-
-    }
-    else if( ciStringEqual(controlUnits,ControlStrategy::VoltsControlUnit) ||
-             ciStringEqual(controlUnits,ControlStrategy::MultiVoltControlUnit)||
-             ciStringEqual(controlUnits,ControlStrategy::MultiVoltVarControlUnit)||
-             ciStringEqual(controlUnits,ControlStrategy::TimeOfDayControlUnit)||
-             ciStringEqual(controlUnits,ControlStrategy::IntegratedVoltVarControlUnit) )
-    {
-        returnKVARSolution = 0;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Invalid control units: " << controlUnits);
-    }
-
-    return returnKVARSolution;
-}
-
 void CtiCCSubstationBus::figureAndSetTargetVarValue()
 {
-    setKVARSolution(calculateKVARSolution(getStrategy()->getControlUnits(),getSetPoint(), getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
+    setKVARSolution(calculateKVARSolution(getStrategy()->getControlUnits(),getSetPoint(), getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue(), *this));
 
     if ( getStrategy()->getUnitType() == ControlStrategy::Volts )
     {

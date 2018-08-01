@@ -21,6 +21,7 @@ using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
 using Cti::CapControl::populateFlag;
+using Cti::CapControl::calculateKVARSolution;
 
 using namespace Cti::Messaging::CapControl;
 using std::endl;
@@ -1315,7 +1316,7 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
             ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit ))
         {
             double setpoint = (peakTimeFlag?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
-            setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
+            setKVARSolution(calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue(), *this));
             setTargetVarValue( getKVARSolution() + getCurrentVarLoadPointValue());
         }
         else
@@ -1324,7 +1325,7 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
             double lagLevel = (peakTimeFlag?getStrategy()->getPeakLag():getStrategy()->getOffPeakLag());
             double leadLevel = (peakTimeFlag?getStrategy()->getPeakLead():getStrategy()->getOffPeakLead());
             double setpoint = (lagLevel + leadLevel)/2;
-            setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue()));
+            setKVARSolution( calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue(), *this));
             if( ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit) )
             {
                 setTargetVarValue( getKVARSolution() + getCurrentVoltLoadPointValue());
@@ -1395,7 +1396,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         setIWCount(1);
     }
 
-    setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(feederControlUnits,setpoint,getIVControl(),getIWControl()));
+    setKVARSolution( calculateKVARSolution(feederControlUnits,setpoint,getIVControl(),getIWControl(), *this));
     setTargetVarValue( getKVARSolution() + getIVControl());
 
 

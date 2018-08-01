@@ -9,6 +9,7 @@
 #include "cctwowaycbcpoints.h"
 
 class CtiCCCapBank;
+class CapControlPao;
 
 namespace Cti           {
 namespace CapControl    {
@@ -141,5 +142,8 @@ std::string serializeFlag( const bool flag );
 bool deserializeFlag( const std::string & flags, const unsigned index = 0 );
 
 extern const std::string SystemUser;
+
+double calculateKVARSolution( const std::string & controlUnits, double setPoint, double varValue, double wattValue,
+                              const CapControlPao & pao );
 
 }}

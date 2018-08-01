@@ -170,7 +170,6 @@ public:
     bool isAlreadyControlled();
     double convertKQToKVAR(double kq, double kw);
     double convertKVARToKQ(double kvar, double kw);
-    static double calculateKVARSolution(const std::string& controlUnits, double setPoint, double varValue, double wattValue);
     bool checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     void voltControlProcess();

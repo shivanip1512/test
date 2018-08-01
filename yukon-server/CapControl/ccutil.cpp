@@ -281,5 +281,68 @@ bool deserializeFlag( const std::string & flags, const unsigned index )
 
 const std::string SystemUser = "cap control";
 
+double calculateKVARSolution( const std::string & controlUnits, double setPoint, double varValue, double wattValue,
+                              const CapControlPao & pao )
+{
+    if( ciStringEqual(controlUnits,ControlStrategy::KVarControlUnit) )
+    {
+        return setPoint - varValue;
+    }
+
+    if( ciStringEqual(controlUnits,ControlStrategy::PFactorKWKVarControlUnit) ||
+        ciStringEqual(controlUnits,ControlStrategy::PFactorKWKQControlUnit))
+    {
+        double targetKVAR = 0.0;
+        if (setPoint != 0)
+        {
+            double targetKVA = wattValue / (setPoint/100.0);
+            double NaNDefenseDouble = (targetKVA*targetKVA)-(wattValue*wattValue);
+            if( NaNDefenseDouble > 0.0 )
+            {
+                targetKVAR = sqrt(NaNDefenseDouble);
+                if (setPoint < 0)
+                {
+                    targetKVAR = 0 - targetKVAR;
+                }
+            }
+        }
+
+        return targetKVAR - varValue;
+    }
+
+    if( ciStringEqual(controlUnits,ControlStrategy::VoltsControlUnit) ||
+        ciStringEqual(controlUnits,ControlStrategy::MultiVoltControlUnit)||
+        ciStringEqual(controlUnits,ControlStrategy::MultiVoltVarControlUnit)||
+        ciStringEqual(controlUnits,ControlStrategy::TimeOfDayControlUnit)||
+        ciStringEqual(controlUnits,ControlStrategy::IntegratedVoltVarControlUnit) )
+    {
+        return 0.0;
+    }
+
+    if( ciStringEqual(controlUnits,ControlStrategy::NoControlUnit) )
+    {
+        // Our pao has no strategy assigned so issue a warning, but only show the warning once in a while (per YUK-18135).
+
+        static std::map<long, CtiTime>  showWarning;
+
+        CtiTime now;
+
+        if ( showWarning[ pao.getPaoId() ] <= now )
+        {
+            showWarning[ pao.getPaoId() ] = now.addSeconds( 300 );  // 5 minutes between warnings, minimum
+
+            CTILOG_WARN( dout, "No strategy assigned to object: " << pao.getPaoName() );
+        }
+
+        return 0.0;
+    }
+
+    //  We've tested against all actual controlUnits above so at this point we have some unknown value
+
+    CTILOG_ERROR(dout, "Invalid/unknown control units: " << controlUnits);
+
+    return 0.0;
+}
+
 }
 }
