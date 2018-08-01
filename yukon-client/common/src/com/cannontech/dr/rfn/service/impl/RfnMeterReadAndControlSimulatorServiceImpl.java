@@ -226,7 +226,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     private RfnMeterReadDataReply setUpReadDataResponse(RfnMeterReadRequest request, RfnMeterReadAndControlReadSimulatorSettings settings) {
         RfnMeterReadDataReply response = new RfnMeterReadDataReply();
         
-        // Calculates Fail Rates for disconnect and connect
+        // Calculates Fail Rates for read
         if(replyWithFailure(settings.getReadReply2FailPercent())) {
             response.setReplyType(settings.getReadReply2());
         } else {
