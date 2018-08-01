@@ -20,10 +20,6 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -37,8 +33,6 @@ public class CollectionActionsController {
     private static final Logger log = YukonLogManager.getLogger(CollectionActionsController.class);
     
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
-    @Autowired private ConfigurationSource configSource;
-    @Autowired private RolePropertyDao rolePropertyDao;
     
     private static final String baseKey ="yukon.web.modules.tools.collectionActions";
     
@@ -111,13 +105,6 @@ public class CollectionActionsController {
                 String totalErrors = new Integer(collection.getErrorDevices().size()).toString();
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".deviceUploadFailed", totalErrors));
             }
-            boolean isMassChangeEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MASS_CHANGE, userContext.getYukonUser());
-            boolean isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
-                    && rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RF_DATA_STREAMING,
-                        userContext.getYukonUser());
-            boolean showConfigSection = isMassChangeEnabled || isDataStreamingEnabled;
-            model.addAttribute("showConfigSection", showConfigSection);
-                    
         } catch (ObjectMappingException | UnsupportedOperationException e) {
             log.error("There was an issue creating a device collection.", e);
             model.addAttribute("errorMsg", e.getMessage());

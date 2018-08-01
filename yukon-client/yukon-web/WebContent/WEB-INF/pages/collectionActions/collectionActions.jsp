@@ -65,6 +65,15 @@
                     </tags:sectionContainer2>
                 </cti:dataGridCell>
                 
+                <c:set var="showConfigSection" value="false"/>
+                <cti:checkRolesAndProperties value="MASS_CHANGE">
+                    <c:set var="showConfigSection" value="true"/>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                    <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+                        <c:set var="showConfigSection" value="true"/>
+                    </cti:checkRolesAndProperties>
+                </cti:checkRolesAndProperties>
                 <c:if test="${showConfigSection}">
                     <cti:dataGridCell>
                         <tags:sectionContainer2 nameKey="header.configActions" styleClass="w300">
