@@ -1,6 +1,7 @@
 package com.cannontech.web.widget;
 
 import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
+import static com.cannontech.web.tools.paoNote.PaoNotesSearchController.NOTE_TEXTAREA_MAX_LENGTH;
 
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +119,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         int noteCount = paoNotesService.getNoteCount(deviceId);
         model.addAttribute("noteCount", noteCount);
         model.addAttribute("maxNotesToDisplay", MAX_NOTES_TO_DISPLAY);
-        model.addAttribute("maxCharactersInNote", MAX_CHARACTERS_IN_NOTE);
+        model.addAttribute("noteTextAreaMaxLength", NOTE_TEXTAREA_MAX_LENGTH);
     }
 
 }

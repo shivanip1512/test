@@ -18,7 +18,7 @@
                 <div class="column one">
                     <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
                     <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
-                                   maxLength="${maxCharactersInNote}" placeholder="${noteTextPlaceholder}"/>
+                                   maxLength="${noteTextAreaMaxLength}" placeholder="${noteTextPlaceholder}"/>
                 </div>
             </cti:checkRolesAndProperties>
             <div class="column two nogutter">
@@ -62,7 +62,7 @@
                                     </div>
                                     <div id="js-edit-popup-note-${noteId}" class="dn">
                                         <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="resize: none; width:100%" 
-                                            maxlength="255" value="${paoNoteSearchResult.paoNote.noteText}"></textarea>
+                                            maxlength="2000" value="${paoNoteSearchResult.paoNote.noteText}"></textarea>
                                     </div>
                                 </td>
                                 <td class="vam js-popup-note-actions dn">

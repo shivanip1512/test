@@ -18,7 +18,7 @@
                     <td width="80%" class="P0">
                         <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
                         <tags:textarea rows="3" cols="46" path="noteText" id="createNoteTextarea" isResizable="false"
-                                       placeholder="${noteTextPlaceholder}" maxLength="${maxCharactersInNote}"/>
+                                       placeholder="${noteTextPlaceholder}" maxLength="${noteTextAreaMaxLength}"/>
                     </td>
                     <td width="20%" class="vam">
                         <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr"/>
@@ -58,7 +58,8 @@
                             </div>
                             <div id="js-edit-note-${noteId}" class="dn">
                                 <textarea id="js-edit-note-textarea-${noteId}" rows="3" cols="46" style="resize: none;" 
-                                          maxlength="255" value="${recentNote.paoNote.noteText}" placeholder="${noteTextPlaceholder}"></textarea>
+                                          maxlength="${noteTextAreaMaxLength}" value="${recentNote.paoNote.noteText}"
+                                          placeholder="${noteTextPlaceholder}"></textarea>
                             </div>
                         </td>
                     <td width="20%" class="vam js-note-actions">

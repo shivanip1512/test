@@ -85,6 +85,8 @@ public class PaoNotesSearchController {
     @Autowired private ServerDatabaseCache databaseCache;
     
     private static final String baseKey = "yukon.web.common.paoNote.";
+    
+    public static final int NOTE_TEXTAREA_MAX_LENGTH = 2000;
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public String search(@ModelAttribute("paoNoteFilter") PaoNotesFilter filter, BindingResult bindingResult,
@@ -304,5 +306,6 @@ public class PaoNotesSearchController {
         model.addAttribute("popupTitle", accessor.getMessage("yukon.web.common.paoNotesPopup.title", 
                                                              databaseCache.getAllPaosMap().get(paoId).getPaoName()));
         model.addAttribute("maxCharactersInNote", MAX_CHARACTERS_IN_NOTE);
+        model.addAttribute("noteTextAreaMaxLength", NOTE_TEXTAREA_MAX_LENGTH);
     }
 }
