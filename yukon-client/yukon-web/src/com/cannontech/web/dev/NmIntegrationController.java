@@ -293,6 +293,7 @@ public class NmIntegrationController {
 
     @RequestMapping("stopMetersReadRequest")
     public String disableMeterReadReply(FlashScope flash) {
+        
         ModifyRfnMeterReadAndControlSimulatorRequest request = new ModifyRfnMeterReadAndControlSimulatorRequest();
         request.setStopReadReply(true);
         

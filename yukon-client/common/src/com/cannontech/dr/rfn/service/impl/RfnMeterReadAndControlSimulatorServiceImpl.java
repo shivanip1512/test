@@ -37,7 +37,7 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadAndControlSimulatorService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnMeterReadAndControlSimulatorServiceImpl.class);
-    // private static final String meterReadRequestQueue = "yukon.qr.obj.amr.rfn.MeterReadRequest";
+    private static final String meterReadingArchiveRequestQueue = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String meterReadRequestQueue = "yukon.qr.obj.amr.rfn.MeterReadRequest";
     private static final String meterDisconnectRequestQueue = "yukon.qr.obj.amr.rfn.MeterDisconnectRequest";
     @Autowired private ConnectionFactory connectionFactory;
@@ -182,20 +182,18 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             RfnMeterReadRequest request = (RfnMeterReadRequest) requestMessage.getObject();
                             
                             RfnMeterReadReply response1 = setUpReadInitialResponse(settings);
-                            
                             RfnMeterReadDataReply response2 = setUpReadDataResponse(request, settings);
                             
-                            //System.out.println(response2.getData());
-                            
+                            // Sends the responses to Meter Read Queue
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response1);
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response2);
                             
+                            // Sends response2 to the Meter Archive Request Queue
                             RfnMeterReadingArchiveRequest archiveRequest = new RfnMeterReadingArchiveRequest();
                             archiveRequest.setReadingType(RfnMeterReadingType.INTERVAL);
                             archiveRequest.setData(response2.getData());
                             archiveRequest.setDataPointId(1);
-                            //please remove hardcoded string
-                            jmsTemplate.convertAndSend("yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest" , archiveRequest);
+                            jmsTemplate.convertAndSend(meterReadingArchiveRequestQueue , archiveRequest);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in meter read reply.", e);
@@ -233,15 +231,8 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
             response.setReplyType(settings.getReadReply2());
         } else {
             response.setReplyType(RfnMeterReadingDataReplyType.OK);
-            //LiteYukonPAObject litePao = cache.getAllPaosMap().get();
-            //RfnDevice device = new RfnDevice(null, cache.get  .getAllPaosMap().get(request.getRfnIdentifier()), request.getRfnIdentifier());
             RfnDevice device = dao.getDeviceForExactIdentifier(request.getRfnIdentifier());
-            // Simulates meter data
-            // RfnDevice temp = new RfnDevice();
-            
-            //RfnMeterDataSimulatorServiceImpl dataCreator = new RfnMeterDataSimulatorServiceImpl();
             response.setData(rfnMeterDataSimulatorService.createReadingForType(device, DateTime.now(), RfnMeterReadingType.INTERVAL, DateTime.now()));
-            
         }
         
         return response;

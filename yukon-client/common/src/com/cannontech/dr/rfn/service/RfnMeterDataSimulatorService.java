@@ -41,7 +41,9 @@ public interface RfnMeterDataSimulatorService extends AutoStartableSimulator {
 
     void testSimulator(SimulatorSettings settings);
 
-    // add comments
+    /**
+     * Creates meter reading data for the inputed device, interval time, type, and current time.
+     */
     RfnMeterReadingData createReadingForType(RfnDevice device, DateTime time, RfnMeterReadingType type,
             DateTime currentTime);
 }
