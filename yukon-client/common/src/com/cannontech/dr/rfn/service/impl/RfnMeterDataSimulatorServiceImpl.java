@@ -92,7 +92,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             if (this.settings == null) {
                 this.settings = settings;
             }
-            List<RfnDevice> devices = new ArrayList<RfnDevice>();
+            List<RfnDevice> devices = new ArrayList<>();
             try {
                 PaoType paoType = PaoType.valueOf((settings).getPaoType());
                 devices.addAll(rfnDeviceDao.getDevicesByPaoType(paoType));
@@ -272,7 +272,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         return null;
     }
 
-    private RfnMeterReadingData createReadingForType(RfnDevice device, DateTime time, RfnMeterReadingType type,
+    @Override
+    public RfnMeterReadingData createReadingForType(RfnDevice device, DateTime time, RfnMeterReadingType type,
             DateTime currentTime) {
 
         PaoType paoType = device.getPaoIdentifier().getPaoType();

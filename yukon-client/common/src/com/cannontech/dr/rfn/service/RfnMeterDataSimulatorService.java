@@ -1,5 +1,10 @@
 package com.cannontech.dr.rfn.service;
 
+import org.joda.time.DateTime;
+
+import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
+import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.simulators.AutoStartableSimulator;
@@ -35,4 +40,8 @@ public interface RfnMeterDataSimulatorService extends AutoStartableSimulator {
     RfnDataSimulatorStatus getStatus();
 
     void testSimulator(SimulatorSettings settings);
+
+    // add comments
+    RfnMeterReadingData createReadingForType(RfnDevice device, DateTime time, RfnMeterReadingType type,
+            DateTime currentTime);
 }
