@@ -62,42 +62,48 @@
                                           placeholder="${noteTextPlaceholder}"></textarea>
                             </div>
                         </td>
-                    <td width="20%" class="vam js-note-actions">
-                        <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
-                        <cti:msg2 var="deleteText" key=".delete.hoverText"/>
-                        <cti:msg2 var="editText" key=".edit.hoverText"/>
-                        <cti:msg2 var="saveText" key="yukon.common.save"/>
-                        <div id="js-edit-note-btn-group-${noteId}" class="button-group">
-                            <c:if test="${recentNote.modifiable}">
-                                <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
-                                    data-note-id="${noteId}" title="${editText}"/>
-                                <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
-                                    data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
-                                <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
-                            </c:if>
-                        </div>
-                        <div id="js-save-note-group-${noteId}" class="button-group dn">
-                            <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
-                                        data-note-id="${noteId}" title="${saveText}"/>
-                            <cti:button id="js-cancel-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
-                                        data-note-id="${noteId}" title="${cancelText}"/>
-                        </div>
-                    </td>
-                </tr>
-            </c:forEach>
+                        <td width="20%" class="vam js-note-actions">
+                            <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
+                            <cti:msg2 var="deleteText" key=".delete.hoverText"/>
+                            <cti:msg2 var="editText" key=".edit.hoverText"/>
+                            <cti:msg2 var="saveText" key="yukon.common.save"/>
+                            <div id="js-edit-note-btn-group-${noteId}" class="button-group">
+                                <c:if test="${recentNote.modifiable}">
+                                    <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
+                                        data-note-id="${noteId}" title="${editText}"/>
+                                    <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
+                                        data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
+                                    <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
+                                </c:if>
+                            </div>
+                            <div id="js-save-note-group-${noteId}" class="button-group dn">
+                                <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
+                                            data-note-id="${noteId}" title="${saveText}"/>
+                                <cti:button id="js-cancel-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
+                                            data-note-id="${noteId}" title="${cancelText}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+                <c:set var="additionalNotesCount" value="${noteCount - maxNotesToDisplay}"/>
+                <c:if test="${additionalNotesCount > 0}">
+                    <tr>
+                        <td colspan="2">
+                            <div class="js-view-all-notes link-tr" data-pao-id="${createPaoNote.paoId}">
+                                <a href="javascript:void(0)">
+                                    <i:inline key=".more" arguments="${additionalNotesCount}"/>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </c:if>
             </table>
         </c:otherwise>
     </c:choose>
 
     <div class="action-area">
-        <c:set var="count" value="${noteCount - maxNotesToDisplay}"/>
-        <c:if test="${count > 0}">
-            ${count} <i:inline key=".more"/><i:inline key=".moreInfoSuffix"/>&nbsp;|&nbsp;
-        </c:if>
-        <a class="js-view-all-notes" href="javascript:void(0)" data-pao-id="${createPaoNote.paoId}"><i:inline key="yukon.common.viewAll"/></a>
-        &nbsp;|&nbsp;
-        <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
-        <a href="${searchUrl}"><i:inline key="yukon.common.search"/></a>
+        <cti:url value="/tools/paoNotes/search" var="allNotesUrl"/>
+        <a href="${allNotesUrl}"><i:inline key=".viewAll"/></a>
     </div>
 </cti:msgScope>
 <div class="dn" id="js-pao-notes-popup"></div>
