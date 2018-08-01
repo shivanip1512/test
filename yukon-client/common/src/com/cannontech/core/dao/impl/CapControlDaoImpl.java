@@ -227,7 +227,7 @@ public class CapControlDaoImpl implements CapControlDao {
         }
         sql.append("AND DateTime").gte(date.toDate());
 
-        sql.append("ORDER BY " + CCEventLog.COLUMNS[CCEventLog.COL_DATETIME] + " DESC");
+        sql.append("ORDER BY " + CCEventLog.COLUMNS[CCEventLog.COL_DATETIME] + " DESC, LogId DESC");
 
         return yukonJdbcTemplate.query(sql, new YukonRowMapper<CCEventLog>() {
             @Override
