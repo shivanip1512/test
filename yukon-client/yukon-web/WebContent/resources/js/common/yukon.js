@@ -358,7 +358,7 @@ yukon.namespace = function (ns) {
     
     /** 
      * Convenience function for checking if any instances of the selected element(s) exist. 
-     * @returns {object} The jQuery object containing the selection. 
+     * @returns {(object|false)} The jQuery object containing the selection, or false if no elements match the selection. 
      */
     $.fn.exists = function () {
         return this.length > 0 ? this : false;
