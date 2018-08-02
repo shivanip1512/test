@@ -357,6 +357,14 @@ yukon.namespace = function (ns) {
     };
     
     /** 
+     * Convenience function for checking if any instances of the selected element(s) exist. 
+     * @returns {object} The jQuery object containing the selection. 
+     */
+    $.fn.exists = function () {
+        return this.length > 0 ? this : false;
+    };
+    
+    /** 
      * Flash an element's background with a color for a duration.
      * @param {object} [options] - Options hash containing color and duration.
      * @param {number} [options.duration=1500] - The duration in milliseconds the animation will last. Default 1500.

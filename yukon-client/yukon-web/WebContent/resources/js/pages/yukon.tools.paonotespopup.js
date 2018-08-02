@@ -13,6 +13,7 @@ yukon.tools.paonotespopup = (function () {
  
     var
     _initialized = false,
+    _notesModified = false,
     
     _toggleClasses = function (noteId) {
         var editButton = $('#js-edit-popup-note-btn-' + noteId),
@@ -64,6 +65,7 @@ yukon.tools.paonotespopup = (function () {
                 $(event.target).siblings('#delete-popup-note-form').ajaxSubmit({
                     success: function(data, status, xhr, $form) {
                         $(event.target).closest('.ui-dialog-content').html(data);
+                        _notesModified = true;
                     }
                 });
             });
@@ -90,6 +92,7 @@ yukon.tools.paonotespopup = (function () {
                         $('#js-edit-popup-note-textarea-' + noteId).addClass('error');
                     } else {
                         _updatePopup(paoId);
+                        _notesModified = true;
                     }
                 });
             });
@@ -98,6 +101,7 @@ yukon.tools.paonotespopup = (function () {
                 $(event.target).closest('#create-popup-note-form').ajaxSubmit({
                      success: function(data, status, xhr, $form) {
                           $(event.target).closest('.ui-dialog-content').html(data);
+                          _notesModified = true;
                      }
                 });
              });
@@ -126,10 +130,11 @@ yukon.tools.paonotespopup = (function () {
                 }
             });
             
-            // Re-render any widgets with notes in them when the notes popup closes, so new or deleted notes will be 
-            // picked-up.
             $(document).on('dialogclose', '#js-pao-notes-popup', function(event) {
                 var widgetId, widget;
+                
+                // Re-render any widgets with notes in them when the notes popup closes, so new or deleted notes will be 
+                // picked-up.
                 $('.js-view-all-notes').each(function(index, obj) {
                     widgetId = $(obj).closest('.widgetWrapper').attr('id');
                     if (widgetId) {
@@ -138,6 +143,12 @@ yukon.tools.paonotespopup = (function () {
                         widget.render();
                     }
                 });
+                
+                // Refresh the page if notes have been modified in the popup on the Notes page.
+                if (_notesModified === true && $('#filter-pao-notes-form').exists()) {
+                    yukon.ui.blockPage();
+                    window.location.reload(true);
+                }
             });
             
             _initialized = true;
