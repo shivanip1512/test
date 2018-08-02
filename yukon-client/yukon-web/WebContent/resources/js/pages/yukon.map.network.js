@@ -662,7 +662,7 @@ yukon.map.network = (function () {
                         //check if user clicked on the cog or the error hide-reveal
                         var cog = $(target).closest('.js-cog-menu'),
                             error = $(target).closest('.hide-reveal-container');
-                        if (cog.length == 0 && error.length == 0) {
+                        if (cog.length === 0 && error.length === 0) {
                             $('#marker-info').hide();
                         }
                     }
