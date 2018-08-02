@@ -37,5 +37,7 @@
     <entry key="yukon.web.common.paoNotesPopup.title">Notes - {0}</entry>
     
     <entry key="yukon.web.common.paoNote.more">({0} more...)</entry>
+    <entry key="yukon.web.common.paoNote.more.title">View all notes for this device.</entry>
     <entry key="yukon.web.common.paoNote.viewAll">All Notes</entry>
+    <entry key="yukon.web.common.paoNote.viewAll.title">Go to the Notes page, where you can view notes for all devices.</entry>
 </properties>

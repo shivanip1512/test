@@ -89,7 +89,9 @@
                 <c:if test="${additionalNotesCount > 0}">
                     <tr>
                         <td colspan="2">
-                            <div class="js-view-all-notes link-tr" data-pao-id="${createPaoNote.paoId}">
+                            <cti:msg2 var="moreTooltip" key=".more.title"/>
+                            <div title="${moreTooltip}" class="js-view-all-notes link-tr" data-pao-id="${createPaoNote.paoId}">
+                                <cti:msg2 var="moreTooltip" key=".more.title"/>
                                 <a href="javascript:void(0)">
                                     <i:inline key=".more" arguments="${additionalNotesCount}"/>
                                 </a>
@@ -102,8 +104,12 @@
     </c:choose>
 
     <div class="action-area">
-        <cti:url value="/tools/paoNotes/search" var="allNotesUrl"/>
-        <a href="${allNotesUrl}"><i:inline key=".viewAll"/></a>
+        <cti:url value="/tools/paoNotes/search" var="allNotesUrl">
+            <cti:param name="paoSelectionMethod" value="selectIndividually"/>
+            <cti:param name="paoIds" value="${createPaoNote.paoId}"/>
+        </cti:url>
+        <cti:msg2 var="allNotesTooltip" key=".viewAll.title"/>
+        <a href="${allNotesUrl}" title="${allNotesTooltip}"><i:inline key=".viewAll"/></a>
     </div>
 </cti:msgScope>
 <div class="dn" id="js-pao-notes-popup"></div>
