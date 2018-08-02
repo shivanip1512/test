@@ -108,7 +108,10 @@ auto BehaviorManager::queryDatabaseForBehaviorValues(const long paoId, const std
 
     while( rdr() )
     {
-        dbValues.emplace(rdr["name"].as<std::string>(), rdr["value"].as<std::string>());
+        const auto name  = rdr["name" ].as<std::string>();
+        const auto value = rdr["value"].as<std::string>();
+        
+        dbValues.emplace(name, value);
     }
 
     return dbValues;
