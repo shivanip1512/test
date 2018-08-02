@@ -193,7 +193,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             archiveRequest.setReadingType(RfnMeterReadingType.INTERVAL);
                             archiveRequest.setData(response2.getData());
                             archiveRequest.setDataPointId(1);
-                            jmsTemplate.convertAndSend(meterReadingArchiveRequestQueue , archiveRequest);
+                            jmsTemplate.convertAndSend(meterReadingArchiveRequestQueue, archiveRequest);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in meter read reply.", e);
