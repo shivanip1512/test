@@ -69,7 +69,7 @@ public:
     StreamBufferT& operator<< (float val);
     StreamBufferT& operator<< (double val);
     StreamBufferT& operator<< (long double val);
-    StreamBufferT& operator<< (void* ptr);
+    StreamBufferT& operator<< (const void* ptr);
     StreamBufferT& operator<< (time_t val); // Same as long long
 
     StreamBufferT& operator<< (std::ostream&  (*pf)(std::ostream&));

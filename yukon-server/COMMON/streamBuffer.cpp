@@ -126,7 +126,7 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (float val)            { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (double val)           { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (long double val)      { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
-template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (void* ptr)            { appendDigit(ptr); return static_cast<StreamBufferT&>(*this); }
+template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const void* ptr)      { appendDigit(ptr); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (time_t val)           { appendDigit(val); return static_cast<StreamBufferT&>(*this); }
 
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::stringstream& ss)   { appendSStream(ss);  return static_cast<StreamBufferT&>(*this); }
