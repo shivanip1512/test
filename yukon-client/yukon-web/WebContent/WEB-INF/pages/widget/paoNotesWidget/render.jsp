@@ -21,7 +21,7 @@
                                        placeholder="${noteTextPlaceholder}" maxLength="${noteTextAreaMaxLength}"/>
                     </td>
                     <td width="20%" class="vam">
-                        <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr"/>
+                        <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr" busy="true"/>
                     </td>
                 </cti:checkRolesAndProperties>
             </tr>

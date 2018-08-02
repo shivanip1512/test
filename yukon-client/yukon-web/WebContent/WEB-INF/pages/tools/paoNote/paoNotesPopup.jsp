@@ -25,7 +25,7 @@
                 <c:set var="searchStyle" value="margin-right : -147%;"/>
                 <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
                     <c:set var="searchStyle" value=""/>
-                    <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl"/>
+                    <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl" busy="true"/>
                 </cti:checkRolesAndProperties>
                 <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
                 <div class="fr" style="${searchStyle}"><a href="${searchUrl}"><i:inline key=".viewAll"/></a></div>
