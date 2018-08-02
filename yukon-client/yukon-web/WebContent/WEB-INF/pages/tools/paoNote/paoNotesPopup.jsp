@@ -56,9 +56,8 @@
                             <tr id="js-popup-note-row-${noteId}">
                                 <td class="vam js-popup-note-actions" colspan="2">
                                     <div id="js-popup-note-${noteId}">
-                                        <div id="js-popup-note-content-${noteId}">
-                                            ${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}
-                                        </div>
+                                        <!-- This needs to be on a single line. Any whitespace will be visible to the user, due to wsp style. -->
+                                        <div id="js-popup-note-content-${noteId}" class="wsp">${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}</div>
                                     </div>
                                     <div id="js-edit-popup-note-${noteId}" class="dn">
                                         <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="resize: none; width:100%" 

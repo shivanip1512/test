@@ -41,9 +41,8 @@
                     <tr>
                         <td width="80%">
                             <div id="js-note-${noteId}">
-                                <div id="js-note-content-${noteId}">
-                                    ${fn:escapeXml(recentNote.paoNote.noteText)}
-                                </div>
+                                <!-- This needs to be on a single line. Any whitespace will be visible to the user, due to wsp style. -->
+                                <div id="js-note-content-${noteId}" class="wsp">${fn:escapeXml(recentNote.paoNote.noteText)}</div>
                                 <c:if test="${not empty recentNote.paoNote.editDate}">
                                     <div class="small-font-orange-color-text fr">
                                         <cti:formatDate type="BOTH" value="${recentNote.paoNote.editDate}" var="editDate"/>
