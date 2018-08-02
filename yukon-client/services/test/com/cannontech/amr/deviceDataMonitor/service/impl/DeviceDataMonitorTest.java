@@ -1,4 +1,4 @@
-package com.cannontech.services.deviceDataMonitor;
+package com.cannontech.amr.deviceDataMonitor.service.impl;
 
 import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.GREATER;
 import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.LESS;
@@ -12,6 +12,7 @@ import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.DISCONN
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
+import com.cannontech.amr.deviceDataMonitor.service.impl.ViolationHelper;
 import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationServiceImpl;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -70,18 +72,15 @@ public class DeviceDataMonitorTest {
     @Test
     public void test_shouldTheGroupBeModified() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException {
-        Method method = cls.getDeclaredMethod("shouldTheGroupBeModified", new Class[] { boolean.class, boolean.class });
-        Assert.assertTrue((boolean) invoke(method, false, true));
-        Assert.assertFalse((boolean) invoke(method, true, false));
-        Assert.assertNull(invoke(method, true, true));
-        Assert.assertNull(invoke(method, false, false));
+        Assert.assertTrue(ViolationHelper.shouldTheGroupBeModified(false, true));
+        Assert.assertFalse(ViolationHelper.shouldTheGroupBeModified(true, false));
+        Assert.assertNull(ViolationHelper.shouldTheGroupBeModified(true, true));
+        Assert.assertNull(ViolationHelper.shouldTheGroupBeModified(false, false));
     }
     
     @Test
     public void test_findViolatingDevices() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException {
-        Method method = cls.getDeclaredMethod("findViolatingDevices",
-            new Class[] { DeviceDataMonitor.class, Map.class, Map.class, Map.class });
         List<DeviceDataMonitorProcessor> processors = new ArrayList<>();
         processors.add(getProcessor(STATE, DISCONNECT_STATUS, 1));
         processors.add(getProcessor(STATE, COMM_STATUS, 2));
@@ -135,12 +134,13 @@ public class DeviceDataMonitorTest {
         pointToDevice.put(7, DEVICE_7);
         attributeToPoints.put(DELIVERED_DEMAND, pointToDevice);
                 
-        Set<SimpleDevice> devices = (Set<SimpleDevice>) invoke(method, monitor, attributeToPoints, pointIdsToStateGroup, pointValues);
+        Set<SimpleDevice> devices = ViolationHelper.findViolatingDevices(monitor, attributeToPoints, pointIdsToStateGroup, pointValues);
         
         Set<SimpleDevice> violating = Sets.newHashSet(DEVICE_1,DEVICE_2, DEVICE_5, DEVICE_6 );        
         Set<SimpleDevice> notViolating =  Sets.newHashSet(DEVICE_3, DEVICE_4, DEVICE_7);
-        Assert.assertTrue(devices.stream().allMatch(d -> violating.contains(d)));
-        Assert.assertFalse(devices.stream().anyMatch(d -> notViolating.contains(d)));
+        
+        Assert.assertTrue(devices.equals(violating));
+        Assert.assertTrue(Collections.disjoint(devices, notViolating));
     }
     
     @Test
@@ -172,24 +172,22 @@ public class DeviceDataMonitorTest {
     }
     
     @Test
-    public void test_isViolating2() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    public void test_isViolating_with_multiple_processors_for_the_same_attribute() throws NoSuchMethodException,
+            SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         // STATE
-        Method method = cls.getDeclaredMethod("isViolating",
-            new Class[] { List.class, Integer.class, PointValueQualityHolder.class });
         List<DeviceDataMonitorProcessor> processors = new ArrayList<>();
         processors.add(getProcessor(STATE, DISCONNECT_STATUS, 1));
-        processors.add(getProcessor(STATE, COMM_STATUS, 2));
+        processors.add(getProcessor(STATE, DISCONNECT_STATUS, 2));
         Integer state = 1;
         PointValueQualityHolder pointData = getPointValue(PointType.Status, 1);
-        Assert.assertTrue((boolean) invoke(method, processors, state, pointData));
+        Assert.assertTrue(ViolationHelper.isViolating(processors, state, pointData));
 
         pointData = getPointValue(PointType.Status, 2);
-        Assert.assertFalse((boolean) invoke(method, processors, state, pointData));
+        Assert.assertFalse(ViolationHelper.isViolating(processors, state, pointData));
 
         state = 2;
         pointData = getPointValue(PointType.Status, 2);
-        Assert.assertTrue((boolean) invoke(method, processors, state, pointData));
+        Assert.assertTrue(ViolationHelper.isViolating(processors, state, pointData));
         
         //VALUE
         processors.clear();
@@ -201,66 +199,93 @@ public class DeviceDataMonitorTest {
         processors.add(processor2);
         
         pointData = getPointValue(PointType.Analog, 11);
-        Assert.assertTrue((boolean) invoke(method, processors, null, pointData));
+        Assert.assertTrue(ViolationHelper.isViolating(processors, null, pointData));
         
         pointData = getPointValue(PointType.Analog, 10);
-        Assert.assertFalse((boolean) invoke(method, processors, null, pointData));
+        Assert.assertFalse(ViolationHelper.isViolating(processors, null, pointData));
     }
 
     @Test
-    public void test_isViolating() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
-        Method method = cls.getDeclaredMethod("isViolating",
-            new Class[] { DeviceDataMonitorProcessor.class, Integer.class, PointValueQualityHolder.class });
-
+    public void test_isViolating_each_processor_individually_with_boundary_values() throws NoSuchMethodException,
+            SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         // STATE
         DeviceDataMonitorProcessor processor = getProcessor(STATE, DISCONNECT_STATUS, 1);
         Integer state = 1;
         PointValueQualityHolder pointData = getPointValue(PointType.Status, 1);
-        Assert.assertTrue((boolean) invoke(method, processor, state, pointData));
+        Assert.assertTrue(ViolationHelper.isViolating(processor, state, pointData));
 
         pointData = getPointValue(PointType.Status, 2);
-        Assert.assertFalse((boolean) invoke(method, processor, state, pointData));
+        Assert.assertFalse(ViolationHelper.isViolating(processor, state, pointData));
 
         // GREATER
         processor = getProcessor(GREATER, DELIVERED_DEMAND, null);
         processor.setProcessorValue(10.0);
         pointData = getPointValue(PointType.Analog, 11);
-        Assert.assertTrue((boolean) invoke(method, processor, null, pointData));
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
+        
+        processor.setProcessorValue(pointData.getValue() - 0.01);
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
+        processor.setProcessorValue(pointData.getValue() + 0.01);
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
 
         processor.setProcessorValue(10.0);
         pointData = getPointValue(PointType.Analog, 9);
-        Assert.assertFalse((boolean) invoke(method, processor, null, pointData));
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
 
         // LESS
         processor = getProcessor(LESS, DELIVERED_DEMAND, null);
         processor.setProcessorValue(10.0);
         pointData = getPointValue(PointType.Analog, 9);
-        Assert.assertTrue((boolean) invoke(method, processor, null, pointData));
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
+        
+        processor.setProcessorValue(pointData.getValue() - 0.01);
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
+        processor.setProcessorValue(pointData.getValue() + 0.01);
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
 
         processor.setProcessorValue(9.0);
         pointData = getPointValue(PointType.Analog, 10);
-        Assert.assertFalse((boolean) invoke(method, processor, null, pointData));
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
 
         // RANGE
         processor = getProcessor(RANGE, DELIVERED_DEMAND, null);
         processor.setRangeMin(5.0);
         processor.setRangeMax(10.0);
         pointData = getPointValue(PointType.Analog, 9);
-        Assert.assertTrue((boolean) invoke(method, processor, null, pointData));
-
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
+        
+        processor.setRangeMin(pointData.getValue() - 0.01);
+        processor.setRangeMax(pointData.getValue() + 0.01);
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
+        
+        processor.setRangeMin(pointData.getValue());
+        processor.setRangeMax(pointData.getValue() + 0.01);
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
+        
+        processor.setRangeMin(5.0);
+        processor.setRangeMax(10.0);
         pointData = getPointValue(PointType.Analog, 11);
-        Assert.assertFalse((boolean) invoke(method, processor, null, pointData));
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
 
         // OUTSIDE
         processor = getProcessor(OUTSIDE, DELIVERED_DEMAND, null);
         processor.setRangeMin(5.0);
         processor.setRangeMax(10.0);
         pointData = getPointValue(PointType.Analog, 10);
-        Assert.assertTrue((boolean) invoke(method, processor, null, pointData));
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
 
+        processor.setRangeMin(pointData.getValue() - 0.01);
+        processor.setRangeMax(pointData.getValue() + 0.01);
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
+        
+        processor.setRangeMin(pointData.getValue());
+        processor.setRangeMax(pointData.getValue() + 0.01);
+        Assert.assertTrue(ViolationHelper.isViolating(processor, null, pointData));
+        
+        processor.setRangeMin(5.0);
+        processor.setRangeMax(10.0);
         pointData = getPointValue(PointType.Analog, 9);
-        Assert.assertFalse((boolean) invoke(method, processor, null, pointData));
+        Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
     }
 
     private Object invoke(Method method, Object... params)

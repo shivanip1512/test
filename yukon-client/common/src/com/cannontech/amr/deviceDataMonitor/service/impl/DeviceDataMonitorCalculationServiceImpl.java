@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -32,7 +30,6 @@ import org.springframework.jms.core.MessagePostProcessor;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
-import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
 import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
@@ -59,7 +56,6 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -69,7 +65,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
 public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonitorCalculationService, MessageListener {
@@ -97,7 +92,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     // monitorId / violation count
     private Map<Integer, Integer> monitorIdToViolationCount = Collections.synchronizedMap(new HashMap<>());
 
-    private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorCalculationServiceImpl.class);
+    static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorCalculationServiceImpl.class);
 
     @PostConstruct
     public void init() {
@@ -334,7 +329,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             PointValueQualityHolder pointValue = pointValues.get(pointId);
             if (pointValue != null) {
                 List<DeviceDataMonitorProcessor> processors = monitor.getProcessors(entry.getKey());
-                foundViolation = isViolating(processors, entry.getValue().getStateGroupID(), pointValue);
+                foundViolation = ViolationHelper.isViolating(processors, entry.getValue().getStateGroupID(), pointValue);
                 if (foundViolation) {
                     break;
                 }
@@ -362,22 +357,20 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      */
     private BuiltInAttribute getValidAttribute(DeviceDataMonitor monitor, RichPointData richPointData) {
         SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
-        Optional<BuiltInAttribute> attribute = monitor.getAttributes().stream().filter(
-            a -> attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), a)).findFirst();
-        if (!attribute.isPresent()) {
-            log.debug(
-                "{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
-                monitor, device, richPointData.getPointValue().getId());
-            return null;
-        }
-        return attribute.get();
+        return monitor.getAttributes().stream()
+                .filter(a -> attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), a))
+                .findFirst()
+                .orElseGet(() -> { 
+                    log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
+                              monitor, device, richPointData.getPointValue().getId());
+                    return null; });
     }
 
     private Boolean recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData, BuiltInAttribute attribute){
         SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
         LitePoint point = pointDao.getLitePoint(richPointData.getPointValue().getId());
         boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(monitor.getViolationGroup(), device);    
-        boolean foundViolation = isViolating(monitor.getProcessors(attribute), point.getStateGroupID(), richPointData.getPointValue());
+        boolean foundViolation = ViolationHelper.isViolating(monitor.getProcessors(attribute), point.getStateGroupID(), richPointData.getPointValue());
 
         // no violation found but device is in violation group and this monitor is monitoring for more then 1
         // attribute
@@ -387,25 +380,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             foundViolation = isOtherAttributeViolating(monitor, attribute, device);
         }
         log.debug("{} recalculation of violation for {} is complete, violation found:{}",  monitor, device, foundViolation);
-        return shouldTheGroupBeModified(inViolationsGroup, foundViolation);
-    }
-
-    /**
-     * Returns true if device needs to be added to a group, returns false if it needs to be removed from the
-     * group, returns null if no changes should be made to the group.
-     * (unit test)
-     */
-    private Boolean shouldTheGroupBeModified(boolean inViolationsGroup, boolean foundViolation) {
-        //found violation and device is not in violation group
-        if(foundViolation && !inViolationsGroup) {
-            return true;
-        }
-        
-        // no violation found but device is in violation group
-        if (!foundViolation && inViolationsGroup) {
-            return false;
-        }
-        return null;
+        return ViolationHelper.shouldTheGroupBeModified(inViolationsGroup, foundViolation);
     }
 
     /**
@@ -468,67 +443,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         Map<Integer, PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointDataOnce(allPoints).stream()
                 .collect(Collectors.toMap(p -> p.getId(), p -> p));
  
-        return findViolatingDevices(monitor, attributeToPoints, pointIdsToStateGroup, pointValues);
-    }
-
-    /**
-     * Returns violating devices for monitor (unit test)
-     */
-    private Set<SimpleDevice> findViolatingDevices(DeviceDataMonitor monitor,
-            Map<BuiltInAttribute, Map<Integer, SimpleDevice>> attributeToPoints,
-            Map<Integer, Integer> pointIdsToStateGroup, Map<Integer, PointValueQualityHolder> pointValues) {
-        Set<SimpleDevice> violatingDevices = new HashSet<>();
-        if (!pointValues.isEmpty()) {
-            for (Entry<BuiltInAttribute, Map<Integer, SimpleDevice>> entry : attributeToPoints.entrySet()) {
-                List<DeviceDataMonitorProcessor> processor = monitor.getProcessors(entry.getKey());
-                for (Entry<Integer, SimpleDevice> pointToDevice : entry.getValue().entrySet()) {
-                    SimpleDevice device = pointToDevice.getValue();
-                    int pointId = pointToDevice.getKey();
-                    int stateGroupId = pointIdsToStateGroup.get(pointId);
-                    if (!violatingDevices.contains(device)) {
-                        PointValueQualityHolder valuetHolder = pointValues.get(pointId);
-                        if (isViolating(processor, stateGroupId, valuetHolder)) {
-                            violatingDevices.add(device);
-                        }
-                    }
-                }
-            }
-        }
-        return violatingDevices;
-    }
-
-    /**
-     * Returns true if violation found (unit test)
-     */
-    private boolean isViolating(List<DeviceDataMonitorProcessor> processors, Integer stateGroupId,
-            PointValueQualityHolder pointValue) {
-
-        if (pointValue != null && pointValue.getPointQuality().isInvalid()) {
-            log.debug("Point Quality is invalid - Point value:{}.", pointValue);
-            return false;
-        }
-        return processors.stream().anyMatch(processor -> isViolating(processor, stateGroupId, pointValue));
-    }
-    
-    /**
-     * Returns true if violation found (unit test)
-     */
-    private boolean isViolating(DeviceDataMonitorProcessor processor, Integer stateGroupId,
-            PointValueQualityHolder pointValue) {
-        PointType type = PointType.getForId(pointValue.getType());
-        if (processor.getType() == ProcessorType.STATE && processor.getStateGroup().getStateGroupID() == stateGroupId
-            && type.isStatus()) {
-            return processor.getState().getStateRawState() == (int) pointValue.getValue();
-        } else if (processor.getType() == ProcessorType.RANGE && type.isValuePoint()) {
-            return Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
-        } else if (processor.getType() == ProcessorType.OUTSIDE && type.isValuePoint()) {
-            return !Range.open(processor.getRangeMin(), processor.getRangeMax()).contains(pointValue.getValue());
-        } else if (processor.getType() == ProcessorType.LESS && type.isValuePoint()) {
-            return pointValue.getValue() < processor.getProcessorValue();
-        } else if (processor.getType() == ProcessorType.GREATER && type.isValuePoint()) {
-            return pointValue.getValue() > processor.getProcessorValue();
-        }
-        return false;
+        return ViolationHelper.findViolatingDevices(monitor, attributeToPoints, pointIdsToStateGroup, pointValues);
     }
 
     /**
