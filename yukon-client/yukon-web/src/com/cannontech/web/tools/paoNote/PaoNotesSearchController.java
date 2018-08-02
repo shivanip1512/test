@@ -1,6 +1,6 @@
 package com.cannontech.web.tools.paoNote;
 
-import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
+import static com.cannontech.common.pao.notes.service.PaoNotesService.*;
 
 import java.beans.PropertyEditor;
 import java.io.IOException;
@@ -303,8 +303,8 @@ public class PaoNotesSearchController {
          });
         
         model.addAttribute("searchResults", searchResults);
-        model.addAttribute("popupTitle", accessor.getMessage("yukon.web.common.paoNotesPopup.title", 
-                                                             databaseCache.getAllPaosMap().get(paoId).getPaoName()));
+        model.addAttribute("popupTitlePrefix", accessor.getMessage("yukon.web.common.paoNotesPopup.title"));
+        model.addAttribute("paoName", databaseCache.getAllPaosMap().get(paoId).getPaoName());
         model.addAttribute("maxCharactersInNote", MAX_CHARACTERS_IN_NOTE);
         model.addAttribute("noteTextAreaMaxLength", NOTE_TEXTAREA_MAX_LENGTH);
     }

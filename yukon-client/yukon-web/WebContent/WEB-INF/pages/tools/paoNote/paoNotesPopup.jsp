@@ -7,7 +7,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="common.paoNote, web.components.ajaxConfirm">
-    <input type="hidden" id="popupTitle" value="${popupTitle}"/>
+    <input type="hidden" id="popupTitlePrefix" value="${popupTitlePrefix}"/>
+    <input type="hidden" id="paoName" value="${paoName}"/>
     <cti:url var="url" value="/tools/paoNotes/createPaoNote"/>
     <form:form id="create-popup-note-form" method="POST" modelAttribute="paoNote" action="${url}">
         <cti:csrfToken/>

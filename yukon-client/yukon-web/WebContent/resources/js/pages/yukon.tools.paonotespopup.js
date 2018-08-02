@@ -36,8 +36,10 @@ yukon.tools.paonotespopup = (function () {
     
     _updatePopup = function (paoId) {
         $.get(yukon.url('/tools/paoNotes/viewAllNotes?paoId=' + paoId), function (data) {
-            $('.ui-dialog-content#js-pao-notes-popup').html(data);
-            $('.ui-dialog-content#js-pao-notes-popup').dialog('open');
+            var popup = $('.ui-dialog-content#js-pao-notes-popup');
+            popup.html(data);
+            var title = popup.find('#popupTitlePrefix').val() + popup.find('#paoName').val();
+            popup.dialog('option', 'title', title).dialog('open');
         });
     };
     
@@ -114,12 +116,11 @@ yukon.tools.paonotespopup = (function () {
             
             $(document).on('click','.js-view-all-notes', function (event) {
                 var paoId = $(this).data('pao-id'),
-                    popup = $('#js-pao-notes-popup'),
-                    paoName = $(this).data('pao-name');
+                    popup = $('#js-pao-notes-popup');
                 if ($('.ui-dialog-content#js-pao-notes-popup').length === 0 ) {
                     popup.load(yukon.url('/tools/paoNotes/viewAllNotes?paoId=' + paoId), function () {
                         popup.dialog({
-                            title: popup.find('#popupTitle').val(),
+                            title: popup.find('#popupTitlePrefix').val() + popup.find('#paoName').val(),
                             minWidth: 950,
                             minHeight: 500,
                             modal: true
