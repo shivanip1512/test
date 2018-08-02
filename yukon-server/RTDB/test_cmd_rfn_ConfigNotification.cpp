@@ -156,7 +156,7 @@ extern const std::vector<uint8_t> payload {
     0x00, 0x07,
         0x01,  //  Enable/disable
         0x17, 0x01,  //  high temp threshold
-        0x03, 0x01,  //  low temp threshold
+        0xff, 0xe4,  //  low temp threshold
         0x07,  //  repeat interval
         0x0b,  //  Max repeats
     //  TLV 13
@@ -355,6 +355,45 @@ BOOST_AUTO_TEST_CASE(test_one_tlv)
     BOOST_CHECK_EQUAL(cmd.touEnabled.value(), Cti::Devices::Commands::RfnTouConfigurationCommand::TouEnable);
 }
 
+BOOST_AUTO_TEST_CASE(test_temperature)
+{
+    const std::vector<uint8_t> payload{
+        0x1e,
+        0x00, 0x01,
+        0x00, 0x0c,  //  Temperature configuration
+        0x00, 0x07,
+        0x01,  //  Enable/disable
+        0xff, 0xee,  //  high temp threshold
+        0xff, 0xe4,  //  low temp threshold
+        0x77,  //  repeat interval
+        0xbb,  //  Max repeats
+    };
+
+    RfnConfigNotificationCommand cmd;
+
+    const auto result = cmd.handleResponse(execute_time, payload);
+
+    BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+    BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+    BOOST_CHECK(result[0].points.empty());
+    BOOST_CHECK_EQUAL(result[0].description,
+        "Device Configuration Request:"
+        "\nTemperature alarm configuration:"
+        "\n    Temperature alarming enabled : true"
+        "\n    High temp threshold          : -18"
+        "\n    Low temp threshold           : -28"
+        "\n    Repeat interval              : 119 minutes"
+        "\n    Max repeats                  : 187");
+
+    BOOST_REQUIRE(cmd.temperature);
+
+    BOOST_CHECK_EQUAL(cmd.temperature->alarmEnabled, true);
+    BOOST_CHECK_EQUAL(cmd.temperature->alarmHighTempThreshold, -18);
+    BOOST_CHECK_EQUAL(cmd.temperature->alarmRepeatCount, 187);
+    BOOST_CHECK_EQUAL(cmd.temperature->alarmRepeatInterval, 119);
+}
+
 BOOST_AUTO_TEST_CASE(test_all_tlvs)
 {
     const std::string expected = 
@@ -435,7 +474,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\nTemperature alarm configuration:"
         "\n    Temperature alarming enabled : true"
         "\n    High temp threshold          : 5889"
-        "\n    Low temp threshold           : 769"
+        "\n    Low temp threshold           : -28"
         "\n    Repeat interval              : 7 minutes"
         "\n    Max repeats                  : 11"
         "\nData Streaming configuration:"

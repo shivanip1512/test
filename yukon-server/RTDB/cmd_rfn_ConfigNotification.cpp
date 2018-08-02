@@ -591,8 +591,8 @@ std::string RfnConfigNotificationCommand::decodeTemperature(Bytes payload)
     RfnTemperatureAlarmCommand::AlarmConfiguration a;
 
     a.alarmEnabled               = payload[0];
-    a.alarmHighTempThreshold     = payload[1] << 8 | payload[2];
-    auto lowTemperatureThreshold = payload[3] << 8 | payload[4];
+    a.alarmHighTempThreshold     = static_cast<short>(payload[1] << 8 | payload[2]);
+    auto lowTemperatureThreshold = static_cast<short>(payload[3] << 8 | payload[4]);
     a.alarmRepeatInterval        = payload[5];
     a.alarmRepeatCount           = payload[6];
 
