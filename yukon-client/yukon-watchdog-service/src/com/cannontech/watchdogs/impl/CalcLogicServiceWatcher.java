@@ -1,8 +1,9 @@
 package com.cannontech.watchdogs.impl;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -16,17 +17,19 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointDataListener;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * This class will validate Calc-Logic Service Status in every 5 min and generate warning.
  */
 @Service
-public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl {
+public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl implements PointDataListener{
 
     private static final Logger log = YukonLogManager.getLogger(CalcLogicServiceWatcher.class);
 
@@ -35,6 +38,8 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl {
     /** Point for process memory usage */
     private LitePoint memoryPoint;
 
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
+    private volatile Instant receivedLatestMessageTimeStamp;
     /**
      * Load memory Point for Calc-Logic Service.
      */
@@ -43,6 +48,9 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl {
         BuiltInAttribute memoryAttribute = BuiltInAttribute.CALC_MEMORY_UTILIZATION;
         try {
             memoryPoint = attributeService.getPointForAttribute(PaoUtils.SYSTEM_PAOIDENTIFIER, memoryAttribute);
+            if (memoryPoint != null) {
+                asyncDynamicDataSource.registerForPointData(this, ImmutableSet.of(memoryPoint.getPointID()));
+            }
         } catch (IllegalUseOfAttribute e) {
             log.error("Attribute: [" + memoryAttribute + "] not found for pao type: [SYSTEM]");
         }
@@ -61,20 +69,26 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl {
      */
 
     private ServiceStatus getCalcLogicServiceStatus() {
-        if (memoryPoint != null) {
-            PointValueHolder pointData = asyncDynamicDataSource.getPointValue(memoryPoint.getPointID());
-            long diff = Duration.between(pointData.getPointDataTimeStamp().toInstant(), Instant.now()).getSeconds();
-            // Difference between current time and latest point data received (2 min)
-            if (pointData != null && diff <= 120) {
+
+        try {
+            countDownLatch.await(120, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {}
+
+        if (receivedLatestMessageTimeStamp != null) {
+            if (receivedLatestMessageTimeStamp.compareTo(Instant.now().minusSeconds(120)) >= 0) {
                 return ServiceStatus.RUNNING;
             }
         }
         return ServiceStatus.STOPPED;
-
     }
-    
+
     @Override
     public YukonServices getServiceName() {
         return YukonServices.CALCLOGIC;
+    }
+
+    @Override
+    public void pointDataReceived(PointValueQualityHolder pointData) {
+        receivedLatestMessageTimeStamp = pointData.getPointDataTimeStamp().toInstant();
     }
 }
