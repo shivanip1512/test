@@ -300,12 +300,19 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
 
         if( debugActivityInfo() )
         {
-            CTILOG_DEBUG(dout, "Sending outgoing message for queue \"" << e->queueName << "\"");
+            CTILOG_DEBUG(dout, "Sending outgoing message for queue " << e->queueName);
         }
 
         if( e->returnAddress )
         {
-            message->setCMSReplyTo(makeDestinationForReturnAddress(std::move(*e->returnAddress)));
+            auto destination = makeDestinationForReturnAddress(std::move(*e->returnAddress));
+
+            if( debugActivityInfo() )
+            {
+                CTILOG_DEBUG(dout, "Setting reply-to destination " << destination << " on message for queue " << e->queueName);
+            }
+
+            message->setCMSReplyTo(destination);
         }
 
         ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queueName);
@@ -338,12 +345,12 @@ const cms::Destination* ActiveMQConnectionManager::makeDestinationForReturnAddre
         //    when passed as a parameter to ptr_map::insert()
         const std::string destinationPhysicalName = tempConsumer->managedConsumer->getDestPhysicalName();
 
+        const auto destination = tempConsumer->managedConsumer->getDestination();
+
         if( debugActivityInfo() )
         {
-            CTILOG_DEBUG(dout, "Created temporary queue for callback reply for \"" << destinationPhysicalName << "\"");
+            CTILOG_DEBUG(dout, "Created temporary queue for callback reply for " << destinationPhysicalName << " with destination " << destination);
         }
-
-        const auto destination = tempConsumer->managedConsumer->getDestination();
 
         _replyConsumers.emplace(
             destinationPhysicalName,
@@ -361,10 +368,22 @@ const cms::Destination* ActiveMQConnectionManager::makeDestinationForReturnAddre
     {
         if( auto existingDestination = mapFind(_sessionConsumerDestinations, *callback) )
         {
+            if( debugActivityInfo() )
+            {
+                CTILOG_DEBUG(dout, "Found existing session consumer destination " << *existingDestination);
+            }
+
             return *existingDestination;
         }
 
-        return createSessionConsumer(*callback);
+        auto newDestination = createSessionConsumer(*callback);
+
+        if( debugActivityInfo() )
+        {
+            CTILOG_DEBUG(dout, "Created new session consumer destination " << newDestination);
+        }
+
+        return newDestination;
     }
 
     CTILOG_ERROR(dout, "No destination found for message");
