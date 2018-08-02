@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -20,7 +21,10 @@ public class PointValidationUtil extends ValidationUtils {
 
     public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOperation) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
-
+        YukonValidationUtils.checkExceedsMaxLength(errors, fieldName, pointModel.getPointName(), 60);
+        if (!PaoUtils.isValidPaoName(pointModel.getPointName())) {
+            errors.rejectValue(fieldName, "yukon.web.error.paoName.containsIllegalChars");
+        }
         List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(pointModel.getPaoId());
 
         for (LitePoint pointOnPao : pointsOnPao) {
