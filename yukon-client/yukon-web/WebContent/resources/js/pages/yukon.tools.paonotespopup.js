@@ -41,7 +41,7 @@ yukon.tools.paonotespopup = (function () {
             var title = popup.find('#popupTitlePrefix').val() + popup.find('#paoName').val();
             popup.dialog('option', 'title', title).dialog('open');
         });
-    };
+    },
     
     mod = {
 
@@ -136,7 +136,7 @@ yukon.tools.paonotespopup = (function () {
                 
                 // Re-render any widgets with notes in them when the notes popup closes, so new or deleted notes will be 
                 // picked-up.
-                $('.js-view-all-notes').each(function(index, obj) {
+                $('.js-notes-containing-widget').each(function(index, obj) {
                     widgetId = $(obj).closest('.widgetWrapper').attr('id');
                     if (widgetId) {
                         widgetId = widgetId.substring(widgetId.indexOf("_") + 1);

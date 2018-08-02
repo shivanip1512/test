@@ -8,6 +8,7 @@
 
 <cti:msgScope paths="common.paoNote, web.components.ajaxConfirm, yukon.common">
     
+    <span class="js-notes-containing-widget"/>
     <form:form id="create-note-form" method="POST" modelAttribute="createPaoNote">
         <cti:csrfToken/>
         <form:hidden path="paoId" id="deviceId"/>

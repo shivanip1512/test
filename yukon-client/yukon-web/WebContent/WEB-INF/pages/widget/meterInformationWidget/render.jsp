@@ -4,6 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<span class="js-notes-containing-widget"/>
 <tags:nameValueContainer2>
     <tags:nameValue2 nameKey=".deviceName">${fn:escapeXml(meter.name)}</tags:nameValue2>
     <tags:nameValue2 nameKey=".meterNumber">${fn:escapeXml(meter.meterNumber)}</tags:nameValue2>
@@ -43,7 +44,6 @@
             </tags:nameValue2>
         </c:when>
         <c:otherwise>
-            <%-- This class is used by js to determine which widgets need to be refreshed when notes change--%>
             <div class="js-view-all-notes"></div>
         </c:otherwise>
     </c:choose>

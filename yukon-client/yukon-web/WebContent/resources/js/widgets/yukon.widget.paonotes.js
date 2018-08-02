@@ -23,13 +23,13 @@ yukon.widget.paonotes = (function () {
     
     _updateNotesWidgets = function () {
         var widgetId, widget;
-        $('.js-view-all-notes').each(function(index, obj) {
+        $('.js-notes-containing-widget').each(function(index, obj) {
             widgetId = $(obj).closest('.widgetWrapper').attr('id');
             widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
             widget = yukon.widgets[widgetId];
             widget.render();
         });
-    }
+    },
     
     mod = {
         
@@ -113,7 +113,7 @@ yukon.widget.paonotes = (function () {
                         widgetId, 
                         widget;
                     if (errorSpan && errorSpan.text().length === 0) {
-                        $('.js-view-all-notes').each(function(index, obj) {
+                        $('.js-notes-containing-widget').each(function(index, obj) {
                             widgetId = $(obj).closest('.widgetWrapper').attr('id');
                             widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
                             widget = yukon.widgets[widgetId];
