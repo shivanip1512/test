@@ -340,7 +340,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
     @Override
     public void updateViolationsGroupBasedOnNewPointData(DeviceDataMonitor monitor, RichPointData richPointData) {
-        BuiltInAttribute attribute = getValidAttribute(monitor, richPointData);
+        BuiltInAttribute attribute = ViolationHelper.getValidAttribute(monitor, richPointData, attributeService);
         if (attribute == null) {
             return;
         }
@@ -350,20 +350,6 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             addRemoveFromViolationGroup(monitor, device, addRemoveFromGroup);
         }
         updateViolationCacheCount(monitor);
-    }
-
-    /**
-     * Finds attribute for point data and monitor
-     */
-    private BuiltInAttribute getValidAttribute(DeviceDataMonitor monitor, RichPointData richPointData) {
-        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
-        return monitor.getAttributes().stream()
-                .filter(a -> attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), a))
-                .findFirst()
-                .orElseGet(() -> { 
-                    log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
-                              monitor, device, richPointData.getPointValue().getId());
-                    return null; });
     }
 
     private Boolean recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData, BuiltInAttribute attribute){

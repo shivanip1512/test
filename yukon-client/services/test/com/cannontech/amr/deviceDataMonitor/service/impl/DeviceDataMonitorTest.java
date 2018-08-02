@@ -27,8 +27,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
-import com.cannontech.amr.deviceDataMonitor.service.impl.ViolationHelper;
-import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationServiceImpl;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -50,7 +48,6 @@ import com.google.common.collect.Sets;
 
 public class DeviceDataMonitorTest {
 
-    private Class<? extends DeviceDataMonitorCalculationServiceImpl> cls;
     private DeviceDataMonitorCalculationServiceImpl calcImpl = new  DeviceDataMonitorCalculationServiceImpl();
     private AttributeServiceImpl attrServiceImpl = new AttributeServiceImpl();
     private PaoDefinitionDaoImpl paoDefinitionImpl = new PaoDefinitionDaoImpl();
@@ -64,7 +61,6 @@ public class DeviceDataMonitorTest {
     
     @Before
     public void setUp() {
-        cls = calcImpl.getClass();
         ReflectionTestUtils.setField(attrServiceImpl, "paoDefinitionDao", paoDefinitionImpl);
         ReflectionTestUtils.setField(calcImpl, "attributeService", attrServiceImpl);
     }
@@ -146,7 +142,6 @@ public class DeviceDataMonitorTest {
     @Test
     public void test_getValidAttribute() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException {
-        Method method = cls.getDeclaredMethod("getValidAttribute", new Class[] { DeviceDataMonitor.class, RichPointData.class });
         List<DeviceDataMonitorProcessor> processors = new ArrayList<>();
         processors.add(getProcessor(STATE, DISCONNECT_STATUS, 1));
         processors.add(getProcessor(STATE, COMM_STATUS, 1));
@@ -161,14 +156,14 @@ public class DeviceDataMonitorTest {
         attrMap.put(DISCONNECT_STATUS, new AttributeDefinition(DISCONNECT_STATUS, new PointTemplate(new PointIdentifier(PointType.Status, 1)), null));
         map.put(PaoType.RFN410FD, attrMap);
         ReflectionTestUtils.setField(paoDefinitionImpl, "paoAttributeAttrDefinitionMap", map);
-        Assert.assertNotNull(invoke(method, monitor, rpd));
+        Assert.assertNotNull(ViolationHelper.getValidAttribute(monitor, rpd, attrServiceImpl));
         
         map = new HashMap<>();
         attrMap = new HashMap<>();
         attrMap.put(DELIVERED_DEMAND, new AttributeDefinition(DELIVERED_DEMAND, new PointTemplate(new PointIdentifier(PointType.Analog, 1)), null));
         map.put(PaoType.RFN410FD, attrMap);
         ReflectionTestUtils.setField(paoDefinitionImpl, "paoAttributeAttrDefinitionMap", map);
-        Assert.assertNull(invoke(method, monitor, rpd));
+        Assert.assertNull(ViolationHelper.getValidAttribute(monitor, rpd, attrServiceImpl));
     }
     
     @Test
@@ -286,12 +281,6 @@ public class DeviceDataMonitorTest {
         processor.setRangeMax(10.0);
         pointData = getPointValue(PointType.Analog, 9);
         Assert.assertFalse(ViolationHelper.isViolating(processor, null, pointData));
-    }
-
-    private Object invoke(Method method, Object... params)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        method.setAccessible(true);
-        return method.invoke(calcImpl, params);
     }
 
     private PointValueQualityHolder getPointValue(PointType type, double value) {

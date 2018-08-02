@@ -14,7 +14,9 @@ import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.Range;
 
@@ -75,6 +77,20 @@ class ViolationHelper {
             return false;
         }
         return processors.stream().anyMatch(processor -> isViolating(processor, stateGroupId, pointValue));
+    }
+    
+    /**
+     * Finds attribute for point data and monitor
+     */
+    public static BuiltInAttribute getValidAttribute(DeviceDataMonitor monitor, RichPointData richPointData, AttributeService attributeService) {
+        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        return monitor.getAttributes().stream()
+                .filter(a -> attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), a))
+                .findFirst()
+                .orElseGet(() -> { 
+                    log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
+                              monitor, device, richPointData.getPointValue().getId());
+                    return null; });
     }
 
     /**
