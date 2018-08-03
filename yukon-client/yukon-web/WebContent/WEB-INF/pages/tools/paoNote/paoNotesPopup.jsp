@@ -29,7 +29,10 @@
                     <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl" busy="true"/>
                 </cti:checkRolesAndProperties>
                 <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
-                <div class="fr" style="${searchStyle}"><a href="${searchUrl}"><i:inline key=".viewAll"/></a></div>
+                <cti:msg2 var="allNotesTooltip" key=".viewAll.title"/>
+                <div class="fr" style="${searchStyle}">
+                    <a href="${searchUrl}" title="${allNotesTooltip}"><i:inline key=".viewAll"/></a>
+                </div>
             </div>
         </div>
     </form:form>
