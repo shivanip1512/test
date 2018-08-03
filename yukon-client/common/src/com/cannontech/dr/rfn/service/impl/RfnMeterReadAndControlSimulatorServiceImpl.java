@@ -26,6 +26,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
@@ -143,6 +144,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_REPLY2, settings.getReadReply2());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1, settings.getReadReply1FailPercent());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_2, settings.getReadReply2FailPercent());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_MODEL_MISMATCH, settings.getModelMismatchPercent());
     }
     
     @Override
@@ -154,6 +156,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
             simulatorSettings.setReadReply1FailPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1));
             simulatorSettings.setReadReply2(RfnMeterReadingDataReplyType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_REPLY2)));
             simulatorSettings.setReadReply2FailPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_2));
+            simulatorSettings.setModelMismatchPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_READ_SIMULATOR_MODEL_MISMATCH));
             readSettings = simulatorSettings;
         }
         return readSettings;
@@ -229,11 +232,21 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
         // Calculates Fail Rates for read
         if(replyWithFailure(settings.getReadReply2FailPercent())) {
             response.setReplyType(settings.getReadReply2());
-        } else {
-            response.setReplyType(RfnMeterReadingDataReplyType.OK);
-            RfnDevice device = dao.getDeviceForExactIdentifier(request.getRfnIdentifier());
-            response.setData(rfnMeterDataSimulatorService.createReadingForType(device, DateTime.now(), RfnMeterReadingType.INTERVAL, DateTime.now()));
+            return response;
         }
+
+        response.setReplyType(RfnMeterReadingDataReplyType.OK);
+        RfnDevice device = dao.getDeviceForExactIdentifier(request.getRfnIdentifier());
+        if(replyWithFailure(settings.getModelMismatchPercent())) {
+            device = new RfnDevice(
+                    device.getName(), 
+                    device.getPaoIdentifier(), 
+                    new RfnIdentifier(
+                            device.getRfnIdentifier().getSensorSerialNumber(),
+                            device.getRfnIdentifier().getSensorManufacturer(),
+                            "SNUFFLEUPAGUS"));
+        }
+        response.setData(rfnMeterDataSimulatorService.createReadingForType(device, DateTime.now(), RfnMeterReadingType.INTERVAL, DateTime.now()));
         
         return response;
     }

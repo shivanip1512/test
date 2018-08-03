@@ -41,6 +41,8 @@ import com.google.common.collect.ImmutableMap;
  * Yukon communicates with, most notably Network Manager.
  */
 public class SimulatorsService {
+    //  The logger creation needs to be delayed in order for setCtiAppName to run before YukonLogManager is initialized.
+    //      See https://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
     private static class LogHolder {
         static final Logger log = YukonLogManager.getLogger(SimulatorsService.class);
     }

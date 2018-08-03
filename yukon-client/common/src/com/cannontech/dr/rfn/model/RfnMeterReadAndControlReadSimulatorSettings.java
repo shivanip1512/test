@@ -11,6 +11,7 @@ public class RfnMeterReadAndControlReadSimulatorSettings implements Serializable
     private int readReply1FailPercent = 0;
     private RfnMeterReadingDataReplyType readReply2;
     private int readReply2FailPercent = 0;
+    private int modelMismatchPercent = 0;
     
     public RfnMeterReadAndControlReadSimulatorSettings() {
     }
@@ -52,5 +53,13 @@ public class RfnMeterReadAndControlReadSimulatorSettings implements Serializable
 
     public void setReadReply2FailPercent(int readReply2FailPercent) {
         this.readReply2FailPercent = readReply2FailPercent;
+    }
+
+    public int getModelMismatchPercent() {
+        return modelMismatchPercent;
+    }
+
+    public void setModelMismatchPercent(int modelMismatchPercent) {
+        this.modelMismatchPercent = modelMismatchPercent;
     }
 }

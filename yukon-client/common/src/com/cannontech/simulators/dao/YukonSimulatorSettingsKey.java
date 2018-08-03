@@ -69,6 +69,7 @@ public enum YukonSimulatorSettingsKey {
     RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
     RFN_METER_READ_SIMULATOR_READ_REPLY2("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_CONTROL),
     RFN_METER_READ_SIMULATOR_READ_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
+    RFN_METER_READ_SIMULATOR_MODEL_MISMATCH(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
     //Simulated Disconnects
     RFN_METER_CONTROL_SIMULATOR_DISCONNECT_REPLY1("OK", InputTypeFactory.stringType(), SimulatorType.RFN_METER_READ_CONTROL),
     RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_1(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),

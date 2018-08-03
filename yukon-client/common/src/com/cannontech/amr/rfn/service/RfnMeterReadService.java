@@ -18,6 +18,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
@@ -97,18 +98,24 @@ public class RfnMeterReadService {
             @Override
             public void handleReply2(RfnMeterReadDataReply dataReplyMessage) {
                 log.info(rfnMeter + " - received reply(" + dataReplyMessage.getReplyType() + ") from NM ");
+                
+                RfnIdentifier receivedIdentifier = dataReplyMessage.getData().getRfnIdentifier();
+                RfnIdentifier expectedIdentifier = rfnMeter.getRfnIdentifier();
+
                 if (!dataReplyMessage.isSuccess()) {
                     /* Data response failed */
                     callback.receivedDataError(dataReplyMessage.getReplyType());
+                } else if (!receivedIdentifier.equals(expectedIdentifier)) {
+                    callback.processingExceptionOccured(
+                            YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                                    "yukon.common.device.attributeRead.rfn.identifierMismatch", receivedIdentifier, expectedIdentifier));
                 } else {
                     /* Data response successful, process point data */
                     List<PointValueHolder> pointDatas = Lists.newArrayList();
                     RfnDevice rfnDevice = new RfnDevice(rfnMeter.getName(), rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
                     rfnChannelDataConverter.convert(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas, null);
 
-                    for (PointValueHolder pointValueHolder : pointDatas) {
-                        callback.receivedData(pointValueHolder);
-                    }
+                    pointDatas.forEach(callback::receivedData);
                 }
            }
 

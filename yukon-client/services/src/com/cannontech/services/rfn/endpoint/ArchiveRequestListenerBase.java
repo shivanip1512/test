@@ -104,9 +104,9 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             Logger rfnCommsLog = YukonLogManager.getRfnLogger();
             Level logLevel = rfnCommsLog.getLevel();
             if (request instanceof RfnMeterReadingArchiveRequest) {
-                if (Level.DEBUG.isLessSpecificThan(logLevel)) {
+                if (Level.DEBUG.isMoreSpecificThan(logLevel)) {
                     rfnCommsLog.debug(">>> " + request.toString());
-                } else if (Level.INFO.isLessSpecificThan(logLevel)) {
+                } else if (Level.INFO.isMoreSpecificThan(logLevel)) {
                     RfnMeterReadingArchiveRequest meterRequest = (RfnMeterReadingArchiveRequest) request;
                     rfnCommsLog.info(">>> " +
                         String.format("RfnMeterReadingArchiveRequest [rfnIdentifier=%s, dataPointId=%s, readingType=%s]",
@@ -115,7 +115,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                                 meterRequest.getReadingType()));
                 }
             } else {
-                if (Level.INFO.isLessSpecificThan(logLevel)) {
+                if (Level.INFO.isMoreSpecificThan(logLevel)) {
                     rfnCommsLog.info(">>> " + request.toString());
                 }
             }
@@ -297,6 +297,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         int converterIndex = Math.abs(hashCode) % converters.size();
         ConverterBase converter = converters.get(converterIndex);
         try {
+            log.debug(request);
             converter.queue(request);
         } catch (InterruptedException e) {
             log.warn("interrupted while queuing archive request", e);

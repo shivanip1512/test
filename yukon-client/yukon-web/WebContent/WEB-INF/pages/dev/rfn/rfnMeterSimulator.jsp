@@ -117,6 +117,11 @@
                         so for a 10% fail rate, it is expected that 1 out of the next 10 read requests will fail, 
                         but it's not guaranteed that 1 out of 10 request will fail. It could end up being more or less.
                     </tags:nameValue>
+                    <tags:nameValue name="Model Mismatch">
+                        This value is used to calculate the chance of the response failing due to a mismatched RfnIdentifier Model.
+                        It's meant to deliver this rate over time, so for a 10% fail rate, it is expected that 1 out of the next 10 read requests 
+                        will fail, but it's not guaranteed that 1 out of 10 request will fail. It could end up being more or less.
+                    </tags:nameValue>
                     <tags:nameValue name="Note">
                         Reply1 and Reply2 refer to the Reply1 and Reply2 referenced from the class RfnMeterReadService.
                     </tags:nameValue>
@@ -199,6 +204,10 @@
                                             <input type="text" name="readReply2FailPercent" style="width: 40px;" 
                                             value="${currentRfnMeterReadAndControlReadSimulatorSettings.readReply2FailPercent}" disabled="true"/>%
                                         </tags:nameValue>
+                                        <tags:nameValue name="Model Mismatch Rate" style="background-color: white;">
+                                            <input type="text" name="modelMismatchPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlReadSimulatorSettings.modelMismatchPercent}" disabled="true"/>%
+                                        </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not meterReadReplyActive}">
@@ -218,6 +227,10 @@
                                         <tags:nameValue name="Reply2 Fail Rate" style="background-color: white;">
                                             <input type="text" name="readReply2FailPercent" style="width: 40px;" 
                                             value="${currentRfnMeterReadAndControlReadSimulatorSettings.readReply2FailPercent}"/>%
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Model Mismatch Rate" style="background-color: white;">
+                                            <input type="text" name="modelMismatchPercent" style="width: 40px;" 
+                                            value="${currentRfnMeterReadAndControlReadSimulatorSettings.modelMismatchPercent}"/>%
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
