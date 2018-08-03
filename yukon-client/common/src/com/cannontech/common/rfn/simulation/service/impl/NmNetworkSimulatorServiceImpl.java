@@ -113,8 +113,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         executor.execute(() -> {
             Map<PaoIdentifier, PaoLocation> locations =
                 Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
-            List<LiteYukonPAObject> devices = cache.getAllDevices().stream().filter(
-                x -> x.getPaoType().isRfn() && !locations.containsKey(x.getPaoIdentifier())).collect(
+            List<LiteYukonPAObject> devices =
+                cache.getAllDevices().stream().filter(x -> !locations.containsKey(x.getPaoIdentifier())).collect(
                     Collectors.toList());
             List<PaoLocation> newLocations = new ArrayList<>();
             int estimatedRadius = getEstimatedRadius(devices.size());
