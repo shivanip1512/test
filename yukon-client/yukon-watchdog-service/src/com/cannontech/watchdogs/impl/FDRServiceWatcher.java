@@ -51,9 +51,8 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
         BuiltInAttribute memoryAttribute = BuiltInAttribute.FDR_MEMORY_UTILIZATION;
         try {
             memoryPoint = attributeService.getPointForAttribute(PaoUtils.SYSTEM_PAOIDENTIFIER, memoryAttribute);
-            if (memoryPoint != null) {
-                asyncDynamicDataSource.registerForPointData(this, ImmutableSet.of(memoryPoint.getPointID()));
-            }
+            asyncDynamicDataSource.registerForPointData(this, ImmutableSet.of(memoryPoint.getPointID()));
+
         } catch (IllegalUseOfAttribute e) {
             log.error("Attribute: [" + memoryAttribute + "] not found for pao type: [SYSTEM]");
         }
