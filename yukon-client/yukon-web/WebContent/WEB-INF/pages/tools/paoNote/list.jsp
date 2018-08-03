@@ -148,7 +148,7 @@
                                     <td><i:inline key="${paoNoteSearchResult.paoType}"/></td>
                                     <td>
                                         <!-- This needs to be on a single line. Any whitespace will be visible to the user, due to wsp style-->
-                                        <span class="wsp">${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}</span>
+                                        <span class="wspr">${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}</span>
                                     </td>
                                     <td>${fn:escapeXml(paoNoteSearchResult.paoNote.createUserName)}</td>
                                     <td>
