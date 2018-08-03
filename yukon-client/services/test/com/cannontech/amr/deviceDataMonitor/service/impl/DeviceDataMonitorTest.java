@@ -10,7 +10,6 @@ import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.DELIVER
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.DISCONNECT_STATUS;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,19 +27,12 @@ import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.model.ProcessorType;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
-import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
@@ -137,33 +129,6 @@ public class DeviceDataMonitorTest {
         
         Assert.assertTrue(devices.equals(violating));
         Assert.assertTrue(Collections.disjoint(devices, notViolating));
-    }
-    
-    @Test
-    public void test_getValidAttribute() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
-        List<DeviceDataMonitorProcessor> processors = new ArrayList<>();
-        processors.add(getProcessor(STATE, DISCONNECT_STATUS, 1));
-        processors.add(getProcessor(STATE, COMM_STATUS, 1));
-        
-        PointValueQualityHolder pointData = getPointValue(PointType.Status, 1);
-        PaoPointIdentifier ident = new PaoPointIdentifier(new PaoIdentifier(1, PaoType.RFN410FD), new PointIdentifier(PointType.Status, 1));
-        RichPointData rpd = new RichPointData(pointData, ident);
-        DeviceDataMonitor monitor= new DeviceDataMonitor(1, "test", null, null, true, processors);
-        
-        Map<PaoType, Map<Attribute, AttributeDefinition>> map = new HashMap<>();
-        Map<Attribute, AttributeDefinition> attrMap = new HashMap<>();
-        attrMap.put(DISCONNECT_STATUS, new AttributeDefinition(DISCONNECT_STATUS, new PointTemplate(new PointIdentifier(PointType.Status, 1)), null));
-        map.put(PaoType.RFN410FD, attrMap);
-        ReflectionTestUtils.setField(paoDefinitionImpl, "paoAttributeAttrDefinitionMap", map);
-        Assert.assertNotNull(ViolationHelper.getValidAttribute(monitor, rpd, attrServiceImpl));
-        
-        map = new HashMap<>();
-        attrMap = new HashMap<>();
-        attrMap.put(DELIVERED_DEMAND, new AttributeDefinition(DELIVERED_DEMAND, new PointTemplate(new PointIdentifier(PointType.Analog, 1)), null));
-        map.put(PaoType.RFN410FD, attrMap);
-        ReflectionTestUtils.setField(paoDefinitionImpl, "paoAttributeAttrDefinitionMap", map);
-        Assert.assertNull(ViolationHelper.getValidAttribute(monitor, rpd, attrServiceImpl));
     }
     
     @Test

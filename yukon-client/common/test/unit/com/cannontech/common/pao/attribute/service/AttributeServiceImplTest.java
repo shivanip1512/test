@@ -2,6 +2,7 @@ package com.cannontech.common.pao.attribute.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.FileInputStream;
@@ -23,6 +24,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.service.impl.PointServiceImpl;
 import com.cannontech.database.data.lite.LitePoint;
 
@@ -46,6 +48,36 @@ public class AttributeServiceImplTest {
     }
 
     @Test
+    public void test_findAttributesForPoint() {
+        Set<Attribute> possibleMatches = new HashSet<>();
+        // Note the attribute used here has no affect on this test or this method call.
+        PaoTypePointIdentifier paoTypePointIdentifier = service.getPaoTypePointIdentifierForAttribute(PaoType.RFN410FL, BuiltInAttribute.USAGE);
+        Set<BuiltInAttribute> foundAttributes = service.findAttributesForPoint(paoTypePointIdentifier, possibleMatches);
+        
+        // Its empty, I didn't provide any possible matches
+        assertTrue(foundAttributes.isEmpty());
+        
+        possibleMatches.add(BuiltInAttribute.DNP3_ADDRESS_CHANGED);
+        foundAttributes = service.findAttributesForPoint(paoTypePointIdentifier, possibleMatches);
+  
+        // Its empty, RFN 410FL does not have this attribute
+        assertTrue(foundAttributes.isEmpty());
+        
+        possibleMatches.add(BuiltInAttribute.BLINK_COUNT);
+        foundAttributes = service.findAttributesForPoint(paoTypePointIdentifier, possibleMatches);
+        
+        // Its empty, the point found with USAGE does not also have BLINK_COUNT
+        assertTrue(foundAttributes.isEmpty());
+        
+        possibleMatches.add(BuiltInAttribute.USAGE);
+        foundAttributes = service.findAttributesForPoint(paoTypePointIdentifier, possibleMatches);
+        
+        // Added usage, the point that we found via USAGE has USAGE!
+        assertTrue(foundAttributes.contains(BuiltInAttribute.USAGE));
+        assertTrue(foundAttributes.size() == 1);
+    }
+    
+    @Test
     public void test_getPointForAttribute() {
         // Test for existing device / attribute
         LitePoint expectedPoint = pointDao.getLitePoint(1);
@@ -66,7 +98,7 @@ public class AttributeServiceImplTest {
 
     @Test
     public void test_getAllExistingAttributes_deviceWithNoAttributes() {
-        Set<Attribute> expectedAttributes = new HashSet<Attribute>();
+        Set<Attribute> expectedAttributes = new HashSet<>();
         device = new SimpleDevice(1, PaoType.MCT318L.getDeviceTypeId());
         Set<Attribute> actualAttributes = service.getExistingAttributes(device, expectedAttributes);
         assertEquals("There shouldn't be any attributes", expectedAttributes, actualAttributes);
