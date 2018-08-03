@@ -34,7 +34,7 @@
     <entry key="yukon.web.common.paoNotesSearch.byDeviceGroups">By Device Group(s)</entry>
     <entry key="yukon.web.common.paoNotesSearch.devices">Devices</entry>
     
-    <entry key="yukon.web.common.paoNotesPopup.title">Notes - {0}</entry>
+    <entry key="yukon.web.common.paoNotesPopup.title">Notes - </entry>
     
     <entry key="yukon.web.common.paoNote.more">({0} more...)</entry>
     <entry key="yukon.web.common.paoNote.more.title">View all notes for this device.</entry>
