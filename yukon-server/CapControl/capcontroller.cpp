@@ -2927,7 +2927,25 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
                        CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
                     }
                 }
-                checkDisablePaoPoint(currentSubstationBus, pointID, value, CapControlCommand::ENABLE_SUBSTATION_BUS, CapControlCommand::DISABLE_SUBSTATION_BUS);
+
+                if ( currentSubstationBus->getDisabledStatePointId() == pointID )
+                {
+                    if ( ! currentSubstationBus->getVerificationFlag() )
+                    {
+                        checkDisablePaoPoint(currentSubstationBus, pointID, value, CapControlCommand::ENABLE_SUBSTATION_BUS, CapControlCommand::DISABLE_SUBSTATION_BUS);
+                    }
+                    else
+                    {
+                        if ( value == 0 )   // we are trying to enable a bus that is verifying
+                        {
+                            CTILOG_WARN( dout, "Cannot ENABLE the bus '"
+                                            <<  currentSubstationBus->getPaoName() << "' during Bank Verification" );
+
+                            // change the point back to disabled so it is consistent with the actual state of the bus
+                            sendMessageToDispatch( new CtiPointDataMsg( pointID, 1.0, NormalQuality, StatusPointType ), CALLSITE );
+                        }
+                    }
+                }
 
                 CtiCCMonitorPointPtr currentMonPoint = currentSubstationBus->getMonitorPoint(pointID);
                 if( currentMonPoint != NULL  && currentMonPoint->getValue() != value)
