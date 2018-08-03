@@ -340,8 +340,10 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
     @Override
     public void updateViolationsGroupBasedOnNewPointData(DeviceDataMonitor monitor, RichPointData richPointData) {
-        BuiltInAttribute attribute = attributeService.findAttributesForPoint(richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
-                Sets.newHashSet(monitor.getAttributes())).stream().findFirst().orElse(null);
+
+        BuiltInAttribute attribute = Iterables.getFirst(
+            attributeService.findAttributesForPoint(richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
+                Sets.newHashSet(monitor.getAttributes())), null);
         if (attribute == null) {
             log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
                 monitor, richPointData.getPaoPointIdentifier().getPaoIdentifier(), richPointData.getPointValue().getId());
