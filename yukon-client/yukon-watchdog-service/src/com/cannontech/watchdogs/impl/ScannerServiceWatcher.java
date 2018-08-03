@@ -2,6 +2,7 @@ package com.cannontech.watchdogs.impl;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -49,9 +50,8 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
         BuiltInAttribute memoryAttribute = BuiltInAttribute.SCANNER_MEMORY_UTILIZATION;
         try {
             memoryPoint = attributeService.getPointForAttribute(PaoUtils.SYSTEM_PAOIDENTIFIER, memoryAttribute);
-            if (memoryPoint != null) {
-                asyncDynamicDataSource.registerForPointData(this, ImmutableSet.of(memoryPoint.getPointID()));
-            }
+            asyncDynamicDataSource.registerForPointData(this, ImmutableSet.of(memoryPoint.getPointID()));
+
         } catch (IllegalUseOfAttribute e) {
             log.error("Attribute: [" + memoryAttribute + "] not found for pao type: [SYSTEM]");
         }
@@ -70,16 +70,15 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
      */
 
     private ServiceStatus getScannerServiceStatus() {
+        Instant startedListening = Instant.now();
         try {
             countDownLatch.await(120, TimeUnit.SECONDS);
         } catch (InterruptedException e) {}
 
-        if (receivedLatestMessageTimeStamp != null) {
-            if (receivedLatestMessageTimeStamp.compareTo(Instant.now().minusSeconds(120)) >= 0) {
-                return ServiceStatus.RUNNING;
-            }
-        }
-        return ServiceStatus.STOPPED;
+        return Optional.ofNullable(receivedLatestMessageTimeStamp)
+                       .filter(ts -> ts.compareTo(startedListening) >= 0)
+                       .map(ts -> ServiceStatus.RUNNING)
+                       .orElse(ServiceStatus.STOPPED);
 
     }
 

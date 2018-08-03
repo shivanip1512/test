@@ -2,6 +2,7 @@ package com.cannontech.watchdogs.impl;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -71,18 +72,17 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
      */
 
     private ServiceStatus getFDRServiceStatus() {
+        Instant startedListening = Instant.now();
         try {
             countDownLatch.await(120, TimeUnit.SECONDS);
         } catch (InterruptedException e) {}
 
-        if (receivedLatestMessageTimeStamp != null) {
-            if (receivedLatestMessageTimeStamp.compareTo(Instant.now().minusSeconds(120)) >= 0) {
-                return ServiceStatus.RUNNING;
-            }
-        }
-        return ServiceStatus.STOPPED;
-
+        return Optional.ofNullable(receivedLatestMessageTimeStamp)
+                       .filter(ts -> ts.compareTo(startedListening) >= 0)
+                       .map(ts -> ServiceStatus.RUNNING)
+                       .orElse(ServiceStatus.STOPPED);
     }
+
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
         receivedLatestMessageTimeStamp = pointData.getPointDataTimeStamp().toInstant();
