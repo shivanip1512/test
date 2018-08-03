@@ -187,7 +187,7 @@ public enum SiteMapPage implements DisplayableEnum {
     TDC(SiteMapCategory.TOOLS, "yukon.web.modules.tools.tdc.home.pageName", "/tools/data-viewer",
             MatchStyle.all, YukonRole.TABULAR_DISPLAY_CONSOLE),
     PAO_NOTE_SEARCH(SiteMapCategory.TOOLS, "yukon.web.modules.tools.paoNotesSearch.pageName", "/tools/paoNotes/search",
-        MatchStyle.all, YukonRole.DEVICE_MANAGEMENT),
+        MatchStyle.all),
 
     SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.modules.support.support.pageName", "/support",
             MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
