@@ -4283,6 +4283,10 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                         break;      // waiting...
                     }
 
+                    // clear remaining scanInProgress flags on the bus
+
+                    currentSubstationBus->clearMonitorPointsScanInProgress();
+                                         
                     // update delta voltages
 
                     currentSubstationBus->updatePointResponseDeltas();
@@ -4305,6 +4309,10 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                     {
                         break;      // waiting...
                     }
+
+                    // clear remaining scanInProgress flags on the bus
+
+                    currentSubstationBus->clearMonitorPointsScanInProgress();
 
                     try
                     {
@@ -4388,6 +4396,10 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                         }
                     }
                 }
+
+                // clear remaining scanInProgress flags on the bus
+
+                currentSubstationBus->clearMonitorPointsScanInProgress();
 
                 // falling through the switch means its time to do the verification
                 //  we don't need the LocalScanState for this bus anymore

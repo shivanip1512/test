@@ -180,6 +180,7 @@ public:
     bool areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
 
     bool areCapbankMonitorPointsNewerThan( const CtiTime timestamp );
+    void clearMonitorPointsScanInProgress();
 
     bool isScanFlagSet();
     bool scanAllMonitorPoints();

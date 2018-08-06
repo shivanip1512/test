@@ -5623,6 +5623,8 @@ CtiCCCapBankPtr CtiCCSubstationBus::canConsiderPoint( const CtiCCMonitorPoint & 
 
 bool CtiCCSubstationBus::areCapbankMonitorPointsNewerThan( const CtiTime timestamp )
 {
+    bool allNewTimestamps = true;
+
     for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
     {
         if ( CtiCCCapBankPtr bank = canConsiderPoint( *point ) )
@@ -5631,14 +5633,36 @@ bool CtiCCSubstationBus::areCapbankMonitorPointsNewerThan( const CtiTime timesta
             {
                 // found one that is older than the timestamp
 
-                return false;
+                allNewTimestamps = false;
+            }
+            else
+            {
+                // this point is newer than the scantime meaning we got scan data back -- mark the scan as done
+
+                if ( point->isScannable() && point->getScanInProgress() )
+                {
+                    point->setScanInProgress( false );
+                }
             }
         }
     }
 
-    return true;
+    return allNewTimestamps;
 }
 
+// Clear out the scanInProgress flag from all the monitor points on this bus so the next time the verification tries
+//  to scan the bus, it can.  Maybe someday the scanInProgress flag can be used in the delta voltage code to put in better
+//  values, instead of being discarded here...
+void CtiCCSubstationBus::clearMonitorPointsScanInProgress()
+{
+    for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
+    {
+        if ( point->isScannable() && point->getScanInProgress() )
+        {
+            point->setScanInProgress( false );
+        }
+    }
+}
 
 bool CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 {
