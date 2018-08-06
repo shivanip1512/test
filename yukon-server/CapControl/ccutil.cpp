@@ -323,13 +323,15 @@ double calculateKVARSolution( const std::string & controlUnits, double setPoint,
     {
         // Our pao has no strategy assigned so issue a warning, but only show the warning once in a while (per YUK-18135).
 
-        static std::map<long, CtiTime>  showWarning;
+        static std::map<long, std::chrono::system_clock::time_point>    showWarning;
 
-        CtiTime now;
+        auto now = std::chrono::system_clock::now();
 
-        if ( showWarning[ pao.getPaoId() ] <= now )
+        auto & paoWarning = showWarning[ pao.getPaoId() ];
+
+        if ( paoWarning <= now )
         {
-            showWarning[ pao.getPaoId() ] = now.addSeconds( 300 );  // 5 minutes between warnings, minimum
+            paoWarning = now + std::chrono::minutes( 5 );   // 5 minutes between warnings, minimum
 
             CTILOG_WARN( dout, "No strategy assigned to object: " << pao.getPaoName() );
         }
