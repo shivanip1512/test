@@ -106,6 +106,7 @@ public class RfnMeterReadService {
                     /* Data response failed */
                     callback.receivedDataError(dataReplyMessage.getReplyType());
                 } else if (!receivedIdentifier.equals(expectedIdentifier)) {
+                    log.error("RFN identifier mismatch, received " + receivedIdentifier + " instead of " + expectedIdentifier);
                     callback.processingExceptionOccured(
                             YukonMessageSourceResolvable.createSingleCodeWithArguments(
                                     "yukon.common.device.attributeRead.rfn.identifierMismatch", receivedIdentifier, expectedIdentifier));
