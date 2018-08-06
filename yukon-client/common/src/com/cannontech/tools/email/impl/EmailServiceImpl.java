@@ -82,12 +82,10 @@ public class EmailServiceImpl implements EmailService {
         Transport transport = null;
         SmtpEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
         transport = session.getTransport(encryptionType.getProtocol());
-
-        if (authentication != null) {
-            try {
+        try {
+            if (authentication != null) {
                 String username = authentication.getUserName();
                 String password = authentication.getPassword();
-
                 String host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
                 String port = configurationSource.getCommonProperty(SmtpPropertyType.PORT);
                 if (!StringUtils.isEmpty(port)) {
@@ -95,17 +93,19 @@ public class EmailServiceImpl implements EmailService {
                 } else {
                     transport.connect(host, username, password);
                 }
-                // Doesn't seem to be necessary. API says it should be called to update headers, but it is expensive so only call if needed.
-                // message.saveChanges();
+                // Doesn't seem to be necessary. API says it should be called to update headers, but it is
+                // expensive so only call if needed.message.saveChanges();
                 transport.sendMessage(message, message.getAllRecipients());
                 log.debug("Message Sent: " + message.toString());
-            } catch (NumberFormatException ne) {
-                log.error("Unable to send email message, SMTP port number is invalid");
+            } else {
+                transport.connect();
+                transport.sendMessage(message, message.getAllRecipients());
+                log.debug("Message Sent: " + message.toString());
             }
-        } else {
-            transport.connect();
-            transport.sendMessage(message, message.getAllRecipients());
-            log.debug("Message Sent: " + message.toString());
+        } catch (NumberFormatException ne) {
+            log.error("Unable to send email message, SMTP port number is invalid");
+        } finally {
+            transport.close();
         }
     }
     
