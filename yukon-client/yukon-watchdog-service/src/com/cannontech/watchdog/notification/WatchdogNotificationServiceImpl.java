@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.mail.internet.InternetAddress;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
@@ -25,6 +23,8 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
@@ -41,6 +41,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
@@ -99,9 +100,9 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                     msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
                 }
                 msgBuilder.append("\n\nSee " + webserverUrlResolver.getUrlBase());
-                String emails = String.join(",", sendToEmailIds);
+                String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
                 EmailMessage emailMessage =
-                    new EmailMessage(InternetAddress.parse(emails), subject, msgBuilder.toString());
+                        EmailMessage.newMessage(subject, msgBuilder.toString(), sender, sendToEmailIds);
                 emailService.sendMessage(emailMessage);
             } catch (Exception e) {
                 log.error("Watch dog is unable to send Internal Notification " + e);

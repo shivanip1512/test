@@ -26,11 +26,18 @@ public class EmailMessageHandler implements MessageHandler<EmailMsg> {
     public void handleMessage(NotifServerConnection connection, Message message) {
         EmailMsg msg = (EmailMsg) message;
         EmailMessage emailMessage = msg.getMessage();
+        if (emailMessage.getTo() != null) {
         String addresses = Arrays.stream(emailMessage.getTo())
                                  .map(InternetAddress::getAddress)
                                  .reduce("", (s1,s2) -> s1 + "," + s2);
         log.debug("Sending email to " + addresses);
-        
+        }
+        if (emailMessage.getBcc() != null) {
+            String bccRecipients = Arrays.stream(emailMessage.getBcc())
+                                 .map(InternetAddress::getAddress)
+                                 .reduce("", (s1,s2) -> s1 + "," + s2);
+        log.debug("Sending email bcc recipients " + bccRecipients);    
+        }
         try {
             emailService.sendMessage(emailMessage);
         } catch (MessagingException e) {
