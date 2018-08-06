@@ -516,12 +516,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             double distanceTo = location.distanceTo(current, unit);
             if (distanceTo <= distance) {
                 LiteYukonPAObject pao = databaseCache.getAllPaosMap().get(current.getPaoIdentifier().getPaoId());
-                RfnDevice device = rfnDeviceDao.getDeviceForId(pao.getYukonID());
-                if(RfnManufacturerModel.of(device.getRfnIdentifier()) != null) {
-                    nearby.add(PaoDistance.of(pao, distanceTo, unit, current)); 
-                    devices.put(device.getPaoIdentifier().getPaoId(), device);
+                try{
+                    RfnDevice device = rfnDeviceDao.getDeviceForId(pao.getYukonID());
+                    if(RfnManufacturerModel.of(device.getRfnIdentifier()) != null) {
+                        nearby.add(PaoDistance.of(pao, distanceTo, unit, current)); 
+                        devices.put(device.getPaoIdentifier().getPaoId(), device);
+                    }
+                } catch (Exception e) {
+                    //device doesn't have RFN identifier, example - template
                 }
-        
                 if(nearby.size() == max) {
                     break;
                 }

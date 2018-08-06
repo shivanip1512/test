@@ -112,7 +112,7 @@ public class MapNetworkController {
         boolean displayNeighborsLayer = !isPlc && !device.getDeviceType().isWaterMeter();
         boolean displayParentNodeLayer = !isPlc && device.getDeviceType().isWaterMeter();
         boolean displayPrimaryRouteLayer = !isPlc && !isGateway;
-        boolean displayNearbyLayer = isPlc;
+        boolean displayNearbyLayer = isPlc || device.getDeviceType().isRfn();
         model.addAttribute("displayNeighborsLayer", displayNeighborsLayer);
         model.addAttribute("displayParentNodeLayer", displayParentNodeLayer);
         model.addAttribute("displayPrimaryRouteLayer", displayPrimaryRouteLayer);
@@ -168,7 +168,7 @@ public class MapNetworkController {
         binder.setValidator(locationValidator);
         binder.validate();
         BindingResult results = binder.getBindingResult();
-        List<String> errorMessages = new ArrayList<String>();
+        List<String> errorMessages = new ArrayList<>();
         results.getAllErrors().stream().forEach(e -> errorMessages.add(accessor.getMessage(e.getCode())));
         if (errorMessages.size()!=0) {
            errorFound = true; 
