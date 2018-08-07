@@ -866,10 +866,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            // is the feasibilityData the same size as the collection of all non-BusPower watt and var points in the request?
-            //  if yes then we have all the data and can proceed
+            // do we have enough feasibilityData?
+            //  if yes then we can proceed
 
-            if ( ( request->requestSize() - state->dmvWattVarPointIDs.size() ) != state->feasibilityData.size() )
+            const unsigned  requestSize  = request->requestSize() - state->dmvWattVarPointIDs.size(),   // asked for voltage points
+                            responseSize = state->feasibilityData.size();                               // received voltage points
+
+            const double    percentComplete = ( 100.0 * responseSize ) / requestSize;
+
+            CTILOG_INFO( dout, "Received  " << responseSize << " of " << requestSize << " requested voltage points ( "
+                                << percentComplete << "% ). Minimum needed is " << dmvTestSettings.CommSuccessPercentage << "%." );
+
+            if ( percentComplete < dmvTestSettings.CommSuccessPercentage )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
                 CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << dmvTestSettings.TestName
