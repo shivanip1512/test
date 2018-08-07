@@ -260,6 +260,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         sql.append("JOIN SmartNotificationSubParam snsp ON sns.SubscriptionId = snsp.SubscriptionId");
         sql.append("  AND snsp.Name = 'sendTime'");
         sql.append("  AND snsp.Value").eq(runTimeInMinutes);
+        sql.append("  AND sns.Frequency").eq_k(SmartNotificationFrequency.DAILY_DIGEST);
         sql.append("WHERE NOT EXISTS (");
         sql.append("  SELECT NULL");
         sql.append("  FROM UserPreference");
