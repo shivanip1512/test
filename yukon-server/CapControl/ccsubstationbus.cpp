@@ -5635,14 +5635,11 @@ bool CtiCCSubstationBus::areCapbankMonitorPointsNewerThan( const CtiTime timesta
 
                 allNewTimestamps = false;
             }
-            else
+            else if ( point->isScannable() && point->getScanInProgress() )
             {
                 // this point is newer than the scantime meaning we got scan data back -- mark the scan as done
 
-                if ( point->isScannable() && point->getScanInProgress() )
-                {
-                    point->setScanInProgress( false );
-                }
+                point->setScanInProgress( false );
             }
         }
     }
