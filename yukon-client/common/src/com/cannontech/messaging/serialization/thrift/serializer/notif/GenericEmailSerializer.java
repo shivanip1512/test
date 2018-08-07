@@ -47,29 +47,25 @@ public class GenericEmailSerializer extends ThriftInheritanceSerializer<EmailMsg
         InternetAddress[] recipients = null;
         InternetAddress[] bccRecipients = null;
         if (entity.get_to() != null) {
-        recipients = Arrays.stream(entity.get_to().split(","))
-                .map(recipient -> {
-                    InternetAddress address = new InternetAddress();
-                    address.setAddress(recipient);
-                    return address;
-                })
-                .toArray(InternetAddress[]::new);
+            recipients = Arrays.stream(entity.get_to().split(",")).map(recipient -> {
+                InternetAddress address = new InternetAddress();
+                address.setAddress(recipient);
+                return address;
+            }).toArray(InternetAddress[]::new);
         }
-        if(entity.get_bcc() != null) {
-         bccRecipients = Arrays.stream(entity.get_bcc().split(","))
-                .map(recipient -> {
-                    InternetAddress address = new InternetAddress();
-                    address.setAddress(recipient);
-                   return address;
-                                })
-                 .toArray(InternetAddress[]::new);
+        if (entity.get_bcc() != null) {
+            bccRecipients = Arrays.stream(entity.get_bcc().split(",")).map(recipient -> {
+                InternetAddress address = new InternetAddress();
+                address.setAddress(recipient);
+                return address;
+            }).toArray(InternetAddress[]::new);
         }
         InternetAddress fromAddress = new InternetAddress();
         fromAddress.setAddress(entity.get_from());
-        
+
         String subject = entity.get_subject();
         String body = entity.get_body();
-        
+
         try {
             EmailMessage message = new EmailMessage(fromAddress, recipients, null, bccRecipients, subject, body);
             msg.setMessage(message);
@@ -81,16 +77,14 @@ public class GenericEmailSerializer extends ThriftInheritanceSerializer<EmailMsg
     @Override
     protected void populateThriftEntityFromMessage(ThriftMessageFactory factory, EmailMsg msg, GenericEmail entity) {
         if (msg.getMessage().getTo() != null) {
-        String to = Arrays.stream(msg.getMessage().getTo())
-                .map(InternetAddress::getAddress)
-                .collect(Collectors.joining(","));
-        entity.set_to(to);
+            String to = Arrays.stream(msg.getMessage().getTo()).map(InternetAddress::getAddress)
+                    .collect(Collectors.joining(","));
+            entity.set_to(to);
         }
         if (msg.getMessage().getBcc() != null) {
-            String bcc = Arrays.stream(msg.getMessage().getBcc())
-                 .map(InternetAddress::getAddress)
-                 .collect(Collectors.joining(","));
-        entity.set_bcc(bcc);
+            String bcc = Arrays.stream(msg.getMessage().getBcc()).map(InternetAddress::getAddress)
+                    .collect(Collectors.joining(","));
+            entity.set_bcc(bcc);
         }
         entity.set_from(msg.getMessage().getFrom().getAddress());
         entity.set_subject(msg.getMessage().getSubject());

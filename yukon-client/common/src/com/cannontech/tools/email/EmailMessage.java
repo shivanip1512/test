@@ -63,7 +63,7 @@ public class EmailMessage {
     }
 
     /**
-     * Builds a complete email notification message.
+     * Builds a complete email notification message. This will bcc all the recipients.
      * @throws MessagingException if an error occurs while building the EmailMessage.
      */
     public static EmailMessage newMessage(String emailSubject, String emailBody, String sendFromAddress, List<String> recipientEmailAddresses) 
