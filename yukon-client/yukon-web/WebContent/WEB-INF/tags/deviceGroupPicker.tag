@@ -65,7 +65,7 @@
                 </c:otherwise>
             </c:choose>
             <c:forEach var="group" items="${inputValue}">
-                <input type="hidden" name="${inputName}" value="${group}">
+                <input type="hidden" name="${inputName}" value="${fn:escapeXml(group)}">
             </c:forEach>
         </c:otherwise>
     </c:choose>

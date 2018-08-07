@@ -48,7 +48,7 @@
             <tags:deviceGroupPicker inputName="deviceGroupNames"
                                     inputValue="${deviceGroupNames}"
                                     multi="${allowMultipleGroupSelection}"
-                                    dialogId="${dialogId}"/>
+                                    dialogId="${deviceGroupPickerDialogId}"/>
             <c:if test="${not empty deviceGroupPickerPath}">
                 <tags:bind path="${deviceGroupPickerPath}"/>
             </c:if>
