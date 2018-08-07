@@ -11,7 +11,7 @@ public class SqlUtilsTest {
         // note that everything goes straight through except the whitespace strings
         // we loose our ability to store that, but that's on purpose
         String[] input =  {null, "", " ", "   ", "foo", "  bar  "};
-        String[] output = {null, "", "",  "",    "foo", "  bar  "};
+        String[] output = {"", "", "",  "",    "foo", "  bar  "};
         
         for (int i = 0; i < input.length; ++i) {
             String dbValue = SqlUtils.convertStringToDbValue(input[i]);
@@ -21,8 +21,6 @@ public class SqlUtilsTest {
             assertEquals("oracle conversion is broke", output[i], SqlUtils.convertDbValueToString(oracleValue));
             assertEquals("mssqlValue conversion is broke", output[i], SqlUtils.convertDbValueToString(mssqlValue));
         }
-        
-        
     }
     
     public String oracleTreatment(String dbValue) {
@@ -36,5 +34,5 @@ public class SqlUtilsTest {
     public String mssqlTreatment(String dbValue) {
         return dbValue;
     }
-
+    
 }
