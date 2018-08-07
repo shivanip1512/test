@@ -29,6 +29,7 @@
                 </div>
                 <cti:button renderMode="image" icon="icon-help" classes="widget-controls fr" data-popup="#notes-search-help-popup"/>
                 
+                <i:inline key=".devices"/>:
                 <%@ include file="../../common/paoNotes/selectPaos.jsp" %>
                 
                 <c:if test="${hasDateFilterErrors}">
@@ -37,7 +38,7 @@
                 <c:if test="${hasDeviceFilterErrors}">
                     <c:set var="marignTopDeviceFilters" value="margin-top: -5%;"/>
                 </c:if>
-                <div>
+                <div class="db">
                     <div id="js-note-create-dates" class="dib MT1" style="margin-left: 6%;">
                         <i:inline key=".createDate"/> :
                         <dt:date path="dateRange.min" wrapperClass="fn vam" displayValidationToRight="true"/>
@@ -46,7 +47,7 @@
                     </div>
                     <div id="js-note-create-by" class="dib vam" style="${marginTop}">
                         <cti:yukonUser var="currentUser"/>
-                        <i:inline key=".createdBy"/> :
+                        <i:inline key=".createdBy"/>:
                         <form:select path="user">
                             <form:option value=""><i:inline key=".anyUser"/></form:option>
                             <form:option value="${currentUser.username}"><i:inline key=".currentUser"/></form:option>

@@ -1,6 +1,6 @@
 package com.cannontech.web.tools.paoNote;
 
-import static com.cannontech.common.pao.notes.service.PaoNotesService.*;
+import static com.cannontech.common.pao.notes.service.PaoNotesService.MAX_CHARACTERS_IN_NOTE;
 
 import java.beans.PropertyEditor;
 import java.io.IOException;
@@ -136,7 +136,9 @@ public class PaoNotesSearchController {
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
         model.addAttribute("deviceCollection", deviceCollection);
 
-        model.addAttribute("paoSelectionMethods", PaoSelectionMethod.values());
+        model.addAttribute("allDevicesEnumValue", PaoSelectionMethod.allDevices);
+        model.addAttribute("selectIndividuallyEnumValue", PaoSelectionMethod.selectIndividually);
+        model.addAttribute("byDeviceGroupsEnumValue", PaoSelectionMethod.byDeviceGroups);
 
         if (bindingResult.hasErrors()) {
             if (bindingResult.hasFieldErrors("paoIds") || bindingResult.hasFieldErrors("deviceGroups")) {

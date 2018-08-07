@@ -29,6 +29,9 @@ public class PaoNotesSearchWidget extends AdvancedWidgetControllerBase {
     public String render(ModelMap model, HttpServletRequest request) {
         model.addAttribute("paoNotesFilter", new PaoNotesFilter());
         model.addAttribute("paoSelectionMethods", PaoSelectionMethod.values());
+        model.addAttribute("allDevicesEnumValue", PaoSelectionMethod.allDevices);
+        model.addAttribute("selectIndividuallyEnumValue", PaoSelectionMethod.selectIndividually);
+        model.addAttribute("byDeviceGroupsEnumValue", PaoSelectionMethod.byDeviceGroups);
         return "paoNotesSearchWidget/render.jsp";
     }
 

@@ -4,41 +4,35 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<div class="js-pao-selection-container dib">
+<div class="js-pao-selection-container dib vat">
     <cti:uniqueIdentifier var="id" />
     <input type="hidden" class="js-unique-identifier" value="${id}"/>
-    <form:select path="paoSelectionMethod" class="js-select-devices">
-        <c:forEach var="paoSelectionMethod" items="${paoSelectionMethods}">
-            <form:option id="js-${paoSelectionMethod}" value="${paoSelectionMethod}">
-                <i:inline key=".${paoSelectionMethod}"/>
-            </form:option>
+    <input type="hidden" class="js-allDevices-enum-val" value="${allDevicesEnumValue}"/>
+    <input type="hidden" class="js-selectIndividually-enum-val" value="${selectIndividuallyEnumValue}"/>
+    <input type="hidden" class="js-byDeviceGroup-enum-val" value="${byDeviceGroupsEnumValue}"/>
+    
+    <cti:list var="groups">
+        <c:forEach var="subGroup" items="${deviceGroupNames}">
+            <cti:item value="${subGroup}"/>
         </c:forEach>
-    </form:select>
-    <div class="dib dn push-down-3 js-picker-dialog">
-        <tags:bind path="paoIds">
-            <tags:pickerDialog type="meterPicker"
-                               id="paoPicker_${id}"
-                               linkType="selection"
-                               selectionProperty="paoName"
-                               destinationFieldName="paoIds"
-                               allowEmptySelection="true"
-                               multiSelectMode="true"
-                               initialIds="${paoNoteFilter.paoIds}"
-                               endEvent="yukon:paonotessearch:paosselected"/>
-        </tags:bind>
-    </div>
-    <div class="dib dn push-down-3 js-device-group-picker-for-notes">
-        <cti:list var="groups">
-            <c:forEach var="subGroup" items="${deviceGroupNames}">
-                <cti:item value="${subGroup}"/>
-            </c:forEach>
-        </cti:list>
-        <tags:deviceGroupPicker inputName="deviceGroupNames"
-                                inputValue="${groups}"
-                                multi="true"
-                                dialogId="js-paonotes-device-group-picker_${id}"/>
+    </cti:list>
+    
+    <tags:hidden path="paoSelectionMethod"/>
+    <div class="dib" style="margin-left: -4px">
+        <tags:selectDevicesIndividuallyOrByGroup uniqueId="${id}"
+                                                 pickerType="meterPicker"
+                                                 initialIds="${paoNoteFilter.paoIds}"
+                                                 pickerCallback="yukon:paonotessearch:paosselected"
+                                                 pickerCss="push-down-3"
+                                                 pickerPath="paoIds"
+                                                 deviceGroupNames="${groups}"
+                                                 deviceGroupPickerDialogId="js-paonotes-device-group-picker_${id}"
+                                                 deivceGroupPickerCss="push-down-3"
+                                                 deviceGroupPickerPath="deviceGroups"
+                                                 allowMultipleGroupSelection="true"/>
         <input type="hidden" id="js-clear-device-group-selection_${id}"/>
-        <tags:bind path="deviceGroups"/>
+        <cti:msg2 var="lblAllDevices" key=".allDevices"/>
+        <div class="dib js-all-devices-lbl vat push-down-3">${lblAllDevices}</div>
     </div>
 </div>
 

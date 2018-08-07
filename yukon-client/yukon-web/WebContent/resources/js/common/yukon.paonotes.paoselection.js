@@ -1,8 +1,7 @@
-yukon.namespace('yukon.paonotes.paoselection.js');
+yukon.namespace('yukon.paonotes.paoselection');
  
 /**
- * TODO Change this.
- * Module to handle pao notes search widget functionality.
+ * Module to handle pao selection functionality for notes search.
  * 
  * @module yukon.paonotes.paoselection
  * @requires yukon
@@ -28,45 +27,12 @@ yukon.paonotes.paoselection = (function () {
         deviceGroupPicker.find("span.fl").text(deviceGroupPicker.find("a.js-device-group-picker").data("select-text"));
     },
     
-    _togglePickerDisplay = function (container) {
-        var selectDevices = container.find('.js-select-devices').val(),
-            pickerDialog = container.find('.js-picker-dialog'),
-            deviceGroupPicker = container.find('.js-device-group-picker-for-notes'),
-            identifier = container.find('.js-unique-identifier').val();
-        if (selectDevices === 'allDevices') {
-            pickerDialog.addClass('dn');
-            deviceGroupPicker.addClass('dn');
-            _clearIndividualDeviceSelection(pickerDialog, identifier);
-            _clearDeviceGroupSelection(deviceGroupPicker);
-            $("#js-clear-device-group-selection_" + identifier).val('CLEAR_SELECTION');
-        } else if (selectDevices === 'selectIndividually') {
-            pickerDialog.removeClass('dn');
-            deviceGroupPicker.addClass('dn');
-            _clearDeviceGroupSelection(deviceGroupPicker);
-            $("#js-clear-device-group-selection_" + identifier).val('CLEAR_SELECTION');
-        } else if (selectDevices === 'byDeviceGroups') {
-            _clearIndividualDeviceSelection(pickerDialog, identifier);
-            pickerDialog.addClass('dn');
-            deviceGroupPicker.removeClass('dn');
-        }
-    },
-    
     mod = {
         
         /** Initialize this module. */
         init : function () {
             
             if (_initialized) return;
-            
-            $(document).on('change', '.js-select-devices', function () {
-                var container = $(this).closest('.js-pao-selection-container');
-                _togglePickerDisplay(container);
-            });
-            
-            
-            $(document).find('.js-pao-selection-container').each(function () {
-                _togglePickerDisplay($(this));
-            });
             
             $(document).on('yukon:paonotessearch:paosselected', function (ev, items, picker) {
                 var tokens = picker.id.split('_');
@@ -89,6 +55,50 @@ yukon.paonotes.paoselection = (function () {
                 }
             });
             
+            $(document).on('change', 'input[name^="js-select-by-device-group_"], input[name^="js-select-individually_"]', function (event) {
+                var container = $(this).closest('.js-pao-selection-container'),
+                    deviceGroupBtn = container.find('input[name^="js-select-by-device-group_"]'),
+                    selectedBtn = container.find('input[name^="js-select-individually_"]'),
+                    allDeviceLbl= container.find('.js-all-devices-lbl'),
+                    pickerDialog = container.find('.js-picker-dialog'),
+                    uniqueIdentifier = container.find('.js-unique-identifier').val(),
+                    deviceGroupPicker = container.find('.js-device-group-picker-container');
+                allDeviceLbl.toggleClass('dn', deviceGroupBtn.is(':checked') || selectedBtn.is(':checked'));
+                
+                if (deviceGroupBtn.is(':checked')) {
+                    container.find("input[name='paoSelectionMethod']").val($(".js-byDeviceGroup-enum-val").val());
+                    _clearIndividualDeviceSelection(pickerDialog, uniqueIdentifier);
+                } else if (selectedBtn.is(':checked')) {
+                    container.find("input[name='paoSelectionMethod']").val($(".js-selectIndividually-enum-val").val());
+                    _clearDeviceGroupSelection(deviceGroupPicker);
+                    $("#js-clear-device-group-selection_" + uniqueIdentifier).val('CLEAR_SELECTION');
+                } else {
+                    container.find("input[name='paoSelectionMethod']").val($(".js-allDevices-enum-val").val());
+                    _clearIndividualDeviceSelection(pickerDialog, uniqueIdentifier);
+                    _clearDeviceGroupSelection(deviceGroupPicker);
+                    $("#js-clear-device-group-selection_" + uniqueIdentifier).val('CLEAR_SELECTION');
+                }
+            });
+            
+            $('.js-pao-selection-container').each(function (idx, item) {
+                var paoSelectionMethod = $(item).find("input[name='paoSelectionMethod']").val(),
+                    byDeviceGroupVal = $(item).find(".js-byDeviceGroup-enum-val").val(),
+                    selectIndividually = $(item).find(".js-selectIndividually-enum-val").val(),
+                    allDeviceVal = $(item).find(".js-allDevices-enum-val").val();
+                if (paoSelectionMethod === byDeviceGroupVal) {
+                    $(item).find('input[name^="js-select-by-device-group_"]').prop('checked', true);
+                    $(item).find('.js-device-group-picker-container').removeClass('dn');
+                    $(item).find('.js-all-devices-lbl').addClass('dn');
+                } else if (paoSelectionMethod === selectIndividually) {
+                    $(item).find('input[name^="js-select-individually_"]').prop('checked', true);
+                    $(item).find('.js-picker-dialog').removeClass('dn');
+                    $(item).find('.js-all-devices-lbl').addClass('dn');
+                } 
+            });
+            
+            if($("#deviceGroups\\.errors").exists()) {
+                $("#deviceGroups\\.errors").addClass('db');
+            }
             _initialized = true;
         }
     
