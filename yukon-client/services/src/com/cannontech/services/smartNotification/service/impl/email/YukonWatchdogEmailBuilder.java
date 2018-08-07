@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,7 +14,6 @@ import com.cannontech.common.smartNotification.model.WatchdogAssembler;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.watchdog.model.WatchdogWarningType;
-import com.google.common.collect.Sets;
 
 public class YukonWatchdogEmailBuilder extends SmartNotificationEmailBuilder {
     @Autowired private DateFormattingService dateFormattingService;
@@ -48,14 +46,17 @@ public class YukonWatchdogEmailBuilder extends SmartNotificationEmailBuilder {
         WatchdogWarningType warningType = WatchdogAssembler.getWarningType(event.getParameters());
         String warningKey = warningType.getWatchdogName().getFormatKey() + "." + verbosity;
         Object[] warningArgs = null;
+        String warningTypeString = null;
+        String formattedDate = getFormattedDate(event.getTimestamp().toDate());
         if (verbosity == SmartNotificationVerbosity.SUMMARY) {
             warningArgs = WatchdogAssembler.getWarningArgumentsForSummary(event.getParameters());
+            warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs);
+            warningTypeString = warningTypeString + " - " + formattedDate;
         } else if (verbosity == SmartNotificationVerbosity.EXPANDED) {
-            String formattedDate = getFormattedDate(event.getTimestamp().toDate());
             List<Object> objectList = WatchdogAssembler.getWarningArgumentsForDetailed(event.getParameters(), formattedDate);
             warningArgs = objectList.toArray();
+            warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs);
         }
-        String warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs);
         argumentList.add(warningTypeString);
         argumentList.add(getUrl("watchdogWarnings"));
         return argumentList;
@@ -103,50 +104,41 @@ public class YukonWatchdogEmailBuilder extends SmartNotificationEmailBuilder {
     }
 
     /**
-     * This method will filter out duplicate smart notification event based on watchdogwarningtype . If we
-     * have multiple
-     * smart notification event of same watchdogwarningtype then we will only use the latest event based on
-     * timestamp.
+     * This method will return the warning arguments for summary verbosity.
+     * Events will be sorted in descending order based on timestamp .
      */
     private String getWatchdogWarningArgumentsForSummary(List<SmartNotificationEvent> events,
             SmartNotificationVerbosity verbosity) {
-        Set<String> watchdogWarningType = Sets.newHashSet();
         StringBuilder builder = new StringBuilder();
         List<SmartNotificationEvent> smartNotificationEventsSortedList = sortSmartNotificationEventList(events);
         builder.append("   ");
         for (SmartNotificationEvent event : smartNotificationEventsSortedList) {
             WatchdogWarningType warningType = WatchdogAssembler.getWarningType(event.getParameters());
-            if (!watchdogWarningType.contains(warningType.name())) {
                 String warningKey = warningType.getWatchdogName().getFormatKey() + "." + verbosity;
                 Object[] warningArgs = WatchdogAssembler.getWarningArgumentsForSummary(event.getParameters());
                 String warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs);
-                builder.append(warningTypeString).append("\n   ");
-                watchdogWarningType.add(warningType.name());
-            }
+                String formattedDate = getFormattedDate(event.getTimestamp().toDate());
+                builder.append(warningTypeString + " - " + formattedDate).append("\n   ");
         }
         return builder.toString();
     }
 
     /**
-     * This method will return the warning arguments for detailed verbosity. Also it will filter out duplicate 
-     * smart notification events based on watchdogwarningtype .
+     * This method will return the warning arguments for detailed verbosity.
+     * Events will be sorted in descending order based on timestamp .
      */
     private String getWatchdogWarningArgumentsForDetailed(List<SmartNotificationEvent> events,
             SmartNotificationVerbosity verbosity) {
-        Set<String> watchdogWarningType = Sets.newHashSet();
         StringBuilder builder = new StringBuilder();
         List<SmartNotificationEvent> smartNotificationEventsSortedList = sortSmartNotificationEventList(events);
         builder.append("  ");
         for (SmartNotificationEvent event : smartNotificationEventsSortedList) {
             WatchdogWarningType warningType = WatchdogAssembler.getWarningType(event.getParameters());
-            if (!watchdogWarningType.contains(warningType.name())) {
                 String warningKey = warningType.getWatchdogName().getFormatKey() + "." + verbosity;
                 String formattedDate = getFormattedDate(event.getTimestamp().toDate());
                 List<Object> warningArgs = WatchdogAssembler.getWarningArgumentsForDetailed(event.getParameters(), formattedDate);
                 String warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs.toArray());
                 builder.append(warningTypeString).append("\n  ");
-                watchdogWarningType.add(warningType.name());
-            }
         }
         return builder.toString();
     }
