@@ -92,7 +92,7 @@
                             <cti:msg2 var="moreTooltip" key=".more.title"/>
                             <div title="${moreTooltip}" class="js-view-all-notes link-tr" data-pao-id="${createPaoNote.paoId}">
                                 <cti:msg2 var="moreTooltip" key=".more.title"/>
-                                <a href="javascript:void(0)">
+                                <a href="#" class="js-no-link">
                                     <i:inline key=".more" arguments="${additionalNotesCount}"/>
                                 </a>
                             </div>

@@ -39,7 +39,7 @@
     <c:choose>
         <c:when test="${hasNotes}">
             <tags:nameValue2 nameKey=".notes">
-                ${fn:escapeXml(note)} (<a class="js-view-all-notes" href="javascript:void(0)" 
+                ${fn:escapeXml(note)} (<a class="js-view-all-notes js-no-link" href="#" 
                                           data-pao-id="${meter.deviceId}"><i:inline key="yukon.common.viewAll"/></a>)
             </tags:nameValue2>
         </c:when>

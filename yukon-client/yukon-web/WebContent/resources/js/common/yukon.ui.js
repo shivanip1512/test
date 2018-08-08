@@ -522,6 +522,15 @@ yukon.ui = (function () {
             // show the popup
             mod.dialog(popup);
         });
+        
+        /**
+         * For anchors whose behavior is completely defined by javascript. The anchor is given an href of "#" and
+         * "js-no-link" class. This ensures that clicking the link has no effect other than the behavior defined
+         * by its other js classes.
+         */
+        $(document).on('click', '.js-no-link', function (ev) {
+            ev.preventDefault();
+        });
     };
 
     var setupPageButtons = function () {
