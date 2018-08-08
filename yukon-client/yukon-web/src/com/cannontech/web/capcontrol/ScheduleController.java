@@ -351,32 +351,45 @@ public class ScheduleController {
         return json;
     }
 
-    @RequestMapping(value="addPao")
-    public String addPao(int scheduleId, ScheduleCommand cmd, String paoIdList, String cmdInput, Integer dmvTestId, FlashScope flash) {
-        
+    @RequestMapping(value = "addPao")
+    public String addPao(ModelMap map, String schedule, String command, int scheduleId, ScheduleCommand cmd,
+            String paoIdList, String cmdInput, Integer dmvTestId, FlashScope flash, HttpServletResponse response) {
+
         List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
-        
+
         AssignmentStatus result = scheduleService.assignCommand(scheduleId, cmd, paoIds, cmdInput, dmvTestId);
-        
+
         switch (result) {
         case DUPLICATE:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".duplicate"));
-            break;
+            setDMVTestCommand(map);
+            setScheduleAssignmentPop(map, schedule, command);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "schedule/newScheduleAssignmentPopup.jsp";
         case NO_DEVICES:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".noDeviceSelected"));
-            break;
+            setDMVTestCommand(map);
+            setScheduleAssignmentPop(map, schedule, command);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "schedule/newScheduleAssignmentPopup.jsp";
         case SUCCESS:
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".addSuccessful", paoIds.size()));
             break;
         case INVALID:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".noScheduleOrCommand"));
-            break;
+            setDMVTestCommand(map);
+            setScheduleAssignmentPop(map, schedule, command);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "schedule/newScheduleAssignmentPopup.jsp";
         case NO_DMVTEST:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".noDmvTestCommand"));
-            break;
+            setDMVTestCommand(map);
+            setScheduleAssignmentPop(map, schedule, command);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "schedule/newScheduleAssignmentPopup.jsp";
         }
-    
-        return "redirect:assignments";
+
+        return null;
     }
     
     /**
@@ -389,10 +402,7 @@ public class ScheduleController {
 
         setDMVTestCommand(map);
 
-        List<PaoSchedule> schedList = paoScheduleDao.getAll();
-        map.addAttribute("schedule", schedule);
-        map.addAttribute("command", command);
-        map.addAttribute("scheduleList", schedList);
+        setScheduleAssignmentPop(map, schedule, command);
         return "schedule/startMultiScheduleAssignmentPopup.jsp";
     }
     
@@ -404,12 +414,8 @@ public class ScheduleController {
             @RequestParam(defaultValue="All") String schedule,
             @RequestParam(defaultValue="All") String command) {
 
-        List<PaoSchedule> schedList = paoScheduleDao.getAll();
-
-        map.addAttribute("schedule", schedule);
-        map.addAttribute("command", command);
+        setScheduleAssignmentPop(map, schedule, command);
         map.addAttribute("verifyCommandsList", ScheduleCommand.getVerifyCommandsList());
-        map.addAttribute("scheduleList", schedList);
         
         return "schedule/stopMultiScheduleAssignmentPopup.jsp";
     }
@@ -422,11 +428,7 @@ public class ScheduleController {
             @RequestParam(defaultValue="All") String schedule,
             @RequestParam(defaultValue="All") String command) {
         setDMVTestCommand(map);
-        List<PaoSchedule> schedList = paoScheduleDao.getAll();
-
-        map.addAttribute("schedule", schedule);
-        map.addAttribute("command", command);
-        map.addAttribute("scheduleList", schedList);
+        setScheduleAssignmentPop(map, schedule, command);
         
         return "schedule/newScheduleAssignmentPopup.jsp";
     }
@@ -441,6 +443,14 @@ public class ScheduleController {
         } else {
             map.addAttribute("commandList", ScheduleCommand.getRequiredCommands());
         }
+    }
+
+    private void setScheduleAssignmentPop(ModelMap map, String schedule, String command) {
+        List<PaoSchedule> schedList = paoScheduleDao.getAll();
+
+        map.addAttribute("schedule", schedule);
+        map.addAttribute("command", command);
+        map.addAttribute("scheduleList", schedList);
     }
 
     @InitBinder

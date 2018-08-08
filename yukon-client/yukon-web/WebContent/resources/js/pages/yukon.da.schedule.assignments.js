@@ -89,7 +89,17 @@ yukon.da.scheduleAssignments = (function () {
             
             /** Click detection to submit add assignment form. */
             $('#add-assignments').on('yukon.vv.schedules.add', function (ev) {
-                $('#add-schedule-assignment-form').submit();
+                yukon.ui.blockPage();
+                $('#add-schedule-assignment-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        window.location.href = yukon.url('/capcontrol/schedules/assignments');
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#add-assignments').html(xhr.responseText);
+                        yukon.ui.initContent('#add-assignments');
+                        yukon.ui.unblockPage();
+                    }
+                });
             });
 
             /** Click detection to post stop schedules form. */

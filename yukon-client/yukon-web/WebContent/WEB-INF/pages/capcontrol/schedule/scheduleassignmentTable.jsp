@@ -72,8 +72,8 @@
                                         <i:inline key=".substation.remove.label"/>
                                     </a>
                                     <cti:list var="confirmArgument">
-                                        <cti:item value="${item.scheduleName}" />
-                                        <cti:item value="${item.deviceName}" />
+                                        <cti:item value="${fn:escapeXml(item.scheduleName)}" />
+                                        <cti:item value="${fn:escapeXml(item.deviceName)}" />
                                     </cti:list>
                                     <d:confirm on='[data-event-id="${item.eventId}"][data-pao-id="${item.paoId}"]' 
                                                nameKey="confirmDelete" argument="${confirmArgument}" />

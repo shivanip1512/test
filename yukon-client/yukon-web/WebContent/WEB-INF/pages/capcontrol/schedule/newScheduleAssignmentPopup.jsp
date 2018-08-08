@@ -4,11 +4,14 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="modules.capcontrol.scheduleAssignments">
+    <cti:flashScopeMessages/>
     <form id="add-schedule-assignment-form" method="post" action="addPao">
         <cti:csrfToken/>
         <input type="hidden" name="paoIdList" id="paoIdList" />
         <input type="hidden" name="filterCommand" value="${param.command}" />
         <input type="hidden" name="filterSchedule" value="${param.schedule}" />
+        <input type="hidden" name="schedule" value="${param.schedule}" />
+        <input type="hidden" name="command" value="${param.command}" />
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".schedules">
                 <select name="scheduleId" id="scheduleId">
