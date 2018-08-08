@@ -375,8 +375,8 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         sendInServiceDevice.retainAll(allLcrsForThisCycle);
         sendAddressing.retainAll(allLcrsForThisCycle);
         
-        log.debug("Devices picked for Send In service command " + sendOOSDevice);
-        log.debug("Devices picked for Send Out of service command " + sendInServiceDevice);
+        log.debug("Devices picked for Send In service command " + sendInServiceDevice);
+        log.debug("Devices picked for Send Out of service command " + sendOOSDevice);
         log.debug("Devices picked for Send Config command " + sendAddressing);
 
         // Do not have any LCR's to send message return back.
