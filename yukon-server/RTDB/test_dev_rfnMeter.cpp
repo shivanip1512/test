@@ -1373,20 +1373,26 @@ BOOST_AUTO_TEST_CASE( test_getconfig_install_all_aggregate )
                 0x00, 0x02, 
                 //  TLV 5
                 0x00, 0x05,  //  Interval recording
-                0x00, 0x19,
+                0x00, 0x25,
                 0x00, 0x00, 0x1c, 0x20,  //  7200
                 0x00, 0x01, 0x51, 0x80,  //  86400
-                0x04,  //  4 metrics
+                0x07,  //  7 metrics
                 0x00, 0x01, 0x00, 0x00,
                 0x00, 0x02, 0x00, 0x00,
+                0x00, 0x09, 0x00, 0x08,
+                0x00, 0x0a, 0x00, 0x10,
+                0x00, 0x0b, 0x00, 0x20,
                 0x00, 0x03, 0x00, 0x00,
                 0x00, 0x04, 0x00, 0x00,
                 //  TLV 6
                 0x00, 0x06,  // Channel selection
-                0x00, 0x11,
-                0x04,
+                0x00, 0x1d,
+                0x07,  //  7 metrics
                 0x00, 0x05, 0x00, 0x00,
                 0x00, 0x06, 0x00, 0x00,
+                0x00, 0x09, 0x00, 0x08,
+                0x00, 0x0a, 0x00, 0x10,
+                0x00, 0x0b, 0x00, 0x20,
                 0x00, 0x07, 0x00, 0x00,
                 0x00, 0x08, 0x00, 0x00 };
 
@@ -1402,8 +1408,10 @@ BOOST_AUTO_TEST_CASE( test_getconfig_install_all_aggregate )
                 "\n    Recording interval : 7200 seconds"
                 "\n    Reporting interval : 86400 seconds"
                 "\n    Interval metrics   : 1, 2, 3, 4"
+                "\n    Coincident metrics : 9, 10, 11"
                 "\nChannel selection configuration:"
-                "\n    Metric IDs: 5, 6, 7, 8";
+                "\n    Midnight metrics   : 5, 6, 7, 8"
+                "\n    Coincident metrics : 9, 10, 11";
 
             BOOST_CHECK_EQUAL(result.description, exp);
         }

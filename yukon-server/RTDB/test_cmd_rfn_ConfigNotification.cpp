@@ -73,19 +73,25 @@ extern const std::vector<uint8_t> payload {
         0x20,  //  32
     //  TLV 5
     0x00, 0x05,  //  Interval recording
-    0x00, 0x19,
+    0x00, 0x25,
         0x00, 0x00, 0x1c, 0x20,  //  7200
         0x00, 0x01, 0x51, 0x80,  //  86400
-        0x04,  //  4 metrics
+        0x07,  //  4 metrics
         0x00, 0x01, 0x00, 0x00,
+        0x00, 0x09, 0x00, 0x08,
+        0x00, 0x0a, 0x00, 0x10,
+        0x00, 0x0b, 0x00, 0x20,
         0x00, 0x02, 0x00, 0x00,
         0x00, 0x03, 0x00, 0x00,
         0x00, 0x04, 0x00, 0x00,
     //  TLV 6
     0x00, 0x06,  // Channel selection
-    0x00, 0x11,
-        0x04,
+    0x00, 0x1d,
+        0x07,
         0x00, 0x05, 0x00, 0x00,
+        0x00, 0x09, 0x00, 0x08,
+        0x00, 0x0a, 0x00, 0x10,
+        0x00, 0x0b, 0x00, 0x20,
         0x00, 0x06, 0x00, 0x00,
         0x00, 0x07, 0x00, 0x00,
         0x00, 0x08, 0x00, 0x00,
@@ -209,19 +215,25 @@ BOOST_AUTO_TEST_CASE(test_request)
             0x00, 0x02,
             //  TLV 5
             0x00, 0x05,  //  Interval recording
-            0x00, 0x19,
+            0x00, 0x25,
             0x00, 0x00, 0x1c, 0x20, //  7200
             0x00, 0x01, 0x51, 0x80, //  86400
-            0x04,  //  4 metrics
+            0x07,  //  7 metrics
             0x00, 0x01, 0x00, 0x00,
+            0x00, 0x09, 0x00, 0x08,
+            0x00, 0x0a, 0x00, 0x10,
+            0x00, 0x0b, 0x00, 0x20,
             0x00, 0x02, 0x00, 0x00,
             0x00, 0x03, 0x00, 0x00,
             0x00, 0x04, 0x00, 0x00,
             //  TLV 6
             0x00, 0x06,  // Channel selection
-            0x00, 0x11,
-            0x04,
+            0x00, 0x1d,
+            0x07,
             0x00, 0x05, 0x00, 0x00,
+            0x00, 0x09, 0x00, 0x08,
+            0x00, 0x0a, 0x00, 0x10,
+            0x00, 0x0b, 0x00, 0x20,
             0x00, 0x06, 0x00, 0x00,
             0x00, 0x07, 0x00, 0x00,
             0x00, 0x08, 0x00, 0x00 };
@@ -232,8 +244,10 @@ BOOST_AUTO_TEST_CASE(test_request)
             "\n    Recording interval : 7200 seconds"
             "\n    Reporting interval : 86400 seconds"
             "\n    Interval metrics   : 1, 2, 3, 4"
+            "\n    Coincident metrics : 9, 10, 11"
             "\nChannel selection configuration:"
-            "\n    Metric IDs: 5, 6, 7, 8";
+            "\n    Midnight metrics   : 5, 6, 7, 8"
+            "\n    Coincident metrics : 9, 10, 11";
 
         BOOST_CHECK_EQUAL(rcv.description, exp);
     }
@@ -355,6 +369,112 @@ BOOST_AUTO_TEST_CASE(test_one_tlv)
     BOOST_CHECK_EQUAL(cmd.touEnabled.value(), Cti::Devices::Commands::RfnTouConfigurationCommand::TouEnable);
 }
 
+BOOST_AUTO_TEST_CASE(test_channel_configuration)
+{
+    const std::vector<uint8_t> payload{
+        0x1e,
+        0x00, 0x02,
+        //  TLV 5
+        0x00, 0x05,  //  Interval recording
+        0x00, 0x25,
+        0x00, 0x00, 0x1c, 0x20, //  7200
+        0x00, 0x01, 0x51, 0x80, //  86400
+        0x07,  //  7 metrics
+        0x00, 0x01, 0x00, 0x00,
+        0x00, 0x09, 0x00, 0x08,
+        0x00, 0x0a, 0x00, 0x10,
+        0x00, 0x0b, 0x00, 0x20,
+        0x00, 0x02, 0x00, 0x00,
+        0x00, 0x03, 0x00, 0x00,
+        0x00, 0x04, 0x00, 0x00,
+        //  TLV 6
+        0x00, 0x06,  // Channel selection
+        0x00, 0x1d,
+        0x07,  //  7 metrics
+        0x00, 0x05, 0x00, 0x00,
+        0x00, 0x09, 0x00, 0x08,
+        0x00, 0x0a, 0x00, 0x10,
+        0x00, 0x0b, 0x00, 0x20,
+        0x00, 0x06, 0x00, 0x00,
+        0x00, 0x07, 0x00, 0x00,
+        0x00, 0x08, 0x00, 0x00 };
+
+    RfnConfigNotificationCommand cmd;
+
+    std::string exp = "Device Configuration Request:"
+        "\nInterval recording configuration:"
+        "\n    Recording interval : 7200 seconds"
+        "\n    Reporting interval : 86400 seconds"
+        "\n    Interval metrics   : 1, 2, 3, 4"
+        "\n    Coincident metrics : 9, 10, 11"
+        "\nChannel selection configuration:"
+        "\n    Midnight metrics   : 5, 6, 7, 8"
+        "\n    Coincident metrics : 9, 10, 11";
+
+    const auto result = cmd.handleResponse(execute_time, payload);
+
+    BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+    BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+    BOOST_CHECK(result[0].points.empty());
+    BOOST_CHECK_EQUAL(result[0].description, exp);
+
+    const auto interval_expected = { 1, 2, 3, 4 };
+    const auto midnight_expected = { 5, 6, 7, 8 };
+
+    BOOST_CHECK_EQUAL_RANGES(*cmd.channelSelections, midnight_expected);
+    BOOST_CHECK_EQUAL_RANGES(cmd.intervalRecording->intervalMetrics, interval_expected);
+}
+
+BOOST_AUTO_TEST_CASE(test_channel_configuration_no_coincidents)
+{
+    const std::vector<uint8_t> payload{
+        0x1e,
+        0x00, 0x02,
+        //  TLV 5
+        0x00, 0x05,  //  Interval recording
+        0x00, 0x19,
+        0x00, 0x00, 0x1c, 0x20, //  7200
+        0x00, 0x01, 0x51, 0x80, //  86400
+        0x04,  //  4 metrics
+        0x00, 0x01, 0x00, 0x00,
+        0x00, 0x02, 0x00, 0x00,
+        0x00, 0x03, 0x00, 0x00,
+        0x00, 0x04, 0x00, 0x00,
+        //  TLV 6
+        0x00, 0x06,  // Channel selection
+        0x00, 0x11,
+        0x04,
+        0x00, 0x05, 0x00, 0x00,
+        0x00, 0x06, 0x00, 0x00,
+        0x00, 0x07, 0x00, 0x00,
+        0x00, 0x08, 0x00, 0x00 };
+
+    RfnConfigNotificationCommand cmd;
+
+    std::string exp = "Device Configuration Request:"
+        "\nInterval recording configuration:"
+        "\n    Recording interval : 7200 seconds"
+        "\n    Reporting interval : 86400 seconds"
+        "\n    Interval metrics   : 1, 2, 3, 4"
+        "\nChannel selection configuration:"
+        "\n    Midnight metrics : 5, 6, 7, 8";
+
+    const auto result = cmd.handleResponse(execute_time, payload);
+
+    BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+    BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+    BOOST_CHECK(result[0].points.empty());
+    BOOST_CHECK_EQUAL(result[0].description, exp);
+
+    const auto intervals_expected = { 1, 2, 3, 4 };
+    const auto channels_expected  = { 5, 6, 7, 8 };
+
+    BOOST_CHECK_EQUAL_RANGES(*cmd.channelSelections, channels_expected);
+    BOOST_CHECK_EQUAL_RANGES(cmd.intervalRecording->intervalMetrics, intervals_expected);
+}
+
 BOOST_AUTO_TEST_CASE(test_temperature)
 {
     const std::vector<uint8_t> payload{
@@ -421,8 +541,10 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Recording interval : 7200 seconds"
         "\n    Reporting interval : 86400 seconds"
         "\n    Interval metrics   : 1, 2, 3, 4"
+        "\n    Coincident metrics : 9, 10, 11"
         "\nChannel selection configuration:"
-        "\n    Metric IDs: 5, 6, 7, 8"
+        "\n    Midnight metrics   : 5, 6, 7, 8"
+        "\n    Coincident metrics : 9, 10, 11"
         "\nDisconnect configuration:"
         "\n    Disconnect mode  : demand threshold"
         "\n    Reconnect method : 1"

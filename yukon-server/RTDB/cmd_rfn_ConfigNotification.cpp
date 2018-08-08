@@ -275,11 +275,17 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
 
     auto pos = 9;
 
+    std::set<int> coincidentMetrics;
+
     for( auto metric = 0; metric < intervalCount; metric++ )
     {
         const auto metricId = payload[pos] << 8 | payload[pos + 1];
 
-        if( ! r.intervalMetrics.insert(metricId).second )
+        if( payload[pos + 3] & 0x38 )
+        {
+            coincidentMetrics.insert(metricId);
+        }
+        else if( ! r.intervalMetrics.insert(metricId).second )
         {
             CTILOG_WARN(dout, "Duplicate metric ID " << metricId);
         }
@@ -288,6 +294,11 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
     }
 
     l.add("Interval metrics") << boost::join(r.intervalMetrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
+
+    if( ! coincidentMetrics.empty() )
+    {
+        l.add("Coincident metrics") << boost::join(coincidentMetrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
+    }
 
     intervalRecording = r;
 
@@ -304,20 +315,34 @@ std::string RfnConfigNotificationCommand::decodeChannelSelection(Bytes payload)
 
     RfnChannelConfigurationCommand::MetricIds metrics;
 
+    std::set<int> coincidentMetrics;
+
     for( auto pos = 1; pos < channelSize; pos += 4 )
     {
         const auto metricId = payload[pos] << 8 | payload[pos + 1];
 
-        if( ! metrics.insert(metricId).second )
+        if( payload[pos + 3] & 0x38 )
+        {
+            coincidentMetrics.insert(metricId);
+        }
+        else if( ! metrics.insert(metricId).second )
         {
             CTILOG_WARN(dout, "Duplicate metric ID " << metricId);
         }
     }
 
+    FormattedList l;
+
+    l.add("Midnight metrics") << boost::join(metrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
+
+    if( !coincidentMetrics.empty() )
+    {
+        l.add("Coincident metrics") << boost::join(coincidentMetrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
+    }
+
     channelSelections = metrics;
 
-    return "Channel selection configuration:"
-        "\nMetric IDs: " + boost::join(metrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
+    return "Channel selection configuration:" + l.toString();
 }
 
 std::string RfnConfigNotificationCommand::decodeDisconnect(Bytes payload)
