@@ -513,7 +513,7 @@ yukon.map.network = (function () {
         miles = $('#miles').val();
         yukon.ui.removeAlerts();
         yukon.ui.busy('.js-nearby');
-        $.getJSON('nearby?' + $.param({ deviceId: paoId, miles: miles }))
+        $.getJSON(yukon.url('/stars/mapNetwork/nearby?') + $.param({ deviceId: paoId, miles: miles }))
         .done(function (json) {
             if (json.nearby) {
                 _loadNearbyDevices(json.nearby);
@@ -748,7 +748,7 @@ yukon.map.network = (function () {
                                 feature = fc.features[0],
                                 paoId = feature.id;
                             yukon.ui.busy('.js-neighbor-data');
-                            $.getJSON('neighbors?' + $.param({ deviceId: paoId }))
+                            $.getJSON(yukon.url('/stars/mapNetwork/neighbors?') + $.param({ deviceId: paoId }))
                             .done(function (json) {
                                 if (json.neighbors) {
                                     _loadNeighborData(json.neighbors);
@@ -780,7 +780,7 @@ yukon.map.network = (function () {
                     var deviceId = $(this).data('deviceId'),
                         mapContainer = $('#map-network-container');
                     yukon.ui.block(mapContainer);
-                    $.getJSON('neighbors?' + $.param({ deviceId: deviceId }))
+                    $.getJSON(yukon.url('/stars/mapNetwork/neighbors?') + $.param({ deviceId: deviceId }))
                     .done(function (json) {
                         if (json.neighbors) {
                             yukon.mapping.displayNeighborsLegend();
@@ -816,7 +816,7 @@ yukon.map.network = (function () {
                                 feature = fc.features[0],
                                 paoId = feature.id;
                             yukon.ui.busy('.js-primary-route');
-                            $.getJSON('primaryRoute?' + $.param({ deviceId: paoId }))
+                            $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute?') + $.param({ deviceId: paoId }))
                             .done(function (json) {
                                 if (json.routeInfo) {
                                     _loadPrimaryRouteData(json.routeInfo);
@@ -847,7 +847,7 @@ yukon.map.network = (function () {
                     var deviceId = $(this).data('deviceId'),
                         mapContainer = $('#map-network-container');
                     yukon.ui.block(mapContainer);
-                    $.getJSON('primaryRoute?' + $.param({ deviceId: deviceId }))
+                    $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute?') + $.param({ deviceId: deviceId }))
                     .done(function (json) {
                         if (json.routeInfo) {
                             _loadDeviceRoute(deviceId, json.routeInfo);
@@ -863,7 +863,7 @@ yukon.map.network = (function () {
                 /** Redirects to new device map network page **/
                 $(document).on('click', '.js-device-map', function() {
                     var deviceId = $(this).data('deviceId');
-                    window.location.href = 'home?deviceId=' + deviceId;
+                    window.location.href = yukon.url('/stars/mapNetwork/home?deviceId=' + deviceId);
                 });
                 
                 /** Gets the parent node from Network Manager **/
@@ -884,7 +884,7 @@ yukon.map.network = (function () {
                             feature = fc.features[0],
                             paoId = feature.id;
                             yukon.ui.busy('.js-parent-node');
-                            $.getJSON('parentNode?' + $.param({ deviceId: paoId }))
+                            $.getJSON(yukon.url('/stars/mapNetwork/parentNode?') + $.param({ deviceId: paoId }))
                             .done(function (json) {
                                 if (json.parent) {
                                     _loadParentData(json.parent);

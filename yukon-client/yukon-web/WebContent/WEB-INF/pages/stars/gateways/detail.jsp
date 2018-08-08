@@ -9,12 +9,10 @@
 
 <cti:standardPage module="operator" page="gateways.detail">
 
-<style>
-#gateway-location-container { height: 300px; }
-</style>
+<input type="hidden" class="js-device-status" value="${deviceStatus}"/>
 <input type="hidden" class="js-device-id" value="${gateway.paoIdentifier.paoId}"/>
 
-<c:if test="${not empty geojson}"><cti:toJson id="gateway-geojson" object="${geojson}"/></c:if>
+<c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
 
 <d:confirm on="#gateway-delete" nameKey="delete.confirm"/>
 
@@ -59,28 +57,14 @@
 </cti:checkRolesAndProperties>
 
 <c:set var="data" value="${gateway.data}"/>
-<div class="column-12-12 clearfix">
+<div class="column-10-14 clearfix">
 
     <div class="column one">
         <tags:widget bean="gatewayInformationWidget" deviceId="${gateway.paoIdentifier.paoId}" container="section"/>
     </div>
     
     <div class="column two nogutter">
-        <tags:sectionContainer2 nameKey="location" styleClass="stacked">
-            <%@ include file="../mapNetwork/locationInput.jspf"%>        
-            <div style="height:400px;">
-                <div id="gateway-location-container" class="${empty gateway.location ? 'dn' : ''}" style="height:90%;width:100%;">
-                    <div id="gateway-location" class="map" data-has-location="${not empty gateway.location}"></div>
-                    <div class="buffered">
-                        <div id="map-tiles" class="fr button-group">
-                            <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                            <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                            <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </tags:sectionContainer2>
+        <%@ include file="/WEB-INF/pages/stars/mapNetwork/locationContainer.jsp" %>
     </div>
     
 </div>
@@ -175,6 +159,8 @@
     </div>
 </div>
 
+&nbsp;
+
 <div class="stacked">
     <tags:sectionContainer2 nameKey="dataCollection" id="gw-data-collection">
         <div class="column-12-12 clearfix">
@@ -231,6 +217,7 @@
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.details.js"/>
 <cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
-
+<cti:includeScript link="/resources/js/common/yukon.mapping.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.map.network.js"/>
 
 </cti:standardPage>

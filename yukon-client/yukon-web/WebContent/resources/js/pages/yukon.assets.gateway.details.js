@@ -20,84 +20,6 @@ yukon.assets.gateway.details = (function () {
     /** @type {Number} - The gateway pao id. */
     _gateway,
     
-    /** @type {ol.Map} - The openlayers map object. */
-    _map = {},
-    
-    /** @type {string} - The default projection code of our map tiles. */
-    _destProjection = 'EPSG:3857',
-    
-    _deviceDragInteraction,
-    
-    /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
-    _tiles = [ 
-          new ol.layer.Tile({ name: 'mqosm',
-              source: new ol.source.XYZ({ name: 'mqosm',
-                  url: yg.map_devices_street_url,
-                  attributions: [new ol.Attribution({
-                      html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
-                    })]
-              })
-          }),
-          new ol.layer.Tile({ name: 'mqsat', visible: false,
-              source: new ol.source.XYZ({ name: 'mqsat', 
-                url: yg.map_devices_satellite_url,
-                attributions: [new ol.Attribution({
-                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
-                  })]
-              })
-          }),
-          new ol.layer.Tile({ name: 'hybrid', visible: false,
-              source: new ol.source.XYZ({ name: 'hybrid', 
-                url: yg.map_devices_hybrid_url,
-                attributions: [new ol.Attribution({
-                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
-                  })]
-              })
-          })
-    ],
-    
-    /** 
-     * Gets pao location as geojson format and adds an icon feature to the vector layer for the map.
-     */
-    _loadIcon = function() {
-        var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-            fc = yukon.fromJson('#gateway-geojson'),
-            feature = fc.features[0],
-            src_projection = fc.crs.properties.name,
-            pao = feature.properties.paoIdentifier,
-            icon = new ol.Feature({ pao: pao });
-        
-        icon.setStyle(new ol.style.Style({ 
-            image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.png'), 
-                anchor: [0.5, 1.0] 
-            }) 
-        }));
-        
-        if (src_projection === _destProjection) {
-            icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-        } else {
-            var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-            icon.setGeometry(new ol.geom.Point(coord));
-        }
-        
-        // Drag and drop feature
-        _deviceDragInteraction = new ol.interaction.Modify({
-            features: new ol.Collection([icon]),
-            pixelTolerance: 40
-        });
-        
-        // Add the event to the drag and drop feature
-        _deviceDragInteraction.on('modifyend', function(e) {
-            yukon.map.location.changeCoordinatesPopup(e, _destProjection, src_projection);
-        }, icon);
-        
-        source.addFeature(icon);
-        
-        _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-        _map.getView().setZoom(13);
-    },
-    
     _updateSequences = function () {
         $.ajax({
             url: yukon.url('/stars/gateways/' + _gateway + '/sequences')
@@ -158,39 +80,7 @@ yukon.assets.gateway.details = (function () {
             
             _text = yukon.fromJson('#gateway-text');
             _gateway = $('#gateway-id').data('id');
-            
-            /** Initialize map if we have a location. */
-            if ($('#gateway-location').data('hasLocation') === true) {
-                
-                /** Setup the openlayers map. */
-                _map = new ol.Map({
-                    controls: [
-                        new ol.control.Attribution(),
-                        new ol.control.FullScreen({source: 'gateway-location-container'}),
-                        new ol.control.Zoom() 
-                    ],
-                    layers: _tiles,
-                    target: 'gateway-location',
-                    view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
-                });
-                _destProjection = _map.getView().getProjection().getCode();
-                _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
-                
-                /** Load icon for location */
-                _loadIcon();
-                
-                /** Change map tiles layer on tile button group clicks. */
-                $('#map-tiles button').click(function (ev) {
-                    $(this).siblings().removeClass('on');
-                    $(this).addClass('on');
-                    for (var i in _tiles) {
-                        var layer = $(this).data('layer');
-                        _tiles[i].set('visible', (_tiles[i].get('name') === layer));
-                    }
-                    
-                });
-            }
-            
+                        
             /** Delete this gateway. */
             $(document).on('yukon:assets:gateways:delete', function (ev) {
                 $('#delete-gw-form').submit();
@@ -254,19 +144,11 @@ yukon.assets.gateway.details = (function () {
                 
             });
             
-            $(document).on('click', '.js-edit-coordinates', function() {
-                _map.addInteraction(_deviceDragInteraction);
-            });
-            
             _update();
             _updateSequences();
             
             _initialized = true;
         },
-        
-        getMap: function () {
-            return _map;
-        }
 
     };
  
