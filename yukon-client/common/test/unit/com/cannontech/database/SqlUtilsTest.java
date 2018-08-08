@@ -11,7 +11,7 @@ public class SqlUtilsTest {
         // note that everything goes straight through except the whitespace strings
         // we loose our ability to store that, but that's on purpose
         String[] input =  {null, "", " ", "   ", "foo", "  bar  "};
-        String[] output = {"", "", "",  "",    "foo", "  bar  "};
+        String[] output = {null, "", "",  "",    "foo", "  bar  "};
         
         for (int i = 0; i < input.length; ++i) {
             String dbValue = SqlUtils.convertStringToDbValue(input[i]);

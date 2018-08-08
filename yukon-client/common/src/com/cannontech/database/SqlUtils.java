@@ -108,7 +108,7 @@ public final class SqlUtils {
      * @throws SQLException
      */
     public static String convertDbValueToString(String value) {
-        if (StringUtils.isWhitespace(value) || value == null) {
+        if (StringUtils.isWhitespace(value)) {
             return "";
         }
         return value;
