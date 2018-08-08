@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
     @Autowired private ConnectionFactoryService connectionFactorySvc;
 
     private volatile Instant receivedLatestMessageTimeStamp;
+    private AtomicBoolean isDispatcherRunning = new AtomicBoolean(false);
     private Instant sendMessageTimeStamp;
     private static WatchdogDispatchClientConnection dispatchConnection;
     
@@ -100,9 +102,11 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
 
         if (receivedLatestMessageTimeStamp == null || !dispatchConnection.isValid()) {
             log.debug("Status of Dispatcher service " + ServiceStatus.STOPPED);
+            isDispatcherRunning.set(false);
             return generateWarning(WatchdogWarningType.DISPATCH_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
             log.debug("Status of Dispatcher service " + ServiceStatus.RUNNING);
+            isDispatcherRunning.set(true);
             return generateWarning(WatchdogWarningType.DISPATCH_SERVICE_STATUS, ServiceStatus.RUNNING);
         }
     }
@@ -124,4 +128,10 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
     public YukonServices getServiceName() {
         return YukonServices.DISPATCH;
     }
+
+    @Override
+    public boolean isServiceRunning() {
+        return isDispatcherRunning.get();
+    }
+
 }

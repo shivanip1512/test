@@ -1,9 +1,9 @@
 package com.cannontech.watchdogs.impl;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -37,10 +37,11 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
 
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private DispatcherServiceWatcher dispatcherServiceWatcher;
     /** Point for process memory usage */
     private LitePoint memoryPoint;
-    private CountDownLatch countDownLatch = new CountDownLatch(1);
-    private volatile Instant receivedLatestMessageTimeStamp;
+    private Semaphore pointDataReceived = new Semaphore(0);
+    private volatile Instant startedListening;
 
     /**
      * Load memory Point for Foreign Data Service.
@@ -60,6 +61,8 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
 
     @Override
     public List<WatchdogWarnings> watch() {
+        startedListening = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+        pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getFDRServiceStatus();
         log.debug("Status of FDR service " + serviceStatus);
         return generateWarning(WatchdogWarningType.FDR_SERVICE_STATUS, serviceStatus);
@@ -71,20 +74,25 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
      */
 
     private ServiceStatus getFDRServiceStatus() {
-        Instant startedListening = Instant.now();
         try {
-            countDownLatch.await(120, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {}
+            boolean checkServiceStatus = pointDataReceived.tryAcquire(120, TimeUnit.SECONDS);
+            if (checkServiceStatus || dispatcherServiceWatcher.isServiceRunning()) {
+                return checkServiceStatus ? ServiceStatus.RUNNING : ServiceStatus.STOPPED;
+            }
 
-        return Optional.ofNullable(receivedLatestMessageTimeStamp)
-                       .filter(ts -> ts.compareTo(startedListening) >= 0)
-                       .map(ts -> ServiceStatus.RUNNING)
-                       .orElse(ServiceStatus.STOPPED);
+        } catch (InterruptedException e) {
+            log.warn("Interrupted while waiting for service status", e);
+        }
+
+        return ServiceStatus.UNKNOWN;
     }
 
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
-        receivedLatestMessageTimeStamp = pointData.getPointDataTimeStamp().toInstant();
+        Instant pointDataTimestamp = pointData.getPointDataTimeStamp().toInstant();
+        if (startedListening != null && pointDataTimestamp.isAfter(startedListening)) {
+            pointDataReceived.release();
+        }
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.cannontech.watchdogs.impl;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -31,16 +31,17 @@ import com.google.common.collect.ImmutableSet;
  */
 
 @Service
-public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements PointDataListener{
+public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements PointDataListener {
 
     private static final Logger log = YukonLogManager.getLogger(ScannerServiceWatcher.class);
 
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private DispatcherServiceWatcher dispatcherServiceWatcher;
     /** Point for process memory usage */
     private LitePoint memoryPoint;
-    private CountDownLatch countDownLatch = new CountDownLatch(1);
-    private volatile Instant receivedLatestMessageTimeStamp;
+    private Semaphore pointDataReceived = new Semaphore(0);
+    private volatile Instant startedListening;
     /**
      * Load memory Point for Real-Time Scan Service.
      */
@@ -59,6 +60,8 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
 
     @Override
     public List<WatchdogWarnings> watch() {
+        startedListening = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+        pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getScannerServiceStatus();
         log.debug("Status of SCANNER service " + serviceStatus);
         return generateWarning(WatchdogWarningType.SCANNER_SERVICE_STATUS, serviceStatus);
@@ -70,16 +73,16 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
      */
 
     private ServiceStatus getScannerServiceStatus() {
-        Instant startedListening = Instant.now();
         try {
-            countDownLatch.await(120, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {}
+            boolean checkServiceStatus = pointDataReceived.tryAcquire(120, TimeUnit.SECONDS);
+            if (checkServiceStatus || dispatcherServiceWatcher.isServiceRunning()) {
+                return checkServiceStatus ? ServiceStatus.RUNNING : ServiceStatus.STOPPED;
+            }
+        } catch (InterruptedException e) {
+            log.warn("Interrupted while waiting for service status", e);
+        }
 
-        return Optional.ofNullable(receivedLatestMessageTimeStamp)
-                       .filter(ts -> ts.compareTo(startedListening) >= 0)
-                       .map(ts -> ServiceStatus.RUNNING)
-                       .orElse(ServiceStatus.STOPPED);
-
+        return ServiceStatus.UNKNOWN;
     }
 
     @Override
@@ -89,7 +92,9 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
 
     @Override
     public void pointDataReceived(PointValueQualityHolder pointData) {
-        receivedLatestMessageTimeStamp = pointData.getPointDataTimeStamp().toInstant();
+        Instant pointDataTimestamp = pointData.getPointDataTimeStamp().toInstant();
+        if (startedListening != null && pointDataTimestamp.isAfter(startedListening)) {
+            pointDataReceived.release();
+        }
     }
-
 }
