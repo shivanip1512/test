@@ -98,9 +98,12 @@
             <div id="scale-line" class="fl"></div>
             
             <div id="map-tiles" class="fr button-group">
-                <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                <cti:msg2 var="map" key="yukon.web.components.button.map.label"/>
+                <cti:msg2 var="satellite" key="yukon.web.components.button.satellite.label"/>
+                <cti:msg2 var="hybrid" key="yukon.web.components.button.hybrid.label"/>
+                <cti:button renderMode="buttonImage" title="${map}" data-layer="mqosm" icon="icon-map" classes="on"/>
+                <cti:button renderMode="buttonImage" title="${satellite}" data-layer="mqsat" icon="icon-map-sat"/>
+                <cti:button renderMode="buttonImage" title="${hybrid}" data-layer="hybrid" icon="icon-map-hyb"/>
             </div>
             
             <c:if test="${dynamic}">

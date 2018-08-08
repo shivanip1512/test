@@ -22,15 +22,6 @@
                     <c:set var="groupClass" value="button-group"/>
                 </c:if>
                 <div class="${groupClass} stacked">
-                    <c:if test="${displayNeighborsLayer}">
-                        <tags:check name="neighbors" key=".mapNetwork.neighbors" classes="js-neighbor-data" />                            
-                    </c:if>
-                    <c:if test="${displayParentNodeLayer}">
-                        <tags:check name="parent" key=".mapNetwork.parent" classes="js-parent-node" />
-                    </c:if>
-                    <c:if test="${displayPrimaryRouteLayer}">
-                        <tags:check name="primary" key=".mapNetwork.primary" classes="js-primary-route" />
-                    </c:if>
                     <c:if test="${displayNearbyLayer}">
                         <span class="fl" style="text-transform:capitalize">
                             <i:inline key=".mapNetwork.distance.miles"/>:&nbsp;
@@ -42,13 +33,25 @@
                                 <option>10</option>
                             </select>
                         </span>
-                        <tags:check name="nearby" key=".mapNetwork.nearby" classes="js-nearby" />
+                        <tags:check name="nearby" key=".mapNetwork.nearby" classes="js-nearby bl1" />
+                    </c:if>
+                    <c:if test="${displayNeighborsLayer}">
+                        <tags:check name="neighbors" key=".mapNetwork.neighbors" classes="js-neighbor-data" />                            
+                    </c:if>
+                    <c:if test="${displayParentNodeLayer}">
+                        <tags:check name="parent" key=".mapNetwork.parent" classes="js-parent-node" />
+                    </c:if>
+                    <c:if test="${displayPrimaryRouteLayer}">
+                        <tags:check name="primary" key=".mapNetwork.primary" classes="js-primary-route" />
                     </c:if>
                 </div>
                 <div id="map-tiles" class="fr button-group">
-                    <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                    <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                    <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                    <cti:msg2 var="map" key="yukon.web.components.button.map.label"/>
+                    <cti:msg2 var="satellite" key="yukon.web.components.button.satellite.label"/>
+                    <cti:msg2 var="hybrid" key="yukon.web.components.button.hybrid.label"/>
+                    <cti:button renderMode="buttonImage" title="${map}" data-layer="mqosm" icon="icon-map" classes="on"/>
+                    <cti:button renderMode="buttonImage" title="${satellite}" data-layer="mqsat" icon="icon-map-sat"/>
+                    <cti:button renderMode="buttonImage" title="${hybrid}" data-layer="hybrid" icon="icon-map-hyb"/>
                 </div>
             </div>
         </div>
