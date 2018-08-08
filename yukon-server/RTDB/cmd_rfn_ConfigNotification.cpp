@@ -258,7 +258,7 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
         << "Interval Recording payload too small - (" << payload.size() << " < " << 9);
 
     const auto intervalCount = payload[8];
-    const auto intervalSize = intervalCount * 2;
+    const auto intervalSize = intervalCount * 4;
 
     validate(Condition(payload.size() >= 9 + intervalSize, ClientErrors::DataMissing)
         << "Interval Recording payload too small - (" << payload.size() << " < " << 9 + intervalSize);
@@ -284,7 +284,7 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
             CTILOG_WARN(dout, "Duplicate metric ID " << metricId);
         }
 
-        pos += 2;
+        pos += 4;
     }
 
     l.add("Interval metrics") << boost::join(r.intervalMetrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
@@ -297,14 +297,14 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
 std::string RfnConfigNotificationCommand::decodeChannelSelection(Bytes payload)
 {
     auto channelCount = payload[0];
-    auto channelSize = channelCount * 2;
+    auto channelSize = channelCount * 4;
 
     validate(Condition(payload.size() > channelSize, ClientErrors::DataMissing)
         << "Channel Selection payload too small - (" << payload.size() << " < " << channelSize);
 
     RfnChannelConfigurationCommand::MetricIds metrics;
 
-    for( auto pos = 1; pos < channelSize; pos += 2 )
+    for( auto pos = 1; pos < channelSize; pos += 4 )
     {
         const auto metricId = payload[pos] << 8 | payload[pos + 1];
 
