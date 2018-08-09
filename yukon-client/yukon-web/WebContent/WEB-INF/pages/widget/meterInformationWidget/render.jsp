@@ -38,8 +38,9 @@
     </tags:nameValue2>
     <c:choose>
         <c:when test="${hasNotes}">
+            <cti:msg2 var="viewAllTitle" key="yukon.web.common.paoNote.more.title"/>
             <tags:nameValue2 nameKey=".notes">
-                ${fn:escapeXml(note)} (<a class="js-view-all-notes js-no-link" href="#" 
+                ${fn:escapeXml(note)} (<a class="js-view-all-notes js-no-link" href="#" title="${viewAllTitle}" 
                                           data-pao-id="${meter.deviceId}"><i:inline key="yukon.common.viewAll"/></a>)
             </tags:nameValue2>
         </c:when>
