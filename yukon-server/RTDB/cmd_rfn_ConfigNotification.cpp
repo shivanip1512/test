@@ -335,7 +335,7 @@ std::string RfnConfigNotificationCommand::decodeChannelSelection(Bytes payload)
 
     l.add("Midnight metrics") << boost::join(metrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
 
-    if( !coincidentMetrics.empty() )
+    if( ! coincidentMetrics.empty() )
     {
         l.add("Coincident metrics") << boost::join(coincidentMetrics | boost::adaptors::transformed([](int i) { return std::to_string(i); }), ", ");
     }
