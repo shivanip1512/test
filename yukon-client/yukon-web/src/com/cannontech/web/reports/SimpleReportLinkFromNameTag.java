@@ -24,7 +24,7 @@ public class SimpleReportLinkFromNameTag extends SimpleReportLinkFromNameTagBase
     	setContext();
     	
         Map<String, String> propertiesMap = getpropertiesMap(definitionName);
-        String url = buildUrl(viewType, propertiesMap, true);
+        String url = buildUrl(viewType, propertiesMap, false);
         url = ServletUtil.createSafeUrl(getRequest(), url);
         
         if (var == null) {

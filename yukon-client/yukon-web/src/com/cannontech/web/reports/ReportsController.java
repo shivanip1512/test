@@ -15,7 +15,10 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
+import com.cannontech.analysis.tablemodel.NormalizedUsageModel;
 import com.cannontech.analysis.tablemodel.ReportModelMetaInfo;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.simplereport.SimpleReportOutputter;
@@ -30,7 +33,7 @@ public class ReportsController extends MultiActionController  {
     
     private SimpleReportService simpleReportService = null;
     private SimpleReportOutputter simpleReportOutputter = null;
-    
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     public ModelAndView htmlView(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
@@ -100,6 +103,7 @@ public class ReportsController extends MultiActionController  {
         ModelAndView mav = new ModelAndView(jspPath);
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         // optional page module, showMenu, menuSelection values
         //-----------------------------------------------------------------------------------------
@@ -113,7 +117,9 @@ public class ReportsController extends MultiActionController  {
         
         // title
         //-----------------------------------------------------------------------------------------
-        mav.addObject("reportTitle", reportModel.getTitle());
+        Boolean isDailyUsage = ServletRequestUtils.getBooleanParameter(request, "isDailyUsage", false);
+
+        mav.addObject("reportTitle", isDailyUsage ? accessor.getMessage("yukon.web.widgetClasses.CsrTrendWidget.dailyUsageData") : reportModel.getTitle());
         
         
         // column layout lists
@@ -182,6 +188,7 @@ public class ReportsController extends MultiActionController  {
     public ModelAndView csvView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         // get report definition, model
         //-----------------------------------------------------------------------------------------
@@ -191,8 +198,13 @@ public class ReportsController extends MultiActionController  {
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext);
         
+        String title = reportModel.getTitle();
+        if (Boolean.parseBoolean(parameterMap.get("isDailyUsage"))) {
+            title = accessor.getMessage("yukon.web.widgetClasses.CsrTrendWidget.dailyUsageData");
+        }
+        
         response.setContentType("text/csv");
-        response.setHeader("Content-Disposition","filename=\"" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".csv\"");
+        response.setHeader("Content-Disposition","filename=\"" + ServletUtil.makeWindowsSafeFileName(title) + ".csv\"");
         OutputStream outputStream = response.getOutputStream();
         simpleReportOutputter.outputCsvReport(reportDefinition, reportModel, outputStream, userContext);
         
@@ -210,14 +222,20 @@ public class ReportsController extends MultiActionController  {
      */
     public ModelAndView pdfView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-                
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
         Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext);
         
+        String title = reportModel.getTitle();
+        if (Boolean.parseBoolean(parameterMap.get("isDailyUsage"))) {
+            title = accessor.getMessage("yukon.web.widgetClasses.CsrTrendWidget.dailyUsageData");
+        }
+        
         //force download of PDF
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".pdf\"");
+        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName(title) + ".pdf\"");
         
         OutputStream outputStream = response.getOutputStream();
         simpleReportOutputter.outputPdfReport(reportDefinition, reportModel, outputStream, userContext);

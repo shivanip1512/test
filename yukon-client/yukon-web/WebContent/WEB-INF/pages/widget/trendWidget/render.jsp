@@ -139,14 +139,20 @@ $(function () {
             
             <c:if test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER' || attributeGraphType.attribute == 'USAGE_GAS'}">
                 <tr>
-                    <td class="wsnw"><b><i:inline key=".normalizedUsageData"/></b></td>
-                    
+                    <c:choose>
+                        <c:when test="${isDailyUsage}">
+                            <td class="wsnw"><b><i:inline key=".dailyUsageData"/></b></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td class="wsnw"><b><i:inline key=".normalizedUsageData"/></b></td>
+                        </c:otherwise>
+                    </c:choose>
                     <td>
                         <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDate.time}&stopDate=${stopDateAdjusted.time}&attribute=${attributeGraphType.attribute}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                         |
-                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
+                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}" isDailyUsage="${isDailyUsage}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                         |
-                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="pdfView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
+                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="pdfView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}" isDailyUsage="${isDailyUsage}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                     </td>
                 </tr>
             </c:if>

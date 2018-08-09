@@ -80,7 +80,8 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
         optionalAttributeDefaults.put("refreshRate", "0");
         optionalAttributeDefaults.put("width", "0");
         optionalAttributeDefaults.put("height", "350");
-        
+        optionalAttributeDefaults.put("isDailyUsage", "false");
+
         CtiUtilities.overrideValuesOfDefaultsMap(optionalAttributeDefaults, identifierAttributes);
         
         propertiesMap.putAll(optionalAttributeDefaults);

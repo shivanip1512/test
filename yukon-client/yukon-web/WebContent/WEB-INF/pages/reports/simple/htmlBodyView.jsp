@@ -17,7 +17,7 @@
 <br>
 
 <%-- CSV URL --%>
-<cti:simpleReportUrlFromNameTag var="csvUrlBase" viewType="csvView" definitionName="${definitionName}" htmlOutput="true" />
+<cti:simpleReportUrlFromNameTag var="csvUrlBase" viewType="csvView" definitionName="${definitionName}" htmlOutput="true" isDailyUsage="${isDailyUsage}" />
 <cti:url var="csvUrl" value="${csvUrlBase}">
     <c:forEach var="input" items="${inputMap}">
         <cti:param name="${input.key}" value="${input.value}"/>
@@ -25,7 +25,7 @@
 </cti:url>
 
 <%-- PDF URL --%>
-<cti:simpleReportUrlFromNameTag var="pdfUrlBase" viewType="pdfView" definitionName="${definitionName}" htmlOutput="true" />
+<cti:simpleReportUrlFromNameTag var="pdfUrlBase" viewType="pdfView" definitionName="${definitionName}" htmlOutput="true" isDailyUsage="${isDailyUsage}" />
 <cti:url var="pdfUrl" value="${pdfUrlBase}">
     <c:forEach var="input" items="${inputMap}">
         <cti:param name="${input.key}" value="${input.value}"/>

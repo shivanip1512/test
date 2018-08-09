@@ -10,15 +10,20 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
+import com.cannontech.analysis.tablemodel.NormalizedUsageModel;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.simplereport.YukonReportDefinitionFactory;
+import com.cannontech.user.YukonUserContext;
 
 public class AMRReportsController extends MultiActionController  {
     
@@ -27,6 +32,7 @@ public class AMRReportsController extends MultiActionController  {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     /**
      * For viewing the Archived Data report crumbs back to high bill complaint page
@@ -71,6 +77,9 @@ public class AMRReportsController extends MultiActionController  {
     
     private void setupArchivedDataReportMav(HttpServletRequest request, ModelAndView mav) throws Exception {
         
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
         // model stuff
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
         Integer pointId = ServletRequestUtils.getRequiredIntParameter(request, "pointId");
@@ -85,16 +94,26 @@ public class AMRReportsController extends MultiActionController  {
         // report title
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = reportDefinition.createBean();
-        mav.addObject("reportTitle", reportModel.getTitle());
         
         // information for bread crumbs
         LitePoint point = pointDao.getLitePoint(pointId);
         Integer deviceId = point.getPaobjectID();
         PaoType type = deviceDao.getYukonDevice(deviceId).getDeviceType();
         
+        String title = reportModel.getTitle();
+        boolean isDailyUsage = type.isRfn() 
+                && !type.isWaterMeter()
+                && !type.isGasMeter() 
+                && reportModel instanceof NormalizedUsageModel;
+        if (isDailyUsage) {
+            title = accessor.getMessage("yukon.web.widgetClasses.CsrTrendWidget.dailyUsageData");
+        }
+        
         mav.addObject("isWaterMeter", type.isWaterMeter());
         mav.addObject("isGasMeter", type.isGasMeter());
+        mav.addObject("isDailyUsage", isDailyUsage);
         mav.addObject("deviceId", deviceId);
+        mav.addObject("reportTitle", title);
     }
     
     /**

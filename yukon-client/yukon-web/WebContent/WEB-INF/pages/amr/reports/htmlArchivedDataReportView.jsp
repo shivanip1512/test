@@ -34,13 +34,14 @@
     </cti:breadCrumbs>
 
     <cti:simpleReportUrlFromNameTag var="bodyUrl"
-                                    htmlOutput="false"
+                                    htmlOutput="true"
                                     viewType="extView"
                                     viewJsp="BODY"
                                     definitionName="${definitionName}"
                                     pointId="${pointId}"
                                     startDate="${startDate}"
-                                    stopDate="${stopDate}" />
+                                    stopDate="${stopDate}"
+                                    isDailyUsage="${isDailyUsage}" />
                                     
     <jsp:include page="${bodyUrl}" />
 
