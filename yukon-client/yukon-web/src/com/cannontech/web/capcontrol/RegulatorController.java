@@ -121,7 +121,7 @@ public class RegulatorController {
             availableConfigs.addAll(deviceConfigDao.getAllConfigurationsByType(type));
         }
         model.addAttribute("availableConfigs", availableConfigs);
-        final int currentConfigId = regulator.getConfigId();
+        int currentConfigId = regulator.getConfigId();
         
         StringBuilder configName = new StringBuilder();
         availableConfigs.stream()
