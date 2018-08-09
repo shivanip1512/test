@@ -162,7 +162,7 @@ public class PaoNotesSearchController {
             @DefaultItemsPerPage(value = 25) PagingParameters paging, YukonUserContext userContext,
             HttpServletResponse response) throws IOException {
         SearchResults<PaoNotesSearchResult> searchResults =
-            paoNotesService.getAllNotesByFilter(filter, SortBy.CREATE_DATE, sorting.getDirection(), paging);
+            paoNotesService.getAllNotesByFilter(filter, SortBy.CREATE_DATE, sorting.getDirection(), PagingParameters.EVERYTHING);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String deviceNameHeader = accessor.getMessage(PaoNoteSortBy.deviceName);
