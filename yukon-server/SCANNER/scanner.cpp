@@ -787,15 +787,28 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
                     id = InMessage.DeviceID;
                 }
 
-                CtiDeviceSPtr pBase = (CtiDeviceSPtr )ScannerDeviceManager.getDeviceByID(id);
-
-                if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
+                if( auto pBase = ScannerDeviceManager.getDeviceByID(id); ! pBase )
                 {
-                    CTILOG_DEBUG(dout, "InMessage from "<< pBase->getName() <<" "<< CtiError::GetErrorString(InMessage.ErrorCode));
+                    Cti::FormattedList loglist;
+                    loglist.add("Device ID") << InMessage.DeviceID;
+                    loglist.add("Port listed as") << InMessage.Port;
+                    loglist.add("Remote listed as") << InMessage.Remote;
+                    loglist.add("Target Remote") << InMessage.TargetID;
+
+                    CTILOG_INFO(dout, "Unknown device scanned." <<
+                        loglist);
                 }
-
-                if(pBase && pBase->isSingle())
+                else if( ! pBase->isSingle() )
                 {
+                    CTILOG_INFO(dout, "Device \"" << pBase->getName() << "\" is not \"Single\"");
+                }
+                else 
+                { 
+                    if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
+                    {
+                        CTILOG_DEBUG(dout, "InMessage from "<< pBase->getName() <<" "<< CtiError::GetErrorString(InMessage.ErrorCode));
+                    }
+
                     CtiDeviceSingleSPtr pSingle = boost::static_pointer_cast<CtiDeviceSingle>(pBase);
 
                     /* get the time for use in the decodes */
@@ -817,18 +830,16 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
                     MakePorterRequests(outList, PorterNexus);
 
                     // Write any results generated back to VanGogh
-                    while(!retList.empty())
+                    for( const auto retMsg : retList )
                     {
                         //  add protection here for CtiRequestMsgs going to Dispatch
-                        VanGoghConnection.WriteConnQue(retList.front(), CALLSITE);   // I no longer manage this, the queue cleans up!
-                        retList.pop_front();
+                        VanGoghConnection.WriteConnQue(retMsg, CALLSITE);   // I no longer manage this, the queue cleans up!
                     }
 
                     // Write any signals or misc. messages back to VanGogh!
-                    while(!vgList.empty())
+                    for( const auto vgMsg : vgList )
                     {
-                        VanGoghConnection.WriteConnQue(vgList.front(), CALLSITE);   // I no longer manage this, the queue cleans up!
-                        vgList.pop_front();
+                        VanGoghConnection.WriteConnQue(vgMsg, CALLSITE);   // I no longer manage this, the queue cleans up!
                     }
 
                     /* Check if we should kick other thread in the pants */
@@ -838,21 +849,6 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
                         pSingle->setNextScan(ScanRateGeneral, TimeNow.now());
                         SetEvent(hScannerSyncs[S_SCAN_EVENT]);
                     }
-                }
-                else if(pBase && !pBase->isSingle())
-                {
-                    CTILOG_INFO(dout, "Device \""<< pBase->getName() <<"\" is not \"Single\"");
-                }
-                else
-                {
-                    Cti::FormattedList loglist;
-                    loglist.add("Device ID")        << InMessage.DeviceID;
-                    loglist.add("Port listed as")   << InMessage.Port;
-                    loglist.add("Remote listed as") << InMessage.Remote;
-                    loglist.add("Target Remote")    << InMessage.TargetID;
-
-                    CTILOG_INFO(dout, "Unknown device scanned."<<
-                            loglist);
                 }
             }
         }
