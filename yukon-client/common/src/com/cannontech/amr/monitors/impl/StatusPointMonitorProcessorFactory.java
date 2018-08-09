@@ -1,11 +1,14 @@
 package com.cannontech.amr.monitors.impl;
 
+import static org.joda.time.DateTime.now;
+
 import java.util.Date;
 import java.util.List;
 
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
@@ -31,29 +34,42 @@ import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryBase<StatusPointMonitor> {
 
     private static final Logger log = YukonLogManager.getLogger(StatusPointMonitorProcessorFactory.class);
-    private AttributeService attributeService;
-    private StatusPointMonitorDao statusPointMonitorDao;
-    private RawPointHistoryDao rawPointHistoryDao;
-    private PointDao pointDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private StatusPointMonitorDao statusPointMonitorDao;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     private JmsTemplate jmsTemplate;
-    private DeviceGroupService deviceGroupService;
 
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
         return statusPointMonitorDao.getAllStatusPointMonitors();
     }
 
+    @Override
     protected RichPointDataListener createPointListener(final StatusPointMonitor statusPointMonitor) {
         
         RichPointDataListener richPointDataListener = new RichPointDataListener() {
 
             @Override
             public void pointDataReceived(RichPointData richPointData) {
-
+                int daysToIngore = globalSettingDao.getInteger(GlobalSettingType.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT);
+                //Ignores date check if value is set to 0
+                if (daysToIngore > 0) {
+                    DateTime xDaysAgo = now().minusDays(daysToIngore);
+                    if (new DateTime(richPointData.getPointValue().getPointDataTimeStamp()).isBefore(xDaysAgo)) {
+                        // ignore the data that is older the X number of days
+                        return;
+                    }
+                }
+      
                 PaoIdentifier paoIdentifier = richPointData.getPaoPointIdentifier().getPaoIdentifier();
                 if (paoIdentifier.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
                     // non devices can't be in groups
@@ -215,7 +231,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     private PointValueHolder getPreviousValueForPoint(PointValueHolder pointValueQualityHolder) {
         Date nextTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
         int pointId = pointValueQualityHolder.getId();
-        Range<Date> dateRange = new Range<Date>(null, true, nextTimeStamp, false);
+        Range<Date> dateRange = new Range<>(null, true, nextTimeStamp, false);
 		List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId,dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
 						Order.REVERSE, 1);
 
@@ -226,35 +242,10 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             return null;
         }
     }
-
-    @Autowired
-    public void setStatusPointMonitorDao(StatusPointMonitorDao statusPointMonitorDao) {
-        this.statusPointMonitorDao = statusPointMonitorDao;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
     
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(true);
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
+    }   
 }

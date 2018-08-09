@@ -144,6 +144,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(GlobalSettingSubCategory.AMI, booleanType(), true),
     PRESERVE_ENDPOINT_LOCATION(GlobalSettingSubCategory.AMI, booleanType(), true),
     RFN_INCOMING_DATA_TIMESTAMP_LIMIT(GlobalSettingSubCategory.AMI, integerType(), 6),
+    STATUS_POINT_MONITOR_NOTIFICATION_LIMIT(GlobalSettingSubCategory.AMI, integerType(), 1),
 
     // Misc.
     SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null),
