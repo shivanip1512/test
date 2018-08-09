@@ -66,13 +66,13 @@ public class EmailMessage {
      * Builds a complete email notification message. This will bcc all the recipients.
      * @throws MessagingException if an error occurs while building the EmailMessage.
      */
-    public static EmailMessage newMessage(String emailSubject, String emailBody, String sendFromAddress, List<String> recipientEmailAddresses) 
+    public static EmailMessage newMessageBccOnly(String emailSubject, String emailBody, String sendFromAddress, List<String> receipientEmailAddressesBcc) 
             throws MessagingException {
 
         InternetAddress sender = new InternetAddress();
         sender.setAddress(sendFromAddress);
         
-        InternetAddress[] bccRecipients = recipientEmailAddresses.stream()
+        InternetAddress[] bccRecipients = receipientEmailAddressesBcc.stream()
                                         .map(recipient -> {
                                             InternetAddress address = new InternetAddress();
                                             address.setAddress(recipient);

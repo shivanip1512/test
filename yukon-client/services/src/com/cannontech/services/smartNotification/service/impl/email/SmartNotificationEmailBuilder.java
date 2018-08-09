@@ -70,7 +70,7 @@ public abstract class SmartNotificationEmailBuilder {
                                                                quantity + ".subject", subjectArguments);
         
         String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
-        return EmailMessage.newMessage(emailSubject, emailBody, sender, parameters.getRecipients());
+        return EmailMessage.newMessageBccOnly(emailSubject, emailBody, sender, parameters.getRecipients());
     }
     
     /**

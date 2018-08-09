@@ -102,7 +102,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                 msgBuilder.append("\n\nSee " + webserverUrlResolver.getUrlBase());
                 String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
                 EmailMessage emailMessage =
-                        EmailMessage.newMessage(subject, msgBuilder.toString(), sender, sendToEmailIds);
+                        EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(), sender, sendToEmailIds);
                 emailService.sendMessage(emailMessage);
             } catch (Exception e) {
                 log.error("Watch dog is unable to send Internal Notification " + e);
