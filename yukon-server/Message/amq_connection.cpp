@@ -102,6 +102,7 @@ void ActiveMQConnectionManager::releaseConnectionObjects()
     _namedConsumers.clear();
     _replyConsumers.clear();
     _sessionConsumers.clear();
+    _sessionConsumerDestinations.clear();
 
     _producerSession.reset();
     _consumerSession.reset();
