@@ -30,9 +30,9 @@ public class SubstationGroupProvider extends BinningDeviceGroupProviderBase<Subs
     @Override
     protected SqlFragmentSource getChildSqlSelectForBin(Substation bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select distinct Device.DEVICEID");
-        sql.append("from Device");
-        sql.append("  join DeviceRoutes on (DeviceRoutes.DEVICEID = Device.DEVICEID)");
+        sql.append("select distinct DeviceMeterGroup.DEVICEID");
+        sql.append("from DeviceMeterGroup");
+        sql.append("  join DeviceRoutes on (DeviceRoutes.DEVICEID = DeviceMeterGroup.DEVICEID)");
         sql.append("  join SubstationToRouteMapping on (SubstationToRouteMapping.RouteID = DeviceRoutes.ROUTEID)");
         sql.append("where SubstationToRouteMapping.SubstationID").eq(bin.getId());
         return sql;
@@ -41,9 +41,9 @@ public class SubstationGroupProvider extends BinningDeviceGroupProviderBase<Subs
     @Override
     protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select distinct Device.DEVICEID");
-        sql.append("from Device");
-        sql.append("  join DeviceRoutes on (DeviceRoutes.DEVICEID = Device.DEVICEID)");
+        sql.append("select distinct DeviceMeterGroup.DEVICEID");
+        sql.append("from DeviceMeterGroup");
+        sql.append("  join DeviceRoutes on (DeviceRoutes.DEVICEID = DeviceMeterGroup.DEVICEID)");
         sql.append("  join SubstationToRouteMapping on (SubstationToRouteMapping.RouteID = DeviceRoutes.ROUTEID)");
         sql.append("where SubstationID != 0"); // substationDao.getAll() does the same != 0 filter
         return sql;
