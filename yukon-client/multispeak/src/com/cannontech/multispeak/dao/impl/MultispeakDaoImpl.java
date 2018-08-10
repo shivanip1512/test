@@ -81,7 +81,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD,");
         sql.append("APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,");
-        sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT");
+        sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT, ValidateCertificate");
         sql.append("FROM " + MSPVENDOR_TABLENAME);
         sql.append("WHERE UPPER(COMPANYNAME)").eq(upperVendorName);
         sql.append("ORDER BY COMPANYNAME, APPNAME");
@@ -112,7 +112,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD,");
             sql.append("APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,");
-            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT");
+            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT, ValidateCertificate");
             sql.append("FROM " + MSPVENDOR_TABLENAME);
             sql.append("WHERE VENDORID").eq(vendorID);
 
@@ -144,7 +144,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD,");
             sql.append("APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,");
-            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT");
+            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT, ValidateCertificate");
             sql.append("FROM " + MSPVENDOR_TABLENAME);
             if (excludeCannon) {
                 sql.append("WHERE VENDORID").neq(MultispeakVendor.CANNON_MSP_VENDORID);
@@ -163,7 +163,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT DISTINCT V.VENDORID, COMPANYNAME, USERNAME, PASSWORD,");
             sql.append("APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,");
-            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT");
+            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT, ValidateCertificate");
             sql.append("FROM MSPVENDOR V JOIN MSPINTERFACE I on V.VENDORID = I.VENDORID");
             sql.append("WHERE INTERFACE IN ('CB_Server', 'CB_MR')");
 
@@ -228,6 +228,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     sink.addValue("RequestMessageTimeout", mspVendor.getRequestMessageTimeout());
                     sink.addValue("MaxInitiateRequestObjects", mspVendor.getMaxInitiateRequestObjects());
                     sink.addValue("TemplateNameDefault", mspVendor.getTemplateNameDefault().trim());
+                    sink.addValue("ValidateCertificate", mspVendor.getValidateCertificate());
                     sql.append("WHERE VendorId").eq(mspVendor.getVendorID());
 
                     jdbcTemplate.update(sql);
@@ -273,6 +274,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     sink.addValue("RequestMessageTimeout", mspVendor.getRequestMessageTimeout());
                     sink.addValue("MaxInitiateRequestObjects", mspVendor.getMaxInitiateRequestObjects());
                     sink.addValue("TemplateNameDefault", mspVendor.getTemplateNameDefault().trim());
+                    sink.addValue("ValidateCertificate", mspVendor.getValidateCertificate());
 
                     jdbcTemplate.update(sql);
 
@@ -328,10 +330,11 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         long requestMessageTimeout = rset.getLong("RequestMessageTimeout");
         long maxInitiateRequestObjects = rset.getLong("MaxInitiateRequestObjects");
         String templateNameDefault = rset.getString("TemplateNameDefault").trim();
+        Boolean validateCertificate = rset.getBoolean("ValidateCertificate");
 
-        MultispeakVendor mspVendor =
-            new MultispeakVendor(vendorID, companyName, appName, userName, password, outUserName, outPassword,
-                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault);
+        MultispeakVendor mspVendor = new MultispeakVendor(vendorID, companyName, appName, userName, password,
+            outUserName, outPassword, maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects,
+            templateNameDefault, validateCertificate);
 
         List<MultispeakInterface> multispeakInterfaces = getMultispeakInterfaces(vendorID);
         mspVendor.setMspInterfaces(multispeakInterfaces);

@@ -8,22 +8,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.oa_server.GetMethods;
 import com.cannontech.msp.beans.v5.oa_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.oa_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.oa_server.PingURL;
-import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public class OAClient implements IOAClient {
     private WebServiceTemplate webServiceTemplate;
-    private HttpComponentsMessageSender messageSender;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     /**
      * OAClient Constructor
@@ -32,9 +31,7 @@ public class OAClient implements IOAClient {
      */
     @Autowired
     public OAClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
-
         this.webServiceTemplate = webServiceTemplate;
-        messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
     }
 
     @Override
@@ -42,7 +39,7 @@ public class OAClient implements IOAClient {
         try {
 
             PingURL pingURL = objectFactory.createPingURL();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -57,7 +54,7 @@ public class OAClient implements IOAClient {
         List<String> methodList = new ArrayList<>();
         try {
             GetMethods getMethods = objectFactory.createGetMethods();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,

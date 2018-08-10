@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.mr_server.GetMethods;
@@ -16,15 +15,15 @@ import com.cannontech.msp.beans.v5.mr_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.mr_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.mr_server.PingURL;
 import com.cannontech.msp.beans.v5.mr_server.PingURLResponse;
-import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public class MRClient implements IMRClient {
     private WebServiceTemplate webServiceTemplate;
-    private HttpComponentsMessageSender messageSender;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     /**
      * MR Client Constructor
@@ -33,9 +32,7 @@ public class MRClient implements IMRClient {
      */
     @Autowired
     public MRClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
-
         this.webServiceTemplate = webServiceTemplate;
-        messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
     }
 
     @Override
@@ -43,7 +40,7 @@ public class MRClient implements IMRClient {
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
@@ -56,7 +53,7 @@ public class MRClient implements IMRClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.not_server.ObjectFactory;
@@ -21,16 +20,16 @@ import com.cannontech.msp.beans.v5.not_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.not_server.MeterReadingsNotification;
 import com.cannontech.msp.beans.v5.not_server.PingURL;
 import com.cannontech.msp.beans.v5.not_server.PingURLResponse;
-import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public class NOTClient implements INOTClient {
     private WebServiceTemplate webServiceTemplate;
-    private HttpComponentsMessageSender messageSender;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     /**
      * NOT Client Constructor
@@ -39,9 +38,7 @@ public class NOTClient implements INOTClient {
      */
     @Autowired
     public NOTClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
-
         this.webServiceTemplate = webServiceTemplate;
-        messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
     }
 
     @Override
@@ -49,7 +46,7 @@ public class NOTClient implements INOTClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =
@@ -72,7 +69,7 @@ public class NOTClient implements INOTClient {
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -85,7 +82,7 @@ public class NOTClient implements INOTClient {
     public void endDeviceStatesNotification(MultispeakVendor mspVendor, String uri,
             EndDeviceStatesNotification endDeviceStatesNotification) throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, endDeviceStatesNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -98,7 +95,7 @@ public class NOTClient implements INOTClient {
     public void cdStatesChangedNotification(MultispeakVendor mspVendor, String uri,
             CDStatesChangedNotification cdStatesChangedNotification) throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, cdStatesChangedNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -111,7 +108,7 @@ public class NOTClient implements INOTClient {
     public void endDeviceEventsNotification(MultispeakVendor mspVendor, String uri,
             EndDeviceEventsNotification deviceEventsNotification) throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, deviceEventsNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -124,7 +121,7 @@ public class NOTClient implements INOTClient {
     public void meterReadingsNotification(MultispeakVendor mspVendor, String uri,
             MeterReadingsNotification meterReadingsNotification) throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, meterReadingsNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -137,7 +134,7 @@ public class NOTClient implements INOTClient {
     public void formattedBlockNotification(MultispeakVendor mspVendor, String uri,
             FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, formattedBlockNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));

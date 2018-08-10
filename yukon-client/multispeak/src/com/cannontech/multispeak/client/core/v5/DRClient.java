@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.dr_server.ObjectFactory;
@@ -16,16 +15,16 @@ import com.cannontech.msp.beans.v5.dr_server.GetMethods;
 import com.cannontech.msp.beans.v5.dr_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.dr_server.PingURL;
 import com.cannontech.msp.beans.v5.dr_server.PingURLResponse;
-import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public class DRClient implements IDRClient {
     private WebServiceTemplate webServiceTemplate;
-    private HttpComponentsMessageSender messageSender;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     /**
      * DR Client Constructor
@@ -36,7 +35,6 @@ public class DRClient implements IDRClient {
     public DRClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
 
         this.webServiceTemplate = webServiceTemplate;
-        messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
     }
 
     @Override
@@ -44,7 +42,7 @@ public class DRClient implements IDRClient {
             throws MultispeakWebServiceClientException {
         PingURL pingURL = objectFactory.createPingURL();
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -58,7 +56,7 @@ public class DRClient implements IDRClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =

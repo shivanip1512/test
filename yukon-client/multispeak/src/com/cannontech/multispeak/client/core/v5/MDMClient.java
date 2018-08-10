@@ -8,22 +8,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.mdm_server.GetMethods;
 import com.cannontech.msp.beans.v5.mdm_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.mdm_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.mdm_server.PingURL;
-import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public class MDMClient implements IMDMClient {
     private WebServiceTemplate webServiceTemplate;
-    private HttpComponentsMessageSender messageSender;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     /**
      * MDMClient Constructor
@@ -32,16 +31,14 @@ public class MDMClient implements IMDMClient {
      */
     @Autowired
     public MDMClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
-
         this.webServiceTemplate = webServiceTemplate;
-        messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
     }
 
     @Override
     public void pingURL(MultispeakVendor mspVendor, String uri) throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
@@ -55,7 +52,7 @@ public class MDMClient implements IMDMClient {
         List<String> methodList = new ArrayList<>();
         try {
             GetMethods getMethods = objectFactory.createGetMethods();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,

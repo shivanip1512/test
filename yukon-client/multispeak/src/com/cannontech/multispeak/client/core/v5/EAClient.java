@@ -8,23 +8,22 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.ea_server.GetMethods;
 import com.cannontech.msp.beans.v5.ea_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.ea_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.ea_server.PingURL;
-import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public class EAClient implements IEAClient {
 
     private WebServiceTemplate webServiceTemplate;
-    private HttpComponentsMessageSender messageSender;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     /**
      * EAClient Constructor
@@ -32,9 +31,7 @@ public class EAClient implements IEAClient {
      */
     @Autowired
     public EAClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
-
         this.webServiceTemplate = webServiceTemplate;
-        messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
     }
 
     @Override
@@ -42,7 +39,7 @@ public class EAClient implements IEAClient {
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri,
                                                      pingURL,
@@ -58,7 +55,7 @@ public class EAClient implements IEAClient {
         List<String> methodList = new ArrayList<>();
         try {
             GetMethods getMethods = objectFactory.createGetMethods();
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             GetMethodsResponse response = (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri,
                                                                                                         getMethods,

@@ -125,6 +125,15 @@
                             <tags:nameValue2 nameKey=".password">
                                 <tags:password path="mspVendor.outPassword" showPassword="true" includeShowHideButton="true"></tags:password>
                             </tags:nameValue2>
+
+                            <tags:nameValue2 nameKey=".validateCertificate">
+                                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                    <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm"/>
+                                </cti:displayForPageEditModes>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm" disabled="true"/>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
                 </div>

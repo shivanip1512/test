@@ -321,7 +321,7 @@ public class MultispeakController {
         String appName = multispeakVendor.getAppName();
         String password = multispeakVendor.getPassword();
         String username = multispeakVendor.getUserName();
-
+        Boolean validateCertificate = multispeakVendor.getValidateCertificate();
         int maxReturnRecords =
             multispeakVendor.getMaxReturnRecords() > 0 ? multispeakVendor.getMaxReturnRecords()
                 : MultispeakDefines.MSP_MAX_RETURN_RECORDS;
@@ -356,7 +356,7 @@ public class MultispeakController {
 
         MultispeakVendor mspVendor =
             new MultispeakVendor(vendorId, companyName, appName, username, password, outUsername, outPassword,
-                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault);
+                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, validateCertificate);
 
         mspVendor.setMspInterfaces(mspInterfaces);
 

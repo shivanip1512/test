@@ -23,6 +23,7 @@ public class MultispeakVendor {
     private String password;
     private String outUserName;
     private String outPassword;
+    private Boolean validateCertificate = true;
 
     private int maxReturnRecords = MultispeakDefines.MSP_MAX_RETURN_RECORDS;
     private long requestMessageTimeout = MultispeakDefines.MSP_REQUEST_MESSAGE_TIMEOUT;
@@ -43,13 +44,14 @@ public class MultispeakVendor {
 
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, String password,
             String outUserName, String outPassword, int maxReturnRecords, long requestMessageTimeout,
-            long maxInitiateRequestObjects, String templateNameDefault) {
+            long maxInitiateRequestObjects, String templateNameDefault, Boolean validateCertificate) {
         super();
         this.vendorID = vendorID;
         this.companyName = companyName;
         this.appName = appName;
         this.userName = userName;
         this.password = password;
+        this.validateCertificate = validateCertificate;
         this.outUserName = outUserName;
         this.outPassword = outPassword;
         this.maxReturnRecords = maxReturnRecords;
@@ -222,6 +224,14 @@ public class MultispeakVendor {
 
     public void setTemplateNameDefault(String templateNameDefault) {
         this.templateNameDefault = templateNameDefault;
+    }
+
+    public Boolean getValidateCertificate() {
+        return validateCertificate;
+    }
+
+    public void setValidateCertificate(Boolean validateCertificate) {
+        this.validateCertificate = validateCertificate;
     }
 
 }

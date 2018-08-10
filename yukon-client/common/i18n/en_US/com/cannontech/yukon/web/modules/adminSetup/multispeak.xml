@@ -151,6 +151,7 @@
     <entry key="yukon.web.modules.adminSetup.vendor.noVendorsExist">No Vendors exist.</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.incomingAuthentication">Incoming Authentication</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.outgoingAuthentication">Outgoing Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.validateCertificate">Validate Certificate</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.exception">Multispeak Vendor not inserted for Company Name {0}.</entry>
 
     <!-- device group sync pages -->

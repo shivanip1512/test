@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.msp.beans.v3.GetAllSubstationLoadControlStatuses;
 import com.cannontech.msp.beans.v3.GetAllSubstationLoadControlStatusesResponse;
@@ -15,14 +14,14 @@ import com.cannontech.msp.beans.v3.InitiateLoadManagementEvent;
 import com.cannontech.msp.beans.v3.InitiateLoadManagementEventResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
-import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public class LMClient implements ILMClient {
     private WebServiceTemplate webServiceTemplate;
-    private HttpComponentsMessageSender messageSender;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
+    @Autowired private MultispeakFuncs multispeakFuncs;
     /**
      * LM Client Constructor
      * 
@@ -32,14 +31,13 @@ public class LMClient implements ILMClient {
     public LMClient(@Qualifier("webServiceTemplate") WebServiceTemplate webServiceTemplate) {
 
         this.webServiceTemplate = webServiceTemplate;
-        messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
     }
 
     @Override
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -52,7 +50,7 @@ public class LMClient implements ILMClient {
     public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -67,7 +65,7 @@ public class LMClient implements ILMClient {
             GetAllSubstationLoadControlStatuses getAllSubstationLoadControlStatuses)
             throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetAllSubstationLoadControlStatusesResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getAllSubstationLoadControlStatuses, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -82,7 +80,7 @@ public class LMClient implements ILMClient {
             InitiateLoadManagementEvent initiateLoadManagementEvent)
             throws MultispeakWebServiceClientException {
         try {
-            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateLoadManagementEventResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateLoadManagementEvent, customWebServiceMsgCallback.addRequestHeader(mspVendor));

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
+import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
@@ -53,6 +54,7 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public RolePropertyDao rolePropertyDao;
+    @Autowired public HttpComponentsMessageSender messageSender;
 
     /** A method that loads the response header. */
     public abstract void loadResponseHeader() throws MultispeakWebServiceException;
@@ -316,9 +318,24 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
     /**
      * This method sets value of ConnectionTimeOut and ReadTimeout for HttpComponentsMessageSender.
      */
-    public static void setMsgSenderTimeOutValues(HttpComponentsMessageSender messageSender, MultispeakVendor mspVendor) {
+    private void setMsgSenderTimeOutValues(HttpComponentsMessageSender messageSender, MultispeakVendor mspVendor) {
         int timeOut = (int) mspVendor.getRequestMessageTimeout();
         messageSender.setReadTimeout(timeOut);
         messageSender.setConnectionTimeout(timeOut);
+    }
+    
+    /**
+     * Sets message sender/SSL message sender based on vendor settings.
+     */
+    public void setMsgSender(WebServiceTemplate webServiceTemplate, MultispeakVendor mspVendor) {
+        if (mspVendor.getValidateCertificate()) {
+            webServiceTemplate.setMessageSender(messageSender);
+            HttpComponentsMessageSender messageSender =
+                (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
+            setMsgSenderTimeOutValues(messageSender, mspVendor);
+        } else {
+            webServiceTemplate.setMessageSender(HttpComponentsMessageSenderWithSSL.getInstance());
+        }
+
     }
 }
