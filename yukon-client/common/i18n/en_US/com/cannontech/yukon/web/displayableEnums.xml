@@ -302,8 +302,6 @@
     <entry key="yukon.common.setting.SERVER_ADDRESS.description">Authentication server machine address</entry>
     <entry key="yukon.common.setting.BULK_IMPORTER_COMMUNICATIONS_ENABLED">Bulk Importer Communications Enabled</entry>
     <entry key="yukon.common.setting.BULK_IMPORTER_COMMUNICATIONS_ENABLED.description">Specifies whether communications will be allowed by the bulk importer.</entry>
-    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT">Status Point Monitor Notification Limit</entry>
-    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT.description">Time of data must be newer than X days to be processed by Status Point Monitor. To ignore the date check set value to 0.</entry>
     <entry key="yukon.common.setting.BATCHED_SWITCH_COMMAND_TOGGLE">Batched Switch Command Toggle</entry>
     <entry key="yukon.common.setting.BATCHED_SWITCH_COMMAND_TOGGLE.description">Specifies whether the STARS application should automatically process batched switch commands</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS">Network Manager Address</entry>
@@ -426,7 +424,9 @@
     
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT">RFN Incoming Data Timestamp Limit</entry>
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT.description">Incoming RFN data having timestamps older than this number (in months) will not be processed nor archived.</entry>
-    
+    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT">Status Point Monitor Notification Limit</entry>
+    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT.description">Incoming point data having timestamps older than this number (in days) will not be processed nor published to OMS Vendors. A value of 0 will process all data.</entry>
+   
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Collection: Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     

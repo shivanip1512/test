@@ -63,7 +63,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 int daysToIngore = globalSettingDao.getInteger(GlobalSettingType.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT);
                 //Ignores date check if value is set to 0
                 if (daysToIngore > 0) {
-                    DateTime xDaysAgo = now().minusDays(daysToIngore);
+                    DateTime xDaysAgo = now().withTimeAtStartOfDay().minusDays(daysToIngore);
                     if (new DateTime(richPointData.getPointValue().getPointDataTimeStamp()).isBefore(xDaysAgo)) {
                         // ignore the data that is older the X number of days
                         return;
