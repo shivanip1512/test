@@ -121,6 +121,7 @@ yukon.historical.readings = (function () {
                     yukon.ui.block(trendContainer);
                     _loadTrend(pointId);
                 }
+                yukon.historical.readings.setDownloadUrl(pointId);
             });
             
             _initialized = true;
