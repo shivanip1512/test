@@ -54,7 +54,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
             newSchedules.setScheduleId(RetrieveSchedule.ALL_SCHEDULES);
             macsConnection.write(newSchedules);
         } else {
-            log.debug("Invalid connection with MAC Scheduler Service");
+            log.info("Invalid connection with MAC Scheduler Service");
         }
         watchAndNotify();
     }
@@ -92,10 +92,10 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
         } catch (InterruptedException e) {}
 
         if (receivedLatestMessageTimeStamp == null || !macsConnection.isValid()) {
-            log.debug("Status of MACS service " + ServiceStatus.STOPPED);
+            log.info("Status of MACS service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.MACS_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
-            log.debug("Status of MACS service " + ServiceStatus.RUNNING);
+            log.info("Status of MACS service " + ServiceStatus.RUNNING);
             return generateWarning(WatchdogWarningType.MACS_SERVICE_STATUS, ServiceStatus.RUNNING);
         }
     }

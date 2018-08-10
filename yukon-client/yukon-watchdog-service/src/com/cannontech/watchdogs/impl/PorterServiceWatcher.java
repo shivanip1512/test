@@ -60,7 +60,7 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
             cmd.setTimeStamp(new Date());
             porterClientConnection.write(cmd);
         } else {
-            log.debug("Invalid connection with Porter Service ");
+            log.info("Invalid connection with Porter Service ");
         }
         watchAndNotify();
     }
@@ -96,10 +96,10 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
             countDownLatch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {}
         if (receivedLatestMessageTimeStamp == null || (receivedLatestMessageTimeStamp.isBefore(sendMessageTimeStamp)) || !porterClientConnection.isValid()) {
-            log.debug("Status of Porter service " + ServiceStatus.STOPPED);
+            log.info("Status of Porter service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.PORTER_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
-            log.debug("Status of Porter service " + ServiceStatus.RUNNING);
+            log.info("Status of Porter service " + ServiceStatus.RUNNING);
             return generateWarning(WatchdogWarningType.PORTER_SERVICE_STATUS, ServiceStatus.RUNNING);
         }
     }

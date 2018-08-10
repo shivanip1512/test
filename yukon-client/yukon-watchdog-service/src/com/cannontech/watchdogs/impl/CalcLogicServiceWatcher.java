@@ -64,7 +64,7 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl implement
         startedListening = Instant.now().truncatedTo(ChronoUnit.MILLIS);
         pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getCalcLogicServiceStatus();
-        log.debug("Status of CalcLogic service " + serviceStatus);
+        log.info("Status of CalcLogic service " + serviceStatus);
         return generateWarning(WatchdogWarningType.CALC_SERVICE_STATUS, serviceStatus);
     }
 

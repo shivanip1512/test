@@ -17,7 +17,7 @@ public class NotificationServiceWatcher extends ServiceStatusWatchdogImpl {
     @Override
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getNotificationServerStatus();
-        log.debug("Status of notification server " + connectionStatus);
+        log.info("Status of notification server " + connectionStatus);
         return generateWarning(WatchdogWarningType.NOTIFICATION_SERVER_SERVICE_STATUS, connectionStatus);
     }
 

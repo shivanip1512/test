@@ -63,7 +63,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
             cmd.setTimeStamp(new Date());
             dispatchConnection.write(cmd);
         } else {
-            log.debug("Invalid connection with Dispatcher Service");
+            log.info("Invalid connection with Dispatcher Service");
         }
         watchAndNotify();
     }
@@ -101,11 +101,11 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
         } catch (InterruptedException e) {}
 
         if (receivedLatestMessageTimeStamp == null || !dispatchConnection.isValid()) {
-            log.debug("Status of Dispatcher service " + ServiceStatus.STOPPED);
+            log.info("Status of Dispatcher service " + ServiceStatus.STOPPED);
             isDispatcherRunning.set(false);
             return generateWarning(WatchdogWarningType.DISPATCH_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
-            log.debug("Status of Dispatcher service " + ServiceStatus.RUNNING);
+            log.info("Status of Dispatcher service " + ServiceStatus.RUNNING);
             isDispatcherRunning.set(true);
             return generateWarning(WatchdogWarningType.DISPATCH_SERVICE_STATUS, ServiceStatus.RUNNING);
         }

@@ -63,7 +63,7 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
         startedListening = Instant.now().truncatedTo(ChronoUnit.MILLIS);
         pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getScannerServiceStatus();
-        log.debug("Status of SCANNER service " + serviceStatus);
+        log.info("Status of SCANNER service " + serviceStatus);
         return generateWarning(WatchdogWarningType.SCANNER_SERVICE_STATUS, serviceStatus);
     }
 

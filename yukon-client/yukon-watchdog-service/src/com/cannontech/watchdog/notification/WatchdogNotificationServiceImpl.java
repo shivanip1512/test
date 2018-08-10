@@ -66,8 +66,10 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
         List <YukonServices> stoppedServices = getStoppedServices();
         // Check If all required services are running for smart notification else send internal notification.
         if (stoppedServices.isEmpty()) {
+            log.info("Sending events to smart notification framework");
             smartNotificationEventCreationService.send(type, events);
         } else {
+            log.info("Sending events to internal notification");
             sendInternalNotification(stoppedServices);
         }
     }
@@ -86,7 +88,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     // Create an email for internal notification and add all stopped services names to it.
     private void sendInternalNotification(List<YukonServices> stoppedServices) {
         if (!shouldSendInternalNotification()) {
-            log.debug("Not sending any notification now as notification was send at " + lastNotificationSendTime);
+            log.info("Not sending any notification now as notification was send at " + lastNotificationSendTime);
         } else {
             try {
                 List<String> sendToEmailIds = getSubscribedUsersEmailId();

@@ -99,7 +99,7 @@ public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
 
         @Override
         public void transportResumed() {
-            log.debug("Connected to broker");
+            log.info("Connected to broker");
             isMsgBrokerRunning = true;
         }
     }

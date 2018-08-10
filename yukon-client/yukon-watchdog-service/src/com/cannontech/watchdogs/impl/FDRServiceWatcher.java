@@ -64,7 +64,7 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
         startedListening = Instant.now().truncatedTo(ChronoUnit.MILLIS);
         pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getFDRServiceStatus();
-        log.debug("Status of FDR service " + serviceStatus);
+        log.info("Status of FDR service " + serviceStatus);
         return generateWarning(WatchdogWarningType.FDR_SERVICE_STATUS, serviceStatus);
     }
 

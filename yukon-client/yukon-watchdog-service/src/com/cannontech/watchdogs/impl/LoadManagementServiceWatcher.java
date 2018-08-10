@@ -61,7 +61,7 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
             cmd.setCommand(LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
             clientConnection.write(cmd);
         } else {
-            log.debug("Invalid connection with LoadManagement Service ");
+            log.info("Invalid connection with LoadManagement Service ");
         }
         watchAndNotify();
     }
@@ -98,10 +98,10 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
         } catch (InterruptedException e) {}
 
         if (receivedLatestMessageTimeStamp == null || !clientConnection.isValid()) {
-            log.debug("Status of LoadManagement service " + ServiceStatus.STOPPED);
+            log.info("Status of LoadManagement service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.LOADMANAGEMENT_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
-            log.debug("Status of LoadManagement service " + ServiceStatus.RUNNING);
+            log.info("Status of LoadManagement service " + ServiceStatus.RUNNING);
             return generateWarning(WatchdogWarningType.LOADMANAGEMENT_SERVICE_STATUS, ServiceStatus.RUNNING);
         }
 

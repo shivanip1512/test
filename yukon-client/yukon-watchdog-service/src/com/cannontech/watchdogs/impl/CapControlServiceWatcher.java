@@ -60,7 +60,7 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
         if (clientConnection.isValid()) {
             clientConnection.sendCommand(new CapControlCommand(CommandType.REQUEST_ALL_DATA.getCommandId()));
         } else {
-            log.debug("Invalid connection with CapControl Service");
+            log.info("Invalid connection with CapControl Service");
         }
         watchAndNotify();
     }
@@ -96,10 +96,10 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
         } catch (InterruptedException e) {}
 
         if (receivedLatestMessageTimeStamp == null || !clientConnection.isValid()) {
-            log.debug("Status of CapControl service " + ServiceStatus.STOPPED);
+            log.info("Status of CapControl service " + ServiceStatus.STOPPED);
             return generateWarning(WatchdogWarningType.CAPCONTROL_SERVICE_STATUS, ServiceStatus.STOPPED);
         } else {
-            log.debug("Status of CapControl service " + ServiceStatus.RUNNING);
+            log.info("Status of CapControl service " + ServiceStatus.RUNNING);
             return generateWarning(WatchdogWarningType.CAPCONTROL_SERVICE_STATUS, ServiceStatus.RUNNING);
         }
 

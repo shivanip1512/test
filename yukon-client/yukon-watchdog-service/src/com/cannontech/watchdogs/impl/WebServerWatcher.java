@@ -36,7 +36,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     @Override
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getWebServerStatus();
-        log.debug("Status of web server " + connectionStatus);
+        log.info("Status of web server " + connectionStatus);
         return generateWarning(WatchdogWarningType.WEB_SERVER_SERVICE_STATUS, connectionStatus);
     }
 
