@@ -182,7 +182,6 @@ public class CsrTrendWidget extends WidgetControllerBase {
         mav.addObject("title", title);
         mav.addObject("pointId", point.getPointID());
         mav.addObject("tabularDataViewer", tabularDataViewer);
-        mav.addObject("isDailyUsage", attributeGraphType.getConverterType() == ConverterType.DAILY_USAGE);
         return mav;
     }
 
