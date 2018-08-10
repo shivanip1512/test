@@ -86,7 +86,7 @@
 	        </tags:nameValue2>
         </cti:checkRolesAndProperties>
         <c:if test="${not empty gateway.data.ipv6Prefix}">
-            <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.formattedIpv6Prefix)}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.ipv6Prefix)}</tags:nameValue2>
         </c:if>
     </tags:nameValueContainer2>
     

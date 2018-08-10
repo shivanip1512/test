@@ -112,7 +112,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RequestReplyTemplate<GatewayConnectionTestResponse> connectionTestRequestTemplate;
     private RequestReplyTemplate<GatewaySetConfigResponse> configRequestTemplate;
     
-    Pattern hex = Pattern.compile("^[0-9a-fA-F]+$");
+    private Pattern prefixPattern = Pattern.compile("[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}::\\/64");
     
     @Autowired
     public RfnGatewayServiceImpl(
@@ -765,8 +765,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             throw new DuplicateException("Ipv6Prefix:" + newIpv6Prefix + " already exists.");
         }
 
-        if (!hex.matcher(newIpv6Prefix).matches()) {
-            throw new IllegalArgumentException("Ipv6Prefix:" + newIpv6Prefix + " is not in hex format.");
+        if (!prefixPattern.matcher(newIpv6Prefix).matches()) {
+            throw new IllegalArgumentException("Ipv6Prefix:" + newIpv6Prefix + " is not in correct format.");
         }
         
         BlockingJmsReplyHandler<GatewaySetConfigResponse> reply =
@@ -784,9 +784,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
     }
     
-    private boolean isDuplicateIpv6Prefix(String previx) {
+    private boolean isDuplicateIpv6Prefix(String prefix) {
         return dataCache.getCache().asMap().values().stream()
-                .filter(d -> d.getIpv6Prefix() != null && d.getIpv6Prefix().equals(previx))
+                .filter(d -> d.getIpv6Prefix() != null && d.getIpv6Prefix().equals(prefix))
                 .findFirst()
                 .isPresent();
     }

@@ -44,7 +44,7 @@ public class DefaultGatewaySimulatorData {
     private static final LastCommStatus lastCommStatus = LastCommStatus.SUCCESSFUL;
     private static final String upperStackVersion = "1.0";
     private static final String softwareVersion = "2.0";
-    private static final String releaseVersion = "6.1.1";
+    private static final String releaseVersion = "9.0.0";
     private static final String radioVersion = "4.0";
     private static final String hardwareVersion = "5.0";
     private static final Set<ConflictType> versionConflicts = new HashSet<>();
@@ -55,7 +55,7 @@ public class DefaultGatewaySimulatorData {
     private static final String commRadioVersion = "V_10_10";
     private static final int dataSequenceCompletionPercentage = 100;
     public static final double maxDataStreamingLoading = 100;
-    
+    private static final String ipv6Prefix = "FD30:0000:0000:0000::/64";
     private static final int gwTotalNotReadyNodes = 500;
     private static final int gwTotalReadyNodes = 1000;
       
@@ -78,7 +78,7 @@ public class DefaultGatewaySimulatorData {
         GatewayDataResponse response = new GatewayDataResponse();
         response.setRfnIdentifier(rfnId);
         
-        response.setSuggestedIpv6Prefix(getRandomHexString(12));
+        response.setIpv6Prefix(ipv6Prefix);
 
         response.setAdmin(customData.getAdmin());
         response.setIpAddress(customData.getIpAddress());

@@ -23,9 +23,9 @@ yukon.widget.gatewayInfo = (function () {
             ipv6 = '0000000000000000'
         }
         $('#ipv6-1').val(ipv6.substring(0,4));
-        $('#ipv6-2').val(ipv6.substring(4,8));
-        $('#ipv6-3').val(ipv6.substring(8,12));
-        $('#ipv6-4').val(ipv6.substring(12,16));
+        $('#ipv6-2').val(ipv6.substring(5,9));
+        $('#ipv6-3').val(ipv6.substring(10,14));
+        $('#ipv6-4').val(ipv6.substring(15,19));
     }
     
     var
@@ -165,7 +165,7 @@ yukon.widget.gatewayInfo = (function () {
                     ipv6three = pad_with_zeroes($('#ipv6-3').val(), 4),
                     ipv6four = pad_with_zeroes($('#ipv6-4').val(), 4);
                 
-                var ipv6 = ipv6one + ipv6two + ipv6three + ipv6four;
+                var ipv6 = ipv6one + ':' + ipv6two + ':' + ipv6three + ':' + ipv6four + "::/64";
                 $('#ipv6prefix').val(ipv6);
             });
             _initialized = true;

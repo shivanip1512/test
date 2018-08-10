@@ -27,7 +27,7 @@
                 <input id="ipv6-1" type="text" class="js-ipv6-update" maxlength="4" size="4"/> :
                 <input id="ipv6-2" type="text" class="js-ipv6-update" maxlength="4" size="4"/> :
                 <input id="ipv6-3" type="text" class="js-ipv6-update" maxlength="4" size="4"/> :
-                <input id="ipv6-4" type="text" class="js-ipv6-update" maxlength="4" size="4" />  ::/64
+                <input id="ipv6-4" type="text" class="js-ipv6-update" maxlength="4" size="4" /> ::/64
             </div>
         </tags:nameValue2>
 
