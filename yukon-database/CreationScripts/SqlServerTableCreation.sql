@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/24/2018 11:28:08 PM                        */
+/* Created on:     8/10/2018 3:41:27 AM                         */
 /*==============================================================*/
 
 
@@ -7478,11 +7478,12 @@ create table MSPVendor (
    RequestMessageTimeout int                  not null,
    MaxInitiateRequestObjects int                  not null,
    TemplateNameDefault  varchar(50)          not null,
+   ValidateCertificate  char(1)              not null,
    constraint PK_MSPVENDOR primary key (VendorID)
 )
 go
 
-INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ');
+INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1);
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */

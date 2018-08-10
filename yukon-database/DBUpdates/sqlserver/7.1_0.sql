@@ -820,6 +820,21 @@ AND ItemValue = 'RECEIVED_KVAH';
 INSERT INTO DBUpdates VALUES ('YUK-18095', '7.1.0', GETDATE());
 /* @end YUK-18095 */
 
+/* @start YUK-18615 */
+ALTER TABLE MSPVendor 
+ADD ValidateCertificate CHAR(1);
+GO
+
+UPDATE MSPVendor 
+SET ValidateCertificate = '1';
+
+ALTER TABLE MSPVendor
+ALTER COLUMN ValidateCertificate CHAR(1) NOT NULL;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-18615', '7.1.0', GETDATE());
+/* @end YUK-18615 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
