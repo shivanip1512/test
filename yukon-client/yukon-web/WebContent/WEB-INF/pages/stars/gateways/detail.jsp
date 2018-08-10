@@ -57,7 +57,7 @@
 </cti:checkRolesAndProperties>
 
 <c:set var="data" value="${gateway.data}"/>
-<div class="column-10-14 clearfix">
+<div class="column-12-12 clearfix">
 
     <div class="column one">
         <tags:widget bean="gatewayInformationWidget" deviceId="${gateway.paoIdentifier.paoId}" container="section"/>
