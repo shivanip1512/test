@@ -20,7 +20,7 @@ yukon.widget.gatewayInfo = (function () {
     function updateIPv6input() {
         var ipv6 = $('#ipv6prefix').val();
         if (ipv6 == null) {
-            ipv6 = '0000:0000:0000:0000::/64'
+            ipv6 = 'FD30:0000:0000:0000::/64'
         }
         $('#ipv6-1').val(ipv6.substring(0,4));
         $('#ipv6-2').val(ipv6.substring(5,9));
