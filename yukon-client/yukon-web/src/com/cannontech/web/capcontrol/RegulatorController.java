@@ -121,15 +121,7 @@ public class RegulatorController {
             availableConfigs.addAll(deviceConfigDao.getAllConfigurationsByType(type));
         }
         model.addAttribute("availableConfigs", availableConfigs);
-        int currentConfigId = regulator.getConfigId();
         
-        StringBuilder configName = new StringBuilder();
-        availableConfigs.stream()
-                        .filter(ldc -> ldc.getConfigurationId() == currentConfigId)
-                        .findFirst()
-                        .ifPresent(ldc -> configName.append(ldc.getName()));
-        model.addAttribute("configName", configName);
-
         if (regulator.getId() != null) {
             try {
                 Zone zone = zoneDao.getZoneByRegulatorId(regulator.getId());

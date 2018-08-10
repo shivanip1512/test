@@ -31,7 +31,8 @@
     </c:if>
     
     <c:if test="${value == valueArg}">
-        <cti:formatObject value="${fn:escapeXml(labelArg)}"/>
+        <cti:formatObject value="${labelArg}" var="lblArg"/>
+        ${fn:escapeXml(lblArg)}
         <c:set var="labelFound" value="true"/>
     </c:if>
 </c:forEach>

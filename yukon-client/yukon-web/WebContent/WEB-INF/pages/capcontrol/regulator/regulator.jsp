@@ -104,15 +104,10 @@
                             <i:inline key="${regulator.type}"/>
                         </tags:nameValue2>
                     </c:if>
-                    <c:if test="${mode eq 'VIEW'}">
-                        <tags:nameValue2 nameKey=".config">
-                            ${fn:escapeXml(configName)}
-                        </tags:nameValue2>
-                    </c:if>
-                    <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <tags:selectNameValue nameKey=".config" items="${availableConfigs}" path="configId" 
-                            itemValue="configurationId"/>
-                    </cti:displayForPageEditModes>
+                    
+                    <tags:selectNameValue nameKey=".config" items="${availableConfigs}" path="configId" 
+                        itemValue="configurationId"/>
+                    
                     <tags:nameValue2 nameKey="yukon.common.status">
                         <tags:switchButton path="disabled" inverse="true"
                             offClasses="M0" onNameKey=".enabled" offNameKey=".disabled"/>
