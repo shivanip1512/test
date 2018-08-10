@@ -80,6 +80,15 @@
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.title">Delete coordinates?</entry>
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.error">Unable to delete coordinates: {0}</entry>
     <entry key="yukon.web.modules.tools.map.network.error">Unable to retrieve network information.</entry>
+    <entry key="yukon.web.modules.tools.map.download">Download</entry>
+    <entry key="yukon.web.modules.tools.map.collectionActions">Collection Actions</entry>
+    <entry key="yukon.web.modules.tools.map.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.tools.map.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.tools.map.latitude">Latitude</entry>
+    <entry key="yukon.web.modules.tools.map.longitude">Longitude</entry>
+    <entry key="yukon.web.modules.tools.map.lastChangedDate">Last Changed Dates</entry>
+    <entry key="yukon.web.modules.tools.map.origin">Origin</entry>
+    <entry key="yukon.web.modules.tools.map.na">N/A</entry>
     <!-- /trend -->  
     <entry key="yukon.web.modules.tools.trend.pageName">Trends</entry>
     <entry key="yukon.web.modules.tools.trend.pageDescription">{0}</entry>

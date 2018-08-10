@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.rfn.message.location.Origin;
 
 public interface PaoLocationDao {
@@ -40,4 +41,9 @@ public interface PaoLocationDao {
      * Get all locations for the origin
      */
     List<PaoLocation> getLocations(Origin origin);
+
+    /**
+     * Get location details for all paoIds
+     */
+    List<PaoLocationDetails> getPaoLocationDetails(List<Integer> paoIds);
 }

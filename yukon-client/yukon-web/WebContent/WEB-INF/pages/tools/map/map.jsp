@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -6,7 +7,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="map">
-
 <style>
 .map .ol-viewport canvas {
      min-height: 600px; 
@@ -75,7 +75,19 @@
     
         <div class="column-19-5 clearfix stacked">
             <div class="column one">
-                <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection"/>
+                <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" />
+                <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                </cti:url>
+                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}"/>
+                    </c:forEach>
+                </cti:url>
+                <cm:dropdown icon="icon-cog">
+                   <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>
+                   <cm:dropdownOption icon="icon-csv" key=".download" href = "${downloadUrl}"/>
+                </cm:dropdown>
             </div>
             <div id="status-info" class="column two nogutter">
                 <div class="dn js-status-retrieving">

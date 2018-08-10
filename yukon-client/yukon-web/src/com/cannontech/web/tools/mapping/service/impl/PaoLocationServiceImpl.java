@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
@@ -113,5 +115,10 @@ public class PaoLocationServiceImpl implements PaoLocationService {
     public void saveLocationForPaoId(int paoId, double latitude, double longitude) {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         paoLocationDao.save(new PaoLocation(pao.getPaoIdentifier(), latitude, longitude));
+    }
+
+    @Override
+    public List<PaoLocationDetails> getLocationDetailsForPaos(List<Integer> paoIds) {
+        return paoLocationDao.getPaoLocationDetails(paoIds);
     }
 }

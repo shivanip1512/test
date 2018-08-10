@@ -1,6 +1,8 @@
 package com.cannontech.web.tools.mapping.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -55,6 +58,8 @@ import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -69,6 +74,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableList;
@@ -80,6 +86,8 @@ import com.google.common.collect.Sets;
 public class MapController {
     
     private static final Logger log = YukonLogManager.getLogger(MapController.class);
+    
+    private final static String baseKey = "yukon.web.modules.tools.map.";
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private IDatabaseCache databaseCache;
@@ -96,6 +104,7 @@ public class MapController {
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private PaoDao paoDao;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private DateFormattingService dateFormattingService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -250,6 +259,51 @@ public class MapController {
         return stateGroups;
     }
     
+    @RequestMapping("/map/locations/download")
+    public void download(DeviceCollection deviceCollection, YukonUserContext userContext, HttpServletResponse response) throws IOException{
+        List<SimpleDevice> simpleDevices = deviceCollection.getDeviceList();
+        List<Integer> paoIds = new ArrayList<>();
+        simpleDevices.forEach(sd -> paoIds.add(sd.getPaoIdentifier().getPaoId()));
+        List<PaoLocationDetails> paoLocationDetails = paoLocationService.getLocationDetailsForPaos(paoIds);
+        String[] headerRow = getHeaderRows(userContext);
+        List<String[]> dataRows = getDataRows(paoLocationDetails, userContext);
+
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "mapLocations_" + now + ".csv");
+    }
+    
+    private String[] getHeaderRows(YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = new String[6];
+        headerRow[0] = accessor.getMessage(baseKey + "deviceName");
+        headerRow[1] = accessor.getMessage(baseKey + "meterNumber");
+        headerRow[2] = accessor.getMessage(baseKey + "latitude");
+        headerRow[3] = accessor.getMessage(baseKey + "longitude");
+        headerRow[4] = accessor.getMessage(baseKey + "lastChangedDate");
+        headerRow[5] = accessor.getMessage(baseKey + "origin");
+        return headerRow;
+    }
+    
+    private List<String[]> getDataRows(List<PaoLocationDetails> paoLocationDetails, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        List<String[]> dataRows = Lists.newArrayList();
+        for (PaoLocationDetails paoLocation : paoLocationDetails) {
+            String[] dataRow = new String[6];
+            dataRow[0] = paoLocation.getPaoName();
+            dataRow[1] = paoLocation.getMeterNumber();
+            dataRow[2] = paoLocation.getLatitude();
+            dataRow[3] = paoLocation.getLongitude();
+            dataRow[4] = paoLocation.getLastChangedDate();
+            if (paoLocation.getOrigin() != null) {
+                dataRow[5] = paoLocation.getOrigin().toString();
+            } else {
+                dataRow[5] = accessor.getMessage(baseKey + "na");
+            }
+            dataRows.add(dataRow);
+        }
+        return dataRows;
+    }
+
     @RequestMapping("/map/filter")
     public @ResponseBody Map<Integer, Boolean> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
         

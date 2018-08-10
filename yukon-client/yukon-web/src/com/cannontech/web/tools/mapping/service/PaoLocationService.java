@@ -1,9 +1,12 @@
 package com.cannontech.web.tools.mapping.service;
 
+import java.util.List;
+
 import org.geojson.FeatureCollection;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.model.PaoLocationDetails;
 
 public interface PaoLocationService {
     
@@ -65,4 +68,8 @@ public interface PaoLocationService {
      * Save the location information for the specified pao.
      */
     void saveLocationForPaoId(int paoId, double latitude, double longitude);
+    /**
+     * Get location detail of all paoIds
+     */
+    public List<PaoLocationDetails> getLocationDetailsForPaos (List<Integer> paoIds);
 }

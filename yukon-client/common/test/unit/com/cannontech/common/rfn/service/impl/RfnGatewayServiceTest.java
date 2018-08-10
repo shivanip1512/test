@@ -25,6 +25,7 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
@@ -948,6 +949,11 @@ public class RfnGatewayServiceTest {
 
         @Override
         public List<PaoLocation> getLocations(Origin origin) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<PaoLocationDetails> getPaoLocationDetails(List<Integer> paoIds) {
             throw new UnsupportedOperationException();
         }
     }

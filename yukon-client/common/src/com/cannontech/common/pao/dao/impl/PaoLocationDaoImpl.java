@@ -18,6 +18,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -46,6 +47,20 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             Instant lastChangedDate = rs.getInstant("LastChangedDate");
 
             return new PaoLocation(paoIdentifier, latitude, longitude, origin, lastChangedDate);
+        }
+    };
+    
+    private final static YukonRowMapper<PaoLocationDetails> paoLoctionDetailMapper = new YukonRowMapper<PaoLocationDetails>() {
+        @Override
+        public PaoLocationDetails mapRow(YukonResultSet rs) throws SQLException {
+             String paoName = rs.getString("PaoName");
+             String meterNumber = rs.getString("MeterNumber");
+             String latitude = rs.getString("Latitude");
+             String longitude = rs.getString("Longitude");
+             Origin origin = rs.getEnum("Origin", Origin.class);
+             String lastChangedDate = rs.getString("LastChangedDate");;
+
+            return new PaoLocationDetails(paoName, meterNumber, latitude, longitude, origin, lastChangedDate);
         }
     };
     
@@ -189,5 +204,22 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
                 }
             });
         });
+    }
+
+    @Override
+    public List<PaoLocationDetails> getPaoLocationDetails(List<Integer> paoIds) {
+        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PaoName, dmg.METERNUMBER As MeterNumber, loc.PAObjectId, Type, Latitude, Longitude, Origin, LastChangedDate");
+                sql.append("FROM YukonPaobject ypo LEFT JOIN DeviceMeterGroup dmg ON ypo.PaobjectId = dmg.DeviceId");
+                sql.append("LEFT JOIN PaoLocation loc ON loc.PAObjectId = ypo.PaobjectId");
+                sql.append("WHERE ypo.PaobjectId").in(subList);
+                return sql;
+            }
+        };
+        return template.query(sqlGenerator, paoIds, paoLoctionDetailMapper);
     }
 }

@@ -12,7 +12,7 @@
 
 <cti:url var="downloadResultUrl" value="/bulk/downloadResult"/>
 <cti:uniqueIdentifier prefix="form_" var="thisId"/>
-<form method="post" action="${downloadResultUrl}" id="${thisId}">
+<form method="post" action="${downloadResultUrl}" id="${thisId}" class="dib">
 <cti:csrfToken/>
 <div <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <strong><cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel"/>:</strong>&nbsp;
