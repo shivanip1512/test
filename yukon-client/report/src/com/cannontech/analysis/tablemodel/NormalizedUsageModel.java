@@ -38,7 +38,7 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
     Attribute attribute;
 
     // member variables
-    private static String title = "Normalized Usage Data";
+    private String title = "Normalized Usage Data";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
     
@@ -108,6 +108,11 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    
     public void setPointId(int pointId) {
         this.pointId = pointId;
     }

@@ -106,14 +106,16 @@ public class ReportsController extends MultiActionController  {
         String module = ServletRequestUtils.getStringParameter(request, "module", "blank");
         Boolean showMenu = ServletRequestUtils.getBooleanParameter(request, "showMenu", false);
         String menuSelection = ServletRequestUtils.getStringParameter(request, "menuSelection", "");
-        
+        String title = ServletRequestUtils.getStringParameter(request, "title", reportModel.getTitle());
+
         mav.addObject("module", module);
         mav.addObject("showMenu", showMenu);
         mav.addObject("menuSelection", menuSelection);
         
         // title
         //-----------------------------------------------------------------------------------------
-        mav.addObject("reportTitle", reportModel.getTitle());
+
+        mav.addObject("reportTitle", title);
         
         
         // column layout lists
@@ -190,9 +192,10 @@ public class ReportsController extends MultiActionController  {
         
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext);
-        
+        String title = ServletRequestUtils.getStringParameter(request, "title", reportModel.getTitle());
+
         response.setContentType("text/csv");
-        response.setHeader("Content-Disposition","filename=\"" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".csv\"");
+        response.setHeader("Content-Disposition","filename=\"" + ServletUtil.makeWindowsSafeFileName(title) + ".csv\"");
         OutputStream outputStream = response.getOutputStream();
         simpleReportOutputter.outputCsvReport(reportDefinition, reportModel, outputStream, userContext);
         
@@ -214,10 +217,11 @@ public class ReportsController extends MultiActionController  {
         Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true, userContext);
-        
+        String title = ServletRequestUtils.getStringParameter(request, "title", reportModel.getTitle());
+
         //force download of PDF
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".pdf\"");
+        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName(title) + ".pdf\"");
         
         OutputStream outputStream = response.getOutputStream();
         simpleReportOutputter.outputPdfReport(reportDefinition, reportModel, outputStream, userContext);

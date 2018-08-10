@@ -627,6 +627,13 @@
                       <bean class="com.cannontech.web.input.type.AttributeType"/>
                     </property>
                 </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="title"/>
+                    <property name="displayName" value="Title"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>              
               </list>
             </property>
           </bean>

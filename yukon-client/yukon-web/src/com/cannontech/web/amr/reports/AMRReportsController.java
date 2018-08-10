@@ -85,7 +85,8 @@ public class AMRReportsController extends MultiActionController  {
         // report title
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = reportDefinition.createBean();
-        mav.addObject("reportTitle", reportModel.getTitle());
+        String title = ServletRequestUtils.getStringParameter(request, "title", reportModel.getTitle());
+        mav.addObject("reportTitle", title);
         
         // information for bread crumbs
         LitePoint point = pointDao.getLitePoint(pointId);
@@ -119,7 +120,8 @@ public class AMRReportsController extends MultiActionController  {
         // report title
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = reportDefinition.createBean();
-        mav.addObject("reportTitle", reportModel.getTitle());
+        String title = ServletRequestUtils.getStringParameter(request, "title", reportModel.getTitle());
+        mav.addObject("reportTitle", title);
         
         return mav;
     }
@@ -143,7 +145,8 @@ public class AMRReportsController extends MultiActionController  {
         // report title
         YukonReportDefinition<BareReportModel> reportDefinition = reportDefinitionFactory.getReportDefinition("deviceGroupDefinition");
         BareReportModel reportModel = reportDefinition.createBean();
-        mav.addObject("reportTitle", reportModel.getTitle());
+        String title = ServletRequestUtils.getStringParameter(request, "title", reportModel.getTitle());
+        mav.addObject("reportTitle", title);
         
         return mav;
     }

@@ -111,7 +111,8 @@ public class CsrTrendWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("trendWidget/render.jsp");
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
@@ -182,6 +183,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
         mav.addObject("title", title);
         mav.addObject("pointId", point.getPointID());
         mav.addObject("tabularDataViewer", tabularDataViewer);
+        mav.addObject("reportTitle", accessor.getMessage(attributeGraphType.getConverterType().getFormatKey()+".title"));
         return mav;
     }
 
