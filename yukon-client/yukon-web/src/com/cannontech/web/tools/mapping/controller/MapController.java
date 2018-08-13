@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -259,11 +260,13 @@ public class MapController {
         return stateGroups;
     }
     
-    @RequestMapping("/map/locations/download")
-    public void download(DeviceCollection deviceCollection, YukonUserContext userContext, HttpServletResponse response) throws IOException{
+    @RequestMapping(value = "/map/locations/download", method = RequestMethod.GET)
+    public void download(DeviceCollection deviceCollection, YukonUserContext userContext, HttpServletResponse response)
+            throws IOException {
         List<SimpleDevice> simpleDevices = deviceCollection.getDeviceList();
-        List<Integer> paoIds = new ArrayList<>();
-        simpleDevices.forEach(sd -> paoIds.add(sd.getPaoIdentifier().getPaoId()));
+        List<Integer> paoIds = simpleDevices.stream()
+                                            .map(sd -> sd.getPaoIdentifier().getPaoId())
+                                            .collect(Collectors.toList());
         List<PaoLocationDetails> paoLocationDetails = paoLocationService.getLocationDetailsForPaos(paoIds);
         String[] headerRow = getHeaderRows(userContext);
         List<String[]> dataRows = getDataRows(paoLocationDetails, userContext);
@@ -275,7 +278,7 @@ public class MapController {
     private String[] getHeaderRows(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[6];
-        headerRow[0] = accessor.getMessage(baseKey + "deviceName");
+        headerRow[0] = accessor.getMessage("yukon.common.deviceName");
         headerRow[1] = accessor.getMessage(baseKey + "meterNumber");
         headerRow[2] = accessor.getMessage(baseKey + "latitude");
         headerRow[3] = accessor.getMessage(baseKey + "longitude");
@@ -285,7 +288,6 @@ public class MapController {
     }
     
     private List<String[]> getDataRows(List<PaoLocationDetails> paoLocationDetails, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<String[]> dataRows = Lists.newArrayList();
         for (PaoLocationDetails paoLocation : paoLocationDetails) {
             String[] dataRow = new String[6];
@@ -294,11 +296,7 @@ public class MapController {
             dataRow[2] = paoLocation.getLatitude();
             dataRow[3] = paoLocation.getLongitude();
             dataRow[4] = paoLocation.getLastChangedDate();
-            if (paoLocation.getOrigin() != null) {
-                dataRow[5] = paoLocation.getOrigin().toString();
-            } else {
-                dataRow[5] = accessor.getMessage(baseKey + "na");
-            }
+            dataRow[5] = paoLocation.getOrigin() != null ? paoLocation.getOrigin().toString() : "";
             dataRows.add(dataRow);
         }
         return dataRows;

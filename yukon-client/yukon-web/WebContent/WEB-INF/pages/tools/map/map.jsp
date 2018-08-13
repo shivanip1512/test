@@ -86,7 +86,7 @@
                 </cti:url>
                 <cm:dropdown icon="icon-cog">
                    <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>
-                   <cm:dropdownOption icon="icon-csv" key=".download" href = "${downloadUrl}"/>
+                   <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
                 </cm:dropdown>
             </div>
             <div id="status-info" class="column two nogutter">

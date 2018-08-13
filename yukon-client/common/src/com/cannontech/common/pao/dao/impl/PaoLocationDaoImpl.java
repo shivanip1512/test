@@ -58,7 +58,7 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
              String latitude = rs.getString("Latitude");
              String longitude = rs.getString("Longitude");
              Origin origin = rs.getEnum("Origin", Origin.class);
-             String lastChangedDate = rs.getString("LastChangedDate");;
+             String lastChangedDate = rs.getString("LastChangedDate");
 
             return new PaoLocationDetails(paoName, meterNumber, latitude, longitude, origin, lastChangedDate);
         }
@@ -213,10 +213,10 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT ypo.PaoName, dmg.METERNUMBER As MeterNumber, loc.PAObjectId, Type, Latitude, Longitude, Origin, LastChangedDate");
-                sql.append("FROM YukonPaobject ypo LEFT JOIN DeviceMeterGroup dmg ON ypo.PaobjectId = dmg.DeviceId");
-                sql.append("LEFT JOIN PaoLocation loc ON loc.PAObjectId = ypo.PaobjectId");
-                sql.append("WHERE ypo.PaobjectId").in(subList);
+                sql.append("SELECT ypo.PaoName, dmg.MeterNumber As MeterNumber, loc.PaObjectId, Type, Latitude, Longitude, Origin, LastChangedDate");
+                sql.append("FROM YukonPaobject ypo LEFT JOIN DeviceMeterGroup dmg ON ypo.PaObjectId = dmg.DeviceId");
+                sql.append("LEFT JOIN PaoLocation loc ON loc.PaObjectId = ypo.PaObjectId");
+                sql.append("WHERE ypo.PaObjectId").in(subList);
                 return sql;
             }
         };
