@@ -1583,38 +1583,41 @@ bool CtiProtocolANSI::retrieveDemand( int offset, double *value, double *timesta
         AnsiTOURate ansiTOURate = getRateOffsetMapping(offset);
         unsigned char *demandSelect = _table22->getDemandSelect();
 
-        for (int x = 0; x < _table21->getNumberDemands(); x++)
+        if( ansiTOURate <= _table21->getTiers() )
         {
-            if ((int) demandSelect[x] != 255)
+            for (int x = 0; x < _table21->getNumberDemands(); x++)
             {
-                if (_table12->getRawTimeBase(demandSelect[x]) == CtiAnsiTable12::timebase_block_average  &&
-                    _table12->getRawIDCode(demandSelect[x]) == ansiOffset )
+                if ((int) demandSelect[x] != 255)
                 {
-                    success = true;
-                    double multiplier = getElecMultiplier((demandSelect[x]%20));
-                    multiplier = scaleMultiplier(multiplier, demandSelect[x]);
+                    if (_table12->getRawTimeBase(demandSelect[x]) == CtiAnsiTable12::timebase_block_average  &&
+                        _table12->getRawIDCode(demandSelect[x]) == ansiOffset )
+                    {
+                        success = true;
+                        double multiplier = getElecMultiplier((demandSelect[x]%20));
+                        multiplier = scaleMultiplier(multiplier, demandSelect[x]);
 
-                    // will bring back value in KW/KVAR ...
-                    if( frozen )
-                    {
-                        *value = _frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) * multiplier;
-                        *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                        // will bring back value in KW/KVAR ...
+                        if( frozen )
+                        {
+                            *value = _frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) * multiplier;
+                            *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                        }
+                        else
+                        {
+                            *value = _table23->getDemandValue(x, ansiTOURate) * multiplier ;
+                            *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
+                        }
+                        if (_table52 )
+                        {
+                            *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
+                        }
+                        printDebugValue(*value, frozen);
+                        break;
                     }
-                    else
-                    {
-                        *value = _table23->getDemandValue(x, ansiTOURate) * multiplier ;
-                        *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
-                    }
-                    if (_table52 )
-                    {
-                        *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                    }
-                    printDebugValue(*value, frozen);
-                    break;
                 }
-
             }
         }
+
         demandSelect = NULL;
 
         return success;
