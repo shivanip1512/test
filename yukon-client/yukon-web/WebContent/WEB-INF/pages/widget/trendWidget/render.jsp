@@ -129,7 +129,13 @@ $(function () {
                     </c:choose>
                 </td>
                 <td>
-                    <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDate.time}&stopDate=${stopDateAdjusted.time}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
+                    <cti:url var="htmlArchiveReportUrl" value="/amr/reports/${tabularDataViewer}">
+                        <cti:param name="def" value="rawPointHistoryDefinition" />
+                        <cti:param name="pointId" value="${pointId}" />
+                        <cti:param name="startDate" value="${startDate.time}" />
+                        <cti:param name="stopDate" value="${stopDateAdjusted.time}" />
+                    </cti:url>
+                    <a href="${htmlArchiveReportUrl}"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                     |
                     <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                     |
@@ -151,7 +157,15 @@ $(function () {
                     </td>
                     
                     <td>
-                        <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDate.time}&stopDate=${stopDateAdjusted.time}&attribute=${attributeGraphType.attribute}&title=${reportTitle}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
+                        <cti:url var="htmlUsageReportUrl" value="/amr/reports/${tabularDataViewer}">
+                            <cti:param name="def" value="normalizedUsageDefinition" />
+                            <cti:param name="pointId" value="${pointId}" />
+                            <cti:param name="startDate" value="${startDate.time}" />
+                            <cti:param name="stopDate" value="${stopDateAdjusted.time}" />
+                            <cti:param name="attribute" value="${attributeGraphType.attribute}" />
+                            <cti:param name="title" value="${reportTitle}" />
+                        </cti:url>
+                        <a href="${htmlUsageReportUrl}" ><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}" title="${reportTitle}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                         |
