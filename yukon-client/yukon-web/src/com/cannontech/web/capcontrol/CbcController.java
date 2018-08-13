@@ -78,9 +78,11 @@ public class CbcController {
     public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         CapControlCBC cbc = cbcService.getCbc(id);
         model.addAttribute("mode", PageEditMode.VIEW);
+        if (model.get("isError") != null && (boolean) model.get("isError")) {
+            return setUpModel(model, cbc, userContext);
+        }
         List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id, request);
         flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
-
         return setUpModel(model, cbc, userContext);
     }
     
@@ -140,13 +142,14 @@ public class CbcController {
             @PathVariable int id,
             String newName,
             boolean copyPoints,
-            YukonUserContext userContext) {
+            YukonUserContext userContext, ModelMap model, RedirectAttributes redirectAttributes) {
         try {
             int newId = cbcService.copy(id, newName, copyPoints, userContext.getYukonUser());
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".copy.success"));
             return "redirect:/capcontrol/cbc/" + newId;
         } catch (IllegalArgumentException e) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + ".copy.fail"));
+            flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
+            redirectAttributes.addFlashAttribute("isError", true);
             return "redirect:/capcontrol/cbc/" + id;
         }
     }

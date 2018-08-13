@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol.service.impl;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +23,7 @@ import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.model.CompleteCbcBase;
 import com.cannontech.common.pao.model.CompleteCbcLogical;
@@ -66,6 +68,7 @@ public class CbcServiceImpl implements CbcService {
     @Autowired private IDatabaseCache dbCache;
 
     private static final Logger log = YukonLogManager.getLogger(CbcServiceImpl.class);
+    private final static String baseKey = "yukon.web.modules.capcontrol.cbc.copy.";
 
     @Override
     public CapControlCBC getCbc(int id) {
@@ -217,9 +220,15 @@ public class CbcServiceImpl implements CbcService {
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(originalId);
         DBPersistent original = dbPersistentDao.retrieveDBPersistent(litePao);
         YukonPAObject copy = (YukonPAObject) CBCCopyUtils.copy(original);
-
-        if (!paoDao.isNameAvailable(newName, copy.getPaoType())) {
-            throw new IllegalArgumentException("Name is not available");
+        int maxLength = 60;
+        if (StringUtils.isBlank(newName)) {
+            throw new IllegalArgumentException(baseKey + "isBlank");
+        } else if (!PaoUtils.isValidPaoName(newName)) {
+            throw new IllegalArgumentException(baseKey + "containsIllegalChars");
+        } else if (newName != null && newName.length() > maxLength) {
+            throw new IllegalArgumentException(baseKey + "exceedsMaximumLength");
+        } else if (!paoDao.isNameAvailable(newName, copy.getPaoType())) {
+            throw new IllegalArgumentException(baseKey + "invalidName");
         }
         copy.setPAOName(newName);
         try {
