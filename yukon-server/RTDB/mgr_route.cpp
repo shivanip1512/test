@@ -497,21 +497,24 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMes
         // This CCURoute has repeater entries.
         if(ccuroute->getCCUVarBits() == 7)
         {
-            string resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters.";
+            string resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters. It will be skipped for role generation.";
 
-            CTILOG_WARN(dout, resStr << " It will be skipped for role generation.");
+            CTILOG_WARN( dout, resStr );
 
-            retList.push_back(
-                    new CtiReturnMsg(
-                            Req.DeviceId(),
-                            Req.CommandString(),
-                            resStr,
-                            ClientErrors::BadParameter,
-                            Req.RouteId(),
-                            Req.MacroOffset(),
-                            Req.AttemptNum(),
-                            Req.GroupMessageId(),
-                            Req.UserMessageId()) );
+            auto retMsg = std::make_unique<CtiReturnMsg>(
+                Req.DeviceId(),
+                Req.CommandString(),
+                resStr,
+                ClientErrors::BadParameter,
+                Req.RouteId(),
+                Req.MacroOffset(),
+                Req.AttemptNum(),
+                Req.GroupMessageId(),
+                Req.UserMessageId());
+
+            retMsg->setExpectMore( true );
+
+            retList.push_back( retMsg.release() );
 
             continue;
         }

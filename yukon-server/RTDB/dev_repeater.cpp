@@ -359,6 +359,8 @@ YukonError_t Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
            strncpy(pOutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
            outList.push_back( pOutMessage );
+
+           incrementGroupMessageCount( pReq->UserMessageId(), pReq->getConnectionHandle() );
        }
 
        delete OutMessage;
