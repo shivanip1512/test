@@ -32,12 +32,14 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
@@ -123,6 +125,7 @@ public class MeterEventsReportController {
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
     private ScheduledFileExportValidator exportValidator = 
             new ScheduledFileExportValidator(MeterEventsReportController.class);
@@ -152,12 +155,19 @@ public class MeterEventsReportController {
         return "meterEventsReport/home.jsp";
     }
 
-    @RequestMapping(value="home", params="collectionType")
-    public String homeWithDeviceCollection(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
-        
-        setupNewHomeModelMap(model, collection, userContext);
-        scheduledJobsTable(model);
-        
+    @RequestMapping(value="home", method=RequestMethod.POST)
+    public String homeWithDeviceCollection(ModelMap model, YukonUserContext userContext,
+                                           HttpServletRequest request, FlashScope flashScope) {            
+        if (StringUtils.isNotBlank(request.getParameter("collectionType"))) {
+            try {
+                DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
+                setupNewHomeModelMap(model, collection, userContext);
+                scheduledJobsTable(model);
+            } catch (Exception e) {
+                flashScope.setError(new YukonMessageSourceResolvable(e.getMessage()));
+                return "meterEventsReport/selectDevices.jsp";
+            }
+        }
         return "meterEventsReport/home.jsp";
     }
 

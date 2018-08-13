@@ -97,7 +97,7 @@ public class DataExporterHomeController {
     
     @RequestMapping(value = "/data-exporter/view")
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-            @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
+            @ModelAttribute ArchivedValuesExporter archivedValuesExporter, FlashScope flashScope)
     throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
@@ -137,10 +137,16 @@ public class DataExporterHomeController {
         model.put("jsConfig", config);
 
         if (StringUtils.isNotBlank(request.getParameter("collectionType"))) {
-            DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-            model.addAllAttributes(deviceCollection.getCollectionParameters());
-            model.addAttribute("deviceCollection", deviceCollection);
-            archivedValuesExporter.setDeviceCollection(deviceCollection);
+            try {
+                DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+                model.addAllAttributes(deviceCollection.getCollectionParameters());
+                model.addAttribute("deviceCollection", deviceCollection);
+                archivedValuesExporter.setDeviceCollection(deviceCollection);
+            } catch (Exception e) {
+                YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(e.getMessage());
+                flashScope.setError(resolvable);
+                return "data-exporter/selectDevices.jsp";
+            }
         }
 
         scheduledJobsTable(model);
@@ -204,9 +210,9 @@ public class DataExporterHomeController {
     
     @RequestMapping("/data-exporter/selected")
     public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-                           @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
+                           @ModelAttribute ArchivedValuesExporter archivedValuesExporter, FlashScope flashScope)
                            throws DeviceCollectionCreationException, ServletException, JsonProcessingException {
-        return view(model, request, userContext, archivedValuesExporter);
+        return view(model, request, userContext, archivedValuesExporter, flashScope);
     }
     
     @RequestMapping("/data-exporter/generateReport")
@@ -224,7 +230,7 @@ public class DataExporterHomeController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             
-            return view(model, request, userContext, archivedValuesExporter);
+            return view(model, request, userContext, archivedValuesExporter, flashScope);
         }
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
