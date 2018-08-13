@@ -165,7 +165,7 @@ $(function () {
                             <cti:param name="attribute" value="${attributeGraphType.attribute}" />
                             <cti:param name="title" value="${reportTitle}" />
                         </cti:url>
-                        <a href="${htmlUsageReportUrl}" ><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
+                        <a href="${htmlUsageReportUrl}"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}" title="${reportTitle}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                         |
