@@ -147,7 +147,7 @@ class IVVCAlgorithm
                                     PointValueMap & voltages, 
                                     std::map<Cti::CapControl::Phase, double> & maxOverages );
 
-        bool handleReverseFlow( CtiCCSubstationBusPtr subbus );
+        std::string handleReverseFlow( CtiCCSubstationBusPtr subbus );
 
         bool regulatorsReadyForDmvTest( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );
 

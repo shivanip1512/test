@@ -298,11 +298,13 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
  
     Operating Mode 8 (Auto Determination): Not supported by Yukon. 
 */ 
-bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
+std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     ZoneManager & zoneManager       = store->getZoneManager();
     Zone::IdSet subbusZoneIds       = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    std::string reason;
 
     for ( const auto ID : subbusZoneIds )
     {
@@ -327,31 +329,22 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         {
                             if ( regulator->isReverseFlowDetected() )
                             {
-                                if ( _CC_DEBUG & CC_DEBUG_IVVC )
-                                {
-                                    CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
-                                                            << regulator->getPaoName()
-                                                            << " configured in "
-                                                            << resolveControlMode( configMode )
-                                                            << " mode is detecting Reverse Flow. Disabling Bus: "
-                                                            << subbus->getPaoName() );
-                                }
-                                return true;
+                                reason = "ManualTap controlled Regulator: "
+                                            + regulator->getPaoName()
+                                            + ", configured in "
+                                            + resolveControlMode( configMode )
+                                            + " mode, is detecting Reverse Flow.";
                             }
                             break;
                         }
                         default:
                         {
-                            if ( _CC_DEBUG & CC_DEBUG_IVVC )
-                            {
-                                CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
-                                                        << regulator->getPaoName()
-                                                        << " is configured in "
-                                                        << resolveControlMode( configMode )
-                                                        << " mode. The current mode is unsupported by IVVC, Disabling Bus: "
-                                                        << subbus->getPaoName() );
-                            }
-                            return true;
+                            reason = "ManualTap controlled Regulator: "
+                                        + regulator->getPaoName()
+                                        + " is configured in "
+                                        + resolveControlMode( configMode )
+                                        + " mode, which is unsupported by IVVC.";
+                            break;
                         }
                     }
                 }
@@ -366,16 +359,11 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         {
                             if ( regulator->isReverseFlowDetected() )
                             {
-                                if ( _CC_DEBUG & CC_DEBUG_IVVC )
-                                {
-                                    CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
-                                                            << regulator->getPaoName()
-                                                            << " configured in "
-                                                            << resolveControlMode( configMode )
-                                                            << " mode is detecting Reverse Flow. Disabling Bus: "
-                                                            << subbus->getPaoName() );
-                                }
-                                return true;
+                                reason = "SetPoint controlled Regulator: "
+                                            + regulator->getPaoName()
+                                            + ", configured in "
+                                            + resolveControlMode( configMode )
+                                            + " mode, is detecting Reverse Flow.";
                             }
                             break;
                         }
@@ -383,16 +371,11 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         {
                             if ( ! regulator->isReverseFlowDetected() )
                             {
-                                if ( _CC_DEBUG & CC_DEBUG_IVVC )
-                                {
-                                    CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
-                                                            << regulator->getPaoName()
-                                                            << " configured in "
-                                                            << resolveControlMode( configMode )
-                                                            << " mode is detecting Forward Flow. Disabling Bus: "
-                                                            << subbus->getPaoName() );
-                                }
-                                return true;
+                                reason = "SetPoint controlled Regulator: "
+                                            + regulator->getPaoName()
+                                            + ", configured in "
+                                            + resolveControlMode( configMode )
+                                            + " mode, is detecting Reverse Flow.";
                             }
                             break;
                         }
@@ -404,16 +387,12 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         }
                         default:
                         {
-                            if ( _CC_DEBUG & CC_DEBUG_IVVC )
-                            {
-                                CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
-                                                        << regulator->getPaoName()
-                                                        << " is configured in "
-                                                        << resolveControlMode( configMode )
-                                                        << " mode. The current mode is unsupported by IVVC, Disabling Bus: "
-                                                        << subbus->getPaoName() );
-                            }
-                            return true;
+                            reason = "SetPoint controlled Regulator: "
+                                        + regulator->getPaoName()
+                                        + " is configured in "
+                                        + resolveControlMode( configMode )
+                                        + " mode, which is unsupported by IVVC.";
+                            break;
                         }
                     }
                 }
@@ -432,7 +411,12 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
         }
     }
 
-    return false;
+    if ( ( _CC_DEBUG & CC_DEBUG_IVVC ) && reason.size() > 0 )
+    {
+        CTILOG_DEBUG( dout, "IVVC Algorithm: " << reason << " Disabling Bus: " << subbus->getPaoName() );
+    }
+
+    return reason;
 }
 
 /*
@@ -662,15 +646,73 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     }
     state->setShowBusDisableMsg(true);
 
-    //  We need to handle any reverse flow conditions detected on the bus.
-    if ( handleReverseFlow( subbus ) )
+    if ( ! subbus->getDisableFlag() )
     {
-        sendDisableRemoteControl( subbus );
-        state->setState(IVVCState::IVVC_WAIT);
+        //  We need to handle any reverse flow conditions detected on the bus.
+        if ( const std::string & reason = handleReverseFlow( subbus ); reason.size() > 0 )
+        {
+            sendDisableRemoteControl( subbus );
+            state->setState(IVVCState::IVVC_WAIT);
 
-        CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::DISABLE_SUBSTATION_BUS,
-                                                               subbus->getPaoId() ) )->execute();
-        return;
+            /// disable the bus
+
+            subbus->setReEnableBusFlag( false );
+            subbus->setBusUpdatedFlag( true );
+            store->UpdatePaoDisableFlagInDB( subbus, true );
+
+            std::string text       = "Substation Bus Disabled - " + reason,
+                        additional = "Bus: " + subbus->getPaoName();
+            if (_LOG_MAPID_INFO)
+            {
+                additional += " MapID: ";
+                additional += subbus->getMapLocationId();
+                additional += " (";
+                additional += subbus->getPaoDescription();
+                additional += ")";
+            }
+
+            CtiCapController::getInstance()->sendMessageToDispatch(
+                new CtiSignalMsg( SYS_PID_CAPCONTROL,
+                                  0,
+                                  text,
+                                  additional,
+                                  CapControlLogType,
+                                  SignalEvent,
+                                  Cti::CapControl::SystemUser ),
+                CALLSITE );
+
+            if ( ! subbus->getVerificationFlag() )
+            {
+                INT seqId = CCEventSeqIdGen();
+                subbus->setEventSequence( seqId );
+            }
+
+            long stationId, areaId, spAreaId;
+
+            store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
+
+            // Truncate at 120 chars if to long for the database column
+            if ( text.size() > 120 )
+            {
+                text = text.substr( 0, 120 );
+            }
+
+            CtiCapController::submitEventLogEntry(
+                EventLogEntry( 0,
+                               SYS_PID_CAPCONTROL,
+                               spAreaId,
+                               areaId,
+                               stationId,
+                               subbus->getPaoId(),
+                               0,
+                               capControlDisable,
+                               subbus->getEventSequence(),
+                               0,
+                               text,
+                               Cti::CapControl::SystemUser ) );
+
+            return;
+        }
     }
 
     // subbus is enabled
