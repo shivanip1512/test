@@ -49,8 +49,8 @@ string CtiTableTagLog::getTableName()
 
 bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    static const std::string sql = "insert into " + getTableName() +
-                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    static const std::string sql = "INSERT INTO " + getTableName() +
+                                   " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     if(getUserName().empty())
     {
@@ -99,8 +99,8 @@ bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
 
 bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
 {
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
+    static const std::string sql = "UPDATE " + getTableName() +
+                                   " SET "
                                         "instanceid = ?, "
                                         "pointid = ?, "
                                         "tagid = ?, "
@@ -110,7 +110,7 @@ bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
                                         "tagtime = ?, "
                                         "refstr = ?, "
                                         "forstr = ?"
-                                   " where "
+                                   " WHERE "
                                         "logid = ?";
 
     if(getUserName().empty())
@@ -278,7 +278,7 @@ int CtiTableTagLog::getMaxInstanceId()
     {
         try
         {
-            static const string sql = "SELECT MAX (TLG.instanceid) as maxid "
+            static const string sql = "SELECT MAX(TLG.instanceid) AS maxid "
                                       "FROM TagLog TLG";
 
             Cti::Database::DatabaseConnection connection;
@@ -311,7 +311,7 @@ int CtiTableTagLog::getNextLogId()
     {
         try
         {
-            static const string sql = "SELECT maxid = MAX (TLG.logid) "
+            static const string sql = "SELECT MAX(TLG.logid) AS maxid "
                                       "FROM TagLog TLG";
 
             Cti::Database::DatabaseConnection connection;
