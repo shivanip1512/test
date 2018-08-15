@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
@@ -27,10 +28,13 @@ import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
+import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTypeInfo;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
@@ -50,7 +54,8 @@ public class ChangeDeviceTypeController {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private CollectionActionDao collectionActionDao;
-    
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
      */
@@ -92,7 +97,9 @@ public class ChangeDeviceTypeController {
                         deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
                     }
                 } else if (paoType.isRfMeter()) {
-                    // skip all RFN types. We do not have a way to pass in Model/Manufacturer in the collection action for Change Type.
+                    if (paoDefinition.getType().isRfMeter()) {
+                        deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
+                    }
                 } else {
                     deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
                 }
@@ -119,7 +126,14 @@ public class ChangeDeviceTypeController {
         SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
-                changeDeviceTypeService.changeDeviceType(device, selectedDeviceType, null);
+                ChangeDeviceTypeInfo info = null;
+                if (device.getPaoIdentifier().getPaoType().isRfn() && selectedDeviceType.isRfn()) {
+                    String sn = rfnDeviceDao.getDevice(device).getRfnIdentifier().getSensorSerialNumber();
+                    RfnManufacturerModel rfnModel = RfnManufacturerModel.getForType(selectedDeviceType).get(0);
+                    RfnIdentifier rfnIdentifier = new RfnIdentifier(sn, rfnModel.getManufacturer(), rfnModel.getModel());
+                    info = new ChangeDeviceTypeInfo(rfnIdentifier);
+                }
+                changeDeviceTypeService.changeDeviceType(device, selectedDeviceType, info);
             }
         };
         
