@@ -147,7 +147,7 @@ struct ClientErrors
         MissingParameter,
         Syntax,
         z_012,
-        z_013,
+        BadRead,
         BadState,
         BadParity,
         BadCcu,
@@ -171,7 +171,7 @@ struct ClientErrors
         BadCrc,
         BadLength,
         BadHdlcUaFrame,
-        Unknown,
+        z_037,
         UnknownCommandReceived,
         z_039,
         z_040,
@@ -187,7 +187,7 @@ struct ClientErrors
         z_050,
         z_051,
         z_052,
-        z_053,
+        PortRemoteNotFound,
         IdNotFound,
         ChildDeviceUnknown,
         TypeNotFound,
@@ -395,6 +395,8 @@ struct ClientErrors
         NoAggregateResponseEntry,
 
         E2eBadRequest,
+        E2eCommandFailed,
+        E2eErrorUnmapped,
     };
 };
 

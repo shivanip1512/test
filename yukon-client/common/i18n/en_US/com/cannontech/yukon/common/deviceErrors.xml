@@ -56,6 +56,10 @@
     <entry key="yukon.web.error.code.11.description">Syntax Error</entry>
     <entry key="yukon.web.error.code.11.troubleshooting">No troubleshooting is available for this error.</entry>
     
+    <entry key="yukon.web.error.code.13.porter">Bad read</entry>
+    <entry key="yukon.web.error.code.13.description">The end device returned an unacceptable response to a read.</entry>
+    <entry key="yukon.web.error.code.13.troubleshooting">No troubleshooting is available for this error.</entry>
+
     <entry key="yukon.web.error.code.14.porter">Bad State Specification</entry>
     <entry key="yukon.web.error.code.14.description">Bad State Specification</entry>
     <entry key="yukon.web.error.code.14.troubleshooting">No troubleshooting is available for this error.</entry>
@@ -367,10 +371,6 @@
                 <li>Attempt the command again</li>
             </ul>]]></entry>
             
-    <entry key="yukon.web.error.code.37.porter">Unknown Error</entry>
-    <entry key="yukon.web.error.code.37.description">An unclassified error occurred in Porter.</entry>
-    <entry key="yukon.web.error.code.37.troubleshooting">No troubleshooting is available for this error.</entry>
-    
     <entry key="yukon.web.error.code.38.porter">Unknown Command Received</entry>
     <entry key="yukon.web.error.code.38.description">Unknown Command Received</entry>
     <entry key="yukon.web.error.code.38.troubleshooting">No troubleshooting is available for this error.</entry>
@@ -391,6 +391,10 @@
     <entry key="yukon.web.error.code.49.porter">Route Not Found</entry>
     <entry key="yukon.web.error.code.49.description">Route Not Found</entry>
     <entry key="yukon.web.error.code.49.troubleshooting"> No troubleshooting is available for this error. </entry>
+
+    <entry key="yukon.web.error.code.53.porter">Outstation address not found on port</entry>
+    <entry key="yukon.web.error.code.53.description">The request specified an outstation address that was not found on the port.</entry>
+    <entry key="yukon.web.error.code.53.troubleshooting"> No troubleshooting is available for this error. </entry>
 
     <entry key="yukon.web.error.code.54.porter">Device ID Not Found</entry>
     <entry key="yukon.web.error.code.54.description">The device ID requested does not exist or is not
@@ -1179,6 +1183,14 @@
     <entry key="yukon.web.error.code.309.porter">Endpoint indicated a bad request.</entry>
     <entry key="yukon.web.error.code.309.description">The end device rejected the request.</entry>
     <entry key="yukon.web.error.code.309.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.310.porter">Endpoint indicated command failure.</entry>
+    <entry key="yukon.web.error.code.310.description">The end device attempted to execute the command, but it failed.</entry>
+    <entry key="yukon.web.error.code.310.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.311.porter">Endpoint returned an unmapped error.</entry>
+    <entry key="yukon.web.error.code.311.description">The end device returned an error that is not categorized by Yukon.</entry>
+    <entry key="yukon.web.error.code.311.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
