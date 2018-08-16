@@ -159,7 +159,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             {//CRC ERROR!!!!
                                 CTILOG_ERROR(dout, "crc error in received data");
 
-                                retVal = ClientErrors::Unknown;//some error code should be set!
+                                retVal = ClientErrors::BadCrc;
 
                                 if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
                                 {
@@ -194,7 +194,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                                 //this means error code was set, but response was right. Report the error code
                                 _string_results.push_back("There is a read with function " + CtiNumStr((*_points_start).pointType) + " starting at point " + CtiNumStr((*_points_start).pointOffset) +
                                                           " that cannot be read.");
-                                retVal = ClientErrors::Unknown;//some error code should be set!
+                                retVal = ClientErrors::BadRead;
 
                                 _status = Continue;
                                 _points_start = _points_finish;//ok, that didnt work, and it wont work if we try it again, so dont.
@@ -211,7 +211,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                                 //unknown data??
                                 CTILOG_ERROR(dout, "unknown data received");
 
-                                retVal = ClientErrors::Unknown;//some error code should be set, we can retry!
+                                retVal = ClientErrors::BadRead;
 
                                 if(_retries++>Retries_Default)//retry and if that doesnt work, quit!
                                 {
@@ -251,7 +251,7 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
             case Command_Error:
             default:
             {
-                retVal = ClientErrors::Unknown;
+                retVal = ClientErrors::BadState;
                 _status = End;
                 break;
             }
