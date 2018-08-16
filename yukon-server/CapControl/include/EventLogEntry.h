@@ -43,10 +43,7 @@ struct EventLogEntry
 
     void validate()
     {
-        enum
-        {
-            TextColumnMaxWidth  = 120
-        };
+        constexpr auto TextColumnMaxWidth = 120;
 
         if ( text.size() > TextColumnMaxWidth )
         {
