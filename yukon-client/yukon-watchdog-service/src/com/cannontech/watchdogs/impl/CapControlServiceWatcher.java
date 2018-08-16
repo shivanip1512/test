@@ -97,10 +97,10 @@ public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implemen
 
         if (receivedLatestMessageTimeStamp == null || !clientConnection.isValid()) {
             log.info("Status of CapControl service " + ServiceStatus.STOPPED);
-            return generateWarning(WatchdogWarningType.CAPCONTROL_SERVICE_STATUS, ServiceStatus.STOPPED);
+            return generateWarning(WatchdogWarningType.YUKON_CAP_CONTROL_SERVICE, ServiceStatus.STOPPED);
         } else {
             log.info("Status of CapControl service " + ServiceStatus.RUNNING);
-            return generateWarning(WatchdogWarningType.CAPCONTROL_SERVICE_STATUS, ServiceStatus.RUNNING);
+            return generateWarning(WatchdogWarningType.YUKON_CAP_CONTROL_SERVICE, ServiceStatus.RUNNING);
         }
 
     }

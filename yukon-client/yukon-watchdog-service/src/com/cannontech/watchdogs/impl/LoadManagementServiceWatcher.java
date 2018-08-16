@@ -99,10 +99,10 @@ public class LoadManagementServiceWatcher extends ServiceStatusWatchdogImpl impl
 
         if (receivedLatestMessageTimeStamp == null || !clientConnection.isValid()) {
             log.info("Status of LoadManagement service " + ServiceStatus.STOPPED);
-            return generateWarning(WatchdogWarningType.LOADMANAGEMENT_SERVICE_STATUS, ServiceStatus.STOPPED);
+            return generateWarning(WatchdogWarningType.YUKON_LOAD_MANAGEMENT_SERVICE, ServiceStatus.STOPPED);
         } else {
             log.info("Status of LoadManagement service " + ServiceStatus.RUNNING);
-            return generateWarning(WatchdogWarningType.LOADMANAGEMENT_SERVICE_STATUS, ServiceStatus.RUNNING);
+            return generateWarning(WatchdogWarningType.YUKON_LOAD_MANAGEMENT_SERVICE, ServiceStatus.RUNNING);
         }
 
     }

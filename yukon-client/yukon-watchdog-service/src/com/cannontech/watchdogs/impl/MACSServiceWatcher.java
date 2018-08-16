@@ -93,10 +93,10 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
 
         if (receivedLatestMessageTimeStamp == null || !macsConnection.isValid()) {
             log.info("Status of MACS service " + ServiceStatus.STOPPED);
-            return generateWarning(WatchdogWarningType.MACS_SERVICE_STATUS, ServiceStatus.STOPPED);
+            return generateWarning(WatchdogWarningType.YUKON_MAC_SCHEDULER_SERVICE, ServiceStatus.STOPPED);
         } else {
             log.info("Status of MACS service " + ServiceStatus.RUNNING);
-            return generateWarning(WatchdogWarningType.MACS_SERVICE_STATUS, ServiceStatus.RUNNING);
+            return generateWarning(WatchdogWarningType.YUKON_MAC_SCHEDULER_SERVICE, ServiceStatus.RUNNING);
         }
     }
 

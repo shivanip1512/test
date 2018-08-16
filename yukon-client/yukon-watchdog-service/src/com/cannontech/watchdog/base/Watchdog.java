@@ -5,6 +5,11 @@ import java.util.List;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 import com.cannontech.watchdog.model.Watchdogs;
 
+/**
+ * Guidelines for adding a new watchdog is available at
+ * http://cipt0534.nam.ci.root:8090/display/EEST/Watchdog+-+Adding+new+watchdog
+ * 
+ */
 public interface Watchdog {
 
     /**

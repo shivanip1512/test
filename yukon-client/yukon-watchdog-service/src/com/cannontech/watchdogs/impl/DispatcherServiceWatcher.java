@@ -103,11 +103,11 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
         if (receivedLatestMessageTimeStamp == null || !dispatchConnection.isValid()) {
             log.info("Status of Dispatcher service " + ServiceStatus.STOPPED);
             isDispatcherRunning.set(false);
-            return generateWarning(WatchdogWarningType.DISPATCH_SERVICE_STATUS, ServiceStatus.STOPPED);
+            return generateWarning(WatchdogWarningType.YUKON_DISPATCH_SERVICE, ServiceStatus.STOPPED);
         } else {
             log.info("Status of Dispatcher service " + ServiceStatus.RUNNING);
             isDispatcherRunning.set(true);
-            return generateWarning(WatchdogWarningType.DISPATCH_SERVICE_STATUS, ServiceStatus.RUNNING);
+            return generateWarning(WatchdogWarningType.YUKON_DISPATCH_SERVICE, ServiceStatus.RUNNING);
         }
     }
 
