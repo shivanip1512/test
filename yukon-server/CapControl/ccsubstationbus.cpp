@@ -26,6 +26,7 @@ using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
 using Cti::CapControl::populateFlag;
 using Cti::CapControl::calculateKVARSolution;
+using Cti::CapControl::formatAdditionalData;
 
 using std::endl;
 using std::set;
@@ -40,7 +41,6 @@ extern bool _USE_FLIP_FLAG;
 extern unsigned long _POINT_AGE;
 extern unsigned long _SCAN_WAIT_EXPIRE;
 extern bool _ALLOW_PARALLEL_TRUING;
-extern bool _LOG_MAPID_INFO;
 extern unsigned long _LIKEDAY_OVERRIDE_TIMEOUT;
 extern bool _RATE_OF_CHANGE;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
@@ -973,16 +973,8 @@ void CtiCCSubstationBus::checkForMaxDailyOpsHit()
          (!getMaxDailyOpsHitFlag() && getCurrentDailyOperations() > getStrategy()->getMaxDailyOperation()) ) )//only send once
     {
         string text = string("Substation Bus Exceeded Max Daily Operations");
-        string additional = string("Substation Bus: ");
-        additional += getPaoName();
-        if (_LOG_MAPID_INFO)
-        {
-            additional += " MapID: ";
-            additional += getMapLocationId();
-            additional += " (";
-            additional += getPaoDescription();
-            additional += ")";
-        }
+        string additional = "Substation Bus: " + getPaoName() + formatAdditionalData( this );
+
         if (getDailyOperationsAnalogPointId() > 0 && !getMaxDailyOpsHitFlag())
         {
             CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
@@ -1002,16 +994,8 @@ bool CtiCCSubstationBus::maxOperationsHitDisableBus()
    setBusUpdatedFlag(true);
    setSolution("  Sub Disabled. Automatic Control Inhibited.");
    string text = string("Substation Bus Disabled");
-   string additional = string("Bus: ");
-   additional += getPaoName();
-   if (_LOG_MAPID_INFO)
-   {
-       additional += " MapID: ";
-       additional += getMapLocationId();
-       additional += " (";
-       additional += getPaoDescription();
-       additional += ")";
-   }
+   string additional = "Bus: " + getPaoName() + formatAdditionalData( this );
+
    if (getDailyOperationsAnalogPointId() > 0)
    {
        CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
@@ -2937,14 +2921,9 @@ void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChange
     if( text.length() > 0 )
     {//if control failed or questionable, create event to be sent to dispatch
         long tempLong = capBank->getStatusPointId();
-        if (_LOG_MAPID_INFO)
-        {
-            additional += " MapID: ";
-            additional += feeder->getMapLocationId();
-            additional += " (";
-            additional += feeder->getPaoDescription();
-            additional += ")";
-        }
+
+        additional += formatAdditionalData( feeder );
+
         pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, user));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
     }

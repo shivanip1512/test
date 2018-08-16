@@ -35,6 +35,7 @@ using Cti::CapControl::ZoneManager;
 using Cti::CapControl::sendCapControlOperationMessage;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
+using Cti::CapControl::formatAdditionalData;
 
 using namespace Cti::Messaging::CapControl;
 
@@ -49,7 +50,6 @@ extern bool _IVVC_STATIC_DELTA_VOLTAGES;
 extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 extern unsigned long _REFUSAL_TIMEOUT;
 extern unsigned long _MAX_KVAR;
-extern bool _LOG_MAPID_INFO;
 extern long _MAXOPS_ALARM_CATID;
 
 long GetDmvTestExecutionID( Cti::Database::DatabaseConnection & connection );
@@ -304,8 +304,6 @@ std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
     ZoneManager & zoneManager       = store->getZoneManager();
     Zone::IdSet subbusZoneIds       = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
 
-    std::string reason;
-
     for ( const auto ID : subbusZoneIds )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
@@ -329,22 +327,21 @@ std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         {
                             if ( regulator->isReverseFlowDetected() )
                             {
-                                reason = "ManualTap controlled Regulator: "
+                                return "ManualTap Regulator: "
                                             + regulator->getPaoName()
-                                            + ", configured in "
+                                            + ", in "
                                             + resolveControlMode( configMode )
-                                            + " mode, is detecting Reverse Flow.";
+                                            + " mode, detecting Reverse Flow.";
                             }
                             break;
                         }
                         default:
                         {
-                            reason = "ManualTap controlled Regulator: "
+                            return "ManualTap Regulator: "
                                         + regulator->getPaoName()
-                                        + " is configured in "
+                                        + " in "
                                         + resolveControlMode( configMode )
-                                        + " mode, which is unsupported by IVVC.";
-                            break;
+                                        + " mode, is unsupported by IVVC.";
                         }
                     }
                 }
@@ -359,11 +356,11 @@ std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         {
                             if ( regulator->isReverseFlowDetected() )
                             {
-                                reason = "SetPoint controlled Regulator: "
+                                return "SetPoint Regulator: "
                                             + regulator->getPaoName()
-                                            + ", configured in "
+                                            + ", in "
                                             + resolveControlMode( configMode )
-                                            + " mode, is detecting Reverse Flow.";
+                                            + " mode, detecting Reverse Flow.";
                             }
                             break;
                         }
@@ -371,11 +368,11 @@ std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         {
                             if ( ! regulator->isReverseFlowDetected() )
                             {
-                                reason = "SetPoint controlled Regulator: "
+                                return "SetPoint Regulator: "
                                             + regulator->getPaoName()
-                                            + ", configured in "
+                                            + ", in "
                                             + resolveControlMode( configMode )
-                                            + " mode, is detecting Reverse Flow.";
+                                            + " mode, detecting Forward Flow.";
                             }
                             break;
                         }
@@ -387,12 +384,11 @@ std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         }
                         default:
                         {
-                            reason = "SetPoint controlled Regulator: "
+                            return "SetPoint Regulator: "
                                         + regulator->getPaoName()
-                                        + " is configured in "
+                                        + " in "
                                         + resolveControlMode( configMode )
-                                        + " mode, which is unsupported by IVVC.";
-                            break;
+                                        + " mode, is unsupported by IVVC.";
                         }
                     }
                 }
@@ -411,12 +407,7 @@ std::string IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
         }
     }
 
-    if ( ( _CC_DEBUG & CC_DEBUG_IVVC ) && reason.size() > 0 )
-    {
-        CTILOG_DEBUG( dout, "IVVC Algorithm: " << reason << " Disabling Bus: " << subbus->getPaoName() );
-    }
-
-    return reason;
+    return "";
 }
 
 /*
@@ -468,16 +459,7 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
 
         store->UpdatePaoDisableFlagInDB( bank, true );
 
-        std::string additional  = "CapBank: " + bank->getPaoName();
-
-        if ( _LOG_MAPID_INFO )
-        {
-            additional  += " MapID: "
-                        + bank->getMapLocationId()
-                        + " ("
-                        + bank->getPaoDescription()
-                        + ")";
-        }
+        std::string additional = "CapBank: " + bank->getPaoName() + formatAdditionalData( bank );
 
         if ( bank->getOperationAnalogPointId() > 0 )
         {
@@ -649,8 +631,13 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     if ( ! subbus->getDisableFlag() )
     {
         //  We need to handle any reverse flow conditions detected on the bus.
-        if ( const std::string & reason = handleReverseFlow( subbus ); reason.size() > 0 )
+        if ( const auto reason = handleReverseFlow( subbus ); ! reason.empty() )
         {
+            if ( _CC_DEBUG & CC_DEBUG_IVVC )
+            {
+                CTILOG_DEBUG( dout, "IVVC Algorithm: " << reason << " Disabling Bus: " << subbus->getPaoName() );
+            }
+
             sendDisableRemoteControl( subbus );
             state->setState(IVVCState::IVVC_WAIT);
 
@@ -661,15 +648,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             store->UpdatePaoDisableFlagInDB( subbus, true );
 
             std::string text       = "Substation Bus Disabled - " + reason,
-                        additional = "Bus: " + subbus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += subbus->getMapLocationId();
-                additional += " (";
-                additional += subbus->getPaoDescription();
-                additional += ")";
-            }
+                        additional = "Bus: " + subbus->getPaoName() + formatAdditionalData( subbus );
 
             CtiCapController::getInstance()->sendMessageToDispatch(
                 new CtiSignalMsg( SYS_PID_CAPCONTROL,
@@ -690,12 +669,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             long stationId, areaId, spAreaId;
 
             store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
-
-            // Truncate at 120 chars if to long for the database column
-            if ( text.size() > 120 )
-            {
-                text = text.substr( 0, 120 );
-            }
 
             CtiCapController::submitEventLogEntry(
                 EventLogEntry( 0,

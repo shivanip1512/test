@@ -8,6 +8,8 @@
 #include "CapControlOperationMessage.h"
 #include "cctwowaycbcpoints.h"
 
+extern bool _LOG_MAPID_INFO;
+
 class CtiCCCapBank;
 class CapControlPao;
 
@@ -145,5 +147,17 @@ extern const std::string SystemUser;
 
 double calculateKVARSolution( const std::string & controlUnits, double setPoint, double varValue, double wattValue,
                               const CapControlPao & pao );
+
+/*
+    This function formats the extended map information in a string.  The map info is only supported on
+        busses, feeders and capbanks.
+*/
+template <typename T>
+std::string formatAdditionalData( const T & object )
+{
+    return _LOG_MAPID_INFO
+        ? " MapID: " + object->getMapLocationId() + " (" + object->getPaoDescription() + ")"
+        : "";
+}
 
 }}

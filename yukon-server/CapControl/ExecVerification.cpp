@@ -12,13 +12,13 @@
 #include "IVVCStrategy.h"
 
 extern unsigned long _CC_DEBUG;
-extern bool _LOG_MAPID_INFO;
 
 using std::endl;
 using std::string;
 using Cti::CapControl::CapControlType;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
 using Cti::CapControl::EventLogEntry;
+using Cti::CapControl::formatAdditionalData;
 
 VerificationExecutor::VerificationExecutor(VerifyBanks* command)
 {
@@ -217,16 +217,8 @@ void VerificationExecutor::startVerification()
            //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
             string text = currentSubstationBus->getVerificationString();
             text += " Enabled";
-            string additional("Bus: ");
-            additional += currentSubstationBus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPaoDescription();
-                additional += ")";
-            }
+            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
             INT seqId = CCEventSeqIdGen();
@@ -296,16 +288,8 @@ void VerificationExecutor::startVerification()
 
     string text = currentSubstationBus->getVerificationString();
     text += " Starting";
-    string additional("Bus: ");
-    additional += currentSubstationBus->getPaoName();
-    if (_LOG_MAPID_INFO)
-    {
-        additional += " MapID: ";
-        additional += currentSubstationBus->getMapLocationId();
-        additional += " (";
-        additional += currentSubstationBus->getPaoDescription();
-        additional += ")";
-    }
+    string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
     INT seqId = CCEventSeqIdGen();
@@ -368,16 +352,8 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
             }
             string text = currentSubstationBus->getVerificationString();
             text += " Stopping after currentBank";
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPaoDescription();
-                additional += ")";
-            }
+            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
             long stationId, areaId, spAreaId;
@@ -422,16 +398,8 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
 
             string text = currentSubstationBus->getVerificationString();
             text += " Stopping";
-            string additional = string("Bus: ");
-            additional += currentSubstationBus->getPaoName();
-            if (_LOG_MAPID_INFO)
-            {
-                additional += " MapID: ";
-                additional += currentSubstationBus->getMapLocationId();
-                additional += " (";
-                additional += currentSubstationBus->getPaoDescription();
-                additional += ")";
-            }
+            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
             long stationId, areaId, spAreaId;

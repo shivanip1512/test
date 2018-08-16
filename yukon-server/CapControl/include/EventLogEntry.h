@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ccid.h"
+#include "string_util.h"
+#include "logger.h"
 #include "ctitime.h"
 #include "pointtypes.h"  //  for SYS_PID_CAPCONTROL
 
@@ -7,6 +10,8 @@
 
 #include <string>
 #include <vector>
+
+extern unsigned long _CC_DEBUG;
 
 namespace Cti {
 namespace CapControl {
@@ -24,6 +29,7 @@ struct EventLogEntry
         value(value_), text(text_), userName(userName_), kvarBefore(kvarBefore_), kvarAfter(kvarAfter_), kvarChange(kvarChange_), ipAddress(ipAddress_),
         actionId(actionId_), stateInfo(stateInfo_), aVar(aVar_), bVar(bVar_), cVar(cVar_), regulatorId(regulatorId_)
     {
+        validate();
     }
 
     EventLogEntry(std::string text_, int regulatorId_ = 0, long eventType_ = -1) :
@@ -32,6 +38,41 @@ struct EventLogEntry
         seqId(0), value(0), kvarBefore(0), kvarAfter(0), kvarChange(0), ipAddress("(N/A)"),
         actionId(0), stateInfo("(N/A)"), aVar(0), bVar(0), cVar(0), regulatorId(regulatorId_)
     {
+        validate();
+    }
+
+    void validate()
+    {
+        enum
+        {
+            TextColumnMaxWidth  = 120
+        };
+
+        if ( text.size() > TextColumnMaxWidth )
+        {
+            std::string original( text );
+
+            text = text.substr( 0, TextColumnMaxWidth );
+
+            Cti::StreamBuffer s;
+
+            s << "Text column exceeds max length of " << TextColumnMaxWidth << " characters.";
+
+            if ( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            {
+                Cti::FormattedTable table;
+
+                table.setCell(0, 0) << "Original";
+                table.setCell(0, 1) << original;
+
+                table.setCell(1, 0) << "Truncated";
+                table.setCell(1, 1) << text;
+
+                s << table;
+            }
+
+            CTILOG_WARN(dout, s);
+        }
     }
 
     void setActionId(long actionId_)

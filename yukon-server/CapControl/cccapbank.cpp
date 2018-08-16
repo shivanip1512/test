@@ -25,7 +25,6 @@ using namespace std;
 
 extern unsigned long _CC_DEBUG;
 extern bool _USE_FLIP_FLAG;
-extern bool _LOG_MAPID_INFO;
 extern long _MAXOPS_ALARM_CATID;
 
 DEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
@@ -1618,16 +1617,7 @@ bool CtiCCCapBank::checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges,
     {
         setMaxDailyOpsHitFlag( true );
 
-        std::string additional  = "CapBank: " + getPaoName();
-
-        if ( _LOG_MAPID_INFO )
-        {
-            additional  += " MapID: "
-                        + getMapLocationId()
-                        + " ("
-                        + getPaoDescription()
-                        + ")";
-        }
+        std::string additional  = "CapBank: " + getPaoName() + formatAdditionalData( this );
 
         if ( getOperationAnalogPointId() > 0 )
         {
