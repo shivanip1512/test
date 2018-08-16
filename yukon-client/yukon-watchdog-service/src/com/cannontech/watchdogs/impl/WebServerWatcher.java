@@ -37,7 +37,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getWebServerStatus();
         log.info("Status of web server " + connectionStatus);
-        return generateWarning(WatchdogWarningType.WEB_SERVER_SERVICE_STATUS, connectionStatus);
+        return generateWarning(WatchdogWarningType.YUKON_WEB_APPLICATION_SERVICE, connectionStatus);
     }
 
     private ServiceStatus getWebServerStatus() {

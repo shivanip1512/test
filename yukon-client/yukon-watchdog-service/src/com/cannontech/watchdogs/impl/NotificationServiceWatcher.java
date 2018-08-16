@@ -18,7 +18,7 @@ public class NotificationServiceWatcher extends ServiceStatusWatchdogImpl {
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getNotificationServerStatus();
         log.info("Status of notification server " + connectionStatus);
-        return generateWarning(WatchdogWarningType.NOTIFICATION_SERVER_SERVICE_STATUS, connectionStatus);
+        return generateWarning(WatchdogWarningType.YUKON_NOTIFICATION_SERVER, connectionStatus);
     }
 
     private ServiceStatus getNotificationServerStatus() {

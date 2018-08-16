@@ -64,7 +64,7 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
         pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getScannerServiceStatus();
         log.info("Status of SCANNER service " + serviceStatus);
-        return generateWarning(WatchdogWarningType.SCANNER_SERVICE_STATUS, serviceStatus);
+        return generateWarning(WatchdogWarningType.YUKON_REAL_TIME_SCAN_SERVICE, serviceStatus);
     }
 
     /**

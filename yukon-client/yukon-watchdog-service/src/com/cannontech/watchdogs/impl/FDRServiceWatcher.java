@@ -65,7 +65,7 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
         pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getFDRServiceStatus();
         log.info("Status of FDR service " + serviceStatus);
-        return generateWarning(WatchdogWarningType.FDR_SERVICE_STATUS, serviceStatus);
+        return generateWarning(WatchdogWarningType.YUKON_FOREIGN_DATA_SERVICE, serviceStatus);
     }
 
     /**

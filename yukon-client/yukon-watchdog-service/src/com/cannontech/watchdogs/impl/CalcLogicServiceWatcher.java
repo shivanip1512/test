@@ -65,7 +65,7 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl implement
         pointDataReceived.drainPermits();
         ServiceStatus serviceStatus = getCalcLogicServiceStatus();
         log.info("Status of CalcLogic service " + serviceStatus);
-        return generateWarning(WatchdogWarningType.CALC_SERVICE_STATUS, serviceStatus);
+        return generateWarning(WatchdogWarningType.YUKON_CALC_LOGIC_SERVICE, serviceStatus);
     }
 
     /**

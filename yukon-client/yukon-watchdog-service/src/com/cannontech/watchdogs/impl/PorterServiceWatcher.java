@@ -97,10 +97,10 @@ public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements W
         } catch (InterruptedException e) {}
         if (receivedLatestMessageTimeStamp == null || (receivedLatestMessageTimeStamp.isBefore(sendMessageTimeStamp)) || !porterClientConnection.isValid()) {
             log.info("Status of Porter service " + ServiceStatus.STOPPED);
-            return generateWarning(WatchdogWarningType.PORTER_SERVICE_STATUS, ServiceStatus.STOPPED);
+            return generateWarning(WatchdogWarningType.YUKON_PORT_CONTROL_SERVICE, ServiceStatus.STOPPED);
         } else {
             log.info("Status of Porter service " + ServiceStatus.RUNNING);
-            return generateWarning(WatchdogWarningType.PORTER_SERVICE_STATUS, ServiceStatus.RUNNING);
+            return generateWarning(WatchdogWarningType.YUKON_PORT_CONTROL_SERVICE, ServiceStatus.RUNNING);
         }
     }
 
