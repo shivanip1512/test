@@ -136,7 +136,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
      *
      */
 
-    validate(Condition( response.size() >= 2, ClientErrors::Unknown )
+    validate(Condition( response.size() >= 2, ClientErrors::DataMissing )
             << "Response too small - (" << response.size() << ", expecting >= 2)");
 
     const unsigned char commandCode     = response[0],
@@ -147,10 +147,10 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
     validate( Condition( !! statusResult, ClientErrors::InvalidData )
             << "Invalid status - (" << statusCode << ")");
 
-    validate(Condition( statusCode == 0x00, ClientErrors::Unknown )
+    validate(Condition( statusCode == 0x00, ClientErrors::E2eCommandFailed )
             << "Failure status - (" << statusCode << ")");
 
-    validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
+    validate( Condition( response.size() >= 4, ClientErrors::DataMissing)
             << "Response too small - (" << response.size() << ", expecting >= 4)" );
 
     const unsigned char displayItemNbr      = response[2],
@@ -317,7 +317,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
     validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << statusCode << ")");
 
-    validate( Condition( statusCode == 0x00, ClientErrors::Unknown )
+    validate( Condition( statusCode == 0x00, ClientErrors::E2eCommandFailed )
             << "Failure Status (" << statusCode << ")");
 
     std::string description = "Status: " + *status + " (" + CtiNumStr(statusCode) + ")";

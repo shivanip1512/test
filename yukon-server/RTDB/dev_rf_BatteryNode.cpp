@@ -61,7 +61,7 @@ YukonError_t processChannelConfigReply( const Cti::Messaging::Rfn::RfnSetChannel
         { 4, ClientErrors::BatteryNodeFailure }
     };
 
-    return mapFindOrDefault( replyCodeToYukonError, reply.replyCode, ClientErrors::Unknown ); 
+    return mapFindOrDefault( replyCodeToYukonError, reply.replyCode, ClientErrors::E2eErrorUnmapped ); 
 }
 
 boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurationFromNM( const RfnIdentifier & rfnId )
@@ -263,7 +263,7 @@ YukonError_t RfBatteryNodeDevice::executeGetConfigIntervals(CtiRequestMsg *pReq,
                 { 3, ClientErrors::BatteryNodeFailure }
             };
 
-            return mapFindOrDefault( replyCodeToYukonError, configInfo->replyCode, ClientErrors::Unknown ); 
+            return mapFindOrDefault( replyCodeToYukonError, configInfo->replyCode, ClientErrors::E2eErrorUnmapped ); 
         }
 
         // SUCCESS -- load a string into the return message and send it out

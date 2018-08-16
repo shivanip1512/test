@@ -279,7 +279,7 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 
         boost::optional<Confirm::Callback> confirmCallback;
 
-        const auto yukonErrorCode = mapFindOrDefault(ConfirmErrors, confirmMsg->replyType, ClientErrors::Unknown);
+        const auto yukonErrorCode = mapFindOrDefault(ConfirmErrors, confirmMsg->replyType, ClientErrors::E2eErrorUnmapped);
 
         if( confirmMsg->header )
         {
