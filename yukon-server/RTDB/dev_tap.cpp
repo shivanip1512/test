@@ -292,7 +292,7 @@ YukonError_t TapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, YukonErro
             }
             else if( xfer.getInCountActual() >= 1 && xfer.getInBuffer()[0] == CHAR_NAK )
             {
-                status = ClientErrors::Unknown;
+                status = ClientErrors::BadState;
                 setCurrentState(StateHandshakeAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
@@ -403,7 +403,7 @@ YukonError_t TapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, YukonErro
         }
     case StateHandshakeDecodeIdentify_2:      // This is a no-win state.  I don't get the old code very much.. CGP 7/5/00
         {
-            status = ClientErrors::Unknown;
+            status = ClientErrors::BadState;
 
             if( xfer.getInBuffer()[2] == CHAR_EOT )
             {
