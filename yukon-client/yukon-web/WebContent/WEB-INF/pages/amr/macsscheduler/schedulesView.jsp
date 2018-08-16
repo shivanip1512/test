@@ -33,10 +33,18 @@
                     </c:otherwise>
                 </c:choose>
                     <td>
-                        <cti:url var="viewUrl" value="/macsscheduler/schedules/${id}/view" />
-                        <a href="${viewUrl}">
-                            ${fn:escapeXml(schedule.scheduleName)}
-                        </a>
+                        <cti:checkRolesAndProperties value="MACS_SCRIPTS" level="UPDATE">
+                            <c:set var="isLinkVisible" value="true" />
+                        </cti:checkRolesAndProperties>
+                        <c:choose>
+                            <c:when test="${isLinkVisible == 'true'}">
+                                <cti:url var="viewUrl" value="/macsscheduler/schedules/${id}/view" />
+                                <a href="${viewUrl}"> ${fn:escapeXml(schedule.scheduleName)} </a>
+                            </c:when>
+                            <c:otherwise>
+                                ${fn:escapeXml(schedule.scheduleName)}
+                            </c:otherwise>
+                        </c:choose>
                     </td>
                     <td>
                         ${fn:escapeXml(schedule.categoryName)}
