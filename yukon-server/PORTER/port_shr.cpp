@@ -106,9 +106,6 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
    case ClientErrors::BadLength:
       retValue = CtiPortShare::PSHR_ERROR_BADLENGTH;
       break;
-   case ClientErrors::Unknown:
-      retValue = CtiPortShare::PSHR_ERROR_UNKNOWN;
-      break;
    case ClientErrors::RemoteInhibited:
       retValue = CtiPortShare::PSHR_ERROR_RTU_DISABLED;
       break;
