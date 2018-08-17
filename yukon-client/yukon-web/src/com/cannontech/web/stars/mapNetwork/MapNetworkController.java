@@ -105,8 +105,8 @@ public class MapNetworkController {
         boolean isGateway = PaoType.getRfGatewayTypes().contains(device.getDeviceType());
         model.addAttribute("isGateway", isGateway);
         model.addAttribute("isRelay", PaoType.getRfRelayTypes().contains(device.getDeviceType()));
-        boolean isRfLcr = PaoType.getRfLcrTypes().contains(device.getDeviceType());
-        model.addAttribute("isRfLcr", isRfLcr);
+        boolean isLcr = PaoType.getRfLcrTypes().contains(device.getDeviceType()) || PaoType.LCR3102 == device.getDeviceType();
+        model.addAttribute("isLcr", isLcr);
         
         boolean isPlc = device.getDeviceType().isPlc();
         boolean displayNeighborsLayer = !isPlc && !device.getDeviceType().isWaterMeter();

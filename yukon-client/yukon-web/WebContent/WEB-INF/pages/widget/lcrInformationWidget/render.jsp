@@ -50,10 +50,11 @@
             ${fn:escapeXml(route.paoName)}
         </tags:nameValue2>
     </c:if>
-    
-    <tags:nameValue2 nameKey=".serviceStatus">
-        <cti:pointValue pointId="${serviceStatusPointId}" format="VALUE"/>
-    </tags:nameValue2>
+    <c:if test="${isRf}">
+        <tags:nameValue2 nameKey=".serviceStatus">
+            <cti:pointValue pointId="${serviceStatusPointId}" format="VALUE"/>
+        </tags:nameValue2>
+    </c:if>
   
 
     

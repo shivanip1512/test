@@ -70,8 +70,12 @@ public class LcrInformationWidget extends AdvancedWidgetControllerBase {
         }
         
         LiteYukonPAObject pao = cache.getAllPaosMap().get(hardware.getDeviceId());
-        LitePoint serviceStatusPoint = attributeService.getPointForAttribute(pao, BuiltInAttribute.SERVICE_STATUS);
-        model.addAttribute("serviceStatusPointId", serviceStatusPoint.getPointID());
+        boolean isRf = pao.getPaoType().isTwoWayRfnLcr();
+        if (isRf) {
+            LitePoint serviceStatusPoint = attributeService.getPointForAttribute(pao, BuiltInAttribute.SERVICE_STATUS);
+            model.addAttribute("serviceStatusPointId", serviceStatusPoint.getPointID());
+        }
+        model.addAttribute("isRf", isRf);
         
         return "lcrInformationWidget/render.jsp";
     }

@@ -21,6 +21,14 @@
     <cti:displayForPageEditModes modes="VIEW"> 
          <div id="page-actions" class="dn">
             <%@ include file="../hardware/hardwareDeviceActions.jspf" %>
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:checkRolesAndProperties value="${editingRoleProperty}">
+                    <cti:url value="/stars/operator/inventory/edit" var="editUrl">
+                        <cti:param name="inventoryId" value="${hardware.inventoryId}"/>
+                    </cti:url>
+                    <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
+                </cti:checkRolesAndProperties>
+            </cti:displayForPageEditModes>
         </div>
     </cti:displayForPageEditModes>
     
@@ -45,15 +53,5 @@
     </div>
  </c:if> 
 
-    <cti:displayForPageEditModes modes="VIEW">
-        <cti:checkRolesAndProperties value="${editingRoleProperty}">
-            <cti:url value="/stars/operator/inventory/edit" var="editUrl">
-                <cti:param name="inventoryId" value="${hardware.inventoryId}"/>
-            </cti:url>
-		    <div class="page-action-area clear">
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-		    </div>
-        </cti:checkRolesAndProperties>
-    </cti:displayForPageEditModes>
 </cti:msgScope>
 </cti:standardPage>

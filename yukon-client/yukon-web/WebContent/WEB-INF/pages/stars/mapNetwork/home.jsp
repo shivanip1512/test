@@ -17,7 +17,7 @@
                 <c:when test="${isRelay}">
                     <tags:widget bean="relayInformationWidget" deviceId="${deviceId}" container="section"/>
                 </c:when>
-                <c:when test="${isRfLcr}">
+                <c:when test="${isLcr}">
                     <tags:widget bean="lcrInformationWidget" deviceId="${deviceId}" container="section"/>
                 </c:when>
                 <c:otherwise>

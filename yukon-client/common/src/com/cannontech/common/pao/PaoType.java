@@ -296,6 +296,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> directProgramTypes;
     private final static ImmutableSet<PaoType> twoWayLcrTypes;
     private final static ImmutableSet<PaoType> rfLcrTypes;
+    private final static ImmutableSet<PaoType> twoWayPlcLcrTypes;
     private final static ImmutableSet<PaoType> capControlTypes;
     private final static ImmutableSet<PaoType> ccuTypes;
     private final static ImmutableSet<PaoType> tcuTypes;
@@ -637,6 +638,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LCR6200_RFN,
             LCR6600_RFN,
             LCR6700_RFN);
+        
+        twoWayPlcLcrTypes = ImmutableSet.of(
+            LCR3102
+            );
         
         rfGatewayTypes = ImmutableSet.of(
             RFN_GATEWAY,
@@ -986,6 +991,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRfLcrTypes() {
         return rfLcrTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getTwoWayPlcLcrTypes() {
+        return twoWayPlcLcrTypes;
     }
     
     public static ImmutableSet<PaoType> getRoutableTypes() {

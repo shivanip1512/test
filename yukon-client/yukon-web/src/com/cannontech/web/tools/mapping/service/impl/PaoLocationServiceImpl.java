@@ -59,6 +59,9 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getRfLcrTypes()) {
             icons.put(type,  Icon.LCR);
         }
+        for (PaoType type : PaoType.getTwoWayPlcLcrTypes()) {
+            icons.put(type,  Icon.PLC_LCR);
+        }
         for (PaoType type : PaoType.getThermostatTypes()) {
             icons.put(type, Icon.THERMOSTAT);
         }

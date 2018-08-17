@@ -148,6 +148,11 @@ public class InventoryController {
             model.addAttribute("showNetworkInfo", true);
             model.addAttribute("showMapNetwork", true);
         }
+        else if (hardware.getHardwareType().isTwoWayPlcLcr()) {
+            int deviceId = inventoryDao.getDeviceId(inventoryId);
+            model.addAttribute("deviceId", deviceId);
+            model.addAttribute("showMapNetwork", true);
+        }
         setupModel(model, userContext, hardware);
 
         return "operator/inventory/inventory.jsp";

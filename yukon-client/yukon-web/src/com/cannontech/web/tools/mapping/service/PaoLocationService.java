@@ -17,6 +17,7 @@ public interface PaoLocationService {
         METER_GAS,
         TRANSMITTER,
         RELAY,
+        PLC_LCR,
         LCR,
         THERMOSTAT,
         GENERIC_GREY,
