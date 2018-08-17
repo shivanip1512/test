@@ -14,39 +14,34 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import com.cannontech.clientutils.YukonLogManager;
 
 /**
- * Singleton class to create Http message sender with SSL settings.
+ * Class to create Http message sender with SSL settings.
  */
 public class HttpComponentsMessageSenderWithSSL extends HttpComponentsMessageSender {
     private final static Logger log = YukonLogManager.getLogger(HttpComponentsMessageSenderWithSSL.class);
-    private static HttpComponentsMessageSender httpMessageSender = null;
-    private static final int DEFAULT_TIMEOUT_MILLISECONDS = 120000;
     
-    private HttpComponentsMessageSenderWithSSL() {
-        setHttpClient(httpClient());
+    private HttpComponentsMessageSenderWithSSL(int timeout) {
+        setHttpClient(httpClient(timeout));
     }
     
-    public static HttpComponentsMessageSender getInstance() {
-        if (httpMessageSender == null) {
-            httpMessageSender = new HttpComponentsMessageSenderWithSSL();
-        }
+    public static HttpComponentsMessageSender getInstance(int timeout) {
+        HttpComponentsMessageSender httpMessageSender = new HttpComponentsMessageSenderWithSSL(timeout);
         return httpMessageSender;
     }
     
-    private HttpClient httpClient() {
+    private HttpClient httpClient(int timeout) {
         try {
             
             RequestConfig config = RequestConfig.custom()
-                    .setConnectTimeout(DEFAULT_TIMEOUT_MILLISECONDS)
-                    .setConnectionRequestTimeout(DEFAULT_TIMEOUT_MILLISECONDS)
-                    .setSocketTimeout(DEFAULT_TIMEOUT_MILLISECONDS)
+                    .setConnectTimeout(timeout)
+                    .setConnectionRequestTimeout(timeout)
+                    .setSocketTimeout(timeout)
                     .build();
-            
+
             HttpClient httpClient =
                 HttpClientBuilder.create().setSSLSocketFactory(sslConnectionSocketFactory())
                 .setDefaultRequestConfig(config)
                 .addInterceptorFirst(new RemoveSoapHeadersInterceptor()).build();
 
-     
             return httpClient;
         } catch (Exception e) {
             log.info("Could not set SSL settings on HTTP client" + e);

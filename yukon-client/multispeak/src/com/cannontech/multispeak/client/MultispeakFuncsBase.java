@@ -329,12 +329,11 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
      */
     public void setMsgSender(WebServiceTemplate webServiceTemplate, MultispeakVendor mspVendor) {
         if (mspVendor.getValidateCertificate()) {
-            webServiceTemplate.setMessageSender(messageSender);
-            HttpComponentsMessageSender messageSender =
-                (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
             setMsgSenderTimeOutValues(messageSender, mspVendor);
+            webServiceTemplate.setMessageSender(messageSender);
         } else {
-            webServiceTemplate.setMessageSender(HttpComponentsMessageSenderWithSSL.getInstance());
+            int timeOut = (int) mspVendor.getRequestMessageTimeout();
+            webServiceTemplate.setMessageSender(HttpComponentsMessageSenderWithSSL.getInstance(timeOut));
         }
 
     }
