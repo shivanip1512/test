@@ -8,19 +8,21 @@
         <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
         <tag name="METER_DETAIL_DISPLAYABLE"/>
         <tag name="PORTER_COMMAND_REQUESTS"/>
+        <tag name="THREE_PHASE_CURRENT"/>
+        <tag name="THREE_PHASE_VOLTAGE"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
-        <pointInfo name="Instantaneous Current Phase A"/>
-        <pointInfo name="Instantaneous Current Phase B"/>
-        <pointInfo name="Instantaneous Current Phase C"/>
+        <pointInfo name="Instantaneous Current Phase A" attributes="CURRENT_PHASE_A"/>
+        <pointInfo name="Instantaneous Current Phase B" attributes="CURRENT_PHASE_B"/>
+        <pointInfo name="Instantaneous Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Instantaneous Neutral Current"/>
-        <pointInfo name="Instantaneous Voltage Phase A"/>
-        <pointInfo name="Instantaneous Voltage Phase B"/>
-        <pointInfo name="Instantaneous Voltage Phase C"/>
+        <pointInfo name="Instantaneous Voltage Phase A" attributes="VOLTAGE_PHASE_A"/>
+        <pointInfo name="Instantaneous Voltage Phase B" attributes="VOLTAGE_PHASE_B"/>
+        <pointInfo name="Instantaneous Voltage Phase C" attributes="VOLTAGE_PHASE_C"/>
         <pointInfo name="Last Interval kW" attributes="DEMAND"/>
-        <pointInfo name="Last Interval/Instantaneous kVA"/>
-        <pointInfo name="Last Interval/Instantaneous kVAr"/>
+        <pointInfo name="Last Interval/Instantaneous kVA" attributes="KVA"/>
+        <pointInfo name="Last Interval/Instantaneous kVAr" attributes="KVAR"/>
         <pointInfo name="Load Profile Current Phase A"/>
         <pointInfo name="Load Profile Current Phase B"/>
         <pointInfo name="Load Profile Current Phase C"/>
@@ -31,38 +33,38 @@
         <pointInfo name="Load Profile Voltage Phase A"/>
         <pointInfo name="Load Profile Voltage Phase B"/>
         <pointInfo name="Load Profile Voltage Phase C"/>
-        <pointInfo name="Peak kVA (Rate A kVA)"/>
-        <pointInfo name="Peak kVA (Rate B kVA)"/>
-        <pointInfo name="Peak kVA (Rate C kVA)"/>
-        <pointInfo name="Peak kVA (Rate D kVA)"/>
+        <pointInfo name="Peak kVA (Rate A kVA)" attributes="PEAK_KVA_RATE_A,PEAK_KVA"/>
+        <pointInfo name="Peak kVA (Rate B kVA)" attributes="PEAK_KVA_RATE_B"/>
+        <pointInfo name="Peak kVA (Rate C kVA)" attributes="PEAK_KVA_RATE_C"/>
+        <pointInfo name="Peak kVA (Rate D kVA)" attributes="PEAK_KVA_RATE_D"/>
         <pointInfo name="Peak kVA (Rate E kVA)"/>
-        <pointInfo name="Peak kVAr (Rate A kVAr)"/>
-        <pointInfo name="Peak kVAr (Rate B kVAr)"/>
-        <pointInfo name="Peak kVAr (Rate C kVAr)"/>
-        <pointInfo name="Peak kVAr (Rate D kVAr)"/>
+        <pointInfo name="Peak kVAr (Rate A kVAr)" attributes="PEAK_KVAR_RATE_A,PEAK_KVAR"/>
+        <pointInfo name="Peak kVAr (Rate B kVAr)" attributes="PEAK_KVAR_RATE_B"/>
+        <pointInfo name="Peak kVAr (Rate C kVAr)" attributes="PEAK_KVAR_RATE_C"/>
+        <pointInfo name="Peak kVAr (Rate D kVAr)" attributes="PEAK_KVAR_RATE_D"/>
         <pointInfo name="Peak kVAr (Rate E kVAr)"/>
-        <pointInfo name="Peak kW (Rate A kW)" attributes="PEAK_DEMAND"/>
-        <pointInfo name="Peak kW (Rate B kW)"/>
-        <pointInfo name="Peak kW (Rate C kW)"/>
-        <pointInfo name="Peak kW (Rate D kW)"/>
-        <pointInfo name="Peak kW (Rate E kW)"/>
-        <pointInfo name="Rate A kVAh"/>
-        <pointInfo name="Rate A kVArh"/>
-        <pointInfo name="Rate A kWh"/>
-        <pointInfo name="Rate B kVAh"/>
-        <pointInfo name="Rate B kVArh"/>
-        <pointInfo name="Rate B kWh"/>
-        <pointInfo name="Rate C kVAh"/>
-        <pointInfo name="Rate C kVArh"/>
-        <pointInfo name="Rate C kWh"/>
-        <pointInfo name="Rate D kVAh"/>
-        <pointInfo name="Rate D kVArh"/>
-        <pointInfo name="Rate D kWh"/>
+        <pointInfo name="Peak kW (Rate A kW)" attributes="PEAK_DEMAND_RATE_A,PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Peak kW (Rate E kW)" attributes="PEAK_DEMAND_RATE_E"/>
+        <pointInfo name="Rate A kVAh" attributes="KVAH_RATE_A"/>
+        <pointInfo name="Rate A kVArh" attributes="KVARH_RATE_A"/>
+        <pointInfo name="Rate A kWh" attributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate B kVAh" attributes="KVAH_RATE_B"/>
+        <pointInfo name="Rate B kVArh" attributes="KVARH_RATE_B"/>
+        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate C kVAh" attributes="KVAH_RATE_C"/>
+        <pointInfo name="Rate C kVArh" attributes="KVARH_RATE_C"/>
+        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate D kVAh" attributes="KVAH_RATE_D"/>
+        <pointInfo name="Rate D kVArh" attributes="KVARH_RATE_D"/>
+        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Rate E kVAh"/>
         <pointInfo name="Rate E kVArh"/>
-        <pointInfo name="Rate E kWh"/>
-        <pointInfo name="Total kVAh"/>
-        <pointInfo name="Total kVArh" init="true"/>
+        <pointInfo name="Rate E kWh" attributes="USAGE_RATE_E"/>
+        <pointInfo name="Total kVAh" attributes="KVAH"/>
+        <pointInfo name="Total kVArh" init="true" attributes="KVARH"/>
         <pointInfo name="Total kWh" init="true" attributes="USAGE"/>
     </pointInfos>
     <commands>
