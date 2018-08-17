@@ -93,11 +93,11 @@ public class ChangeDeviceTypeController {
                  * opposite types for this feature.
                  */
                 if (paoType.isMct()) {
-                    if (paoDefinition.getType().isMct()) {
+                    if (paoDefinition.getType().isMct() && paoDefinition.isCreatable()) {
                         deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
                     }
                 } else if (paoType.isRfMeter()) {
-                    if (paoDefinition.getType().isRfMeter()) {
+                    if (paoDefinition.getType().isRfMeter() && paoDefinition.isCreatable()) {
                         deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType());
                     }
                 } else {
