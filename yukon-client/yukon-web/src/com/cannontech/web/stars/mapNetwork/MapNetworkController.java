@@ -105,7 +105,7 @@ public class MapNetworkController {
         boolean isGateway = PaoType.getRfGatewayTypes().contains(device.getDeviceType());
         model.addAttribute("isGateway", isGateway);
         model.addAttribute("isRelay", PaoType.getRfRelayTypes().contains(device.getDeviceType()));
-        boolean isLcr = PaoType.getRfLcrTypes().contains(device.getDeviceType()) || PaoType.LCR3102 == device.getDeviceType();
+        boolean isLcr = device.getDeviceType().isTwoWayRfnLcr() || device.getDeviceType().isTwoWayPlcLcr();
         model.addAttribute("isLcr", isLcr);
         
         boolean isPlc = device.getDeviceType().isPlc();
