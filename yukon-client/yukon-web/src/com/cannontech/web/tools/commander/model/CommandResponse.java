@@ -68,11 +68,11 @@ public final class CommandResponse {
             }
         }
         
-        if (StringUtils.isNotBlank(rtn.getResultString())) {
+        if (StringUtils.isNotBlank(rtn.getResultString()) && rtn.getStatus() == 0) {
             String[] lines = rtn.getResultString().split("\n");
             for(String line : lines) messages.add(line);
         }
-        
+
         CommandResponse resp = new CommandResponse(id, rtn.getTimeStamp().getTime(), type, rtn.getStatus(), messages, 
                 rtn.getExpectMore());
         

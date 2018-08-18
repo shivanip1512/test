@@ -17,6 +17,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
@@ -72,6 +74,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
     @Autowired private LMCommandAuthorizationService lmCommandAuthService;
     @Autowired private ServerDatabaseCache cache;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     @Override
     public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandCounts) throws CommandRequestException {
@@ -166,7 +169,13 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         boolean found = false;
         int id = responseIds.nextInt();
         CommandResponse resp = CommandResponse.of(id, rtn);
-        
+
+        if (rtn.getStatus() > 1) {
+            DeviceErrorDescription deviceErrorDesc = deviceErrorTranslatorDao.translateErrorCode(rtn.getStatus());
+            resp.getResults().add(deviceErrorDesc.getCategory() + " -- " + deviceErrorDesc.getDescription());
+            resp.getResults().add(rtn.getResultString());
+        }
+
         for (Map<Integer, CommandRequest> reqsByUser : commands.values()) {
             
             int requestId = (int) rtn.getUserMessageID();
