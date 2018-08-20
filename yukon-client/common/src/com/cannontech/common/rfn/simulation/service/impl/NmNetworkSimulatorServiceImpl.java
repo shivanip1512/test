@@ -118,7 +118,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         executor.execute(() -> {
             Map<PaoIdentifier, PaoLocation> locations =
                     Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
-                List<LiteYukonPAObject> devices = cache.getAllDevices().stream()
+            List<LiteYukonPAObject> devices = cache.getAllDevices().stream()
                     .filter(x -> ! x.getPaoName().contains(templatePrefix) && !locations.containsKey(x.getPaoIdentifier()))
                     .collect(Collectors.toList());
             createRfnIdentifiers(devices); 
