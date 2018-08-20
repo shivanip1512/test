@@ -153,7 +153,7 @@ double calculateKVARSolution( const std::string & controlUnits, double setPoint,
         busses, feeders and capbanks.
 */
 template <typename T>
-std::string formatAdditionalData( const T & object )
+std::string formatMapInfo( const T & object )
 {
     return _LOG_MAPID_INFO
         ? " MapID: " + object->getMapLocationId() + " (" + object->getPaoDescription() + ")"

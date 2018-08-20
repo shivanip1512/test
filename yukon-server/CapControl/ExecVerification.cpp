@@ -18,7 +18,7 @@ using std::string;
 using Cti::CapControl::CapControlType;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
 using Cti::CapControl::EventLogEntry;
-using Cti::CapControl::formatAdditionalData;
+using Cti::CapControl::formatMapInfo;
 
 VerificationExecutor::VerificationExecutor(VerifyBanks* command)
 {
@@ -217,7 +217,7 @@ void VerificationExecutor::startVerification()
            //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
             string text = currentSubstationBus->getVerificationString();
             text += " Enabled";
-            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus );
 
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
@@ -288,7 +288,7 @@ void VerificationExecutor::startVerification()
 
     string text = currentSubstationBus->getVerificationString();
     text += " Starting";
-    string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+    string additional = "Bus: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus );
 
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
@@ -352,7 +352,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
             }
             string text = currentSubstationBus->getVerificationString();
             text += " Stopping after currentBank";
-            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus );
 
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 
@@ -398,7 +398,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
 
             string text = currentSubstationBus->getVerificationString();
             text += " Stopping";
-            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+            string additional = "Bus: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus );
 
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_userName), CALLSITE);
 

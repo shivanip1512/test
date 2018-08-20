@@ -1617,7 +1617,7 @@ bool CtiCCCapBank::checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges,
     {
         setMaxDailyOpsHitFlag( true );
 
-        std::string additional  = "CapBank: " + getPaoName() + formatAdditionalData( this );
+        std::string additional  = "CapBank: " + getPaoName() + formatMapInfo( this );
 
         if ( getOperationAnalogPointId() > 0 )
         {

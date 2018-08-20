@@ -22,7 +22,7 @@ using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
 using Cti::CapControl::populateFlag;
 using Cti::CapControl::calculateKVARSolution;
-using Cti::CapControl::formatAdditionalData;
+using Cti::CapControl::formatMapInfo;
 
 using namespace Cti::Messaging::CapControl;
 using std::endl;
@@ -412,7 +412,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
             {
                 currentCapBank->setMaxDailyOpsHitFlag(true);
                 string text = string("CapBank Exceeded Max Daily Operations");
-                string additional = "CapBank: " + currentCapBank->getPaoName() + formatAdditionalData( currentCapBank );
+                string additional = "CapBank: " + currentCapBank->getPaoName() + formatMapInfo( currentCapBank );
 
                 if (currentCapBank->getOperationAnalogPointId() > 0)
                 {
@@ -575,7 +575,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     if( capBank->getStatusPointId() > 0 )
     {
-        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
         pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
@@ -664,7 +664,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
 
     if( capBank->getStatusPointId() > 0 )
     {
-        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
         pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
@@ -750,7 +750,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 
     if( capBank->getStatusPointId() > 0 )
     {
-        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
         pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
@@ -844,7 +844,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     if( capBank->getStatusPointId() > 0 )
     {
-        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
         pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
@@ -949,7 +949,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
 
     if( capBank->getStatusPointId() > 0 )
     {
-        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+        string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
         pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
@@ -1647,7 +1647,7 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
     double varValueBC = varValueBeforeControl;
 
     string text = "";
-    string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+    string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
     for(long i=0;i<_cccapbanks.size();i++)
     {
@@ -1911,7 +1911,7 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
     double varValueCbc = varCValueBeforeControl;
 
     string text = "";
-    string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+    string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
     for(long i=0;i<_cccapbanks.size();i++)
     {
@@ -3502,7 +3502,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
                             string text = string("Resending Open");
-                            string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+                            string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
                             pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
@@ -3533,7 +3533,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
                             string text = string("Resending Close");
-                            string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatAdditionalData( this );
+                            string additional = "Sub: " + getParentName() + " /Feeder: " + getPaoName() + formatMapInfo( this );
 
                             pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control"));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
@@ -4638,7 +4638,7 @@ bool CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
     {
 
         string text = ("Feeder Exceeded Max Daily Operations");
-        string additional = "Feeder: " + getPaoName() + formatAdditionalData( this );
+        string additional = "Feeder: " + getPaoName() + formatMapInfo( this );
 
         if (getDailyOperationsAnalogPointId() > 0 && !getMaxDailyOpsHitFlag())
         {
@@ -4669,7 +4669,7 @@ bool CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
         if (endOfDayOverride == false)
         {
             string text = string("Feeder Disabled");
-            string additional = "Feeder: " + getPaoName() + formatAdditionalData( this );
+            string additional = "Feeder: " + getPaoName() + formatMapInfo( this );
 
             if (getDailyOperationsAnalogPointId() > 0)
             {

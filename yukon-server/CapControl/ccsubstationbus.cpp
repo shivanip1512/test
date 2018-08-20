@@ -26,7 +26,7 @@ using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
 using Cti::CapControl::populateFlag;
 using Cti::CapControl::calculateKVARSolution;
-using Cti::CapControl::formatAdditionalData;
+using Cti::CapControl::formatMapInfo;
 
 using std::endl;
 using std::set;
@@ -973,7 +973,7 @@ void CtiCCSubstationBus::checkForMaxDailyOpsHit()
          (!getMaxDailyOpsHitFlag() && getCurrentDailyOperations() > getStrategy()->getMaxDailyOperation()) ) )//only send once
     {
         string text = string("Substation Bus Exceeded Max Daily Operations");
-        string additional = "Substation Bus: " + getPaoName() + formatAdditionalData( this );
+        string additional = "Substation Bus: " + getPaoName() + formatMapInfo( this );
 
         if (getDailyOperationsAnalogPointId() > 0 && !getMaxDailyOpsHitFlag())
         {
@@ -994,7 +994,7 @@ bool CtiCCSubstationBus::maxOperationsHitDisableBus()
    setBusUpdatedFlag(true);
    setSolution("  Sub Disabled. Automatic Control Inhibited.");
    string text = string("Substation Bus Disabled");
-   string additional = "Bus: " + getPaoName() + formatAdditionalData( this );
+   string additional = "Bus: " + getPaoName() + formatMapInfo( this );
 
    if (getDailyOperationsAnalogPointId() > 0)
    {
@@ -2922,7 +2922,7 @@ void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChange
     {//if control failed or questionable, create event to be sent to dispatch
         long tempLong = capBank->getStatusPointId();
 
-        additional += formatAdditionalData( feeder );
+        additional += formatMapInfo( feeder );
 
         pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, user));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);

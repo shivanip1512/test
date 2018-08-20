@@ -30,7 +30,7 @@ using Cti::CapControl::createBankOpenRequest;
 using Cti::CapControl::createBankCloseRequest;
 using Cti::CapControl::createBankFlipRequest;
 using Cti::Messaging::CapControl::CapControlOperationMessage;
-using Cti::CapControl::formatAdditionalData;
+using Cti::CapControl::formatMapInfo;
 using std::endl;
 using std::string;
 
@@ -304,7 +304,7 @@ void CtiCCCommandExecutor::EnableSubstationBus(long subBusId)
     currentSubstationBus->setBusUpdatedFlag(true);
     store->UpdatePaoDisableFlagInDB(currentSubstationBus, false);
     string text = string("Substation Bus Enabled");
-    string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+    string additional = "Bus: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus );
 
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
@@ -342,7 +342,7 @@ void CtiCCCommandExecutor::DisableSubstationBus(long subBusId)
     currentSubstationBus->setBusUpdatedFlag(true);
     store->UpdatePaoDisableFlagInDB(currentSubstationBus, true);
     string text = string("Substation Bus Disabled");
-    string additional = "Bus: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+    string additional = "Bus: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus );
 
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
@@ -383,7 +383,7 @@ void CtiCCCommandExecutor::EnableFeeder()
                     currentSubstationBus->setBusUpdatedFlag(true);
                     store->UpdatePaoDisableFlagInDB(currentFeeder, false);
                     string text("Feeder Enabled");
-                    string additional = "Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                    string additional = "Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
@@ -433,7 +433,7 @@ void CtiCCCommandExecutor::DisableFeeder()
                     currentSubstationBus->setBusUpdatedFlag(true);
                     store->UpdatePaoDisableFlagInDB(currentFeeder, true);
                     string text("Feeder Disabled");
-                    string additional = "Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                    string additional = "Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()), CALLSITE);
 
@@ -485,7 +485,7 @@ void CtiCCCommandExecutor::EnableCapBank()
                         currentSubstationBus->setBusUpdatedFlag(true);
                         store->UpdatePaoDisableFlagInDB(currentCapBank, false);
                         string text("Cap Bank Enabled");
-                        string additional = "Cap Bank: " + currentCapBank->getPaoName() + formatAdditionalData( currentCapBank );
+                        string additional = "Cap Bank: " + currentCapBank->getPaoName() + formatMapInfo( currentCapBank );
 
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
@@ -549,7 +549,7 @@ void CtiCCCommandExecutor::DisableCapBank()
                         currentSubstationBus->setBusUpdatedFlag(true);
                         store->UpdatePaoDisableFlagInDB(currentCapBank, true);
                         string text("Cap Bank Disabled");
-                        string additional = "Cap Bank: " + currentCapBank->getPaoName() + formatAdditionalData( currentCapBank );
+                        string additional = "Cap Bank: " + currentCapBank->getPaoName() + formatMapInfo( currentCapBank );
 
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
@@ -631,7 +631,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
     string text = string("Manual CBC/CapBank State Sync.  Adjusting CapBank State from: ");
     text += capBank->getControlStatusText() + " to ";
     text += ( controlStatus ? "Close." : "Open.");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     capBank->setControlStatus(controlStatus);
 
@@ -681,7 +681,7 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
 
     //Logging Action
     string text = string("Cap Bank OV/UV Enabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
@@ -763,7 +763,7 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
 
     //Logging Action
     string text = string("Cap Bank OV/UV Disabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     int subId = store->findSubBusIDbyCapBankID(bankId);
@@ -840,7 +840,7 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
 
     //Logging Action
     string text = string("Cap Bank Temp Control Enabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     int subId = store->findSubBusIDbyCapBankID(bankId);
@@ -930,7 +930,7 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
 
     //Logging Action
     string text = string("Cap Bank Temp Control Disabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     int subId = store->findSubBusIDbyCapBankID(bankId);
@@ -1007,7 +1007,7 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
 
     //Logging Action
     string text = string("Cap Bank Var Control Enabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     int subId = store->findSubBusIDbyCapBankID(bankId);
@@ -1083,7 +1083,7 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
 
     //Logging Action
     string text = string("Cap Bank Var Control Disabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     int subId = store->findSubBusIDbyCapBankID(bankId);
@@ -1160,7 +1160,7 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
 
     //Logging Action
     string text = string("Cap Bank Time Control Enabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     int subId = store->findSubBusIDbyCapBankID(bankId);
@@ -1251,7 +1251,7 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
 
     //Logging Action
     string text = string("Cap Bank Time Control Disabled");
-    string additional = "Cap Bank: " + capBank->getPaoName() + formatAdditionalData( capBank );
+    string additional = "Cap Bank: " + capBank->getPaoName() + formatMapInfo( capBank );
 
     signals.push_back(new CtiSignalMsg(capBank->getControlPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     int subId = store->findSubBusIDbyCapBankID(bankId);
@@ -1856,8 +1856,8 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
                                 char tempchar[80] = "";
                                 char tempchar1[80] = "";
 
-                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus )
-                                                + "  Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus )
+                                                + "  Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                                 string text("Manual Open Sent, Sub VarLoad = ");
                                 _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
@@ -2141,8 +2141,8 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
                                 char tempchar[80] = "";
                                 char tempchar1[80] = "";
 
-                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus )
-                                                + "  Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus )
+                                                + "  Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                                 string text("Manual Close Sent, Sub VarLoad = ");
                                 _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
@@ -2944,8 +2944,8 @@ void CtiCCCommandExecutor::Flip7010Device()
                                 char tempchar[80] = "";
                                 char tempchar1[80] = "";
 
-                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus )
-                                                + "  Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus )
+                                                + "  Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                                 string text("Manual Flip Sent, Sub VarLoad = ");
                                 _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
@@ -3222,7 +3222,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
 
             string text1 = string("Manual Confirm Sub");
 
-            string additional1 = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus );
+            string additional1 = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus );
 
             pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
             currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
@@ -3264,8 +3264,8 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
                             char tempchar[80] = "";
                             char tempchar1[80] = "";
 
-                            string additional = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus )
-                                            + "  Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                            string additional = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus )
+                                            + "  Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                             string text = string("Manual Confirm ");
                             if (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
@@ -3397,7 +3397,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
     {
         string text1 = string("Manual Confirm Feeder");
 
-        string additional1 = "Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+        string additional1 = "Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
         currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
@@ -3434,8 +3434,8 @@ void CtiCCCommandExecutor::ConfirmFeeder()
                 char tempchar[80] = "";
                 char tempchar1[80] = "";
 
-                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus )
-                                + "  Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus )
+                                + "  Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                 string text = string("Manual Confirm ");
 
@@ -3815,8 +3815,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                 char tempchar[80] = "";
                                 char tempchar1[80] = "";
 
-                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus )
-                                                + "  Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus )
+                                                + "  Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                                 string text("Manual Confirm Open Sent, Sub VarLoad = ");
                                 _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
@@ -4087,8 +4087,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                                 char tempchar[80] = "";
                                 char tempchar1[80] = "";
 
-                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatAdditionalData( currentSubstationBus )
-                                                + "  Feeder: " + currentFeeder->getPaoName() + formatAdditionalData( currentFeeder );
+                                string additional = "Sub: " + currentSubstationBus->getPaoName() + formatMapInfo( currentSubstationBus )
+                                                + "  Feeder: " + currentFeeder->getPaoName() + formatMapInfo( currentFeeder );
 
                                 string text("Manual Confirm Close Sent, Sub VarLoad = ");
                                 _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());

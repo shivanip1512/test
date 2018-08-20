@@ -35,7 +35,7 @@ using Cti::CapControl::ZoneManager;
 using Cti::CapControl::sendCapControlOperationMessage;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
-using Cti::CapControl::formatAdditionalData;
+using Cti::CapControl::formatMapInfo;
 
 using namespace Cti::Messaging::CapControl;
 
@@ -459,7 +459,7 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
 
         store->UpdatePaoDisableFlagInDB( bank, true );
 
-        std::string additional = "CapBank: " + bank->getPaoName() + formatAdditionalData( bank );
+        std::string additional = "CapBank: " + bank->getPaoName() + formatMapInfo( bank );
 
         if ( bank->getOperationAnalogPointId() > 0 )
         {
@@ -648,7 +648,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             store->UpdatePaoDisableFlagInDB( subbus, true );
 
             std::string text       = "Substation Bus Disabled - " + reason,
-                        additional = "Bus: " + subbus->getPaoName() + formatAdditionalData( subbus );
+                        additional = "Bus: " + subbus->getPaoName() + formatMapInfo( subbus );
 
             CtiCapController::getInstance()->sendMessageToDispatch(
                 new CtiSignalMsg( SYS_PID_CAPCONTROL,
