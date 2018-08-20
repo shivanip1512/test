@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +28,8 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -92,30 +95,33 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private IDatabaseCache databaseCache;
+    @Autowired private ConfigurationSource configurationSource;
     private JmsTemplate jmsTemplate;
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Executor executor = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
+    String templatePrefix;
 
     @PostConstruct
     public void init() {
+        templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
     }
     
     @Override
     public void setupLocations() {
-        
         log.info("Setting up locations");
         paoLocationDao.delete(Origin.SIMULATOR);
-
+            
         executor.execute(() -> {
             Map<PaoIdentifier, PaoLocation> locations =
-                Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
-            List<LiteYukonPAObject> devices =
-                cache.getAllDevices().stream().filter(x -> !locations.containsKey(x.getPaoIdentifier())).collect(
-                    Collectors.toList());
+                    Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
+                List<LiteYukonPAObject> devices = cache.getAllDevices().stream()
+                    .filter(x -> ! x.getPaoName().contains(templatePrefix) && !locations.containsKey(x.getPaoIdentifier()))
+                    .collect(Collectors.toList());
+            createRfnIdentifiers(devices); 
             List<PaoLocation> newLocations = new ArrayList<>();
             int estimatedRadius = getEstimatedRadius(devices.size());
             for (LiteYukonPAObject device : devices) {
@@ -124,6 +130,27 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             log.info("Inserting " + newLocations.size() + " locations.");
             paoLocationDao.save(newLocations);
             log.info("Inserting " + newLocations.size() + " locations is done.");
+        });
+    }
+    
+    //If RFN identifiers do not exist creates identifiers
+    private void createRfnIdentifiers(List<LiteYukonPAObject> devices) {
+        List<LiteYukonPAObject> rfnDevices =
+            devices.stream().filter(d -> d.getPaoType().isRfn()).collect(Collectors.toList());
+        Map<Integer, RfnDevice> rfnDevicesWithIdentifiers = rfnDeviceDao.getDevicesByPaoIds(
+            rfnDevices.stream().map(d -> d.getLiteID()).collect(Collectors.toList())).stream().collect(
+                Collectors.toMap(d -> d.getPaoIdentifier().getPaoId(), Function.identity()));
+        List<LiteYukonPAObject> devicesWithoutIdentifiers =
+            rfnDevices.stream().filter(d -> !rfnDevicesWithIdentifiers.containsKey(d.getLiteID())).collect(
+                Collectors.toList());
+        devicesWithoutIdentifiers.forEach(d -> {
+            RfnManufacturerModel template = RfnManufacturerModel.getForType(d.getPaoType()).get(0);
+            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(d.getLiteID()), template.getManufacturer(), template.getModel());
+            try {
+                rfnDeviceDao.updateDevice(new RfnDevice(d.getPaoName(), d, rfId));
+            }catch(Exception e) {
+                log.error("Unable to update device {} with {}", d, rfId);
+            }
         });
     }
     
