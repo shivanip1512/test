@@ -26,7 +26,7 @@
                     <cti:url value="/stars/operator/inventory/edit" var="editUrl">
                         <cti:param name="inventoryId" value="${hardware.inventoryId}"/>
                     </cti:url>
-                    <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
+                    <cm:dropdownOption key="yukon.common.edit" icon="icon-pencil" href="${editUrl}"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
         </div>
