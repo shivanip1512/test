@@ -68,7 +68,7 @@ public final class CommandResponse {
             }
         }
         
-        if (StringUtils.isNotBlank(rtn.getResultString()) && rtn.getStatus() == 0) {
+        if (StringUtils.isNotBlank(rtn.getResultString()) && rtn.isSuccess()) {
             String[] lines = rtn.getResultString().split("\n");
             for(String line : lines) messages.add(line);
         }
