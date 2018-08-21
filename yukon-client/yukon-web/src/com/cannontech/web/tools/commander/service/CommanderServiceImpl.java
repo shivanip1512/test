@@ -170,7 +170,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         int id = responseIds.nextInt();
         CommandResponse resp = CommandResponse.of(id, rtn);
 
-        if (rtn.getStatus() > 1) {
+        if (rtn.isError()) {
             DeviceErrorDescription deviceErrorDesc = deviceErrorTranslatorDao.translateErrorCode(rtn.getStatus());
             resp.getResults().add(deviceErrorDesc.getCategory() + " -- " + deviceErrorDesc.getDescription());
             resp.getResults().add(rtn.getResultString());

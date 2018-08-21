@@ -110,7 +110,15 @@ public class Return extends Message {
     public void setMessages(List<Message> messages) {
         this.messages = messages;
     }
-    
+
+    public boolean isError() {
+        return !isSuccess();
+    }
+
+    public boolean isSuccess() {
+        return getStatus() == 0;
+    }
+
     @Override
     public String toString() {
         return String.format(
