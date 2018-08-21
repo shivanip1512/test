@@ -310,7 +310,7 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
                     _modbus.clearPoints();
-                    retVal = ClientErrors::Unknown;
+                    retVal = ClientErrors::PointLookupFailed;
 
                     break;
                 }

@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_write_fail)
         }
         catch ( const RfnCommand::CommandException & ex )
         {
-            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::Unknown );
+            BOOST_CHECK_EQUAL( ex.error_code, ClientErrors::E2eCommandFailed );
             BOOST_CHECK_EQUAL( ex.error_description, "Failure Status (1)" );
         }
     }
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(test_read_fail)
         }
         catch (const RfnCommand::CommandException & ex)
         {
-            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::Unknown);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::E2eCommandFailed);
             BOOST_CHECK_EQUAL(ex.error_description, "Failure status - (1)");
         }
     }

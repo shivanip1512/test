@@ -144,7 +144,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                         else
                         {
 
-                            status = ClientErrors::Unknown;
+                            status = ClientErrors::BadState;
 
                             CTILOG_ERROR(dout, "Invalid data received during handshake");
 
@@ -238,7 +238,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
                             _retryCount = 0;
                             _command = Fail;
-                            status = ClientErrors::Unknown;
+                            status = ClientErrors::BadState;
                         }
                         else if(xfer.getInBuffer()[0] == *_RS)//buffer full
                         {
@@ -246,11 +246,11 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
                             _retryCount = 0;
                             _command = Fail;
-                            status = ClientErrors::Unknown;
+                            status = ClientErrors::BadState;
                         }
                         else
                         {
-                            status = ClientErrors::Unknown;
+                            status = ClientErrors::BadState;
                             _command = Fail; //Transaction Complete
 
                             CTILOG_ERROR(dout, "TNPP Device had a fatal unknown error");

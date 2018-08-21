@@ -1057,7 +1057,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                 {
                     setAttemptsRemaining(getRetryAttempts());
                     setCurrentState (StateHandshakeSendIdentify);
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "NAK: Fulcrum "<< getName() <<" already online");
                     }
@@ -1067,7 +1067,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                 {
                     setAttemptsRemaining(getRetryAttempts());
                     setCurrentState (StateHandshakeSendIdentify);
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "ACK: Fulcrum "<< getName() <<" already online");
                     }

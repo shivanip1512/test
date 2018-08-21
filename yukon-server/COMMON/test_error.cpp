@@ -38,7 +38,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Missing Parameter")
     ("Syntax Error")
     ("Unknown Error Code (12)")
-    ("Unknown Error Code (13)")
+    ("Bad read")
     ("Bad State Specification")
     ("Parity Error")
     ("Bad CCU Specification")
@@ -64,7 +64,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Bad CRC on Message")
     ("Bad Length Specification")
     ("Bad HDLC UA Frame")
-    ("Unknown Error")
+    ("Unknown Error Code (37)")
     ("Unknown Command Received")
     ("Unknown Error Code (39)")
     //  40
@@ -82,7 +82,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Unknown Error Code (50)")
     ("Unknown Error Code (51)")
     ("Unknown Error Code (52)")
-    ("Unknown Error Code (53)")
+    ("Outstation address not found on port")
     ("Device ID Not Found")
     ("Child Device Unknown")
     ("Function and/or Type Not Found")
@@ -257,7 +257,9 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Requested operation is already executing.")
     ("Aggregate response did not include an entry for the command.")
     ("Endpoint indicated a bad request.")
-    .repeat(40, UnknownErrorHelper(310));
+    ("Endpoint indicated command failure.")
+    ("Endpoint returned an unmapped error.")
+    .repeat(38, UnknownErrorHelper(312));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {
@@ -295,7 +297,7 @@ BOOST_AUTO_TEST_CASE(test_GetErrorType)
     const int expected[] =
     {
         0, _, _, 2, 2, _, _, _, _, _,
-        _, _, _, _, _, 3, 3, 2, 2, 2,
+        _, _, _, 2, _, 3, 3, 2, 2, 2,
         2, 2, 2, _, _, _, _, _, _, _,
         _, 3, 3, 3, 3, _, 3, _, 2, _,
         _, _, _, _, _, _, 3, _, _, _,

@@ -803,7 +803,7 @@ YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonE
                     {
                         CTILOG_ERROR(dout, "CRC error for "<< getName() <<" while handshaking");
                     }
-                    Transfer.doTrace(ClientErrors::Unknown);
+                    Transfer.doTrace(ClientErrors::BadCrc);
                     setAttemptsRemaining (getAttemptsRemaining()-1);
                     if (getAttemptsRemaining() > 0)
                     {

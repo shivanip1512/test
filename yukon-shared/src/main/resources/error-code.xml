@@ -79,6 +79,13 @@
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     
+    <error code="13" type="PROTOCOL">
+        <category>N/A</category>
+        <porter>Bad read</porter>
+        <description>The end device returned an unacceptable response to a read.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+  
     <error code="14" type="SYSTEM">
         <category>N/A</category>
         <porter>Bad State Specification</porter>
@@ -477,13 +484,6 @@
         </troubleshooting>
     </error>
     
-    <error code="37" type="SYSTEM">
-        <category>N/A</category>
-        <porter>Unknown Error</porter>
-        <description>An unclassified error occurred in Porter.</description>
-        <troubleshooting> No troubleshooting is available for this error. </troubleshooting>
-    </error>
-    
     <error code="38" type="PROTOCOL">
         <category>N/A</category>
         <porter>Unknown Command Received</porter>
@@ -515,6 +515,13 @@
         <troubleshooting> No troubleshooting is available for this error. </troubleshooting>
     </error>
 
+    <error code="53" type="SYSTEM">
+        <category>Yukon System</category>
+        <porter>Outstation address not found on port</porter>
+        <description>The request specified an outstation address that was not found on the port.</description>
+        <troubleshooting> No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
     <error code="54" type="SYSTEM">
         <category>Yukon System</category>
         <porter>Device ID Not Found</porter>
@@ -1786,6 +1793,20 @@
         <category>Network Manager</category>
         <porter>Endpoint indicated a bad request.</porter>
         <description>The end device rejected the request.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="310" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>Endpoint indicated command failure.</porter>
+        <description>The end device attempted to execute the command, but it failed.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+    
+    <error code="311" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>Endpoint returned an unmapped error.</porter>
+        <description>The end device returned an error that is not categorized by Yukon.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     

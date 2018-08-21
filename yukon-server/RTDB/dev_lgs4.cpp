@@ -699,7 +699,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                 }
                 else
                 {
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "NAK: (no 0x55) attempting to scan "<< getName());
                     }
@@ -728,7 +728,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                 }
                 else
                 {
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "NAK: (no 0xAA) attempting to scan " << getName());
                     }
@@ -898,7 +898,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                 }
                 else
                 {
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "NAK: (no 0x55) attempting to scan");
                     }
@@ -928,7 +928,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                 }
                 else
                 {
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "NAK: (no 0xAA) attempting to scan " << getName());
                     }

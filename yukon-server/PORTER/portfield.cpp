@@ -4094,7 +4094,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                     CTILOG_DEBUG(dout, "could not assign new deviceID with Port "<< OutMessage->Port <<", Remote "<< OutMessage->Remote);
                 }
 
-                SendError(OutMessage, ClientErrors::Unknown);
+                SendError(OutMessage, ClientErrors::PortRemoteNotFound);
                 status = ClientErrors::ContinueLoop;
             }
         }

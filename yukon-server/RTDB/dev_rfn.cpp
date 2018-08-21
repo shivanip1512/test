@@ -94,7 +94,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         }
         catch( std::exception &e )
         {
-            errorCode        = ClientErrors::Unknown;
+            errorCode        = ClientErrors::E2eErrorUnmapped;
             errorDescription = e.what();
         }
     }

@@ -941,7 +941,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                 {
                     setAttemptsRemaining(getRetryAttempts());
                     setCurrentState (StateHandshakeSendIdentify);
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "NAK: Vectron "<< getName() <<" already online");
                     }
@@ -951,7 +951,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                 {
                     setAttemptsRemaining(getRetryAttempts());
                     setCurrentState (StateHandshakeSendIdentify);
-                    if (Transfer.doTrace(ClientErrors::Unknown))
+                    if (Transfer.doTrace(ClientErrors::BadState))
                     {
                         CTILOG_ERROR(dout, "ACK: Vectron " << getName() << " already online");
                     }
