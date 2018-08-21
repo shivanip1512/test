@@ -6,15 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.broker.message.request.BrokerSystemMetricsRequest;
 import com.cannontech.broker.model.BrokerSystemMetricsAttribute;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.db.device.Device;
 
 /**
  * Listens for System Metrics messages from Broker Service, parses them, and does point insertion.
@@ -44,19 +42,18 @@ public class BrokerSystemMetricsMessageListener {
 
 
     public void init() {
-        PaoIdentifier paoIdentifier = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
         BuiltInAttribute loadAverageAttribute = BuiltInAttribute.MESSAGE_BROKER_CPU_UTILIZATION;
         BuiltInAttribute memoryAttribute = BuiltInAttribute.MESSAGE_BROKER_MEMORY_UTILIZATION;
 
         try {
 
-            loadAveragePoint = attributeService.getPointForAttribute(paoIdentifier,
+            loadAveragePoint = attributeService.getPointForAttribute(PaoUtils.SYSTEM_PAOIDENTIFIER,
                                                                      loadAverageAttribute);
         } catch (IllegalUseOfAttribute e) {
             log.error("Attribute: [" + loadAverageAttribute + "] not found for pao type: [SYSTEM]");
         }
         try {
-            memoryPoint = attributeService.getPointForAttribute(paoIdentifier, memoryAttribute);
+            memoryPoint = attributeService.getPointForAttribute(PaoUtils.SYSTEM_PAOIDENTIFIER, memoryAttribute);
         } catch (IllegalUseOfAttribute e) {
             log.error("Attribute: [" + memoryAttribute + "] not found for pao type: [SYSTEM]");
         }
