@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
@@ -453,15 +455,27 @@ public class ActivityDetailModel extends ReportModelBase<Object> {
                     return (al.getUserName());
                 case CONTACT_COLUMN:
                 {
-                    LiteContact contact = YukonSpringHook.getBean(CustomerDao.class).getPrimaryContact(al.getCustID().intValue());
-                    if (contact == null) {
-                        return "(n/a)";
+                    try {
+                        LiteContact contact = YukonSpringHook.getBean(CustomerDao.class).getPrimaryContact(al.getCustID().intValue());
+                        if (contact == null) {
+                            return "(n/a)";
+                        }
+                        return (contact.getContLastName() + ", " + contact.getContFirstName());
+                    } catch (EmptyResultDataAccessException e) {
+                        return "(deleted)";
                     }
-
-                    return (contact.getContLastName() + ", " + contact.getContFirstName());
                 }
                 case ACCOUNT_NUMBER_COLUMN:
+                {
+                    if (al.getAcctNumber() == null) {
+                        if( al.getAcctID().intValue() == -1) {
+                            return "(n/a)";
+                        } else {
+                            return "(deleted)";
+                        }
+                    }
                     return al.getAcctNumber();
+                }
                 case DATE_COLUMN:
                     return al.getDateOnly();
                 case TIME_COLUMN:

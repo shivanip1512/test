@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
@@ -408,17 +410,20 @@ public class ActivityModel extends ReportModelBase<Object> {
                     return al.getUserName();
                 case CONTACT_COLUMN:
                 {
-                    LiteContact contact = YukonSpringHook.getBean(CustomerDao.class).getPrimaryContact(al.getCustID().intValue());
-                    if (contact == null) {
-                        return "(n/a)";
+                    try {
+                        LiteContact contact = YukonSpringHook.getBean(CustomerDao.class).getPrimaryContact(al.getCustID().intValue());
+                        if (contact == null) {
+                            return "(n/a)";
+                        }
+    
+                        return (contact.getContLastName() + ", " + contact.getContFirstName());
+                    } catch (EmptyResultDataAccessException e) {
+                        return "(deleted)";
                     }
-
-                    return (contact.getContLastName() + ", " + contact.getContFirstName());
                 }
                 case ACCOUNT_NUMBER_COLUMN:
                 {
-                    if (al.getAcctNumber() == null)
-                    {
+                    if (al.getAcctNumber() == null) {
                         if( al.getAcctID().intValue() == -1) {
                             return "(n/a)";
                         } else {
@@ -429,12 +434,8 @@ public class ActivityModel extends ReportModelBase<Object> {
                 }
                 case ACTION_COUNT_COLUMN:
                     return al.getActionCount();
-//                    case DATE_TIME_COLUMN:
-//                        return dateTime;
                 case ACTION_COLUMN:
                     return al.getAction();
-//                    case DESCRIPTION_COLUMN:
-//                        return description;
             }
         }
         return null;
@@ -455,9 +456,6 @@ public class ActivityModel extends ReportModelBase<Object> {
                 ACCOUNT_NUMBER_STRING,
                 ACTION_STRING,
                 ACTION_COUNT_STRING
-//                DATE_TIME_STRING,
-//                ACTION_STRING,
-//                DESCRIPTION_STRING
             };
         }
         return columnNames;
@@ -478,9 +476,6 @@ public class ActivityModel extends ReportModelBase<Object> {
                 String.class,
                 String.class,
                 Integer.class
-//                java.util.Date.class,
-//                String.class,
-//                String.class
             };
         }
 
