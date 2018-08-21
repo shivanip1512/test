@@ -80,6 +80,14 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
         return job;
     }
 
+    public String getDefaultYukonExternalUrl(HttpServletRequest request) {
+        String defaultYukonExternalUrl = request.getScheme() + "://" + request.getServerName();
+        if (request.getServerPort() != 80) {
+            defaultYukonExternalUrl += ":" + request.getServerPort();
+        }
+        return defaultYukonExternalUrl;
+    }
+
     @Override
     public YukonJob updateFileExport(ScheduledFileExportData data, YukonUserContext userContext,
                                      HttpServletRequest request, int jobId) {
