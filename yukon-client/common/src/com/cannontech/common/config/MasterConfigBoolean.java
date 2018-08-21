@@ -39,7 +39,6 @@ public enum MasterConfigBoolean {
     USE_OLD_FORGOTTEN_PASSWORD_PAGE,
     USER_FEEDBACK_ENABLED,
     VIRTUAL_PROGRAMS,
-//    JOB_MANAGER_DISABLED, // need to move out of JobManager class
     WATCHDOG_WEB_SERVER_HTTP_CHECK_ENABLED
     ;
     
