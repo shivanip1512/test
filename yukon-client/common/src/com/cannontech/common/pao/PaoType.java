@@ -628,12 +628,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             DIALOUT_POOL,
             RFN_1200);
         
-        twoWayLcrTypes = ImmutableSet.of(
-            LCR3102,
-            LCR6200_RFN,
-            LCR6600_RFN,
-            LCR6700_RFN);
-        
         rfLcrTypes = ImmutableSet.of(
             LCR6200_RFN,
             LCR6600_RFN,
@@ -642,6 +636,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         twoWayPlcLcrTypes = ImmutableSet.of(
             LCR3102
             );
+        
+        twoWayLcrTypes = Sets.union(rfLcrTypes, twoWayPlcLcrTypes).immutableCopy();
         
         rfGatewayTypes = ImmutableSet.of(
             RFN_GATEWAY,
