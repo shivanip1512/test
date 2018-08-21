@@ -11,14 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.db.device.Device;
 
 /**
  * Spring Bean that inserts point data for CPU and Memory point of the invoking service.
@@ -49,15 +47,14 @@ public class SystemMetricsImpl extends SystemMetricsBase {
     public void init() {
         log.debug("SystemMetricsImpl.init()");
 
-        PaoIdentifier paoIdentifier = new PaoIdentifier(Device.SYSTEM_DEVICE_ID, PaoType.SYSTEM);
         try {
-            loadAveragePoint = attributeService.getPointForAttribute(paoIdentifier,
+            loadAveragePoint = attributeService.getPointForAttribute(PaoUtils.SYSTEM_PAOIDENTIFIER,
                                                                      loadAverageAttribute);
         } catch (IllegalUseOfAttribute e) {
             log.error("Attribute: [" + loadAverageAttribute + "] not found for pao type: [SYSTEM]");
         }
         try {
-            memoryPoint = attributeService.getPointForAttribute(paoIdentifier, memoryAttribute);
+            memoryPoint = attributeService.getPointForAttribute(PaoUtils.SYSTEM_PAOIDENTIFIER, memoryAttribute);
         } catch (IllegalUseOfAttribute e) {
             log.error("Attribute: [" + memoryAttribute + "] not found for pao type: [SYSTEM]");
         }
