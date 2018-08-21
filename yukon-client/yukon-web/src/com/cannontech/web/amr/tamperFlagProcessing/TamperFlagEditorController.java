@@ -76,7 +76,7 @@ public class TamperFlagEditorController {
         } else {
             tamperFlagMonitor=new TamperFlagMonitor();
             tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
-            tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+            tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
         }
         model.addAttribute("tamperFlagGroupBase", deviceGroupService.getFullPath(SystemGroupEnum.TAMPER_FLAG));
         model.addAttribute("tamperFlagMonitor", tamperFlagMonitor);
@@ -112,25 +112,25 @@ public class TamperFlagEditorController {
             if (isNewMonitor) {
 
                 // create new group
-                tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+                tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
 
             } else {
 
                 // tamper flag group needs new name
-                String currentProcessorName = tamperFlagMonitor.getTamperFlagMonitorName();
-                if (!currentProcessorName.equals(tamperFlagMonitor.getTamperFlagMonitorName())) {
+                String currentProcessorName = tamperFlagMonitor.getName();
+                if (!currentProcessorName.equals(tamperFlagMonitor.getName())) {
 
                     // try to retrieve group by new name (possible it could exist)
                     // if does not exist, get old group, give it new name
                     try {
 
-                        deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.TAMPER_FLAG, tamperFlagMonitor.getTamperFlagMonitorName(), false);
+                        deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.TAMPER_FLAG, tamperFlagMonitor.getName(), false);
 
                     } catch (NotFoundException e) {
 
                         // ok, it doesn't yet exist
                         StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(currentProcessorName);
-                        tamperFlagGroup.setName(tamperFlagMonitor.getTamperFlagMonitorName());
+                        tamperFlagGroup.setName(tamperFlagMonitor.getName());
                         deviceGroupEditorDao.updateGroup(tamperFlagGroup);
                     }
                 }
@@ -170,7 +170,7 @@ public class TamperFlagEditorController {
         try {
             tamperFlagMonitorService.delete(tamperFlagMonitor.getTamperFlagMonitorId());
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".monitorDeleted",
-                tamperFlagMonitor.getTamperFlagMonitorName()));
+                tamperFlagMonitor.getName()));
         } catch (TamperFlagMonitorNotFoundException e) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".monitorNotFound"));
             return "redirect:" + tamperFlagMonitor.getTamperFlagMonitorId() + "/edit";

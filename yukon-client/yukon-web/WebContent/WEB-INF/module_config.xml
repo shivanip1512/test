@@ -32,13 +32,13 @@
           <page name="outageProcessingParent" type="BASIC">
             <pages>
               <page name="outageProcessing" type="DETAIL">
-                <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+                <labelArgument>${outageMonitor.name}</labelArgument>
               </page>
               <page name="outageMonitorConfig" type="DETAIL">
-                <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+                <labelArgument>${outageMonitor.name}</labelArgument>
               </page>
               <page name="outageMonitorConfig.EDIT" type="DETAIL" hideFavorite="true">
-                <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+                <labelArgument>${outageMonitor.name}</labelArgument>
               </page>
               <page name="outageMonitorConfig.CREATE" type="DETAIL" hideFavorite="true">
               </page>
@@ -47,10 +47,10 @@
           <page name="tamperFlagProcessingParent" type="BASIC">
             <pages>
               <page name="tamperFlagProcessing" type="DETAIL">
-                <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
+                <labelArgument>${tamperFlagMonitor.name}</labelArgument>
               </page>
               <page name="tamperFlagEditor.EDIT" type="DETAIL" hideFavorite="true">
-                <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
+                <labelArgument>${tamperFlagMonitor.name}</labelArgument>
               </page>
               <page name="tamperFlagEditor.CREATE" type="DETAIL" hideFavorite="true">
               </page>
@@ -59,10 +59,10 @@
           <page name="statusPointMonitorProcessing" type="BASIC">
             <pages>
               <page name="statusPointMonitorView" type="DETAIL">
-                <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
+                <labelArgument>${statusPointMonitor.name}</labelArgument>
               </page>
               <page name="statusPointMonitorEditor" type="DETAIL">
-                <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
+                <labelArgument>${statusPointMonitor.name}</labelArgument>
               </page>
               <page name="statusPointMonitorCreator" type="DETAIL">
               </page>

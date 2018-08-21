@@ -17,18 +17,21 @@ public class TamperFlagMonitor implements PointMonitor, Comparable<TamperFlagMon
     public void setTamperFlagMonitorId(Integer tamperFlagMonitorId) {
         this.tamperFlagMonitorId = tamperFlagMonitorId;
     }
-    public String getTamperFlagMonitorName() {
+    @Override
+    public String getName() {
         return tamperFlagMonitorName;
     }
-    public void setTamperFlagMonitorName(String name) {
+    public void setName(String name) {
         this.tamperFlagMonitorName = name.trim();
     }
+    @Override
     public String getGroupName() {
         return groupName;
     }
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
+    @Override
     public MonitorEvaluatorStatus getEvaluatorStatus() {
         return evaluatorStatus;
     }
@@ -42,7 +45,7 @@ public class TamperFlagMonitor implements PointMonitor, Comparable<TamperFlagMon
     
     @Override
     public int compareTo(TamperFlagMonitor o) {
-        return this.getTamperFlagMonitorName().compareToIgnoreCase(o.getTamperFlagMonitorName());
+        return this.getName().compareToIgnoreCase(o.getName());
     }
     
     @Override

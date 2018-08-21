@@ -30,7 +30,7 @@ public class ViolationsCountTamperFlagProcessingUpdaterHandler implements Tamper
 			
 			TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 			
-			StoredDeviceGroup tamperFlagGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.TAMPER_FLAG, tamperFlagMonitor.getTamperFlagMonitorName(), false);
+			StoredDeviceGroup tamperFlagGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.TAMPER_FLAG, tamperFlagMonitor.getName(), false);
 			int deviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(tamperFlagGroup));
 			countStr = String.valueOf(deviceCount);
 			

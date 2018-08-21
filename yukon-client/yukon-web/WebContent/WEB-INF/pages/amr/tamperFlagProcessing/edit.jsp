@@ -19,7 +19,7 @@
         <form:form id="deleteMonitorForm" action="${monitorDeleteURL}" method="post" commandName="tamperFlagMonitor">
             <cti:csrfToken/>
             <tags:hidden path="tamperFlagMonitorId"/>
-            <tags:hidden path="tamperFlagMonitorName"/>
+            <tags:hidden path="name"/>
         </form:form>
         
         <form id="toggleEnabledForm" action="${toggleEnabledURL}" method="post">
@@ -47,7 +47,7 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <tags:input path="tamperFlagMonitorName" maxlength="60" inputClass="js-monitor-name" />
+                    <tags:input path="name" maxlength="60" inputClass="js-monitor-name" />
                 </tags:nameValue2>
                 
                 <%-- device group --%>
@@ -67,7 +67,7 @@
             
                 <%-- tamper flag group --%>
                 <tags:nameValue2 nameKey=".label.tamperFlagGroup">
-                    <span class="group-base" data-groupbase="${fn:escapeXml(tamperFlagGroupBase)}">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</div>            
+                    <span class="group-base" data-groupbase="${fn:escapeXml(tamperFlagGroupBase)}">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(tamperFlagMonitor.name)}</div>            
                 </tags:nameValue2>
             
                 <%-- enable/disable monitoring --%>
@@ -97,7 +97,7 @@
                             data-disable-group="actionButtons"/>
                         <cti:button id="deleteButton" nameKey="delete" data-disable-group="actionButtons" 
                                     classes="delete" data-popup="#confirm-delete-monitor-popup"/>
-                        <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${tamperFlagMonitor.tamperFlagMonitorName}"/>
+                        <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${tamperFlagMonitor.name}"/>
                         
                         <cti:url var="backUrl" value="/amr/tamperFlagProcessing/process/process">
                             <cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitorId}"/>

@@ -82,13 +82,13 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         deviceDataMonitors.sort(Comparator.comparing(DeviceDataMonitor::getName));
         model.addAttribute("deviceDataMonitors", deviceDataMonitors);
         
-        outageMonitors.sort(Comparator.comparing(OutageMonitor::getOutageMonitorName));
+        outageMonitors.sort(Comparator.comparing(OutageMonitor::getName));
         model.addAttribute("outageMonitors", outageMonitors);
         
-        tamperFlagMonitors.sort(Comparator.comparing(TamperFlagMonitor::getTamperFlagMonitorName));
+        tamperFlagMonitors.sort(Comparator.comparing(TamperFlagMonitor::getName));
         model.addAttribute("tamperFlagMonitors", tamperFlagMonitors);
         
-        statusPointMonitors.sort(Comparator.comparing(StatusPointMonitor::getStatusPointMonitorName));
+        statusPointMonitors.sort(Comparator.comparing(StatusPointMonitor::getName));
         model.addAttribute("statusPointMonitors", statusPointMonitors);
         
         porterResponseMonitors.sort(Comparator.comparing(PorterResponseMonitor::getName));

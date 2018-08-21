@@ -83,7 +83,7 @@
         <tbody>
             <c:forEach var="monitor" items="${outageMonitors}">
                 <c:set var="monitorId" value="${monitor.outageMonitorId}"/>
-                <c:set var="monitorName" value="${monitor.outageMonitorName}"/>
+                <c:set var="monitorName" value="${monitor.name}"/>
 
                 <tr class="monitor" data-removed-text="${removedText}">
                     <%-- monitor name --%>
@@ -139,7 +139,7 @@
         <tbody>
             <c:forEach var="monitor" items="${tamperFlagMonitors}">
                 <c:set var="monitorId" value="${monitor.tamperFlagMonitorId}"/>
-                <c:set var="monitorName" value="${monitor.tamperFlagMonitorName}"/>
+                <c:set var="monitorName" value="${monitor.name}"/>
 
                 <tr class="monitor" data-removed-text="${removedText}">
 
@@ -195,7 +195,7 @@
         <tbody>
         <c:forEach var="monitor" items="${statusPointMonitors}">
             <c:set var="monitorId" value="${monitor.statusPointMonitorId}"/>
-            <c:set var="monitorName" value="${monitor.statusPointMonitorName}"/>
+            <c:set var="monitorName" value="${monitor.name}"/>
 
             <tr class="monitor" data-removed-text="${removedText}">
                 <%-- monitor name --%>

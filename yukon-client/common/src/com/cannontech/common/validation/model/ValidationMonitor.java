@@ -9,7 +9,7 @@ import com.cannontech.amr.monitors.PointMonitor;
 public class ValidationMonitor implements PointMonitor, Comparable<ValidationMonitor> {
     
     private String name;
-    private String deviceGroupName;
+    private String groupName;
     private MonitorEvaluatorStatus evaluatorStatus;
     
     private Integer validationMonitorId;
@@ -60,18 +60,20 @@ public class ValidationMonitor implements PointMonitor, Comparable<ValidationMon
         return reReadOnUnreasonable;
     }
 
-    public void setDeviceGroupName(String deviceGroupName) {
-        this.deviceGroupName = deviceGroupName;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
-    public String getDeviceGroupName() {
-        return deviceGroupName;
+    @Override
+    public String getGroupName() {
+        return groupName;
     }
 
     public void setName(String name) {
         this.name = name.trim();
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -109,8 +111,8 @@ public class ValidationMonitor implements PointMonitor, Comparable<ValidationMon
     @Override
     public String toString() {
         return String
-                .format("ValidationMonitor [name=%s, deviceGroupName=%s, evaluatorStatus=%s, validationMonitorId=%s, reasonableMaxKwhPerDay=%s, kwhReadingError=%s, kwhSlopeError=%s, peakHeightMinimum=%s, reReadOnUnreasonable=%s, setQuestionableOnPeak=%s]",
-                        name, deviceGroupName, evaluatorStatus,
+                .format("ValidationMonitor [name=%s, groupName=%s, evaluatorStatus=%s, validationMonitorId=%s, reasonableMaxKwhPerDay=%s, kwhReadingError=%s, kwhSlopeError=%s, peakHeightMinimum=%s, reReadOnUnreasonable=%s, setQuestionableOnPeak=%s]",
+                        name, groupName, evaluatorStatus,
                         validationMonitorId, reasonableMaxKwhPerDay,
                         kwhReadingError, kwhSlopeError, peakHeightMinimum,
                         reReadOnUnreasonable, questionableOnPeak);

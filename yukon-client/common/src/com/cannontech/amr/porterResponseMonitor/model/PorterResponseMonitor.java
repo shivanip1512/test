@@ -5,21 +5,22 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.amr.monitors.PointMonitor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
-public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> {
-	private Integer monitorId;
-	private String name;
-	private String groupName;
-	private LiteStateGroup stateGroup;
-	private Attribute attribute;
-	private MonitorEvaluatorStatus evaluatorStatus;
-	private List<PorterResponseMonitorRule> rules = Lists.newArrayList();
-    
+public class PorterResponseMonitor implements PointMonitor, Comparable<PorterResponseMonitor> {
+    private Integer monitorId;
+    private String name;
+    private String groupName;
+    private LiteStateGroup stateGroup;
+    private Attribute attribute;
+    private MonitorEvaluatorStatus evaluatorStatus;
+    private List<PorterResponseMonitorRule> rules = Lists.newArrayList();
+
     public PorterResponseMonitor() {
     }
 
@@ -30,41 +31,43 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
         evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
     }
 
-	public PorterResponseMonitor(PorterResponseMonitorDto monitorDto) {
-	    monitorId = monitorDto.getMonitorId();
-	    name = monitorDto.getName().trim();
-	    groupName = monitorDto.getGroupName();
-	    stateGroup = monitorDto.getStateGroup();
-	    attribute = monitorDto.getAttribute();
-	    evaluatorStatus = monitorDto.getEvaluatorStatus();
-	    Collection<PorterResponseMonitorRuleDto> values = monitorDto.getRules();
-	    // sort those values
-	    List<PorterResponseMonitorRuleDto> sortedCopy = Ordering.natural().sortedCopy(values);
-	    int order = 1;
+    public PorterResponseMonitor(PorterResponseMonitorDto monitorDto) {
+        monitorId = monitorDto.getMonitorId();
+        name = monitorDto.getName().trim();
+        groupName = monitorDto.getGroupName();
+        stateGroup = monitorDto.getStateGroup();
+        attribute = monitorDto.getAttribute();
+        evaluatorStatus = monitorDto.getEvaluatorStatus();
+        Collection<PorterResponseMonitorRuleDto> values = monitorDto.getRules();
+        // sort those values
+        List<PorterResponseMonitorRuleDto> sortedCopy = Ordering.natural().sortedCopy(values);
+        int order = 1;
         for (PorterResponseMonitorRuleDto ruleDto : sortedCopy) {
-	        PorterResponseMonitorRule rule = new PorterResponseMonitorRule(ruleDto);
+            PorterResponseMonitorRule rule = new PorterResponseMonitorRule(ruleDto);
             rule.setRuleOrder(order++);
-	        rules.add(rule);
-	    }
-	}
+            rules.add(rule);
+        }
+    }
 
-	public Integer getMonitorId() {
-		return monitorId;
-	}
+    public Integer getMonitorId() {
+        return monitorId;
+    }
 
-	public void setMonitorId(Integer monitorId) {
-		this.monitorId = monitorId;
-	}
+    public void setMonitorId(Integer monitorId) {
+        this.monitorId = monitorId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getGroupName() {
+    @Override
+    public String getGroupName() {
         return groupName;
     }
 
@@ -88,13 +91,14 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
         this.attribute = attribute;
     }
 
+    @Override
     public MonitorEvaluatorStatus getEvaluatorStatus() {
-		return evaluatorStatus;
-	}
+        return evaluatorStatus;
+    }
 
-	public void setEvaluatorStatus(MonitorEvaluatorStatus evaluatorStatus) {
-		this.evaluatorStatus = evaluatorStatus;
-	}
+    public void setEvaluatorStatus(MonitorEvaluatorStatus evaluatorStatus) {
+        this.evaluatorStatus = evaluatorStatus;
+    }
 
     public List<PorterResponseMonitorRule> getRules() {
         Collections.sort(rules);
@@ -108,14 +112,14 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
     @Override
     public String toString() {
         return String.format("PorterResponseMonitor [monitorId=%s, name=%s, groupName=%s, stateGroup=%s, attribute=%s, evaluatorStatus=%s]",
-                    monitorId,
-                    name,
-                    groupName,
-                    stateGroup,
-                    attribute,
-                    evaluatorStatus);
+                             monitorId,
+                             name,
+                             groupName,
+                             stateGroup,
+                             attribute,
+                             evaluatorStatus);
     }
-    
+
     @Override
     public int compareTo(PorterResponseMonitor porterResponseMonitor) {
         return name.compareToIgnoreCase(porterResponseMonitor.getName());

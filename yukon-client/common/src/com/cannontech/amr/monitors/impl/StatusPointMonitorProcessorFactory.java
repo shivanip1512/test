@@ -122,7 +122,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
 
                     if (shouldSendMessage) {
                         OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
-                        outageJmsMessage.setSource(statusPointMonitor.getStatusPointMonitorName());
+                        outageJmsMessage.setSource(statusPointMonitor.getName());
                         outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
                         outageJmsMessage.setPaoIdentifier(richPointData.getPaoPointIdentifier().getPaoIdentifier());
                         outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
@@ -213,16 +213,15 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     
     public static boolean isDifference(PointValueHolder nextPointValue, PointValueHolder prevPointValue) {
         if (prevPointValue == null) {
-            return true;
+            return true;    //previous point not existing
         }
         return nextPointValue.getValue() != prevPointValue.getValue();
     }
     
     public static boolean isExactMatch(int processorPointValue, PointValueHolder pointValue) {
-        
         //Safety check for points that don't have a previous value yet in the database
         if (pointValue == null) {
-            return false;
+            return false;   //should this change to true? If (prev) pointValue doesn't exist, then return true.
         }
         int pointValueAsInt = (int)pointValue.getValue();
         return processorPointValue == pointValueAsInt;

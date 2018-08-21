@@ -4,17 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.model.ValidationMonitor;
-import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
-public class ValidationMonitorValidator extends SimpleValidator<ValidationMonitor> {
+public class ValidationMonitorValidator extends PointMonitorValidator<ValidationMonitor> {
     @Autowired private ValidationMonitorDao validationMonitorDao;
-    @Autowired private DeviceGroupService deviceGroupService;
 
     public ValidationMonitorValidator() {
         super(ValidationMonitor.class);
@@ -22,11 +18,7 @@ public class ValidationMonitorValidator extends SimpleValidator<ValidationMonito
 
     @Override
     public void doValidation(ValidationMonitor validationMonitor, Errors errors) {
-        validateName(validationMonitor, errors);
-        if (!errors.hasErrors() && (validationMonitor.getDeviceGroupName() == null
-            || deviceGroupService.findGroupName(validationMonitor.getDeviceGroupName()) == null)) {
-            errors.reject("yukon.web.modules.amr.invalidGroupName");
-        }
+        super.doValidation(validationMonitor, errors);
         YukonValidationUtils.checkIsPositiveDouble(errors, "reasonableMaxKwhPerDay",
             validationMonitor.getReasonableMaxKwhPerDay());
         YukonValidationUtils.checkIsPositiveDouble(errors, "kwhSlopeError", validationMonitor.getKwhSlopeError());
@@ -34,18 +26,11 @@ public class ValidationMonitorValidator extends SimpleValidator<ValidationMonito
             validationMonitor.getPeakHeightMinimum());
     }
 
-    private void validateName(ValidationMonitor validationMonitor, Errors errors) {
+    @Override
+    void isNameAvailable(ValidationMonitor monitor, Errors errors) {
+        boolean idSpecified = monitor.getValidationMonitorId() != null;
 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
-        if (!errors.hasFieldErrors("name")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", validationMonitor.getName(), 60);
-            if (!DeviceGroupUtil.isValidName(validationMonitor.getName())) {
-                errors.rejectValue("name", "yukon.web.error.deviceGroupName.containsIllegalChars");
-            }
-        }
-        boolean idSpecified = validationMonitor.getValidationMonitorId() != null;
-
-        boolean nameAvailable = !validationMonitorDao.processorExistsWithName(validationMonitor.getName());
+        boolean nameAvailable = !validationMonitorDao.processorExistsWithName(monitor.getName());
 
         if (!nameAvailable) {
             if (!idSpecified) {
@@ -54,8 +39,8 @@ public class ValidationMonitorValidator extends SimpleValidator<ValidationMonito
             } else {
                 // For edit, we can use our own existing name
                 ValidationMonitor existingValidator =
-                    validationMonitorDao.getById(validationMonitor.getValidationMonitorId());
-                if (!existingValidator.getName().equals(validationMonitor.getName())) {
+                    validationMonitorDao.getById(monitor.getValidationMonitorId());
+                if (!existingValidator.getName().equals(monitor.getName())) {
                     errors.rejectValue("name", "yukon.web.error.nameConflict");
                 }
             }

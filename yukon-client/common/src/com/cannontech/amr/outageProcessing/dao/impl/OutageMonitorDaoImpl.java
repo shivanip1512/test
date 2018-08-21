@@ -91,7 +91,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao {
                 OutageMonitor outageMonitor = new OutageMonitor();
 
                 outageMonitor.setOutageMonitorId(rs.getInt("OutageMonitorId"));
-                outageMonitor.setOutageMonitorName(rs.getString("OutageMonitorName"));
+                outageMonitor.setName(rs.getString("OutageMonitorName"));
                 outageMonitor.setGroupName(rs.getString("GroupName"));
                 outageMonitor.setTimePeriodDays(rs.getInt("TimePeriod"));
                 outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));
@@ -105,7 +105,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao {
     private final FieldMapper<OutageMonitor> outageMonitorFieldMapper = new FieldMapper<OutageMonitor>() {
         @Override
         public void extractValues(MapSqlParameterSource p, OutageMonitor outageMonitor) {
-            p.addValue("OutageMonitorName", outageMonitor.getOutageMonitorName());
+            p.addValue("OutageMonitorName", outageMonitor.getName());
             p.addValue("GroupName", outageMonitor.getGroupName());
             p.addValue("TimePeriod", outageMonitor.getTimePeriodDays());
             p.addValue("NumberOfOutages", outageMonitor.getNumberOfOutages());

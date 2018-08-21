@@ -117,7 +117,7 @@ public class StatusPointMonitorController {
         flashScope.setConfirm(Collections.singletonList(createMessage));
         
         outageEventLogService.statusPointMonitorCreated(statusPointMonitor.getStatusPointMonitorId(), 
-                                                        statusPointMonitor.getStatusPointMonitorName(), 
+                                                        statusPointMonitor.getName(), 
                                                         statusPointMonitor.getGroupName(), 
                                                         statusPointMonitor.getAttribute().getKey(), 
                                                         statusPointMonitor.getStateGroup().toString(), 
@@ -144,11 +144,11 @@ public class StatusPointMonitorController {
         
         statusPointMonitorService.update(statusPointMonitor);
         
-        MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.statusPointMonitor.updated", statusPointMonitor.getStatusPointMonitorName());
+        MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.statusPointMonitor.updated", statusPointMonitor.getName());
         flashScope.setConfirm(Collections.singletonList(updateMessage));
         
         outageEventLogService.statusPointMonitorUpdated(statusPointMonitor.getStatusPointMonitorId(), 
-                                                        statusPointMonitor.getStatusPointMonitorName(), 
+                                                        statusPointMonitor.getName(), 
                                                         statusPointMonitor.getGroupName(), 
                                                         statusPointMonitor.getAttribute().getKey(), 
                                                         statusPointMonitor.getStateGroup().toString(), 
@@ -168,11 +168,11 @@ public class StatusPointMonitorController {
         
         statusPointMonitorService.delete(statusPointMonitorId);
         
-        MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.statusPointMonitor.deleted", statusPointMonitor.getStatusPointMonitorName());
+        MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.statusPointMonitor.deleted", statusPointMonitor.getName());
         flashScope.setConfirm(deleteMessage);
         
         outageEventLogService.statusPointMonitorDeleted(statusPointMonitor.getStatusPointMonitorId(), 
-                                                        statusPointMonitor.getStatusPointMonitorName(), 
+                                                        statusPointMonitor.getName(), 
                                                         statusPointMonitor.getGroupName(), 
                                                         statusPointMonitor.getAttribute().getKey(), 
                                                         statusPointMonitor.getStateGroup().toString(), 

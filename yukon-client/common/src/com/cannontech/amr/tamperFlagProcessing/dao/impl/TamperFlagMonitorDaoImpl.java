@@ -89,7 +89,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
             public TamperFlagMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
                 TamperFlagMonitor tamperFlagMonitor = new TamperFlagMonitor();
                 tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));
-                tamperFlagMonitor.setTamperFlagMonitorName(rs.getString("TamperFlagMonitorName"));
+                tamperFlagMonitor.setName(rs.getString("TamperFlagMonitorName"));
                 tamperFlagMonitor.setGroupName(rs.getString("GroupName"));
                 tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return tamperFlagMonitor;
@@ -101,7 +101,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
     private final FieldMapper<TamperFlagMonitor> tamperFlagMonitorFieldMapper = new FieldMapper<TamperFlagMonitor>() {
         @Override
         public void extractValues(MapSqlParameterSource p, TamperFlagMonitor tamperFlagMonitor) {
-            p.addValue("TamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
+            p.addValue("TamperFlagMonitorName", tamperFlagMonitor.getName());
             p.addValue("GroupName", tamperFlagMonitor.getGroupName());
             p.addValue("EvaluatorStatus", tamperFlagMonitor.getEvaluatorStatus().name());
         }

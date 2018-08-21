@@ -35,14 +35,16 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
         this.statusPointMonitorId = statusPointMonitorId;
     }
     
-    public String getStatusPointMonitorName() {
+    @Override
+    public String getName() {
         return statusPointMonitorName;
     }
     
-    public void setStatusPointMonitorName(String name) {
+    public void setName(String name) {
         this.statusPointMonitorName = name.trim();
     }
     
+    @Override
     public String getGroupName() {
         return groupName;
     }
@@ -67,6 +69,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
         return stateGroup;
     }
     
+    @Override
     public MonitorEvaluatorStatus getEvaluatorStatus() {
         return evaluatorStatus;
     }
@@ -98,7 +101,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
     
     @Override
     public int compareTo(StatusPointMonitor o) {
-        return this.getStatusPointMonitorName().compareToIgnoreCase(o.getStatusPointMonitorName());
+        return this.getName().compareToIgnoreCase(o.getName());
     }
     
 }

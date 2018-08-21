@@ -64,10 +64,6 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.ok">OK</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.cancel">Cancel</entry>
     
-    <!-- validation errors -->
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.empty.statusPointMonitorName">Name cannot be empty.</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.alreadyExists.statusPointMonitorName">Name already exists.</entry>
-    
     <!-- StatusPointMonitorController view.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorView.pageName">Status Point Processing</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.pageDescription">{0}</entry>

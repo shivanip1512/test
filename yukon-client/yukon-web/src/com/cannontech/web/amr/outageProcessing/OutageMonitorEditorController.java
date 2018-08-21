@@ -102,7 +102,7 @@ public class OutageMonitorEditorController {
             outageMonitor.setTimePeriodDays(DEFAULT_TIME_PERIOD);
             outageMonitor.setNumberOfOutages(DEFAULT_NUMBER_OF_OUTAGES);
             outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
-            outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
+            outageMonitorService.getOutageGroup(outageMonitor.getName());
         }
         String basePath = deviceGroupService.getFullPath(SystemGroupEnum.OUTAGE);
         model.addAttribute("outageGroupBase", basePath);
@@ -154,20 +154,20 @@ public class OutageMonitorEditorController {
         // OUTAGE GROUP
         if (isNewMonitor) {
             // create new group
-            outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
+            outageMonitorService.getOutageGroup(outageMonitor.getName());
         } else {
             // outage group needs new name
-            String currentProcessorName = outageMonitor.getOutageMonitorName();
-            if (!currentProcessorName.equals(outageMonitor.getOutageMonitorName())) {
+            String currentProcessorName = outageMonitor.getName();
+            if (!currentProcessorName.equals(outageMonitor.getName())) {
                 // try to retrieve group by new name (possible it could exist)
                 // if does not exist, get old group, give it new name
                 try {
-                    deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.OUTAGE, outageMonitor.getOutageMonitorName(),
+                    deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.OUTAGE, outageMonitor.getName(),
                         false);
                 } catch (NotFoundException e) {
                     // ok, it doesn't yet exist
                     StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(currentProcessorName);
-                    outageGroup.setName(outageMonitor.getOutageMonitorName());
+                    outageGroup.setName(outageMonitor.getName());
                     deviceGroupEditorDao.updateGroup(outageGroup);
                 }
             }
@@ -195,7 +195,7 @@ public class OutageMonitorEditorController {
         try {
             model.addAttribute("outageMonitorId", outageMonitor.getOutageMonitorId());
             outageMonitorService.delete(outageMonitor.getOutageMonitorId());
-            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleted", outageMonitor.getOutageMonitorName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleted", outageMonitor.getName()));
         } catch (OutageMonitorNotFoundException e) {
             log.error("Could not delete outage monitor : ", e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFound"));

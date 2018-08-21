@@ -59,13 +59,13 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
         for (ValidationMonitor validationMonitor : getValidationMonitors()) {
             
             if (validationMonitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
-                DeviceGroup groupName = deviceGroupService.findGroupName(validationMonitor.getDeviceGroupName());
-                if (groupName != null) {	// check if group name still exists.	
-                	Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(groupName));
-                	deviceGroupCache.putAll(validationMonitor, deviceIds);
+                DeviceGroup groupName = deviceGroupService.findGroupName(validationMonitor.getGroupName());
+                if (groupName != null) { // check if group name still exists.
+                    Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singleton(groupName));
+                    deviceGroupCache.putAll(validationMonitor, deviceIds);
                 } else {
-                	LogHelper.warn(log, "Device Group %s no longer exists. Monitor %s is not validating any readings.", 
-                			validationMonitor.getDeviceGroupName(), validationMonitor.getName());
+                    LogHelper.warn(log, "Device Group %s no longer exists. Monitor %s is not validating any readings.",
+                                   validationMonitor.getGroupName(), validationMonitor.getName());
                 }
             }
             
@@ -147,7 +147,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
                 
                 validationMonitor.setValidationMonitorId(rs.getInt("ValidationMonitorId"));
                 validationMonitor.setName(rs.getString("ValidationMonitorName"));
-                validationMonitor.setDeviceGroupName(rs.getString("GroupName"));
+                validationMonitor.setGroupName(rs.getString("GroupName"));
                 validationMonitor.setReasonableMaxKwhPerDay(rs.getDouble("Threshold"));
                 validationMonitor.setReReadOnUnreasonable(rs.getInt("ReRead") > 0 ? true : false);
                 validationMonitor.setKwhSlopeError(rs.getDouble("SlopeError"));
@@ -165,7 +165,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
         @Override
         public void extractValues(MapSqlParameterSource p, ValidationMonitor validationMonitor) {
             p.addValue("ValidationMonitorName", validationMonitor.getName());
-            p.addValue("GroupName", validationMonitor.getDeviceGroupName());
+            p.addValue("GroupName", validationMonitor.getGroupName());
             p.addValue("Threshold", validationMonitor.getReasonableMaxKwhPerDay());
             p.addValue("ReRead", validationMonitor.isReReadOnUnreasonable() ? 1 : 0);
             p.addValue("SlopeError", validationMonitor.getKwhSlopeError());

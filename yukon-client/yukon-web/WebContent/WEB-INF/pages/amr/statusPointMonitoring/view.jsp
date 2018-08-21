@@ -14,7 +14,7 @@
     
     <tags:sectionContainer2 nameKey="sectionHeader">
         <tags:nameValueContainer2 tableClass="has-actions">
-            <tags:nameValue2 nameKey=".name">${fn:escapeXml(statusPointMonitor.statusPointMonitorName)}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".name">${fn:escapeXml(statusPointMonitor.name)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".monitoring">
                 <cti:dataUpdaterValue type="STATUS_POINT_MONITORING" identifier="${statusPointMonitor.statusPointMonitorId}/MONITORING_COUNT"/>
             </tags:nameValue2>

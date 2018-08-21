@@ -31,7 +31,7 @@ public class TestStatusPointMonitorSelenium extends SolventSeleniumTestCase {
 		
 		//click create outage monitor button in widget
 		meteringSolvent.clickCreateByWidget("Status Point Monitors");
-		common.enterInputText("statusPointMonitoring/create", "statusPointMonitorName", "autoTest");
+		common.enterInputText("statusPointMonitoring/create", "name", "autoTest");
 		common.selectDropDownMenu("statusPointMonitoring/create", "stateGroup", "TrueFalse");
 		common.clickButtonBySpanText("Create");	
 		Assert.assertEquals("Metering: Status Point Monitoring (autoTest)", common.getPageTitle());		

@@ -24,7 +24,7 @@
     <form:form id="deleteMonitorForm" action="${deleteURL}" method="post" commandName="outageMonitor">
         <cti:csrfToken/>
         <form:hidden path="outageMonitorId"/>
-        <form:hidden path="outageMonitorName"/>
+        <form:hidden path="name"/>
     </form:form>
     
     <form id="toggleEnabledForm" action="${toggleEnabledURL}" method="post">
@@ -51,7 +51,7 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <tags:input path="outageMonitorName" id="outageMonitorName" inputClass="js-monitor-name" size="60" placeholder="${outageGroupBase}"/>
+                    <tags:input path="name" id="name" inputClass="js-monitor-name" size="60" placeholder="${outageGroupBase}"/>
                 </tags:nameValue2>
                 
                 <%-- device group --%>
@@ -71,7 +71,7 @@
             
                 <%-- outages group --%>
                 <tags:nameValue2 nameKey=".label.outagesGroup">
-                    <span class="group-base" data-groupbase="${fn:escapeXml(outageGroupBase)}">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(outageMonitor.outageMonitorName)}</div>
+                    <span class="group-base" data-groupbase="${fn:escapeXml(outageGroupBase)}">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(outageMonitor.name)}</div>
                 </tags:nameValue2>
             
                 <%-- number of outages --%>
@@ -168,7 +168,7 @@
                     <cti:button id="deleteButton" nameKey="delete" data-disable-group="actionButtons" 
                                 classes="delete" data-popup="#confirm-delete-monitor-popup"/>
                     
-                    <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${outageMonitor.outageMonitorName}"/>
+                    <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${outageMonitor.name}"/>
                     
                     <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
                         <cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}" />

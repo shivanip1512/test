@@ -76,7 +76,7 @@ public class TamperFlagProcessingController {
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
 		// tamper flag group device collection
-		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 		
 		//check for cached results
@@ -100,7 +100,7 @@ public class TamperFlagProcessingController {
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 	    model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
 		
-		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 		
         if (tamperFlagGroupDeviceCollection.getDeviceCount() == 0) {
@@ -110,7 +110,7 @@ public class TamperFlagProcessingController {
 				
 		// alert callback
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        String detailText = accessor.getMessage(baseKey + "readInternalFlags.completionAlertDetailText", tamperFlagMonitor.getTamperFlagMonitorName());
+        String detailText = accessor.getMessage(baseKey + "readInternalFlags.completionAlertDetailText", tamperFlagMonitor.getName());
         SimpleCallback<CollectionActionResult> alertCallback =
                 CollectionActionAlertHelper.createAlert(AlertType.TAMPER_FLAG_PROCESSING_READ_INTERNAL_FLAGS_COMPLETION, alertService,
                     accessor, request, detailText);
@@ -130,7 +130,7 @@ public class TamperFlagProcessingController {
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 	    model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
 
-		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 		
         if (tamperFlagGroupDeviceCollection.getDeviceCount() == 0) {
@@ -155,7 +155,7 @@ public class TamperFlagProcessingController {
 		
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
-		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
 		
 		List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(tamperFlagGroup);
         deviceGroupMemberEditorDao.removeDevices(tamperFlagGroup, deviceList);

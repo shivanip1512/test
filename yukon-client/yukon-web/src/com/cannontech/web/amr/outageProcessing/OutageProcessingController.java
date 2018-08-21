@@ -90,7 +90,7 @@ public class OutageProcessingController extends MultiActionController {
 		final OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 	    model.addAttribute("outageMonitorId", outageMonitorId);
 		
-        StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
+        StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getName());
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
 		
 		if (deviceCollection.getDeviceCount() == 0) {
@@ -110,7 +110,7 @@ public class OutageProcessingController extends MultiActionController {
 
         // alert callback
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        String detailText = accessor.getMessage(baseKey + "readOutagesLog.completionAlertDetailText", outageMonitor.getOutageMonitorName());
+        String detailText = accessor.getMessage(baseKey + "readOutagesLog.completionAlertDetailText", outageMonitor.getName());
         SimpleCallback<CollectionActionResult> alertCallback =
             CollectionActionAlertHelper.createAlert(AlertType.OUTAGE_PROCESSING_READ_LOGS_COMPLETION, alertService,
                 accessor, outageRemovalCallback, request, detailText);
@@ -130,7 +130,7 @@ public class OutageProcessingController extends MultiActionController {
 
 		OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 		
-		StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
+		StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getName());
 		
 		List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(outageGroup);
         deviceGroupMemberEditorDao.removeDevices(outageGroup, deviceList);

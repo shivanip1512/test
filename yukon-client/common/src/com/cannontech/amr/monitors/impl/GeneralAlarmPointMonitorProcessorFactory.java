@@ -32,7 +32,7 @@ public class GeneralAlarmPointMonitorProcessorFactory extends MonitorProcessorFa
 
 	protected RichPointDataListener createPointListener(final TamperFlagMonitor tamperFlagMonitor) {
 	    final DeviceGroup monitorGroup = deviceGroupService.findGroupName(tamperFlagMonitor.getGroupName());
-	    final StoredDeviceGroup resultGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
+	    final StoredDeviceGroup resultGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getName());
 	    PointMonitorProcessor monitorProcessor = new PointMonitorProcessor() {
 	
 	        @Override

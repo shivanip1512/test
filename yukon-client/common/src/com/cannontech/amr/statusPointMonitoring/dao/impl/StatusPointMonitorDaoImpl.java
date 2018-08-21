@@ -49,7 +49,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
             
             StatusPointMonitor retVal = new StatusPointMonitor();
             retVal.setStatusPointMonitorId(rs.getInt("statusPointMonitorId"));
-            retVal.setStatusPointMonitorName(rs.getString("statusPointMonitorName"));
+            retVal.setName(rs.getString("statusPointMonitorName"));
             retVal.setGroupName(rs.getString("groupName"));
             String attributeKey = rs.getString("attribute");
             Attribute attribute = attributeService.resolveAttributeName(attributeKey);
@@ -193,7 +193,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     private final FieldMapper<StatusPointMonitor> statusPointMonitorFieldMapper = new FieldMapper<StatusPointMonitor>() {
         @Override
         public void extractValues(MapSqlParameterSource p, StatusPointMonitor statusPointMonitor) {
-            p.addValue("StatusPointMonitorName", statusPointMonitor.getStatusPointMonitorName());
+            p.addValue("StatusPointMonitorName", statusPointMonitor.getName());
             p.addValue("GroupName", statusPointMonitor.getGroupName());
             p.addValue("Attribute", statusPointMonitor.getAttribute());
             p.addValue("StateGroupId", statusPointMonitor.getStateGroup().getStateGroupID());

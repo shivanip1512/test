@@ -12,16 +12,11 @@ import com.cannontech.amr.porterResponseMonitor.dao.PorterResponseMonitorDao;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorErrorCode;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
-import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.google.common.collect.Lists;
 
 @Service
-public class PorterResponseMonitorValidator extends SimpleValidator<PorterResponseMonitor> {
+public class PorterResponseMonitorValidator extends PointMonitorValidator<PorterResponseMonitor> {
 
-    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
     private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
 
@@ -30,19 +25,35 @@ public class PorterResponseMonitorValidator extends SimpleValidator<PorterRespon
     }
 
     @Override
-    protected void doValidation(PorterResponseMonitor monitor, Errors errors) {
-        validateName(monitor, errors);
+    public void doValidation(PorterResponseMonitor monitor, Errors errors) {
+        super.doValidation(monitor, errors);
 
         if (monitor.getMonitorId() != null) {
             validateRules(monitor, errors);
         }
     }
 
-    private void validateRules(PorterResponseMonitor monitor, Errors errors) {
-        if (deviceGroupService.findGroupName(monitor.getGroupName()) == null) {
-            errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
-        }
+    @Override
+    void isNameAvailable(PorterResponseMonitor monitor, Errors errors) {
+        boolean idSpecified = monitor.getMonitorId() != null;
 
+        boolean nameAvailable = !porterResponseMonitorDao.monitorExistsWithName(monitor.getName());
+        
+        if (!nameAvailable) {
+            if (!idSpecified) {
+                // For create, we must have an available name
+                errors.rejectValue("name", "yukon.web.error.nameConflict");
+            } else {
+                // For edit, we can use our own existing name
+                PorterResponseMonitor existingDeviceDataMonitor = porterResponseMonitorDao.getMonitorById(monitor.getMonitorId());
+                if (!existingDeviceDataMonitor.getName().equals(monitor.getName())) {
+                    errors.rejectValue("name", "yukon.web.error.nameConflict");
+                }
+            }
+        }
+    }
+    
+    private void validateRules(PorterResponseMonitor monitor, Errors errors) {
         /* uniqueness checks */
         List<Integer> orderList = Lists.newArrayList();
         List<PorterResponseMonitorRule> rules = monitor.getRules();
@@ -74,34 +85,6 @@ public class PorterResponseMonitorValidator extends SimpleValidator<PorterRespon
         }
     }
 
-    private void validateName(PorterResponseMonitor monitor, Errors errors) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
-        if (!errors.hasFieldErrors("name")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 60);
-            // Check the monitor name does not contain any invalid characters as we use it in Violations Group
-            if (!DeviceGroupUtil.isValidName(monitor.getName())) {
-                errors.rejectValue("name", "yukon.web.error.deviceGroupName.containsIllegalChars");
-            }
-        }
-
-        boolean nameAvailable = !porterResponseMonitorDao.monitorExistsWithName(monitor.getName());
-        boolean idSpecified = monitor.getMonitorId() != null;
-
-        if (!nameAvailable) {
-            if (!idSpecified) {
-                // For create, we must have an available name
-                errors.rejectValue("name", "yukon.web.error.nameConflict");
-            } else {
-                // For edit, we can use our own existing name
-                PorterResponseMonitor existingDeviceDataMonitor =
-                    porterResponseMonitorDao.getMonitorById(monitor.getMonitorId());
-                if (!existingDeviceDataMonitor.getName().equals(monitor.getName())) {
-                    errors.rejectValue("name", "yukon.web.error.nameConflict");
-                }
-            }
-        }
-    }
-
     private <T> boolean containsDuplicates(List<T> list) {
         Set<T> set = new HashSet<T>(list);
         if (set.size() < list.size()) {
@@ -110,5 +93,4 @@ public class PorterResponseMonitorValidator extends SimpleValidator<PorterRespon
         }
         return false;
     }
-
 }

@@ -68,7 +68,7 @@
             <tags:nameValueContainer2>
             
                 <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" size="60" maxlength="60"/>
+                <tags:inputNameValue nameKey=".name" path="name" size="60" maxlength="60"/>
                 
                 <%-- device group --%>
                 <tags:nameValue2 nameKey=".deviceGroup">
@@ -174,7 +174,7 @@
             <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>
             <cti:button id="deleteButton" nameKey="delete" data-disable-group="actionButtons" classes="delete"
                         data-popup="#confirm-delete-monitor-popup"/>
-            <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${statusPointMonitor.statusPointMonitorName}"/>
+            <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${statusPointMonitor.name}"/>
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
             </cti:url>

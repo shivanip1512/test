@@ -26,7 +26,7 @@ public class MonitoringCountValidationProcessingUpdaterHandler implements Valida
         try {
             
             ValidationMonitor validationMonitor = validationMonitorDao.getById(validationMonitorId);
-            String groupName = validationMonitor.getDeviceGroupName();
+            String groupName = validationMonitor.getGroupName();
             
             DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
             int deviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
