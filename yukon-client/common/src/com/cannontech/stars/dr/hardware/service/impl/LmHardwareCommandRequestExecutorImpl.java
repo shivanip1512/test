@@ -76,7 +76,7 @@ public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRe
         CommandRequestRoute request = new CommandRequestRoute(command, routeId);
         CommandResultHolder result =
             commandRequestService.execute(request, DeviceRequestType.LM_HARDWARE_COMMAND, user);
-        if (result.isExceptionOccured()) {
+        if (result.isExceptionOccurred()) {
             throw new CommandCompletionException(result.getExceptionReason());
         }
     }

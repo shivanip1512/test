@@ -964,7 +964,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
 
         if( ! Cti::Database::executeCommand( updater, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
         {
-            return; // Error occured!
+            return; // Error occurred!
         }
     }
     else
@@ -986,7 +986,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
 
         if( ! Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
         {
-            return; // Error occured!
+            return; // Error occurred!
         }
 
         _insertDynamicDataFlag = false;

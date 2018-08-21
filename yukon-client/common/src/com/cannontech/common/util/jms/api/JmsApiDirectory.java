@@ -1006,7 +1006,7 @@ public final class JmsApiDirectory {
     public static JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
             JmsApi.builder(EcobeeAuthTokenRequest.class, EcobeeAuthTokenResponse.class)
             .name("Ecobee Auth Token")
-            .description("Sent from Service Manager and Webserver and recieved by Service manager to generate Ecobee Auth Token")
+            .description("Sent from Service Manager and Webserver and received by Service manager to generate Ecobee Auth Token")
             .communicationPattern(REQUEST_RESPONSE)
             .queue(new JmsQueue("yukon.ecobee.auth.token.EcobeeAuthTokenRequest"))
             .responseQueue(JmsQueue.TEMP_QUEUE)

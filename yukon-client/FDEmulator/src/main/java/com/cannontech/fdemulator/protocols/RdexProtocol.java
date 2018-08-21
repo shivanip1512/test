@@ -2027,7 +2027,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				{
 					case RDEX_NULL :
 
-						// Recieved a heartbeat message
+						// Received a heartbeat message
 						if (hbeat == true)
 						{
 							SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Heartbeat", 2));
@@ -2061,7 +2061,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 
 					case RDEX_ACK :
 
-						// Recieved ACK
+						// Received ACK
 						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Acknowledge", 2));
 						//System.out.println(getDebugTimeStamp() + "RDEX RECV: Acknowledge");
 						// Write message to traffic log file
@@ -2199,7 +2199,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		return;
 	}
 
-	// Write recieved message to point list file and traffic log file
+	// Write received message to point list file and traffic log file
 	public void writeToFile(String ftype, String fname, double fpoint)
 	{
 
@@ -2371,7 +2371,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				yukonFileWriter.write(ftype + ";" + fname + ";" + formattedPoint + LF);
 				yukonFileWriter.write("EOF" + LF);
 				yukonFileWriter.write("#TO CLEAR THIS FILE, DELETE ALL LINES UP T0 'EOF' LEAVING EOF AT THE TOP" + LF);
-				yukonFileWriter.write("#THIS IS LIST OF POINTS RECIEVED FROM YUKON, WHEN POINTS ARE RECIEVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
+				yukonFileWriter.write("#THIS IS LIST OF POINTS RECEIVED FROM YUKON, WHEN POINTS ARE RECEIVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
 				yukonFileWriter.write("#NEW ONES ARE APPENED TO THE BOTTOM OF THE LIST");
 				yukonFileWriter.flush();
 
@@ -2432,7 +2432,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 
 				yukonFileWriter.write("EOF" + LF);
 				yukonFileWriter.write("#TO CLEAR THIS FILE, DELETE ALL LINES UP T0 'EOF' LEAVING EOF AT THE TOP" + LF);
-				yukonFileWriter.write("#THIS IS LIST OF POINTS RECIEVED FROM YUKON, WHEN POINTS ARE RECIEVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
+				yukonFileWriter.write("#THIS IS LIST OF POINTS RECEIVED FROM YUKON, WHEN POINTS ARE RECEIVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
 				yukonFileWriter.write("#NEW ONES ARE APPENED TO THE BOTTOM OF THE LIST");
 				yukonFileWriter.flush();
 

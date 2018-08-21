@@ -252,7 +252,7 @@ public class DynamicBillingController {
             return messageSourceAccessor.getMessage("yukon.web.billing.nonUniqueFormatName");
         }
 
-        // returns a blank text view since to error occured.   
+        // returns a blank text view since to error occurred.   
         return null;
     }
 

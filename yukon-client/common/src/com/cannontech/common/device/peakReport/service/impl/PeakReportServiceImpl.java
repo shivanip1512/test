@@ -112,7 +112,7 @@ public class PeakReportServiceImpl implements PeakReportService {
 	            
 	            deviceError = sb.toString();
 	            
-        	} else if (commandResultHolder.isExceptionOccured()) {
+        	} else if (commandResultHolder.isExceptionOccurred()) {
         		
         		deviceError = commandResultHolder.getExceptionReason();
         	}

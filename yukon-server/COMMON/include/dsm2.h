@@ -24,7 +24,7 @@ IM_EX_CTIBASE LONG OutMessageCount();
 
 #pragma pack(push, message_packing, 1)
 
-/* Structure defintions */
+/* Structure definitions */
 enum  CtiSyncType_t
 {
   CtiEventType = 0,

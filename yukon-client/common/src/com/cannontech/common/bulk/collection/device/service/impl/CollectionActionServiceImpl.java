@@ -188,7 +188,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
      */
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
-        log.debug("Created new collecton action result:");
+        log.debug("Created new collection action result:");
         eventLogHelper.log(result);
         result.setLogger(log);
         result.log();

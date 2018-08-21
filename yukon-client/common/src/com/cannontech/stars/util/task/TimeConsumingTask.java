@@ -60,7 +60,7 @@ public abstract class TimeConsumingTask implements Runnable {
 	}
 	
 	/**
-	 * If there is an error occured, return a description of it.
+	 * If there is an error occurred, return a description of it.
 	 * Otherwise return null.
 	 */
 	public String getErrorMsg() {

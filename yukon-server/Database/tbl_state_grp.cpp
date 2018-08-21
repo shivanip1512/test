@@ -107,7 +107,7 @@ string CtiTableStateGroup::getRawState(LONG rawValue)
             // Try to insert. Return indicates success.
             auto resultpair = _stateMap.emplace( rawValue, mystate );
 
-            if(resultpair.second == true)   // Insertion occured
+            if(resultpair.second == true)   // Insertion occurred
             {
                 sit = resultpair.first;      // Iterator which points to the set entry.
             }

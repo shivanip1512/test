@@ -229,7 +229,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
                     + " from MACS Service for soeTag=" + soeTag + " [" + message + "]");
                 if (message instanceof Info) {
                     MacsException error = new MacsException(MACSExceptionType.PROCESSING_ERROR,
-                        description + " Recieved error from MACS Service: " + ((Info) message).getInfo());
+                        description + " Received error from MACS Service: " + ((Info) message).getInfo());
                     log.error(error);
                     throw error;
                 }
@@ -239,7 +239,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
                 if (stopWaiting) {
                     cachedMessages.remove(soeTag);
                     MacsException error = new MacsException(MACSExceptionType.NO_REPLY,
-                        description + " Response was not recieved from MACS Service.");
+                        description + " Response was not received from MACS Service.");
                     log.error(error);
                     throw error;
                 }

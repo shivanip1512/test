@@ -298,7 +298,7 @@ YukonError_t CTIOpen (PSZ         pszFileName,
 
          *pHf = NULL; // Most of the code expects this!
       }
-      return ClientErrors::Abnormal;    // Error of some sort occured! timeout or otherwise
+      return ClientErrors::Abnormal;    // Error of some sort occurred! timeout or otherwise
    }
 
    *pAction = 1;

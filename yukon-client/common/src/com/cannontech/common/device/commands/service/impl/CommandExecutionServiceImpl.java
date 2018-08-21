@@ -149,7 +149,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
                 }
 
                 @Override
-                public void processingExceptionOccured(String reason) {
+                public void processingExceptionOccurred(String reason) {
                     result.setExecutionExceptionText(reason);
                     collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
                 }
@@ -202,7 +202,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
                 YukonMessageSourceResolvable.createSingleCode("yukon.common.device.attributeRead.general.timeout");
             SpecificDeviceErrorDescription errorDesc = new SpecificDeviceErrorDescription(errorDescription, detail);
             callback.getErrors().add(errorDesc);
-            callback.processingExceptionOccured(error);
+            callback.processingExceptionOccurred(error);
             log.error(error, e);
         }
         return callback;
@@ -314,13 +314,13 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
             } catch (ConnectionException e) {
                 String error = "No porter connection.";
                 log.error(error, e);
-                callback.processingExceptionOccured(error);
+                callback.processingExceptionOccurred(error);
                 commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), params.getContextId(),
                     params.getType(), commandToSend, error, params.getUser());
                 completeRequestAndRemoveListeners(listener, FAILED, true);
             } catch (Exception e) {
                 log.error(buildLogString(execution), e);
-                callback.processingExceptionOccured(e.getMessage());
+                callback.processingExceptionOccurred(e.getMessage());
                 commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), params.getContextId(),
                     params.getType(), commandToSend, e.getMessage(), params.getUser());
                 completeRequestAndRemoveListeners(listener, FAILED, true);
@@ -385,7 +385,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
         int commandPriority =
             configurationSource.getInteger("OVERRIDE_PRIORITY_" + params.getType(), params.getPriority());
         if (!CommandPriority.isCommandPriorityValid(commandPriority)) {
-            log.warn("System has recieved a new priority for " + params.getType()
+            log.warn("System has received a new priority for " + params.getType()
                 + ", but cannot use the value because it is invalid.  The system will revert to using the default priority value until a valid priority is supplied.  Please fix the priority value and try again.");
         } else {
             params.overridePriority(commandPriority);

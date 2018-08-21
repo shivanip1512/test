@@ -145,9 +145,9 @@ public class DemandResetPlcServiceImpl implements DemandResetStrategyService {
         }
 
         @Override
-        public void processingExceptionOccured(String reason) {
+        public void processingExceptionOccurred(String reason) {
             log.debug("PLC exception (InitiatedCallback)" + " Reason:" + reason);
-            callback.processingExceptionOccured(reason);
+            callback.processingExceptionOccurred(reason);
         }
     }
 
@@ -182,10 +182,10 @@ public class DemandResetPlcServiceImpl implements DemandResetStrategyService {
         }
 
         @Override
-        public void processingExceptionOccured(String reason) {
+        public void processingExceptionOccurred(String reason) {
             log.debug("PLC exception (VerificationCallback)");
             log.debug("Reason:" + reason);
-            callback.processingExceptionOccured(reason);
+            callback.processingExceptionOccurred(reason);
         }
 
         @Override

@@ -87,7 +87,7 @@ int CtiConfigParameters::RefreshConfigParameters()
                                     processed.first
                                         did we get an acceptable value from the input.
                                             true  : unencrypted cparm or a correctly decrypted encrypted cparm
-                                            false : decryption error occured on an encrypted cparm
+                                            false : decryption error occurred on an encrypted cparm
                                     processed.second
                                         if processed.first is true the we have the cparm value - properly decrypted
                                             if it was encrypted.

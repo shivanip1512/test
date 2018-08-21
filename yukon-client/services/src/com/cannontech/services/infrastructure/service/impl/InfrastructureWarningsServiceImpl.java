@@ -80,7 +80,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             MasterConfigInteger.INFRASTRUCTURE_WARNING_MINIMUM_TIME_BETWEEN_RUNS, minimumTimeBetweenRuns);
         runFrequencyMinutes = configurationSource.getInteger(
             MasterConfigInteger.INFRASTRUCTURE_WARNING_RUN_FREQUENCY_MINUTES, runFrequencyMinutes);
-        log.info("Calculation for infastructure warnings will start " + minimumTimeBetweenRuns
+        log.info("Calculation for infrastructure warnings will start " + minimumTimeBetweenRuns
             + " minute(s) after the server is started and run every " + runFrequencyMinutes
             + " minute(s) with force refresh possible every " + minimumTimeBetweenRuns + " minute(s).");
         executor.scheduleAtFixedRate(calculationThread, minimumTimeBetweenRuns, runFrequencyMinutes, TimeUnit.MINUTES);

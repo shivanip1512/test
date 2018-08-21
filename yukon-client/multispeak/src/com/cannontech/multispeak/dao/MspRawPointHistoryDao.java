@@ -21,7 +21,7 @@ public interface MspRawPointHistoryDao {
      * @param readByValue
      * @param startDate - rph timestamp >= (inclusive)
      * @param endDate - rph timestamp <= (inclusive)
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *                  that meterNumber will still be included. Meaning meterRead[].length > maxRecords is possible).
      * @return MspMeterRead
@@ -36,7 +36,7 @@ public interface MspRawPointHistoryDao {
      * The readings will be grouped together such that there is only one MeterRead per meter
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValue
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *            that meterNumber will still be included. Meaning meterRead[].length > maxRecordsis possible).
      * @return MspMeterRead
@@ -51,7 +51,7 @@ public interface MspRawPointHistoryDao {
      * @param blockProcessService - service to use when defining type of block and how to load
      * @param startDate - rph timestamp >= (inclusive)
      * @param endDate - rph timestamp <= (inclusive)
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *            that meterNumber will still be included. Meaning meterRead[].length > maxRecords
      *            is possible). More specifically, maxRecords is equivalent
@@ -66,7 +66,7 @@ public interface MspRawPointHistoryDao {
     /**
      * Returns a FormattedBlock of type block.
      * @param blockProcessService - service to use when defining type of block and how to load
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *            that meterNumber will still be included. Meaning meterRead[].length > maxRecords
      *            is possible). More specifically, maxRecords is equivalent

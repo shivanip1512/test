@@ -172,7 +172,7 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
         }
 
         @Override
-        public void processingExceptionOccured(MessageSourceResolvable message) {
+        public void processingExceptionOccurred(MessageSourceResolvable message) {
             log.debug("RFN exception (RfnMeterDisconnectCallback)");
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);

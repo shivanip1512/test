@@ -199,7 +199,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
             if( Cti::Database::executeCommand( updater, CALLSITE ))
             {
-                _dirty = false; // No error occured!
+                _dirty = false; // No error occurred!
             }
         }
         else
@@ -221,7 +221,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             if( Cti::Database::executeCommand( dbInserter, CALLSITE, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
-                _dirty = false; // No error occured!
+                _dirty = false; // No error occurred!
             }
         }
     }

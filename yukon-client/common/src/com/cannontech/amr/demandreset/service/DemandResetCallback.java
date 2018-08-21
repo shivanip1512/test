@@ -96,7 +96,7 @@ public interface DemandResetCallback extends CollectionActionStrategyCompletionC
      * This method should be called if an error occurred that will
      * prevent the command from being sent to any devices (example: no porter connection)
      */
-    default void processingExceptionOccured(String reason) {
+    default void processingExceptionOccurred(String reason) {
         
     }
 }

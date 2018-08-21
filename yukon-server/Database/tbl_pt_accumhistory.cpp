@@ -85,7 +85,7 @@ bool CtiTablePointAccumulatorHistory::Update()
 
     setDirty(false);
     
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 bool CtiTablePointAccumulatorHistory::Insert()
@@ -108,7 +108,7 @@ bool CtiTablePointAccumulatorHistory::Insert()
 
     setDirty(false);
     
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 void CtiTablePointAccumulatorHistory::DecodeDatabaseReader(Cti::RowReader& rdr )

@@ -22,7 +22,7 @@ public class MasterConfigServerFactory implements FactoryBean<ConfigurationSourc
             boolean isRemoteVersionAvailable = remoteFile.canRead();
             if (isRemoteVersionAvailable) {
                 MasterConfigMap config = new MasterConfigMap(remoteFile);
-                log.info("Using remote configuation: " + remoteFileName);
+                log.info("Using remote configuration: " + remoteFileName);
                 return config;
             }
         } catch (Exception e) {

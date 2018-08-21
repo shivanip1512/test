@@ -192,7 +192,7 @@ public class BulkPointDataInjectionController {
         String errorMessage = injectionStatus.getErrorMessage();
         if (!StringUtils.isBlank(errorMessage)) {
             injectionStatusJson.put("hasError", true);
-            injectionStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
+            injectionStatusJson.put("errorMessage", "Error Occurred: " + errorMessage);
         }
 
         return injectionStatusJson;
@@ -354,7 +354,7 @@ public class BulkPointDataInjectionController {
         String errorMessage = rphSimulatorPointStatus.getErrorMessage();
         if (!StringUtils.isBlank(errorMessage)) {
             rphInjectionStatusJson.put("hasError", true);
-            rphInjectionStatusJson.put("errorMessage", "Error Occured: " + errorMessage);
+            rphInjectionStatusJson.put("errorMessage", "Error Occurred: " + errorMessage);
         }
 
         return rphInjectionStatusJson;

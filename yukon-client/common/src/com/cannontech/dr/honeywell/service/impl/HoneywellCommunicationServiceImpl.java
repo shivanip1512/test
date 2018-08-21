@@ -389,7 +389,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                     deviceId = (int) deviceMap.get("deviceID");
                 }
             } catch (IOException e) {
-                log.error("Error occured");
+                log.error("Error occurred");
             }
 
         } catch (RestClientException ex) {

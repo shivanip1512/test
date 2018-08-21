@@ -83,7 +83,7 @@ bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &con
 
     setDirty(false);
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 bool CtiTableDynamicPointAlarming::Update( Cti::Database::DatabaseConnection &conn )

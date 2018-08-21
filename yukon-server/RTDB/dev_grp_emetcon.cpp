@@ -162,7 +162,7 @@ YukonError_t CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
 
                     pRet->setStatus(ClientErrors::None);
                 }
-                else     // An error occured in the processing/communication
+                else     // An error occurred in the processing/communication
                 {
                     resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing control on route ") + CtiNumStr(Route->getRouteID());
                     pRet->setStatus(nRet);

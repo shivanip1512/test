@@ -23,7 +23,7 @@ public class WatchdogPorterClientConnection extends PorterClientConnection {
                 watcher.handleMessage(msg);
             }
         } else {
-            log.debug("Other recieved message:" + msg.toString());
+            log.debug("Other received message:" + msg.toString());
         }
     }
 

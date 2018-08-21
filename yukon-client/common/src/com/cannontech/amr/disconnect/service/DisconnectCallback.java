@@ -19,7 +19,7 @@ public interface DisconnectCallback extends CollectionActionStrategyCompletionCa
      * This method should be called if an error occurred that will
      * prevent the command from being sent to any devices (example: no porter connection)
      */
-    void processingExceptionOccured(String reason);
+    void processingExceptionOccurred(String reason);
 
     void success(DisconnectCommand state, SimpleDevice device, PointValueHolder value);
 

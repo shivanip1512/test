@@ -37,7 +37,7 @@ public class WaitableRfnUnicastCallback implements RfnUnicastCallback {
     }
     
     @Override
-    public void processingExceptionOccured(MessageSourceResolvable message) {
+    public void processingExceptionOccurred(MessageSourceResolvable message) {
         log.error(message);
     }
     

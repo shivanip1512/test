@@ -185,7 +185,7 @@ public class CapControlImportRequestEndpoint {
 				hierarchyResults.add(new HierarchyImportMissingDataResult(e.getMissingField()));
 			} catch (NotFoundException e) {
                 log.debug("Parent " + data.getParent() + " was not found for hierarchy object " + data.getName() +
-                        ". No import occured for this object.");
+                        ". No import occurred for this object.");
                 hierarchyResults.add(new HierarchyImportCompleteDataResult(data, HierarchyImportResultType.INVALID_PARENT));
 			}
 		}

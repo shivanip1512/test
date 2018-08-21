@@ -35,7 +35,7 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
             private boolean failed = false;
             private String errorMsg = "";
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 errorMsg = reason;
                 failed = true;
             }

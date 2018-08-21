@@ -1000,7 +1000,7 @@ public class AccountImportService {
                 if (importLog == null) {
                     try {
                         importLog = new PrintWriter(new FileWriter(logFile), true);
-                        importLog.println("Error Occured");
+                        importLog.println("Error Occurred");
                     } catch (IOException e1) {
                         CTILogger.error(e1);
                     }
@@ -1008,7 +1008,7 @@ public class AccountImportService {
 
                 // Could not open the file passing error writing.
                 if (!result.getErrors().isEmpty()) {
-                    importLog.println("Error Occured");
+                    importLog.println("Error Occurred");
                     if (result.getCustLines() != null) {
                         value = result.getCustLines().get(lineNo);
                         result.getCustLines().put(lineNo, value);

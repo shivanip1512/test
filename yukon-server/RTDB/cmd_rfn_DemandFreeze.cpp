@@ -370,7 +370,7 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
                 _freezeData.dayOfFreeze = tlvValue;
                 break;
             }
-            case TlvType_TimeLastDemandFreezeOccured:
+            case TlvType_TimeLastDemandFreezeOccurred:
             {
                 _freezeData.lastFreezeTime = tlvValue;
                 break;

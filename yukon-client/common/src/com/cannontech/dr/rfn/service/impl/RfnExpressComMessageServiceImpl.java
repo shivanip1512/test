@@ -66,7 +66,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
                 log.error(request.getRfnIdentifier() + " - unicast request failed", e);
                 MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.rfnExpressComMessage.error", e.toString());
-                callback.processingExceptionOccured(message);
+                callback.processingExceptionOccurred(message);
             }
 
             @Override
@@ -114,7 +114,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
                 log.error(request.getRfnIdentifier() + " - unicast request failed", e);
                 MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.rfnExpressComMessage.error", e.toString());
-                callback.processingExceptionOccured(message);
+                callback.processingExceptionOccurred(message);
             }
 
             @Override
@@ -232,8 +232,8 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         request.setRfnMessageClass(RfnMessageClass.DR);
         
         sendUnicastDataRequest(request, new RfnUnicastDataCallback() {
-            @Override public void processingExceptionOccured(MessageSourceResolvable message) {
-                delegateCallback.processingExceptionOccured(message);
+            @Override public void processingExceptionOccurred(MessageSourceResolvable message) {
+                delegateCallback.processingExceptionOccurred(message);
             }
             @Override public void complete() {
                 delegateCallback.complete();

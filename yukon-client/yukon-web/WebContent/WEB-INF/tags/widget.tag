@@ -23,7 +23,7 @@
 
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 
-<%-- AUTHORIZE VISIBLITY BASED ON ROLE/ROLE PROPERTY --%>
+<%-- AUTHORIZE VISIBILITY BASED ON ROLE/ROLE PROPERTY --%>
 <cti:checkUserChecker var="authorized" userChecker="${beanInst.roleAndPropertiesChecker}"/>
 
 <%-- Do not affect how widgets currently display on pages other than dashboards...widgets should still be hidden in this case --%>

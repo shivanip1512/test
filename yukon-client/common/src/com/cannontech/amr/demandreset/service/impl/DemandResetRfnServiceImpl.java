@@ -309,7 +309,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                 @Override
                 public void handleException(Exception e) {
                     callback
-                        .processingExceptionOccured("There was an error sending the command demand reset command for RFN devices.");
+                        .processingExceptionOccurred("There was an error sending the command demand reset command for RFN devices.");
 
                 }
 

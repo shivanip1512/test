@@ -34,7 +34,7 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
         try (Scanner scanner = new Scanner(request.getInputStream(), "ISO-8859-1").useDelimiter("\\A")) {
             body = scanner.hasNext() ? scanner.next() : "";
         } catch (IOException e) {
-            log.error("Error occured in fetching the payload content for the request", e);
+            log.error("Error occurred in fetching the payload content for the request", e);
         }
         payload = body;
     }

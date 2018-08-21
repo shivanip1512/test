@@ -211,10 +211,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 configurationMap.put(exportType, databaseTableTemplate);
 
             } catch (JDOMException e) {
-                log.error("An parsing error occured while parsing the " + configurationResource + 
+                log.error("An parsing error occurred while parsing the " + configurationResource + 
                 		" configuration file.", e);
             } catch (IOException e) {
-                log.error("An issue occured when trying to parse the " + configurationResource + 
+                log.error("An issue occurred when trying to parse the " + configurationResource + 
                 		" configuration file.", e);
             }
         }
@@ -1356,10 +1356,10 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             return firstLabelElement.getAttribute("name").getValue();
 
         } catch (JDOMException e) {
-            log.error("An parsing error occured while parsing the " + configurationXmlFile.getName() + 
+            log.error("An parsing error occurred while parsing the " + configurationXmlFile.getName() + 
             		" configuration file.", e);
         } catch (IOException e) {
-            log.error("An issue occured when trying to parse the " + configurationXmlFile.getName() + 
+            log.error("An issue occurred when trying to parse the " + configurationXmlFile.getName() + 
             		" configuration file.", e);
         }
         return null;

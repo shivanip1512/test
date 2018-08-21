@@ -190,7 +190,7 @@ void CtiTransdataApplication::reinitalize( void )
 }
 
 //=====================================================================================================================
-//passes the data recieved up to the next level
+//passes the data received up to the next level
 //=====================================================================================================================
 
 int CtiTransdataApplication::retrieveData( BYTE *data )

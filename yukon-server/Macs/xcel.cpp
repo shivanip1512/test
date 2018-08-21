@@ -130,7 +130,7 @@ bool isValidPMSILine( char* line, char &command, string &serialNum, string &prog
 
     for (int fieldNumber=0; fieldNumber < 41; fieldNumber++)
     {
-        // see if an error occured, might as well get out
+        // see if an error occurred, might as well get out
         if (retCode != false)
         {
             // get the next token

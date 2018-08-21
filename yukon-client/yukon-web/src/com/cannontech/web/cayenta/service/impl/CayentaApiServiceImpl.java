@@ -218,7 +218,7 @@ public class CayentaApiServiceImpl implements CayentaApiService {
 			        simpleHttpPostServiceFactory.getSimpleHttpPostService(url, port, userName, password);
 			
 			String resp = postService.postValue(postElementName, value);
-			log.debug("Recieved response: " + resp);
+			log.debug("Received response: " + resp);
 			return resp;
 		} catch (HttpException e) {
 			log.debug("Unable to communicate with Cayenta API server due to HttpException.", e);

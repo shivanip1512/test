@@ -62,7 +62,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         WaitableDataCallback<Map<RfnMetadata, Object>> waitableCallback = new WaitableDataCallback<Map<RfnMetadata, Object>>() {
             
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
+            public void processingExceptionOccurred(MessageSourceResolvable message) {
                 model.addAttribute("error", message);
             }
             

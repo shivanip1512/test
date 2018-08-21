@@ -96,7 +96,7 @@ public class FileLoader {
     }
     
     private void loadPaosAndPoints(ResourceLoader loader, Resource paoXsd, Resource pointsXsd) {
-        log.info("Loading device defintions.");
+        log.info("Loading device definitions.");
         Map<String, List<Point>> fileNameToPoints = new HashMap<>();
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         try {
@@ -118,7 +118,7 @@ public class FileLoader {
         } catch (IOException e) {
             throw new PaoConfigurationException("Unable to load resorces from " + classpath, e);
         }
-        log.info("Loading device defintions complete.");
+        log.info("Loading device definitions complete.");
     }
     
     private void validate(){

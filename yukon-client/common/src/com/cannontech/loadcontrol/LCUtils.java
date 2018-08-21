@@ -276,7 +276,7 @@ public class LCUtils {
 
     /**
      * Executes a batch of requests and waits for their corresponding responses.
-     * Return false if an error occured, else true.
+     * Return false if an error occurred, else true.
      * If programResp is null, false is returned.
      * 
      * @param lmReqs

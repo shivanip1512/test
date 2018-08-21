@@ -385,7 +385,7 @@ public class CapControlImportController {
                 }
             } catch (NotFoundException e) {
                 log.debug("Parent " + data.getParent() + " was not found for hierarchy object " 
-                        + data.getName() + ". No import occured for this object.");
+                        + data.getName() + ". No import occurred for this object.");
                 results.add(new HierarchyImportCompleteDataResult(data, HierarchyImportResultType.INVALID_PARENT));
             }
         }

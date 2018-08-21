@@ -557,7 +557,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
         {
             //nothing to do locally
         } else {
-            throw new RuntimeException("Recieved a message of an unknown type: " + msg.getClass() );
+            throw new RuntimeException("Received a message of an unknown type: " + msg.getClass() );
         }
         
         

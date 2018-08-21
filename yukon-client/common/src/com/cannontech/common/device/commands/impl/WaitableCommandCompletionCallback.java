@@ -107,8 +107,8 @@ public final class WaitableCommandCompletionCallback<T> extends CommandCompletio
     }
     
     @Override
-    public void processingExceptionOccured(String reason) {
-        delegate.processingExceptionOccured(reason);
+    public void processingExceptionOccurred(String reason) {
+        delegate.processingExceptionOccurred(reason);
     }
     
     @Override

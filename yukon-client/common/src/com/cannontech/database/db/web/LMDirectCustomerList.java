@@ -83,7 +83,7 @@ public static long[] getProgramIDs(long customerID, String dbAlias) {
 		SqlUtils.close(rset, pstmt, conn );
 	}
 
-	// An exception must have occured
+	// An exception must have occurred
 	return new long[0];
 }
 /**

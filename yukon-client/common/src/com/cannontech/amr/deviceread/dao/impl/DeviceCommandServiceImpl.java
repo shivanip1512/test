@@ -181,7 +181,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         }
 
         @Override
-        public void processingExceptionOccured(String reason) {
+        public void processingExceptionOccurred(String reason) {
             if (!isComplete) {
                 isComplete = true;
                 currentCallback.completeExecution(CommandRequestExecutionStatus.FAILED);
@@ -319,7 +319,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         private final Set<CommandRequestDevice> commandsToSend = new HashSet<>();
         private final int tryNumber;
         private final String scheduleName;
-        private boolean processingExceptionOccured= false;
+        private boolean processingExceptionOccurred= false;
 
         private final Set<CommandRequestDevice> failedCommands = new HashSet<>();
 
@@ -340,7 +340,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
 
         @Override
         public void complete() {
-            if (!processingExceptionOccured) {
+            if (!processingExceptionOccurred) {
                 if (log.isDebugEnabled()) {
                     log.debug("COMPLETE " + getLogDetails() + " sent commands=" + commandsToSend.size() + "  failed="
                         + failedCommands.size());
@@ -363,10 +363,10 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         }
 
         @Override
-        public void processingExceptionOccured(String reason) {
-            processingExceptionOccured = true;
-            log.error(getLogDetails() + " processingExceptionOccured=" + reason);
-            callback.processingExceptionOccured(reason);
+        public void processingExceptionOccurred(String reason) {
+            processingExceptionOccurred = true;
+            log.error(getLogDetails() + " processingExceptionOccurred=" + reason);
+            callback.processingExceptionOccurred(reason);
         }
 
         /**

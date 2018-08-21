@@ -1113,7 +1113,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 result.setExecutionExceptionText(reason);
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
             }
@@ -1506,7 +1506,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     
     private void processReceivedConfigSuccess(SimpleDevice device, ReportedDataStreamingConfig config,
             int requestSeqNumber) {
-        log.debug("Recieved a config success for device=" + device + " config=" + config);
+        log.debug("Received a config success for device=" + device + " config=" + config);
         if (config != null) {
             BehaviorReport reportedBehavior =
                 buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.CONFIRMED);
@@ -1517,7 +1517,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
     
     private void processReceivedConfigError(SimpleDevice device, ReportedDataStreamingConfig config,
             int requestSeqNumber,  SpecificDeviceErrorDescription error) {
-        log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription() + " config=" + config);
+        log.debug("Received a config error for device=" + device + " error=" + error.getDescription() + " config=" + config);
         
         if (config != null) {
             BehaviorReport report = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.FAILED);

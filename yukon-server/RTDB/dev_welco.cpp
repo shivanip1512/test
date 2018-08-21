@@ -766,7 +766,7 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
                          *  Basically the RTU tells you the current status (above) and provides a bit which
                          *   is set on the second (and subsequent) state change(s) since the last
                          *   status (or exception) report.  We know only that two or more changes have
-                         *   occured iff the Change Flag is set, so we'll just log a change in the
+                         *   occurred iff the Change Flag is set, so we'll just log a change in the
                          *   opposite direction and then the current state....
                          */
 

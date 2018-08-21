@@ -78,7 +78,7 @@ public class RfnMeterReadService {
             public void handleException(Exception e) {
                 log.error(rfnMeter + " - meter read failed", e);
                 MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.exception", e.getMessage());
-                callback.processingExceptionOccured(summary);
+                callback.processingExceptionOccurred(summary);
             }
 
             @Override
@@ -107,7 +107,7 @@ public class RfnMeterReadService {
                     callback.receivedDataError(dataReplyMessage.getReplyType());
                 } else if (!receivedIdentifier.equals(expectedIdentifier)) {
                     log.error("RFN identifier mismatch, received " + receivedIdentifier + " instead of " + expectedIdentifier);
-                    callback.processingExceptionOccured(
+                    callback.processingExceptionOccurred(
                             YukonMessageSourceResolvable.createSingleCodeWithArguments(
                                     "yukon.common.device.attributeRead.rfn.identifierMismatch", receivedIdentifier, expectedIdentifier));
                 } else {

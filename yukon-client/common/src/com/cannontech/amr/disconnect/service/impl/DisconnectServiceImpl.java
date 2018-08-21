@@ -141,7 +141,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 result.setExecutionExceptionText(reason);
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
             }
@@ -270,7 +270,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         }
 
         @Override
-        public void processingExceptionOccured(String reason) {
+        public void processingExceptionOccurred(String reason) {
             if (!isComplete) {
                 completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.FAILED);
                 result.setProcessingException(reason);

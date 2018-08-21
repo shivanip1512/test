@@ -41,7 +41,7 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
         @Override
         protected void processData(RfnDevice device, LocationResponse location) {
             if (log.isDebugEnabled()) {
-                log.debug("Recieved location for " + device.getName() + " " + device.getRfnIdentifier() + " "
+                log.debug("Received location for " + device.getName() + " " + device.getRfnIdentifier() + " "
                     + location);
             }
             PaoLocation paoLocation = paoLocationDao.getLocation(device.getPaoIdentifier().getPaoId());

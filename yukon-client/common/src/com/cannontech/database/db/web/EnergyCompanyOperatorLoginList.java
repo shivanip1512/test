@@ -79,7 +79,7 @@ public class EnergyCompanyOperatorLoginList extends DBPersistent {
             SqlUtils.close(rset, pstmt, conn);
         }
 
-        // An exception must have occured
+        // An exception must have occurred
         return -1;
     }
 

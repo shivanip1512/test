@@ -231,7 +231,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             dbPersistentDao.performDBChangeWithNoMsg(currentDevice, TransactionType.DELETE_PARTIAL);
         } catch (Exception e) {
             CTILogger.error(e);
-            CTILogger.info("*** An exception occured when trying to change type of " + currentDevice
+            CTILogger.info("*** An exception occurred when trying to change type of " + currentDevice
                 + ", action aborted.");
 
             return currentDevice;

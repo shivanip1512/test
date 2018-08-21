@@ -15,13 +15,13 @@ public interface BulkProcessorCallback<I,O> {
     /**
      * Method called when an object mapping exception occurs during processing
      * @param rowNumber 
-     * @param e - Exception that occured
+     * @param e - Exception that occurred
      */
     //public void receivedObjectMappingException(int rowNumber, ObjectMappingException e);
 
     /**
      * Method called when a processing exception occurs during processing
-     * @param e - Exception that occured
+     * @param e - Exception that occurred
      */
     public void receivedProcessingException(int rowNumber, I object, ProcessorCallbackException e);
 

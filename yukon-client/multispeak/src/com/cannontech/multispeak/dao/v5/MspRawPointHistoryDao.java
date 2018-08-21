@@ -35,7 +35,7 @@ public interface MspRawPointHistoryDao {
      * @param meterNbrs
      * @param startDate - rph timestamp >= (inclusive)
      * @param endDate - rph timestamp <= (inclusive)
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
      *        start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
      *        all results for
@@ -53,7 +53,7 @@ public interface MspRawPointHistoryDao {
      * 
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValue
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
      *        start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
      *        all results for
@@ -71,7 +71,7 @@ public interface MspRawPointHistoryDao {
      * @param blockProcessService - service to use when defining type of block and how to load
      * @param startDate - rph timestamp >= (inclusive)
      * @param endDate - rph timestamp <= (inclusive)
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
      *        start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
      *        all results for
@@ -90,7 +90,7 @@ public interface MspRawPointHistoryDao {
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param blockProcessService - service to use when defining type of block and how to load
      * @param meterNos
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
      *        start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
      *        all results for

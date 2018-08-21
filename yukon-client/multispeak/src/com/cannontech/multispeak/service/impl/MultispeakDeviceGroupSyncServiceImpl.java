@@ -170,7 +170,7 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
 				try {
 					mspObjectDao.getAllMspServiceLocations(mspVendor, callback);
 				} catch (Exception e) {
-					log.error("Error occured during MSP device group sync.", e);
+					log.error("Error occurred during MSP device group sync.", e);
 					progress.setException(e);
 				}
 			}

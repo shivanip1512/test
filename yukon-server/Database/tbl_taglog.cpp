@@ -94,7 +94,7 @@ bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
 
     setDirty(false);
     
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)

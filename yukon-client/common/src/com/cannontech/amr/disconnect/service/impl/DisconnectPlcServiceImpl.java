@@ -168,10 +168,10 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
         }
 
         @Override
-        public void processingExceptionOccured(String reason) {
+        public void processingExceptionOccurred(String reason) {
             log.debug("PLC exception (CommandCompletionCallback)");
             log.debug("Reason:" + reason);
-            callback.processingExceptionOccured(reason);
+            callback.processingExceptionOccurred(reason);
         }
 
         @Override

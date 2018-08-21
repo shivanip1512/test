@@ -136,7 +136,7 @@ public class LoadcontrolCache implements Observer {
                 customerBaseLine.put(customerID, pointID);
             }
         } catch (java.sql.SQLException e) {
-            CTILogger.debug("An error occured refreshing customerbaselines");
+            CTILogger.debug("An error occurred refreshing customerbaselines");
         } finally {
             try {
                 if (rset != null) {

@@ -268,7 +268,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
      * Helper method to retrieve a limited set of Meters
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValue corresponding value to be used with readBy
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - maximum number of meters to return.
      * @return
      */

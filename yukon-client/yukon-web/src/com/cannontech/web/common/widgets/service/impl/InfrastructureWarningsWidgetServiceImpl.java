@@ -109,7 +109,7 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
                     lastRunTime = request.getLastRunTime();
                     refreshWarnings = true;
                     refreshSummary = true;
-                    log.debug("Recieved Cache Refresh Request (InfrastructureWarningsRefreshRequest)" );
+                    log.debug("Received Cache Refresh Request (InfrastructureWarningsRefreshRequest)" );
                     log.debug("lastRunTime=" + lastRunTime.toDateTime().toString("MM/dd/yyyy HH:mm:ss"));
                     log.debug("nextRunTime=" + nextRunTime.toDateTime().toString("MM/dd/yyyy HH:mm:ss"));
                 }

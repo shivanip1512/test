@@ -44,7 +44,7 @@ public class FDTestPanelNotifier extends Observable
 	}
 
 	/** 
-	  * method used to set the action that has occured
+	  * method used to set the action that has occurred
 	  * 
 	  * @param int newAction from the static list of actions
 	  * 

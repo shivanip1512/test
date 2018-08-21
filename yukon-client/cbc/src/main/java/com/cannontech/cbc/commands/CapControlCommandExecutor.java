@@ -39,7 +39,7 @@ public class CapControlCommandExecutor {
                 try {
                     cache.getConnection().write(message);
                 } catch (ConnectionException e) {
-                    callback.processingExceptionOccured(e.getMessage());
+                    callback.processingExceptionOccurred(e.getMessage());
                     messageListener.removeListener();
                 }
                 
@@ -82,7 +82,7 @@ public class CapControlCommandExecutor {
             if (e.getMessage() instanceof CapControlServerResponse) {
                 CapControlServerResponse message = (CapControlServerResponse)e.getMessage();
                 if (message.getMessageId() == messageId) {
-                    callback.recievedResponse(message);
+                    callback.receivedResponse(message);
                     this.removeListener();
                 }
             }

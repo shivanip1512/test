@@ -228,7 +228,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
 
         outageConfig = ImmutableSetMultimap.copyOf(outageConfigTemp);
-        log.info("outage event configuation: " + outageConfig);
+        log.info("outage event configuration: " + outageConfig);
     }
 
     @Override
@@ -1582,8 +1582,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 }
 
                 @Override
-                public void processingExceptionOccured(String reason) {
-                    log.warn("processingExceptionOccured for odEvent " + reason);
+                public void processingExceptionOccurred(String reason) {
+                    log.warn("processingExceptionOccurred for odEvent " + reason);
                 }
             };
 
@@ -1888,8 +1888,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 }
 
                 @Override
-                public void processingExceptionOccured(String reason) {
-                    log.warn("processingExceptionOccured for cdEvent " + reason);
+                public void processingExceptionOccurred(String reason) {
+                    log.warn("processingExceptionOccurred for cdEvent " + reason);
                 }
             };
 
@@ -1923,8 +1923,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
 
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
-                log.warn("rfn " + meter + " processingExceptionOccured for cdEvent " + getMessageText(message));
+            public void processingExceptionOccurred(MessageSourceResolvable message) {
+                log.warn("rfn " + meter + " processingExceptionOccurred for cdEvent " + getMessageText(message));
             }
 
             @Override

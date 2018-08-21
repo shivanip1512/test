@@ -250,7 +250,7 @@ int CtiHayesModem::setAutoAnswerRingCount(  int num )  /* Tag: Modem public */
  *
  *  RETURNS
  *
- *   A Greenleaf status code if an error occured.  Otherwise it returns
+ *   A Greenleaf status code if an error occurred.  Otherwise it returns
  *   the numeric value in register 1.
  *
  *  AUTHOR
@@ -1725,7 +1725,7 @@ int  CtiHayesModem::sendStringNoWait(  const char *str, int termination_sequence
  *
  *  RETURNS
  *
- *   A Greenleaf status code, if an error occured.  Otherwise this function
+ *   A Greenleaf status code, if an error occurred.  Otherwise this function
  *   will return the status register value that came back from the modem.
  *
  *  AUTHOR
@@ -1811,7 +1811,7 @@ int  CtiHayesModem::getRegister(  int num )  /* Tag: Modem public */
  *
  *  RETURNS
  *
- *   A status code, if an error occured.  Otherwise this function
+ *   A status code, if an error occurred.  Otherwise this function
  *   will return the number of milliseconds left in the timeout.
  *
  *  AUTHOR

@@ -3033,7 +3033,7 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
     dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
     CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 // Updates the yukonpaobject table with the paoid and disable flag given.

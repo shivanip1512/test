@@ -67,7 +67,7 @@ public class ExportDatabaseMigrationStatus implements Completable, ExceptionStat
     }
 
     @Override
-    public boolean isExceptionOccured() {
+    public boolean isExceptionOccurred() {
         return StringUtils.isNotBlank(error);
     }
 }

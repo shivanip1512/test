@@ -21,7 +21,7 @@ public class WatchdogLoadManagementClientConnection extends LoadControlClientCon
         if (msg instanceof LMControlAreaMsg || msg instanceof LMControlAreaChanged) {
             watcher.handleMessage(msg);
         } else {
-            log.debug("Other recieved message:" + msg.toString());
+            log.debug("Other received message:" + msg.toString());
         }
     }
 

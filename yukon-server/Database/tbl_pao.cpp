@@ -246,7 +246,7 @@ bool CtiTblPAO::Insert()
 
     setDirty(false);
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 bool CtiTblPAO::Update()
@@ -283,7 +283,7 @@ bool CtiTblPAO::Update()
 
     setDirty(false);
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 bool CtiTblPAO::Delete()

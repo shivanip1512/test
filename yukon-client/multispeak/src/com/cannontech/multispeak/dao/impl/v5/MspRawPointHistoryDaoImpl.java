@@ -349,7 +349,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
      * 
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValues corresponding values to be used with readBy (this parameter is used with METER_NUMBERS)
-     * @param lastReceived - Results are retrieved for meterNumber > lastRecieved. LastReceived == null means start from beginning.
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - This parameter is used with lastReceived (maximum number of meters to return)
      * @return
      */

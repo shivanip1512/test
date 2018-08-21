@@ -162,7 +162,7 @@ public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde)
 			
 			dtde.getDropTargetContext().dropComplete( true );
 
-			//tell any listeners that a drop occured
+			//tell any listeners that a drop occurred
 			fireDrop_actionPerformed(new java.util.EventObject(this));
 		}
 		else

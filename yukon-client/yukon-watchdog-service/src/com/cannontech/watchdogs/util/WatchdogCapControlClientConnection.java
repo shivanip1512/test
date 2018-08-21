@@ -29,7 +29,7 @@ public class WatchdogCapControlClientConnection extends CapControlClientConnecti
             || msg instanceof VoltageRegulatorFlagMessage) {
             watcher.handleMessage(msg);
         } else {
-            log.debug("Other recieved message:" + msg.toString());
+            log.debug("Other received message:" + msg.toString());
         }
     }
 

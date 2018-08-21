@@ -48,7 +48,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         String refHeader = request.getHeader("Referer");
         if (refHeader == null) {
             log.error("Missing referer header field for" + request.getRequestURL());
-            throw new SecurityException("Missing referer header field for" + request.getRequestURL());
+            throw new SecurityException("Missing referer header field for " + request.getRequestURL());
         }
         String host = null;
         try {
@@ -67,7 +67,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         try (Scanner scanner = new Scanner(request.getInputStream(), "ISO-8859-1").useDelimiter("\\A")) {
             payload = scanner.hasNext() ? scanner.next() : "";
         } catch (IOException e) {
-            log.error("Error occured in fetching the payload content for the request", e);
+            log.error("Error occurred in fetching the payload content for the request", e);
         }
         requestToken = getTokenFromRequest(request);
         if (ServletUtil.isAjaxRequest(request)) {
@@ -79,7 +79,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
                     String stringify = JsonUtils.toJson(mapValue);
                     requestToken = JsonUtils.fromJson(stringify, JsonUtils.STRING_TYPE);
                 } catch (IOException e) {
-                    log.error("Error occured in fetching the CSRF token from the request", e);
+                    log.error("Error occurred in fetching the CSRF token from the request", e);
                 }
             }
         }

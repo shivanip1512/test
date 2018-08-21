@@ -53,7 +53,7 @@ public abstract class MessageAutoSerializationTestBase extends MessageSerializat
 
                 SerializationResult encodingResult = messageFactory.encodeMessage(expected);
                 if (!encodingResult.isValid()) {
-                    result.addError("Serialization error occured : " +
+                    result.addError("Serialization error occurred : " +
                                     ValidationHelper.getCauseTrace(encodingResult.getException()));
                     return result;
                 }

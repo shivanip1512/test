@@ -18,8 +18,8 @@ import com.cannontech.util.ServletUtil;
  * @author snebben
  *
  * Class used to return a small collection of summary data.
- * Makes data easily accesible in web pages.
- * Contains an action, the number of times the action occured and the maximum timestamp of occurance. 
+ * Makes data easily accessible in web pages.
+ * Contains an action, the number of times the action occurred and the maximum timestamp of occurrence. 
  */
 public class ActivityLogSummary
 {

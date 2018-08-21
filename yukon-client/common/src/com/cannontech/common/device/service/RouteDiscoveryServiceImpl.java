@@ -101,7 +101,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     CommandCompletionCallback<CommandRequestRouteAndDevice> callback = new CommandCompletionCallback<CommandRequestRouteAndDevice>() {
 
                         @Override
-                        public void processingExceptionOccured(String reason) {
+                        public void processingExceptionOccurred(String reason) {
                         
                     		runCallbackWithNull(state, "Processing exception: " + reason, deviceLogStr, "", null);
                     	}
@@ -122,7 +122,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                                 log.debug("Command " + commandString + " failed." + routeLogStr + deviceLogStr);
 
                                 // error 54 means device does not exist, which likely means porter hasn't
-                                // recieved the dbupdate msg for it yet, will try same route again
+                                // received the dbupdate msg for it yet, will try same route again
                                 if (errorCode == 54 && currentAttemptCount < MAX_ROUTE_RETRY) {
 
                                     state.setAttemptCount(currentAttemptCount + 1);

@@ -97,7 +97,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     @PostConstruct
     public void init() {
 
-        log.info("Waiting " + MINUTES_TO_WAIT_TO_START_CALCULATION + " minutes to recalcutate");
+        log.info("Waiting " + MINUTES_TO_WAIT_TO_START_CALCULATION + " minutes to recalculate");
 
         scheduledExecutorService.schedule(() -> {
             try {

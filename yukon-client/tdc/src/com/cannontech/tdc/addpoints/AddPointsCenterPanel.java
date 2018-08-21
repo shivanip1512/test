@@ -70,7 +70,7 @@ public void drop_actionPerformed(java.util.EventObject newEvent)
 	//just act like a user pressed the add button
 	//fireAddButtonAction_actionPerformed( new java.util.EventObject(this) );
 	
-	System.out.println("   drop_actionPerformed() occured int CenterPanel");
+	System.out.println("   drop_actionPerformed() occurred int CenterPanel");
 }
 
 

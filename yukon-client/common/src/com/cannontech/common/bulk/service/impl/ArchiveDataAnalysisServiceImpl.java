@@ -169,7 +169,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
             }
             
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 result.processingExceptionOccurred(reason);
             }
         };

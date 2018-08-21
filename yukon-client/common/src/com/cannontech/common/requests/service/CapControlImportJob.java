@@ -124,7 +124,7 @@ public abstract class CapControlImportJob implements YukonJob {
                     hierarchyImportResults.add(new HierarchyImportMissingDataResult(e.getMissingField()));
                 } catch (NotFoundException e) {
                     log.debug("Parent " + hierarchyImportData.getParent() + " was not found for hierarchy object " + 
-                              hierarchyImportData.getName() + ". No import occured for this object.");
+                              hierarchyImportData.getName() + ". No import occurred for this object.");
                     HierarchyImportCompleteDataResult result = 
                             new HierarchyImportCompleteDataResult(hierarchyImportData, 
                                                                   HierarchyImportResultType.INVALID_PARENT);

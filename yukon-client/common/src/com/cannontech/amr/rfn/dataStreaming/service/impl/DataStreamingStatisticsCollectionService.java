@@ -29,20 +29,20 @@ public class DataStreamingStatisticsCollectionService {
             log.debug("Not scheduling gateway statistics collection");
             return;
         }
-        log.info("Scheduling gateway statistics collecton to run every hour.");
+        log.info("Scheduling gateway statistics collection to run every hour.");
         scheduledExecutor.scheduleAtFixedRate(() -> {
             try {
-                log.info("Starting gateway statistics collecton.");
+                log.info("Starting gateway statistics collection.");
                 dataStreamingCommunicationService.getGatewayInfo(rfnGatewayService.getAllGateways(), true);
-                log.info("Finished gateway statistics collecton.");
+                log.info("Finished gateway statistics collection.");
             } catch (DataStreamingConfigException e) {
                 if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
                     log.info("Data Streaming Simulator is not started, gateway statistics collection is not available.");
                 } else {
-                    log.error("Error accured during gateway statistics collection", e);
+                    log.error("Error occurred during gateway statistics collection", e);
                 }
             } catch (Exception e) {
-                log.error("Error accured during gateway statistics collection", e);
+                log.error("Error occurred during gateway statistics collection", e);
             }
         }, 0, 1, TimeUnit.HOURS);
     }

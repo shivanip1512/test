@@ -355,7 +355,7 @@ typedef struct {
 int DCLFUNTYPE DnaClientGetStatus(const char  *service_name, DNACSB  *sb);
 
 #define DNACLIENT_S_INIT      0 /* not yet accessed */
-#define DNACLIENT_S_OK        1 /* successful communications has occured */
+#define DNACLIENT_S_OK        1 /* successful communications has occurred */
 #define DNACLIENT_S_CONNECTED 2 /* in table but no communications attempted */
 #define DNACLIENT_S_OOS       3 /* service is shut down */
 #define DNACLIENT_S_FAILED    4 /* service is failed */

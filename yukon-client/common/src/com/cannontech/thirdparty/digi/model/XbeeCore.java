@@ -3,7 +3,7 @@ package com.cannontech.thirdparty.digi.model;
 import org.joda.time.Instant;
 
 /**
- * Class to represent the data recieved from digi about the EndPoints it knows about.
+ * Class to represent the data received from digi about the EndPoints it knows about.
  */
 public class XbeeCore {
 

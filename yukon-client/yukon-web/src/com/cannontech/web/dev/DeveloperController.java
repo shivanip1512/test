@@ -113,7 +113,7 @@ public class DeveloperController {
                     }
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                log.warn("DBChange development tool was not setup properly. Unexpected error occured. ", e);
+                log.warn("DBChange development tool was not setup properly. Unexpected error occurred. ", e);
             }
         }
         databaseFields = ImmutableMap.copyOf(mutableDatabaseFields);

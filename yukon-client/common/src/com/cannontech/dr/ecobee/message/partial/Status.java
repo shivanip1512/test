@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This status object is included in most responses from the Ecobee API.
- * @param code A code of 0 indicates a successfuly operation. Any other code is an error code.
+ * @param code A code of 0 indicates a successful operation. Any other code is an error code.
  * @param message Additional error details.
  * @see EcobeeStatusCode
  */

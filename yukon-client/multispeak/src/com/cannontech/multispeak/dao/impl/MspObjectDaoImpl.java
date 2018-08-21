@@ -430,7 +430,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (response != null) {
                 meters = response.getGetMetersByFacilityIDResult().getMeter();
             } else {
-                log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
             }
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - getMspMetersByFacilityId (" + mspVendor.getCompanyName()
@@ -455,7 +455,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (response != null) {
                 meters = response.getGetMeterByAccountNumberResult().getMeter();
             } else {
-                log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
             }
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - getMspMetersByAccountNumber (" + mspVendor.getCompanyName()
@@ -479,7 +479,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (response != null) {
                 meters = response.getGetMeterByCustIDResult().getMeter();
             } else {
-                log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
             }
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - getMspMetersByCustId (" + mspVendor.getCompanyName()

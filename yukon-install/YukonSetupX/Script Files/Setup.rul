@@ -634,7 +634,7 @@ begin
 	StatusUpdate( ON, 100 );
     // Uninstall
 	nResult = FeatureTransferData( MEDIA );
-    // Handle move data error and abort if error occured.
+    // Handle move data error and abort if error occurred.
 	if( nResult < ISERR_SUCCESS ) then
 		OnComponentError();
 		abort;

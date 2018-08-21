@@ -2413,7 +2413,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		}
     
     		if( i == 25 ) {
-    			CTILogger.info("		** TimeOut occured while waiting for our ScriptEditor screen to become Visible.");
+    			CTILogger.info("		** TimeOut occurred while waiting for our ScriptEditor screen to become Visible.");
     			return;
     		}
     	}
@@ -2480,7 +2480,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	//so we NOT the result which is from a retry script, one that is a read once type script 
         getRetryPanel().setVisible(!ScriptTemplateTypes.isRetryTemplate(templateType));
     
-        CTILogger.info("Set TemplateType, component visiblity updated.");
+        CTILogger.info("Set TemplateType, component visibility updated.");
     }
     
     private void setIED300AreaVisible(boolean visible){

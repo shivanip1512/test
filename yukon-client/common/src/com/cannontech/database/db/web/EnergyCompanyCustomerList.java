@@ -67,7 +67,7 @@ public class EnergyCompanyCustomerList extends DBPersistent {
             }
         }
 
-        // An exception must have occured
+        // An exception must have occurred
         return new long[0];
     }
 

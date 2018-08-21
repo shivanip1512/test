@@ -152,14 +152,14 @@ public class GpuffMessageMux {
                                 UDPGpuffAddress src = new UDPGpuffAddress(pkt.getAddress(), pkt.getPort(), 0);                                
                                 UDPGpuffAddress targ = replyNATMap.get(src);  // This should be my target???
                                 if(targ != null) {
-                                    log.info("Reply recieved from: " + pkt.getAddress() + ":" + pkt.getPort() + ". Repeating to to " + targ.getAddress() + ":" + targ.getPort());                                    
+                                    log.info("Reply received from: " + pkt.getAddress() + ":" + pkt.getPort() + ". Repeating to to " + targ.getAddress() + ":" + targ.getPort());                                    
                                     sendPacket(pkt.getData(), pkt.getLength(), targ.getAddress(), targ.getPort());
                                     replyNATMap.clear();
                                 } else {
                                     gpProt.decode();  //Decode the UDP packet if it is GPUFF.
                                     
                                     if(gpProt.isAckResponseBit()) {
-                                        log.info("ACK Reply recieved from: " + pkt.getAddress() + ":" + pkt.getPort() + ".  Another responder has already acknowledged the device (replyNAT was cleared).");
+                                        log.info("ACK Reply received from: " + pkt.getAddress() + ":" + pkt.getPort() + ".  Another responder has already acknowledged the device (replyNAT was cleared).");
                                     } else if (gpProt.isGpuffACKwithACKRequest()) {
                                         // This packet is an ACK with an ACK Request.  Log it as an error.
                                         log.warn("ERR ACK+ACK req rec: " + pkt.getAddress() + ":" + pkt.getPort() + " [" + pkt.getLength() + "] bytes (IGNORE)." + gpProt.toHexString());

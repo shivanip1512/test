@@ -27,5 +27,5 @@ public interface DataStreamingConfigCallback {
         return false;
     }
 
-    void processingExceptionOccured(String reason);
+    void processingExceptionOccurred(String reason);
 }

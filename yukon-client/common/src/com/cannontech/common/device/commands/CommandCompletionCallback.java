@@ -23,7 +23,7 @@ public abstract class CommandCompletionCallback<T> {
 
     /**
      * Either this or receivedLastError will get called for each command exactly once,
-     * unless a processingExceptionOccured happens, in which case it may not get called at all.
+     * unless a processingExceptionOccurred happens, in which case it may not get called at all.
      */
     public void receivedLastResultString(T command, String value) {
 
@@ -46,7 +46,7 @@ public abstract class CommandCompletionCallback<T> {
     /**
      * Called when an exception occurs during the processing. May get called multiple times before complete().
      */
-    public void processingExceptionOccured(String reason) {
+    public void processingExceptionOccurred(String reason) {
 
     }
 

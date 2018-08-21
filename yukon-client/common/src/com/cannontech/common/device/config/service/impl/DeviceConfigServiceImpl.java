@@ -101,7 +101,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 }
 
                 @Override
-                public void processingExceptionOccured(String reason) {
+                public void processingExceptionOccurred(String reason) {
                     result.setExecutionExceptionText(reason);
                     collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
                 }
@@ -252,7 +252,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 }
 
                 @Override
-                public void processingExceptionOccured(String reason) {
+                public void processingExceptionOccurred(String reason) {
                     result.setExecutionExceptionText(reason);
                     collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
                 }

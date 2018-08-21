@@ -14,10 +14,10 @@ import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipation
 
 public interface RecentEventParticipationService {
     /**
-     * Update device status (({@link ControlEventDeviceStatus}, deviceRecievedTime)) for which response is
+     * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
      * received.
      */
-    public void updateDeviceControlEvent(int eventId, int deviceId, EventPhase eventPhase, Instant deviceRecievedTime);
+    public void updateDeviceControlEvent(int eventId, int deviceId, EventPhase eventPhase, Instant deviceReceivedTime);
 
     /**
      * Creates new control event associated with the specified load program & group

@@ -1094,7 +1094,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     .write("#TO CLEAR THIS FILE, DELETE ALL LINES UP T0 'EOF' LEAVING EOF AT THE TOP"
                            + LF);
                 yukonFileWriter
-                    .write("#THIS IS LIST OF POINTS RECIEVED FROM YUKON, WHEN POINTS ARE RECIEVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
+                    .write("#THIS IS LIST OF POINTS RECEIVED FROM YUKON, WHEN POINTS ARE RECEIVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
                 yukonFileWriter.write("#NEW ONES ARE APPENED TO THE BOTTOM OF THE LIST");
                 yukonFileWriter.flush();
 
@@ -1146,7 +1146,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     .write("#TO CLEAR THIS FILE, DELETE ALL LINES UP T0 'EOF' LEAVING EOF AT THE TOP"
                            + LF);
                 yukonFileWriter
-                    .write("#THIS IS LIST OF POINTS RECIEVED FROM YUKON, WHEN POINTS ARE RECIEVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
+                    .write("#THIS IS LIST OF POINTS RECEIVED FROM YUKON, WHEN POINTS ARE RECEIVED OLD ONES ARE REWRITTEN WITH NEW VALUES");
                 yukonFileWriter.write("#NEW ONES ARE APPENED TO THE BOTTOM OF THE LIST");
                 yukonFileWriter.flush();
 

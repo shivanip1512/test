@@ -150,7 +150,7 @@ void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& con
 
             if( Cti::Database::executeCommand( updater, CALLSITE ))
             {
-                _dirty = false; // No error occured!
+                _dirty = false; // No error occurred!
             }
         }
         else
@@ -168,7 +168,7 @@ void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& con
             if( Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
-                _dirty = false; // No error occured!
+                _dirty = false; // No error occurred!
             }
         }
     }

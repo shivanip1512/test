@@ -20,7 +20,7 @@ public class WatchdogMACSConnection extends ServerMACSConnection {
         if (msg instanceof Schedule) {
             watcher.handleMessage(msg);
         } else {
-            log.debug("Other recieved message:" + msg.toString());
+            log.debug("Other received message:" + msg.toString());
         }
     }
 }

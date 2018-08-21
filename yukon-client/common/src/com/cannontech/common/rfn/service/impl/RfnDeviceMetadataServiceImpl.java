@@ -29,7 +29,7 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
 
     private static final String commsError =
         "Unable to send request due to a communication error between Yukon and Network Manager.";
-    private static final String nmError = "Recieved error from Network Manager.";
+    private static final String nmError = "Received error from Network Manager.";
         
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceMetadataServiceImpl.class);
 
@@ -61,19 +61,19 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
             public void handleException(Exception e) {
                 MessageSourceResolvable message = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(keyPrefix + "error", e.toString());
-                callback.processingExceptionOccured(message);
+                callback.processingExceptionOccurred(message);
             }
 
             @Override
             public void handleReply(RfnMetadataResponse reply) {
                 if (!reply.isSuccess()) {
-                    log.debug("Recieved unsuccessful meta-data response " + reply);
+                    log.debug("Received unsuccessful meta-data response " + reply);
                     /* Request failed */
                     MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments(keyPrefix + "error", reply.getReplyType());
                     callback.receivedDataError(message);
                 } else {
-                    log.debug("Recieved successful meta-data response " + reply);
+                    log.debug("Received successful meta-data response " + reply);
                     callback.receivedData(reply.getMetadata());
                 }
             }

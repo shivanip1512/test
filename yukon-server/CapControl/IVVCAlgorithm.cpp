@@ -3903,7 +3903,7 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
 
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CTILOG_DEBUG(dout, "IVVC Algorithm: Analysing Point Data Request Results.");
+        CTILOG_DEBUG(dout, "IVVC Algorithm: Analyzing Point Data Request Results.");
     }
 
     const Cti::CapControl::Phase phases[] =

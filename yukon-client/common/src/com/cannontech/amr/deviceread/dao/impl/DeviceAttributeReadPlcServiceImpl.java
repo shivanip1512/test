@@ -95,7 +95,7 @@ public class DeviceAttributeReadPlcServiceImpl implements DeviceAttributeReadStr
                 }
 
                 @Override
-                public void processingExceptionOccured(String reason) {
+                public void processingExceptionOccurred(String reason) {
                     DeviceErrorDescription errorDescription =
                         deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
                     MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments(

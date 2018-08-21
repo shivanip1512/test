@@ -23,7 +23,7 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
 
     private ApplianceDaoMock applianceDao;
     private CustomerAccountDaoMock customerAccountDao;
-    /*package visiblity*/ EnrollmentDaoMock enrollmentDao;
+    /*package visibility*/ EnrollmentDaoMock enrollmentDao;
     private ProgramEnrollmentServiceMock programEnrollmentService;
 
     public EnrollmentHelperEndpointServiceMock() throws Exception {

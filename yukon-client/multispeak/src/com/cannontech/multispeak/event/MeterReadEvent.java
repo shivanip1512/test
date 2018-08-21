@@ -96,7 +96,7 @@ public class MeterReadEvent extends MultispeakEvent {
                                                                                  responseErrorObjects);
               }
           } else {
-              CTILogger.info("Response not recieved (or is null) for (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead().getObjectID());
+              CTILogger.info("Response not received (or is null) for (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead().getObjectID());
           }
         } catch (MultispeakWebServiceClientException e) {
             CTILogger.error("TargetService: " + getResponseUrl() + " - ReadingChangedNotification ("

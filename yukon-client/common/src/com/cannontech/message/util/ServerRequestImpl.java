@@ -31,7 +31,7 @@ import com.cannontech.yukon.IServerConnection;
  *  	// good response
  *  }
  *  else { 
- * 	    // some type of error occured
+ * 	    // some type of error occurred
  *  }
  * 
  *  LMManualControlResponse lmResp = (LMManualControlResponse) responseMsg.getPayload();

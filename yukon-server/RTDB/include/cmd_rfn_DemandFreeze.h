@@ -33,7 +33,7 @@ public:
     enum TlvType
     {
         TlvType_ScheduledDayOfDemandFreeze  = 0x01,
-        TlvType_TimeLastDemandFreezeOccured = 0x02,
+        TlvType_TimeLastDemandFreezeOccurred = 0x02,
 
         TlvType_FrozenDeliveredPeakDemandTotal      = 0x03,
         TlvType_FrozenDeliveredPeakDemandTime       = 0x04,

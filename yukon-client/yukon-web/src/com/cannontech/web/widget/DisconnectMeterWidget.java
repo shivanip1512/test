@@ -175,7 +175,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             }
             
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
+            public void processingExceptionOccurred(MessageSourceResolvable message) {
                 errors.add(new SpecificDeviceErrorDescription(errorDescription, message));
             }
 

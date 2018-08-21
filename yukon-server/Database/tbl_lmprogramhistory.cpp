@@ -104,7 +104,7 @@ bool CtiTableLMProgramHistory::Insert()
         return false;
     }
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 // Get the next program id from local store or the database

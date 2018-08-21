@@ -54,7 +54,7 @@
  * (STAT) Status Codes
  */
 
-#define  ALPHA_AUTOREAD_OCCURED  0x80
+#define  ALPHA_AUTOREAD_OCCURRED  0x80
 #define  ALPHA_SEASON_CHANGE     0x40
 #define  ALPHA_POWER_FAIL        0x20
 #define  ALPHA_GENERAL_ALARM     0x10

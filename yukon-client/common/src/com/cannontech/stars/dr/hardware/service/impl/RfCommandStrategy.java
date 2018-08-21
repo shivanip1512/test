@@ -121,7 +121,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
         } else {
             rfnExpressComMessageService.sendUnicastRequest(request, new RfnUnicastCallback() {
                 @Override
-                public void processingExceptionOccured(MessageSourceResolvable message) {
+                public void processingExceptionOccurred(MessageSourceResolvable message) {
                     log.error("Unable to send " + parameters.getType() + ": " + message);
                 }
 
@@ -131,12 +131,12 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
 
                 @Override
                 public void receivedStatus(RfnExpressComUnicastReplyType replyType) {
-                    log.debug(String.format("Recieved status %s for %s", replyType, parameters.getType()));
+                    log.debug(String.format("Received status %s for %s", replyType, parameters.getType()));
                 }
 
                 @Override
                 public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {
-                    log.debug(String.format("Recieved status error %s for %s", replyType, parameters.getType()));
+                    log.debug(String.format("Received status error %s for %s", replyType, parameters.getType()));
                 }
             });
         }
@@ -152,7 +152,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
         WaitableRfnUnicastCallback waitableCallback = new WaitableRfnUnicastCallback(new RfnUnicastCallback() {
 
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
+            public void processingExceptionOccurred(MessageSourceResolvable message) {
                 resultMap.put("success", false);
                 resultMap.put("message", "Unable to send command");
                 log.error("Unable to send " + parameters.getType() + ": " + message);
@@ -163,7 +163,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
                 boolean success = status == RfnExpressComUnicastReplyType.OK ? true : false;
                 resultMap.put("success", success);
                 if (!success) {
-                    log.debug(String.format("Recieved status %s for %s", status, parameters.getType()));
+                    log.debug(String.format("Received status %s for %s", status, parameters.getType()));
                     resultMap.put("message", status);
                 }
             }
@@ -172,7 +172,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
             public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {
                 resultMap.put("success", false);
                 resultMap.put("message", replyType);
-                log.debug(String.format("Recieved status error %s for %s", replyType, parameters.getType()));
+                log.debug(String.format("Received status error %s for %s", replyType, parameters.getType()));
             }
 
             @Override

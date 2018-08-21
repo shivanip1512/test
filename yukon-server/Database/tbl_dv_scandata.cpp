@@ -204,7 +204,7 @@ bool CtiTableDeviceScanData::Update(Cti::Database::DatabaseConnection &conn)
 
     setDirty(false);
     
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 bool CtiTableDeviceScanData::Update()
@@ -241,7 +241,7 @@ bool CtiTableDeviceScanData::Insert()
 
     setDirty(false);
     
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 void CtiTableDeviceScanData::DecodeDatabaseReader(Cti::RowReader& rdr )

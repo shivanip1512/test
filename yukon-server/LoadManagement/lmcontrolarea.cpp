@@ -2533,7 +2533,7 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
 
             if( Cti::Database::executeCommand( updater, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
             {
-                setDirty(false); // No error occured!
+                setDirty(false); // No error occurred!
             }
         }
         else
@@ -2558,7 +2558,7 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             if( Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
             {
                 _insertDynamicDataFlag = false;
-                setDirty(false); // No error occured!
+                setDirty(false); // No error occurred!
             }
         }
     }

@@ -21,14 +21,14 @@ public class WaitableCommandResultCallback implements CommandResultCallback {
 
 
     @Override
-    public void recievedResponse(CapControlServerResponse response) {
-        delegate.recievedResponse(response);
+    public void receivedResponse(CapControlServerResponse response) {
+        delegate.receivedResponse(response);
         completeLatch.countDown();
     }
 
     @Override
-    public void processingExceptionOccured(String reason) {
-        delegate.processingExceptionOccured(reason);
+    public void processingExceptionOccurred(String reason) {
+        delegate.processingExceptionOccurred(reason);
         completeLatch.countDown();
     }
 

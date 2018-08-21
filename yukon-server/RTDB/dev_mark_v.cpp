@@ -932,7 +932,7 @@ void CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec, int yyMap,
 //transdata qualities
 // 0 = end of interval
 // 6 = end of interval with power outage
-// 8 = entire interval occured during outage
+// 8 = entire interval occurred during outage
 // a = end of interval during demand deferral
 // 2 = interval time correction
 // e = end of interval with diagnostics alarm

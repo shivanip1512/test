@@ -1941,7 +1941,7 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
     dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
     CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 /*---------------------------------------------------------------------------
@@ -1976,7 +1976,7 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
     dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
     CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 /*---------------------------------------------------------------------------

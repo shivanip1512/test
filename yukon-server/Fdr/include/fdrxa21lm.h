@@ -92,15 +92,15 @@ NOTE:  All data limit violations will be handled by the receiving system
 #define MPCSHED                  0x0001      // SHED
 #define MPCREJECTED              0x0002      // Control Group was Rejected
 #define MPCINPROGRESS            0x0004      // Control Group is being processed
-#define MPCERROR                 0x0008      // Error occured, retrying
+#define MPCERROR                 0x0008      // Error occurred, retrying
 #define MPCBLOCK                 0x0010      // Problem encountered while controlling group
 #define MPCFINISHED              0x0020      // Processing on group completed
 #define MPCRESTORE               0x0040      // restore
 
-/* Structures used to decode messages recieved from Harris system. Any message
-   recieved in a buffer declared with this union will have the type available
+/* Structures used to decode messages received from Harris system. Any message
+   received in a buffer declared with this union will have the type available
    for determining which type of message to decode.  Also by default the
-   buffer is guarenteed to be large enough to accept the largest message */
+   buffer is guaranteed to be large enough to accept the largest message */
 
 typedef struct _XA21TIME {
     ULONG Time;                 // Seconds

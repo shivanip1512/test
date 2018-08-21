@@ -66,7 +66,7 @@
           /*
            * The first time a header is clicked this will check to see if any of the rows are blank.
            * If the row is blank the row will be removed.
-           * The firstClick boolean is there because if this code is ran more than once an error occured
+           * The firstClick boolean is there because if this code is ran more than once an error occurred
            * when trying to sort a column a second time.
            */
           if (firstClick) {

@@ -184,7 +184,7 @@ bool PointResponseDatabaseDao::performDatabaseOperation(DatabaseReader& reader, 
 
     buildPointResponseFromReader(reader,pointResponses);
     
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 void PointResponseDatabaseDao::buildPointResponseFromReader(DatabaseReader& reader, vector<PointResponse>& pointResponses)

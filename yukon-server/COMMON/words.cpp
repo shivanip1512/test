@@ -423,7 +423,7 @@ YukonError_t E_Word (
 }
 
 
-/* Routine checks the BCh in a recieved "D" word. */
+/* Routine checks the BCh in a received "D" word. */
 /* Returns 0 if ok, error code if not. */
 
 bool isBchValid (const unsigned char *DWord)

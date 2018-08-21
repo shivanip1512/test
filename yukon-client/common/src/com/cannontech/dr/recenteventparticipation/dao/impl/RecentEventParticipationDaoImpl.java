@@ -120,9 +120,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
 
     @Override
     public void updateDeviceControlEvent(int eventId, int deviceId, List<ControlEventDeviceStatus> skipUpdateForStatus,
-            ControlEventDeviceStatus recievedDeviceStatus, Instant deviceRecievedTime) {
+            ControlEventDeviceStatus receivedDeviceStatus, Instant deviceReceivedTime) {
         SqlStatementBuilder where = new SqlStatementBuilder();
-        if (recievedDeviceStatus != ControlEventDeviceStatus.SUCCESS_COMPLETED) {
+        if (receivedDeviceStatus != ControlEventDeviceStatus.SUCCESS_COMPLETED) {
             where.append("EXISTS");
             where.append("(SELECT 1 FROM ControlEventDevice");
             where.append("WHERE");
@@ -131,7 +131,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
             where.append("AND");
         }
         where.append(getWhereClauseFragment(eventId, deviceId));
-        updateDeviceControlEvent(eventId, deviceId, recievedDeviceStatus.name(), deviceRecievedTime, where);
+        updateDeviceControlEvent(eventId, deviceId, receivedDeviceStatus.name(), deviceReceivedTime, where);
     }
 
     private SqlFragmentSource getWhereClauseFragment(int eventId, int deviceId) {
@@ -141,11 +141,11 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         return whereClause;
     }
 
-    private void updateDeviceControlEvent(int eventId, int deviceId, String recievedDeviceStatus,
-            Instant deviceRecievedTime, SqlFragmentSource where) {
+    private void updateDeviceControlEvent(int eventId, int deviceId, String receivedDeviceStatus,
+            Instant deviceReceivedTime, SqlFragmentSource where) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE ControlEventDevice");
-        sql.set("Result", recievedDeviceStatus, "DeviceReceivedTime", deviceRecievedTime);
+        sql.set("Result", receivedDeviceStatus, "DeviceReceivedTime", deviceReceivedTime);
         sql.append("WHERE");
         sql.appendFragment(where);
         jdbcTemplate.update(sql);

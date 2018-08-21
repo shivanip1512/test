@@ -43,7 +43,7 @@ public class RfHardwareReadNowStrategy implements HardwareReadNowStrategy {
         WaitableRfnUnicastCallback waitableCallback = new WaitableRfnUnicastCallback(new RfnUnicastCallback() {
 
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
+            public void processingExceptionOccurred(MessageSourceResolvable message) {
                 log.error(message);
                 resultMap.put("success", false);
                 resultMap.put("message", accessor.getMessage(message));

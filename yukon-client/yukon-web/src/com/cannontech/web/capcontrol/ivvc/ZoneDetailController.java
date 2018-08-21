@@ -256,7 +256,7 @@ public class ZoneDetailController {
                     private CapControlServerResponse response;
                     private String errorMessage;
                     @Override
-                    public void processingExceptionOccured(String errorMessage) {
+                    public void processingExceptionOccurred(String errorMessage) {
                         this.errorMessage = errorMessage;
                     }
                     @Override
@@ -264,7 +264,7 @@ public class ZoneDetailController {
                         return response;
                     }
                     @Override
-                    public void recievedResponse(CapControlServerResponse message) {
+                    public void receivedResponse(CapControlServerResponse message) {
                         if (!message.isSuccess()) {
                             errorMessage = message.getResponse();
                         }

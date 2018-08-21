@@ -125,7 +125,7 @@ public static long[] getAllCommandIDsForType(String dbAlias, String deviceType_)
 		SqlUtils.close(rset, stmt, conn );
 	}
 
-	// An exception must have occured
+	// An exception must have occurred
 	return new long[0];
 }
 
@@ -257,7 +257,7 @@ public void update() throws java.sql.SQLException
 	}
 
 	/**
-	 * Returns the visiblity of an item.
+	 * Returns the visibility of an item.
 	 * @return 
 	 */
 	public Character getVisibleFlag() {

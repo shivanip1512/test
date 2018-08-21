@@ -214,6 +214,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
         Builder<OutageEventType, Integer> builder = ImmutableMultimap.builder();
+        //TODO - add the RF error codes.
         builder.putAll(OutageEventType.OUTAGE, 20, 57, 72);
         builder.putAll(OutageEventType.RESTORATION, 1, 17, 74, 0);
         ImmutableMultimap<OutageEventType, Integer> systemDefault = builder.build();
@@ -238,7 +239,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
 
         outageConfig = ImmutableSetMultimap.copyOf(outageConfigTemp);
-        log.info("outage event configuation: " + outageConfig);
+        log.info("outage event configuration: " + outageConfig);
     }
 
     /**
@@ -530,8 +531,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
-                log.warn("processingExceptionOccured for odEvent " + reason);
+            public void processingExceptionOccurred(String reason) {
+                log.warn("processingExceptionOccurred for odEvent " + reason);
             }
         };
 
@@ -1127,8 +1128,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
-                log.warn("processingExceptionOccured for cdEvent " + reason);
+            public void processingExceptionOccurred(String reason) {
+                log.warn("processingExceptionOccurred for cdEvent " + reason);
             }
         };
 
@@ -1155,12 +1156,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             @Override
             public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
                 log.warn("rfn " + meter + " receivedError for cdEvent " + getMessageText(message));
+                // MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForRfnState(RfnDisconnectStatusState.getForNmState(state));
+                // should we actually be returning msopLoadActionCode.getLoadActionCode instead of UNKNOWN ?
                 sendCDEventNotification(meter, LoadActionCode.UNKNOWN, mspVendor, transactionId, responseUrl);
             }
 
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
-                log.warn("rfn " + meter + " processingExceptionOccured for cdEvent " + getMessageText(message));
+            public void processingExceptionOccurred(MessageSourceResolvable message) {
+                log.warn("rfn " + meter + " processingExceptionOccurred for cdEvent " + getMessageText(message));
             }
 
             @Override

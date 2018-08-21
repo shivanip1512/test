@@ -676,7 +676,7 @@ public String getCellData( int rowPosition, int colPosition )
 	if( getRowCount() <= 0 || rowPosition >= getRowCount() || colPosition >= getColumnCount() ||
 		rowPosition < 0 || colPosition < 0 )
 	{
-		CTILogger.info(this.getClass().toString() + ".getCellData( int, int ) recieved a bad position");
+		CTILogger.info(this.getClass().toString() + ".getCellData( int, int ) received a bad position");
 		return "";
 	}
 	else

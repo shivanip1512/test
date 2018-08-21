@@ -184,7 +184,7 @@
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET">Dashboard Widgets</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET.description">System-wide dashboard widget settings</entry>
     
-    <!-- VisiblityEnum -->
+    <!-- VisibilityEnum -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>
     <entry key="yukon.web.modules.dashboard.visibility.PUBLIC">Public</entry>
     <entry key="yukon.web.modules.dashboard.visibility.PRIVATE">Private</entry>

@@ -21,11 +21,11 @@ public interface RecentEventParticipationDao {
     public void createNewEventMapping(int programId, int eventId, int groupId, Instant startTime, Instant stopTime);
 
     /**
-     * Update device status (({@link ControlEventDeviceStatus}, deviceRecievedTime)) for which response is
+     * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
      * received.
      */
     void updateDeviceControlEvent(int eventId, int deviceId, List<ControlEventDeviceStatus> skipUpdateForStatus,
-            ControlEventDeviceStatus recievedMessageStatus, Instant deviceRecievedTime);
+            ControlEventDeviceStatus receivedMessageStatus, Instant deviceReceivedTime);
 
     /**
      * Insert event information for the device (in the specified load group) for which event as sent.

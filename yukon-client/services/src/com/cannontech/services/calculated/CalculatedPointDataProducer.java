@@ -69,7 +69,7 @@ public class CalculatedPointDataProducer {
     }
     
     /**
-     * Values are dumped into the cache as soon as they are recieved and just prior to queueing up the
+     * Values are dumped into the cache as soon as they are received and just prior to queuing up the
      * appropriate calculator thread.
      */
     public void updateCache(List<CalculationData> data) {

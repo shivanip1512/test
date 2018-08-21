@@ -26,7 +26,7 @@ public class DeviceConfigVerificationTask extends YukonTaskBase {
         log.info("Running DeviceConfigVerificationTask at "+ new DateTime().toString("MM-dd-yyyy HH:mm:ss"));
         List<SimpleDevice> devicesToVerify = deviceConfigSummaryDao.getDevicesToVerify();
         if (!devicesToVerify.isEmpty()) {
-            log.info("DeviceConfigVerificationTask is verifing " + devicesToVerify.size() + " devices");
+            log.info("DeviceConfigVerificationTask is verifying " + devicesToVerify.size() + " devices");
             deviceConfigService.verifyConfigs(devicesToVerify, YukonUserContext.system.getYukonUser());
             if (log.isDebugEnabled()) {
                 log.debug("DeviceConfigVerificationTask is verified devices ids= "

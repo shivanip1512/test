@@ -160,7 +160,7 @@ public static long[] getAllCommandIDs(String dbAlias) {
         SqlUtils.close(rset, stmt, conn );
     }
 
-    // An exception must have occured
+    // An exception must have occurred
     return new long[0];
 }
 

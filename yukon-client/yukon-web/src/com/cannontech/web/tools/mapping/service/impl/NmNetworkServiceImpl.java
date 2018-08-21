@@ -74,7 +74,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
     private static final String commsError =
         "Unable to send request due to a communication error between Yukon and Network Manager.";
-    private static final String nmError = "Recieved error from Network Manager.";
+    private static final String nmError = "Received error from Network Manager.";
     private static final String noRoute = "One or more devices within the route could not be located.";
     private static final String noParent = "No location in Yukon was found for this parent device.";
 
@@ -420,7 +420,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     devices.put(identifier, rfnDevice);
                     log.info(identifier + " is not found. Creating device.");
                 } catch (DeviceCreationException e1) {
-                    log.error("Drvice creation failed for " + identifier, e1);
+                    log.error("Device creation failed for " + identifier, e1);
                 }
             }
         }

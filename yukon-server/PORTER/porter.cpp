@@ -2216,7 +2216,7 @@ void reportOnWorkObjects()
     {
         if ( !VanGoghConnection.WriteConnQue(queueCounts.portQueueCountMsgs.release(), CALLSITE) )
         {
-            CTILOG_INFO( dout, "Port queue counts and total work count messages sent successfuly." );
+            CTILOG_INFO( dout, "Port queue counts and total work count messages sent successfully." );
         }
     }
 }

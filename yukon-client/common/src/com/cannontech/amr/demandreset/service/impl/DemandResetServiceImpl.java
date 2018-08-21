@@ -189,7 +189,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 completeExecution(verifExecution, FAILED);
                 result.setExecutionExceptionText(reason);
                 collectionActionService.updateResult(result, FAILED);
@@ -301,9 +301,9 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 completeCommandRequestExecution(execution, FAILED);
-                callback.processingExceptionOccured(reason);
+                callback.processingExceptionOccurred(reason);
             }
         };
 
@@ -375,9 +375,9 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 completeExecutions(FAILED);
-                callback.processingExceptionOccured(reason);
+                callback.processingExceptionOccurred(reason);
             }
 
             @Override

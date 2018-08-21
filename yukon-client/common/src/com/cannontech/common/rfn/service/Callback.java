@@ -8,7 +8,7 @@ public interface Callback {
      * Method to keep track of processing exceptions that occur.
      * @param message
      */
-    public void processingExceptionOccured(MessageSourceResolvable message);
+    public void processingExceptionOccurred(MessageSourceResolvable message);
     
     /**
      * Method to signal the that the request has completed.

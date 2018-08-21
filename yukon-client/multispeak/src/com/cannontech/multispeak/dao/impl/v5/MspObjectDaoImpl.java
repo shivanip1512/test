@@ -360,7 +360,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     meterList = multispeakFuncs.getMspMeters(response.getMeters());
                 }
             } else {
-                log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
             }
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - getMetersByContactInfo (" + mspVendor.getCompanyName()

@@ -401,7 +401,7 @@ bool CtiTableDynamicPaoInfoBase::Insert(Cti::Database::DatabaseConnection &conn,
 
     setFromDb();
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn, const std::string &owner)
@@ -444,7 +444,7 @@ bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn,
         return false;
     }
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 std::string CtiTableDynamicPaoInfoBase::getSQLCoreStatement()

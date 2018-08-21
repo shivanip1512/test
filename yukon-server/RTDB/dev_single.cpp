@@ -454,7 +454,7 @@ YukonError_t CtiDeviceSingle::initiateGeneralScan( OutMessageList &outList, INT 
                     {
                         setScanFlag( ScanRateGeneral );
                     }
-                    else     // Error occured
+                    else     // Error occurred
                     {
                         CTILOG_ERROR( dout, "Error " << CtiError::GetErrorString( nRet ) << " sending general scan to " << getName() );
 

@@ -96,10 +96,10 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
     public void handleMessage(OutageJmsMessage outageJmsMessage) {
         
         if (vendorsToSendOutageMsg.isEmpty()) {
-            log.debug("Recieved outage message from jms queue: not generating message because no vendors are configured");
+            log.debug("Received outage message from jms queue: not generating message because no vendors are configured");
             return;
         }
-        log.debug("Recieved outage message from jms queue: " + outageJmsMessage);
+        log.debug("Received outage message from jms queue: " + outageJmsMessage);
         
         OutageDetectionEvent outageDetectionEvent = getOutageDetectionEvent(outageJmsMessage);
         

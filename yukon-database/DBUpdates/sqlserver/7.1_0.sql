@@ -834,6 +834,7 @@ GO
 
 INSERT INTO DBUpdates VALUES ('YUK-18615', '7.1.0', GETDATE());
 /* @end YUK-18615 */
+--YOU ARE HERE 
 
 /**************************************************************/
 /* VERSION INFO                                               */

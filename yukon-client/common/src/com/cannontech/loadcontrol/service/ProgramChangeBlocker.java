@@ -91,7 +91,7 @@ public class ProgramChangeBlocker implements MessageListener {
                 
                 long timeNow = System.currentTimeMillis();
                 if (timeNow > this.afterTime) {
-                    log.info("Recieved program update for programId " + this.programId + " at time " + timeNow);
+                    log.info("Received program update for programId " + this.programId + " at time " + timeNow);
                     this.countDownLatch.countDown();
                 }
             }

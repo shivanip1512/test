@@ -82,7 +82,7 @@ public class DataStreamingPorterConnection {
 
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                log.info("Recieved error for device="+ command.getDevice()+" error="+error);
+                log.info("Received error for device="+ command.getDevice()+" error="+error);
                 ReportedDataStreamingConfig config = null;
                 try {
                     config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(error.getPorter());
@@ -118,8 +118,8 @@ public class DataStreamingPorterConnection {
             }
 
             @Override
-            public void processingExceptionOccured(String reason) {
-                configCallback.processingExceptionOccured(reason);
+            public void processingExceptionOccurred(String reason) {
+                configCallback.processingExceptionOccurred(reason);
             }           
         };
         

@@ -96,7 +96,7 @@ public class RfnMeterDisconnectService {
             public void handleException(Exception e) {
                 MessageSourceResolvable message = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(error, e.toString());
-                callback.processingExceptionOccured(message);
+                callback.processingExceptionOccurred(message);
             }
 
             @Override

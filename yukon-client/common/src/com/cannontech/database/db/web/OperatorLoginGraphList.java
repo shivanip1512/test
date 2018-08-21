@@ -89,7 +89,7 @@ public static long[] getGraphDefinitionIDs(long operatorLoginID, String dbAlias)
 		SqlUtils.close(rset, pstmt, conn );
 	}
 
-	// An exception must have occured
+	// An exception must have occurred
 	return new long[0];
 }
 /**
@@ -150,7 +150,7 @@ public static long[] getOperatorLoginIDs(long graphDefinitionID, String dbAlias)
 		}
 	}
 
-	// An exception must have occured
+	// An exception must have occurred
 	return new long[0];
 }
 /**

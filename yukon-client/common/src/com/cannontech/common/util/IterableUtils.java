@@ -176,10 +176,10 @@ public class IterableUtils {
     }
 
     /**
-     * Returns a standard Collecton.toString, but with only maxElements.
+     * Returns a standard Collection.toString, but with only maxElements.
      * 
      * Output example: [a, b, ...]
-     * @param iterable An Iterable of elemtns, works best when elements have a nice toString
+     * @param iterable An Iterable of elements, works best when elements have a nice toString
      * @param maxElements max elements to display, -1 for all
      * @return
      */

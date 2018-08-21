@@ -98,7 +98,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
         CompletionCallback callback = new CompletionCallback() {
             @Override
             public void success() {
-                /* Stateful objects will be null if a cancel occured */
+                /* Stateful objects will be null if a cancel occurred */
                 if (phaseDetectResult != null) {
                     phaseDetectResult.setErrorMsg(null);
                 }
@@ -106,7 +106,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
             }
             @Override
             public void failure(String errorReason) {
-                /* Stateful objects will be null if a cancel occured */
+                /* Stateful objects will be null if a cancel occurred */
                 if (phaseDetectResult != null) {
                     phaseDetectResult.setErrorMsg(errorReason);
                 }
@@ -139,7 +139,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
         CompletionCallback callback = new CompletionCallback() {
             @Override
             public void success() {
-                /* Stateful objects will be null if a cancel occured */
+                /* Stateful objects will be null if a cancel occurred */
                 if (phaseDetectState != null) {
                     phaseDetectState.setPhaseDetectSent(phase);
                 }
@@ -150,7 +150,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
             }
             @Override
             public void failure(String errorReason) {
-                /* Stateful objects will be null if a cancel occured */
+                /* Stateful objects will be null if a cancel occurred */
                 if (phaseDetectResult != null) {
                     phaseDetectResult.setErrorMsg(errorReason);
                 }
@@ -220,7 +220,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
             }
             
             @Override
-            public void processingExceptionOccured(String reason) {
+            public void processingExceptionOccurred(String reason) {
                 phaseDetectResult.setErrorMsg(reason);
             }
             

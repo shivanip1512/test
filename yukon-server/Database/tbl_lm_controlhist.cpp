@@ -590,7 +590,7 @@ bool CtiTableLMControlHistory::Update()
 
     setDirty(false);
 
-    return true; // No error occured!
+    return true; // No error occurred!
 }
 
 CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const CtiTime &logTime, const LONG increment, bool season_reset )

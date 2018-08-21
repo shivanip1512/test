@@ -523,7 +523,7 @@ CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareA
             CTILOG_DEBUG(dout, _expresscomGroup.getId() << " is child of " << expGroup->_expresscomGroup.getId());
             break;
         case ADDRESSING_EQUIVALENT:
-            CTILOG_DEBUG(dout, _expresscomGroup.getId() << " is equivelent of " << expGroup->_expresscomGroup.getId());
+            CTILOG_DEBUG(dout, _expresscomGroup.getId() << " is equivalent of " << expGroup->_expresscomGroup.getId());
             break;
         }
     }

@@ -20,7 +20,7 @@ public class CollectingCommandCompletionCallback extends
     private final List<String> resultStrings = new ArrayList<>();
     private boolean complete = false;
     private boolean canceled = false;
-    private boolean processingErrorOccured = false;
+    private boolean processingErrorOccurred = false;
     private String processingErrorReason = "";
 
     @Override
@@ -51,7 +51,7 @@ public class CollectingCommandCompletionCallback extends
     @Override
     public boolean isAnyErrorOrException() {
     	
-    	return isExceptionOccured() || isErrorsExist();
+    	return isExceptionOccurred() || isErrorsExist();
     }
     
     @Override
@@ -96,9 +96,9 @@ public class CollectingCommandCompletionCallback extends
     }
     
     @Override
-    final public void processingExceptionOccured(String reason) {
+    final public void processingExceptionOccurred(String reason) {
     	processingErrorReason = reason;
-    	processingErrorOccured = true;
+    	processingErrorOccurred = true;
     }
     
     @Override
@@ -116,8 +116,8 @@ public class CollectingCommandCompletionCallback extends
     }
     
     @Override
-    public boolean isExceptionOccured() {
-    	return processingErrorOccured;
+    public boolean isExceptionOccurred() {
+    	return processingErrorOccurred;
     }
     
     @Override

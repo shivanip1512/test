@@ -95,7 +95,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
         JmsReplyHandler<RfnGatewayUpgradeRequestAck> handler = new JmsReplyHandler<RfnGatewayUpgradeRequestAck>() {
                 @Override
                 public void handleException(Exception e) {
-                    log.error("Error occured in gateway certificate upgrade.", e);
+                    log.error("Error occurred in gateway certificate upgrade.", e);
                 }
 
                 @Override

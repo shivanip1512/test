@@ -23,16 +23,16 @@ public class RecentEventParticipationServiceImpl implements RecentEventParticipa
 
     @Override
     public void updateDeviceControlEvent(int eventId, int deviceId, EventPhase eventPhase,
-            Instant deviceRecievedTime) {
-        ControlEventDeviceStatus recievedDeviceStatus = ControlEventDeviceStatus.getDeviceStatus(eventPhase);
+            Instant deviceReceivedTime) {
+        ControlEventDeviceStatus receivedDeviceStatus = ControlEventDeviceStatus.getDeviceStatus(eventPhase);
         List<ControlEventDeviceStatus> skipUpdateForStatus =
             ImmutableList.copyOf(ControlEventDeviceStatus.values())
                          .stream()
-                         .filter(messageStatus -> messageStatus.getMessageOrder() <= recievedDeviceStatus.getMessageOrder())
+                         .filter(messageStatus -> messageStatus.getMessageOrder() <= receivedDeviceStatus.getMessageOrder())
                          .collect(Collectors.toList());
 
-        recentEventParticipationDao.updateDeviceControlEvent(eventId, deviceId, skipUpdateForStatus, recievedDeviceStatus,
-            deviceRecievedTime);
+        recentEventParticipationDao.updateDeviceControlEvent(eventId, deviceId, skipUpdateForStatus, receivedDeviceStatus,
+            deviceReceivedTime);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class DatabaseMigrationBackingService implements UpdateBackingService {
         	
         	if (status.isComplete()) {
         		return "Complete";
-        	} else if (status.isExceptionOccured()) {
+        	} else if (status.isExceptionOccurred()) {
         	    return "Error";
         	} else {
         		return "In Progress";
@@ -45,7 +45,7 @@ public class DatabaseMigrationBackingService implements UpdateBackingService {
             if (status.isComplete()) {
                 return "OkMsg";
 
-            } else if (status.isExceptionOccured()) {
+            } else if (status.isExceptionOccurred()) {
                 return "ErrorMsg";
 
             } else {
@@ -57,7 +57,7 @@ public class DatabaseMigrationBackingService implements UpdateBackingService {
 
             ExportDatabaseMigrationStatus status = databaseMigrationService.getExportStatus(id);
 
-            if (status.isExceptionOccured()) {
+            if (status.isExceptionOccurred()) {
                 return status.getError();
             } else {
                 return "";

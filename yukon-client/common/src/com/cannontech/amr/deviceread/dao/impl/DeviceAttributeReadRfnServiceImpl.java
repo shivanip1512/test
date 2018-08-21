@@ -196,7 +196,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
             }
             
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable detail) {
+            public void processingExceptionOccurred(MessageSourceResolvable detail) {
                 SpecificDeviceErrorDescription error = getError(DeviceError.FAILURE, detail);
                 delegateCallback.receivedException(error);
             }
@@ -268,7 +268,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         }
         
         @Override
-        public void processingExceptionOccured(MessageSourceResolvable detail) {
+        public void processingExceptionOccurred(MessageSourceResolvable detail) {
             if(!isComplete) {
                 SpecificDeviceErrorDescription error = getError(DeviceError.FAILURE, detail);
                 delegateCallback.receivedException( error);

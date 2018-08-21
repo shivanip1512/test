@@ -686,7 +686,7 @@ CTILogger.info("		** Sleeping until ScriptEditor isVisible()");
 
 		if( i == 25 )
 		{
-			CTILogger.info("		** TimeOut occured while waiting for our ScriptEditor screen to become Visible.");
+			CTILogger.info("		** TimeOut occurred while waiting for our ScriptEditor screen to become Visible.");
 			return;
 		}
 
