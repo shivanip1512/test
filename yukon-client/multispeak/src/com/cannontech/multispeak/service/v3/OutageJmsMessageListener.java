@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
                     ArrayOfString arrayOfMethods = getMethodsResponse.getGetMethodsResult();
                     List<String> mspMethodNames = arrayOfMethods.getString();
                     // not sure where a static variable containing this method exists.. doing this for now
-                    if (mspMethodNames.contains("ODEventNotification")) {
+                    if (mspMethodNames.stream().anyMatch("ODEventNotification"::equalsIgnoreCase)) {
                         supportsOutage.add(mspVendor);
                         log.info("Added OMS vendor to receive Status Point Monitor messages: "
                             + mspVendor.getCompanyName());

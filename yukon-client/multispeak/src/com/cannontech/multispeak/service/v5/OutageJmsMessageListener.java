@@ -86,7 +86,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
                 try {
                     List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl);
                     // not sure where a static variable containing this method exists.. doing this for now
-                    if (mspMethodNames.contains("EndDeviceStatesNotification")) {
+                    if (mspMethodNames.stream().anyMatch("EndDeviceStatesNotification"::equalsIgnoreCase)) {
                         supportsOutage.add(mspVendor);
                         log.info("Added OMS vendor to receive Status Point Monitor messages: "
                             + mspVendor.getCompanyName());
