@@ -51,7 +51,7 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <tags:input path="name" id="name" inputClass="js-monitor-name" size="60" placeholder="${outageGroupBase}"/>
+                    <tags:input path="name" id="name" inputClass="js-monitor-name" size="60" maxlength="60" placeholder="${outageGroupBase}"/>
                 </tags:nameValue2>
                 
                 <%-- device group --%>

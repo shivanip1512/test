@@ -90,7 +90,7 @@
             <tags:nameValueContainer2>
 
                 <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="name" maxlength="50" size="50"/>
+                <tags:inputNameValue nameKey=".name" path="name" maxlength="60" size="60"/>
 
                 <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
 
