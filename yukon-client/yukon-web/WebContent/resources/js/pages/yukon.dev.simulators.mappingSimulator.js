@@ -14,7 +14,7 @@ yukon.dev.mappingSimulator = (function() {
         init : function() {
             if (_initialized) return;
             
-            $(document).on('click', '#populateDatabase', function () {
+            $(document).on('click', '.populateDatabase', function () {
                 var form = $('#mapping-form');
                 form.attr("action", "populateMappingDatabase");
                 form.submit();

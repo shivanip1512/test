@@ -62,7 +62,7 @@ yukon.dialogConfirm = (function () {
             
             buttons.push({text: args.strings.cancel, click: _default._cancel_action});
             
-            actionButton = {text: args.strings.ok, click: _default._ok_action, 'class': 'primary action'};
+            actionButton = {text: args.strings.ok, click: _default._ok_action, 'class': 'primary action ' + args.strings.okClasses};
             buttons.push(actionButton);
             
             // Determine the 'ok' click action.

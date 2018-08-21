@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="dev" page="rfnTest.viewMappingSimulator">
     <form:form id="mapping-form" action="startMappingSimulator" commandName="currentSettings" method="POST">
@@ -100,7 +101,8 @@
     </div>
     </div>
 
-    <cti:button id="populateDatabase" busy="true" label="Populate Database"/>
+    <cti:button id="populateButton" busy="true" label="Populate Database"/>
+    <d:confirm on="#populateButton" nameKey="confirmPopulate" okClasses="populateDatabase"/>
 
     <c:if test="${simulatorRunning}">
         <cti:button id="updateSettings" busy="true" label="Update Settings"/>
