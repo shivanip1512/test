@@ -45,11 +45,11 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 
 	/** String values for column representation */
 	public final static String GROUP_NAME_STRING = "Group Name";
-	public final static String GROUP_CAPACITY_STRING = "Group\r\nCapacity";
-	public final static String RECEIVERS_COUNT_STRING = "Receivers\r\nIn Group";
-	public final static String RECEIVERS_TOTAL_CAPACITY_STRING = "Receivers\r\nCapacity";
-	public final static String RECEIVERS_OUT_OF_SERVICE_COUNT_STRING = "Receivers\r\nOut-Of-Service";
-	public final static String ADJUSTED_TOTAL_CAPACITY_STRING = "Adjusted\r\nCapacity";
+	public final static String GROUP_CAPACITY_STRING = "Group Capacity";
+	public final static String RECEIVERS_COUNT_STRING = "Receivers In Group";
+	public final static String RECEIVERS_TOTAL_CAPACITY_STRING = "Receivers Capacity";
+	public final static String RECEIVERS_OUT_OF_SERVICE_COUNT_STRING = "Receivers Out-Of-Service";
+	public final static String ADJUSTED_TOTAL_CAPACITY_STRING = "Adjusted Capacity";
 
 	/** Class fields */
 	public static final int ORDER_BY_GROUP_NAME = 0;
@@ -322,63 +322,85 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnNames()
-	 */
-	public String[] getColumnNames()
-	{
-		if( columnNames == null)
-		{
-			columnNames = new String[]{
-				GROUP_NAME_STRING,
-				GROUP_CAPACITY_STRING,
-				RECEIVERS_COUNT_STRING,
-				RECEIVERS_TOTAL_CAPACITY_STRING,
-				RECEIVERS_OUT_OF_SERVICE_COUNT_STRING,
-				ADJUSTED_TOTAL_CAPACITY_STRING
-			};
-		}
-		return columnNames;
-	}
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.analysis.Reportable#getColumnNames()
+     */
+    public String[] getColumnNames() {
+        if( columnNames == null) {
+            if (isShowCapacity()) {
+                columnNames = new String[]{
+                    GROUP_NAME_STRING,
+                    GROUP_CAPACITY_STRING,
+                    RECEIVERS_COUNT_STRING,
+                    RECEIVERS_TOTAL_CAPACITY_STRING,
+                    RECEIVERS_OUT_OF_SERVICE_COUNT_STRING,
+                    ADJUSTED_TOTAL_CAPACITY_STRING
+                };
+            } else {
+                columnNames = new String[]{
+                    GROUP_NAME_STRING,
+                    RECEIVERS_COUNT_STRING,
+                    RECEIVERS_OUT_OF_SERVICE_COUNT_STRING,
+                };
+            }
+        }
+        return columnNames;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
-	 */
-	public Class<?>[] getColumnTypes()
-	{
-		if( columnTypes == null)
-		{
-			columnTypes = new Class[]{
-				String.class,
-				Integer.class,
-				Integer.class,
-				Integer.class,
-				Integer.class,
-				Integer.class
-			};
-		}
-		return columnTypes;
-	}
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.analysis.Reportable#getColumnTypes()
+     */
+    public Class<?>[] getColumnTypes() {
+        if (columnTypes == null) {
+            if (isShowCapacity()) {
+                columnTypes = new Class[] {
+                    String.class, 
+                    Integer.class, 
+                    Integer.class, 
+                    Integer.class, 
+                    Integer.class,
+                    Integer.class
+                };
+            } else {
+                columnTypes = new Class[] {
+                        String.class, 
+                        Integer.class,
+                        Integer.class
+                    };
+            }
+        }
+        return columnTypes;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
-	 */
-	public ColumnProperties[] getColumnProperties()
-	{
-		if(columnProperties == null)
-		{
-			columnProperties = new ColumnProperties[]{
-				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(200, 1, 100, "0"),
-				new ColumnProperties(300, 1, 100, "0"),
-				new ColumnProperties(400, 1, 100, "0"),
-				new ColumnProperties(500, 1, 100, "0"),
-				new ColumnProperties(600, 1, 100, "0")
-			};
-		}
-		return columnProperties;
-	}
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.analysis.Reportable#getColumnProperties()
+     */
+    public ColumnProperties[] getColumnProperties() {
+        if (columnProperties == null) {
+            if (isShowCapacity()) {
+                columnProperties = new ColumnProperties[] {
+                    // posX, posY, width, height, numberFormatString
+                    new ColumnProperties(0, 1, 200, null),
+                    new ColumnProperties(200, 1, 100, "0"),
+                    new ColumnProperties(300, 1, 100, "0"),
+                    new ColumnProperties(400, 1, 100, "0"),
+                    new ColumnProperties(500, 1, 100, "0"),
+                    new ColumnProperties(600, 1, 100, "0")
+                };
+            } else {
+                columnProperties = new ColumnProperties[] {
+                    // posX, posY, width, height, numberFormatString
+                    new ColumnProperties(0, 1, 200, null),
+                    new ColumnProperties(300, 1, 100, "0"),
+                    new ColumnProperties(500, 1, 100, "0"),
+                    };
+            }
+        }
+        return columnProperties;
+    }
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()

@@ -101,20 +101,9 @@ public class StarsLMSummaryReport extends YukonReportBase
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
 		LabelElementFactory factory;
-		for (int i = 0; i < getModel().getColumnNames().length; i++)
-		{
-		    boolean show = true;
-		    if( !((StarsLMSummaryModel)getModel()).isShowCapacity() &&
-		        ( StarsLMSummaryModel.GROUP_CAPACITY_COLUMN == i ||
-		          StarsLMSummaryModel.RECEIVERS_TOTAL_CAPACITY_COLUMN == i ||
-		          StarsLMSummaryModel.ADJUSTED_TOTAL_CAPACITY_COLUMN == i) )
-		        show = false;
-
-		    if( show)
-		    {
-				factory = ReportFactory.createGroupLabelElementDefault(model, i);
-				header.addElement(factory.createElement());
-		    }
+		for (int i = 0; i < getModel().getColumnNames().length; i++) {
+			factory = ReportFactory.createGroupLabelElementDefault(model, i);
+			header.addElement(factory.createElement());
 		}
 	
 		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
@@ -157,21 +146,9 @@ public class StarsLMSummaryReport extends YukonReportBase
 				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 		
-		for (int i = 0; i < getModel().getColumnNames().length; i++)
-		{
-		    boolean show = true;
-		    if( !((StarsLMSummaryModel)getModel()).isShowCapacity() &&
-		        ( StarsLMSummaryModel.GROUP_CAPACITY_COLUMN == i ||
-		          StarsLMSummaryModel.RECEIVERS_TOTAL_CAPACITY_COLUMN == i ||
-		          StarsLMSummaryModel.ADJUSTED_TOTAL_CAPACITY_COLUMN == i) )
-		        show = false;
-
-		    if( show)
-		    {
-			    
-				TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-				items.addElement(factory.createElement());
-		    }
+		for (int i = 0; i < getModel().getColumnNames().length; i++) {
+			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			items.addElement(factory.createElement());
 		}
 		return items;
 	}
