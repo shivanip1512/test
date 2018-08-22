@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.model;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -42,8 +43,14 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     
     public boolean isUpgradeAvailable () {
         log.debug("Checking if upgrade is valid for " + getName());
+        
+        //If there's no gateway data, we can't check
+        if (data == null) {
+            return false;
+        }
+        
         //If the current or available version is null, we can't upgrade
-        String currentVersionString = getData().getReleaseVersion();
+        String currentVersionString = data.getReleaseVersion();
         log.debug("Current version: " + currentVersionString + ", Upgrade version: " + upgradeVersion);
         if (currentVersionString == null || upgradeVersion == null) {
             log.debug("Upgrade not valid due to null version.");
@@ -73,8 +80,11 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         }
     }
     
-    public boolean isIpv6Supported () {
-        String currentVersionString = getData().getReleaseVersion();
+    public boolean isIpv6Supported() {
+        if (data == null) {
+            return false;
+        }
+        String currentVersionString = data.getReleaseVersion();
         GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(currentVersionString);
         return currentVersion.compareTo(new GatewayFirmwareVersion(9, 0, 0)) >= 0;
     }
@@ -206,12 +216,12 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
 
         RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
 
-        RfnGatewayData data = builder.copyOf(getData())
+        RfnGatewayData dataCopy = builder.copyOf(data)
             .updateServerUrl(updateServer.getUpdateServerUrl())
             .updateServerLogin(updateServer.getUpdateServerLogin())
             .build();
 
-        setData(data);
+        setData(dataCopy);
 
         return this;
     }
@@ -221,7 +231,11 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     }
     
     public String getNameWithIPAddress() {
-        return name + " (" + data.getIpAddress() + ")";
+        String ipAddress = Optional.ofNullable(data)
+                                   .map(RfnGatewayData::getIpAddress)
+                                   .map(ipa -> " (" + ipa + ")")
+                                   .orElse("");
+        return name + ipAddress;
     }
 
 }

@@ -76,6 +76,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -686,24 +687,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public GatewayConfiguration gatewayAsConfiguration(RfnGateway gateway) {
-        GatewayConfiguration configuration = new GatewayConfiguration();
-
-        configuration.setId(gateway.getPaoIdentifier().getPaoId());
-
-        configuration.setIpv6Prefix(gateway.getData().getIpv6Prefix());
-
-        while (configuration.getIpv6Prefix() == null) {
-            String newPrefix = gateway.getData().generateNewIpv6Prefix();
-            if (!isDuplicateIpv6Prefix(newPrefix)) {
-                configuration.setIpv6Prefix(newPrefix);
-            }
-        }
-
-        return configuration;
-    }
-
-    @Override
     public void updateGateways(Iterable<RfnGateway> gateways, LiteYukonUser user) throws NmCommunicationException {
 
         for (RfnGateway gateway : gateways) {
@@ -784,10 +767,48 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
     }
     
+    @Override
+    public GatewayConfiguration gatewayAsConfiguration(RfnGateway gateway) {
+        GatewayConfiguration configuration = new GatewayConfiguration();
+        configuration.setId(gateway.getPaoIdentifier().getPaoId());
+        configuration.setIpv6Prefix(gateway.getData().getIpv6Prefix());
+
+        while (configuration.getIpv6Prefix() == null) {
+            String newPrefix = generateNewIpv6Prefix("FD30:0000:0000:");
+            if (!isDuplicateIpv6Prefix(newPrefix)) {
+                configuration.setIpv6Prefix(newPrefix);
+                break;
+            }
+        }
+
+        return configuration;
+    }
+    
+    private String generateNewIpv6Prefix(String first3Parts) {
+        String newPrefix;
+        
+        for (short i = 0; i < Short.MAX_VALUE; i++) {
+            newPrefix = buildPrefixLastPart(first3Parts, i);
+            if (!isDuplicateIpv6Prefix(newPrefix)) {
+                return newPrefix;
+            }
+        }
+        
+        // This is us giving up after exhausting Short.MAX_VALUE possible prefixes as duplicates
+        return first3Parts + "0000::/64";
+    }
+    
+    private static String buildPrefixLastPart(String first3Parts, short value) {
+        String lastPart = Integer.toHexString(value).toUpperCase(); //Convert value to hex, uppercase
+        lastPart = Strings.padStart(lastPart, 4, '0');              //Pad with 0s, if needed
+        return first3Parts + lastPart + "::/64";
+    }
+    
     private boolean isDuplicateIpv6Prefix(String prefix) {
-        return dataCache.getCache().asMap().values().stream()
-                .filter(d -> d.getIpv6Prefix() != null && d.getIpv6Prefix().equals(prefix))
-                .findFirst()
-                .isPresent();
+        return dataCache.getCache()
+                        .asMap()
+                        .values()
+                        .stream()
+                        .anyMatch(d -> d.getIpv6Prefix() != null && d.getIpv6Prefix().equals(prefix));
     }
 }
