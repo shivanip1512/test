@@ -156,6 +156,7 @@ public class MapController {
             }
             if (StringUtils.isNotBlank(meter.getMeter().getSerialOrAddress())) {
                 model.addAttribute("showAddressOrSerial", true);
+                model.addAttribute("isRf", type.isRfMeter());
             }
             if (StringUtils.isNotBlank(meter.getMeter().getMeterNumber())) {
                 model.addAttribute("showMeterNumber", true);
@@ -177,6 +178,8 @@ public class MapController {
                 model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
                 String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
                 model.addAttribute("primaryGatewayName", primaryGatewayName);
+                String nodeSN = metadataService.getMetaDataValueAsString(RfnMetadata.NODE_SERIAL_NUMBER, metadata);
+                model.addAttribute("nodeSN", nodeSN);
                 //primary gateway from NM contains the IP Address too
                 List<LiteYukonPAObject> foundGateways;
                 foundGateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
