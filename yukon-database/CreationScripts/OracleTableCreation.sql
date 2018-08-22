@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/10/2018 3:43:44 AM                         */
+/* Created on:     8/22/2018 2:56:05 PM                         */
 /*==============================================================*/
 
 
@@ -5851,6 +5851,7 @@ create table InfrastructureWarnings  (
    Argument1            VARCHAR2(50),
    Argument2            VARCHAR2(50),
    Argument3            VARCHAR2(50),
+   Timestamp            DATE                            not null,
    constraint PK_InfrastructureWarnings primary key (PaoId, WarningType)
 );
 

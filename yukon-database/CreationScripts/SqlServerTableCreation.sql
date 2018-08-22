@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/10/2018 3:41:27 AM                         */
+/* Created on:     8/22/2018 2:54:24 PM                         */
 /*==============================================================*/
 
 
@@ -6172,6 +6172,7 @@ create table InfrastructureWarnings (
    Argument1            varchar(50)          null,
    Argument2            varchar(50)          null,
    Argument3            varchar(50)          null,
+   Timestamp            datetime             not null,
    constraint PK_InfrastructureWarnings primary key (PaoId, WarningType)
 )
 go
