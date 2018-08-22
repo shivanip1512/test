@@ -29,7 +29,12 @@
     </c:if>
     <tags:nameValue2 nameKey=".type">${fn:escapeXml(pao.paoIdentifier.paoType.paoTypeName)}</tags:nameValue2>    
     <c:if test="${showAddressOrSerial}">
-        <tags:nameValue2 nameKey=".serialOrAddress">${fn:escapeXml(pao.meter.serialOrAddress)}</tags:nameValue2>
+        <c:if test="${isRf}">
+            <tags:nameValue2 nameKey=".serial">${fn:escapeXml(pao.meter.serialOrAddress)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${!isRf}">
+            <tags:nameValue2 nameKey=".address">${fn:escapeXml(pao.meter.serialOrAddress)}</tags:nameValue2>
+        </c:if>
     </c:if>
     <c:if test="${!empty serialNumber}">
         <tags:nameValue2 nameKey=".serialNbr">${fn:escapeXml(serialNumber)}</tags:nameValue2>
@@ -43,7 +48,9 @@
     <c:if test="${!empty macAddress}">
         <tags:nameValue2 nameKey=".macAddress">${fn:escapeXml(macAddress)}</tags:nameValue2>
     </c:if>
-    <tags:nameValue2 nameKey=".status" nameClass="dn js-status-display" valueClass="dn js-status js-status-display"></tags:nameValue2>
+    <c:if test="${!empty nodeSN}">
+        <tags:nameValue2 nameKey=".nodeSN">${fn:escapeXml(nodeSN)}</tags:nameValue2>
+    </c:if>    <tags:nameValue2 nameKey=".status" nameClass="dn js-status-display" valueClass="dn js-status js-status-display"></tags:nameValue2>
     <c:if test="${showRoute}">
         <tags:nameValue2 nameKey=".route">${fn:escapeXml(pao.meter.route)}</tags:nameValue2>
     </c:if>
