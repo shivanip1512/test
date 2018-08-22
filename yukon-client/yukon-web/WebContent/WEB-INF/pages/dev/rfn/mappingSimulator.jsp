@@ -101,7 +101,7 @@
     </div>
     </div>
 
-    <cti:button id="populateButton" busy="true" label="Populate Database"/>
+    <cti:button id="populateButton" label="Populate Database"/>
     <d:confirm on="#populateButton" nameKey="confirmPopulate" okClasses="populateDatabase"/>
 
     <c:if test="${simulatorRunning}">

@@ -207,7 +207,7 @@
     <entry key="yukon.web.components.ajaxConfirm.confirmSync.message">Request all previously unacknowledged RF data be sent to Service Manager. This may result in increased network traffic. Are you sure you want to initiate this request?</entry>
 
     <entry key="yukon.web.components.ajaxConfirm.confirmPopulate.title">Confirm Populate</entry>
-    <entry key="yukon.web.components.ajaxConfirm.confirmPopulate.message">Populate will search for currently empty Rfn Addresses and populate them</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmPopulate.message">This will delete all previous device locations created by the simulator. Then it will generate an RFN address if needed and create new locations for all devices.</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmPopulate.ok">Populate</entry>
 
     <entry key="yukon.web.components.updatedWarning.title">Data Update Failed</entry>
