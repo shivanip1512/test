@@ -1,6 +1,5 @@
 package com.cannontech.common.rfn.model;
 
-import java.util.Random;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.gateway.AppMode;
@@ -283,15 +282,6 @@ public final class RfnGatewayData {
 
     public String getIpv6PrefixSuggested() {
         return ipv6PrefixSuggested;
-    }
-
-    public String generateNewIpv6Prefix() {
-        Random r = new Random();
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < 4) {
-            sb.append(Integer.toHexString(r.nextInt(16)).toUpperCase());
-        }
-        return sb.toString() + ":0000:0000:0000";
     }
 
     @Override

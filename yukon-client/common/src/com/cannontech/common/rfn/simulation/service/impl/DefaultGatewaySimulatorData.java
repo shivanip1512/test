@@ -55,7 +55,7 @@ public class DefaultGatewaySimulatorData {
     private static final String commRadioVersion = "V_10_10";
     private static final int dataSequenceCompletionPercentage = 100;
     public static final double maxDataStreamingLoading = 100;
-    private static final String ipv6Prefix = "FD30:0000:0000:0000::/64";
+    private static final String ipv6Prefix = null;
     private static final int gwTotalNotReadyNodes = 500;
     private static final int gwTotalReadyNodes = 1000;
       
