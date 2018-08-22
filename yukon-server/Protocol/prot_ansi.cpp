@@ -1655,30 +1655,33 @@ bool CtiProtocolANSI::retrieveSummation( int offset, double *value,  double *tim
        /* returns pointer to list of summation Selects */
         unsigned char* summationSelect = _table22->getSummationSelect();
 
-        for (int x = 0; x < _table21->getNumberSummations(); x++)
+        if (ansiTOURate <= _table21->getTiers())
         {
-            if ((int) summationSelect[x] != 255)
+            for (int x = 0; x < _table21->getNumberSummations(); x++)
             {
-                if (_table12->getRawTimeBase(summationSelect[x]) == CtiAnsiTable12::timebase_dial_reading &&
-                    _table12->getRawIDCode(summationSelect[x]) == ansiOffset)
+                if ((int) summationSelect[x] != 255)
                 {
-                    double multiplier = getElecMultiplier(summationSelect[x]);
-                    multiplier = scaleMultiplier(multiplier, summationSelect[x]);
-
-                    if( frozen )
+                    if (_table12->getRawTimeBase(summationSelect[x]) == CtiAnsiTable12::timebase_dial_reading &&
+                        _table12->getRawIDCode(summationSelect[x]) == ansiOffset)
                     {
+                        double multiplier = getElecMultiplier(summationSelect[x]);
+                        multiplier = scaleMultiplier(multiplier, summationSelect[x]);
 
-                        *value = _frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) * multiplier;
-                        *timestamp = _frozenRegTable->getEndDateTime();
+                        if( frozen )
+                        {
+
+                            *value = _frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) * multiplier;
+                            *timestamp = _frozenRegTable->getEndDateTime();
+                        }
+                        else
+                        {
+                            *value = _table23->getSummationsValue(x, ansiTOURate) * multiplier;
+                            *timestamp = CtiTime().seconds();
+                        }
+                        success = true;
+                        printDebugValue(*value, frozen);
+                        break;
                     }
-                    else
-                    {
-                        *value = _table23->getSummationsValue(x, ansiTOURate) * multiplier;
-                        *timestamp = CtiTime().seconds();
-                    }
-                    success = true;
-                    printDebugValue(*value, frozen);
-                    break;
                 }
             }
         }
