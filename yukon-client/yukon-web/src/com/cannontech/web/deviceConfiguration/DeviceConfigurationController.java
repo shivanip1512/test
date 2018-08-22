@@ -246,7 +246,7 @@ public class DeviceConfigurationController {
             .onResultOf(new Function<DisplayableConfigurationData, String>() {
                 @Override
                 public String apply(DisplayableConfigurationData from) {
-                    return from.getName();
+                    return from.getName().toLowerCase();
                 }
             });
         return nameOrdering;
@@ -270,7 +270,7 @@ public class DeviceConfigurationController {
             .onResultOf(new Function<DisplayableConfigurationCategory, String>() {
                 @Override
                 public String apply(DisplayableConfigurationCategory from) {
-                    return from.getCategoryName();
+                    return from.getCategoryName().toLowerCase();
                 }
             });
         return nameOrdering;

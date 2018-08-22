@@ -300,6 +300,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceConfigurationId, Name, Description");
         sql.append("FROM DeviceConfiguration");
+        sql.append("ORDER BY LOWER(Name)");
         
         List<LightDeviceConfiguration> configurations = jdbcTemplate.query(sql, new LightConfigurationRowMapper());
         
@@ -924,6 +925,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("   JOIN DeviceConfigDeviceTypes DCDT");
         sql.append("      ON DC.DeviceConfigurationId = DCDT.DeviceConfigurationId");
         sql.append("WHERE DCDT.PaoType").eq(paoType);
+        sql.append("ORDER BY LOWER(DC.Name)");
         
         List<LightDeviceConfiguration> configurations = jdbcTemplate.query(sql, new LightConfigurationRowMapper());
         
