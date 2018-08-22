@@ -366,7 +366,7 @@ public void runImport(List<ImportData> imps) {
         // COLLECTION GROUP
         // updatePrefixGroup will check for isBlank and ignore group field updates/inserts when collectionGroup is blank. 
         if (!DeviceGroupUtil.isValidName(collectionGrp)) {
-            String error = "Collection group name has invalid characters " + Arrays.toString(DeviceGroupUtil.ILLEGAL_NAME_CHARS) + ".  ";
+            String error = "Collection group name has invalid characters " + Arrays.toString(DeviceGroupUtil.ILLEGAL_NAME_CHARS) + " or exceeds 60 characters.  ";
             log.warn(logMsgPrefix + error);
             errorMsg.add(error);
         } 
@@ -374,7 +374,7 @@ public void runImport(List<ImportData> imps) {
         // ALTERNATE GROUP
         // updatePrefixGroup will check for isBlank and ignore group field updates/inserts when alternateGroup is blank.
         if (!DeviceGroupUtil.isValidName(altGrp)) {
-            String error = "Alternate group name has invalid characters " + Arrays.toString(DeviceGroupUtil.ILLEGAL_NAME_CHARS) + ".  ";
+            String error = "Alternate group name has invalid characters " + Arrays.toString(DeviceGroupUtil.ILLEGAL_NAME_CHARS) + " or exceeds 60 characters.  ";
             log.warn(logMsgPrefix + error);
             errorMsg.add(error);
         }
@@ -382,7 +382,7 @@ public void runImport(List<ImportData> imps) {
         // BILLING GROUP
         // updatePrefixGroup will check for isBlank and ignore group field updates/inserts when billingGroup is blank.
         if (!DeviceGroupUtil.isValidName(billGrp)) {
-            String error = "Billing group name has invalid characters " + Arrays.toString(DeviceGroupUtil.ILLEGAL_NAME_CHARS) + ".  ";
+            String error = "Billing group name has invalid characters " + Arrays.toString(DeviceGroupUtil.ILLEGAL_NAME_CHARS) + " or exceeds 60 characters.  ";
             log.warn(logMsgPrefix + error);
             errorMsg.add(error);
         }

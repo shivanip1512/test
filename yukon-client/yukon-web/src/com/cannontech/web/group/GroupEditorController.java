@@ -269,7 +269,7 @@ public class GroupEditorController {
         newGroupName = newGroupName.trim();
         if (!DeviceGroupUtil.isValidName(newGroupName)) {
             model.addAttribute("errorMessage",
-                          "You must enter a New Group Name.  Group names may not contain slashes.");
+                          "You must enter a New Group Name.  Group names may not contain slashes nor exceed 60 characters.");
             return "redirect:/group/editor/home";
         }
 
@@ -316,7 +316,7 @@ public class GroupEditorController {
             if (StringUtils.isEmpty(childGroupName) || !DeviceGroupUtil.isValidName(childGroupName)) {
                 
                 deviceGroupMav.addObject("groupName", groupName);
-                deviceGroupMav.addObject("errorMessage", "You must enter a Sub Group Name.  Group names may not contain slashes.");
+                deviceGroupMav.addObject("errorMessage", "You must enter a Sub Group Name.  Group names may not contain slashes nor exceed 60 characters.");
                 return deviceGroupMav;
             }
 

@@ -45,7 +45,7 @@
                                 <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                 <tags:nameValueContainer>
                                     <tags:nameValue name="${newGroupNameText}">
-                                        <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" />
+                                        <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" maxlength="60"/>
                                     </tags:nameValue>
                                 </tags:nameValueContainer>
                                 <div class="action-area">
@@ -142,7 +142,7 @@
                                         <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                         <tags:nameValueContainer>
                                             <tags:nameValue name="${subgroupNameLabel}" nameColumnWidth="120px">
-                                                <input id="childGroupName" name="childGroupName" type="text" />
+                                                <input id="childGroupName" name="childGroupName" type="text" maxlength="60"/>
                                             </tags:nameValue>
                                             <tags:nameValue name="${subgroupTypeLabel}">
                                                 <select name="subGroupType">

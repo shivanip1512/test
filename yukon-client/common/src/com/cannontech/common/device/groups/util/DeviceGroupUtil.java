@@ -16,7 +16,8 @@ public class DeviceGroupUtil {
      */
     public static boolean isValidName(String groupName) {
         return !StringUtils.isBlank(groupName)
-            && StringUtils.containsNone(groupName, ILLEGAL_NAME_CHARS);
+            && StringUtils.containsNone(groupName, ILLEGAL_NAME_CHARS)
+            && StringUtils.length(groupName) <= 60;
     }
 
     public static void validateName(String groupName) throws IllegalGroupNameException {

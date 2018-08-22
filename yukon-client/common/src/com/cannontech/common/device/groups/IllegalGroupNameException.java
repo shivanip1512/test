@@ -2,7 +2,7 @@ package com.cannontech.common.device.groups;
 
 public class IllegalGroupNameException extends IllegalArgumentException {
 
-    private static final String defaultMsg = "group name may not be blank or contain slashes: ";
+    private static final String defaultMsg = "group name may not be blank, contain '/' or '\\', nor exceed 60 characters: ";
 
     public IllegalGroupNameException(String groupName) {
         super(defaultMsg + groupName);

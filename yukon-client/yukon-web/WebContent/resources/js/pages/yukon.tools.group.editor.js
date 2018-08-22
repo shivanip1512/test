@@ -14,7 +14,7 @@ yukon.tools.group.editor = (function () {
 
     // js implementation of DeviceGroupUtil.isValidName(name).
     function isValidGroupName(name) {
-        if(name == null || name.trim() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
+        if(name == null || name.trim() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1) || (name.length > 60)) {
             return false;
         }
         return true;
