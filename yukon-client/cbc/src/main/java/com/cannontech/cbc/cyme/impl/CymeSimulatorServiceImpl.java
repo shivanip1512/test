@@ -308,7 +308,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     	                scheduledExecutor.scheduleAtFixedRate(simulationThread, 0, 5, TimeUnit.SECONDS);
             		} catch (Exception e) {
                         //intercepting all exception while setting up the simulation in order to make sure we reset flags.
-                        logger.error("There was an exeption while starting up the 24 hour load simulation.", e);
+                        logger.error("There was an exception while starting up the 24 hour load simulation.", e);
                         simulationThread.stop();
                         throw e;
                     }

@@ -369,7 +369,7 @@ public class JobManagerImpl implements JobManager {
         boolean isToBeStopped = true;
         for (JobException it : jobExceptions) {
             if (it.jobId == jobId) {
-                isToBeStopped = it.isExeptionReceived();
+                isToBeStopped = it.isExceptionReceived();
             }
         }
         return isToBeStopped;
@@ -520,7 +520,7 @@ public class JobManagerImpl implements JobManager {
         boolean hasJobFailed = false;
         // Check if the given jobId is in list of jobs that have failed for more than twice and hence not scheduled
         for (JobException je : jobExceptions) {
-            if (jobId == je.jobId && !je.isExeptionReceived()) {
+            if (jobId == je.jobId && !je.isExceptionReceived()) {
                 hasJobFailed = true;
                 break;
             }
@@ -564,15 +564,15 @@ public class JobManagerImpl implements JobManager {
     }
 
     /**
-     * Cancels the exception received by setting isExeptionReceived flag to
+     * Cancels the exception received by setting isExceptionReceived flag to
      * false It is called when a job fails for second time If the given JobId
-     * exists in a jobExceptions set then the isExeptionReceived flag is set in
+     * exists in a jobExceptions set then the isExceptionReceived flag is set in
      * order to cancel job reschedule
      */
     private void cancelExceptionReceived(Integer jobId) {
         for (JobException it : jobExceptions) {
             if (it.jobId == jobId) {
-                it.isExeptionReceived = false;
+                it.isExceptionReceived = false;
             }
         }
     }
@@ -755,12 +755,12 @@ public class JobManagerImpl implements JobManager {
     private class JobException {
         int jobId;
         String exception;
-        private boolean isExeptionReceived;
+        private boolean isExceptionReceived;
 
-        public JobException(int jobId, String exception, boolean isExeptionReceived) {
+        public JobException(int jobId, String exception, boolean isExceptionReceived) {
             this.jobId = jobId;
             this.exception = exception;
-            this.isExeptionReceived = isExeptionReceived;
+            this.isExceptionReceived = isExceptionReceived;
         }
 
         @Override
@@ -797,8 +797,8 @@ public class JobManagerImpl implements JobManager {
             return true;
         }
 
-        public boolean isExeptionReceived() {
-            return isExeptionReceived;
+        public boolean isExceptionReceived() {
+            return isExceptionReceived;
         }
     }
 
