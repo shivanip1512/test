@@ -1,6 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +14,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.model.Phase;
@@ -304,14 +302,16 @@ public class PointDaoImpl implements PointDao {
     
     @Override
     public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
-        RowMapper<PointInfo> rowMapper = new PointInfoMapper();
+        YukonRowMapper<PointInfo> rowMapper = new PointInfoMapper();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
-        sql.append("SELECT POINTID,POINTTYPE,POINTNAME,P.PAObjectID");
-        sql.append(" FROM Point P");
-        sql.append(" WHERE PAObjectID").eq(paobjectId);
-        sql.append(" ORDER BY POINTNAME");
+        sql.append("SELECT P.PointId, PointName, PointType, PointOffset, UOMName, StateGroupId");
+        sql.append("FROM Point P");
+        sql.append("LEFT JOIN PointUnit PU ON P.PointId = PU.PointId");
+        sql.append("LEFT JOIN UnitMeasure UM ON PU.UomId = UM.UomId");
+        sql.append("WHERE PAObjectID").eq(paobjectId);
+        sql.append("ORDER BY PointName");
 
         List<PointInfo> points = jdbcTemplate.query(sql, rowMapper);
 
@@ -328,16 +328,16 @@ public class PointDaoImpl implements PointDao {
         return pointNameAndTypes;
     }
 
-    private class PointInfoMapper implements RowMapper<PointInfo> {
-
+    private class PointInfoMapper implements YukonRowMapper<PointInfo> {
         @Override
-        public PointInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public PointInfo mapRow(YukonResultSet rs) throws SQLException {
             PointInfo pointInfo = new PointInfo();
-            pointInfo.setPointId(rs.getInt("POINTID"));
-            PointIdentifier pointIdentifier =
-                new PointIdentifier(PointType.getForString(rs.getString("POINTTYPE")), rs.getInt("PAObjectID"));
+            pointInfo.setPointId(rs.getInt("PointId"));
+            pointInfo.setName(rs.getString("PointName"));
+            PointIdentifier pointIdentifier = rs.getPointIdentifier("PointType", "PointOffset");
             pointInfo.setPointIdentifier(pointIdentifier);
-            pointInfo.setName(rs.getString("POINTNAME"));
+            pointInfo.setUnitOfMeasure(rs.getString("UOMName"));
+            pointInfo.setStateGroupId(rs.getInt("StateGroupId"));
             return pointInfo;
         }
 
