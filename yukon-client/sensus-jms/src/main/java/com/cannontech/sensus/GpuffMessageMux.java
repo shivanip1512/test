@@ -152,7 +152,7 @@ public class GpuffMessageMux {
                                 UDPGpuffAddress src = new UDPGpuffAddress(pkt.getAddress(), pkt.getPort(), 0);                                
                                 UDPGpuffAddress targ = replyNATMap.get(src);  // This should be my target???
                                 if(targ != null) {
-                                    log.info("Reply received from: " + pkt.getAddress() + ":" + pkt.getPort() + ". Repeating to to " + targ.getAddress() + ":" + targ.getPort());                                    
+                                    log.info("Reply received from: " + pkt.getAddress() + ":" + pkt.getPort() + ". Repeating to " + targ.getAddress() + ":" + targ.getPort());                                    
                                     sendPacket(pkt.getData(), pkt.getLength(), targ.getAddress(), targ.getPort());
                                     replyNATMap.clear();
                                 } else {
