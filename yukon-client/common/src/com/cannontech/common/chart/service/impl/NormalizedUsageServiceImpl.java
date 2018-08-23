@@ -43,8 +43,8 @@ public class NormalizedUsageServiceImpl implements NormalizedUsageService {
                 paoType = paoPointIdentifier.getPaoIdentifier().getPaoType();
             }
 
-            if (paoType != null && paoType.isRfn()) {
-                // only add the midnight reads for RF meters.
+            if (paoType != null && paoType.isRfElectric()) {
+                // only add the midnight reads for RF electric meters. CAUTION: This call is also used by Water Leak Report where all intervals are needed.
                 DateTime dateTime = new DateTime(chartValue.getTime());
                 if (dateTime.getHourOfDay() == 0 && dateTime.getMinuteOfHour() == 0) {
                     chartValueList.add(chartValue);
