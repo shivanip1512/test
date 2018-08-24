@@ -7,7 +7,7 @@ ALTER TABLE InfrastructureWarnings
 ADD Timestamp DATE;
 
 UPDATE InfrastructureWarnings
-SET Timestamp = '1/1/1990';
+SET Timestamp = '01-JAN-1990';
 
 ALTER TABLE InfrastructureWarnings
 MODIFY (Timestamp DATE NOT NULL);
