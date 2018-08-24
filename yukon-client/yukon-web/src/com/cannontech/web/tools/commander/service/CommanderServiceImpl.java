@@ -81,7 +81,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         
         LiteYukonUser user = userContext.getYukonUser();
         
-        log.debug("User: " + user + " attempting command: " + params);
+        log.info("User: " + user + " attempting command: " + params);
         // TODO log the attempt with event log service
         
         List<CommandRequest> commands = buildCommands(params, userContext, commandCounts);
@@ -97,7 +97,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         List<Request> reqs = buildPorterRequest(user, commands);
         for (Request req : reqs) {
             porter.write(req);
-            log.debug("User: " + user + " attempting command: " + params + " produced request to porter: " + req);
+            log.info("User: " + user + " produced request to porter: " + req);
             // TODO log the resulting requests sent to porter with event log service
         }
         
@@ -182,7 +182,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
             if (reqsByUser.containsKey(requestId)) {
                 
                 found = true;
-                log.debug("Storing response from porter: " + rtn);
+                log.info("Storing response from porter: " + rtn);
                 
                 CommandRequest req = reqsByUser.get(requestId);
                 req.getResponses().add(resp);
