@@ -39,6 +39,18 @@ public class DeviceConfigVerificationTask extends YukonTaskBase {
     public void start() {
         log.info("Running DeviceConfigVerificationTask at "+ new DateTime().toString("MM-dd-yyyy HH:mm:ss"));
         
+        List<SimpleDevice> devicesToVerify =  getDevicesToVerify();
+
+        if (!devicesToVerify.isEmpty()) {
+            log.info("DeviceConfigVerificationTask is verifying " + devicesToVerify.size() + " devices");
+            VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(devicesToVerify, YukonUserContext.system.getYukonUser());
+            if (log.isDebugEnabled()) {
+                log.debug("DeviceConfigVerificationTask is verified devices ids= " + result.getVerifyResultsMap().keySet());
+            }
+        }
+    }
+    
+    private List<SimpleDevice> getDevicesToVerify() {
         DeviceConfigSummaryFilter filter = new DeviceConfigSummaryFilter();
 
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
@@ -53,16 +65,8 @@ public class DeviceConfigVerificationTask extends YukonTaskBase {
         SearchResults<DeviceConfigSummaryDetail> details =
             deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         
-        List<SimpleDevice> devicesToVerify = details.getResultList().stream()
+        return details.getResultList().stream()
                 .map(detail -> new SimpleDevice(detail.getDevice()))
                 .collect(Collectors.toList());
-
-        if (!devicesToVerify.isEmpty()) {
-            log.info("DeviceConfigVerificationTask is verifying " + devicesToVerify.size() + " devices");
-            VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(devicesToVerify, YukonUserContext.system.getYukonUser());
-            if (log.isDebugEnabled()) {
-                log.debug("DeviceConfigVerificationTask is verified devices ids= " + result.getVerifyResultsMap().keySet());
-            }
-        }
     }
 }
