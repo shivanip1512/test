@@ -296,6 +296,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         
         VerificationSummary summary = new VerificationSummary(devices);
         Map<SimpleDevice, VerifyResult> supported = summary.supported;
+        
+        if(supported.isEmpty()) {
+            return result;
+        }
         result.getVerifyResultsMap().putAll(supported);
         
         List<CommandRequestDevice> requests = supported.keySet().stream()

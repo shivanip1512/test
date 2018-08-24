@@ -183,7 +183,10 @@ public class DeviceConfigurationSummaryController {
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
         VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
-        if (result.isSynced()) {
+        if (result == null) {
+            flash.setError(
+                new YukonMessageSourceResolvable("yukon.common.device.bulk.verifyConfigResults.notSupported"));
+        } else if (result.isSynced()) {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.widgets.configWidget.inSync"));
         } else {
             List<MessageSourceResolvable> messages = new ArrayList<>();

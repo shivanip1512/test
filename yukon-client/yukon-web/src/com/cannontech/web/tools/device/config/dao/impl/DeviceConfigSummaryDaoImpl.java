@@ -14,7 +14,6 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
@@ -22,7 +21,6 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.impl.DeviceDaoImpl;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -420,30 +418,5 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     private List<PaoType> getSupportedPaoTypes() {
         return paoDefinitionDao.getPaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION).stream().map(
             t -> t.getType()).collect(Collectors.toList());
-    }
-    
-    @Override
-    public List<SimpleDevice> getDevicesToVerify(){
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT paobjectId, Type");
-        sql.append("FROM (");
-        sql.append("    SELECT cre.CommandRequestExecId, DeviceId, CommandRequestExecType");
-        sql.append("        FROM CommandRequestExec cre");
-        sql.append("        JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = cre.CommandRequestExecId");
-        sql.append("        WHERE CommandRequestExecType").in_k(deviceConfigExecTypes);
-        sql.append("        AND cre.CommandRequestExecId =");
-        sql.append("        (");
-        sql.append("            SELECT MAX(cre2.CommandRequestExecId)");
-        sql.append("            FROM CommandRequestExec cre2");
-        sql.append("            JOIN CommandRequestExecResult crer2");
-        sql.append("                ON crer2.CommandRequestExecId = cre2.CommandRequestExecId");
-        sql.append("                WHERE CommandRequestExecType").in_k(deviceConfigExecTypes);
-        sql.append("                AND crer2.DeviceID = crer.DeviceId");
-        sql.append("        )");
-        sql.append(") t");
-        sql.append("JOIN YukonPAObject ypo");
-        sql.append("    ON t.DeviceId = ypo.PAObjectID");
-        sql.append("WHERE t.CommandRequestExecType").neq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
-        return jdbcTemplate.query(sql, DeviceDaoImpl.SIMPLE_DEVICE_MAPPER);
     }
 }
