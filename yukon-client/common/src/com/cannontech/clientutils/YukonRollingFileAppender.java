@@ -13,6 +13,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
 
 import org.apache.logging.log4j.LogManager;
@@ -114,6 +117,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * Name of the current logging file.
      */
     private String fileName;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public YukonRollingFileAppender(final String name, final Filter filter, final Layout<? extends Serializable> layout,
             String fileName, String pattern, TriggeringPolicy policy, RolloverStrategy strategy, String applicationName,
@@ -266,15 +270,17 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     }
 
     /**
-     * Rename .log.zip files to .zip format in the log directory. 
+     * Rename .log.zip files to .zip format in the log directory after 10 minutes. 
      */
     private void renameZippedFiles() {
-        File currentDirectory = new File(directory);
-        File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
-        for (File file : filesForRename) {
-            String[] output = file.getAbsolutePath().split("\\.");
-            file.renameTo(new File(output[0] + ".zip"));
-        }
+        scheduler.schedule(() -> {
+            File currentDirectory = new File(directory);
+            File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
+            for (File file : filesForRename) {
+                String[] output = file.getAbsolutePath().split("\\.");
+                file.renameTo(new File(output[0] + ".zip"));
+            }
+        }, 10, TimeUnit.MINUTES);
     }
 
     private void setStartDate() {
