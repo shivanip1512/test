@@ -51,16 +51,10 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
                 if (weatherStationMap.containsKey(weatherStationId)) {
                     if (shouldUpdateWeatherPoints(singlePaoId)) {
                         log.debug("Weather data for " + weatherStationId + " is old. We will check with NOAA for updated weather data.");
+
                         WeatherStation weatherStation = weatherStationMap.get(weatherStationId);
-                        WeatherObservation updatedObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);
 
-                        if (updatedObservation.getTimestamp().isBefore(Instant.now().plus(Duration.standardHours(24)))) {
-                            updateWeatherPoints(updatedObservation, weatherStation, singlePaoId);
-                        } else {
-                            log.debug("Ignoring update weather data for station: " + weatherStationId
-                                + " as the timestamp" + updatedObservation.getTimestamp() + " is more than +24hrs hours");
-                        }
-
+                        updateWeatherPoints(weatherStation, singlePaoId);
                     } else {
                         log.debug("Weather data for " + weatherStationId + " is current and will not be updated.");
                     }
@@ -95,13 +89,19 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
     /**
      * Update weather points for any weather location
      */
-    private void updateWeatherPoints(WeatherObservation updatedObservation, WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
+    private void updateWeatherPoints(WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
+        WeatherObservation updatedObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);
+        if (updatedObservation.isTimestampValid()) {
+            WeatherLocation weatherLocation = weatherDataService.findWeatherLocationForPao(paoId);
+            WeatherObservation currentObservation = weatherDataService.getCurrentWeatherObservation(weatherLocation);
 
-        WeatherLocation weatherLocation = weatherDataService.findWeatherLocationForPao(paoId);
-        WeatherObservation currentObservation = weatherDataService.getCurrentWeatherObservation(weatherLocation);
-
-        if (!currentObservation.getTimestamp().isEqual(updatedObservation.getTimestamp())) {
-            weatherDataService.updateWeatherPoints(updatedObservation, paoId);
+            if (!currentObservation.getTimestamp().isEqual(updatedObservation.getTimestamp())) {
+                weatherDataService.updateWeatherPoints(updatedObservation, paoId);
+            }
+        } else {
+            log.debug("Ignoring update weather data for station: " + weatherStation.getStationId() + " as the timestamp"
+                + updatedObservation.getTimestamp() + " is more than +24hrs hours");
         }
+
     }
 }

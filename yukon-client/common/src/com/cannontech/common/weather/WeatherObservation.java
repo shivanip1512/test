@@ -1,5 +1,6 @@
 package com.cannontech.common.weather;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 public final class WeatherObservation {
@@ -43,5 +44,12 @@ public final class WeatherObservation {
 
     public String getStationId() {
         return stationId;
+    }
+
+    /**
+     * Return true if the timestamp of weather observation is less than 24 hours otherwise false.
+     */
+    public boolean isTimestampValid() {
+        return getTimestamp().isBefore(Instant.now().plus(Duration.standardHours(24)));
     }
 }

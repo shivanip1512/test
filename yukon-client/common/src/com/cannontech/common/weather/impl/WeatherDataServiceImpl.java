@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -206,7 +205,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         WeatherStation weatherStation = weatherStationMap.get(weatherLocation.getStationId());
         try {
             WeatherObservation weatherObservation = noaaWeatherDataService.getCurrentWeatherObservation(weatherStation);
-            if (weatherObservation.getTimestamp().isBefore(Instant.now().plus(Duration.standardHours(24)))) {
+            if (weatherObservation.isTimestampValid()) {
                 updateWeatherPoints(weatherObservation, weatherPaoId);
             } else {
                 log.debug("Ignoring update weather data for station: " + weatherLocation.getStationId()
