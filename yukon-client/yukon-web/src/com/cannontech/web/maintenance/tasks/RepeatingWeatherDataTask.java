@@ -99,7 +99,7 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
                 weatherDataService.updateWeatherPoints(updatedObservation, paoId);
             }
         } else {
-            log.debug("Ignoring update weather data for station: " + weatherStation.getStationId() + " as the timestamp"
+            log.warn("Ignoring update weather data for station: " + weatherStation.getStationId() + " as the timestamp"
                 + updatedObservation.getTimestamp() + " is more than +24hrs hours");
         }
 

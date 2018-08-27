@@ -208,7 +208,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
             if (weatherObservation.isTimestampValid()) {
                 updateWeatherPoints(weatherObservation, weatherPaoId);
             } else {
-                log.debug("Ignoring update weather data for station: " + weatherLocation.getStationId()
+                log.warn("Ignoring update weather data for station: " + weatherLocation.getStationId()
                     + " as the timestamp" + weatherObservation.getTimestamp() + " is more than +24hrs hours");
             }
         } catch (NoaaWeatherDataServiceException e) {
