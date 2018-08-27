@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +24,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
@@ -49,6 +49,7 @@ public class InfrastructureWarningsController {
 
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
     private final static String widgetKey = "yukon.web.widgets.";
+    private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
 
     @RequestMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
@@ -81,6 +82,17 @@ public class InfrastructureWarningsController {
             model.addAttribute("isRefreshPossible", true);
             model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         }
+        
+        // these values are used to provide a ROUNDED time since the warning was first observed
+        model.addAttribute("epoch1990", epoch1990);
+        model.addAttribute("minute_1", new DateTime().minusMinutes(1).toInstant());
+        model.addAttribute("hour_2", new DateTime().minusHours(2).toInstant());
+        model.addAttribute("hour_12", new DateTime().minusHours(12).toInstant());
+        model.addAttribute("day_1", new DateTime().minusDays(1).toInstant());
+        model.addAttribute("day_3", new DateTime().minusDays(3).toInstant());
+        model.addAttribute("week_3", new DateTime().minusWeeks(1).toInstant());
+        model.addAttribute("month_1", new DateTime().minusMonths(1).toInstant());
+
         return "infrastructureWarnings/widgetView.jsp";
     }
     
@@ -92,7 +104,7 @@ public class InfrastructureWarningsController {
     }
     
     @RequestMapping("detail")
-    public String detail(@DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, PagingParameters paging, 
+    public String detail(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
                          InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
@@ -116,6 +128,8 @@ public class InfrastructureWarningsController {
             comparator = (o1, o2) -> o1.getPaoIdentifier().getPaoType().getPaoTypeName().compareTo(o2.getPaoIdentifier().getPaoType().getPaoTypeName());
         } else if (sortBy == DetailSortBy.status) {
             comparator = (o1, o2) -> o1.getSeverity().name().compareTo(o2.getSeverity().name());
+        } else if (sortBy == DetailSortBy.timestamp) {
+            comparator = (o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp());
         }
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
@@ -138,7 +152,8 @@ public class InfrastructureWarningsController {
         
         model.addAttribute("deviceTypes", getTypesInSystem());
         model.addAttribute("selectedTypes", Lists.newArrayList(types));
-
+        
+        model.addAttribute("epoch1990", epoch1990);
         return "infrastructureWarnings/detail.jsp";
     }
     
@@ -146,7 +161,8 @@ public class InfrastructureWarningsController {
 
         name,
         type,
-        status;
+        status,
+        timestamp;
 
         @Override
         public String getFormatKey() {

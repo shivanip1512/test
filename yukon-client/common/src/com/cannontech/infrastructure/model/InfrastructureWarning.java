@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.joda.time.Instant;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
@@ -20,22 +21,23 @@ public class InfrastructureWarning implements Displayable, Serializable {
     private final InfrastructureWarningType warningType;
     private final Object[] arguments;
     private final InfrastructureWarningSeverity severity;
+    private final Instant timestamp;
     
     /**
      * Create a new InfrastructureWarning with the default severity.
      */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType) {
-        this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, new Object[0]);
+        this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, Instant.now(), new Object[0]);
     }
     
     /**
      * Create a new InfrastructureWarning with the default severity.
      */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
-                                 InfrastructureWarningType warningType, 
+                                 InfrastructureWarningType warningType,
                                  Object... arguments) {
-        this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, arguments);
+        this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, Instant.now(), arguments);
     }
     
     /**
@@ -44,11 +46,13 @@ public class InfrastructureWarning implements Displayable, Serializable {
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType, 
                                  InfrastructureWarningSeverity severity,
+                                 Instant timestamp,
                                  Object... arguments) {
         this.paoIdentifier = paoIdentifier;
         this.warningType = warningType;
         this.arguments = arguments;
         this.severity = severity;
+        this.timestamp = timestamp;
     }
 
     public PaoIdentifier getPaoIdentifier() {
@@ -66,6 +70,10 @@ public class InfrastructureWarning implements Displayable, Serializable {
     public InfrastructureWarningSeverity getSeverity() {
         return severity;
     }
+    
+    public Instant getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public MessageSourceResolvable getMessage() {
@@ -75,7 +83,7 @@ public class InfrastructureWarning implements Displayable, Serializable {
     @Override
     public String toString() {
         return "InfrastructureWarning [paoIdentifier=" + paoIdentifier + ", warningType=" + warningType + ", arguments="
-               + Arrays.toString(arguments) + ", severity=" + severity + "]";
+               + Arrays.toString(arguments) + ", severity=" + severity + ", timestamp=" + timestamp + "]";
     }
 
     @Override
@@ -85,6 +93,7 @@ public class InfrastructureWarning implements Displayable, Serializable {
         result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
         result = prime * result + ((severity == null) ? 0 : severity.hashCode());
         result = prime * result + ((warningType == null) ? 0 : warningType.hashCode());
+        result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
         return result;
     }
 
@@ -113,6 +122,9 @@ public class InfrastructureWarning implements Displayable, Serializable {
         if (warningType != other.warningType) {
             return false;
         }
+        // Not comparing timestamp here because we use this equals method to check if a new warning
+        // is a duplicate of an old warning.
+         
         return true;
     }
 

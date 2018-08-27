@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +45,8 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
                                             .map(warning -> {
                                                 List<Object> row = Lists.newArrayList(warning.getPaoIdentifier().getPaoId(),
                                                                                       warning.getWarningType(),
-                                                                                      warning.getSeverity());
+                                                                                      warning.getSeverity(),
+                                                                                      warning.getTimestamp());
                                                 for (int i = 0; i < 3; i++) {
                                                     if (i < warning.getArguments().length) {
                                                         row.add(warning.getArguments()[i].toString());
@@ -59,7 +61,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         // Finally, insert the new warnings
         SqlStatementBuilder insertSql = new SqlStatementBuilder();
         insertSql.batchInsertInto("InfrastructureWarnings")
-                 .columns("PaoId", "WarningType", "Severity", "Argument1", "Argument2", "Argument3")
+                 .columns("PaoId", "WarningType", "Severity", "Timestamp", "Argument1", "Argument2", "Argument3")
                  .values(values);
         
         jdbcTemplate.yukonBatchUpdate(insertSql);
@@ -158,7 +160,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
     
     private static SqlStatementBuilder selectAllInfrastructureWarnings() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PaoId, Type, WarningType, Severity, Argument1, Argument2, Argument3");
+        sql.append("SELECT PaoId, Type, WarningType, Severity, Timestamp, Argument1, Argument2, Argument3");
         sql.append("FROM InfrastructureWarnings iw");
         sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = iw.PaoId");
         return sql;
@@ -181,9 +183,10 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaoId", "Type");
         InfrastructureWarningType warningType = rs.getEnum("WarningType", InfrastructureWarningType.class);
         InfrastructureWarningSeverity severity = rs.getEnum("Severity", InfrastructureWarningSeverity.class);
+        Instant timestamp = rs.getInstant("Timestamp");
         Object[] arguments = getWarningArguments(rs);
         
-        return new InfrastructureWarning(paoIdentifier, warningType, severity, arguments);
+        return new InfrastructureWarning(paoIdentifier, warningType, severity, timestamp, arguments);
     };
     
     private static Object[] getWarningArguments(YukonResultSet rs) throws SQLException {

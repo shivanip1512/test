@@ -200,8 +200,10 @@
             <li>PLC CCU communication status – Warning condition produced when ten consecutive messages targeting the specified CCU fail to be delivered. This may indicate a bulk communication problem between the Yukon software and the device.</li>
             <li>PLC Repeater communication status - Warning condition produced when ten consecutive messages targeting the specified Repeater fail to be delivered. This indicates a communication problem between the Yukon software and the device.</li>
         </ul>
-        The infrastructure warnings are updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 5 minutes. 
-        The date/time displays the date/time that the warnings were last updated.
+        The Duration provides an upper bound for how much time has passed since the warning first occurred. Hover over the Duration value to see the exact time that the warning first occurred.
+        <br/>
+        The infrastructure warnings are updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 5 minutes.
+        The date/time next to the Refresh button displays the date/time that the warnings were last updated.
 ]]></entry>
 
 <entry key="yukon.web.widgets.notAuthorized">You are not authorized to access this widget.</entry>

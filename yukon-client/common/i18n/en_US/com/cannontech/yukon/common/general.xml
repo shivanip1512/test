@@ -277,6 +277,14 @@
 <entry key="yukon.common.time.range.DAY_2">48 Hours</entry>
 <entry key="yukon.common.time.range.WEEK_1">7 Days</entry>
 <entry key="yukon.common.timestamp">Timestamp</entry>
+<entry key="yukon.common.duration">Duration</entry>
+<entry key="yukon.common.duration.minute.1">1 min.</entry>
+<entry key="yukon.common.duration.hour.2">2 hours</entry>
+<entry key="yukon.common.duration.hour.12">12 hours</entry>
+<entry key="yukon.common.duration.day.1">1 day</entry>
+<entry key="yukon.common.duration.day.3">3 days</entry>
+<entry key="yukon.common.duration.week.1">1 week</entry>
+<entry key="yukon.common.duration.month.1">1 month</entry>
 <entry key="yukon.common.timestamp.format.header.input">Input</entry>
 <entry key="yukon.common.timestamp.format.header.result">Result</entry>
 <entry key="yukon.common.timestamp.format.header.description">Description</entry>

@@ -57,29 +57,73 @@
     <br/>  
         
     <tags:sectionContainer2 nameKey="recentIssues">
-        <table class="compact-results-table">
-            <th><cti:msg2 key=".name"/></th>
-            <th><cti:msg2 key=".status"/></th>
+        <table class="compact-results-table" width="100%">
+            <th width="20%"><cti:msg2 key=".name"/></th>
+            <th width="60%"><cti:msg2 key=".status"/></th>
+            <th width="20%"><cti:msg2 key="yukon.common.duration"/></th>
         
-        <c:choose>
-            <c:when test="${warnings.size() > 0}">
-                <c:forEach var="warning" items="${warnings}">
-                    <tr>
-                        <td class="wsnw">
-                            <cti:paoDetailUrl yukonPao="${warning.paoIdentifier}" newTab="true">
-                                <cti:deviceName deviceId="${warning.paoIdentifier.paoId}"/>
-                            </cti:paoDetailUrl>
-                        </td>
-                        <td>
-                            <c:set var="warningColor" value="warning"/>
-                            <c:if test="${warning.severity == 'HIGH'}">
-                                <c:set var="warningColor" value="error"/>
-                            </c:if>
-                            <span class="${warningColor}"><cti:msg2 key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/></td>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </c:when>
+            <c:choose>
+                <c:when test="${warnings.size() > 0}">
+                    <c:forEach var="warning" items="${warnings}">
+                        <tr>
+                            <td class="wsnw">
+                                <cti:paoDetailUrl yukonPao="${warning.paoIdentifier}" newTab="true">
+                                    <cti:deviceName deviceId="${warning.paoIdentifier.paoId}"/>
+                                </cti:paoDetailUrl>
+                            </td>
+                            <td>
+                                <c:set var="warningColor" value="warning"/>
+                                <c:if test="${warning.severity == 'HIGH'}">
+                                    <c:set var="warningColor" value="error"/>
+                                </c:if>
+                                <span class="${warningColor}">
+                                    <cti:msg2 key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/>
+                                </span>
+                            </td>
+                            <td>
+                                <c:choose>                                    
+                                    <c:when test="${warning.timestamp le epoch1990}">
+                                        <cti:msg2 key="yukon.common.dashes" var="timestamp"/>
+                                        <div title="${timestamp}">
+                                           &gt; <i:inline key="yukon.common.duration.month.1"/>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:formatDate value="${warning.timestamp}" type="FULL" var="timestamp"/>
+                                        <div title="${timestamp}">
+                                            <c:choose>
+                                                <c:when test="${warning.timestamp ge minute_1}">
+                                                    <i:inline key="yukon.common.duration.minute.1"/>
+                                                </c:when>
+                                                <c:when test="${warning.timestamp ge hour_2}">
+                                                    <i:inline key="yukon.common.duration.hour.2"/>
+                                                </c:when>
+                                                <c:when test="${warning.timestamp ge hour_12}">
+                                                    <i:inline key="yukon.common.duration.hour.12"/>
+                                                </c:when>
+                                                <c:when test="${warning.timestamp ge day_1}">
+                                                    <i:inline key="yukon.common.duration.day.1"/>
+                                                </c:when>
+                                                <c:when test="${warning.timestamp ge day_3}">
+                                                    <i:inline key="yukon.common.duration.day.3"/>
+                                                </c:when>
+                                                <c:when test="${warning.timestamp ge week_1}">
+                                                    <i:inline key="yukon.common.duration.week.1"/>
+                                                </c:when>
+                                                <c:when test="${warning.timestamp ge month_1}">
+                                                    <i:inline key="yukon.common.duration.month.1"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    &gt; <i:inline key="yukon.common.duration.month.1"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </c:when>
                 <c:otherwise>
                     <tr>
                         <td colspan="3">

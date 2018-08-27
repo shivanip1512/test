@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,27 +61,33 @@ public class InfrastructureWarningsServiceImplTest {
                                                              PaoType.GWY800,
                                                              "", "");
         
+        Instant now = Instant.now();
         InfrastructureWarning warning1 = new InfrastructureWarning(pao1.getPaoIdentifier(),
                                                                    InfrastructureWarningType.GATEWAY_COLOR,
+                                                                   now,
                                                                    (short) 2);
         InfrastructureWarning warning2 = new InfrastructureWarning(pao2.getPaoIdentifier(),
                                                                    InfrastructureWarningType.GATEWAY_COLOR,
+                                                                   now,
                                                                    (short) 2);
         InfrastructureWarning warning3 = new InfrastructureWarning(pao3.getPaoIdentifier(),
-                                                                   InfrastructureWarningType.GATEWAY_FAILSAFE);
+                                                                   InfrastructureWarningType.GATEWAY_FAILSAFE,
+                                                                   now);
         InfrastructureWarning warning4 = new InfrastructureWarning(pao4.getPaoIdentifier(),
                                                                    InfrastructureWarningType.GATEWAY_COLOR,
+                                                                   now,
                                                                    (short) 3);
         InfrastructureWarning warning5 = new InfrastructureWarning(pao5.getPaoIdentifier(),
                                                                    InfrastructureWarningType.GATEWAY_COLOR,
+                                                                   now,
                                                                    (short) 3);
         InfrastructureWarning warning6 = new InfrastructureWarning(pao2.getPaoIdentifier(),
                                                                    InfrastructureWarningType.GATEWAY_COLOR,
+                                                                   new DateTime(now).plusMinutes(1).toInstant(),
                                                                    (short) 4);
         
         List<InfrastructureWarning> oldWarnings = ImmutableList.of(warning1, warning2, warning3);
         List<InfrastructureWarning> newWarnings = ImmutableList.of(warning3, warning4, warning5, warning6);
-        Instant now = Instant.now();
         
         final IDatabaseCache databaseCache = new StubServerDatabaseCache() {
             @Override
@@ -118,6 +125,17 @@ public class InfrastructureWarningsServiceImplTest {
         // Test warnings smart notification logic
         List<InfrastructureWarning> smartNotificationWarnings = ReflectionTestUtils.invokeMethod(service, 
                 "getSmartNotificationWarnings", oldWarnings, newWarnings);
+        
+        // Test warnings timestamp logic
+        List<InfrastructureWarning> infrastructureWarnings =  ReflectionTestUtils.invokeMethod(service, 
+                "getInfrastructureWarnings", oldWarnings, smartNotificationWarnings);
+        Assert.assertEquals("Timestamp should not be updated for repeated infrastructure warnings", 
+                            infrastructureWarnings.stream()
+                                                  .filter(warning -> warning.getPaoIdentifier().getPaoId() == 2)
+                                                  .findFirst()
+                                                  .get()
+                                                  .getTimestamp(),
+                            now);
         
         List<SmartNotificationEvent> events = ReflectionTestUtils.invokeMethod(service, 
                 "getNotificationEventsForNewWarnings", smartNotificationWarnings, now);

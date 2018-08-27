@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -119,14 +120,17 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                                                                  .flatMap(List::stream)
                                                                  .collect(Collectors.toList());
                 
-                // Insert warnings into DB (overwriting previous warnings)
-                infrastructureWarningsDao.insert(warnings);
-                
                 // Add event log entries only for warnings that are new in this calculation. Warning arguments checked for equality.
                 List<InfrastructureWarning> eventLogWarnings = getAndLogEventLogWarnings(oldWarnings, warnings);
                 
                 // Used for smart notifications. Warning arguments NOT checked for equality.
                 List<InfrastructureWarning> smartNotificationWarnings = getSmartNotificationWarnings(oldWarnings, eventLogWarnings);
+                
+                // Get the old warnings and non-repeated warnings that we want to put in the Infrastructure
+                // Warnings table, then insert warnings into DB (overwriting previous warnings in the table).
+                // This process carries over the start time for warnings that have been repeatedly calculated.
+                List<InfrastructureWarning> infrastructureWarnings = getInfrastructureWarnings(oldWarnings, smartNotificationWarnings);
+                infrastructureWarningsDao.insert(infrastructureWarnings);
 
                 log.info("Infrastructure warnings calculation complete");
                 
@@ -141,6 +145,13 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
         }   
     }
     
+    private List<InfrastructureWarning> getInfrastructureWarnings(List<InfrastructureWarning> oldWarnings,
+                                                                  List<InfrastructureWarning> smartNotificationWarnings) {
+        return Stream.concat(smartNotificationWarnings.stream(),
+                             oldWarnings.stream())
+                     .collect(Collectors.toList());
+    }
+
     /**
      * Notify WS that warnings were recalculated and warnings cache can be updated
      */

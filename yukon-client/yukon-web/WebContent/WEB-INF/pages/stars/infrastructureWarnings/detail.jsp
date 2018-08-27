@@ -49,7 +49,8 @@
     <table class="compact-results-table row-highlighting">
         <tags:sort column="${name}" />                
         <tags:sort column="${type}" />                
-        <tags:sort column="${status}" />                
+        <tags:sort column="${status}" />
+        <tags:sort column="${timestamp}" />
 
         <c:choose>
             <c:when test="${warnings.hitCount > 0}">
@@ -67,6 +68,16 @@
                                 <c:set var="warningColor" value="error"/>
                             </c:if>
                             <span class="${warningColor}"><cti:msg2 key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/></td>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${warning.timestamp lt epoch1990}">
+                                    <i:inline key="yukon.common.dashes"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:formatDate value="${warning.timestamp}" type="FULL"/>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>
