@@ -65,6 +65,6 @@
     <bean class="com.cannontech.services.smartNotification.service.impl.email.SmartNotificationEmailMessageParametersHandler"/>
     <bean class="com.cannontech.services.smartNotification.service.impl.email.DeviceDataMonitorEmailBuilder"/>
     <bean class="com.cannontech.services.smartNotification.service.impl.email.InfrastructureWarningsEmailBuilder"/>
-    <bean class="com.cannontech.services.smartNotification.service.impl.email.YukonWatchdogEmailBuilder"/>
-    
+    <bean class="com.cannontech.services.smartNotification.service.impl.email.WatchdogEmailBuilder"/>
+    <bean class="com.cannontech.services.smartNotification.service.impl.email.ServiceStatusWatchdogEmailFormatHandler"/>
 </beans>

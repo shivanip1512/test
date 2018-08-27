@@ -1,62 +1,51 @@
 package com.cannontech.watchdog.model;
 
-import org.apache.commons.lang3.text.WordUtils;
 import com.cannontech.watchdog.model.Watchdogs;
 
 
 public enum WatchdogWarningType {
 
-    YUKON_WEB_APPLICATION_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_SERVICE_MANAGER(Watchdogs.SERVICE_STATUS),
-    YUKON_NOTIFICATION_SERVER(Watchdogs.SERVICE_STATUS),
-    YUKON_MESSAGE_BROKER(Watchdogs.SERVICE_STATUS),
-    YUKON_DISPATCH_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_CAP_CONTROL_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_LOAD_MANAGEMENT_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_PORT_CONTROL_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_MAC_SCHEDULER_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_FOREIGN_DATA_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_CALC_LOGIC_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_REAL_TIME_SCAN_SERVICE(Watchdogs.SERVICE_STATUS),
-    YUKON_NETWORK_MANAGER(Watchdogs.SERVICE_STATUS),
-    DB_CONNECTION_STATUS(Watchdogs.DB_CONNECTION),
-    CRASH_DUMP_LOCATION(Watchdogs.CRASH_DUMP),
-    CONFIG_FILE_MODIFICATION(Watchdogs.CONFIG_FILE),
-    LOW_DISK_SPACE(Watchdogs.DISK_SPACE);
+    YUKON_WEB_APPLICATION_SERVICE("Yukon Web Application Service",Watchdogs.SERVICE_STATUS),
+    YUKON_SERVICE_MANAGER("Yukon Service Manager", Watchdogs.SERVICE_STATUS),
+    YUKON_NOTIFICATION_SERVER("Yukon Notification Server", Watchdogs.SERVICE_STATUS),
+    YUKON_MESSAGE_BROKER("Yukon Message Broker", Watchdogs.SERVICE_STATUS),
+    YUKON_DISPATCH_SERVICE("Yukon Dispatch Service", Watchdogs.SERVICE_STATUS),
+    YUKON_CAP_CONTROL_SERVICE("Yukon Cap Control Service", Watchdogs.SERVICE_STATUS),
+    YUKON_LOAD_MANAGEMENT_SERVICE("Yukon Load Management Service", Watchdogs.SERVICE_STATUS),
+    YUKON_PORT_CONTROL_SERVICE("Yukon Port Control Service", Watchdogs.SERVICE_STATUS),
+    YUKON_MAC_SCHEDULER_SERVICE("Yukon MAC Scheduler Service", Watchdogs.SERVICE_STATUS),
+    YUKON_FOREIGN_DATA_SERVICE("Yukon Foreign Data Service", Watchdogs.SERVICE_STATUS),
+    YUKON_CALC_LOGIC_SERVICE("Yukon Calc-Logic Service", Watchdogs.SERVICE_STATUS),
+    YUKON_REAL_TIME_SCAN_SERVICE("Yukon Real-Time Scan Service", Watchdogs.SERVICE_STATUS),
+    YUKON_NETWORK_MANAGER("Yukon Network Manager", Watchdogs.SERVICE_STATUS);
 
     private final Watchdogs watchdogName;
+
+    private final String name;
 
     public Watchdogs getWatchdogName() {
         return watchdogName;
     }
 
-    private WatchdogWarningType(Watchdogs watchdogName) {
+    public String getName() {
+        return name;
+    }
+
+    private WatchdogWarningType(String name, Watchdogs watchdogName) {
         this.watchdogName = watchdogName;
+        this.name = name;
     }
 
     /**
-     * This method receives object in two format . first one will be the watchdogwarningtype and other one will be the 
-     * arguments in "{key=value}" format . As we need value part so if it didn't matches the enums it will return the 
-     * value part.
+     * This method will return a user friendly watchdog warning name.
      */
-    public static Object fromObject(Object obj) {
-        String argument = obj.toString();
+    public static String getWatchdogWarningName(String watchdog) {
         for (WatchdogWarningType wwt : WatchdogWarningType.values()) {
-            if (wwt.name().equalsIgnoreCase(argument)) {
-                return wwt.toString();
+            if (wwt.name().equalsIgnoreCase(watchdog)) {
+                return wwt.getName();
             }
         }
-        String[] strArray = argument.split("=");
-        if (strArray.length == 2) {
-            return strArray[1];
-        } else {
-            return WordUtils.capitalizeFully(strArray[0].toLowerCase().replaceAll("_", " "));
-        }
+        return watchdog;
     }
 
-
-    @Override
-    public String toString() {
-        return WordUtils.capitalizeFully(name().toLowerCase().replaceAll("_", " "));
-    }
 }

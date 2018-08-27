@@ -99,8 +99,8 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
                 SmartNotificationEventData row = new SmartNotificationEventData();
                 row.setEventId(rs.getInt("EventId"));
                 row.setTimestamp(rs.getInstant("Timestamp"));
-                row.setStatus(rs.getString("Status") != null ? WatchdogWarningType.fromObject(rs.getString("Status")).toString() : "");
-                row.setWarningType(rs.getString("WarningType") != null ? WatchdogWarningType.fromObject(rs.getString("WarningType")).toString() : "");
+                row.setStatus(rs.getString("Status"));
+                row.setWarningType(rs.getString("WarningType") != null ? WatchdogWarningType.getWatchdogWarningName(rs.getString("WarningType")): "");
                 return row;
             }
         };
@@ -417,17 +417,17 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         boolean isOracle = databaseVendor.isOracle();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT sne.Timestamp As Timestamp, sne.EventId, sne.Type, snep.WarningType As WarningType, snep.Argument0 As Status ");
+        sql.append("SELECT sne.Timestamp As Timestamp, sne.EventId, sne.Type, snep.WarningType As WarningType, snep.Status As Status ");
         sql.append("FROM SmartNotificationEvent sne");
         sql.append("    INNER JOIN ("); 
         sql.append("        SELECT * FROM (");
         sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
         sql.append("        ) snep");
         if (isOracle) {
-            sql.append("        PIVOT ( Max(Value) FOR Name IN ('WarningType' AS WarningType, 'Argument0' As Argument0)) P");
+            sql.append("        PIVOT ( Max(Value) FOR Name IN ('WarningType' AS WarningType, 'Status' As Status)) P");
         } 
         else {
-            sql.append("        PIVOT ( Max(Value) FOR Name IN (WarningType, Argument0)) P");
+            sql.append("        PIVOT ( Max(Value) FOR Name IN (WarningType, Status)) P");
         }
         sql.append("        ) snep ON sne.EventId = snep.EventId ");
         sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.YUKON_WATCHDOG);
