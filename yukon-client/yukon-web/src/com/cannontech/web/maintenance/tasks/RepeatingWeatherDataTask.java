@@ -23,14 +23,12 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
-import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonTaskBase;
 
 public class RepeatingWeatherDataTask extends YukonTaskBase {
 
     private Logger log = YukonLogManager.getLogger(RepeatingWeatherDataTask.class);
 
-    @Autowired private JobManager jobManager;
     @Autowired private PaoDao paoDao;
     @Autowired private NoaaWeatherDataService noaaWeatherService;
     @Autowired private StaticPaoInfoDao staticPaoInfoDao;
@@ -52,11 +50,17 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
                 weatherStationId = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_STATIONID, singlePaoId);
                 if (weatherStationMap.containsKey(weatherStationId)) {
                     if (shouldUpdateWeatherPoints(singlePaoId)) {
-                        WeatherStation weatherStation = weatherStationMap.get(weatherStationId);
-
-                        updateWeatherPoints(weatherStation, singlePaoId);
-
                         log.debug("Weather data for " + weatherStationId + " is old. We will check with NOAA for updated weather data.");
+                        WeatherStation weatherStation = weatherStationMap.get(weatherStationId);
+                        WeatherObservation updatedObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);
+
+                        if (updatedObservation.getTimestamp().isBefore(Instant.now().plus(Duration.standardHours(24)))) {
+                            updateWeatherPoints(updatedObservation, weatherStation, singlePaoId);
+                        } else {
+                            log.debug("Ignoring update weather data for station: " + weatherStationId
+                                + " as the timestamp" + updatedObservation.getTimestamp() + " is more than +24hrs hours");
+                        }
+
                     } else {
                         log.debug("Weather data for " + weatherStationId + " is current and will not be updated.");
                     }
@@ -91,8 +95,7 @@ public class RepeatingWeatherDataTask extends YukonTaskBase {
     /**
      * Update weather points for any weather location
      */
-    private void updateWeatherPoints(WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
-        WeatherObservation updatedObservation = noaaWeatherService.getCurrentWeatherObservation(weatherStation);
+    private void updateWeatherPoints(WeatherObservation updatedObservation, WeatherStation weatherStation, int paoId) throws NoaaWeatherDataServiceException {
 
         WeatherLocation weatherLocation = weatherDataService.findWeatherLocationForPao(paoId);
         WeatherObservation currentObservation = weatherDataService.getCurrentWeatherObservation(weatherLocation);

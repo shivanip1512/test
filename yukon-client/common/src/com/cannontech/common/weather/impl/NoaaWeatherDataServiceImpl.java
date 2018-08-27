@@ -34,8 +34,6 @@ import org.xml.sax.SAXException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.xml.YukonXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
@@ -44,8 +42,6 @@ import com.cannontech.common.weather.NoaaWeatherDataService;
 import com.cannontech.common.weather.NoaaWeatherDataServiceException;
 import com.cannontech.common.weather.WeatherObservation;
 import com.cannontech.common.weather.WeatherStation;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
@@ -56,10 +52,6 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
     private String noaaUrl = "http://w1.weather.gov/xml/current_obs/index.xml";
     private Map<String, WeatherStation> weatherStationMap = new HashMap<>();
 
-    @Autowired private PaoDao paoDao;
-    @Autowired private StaticPaoInfoDao staticPaoInfoDao;
-    @Autowired private PaoPersistenceService paoPersistenceService;
-    @Autowired private AttributeService attributeService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
 
