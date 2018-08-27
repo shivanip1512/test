@@ -85,38 +85,13 @@
                                     <c:when test="${warning.timestamp le epoch1990}">
                                         <cti:msg2 key="yukon.common.dashes" var="timestamp"/>
                                         <div title="${timestamp}">
-                                           &gt; <i:inline key="yukon.common.duration.month.1"/>
+                                            <i:inline key="${warning.approximateDurationKey}" arguments="${warning.approximateDurationValue}"/>
                                         </div>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:formatDate value="${warning.timestamp}" type="FULL" var="timestamp"/>
                                         <div title="${timestamp}">
-                                            <c:choose>
-                                                <c:when test="${warning.timestamp ge minute_1}">
-                                                    <i:inline key="yukon.common.duration.minute.1"/>
-                                                </c:when>
-                                                <c:when test="${warning.timestamp ge hour_2}">
-                                                    <i:inline key="yukon.common.duration.hour.2"/>
-                                                </c:when>
-                                                <c:when test="${warning.timestamp ge hour_12}">
-                                                    <i:inline key="yukon.common.duration.hour.12"/>
-                                                </c:when>
-                                                <c:when test="${warning.timestamp ge day_1}">
-                                                    <i:inline key="yukon.common.duration.day.1"/>
-                                                </c:when>
-                                                <c:when test="${warning.timestamp ge day_3}">
-                                                    <i:inline key="yukon.common.duration.day.3"/>
-                                                </c:when>
-                                                <c:when test="${warning.timestamp ge week_1}">
-                                                    <i:inline key="yukon.common.duration.week.1"/>
-                                                </c:when>
-                                                <c:when test="${warning.timestamp ge month_1}">
-                                                    <i:inline key="yukon.common.duration.month.1"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    &gt; <i:inline key="yukon.common.duration.month.1"/>
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <i:inline key="${warning.approximateDurationKey}" arguments="${warning.approximateDurationValue}"/>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>

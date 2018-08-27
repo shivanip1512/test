@@ -1,9 +1,11 @@
 package com.cannontech.infrastructure.model;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -73,6 +75,62 @@ public class InfrastructureWarning implements Displayable, Serializable {
     
     public Instant getTimestamp() {
         return timestamp;
+    }
+    
+    /**
+     * The following durations will be displayed in the infrastructure warnings widget based upon
+     * the timestamp of when the warning first occurred. This method gets the key for the unit of
+     * time in the examples below (e.g. hours).
+     * X hours (if less than a day)
+     * X days (if less than a week)
+     * X weeks (if less than a month)
+     * 1 month (if less than 2 months)
+     * > 1 month (2 months or more)
+     */
+    public String getApproximateDurationKey() {
+        DateTime now = new DateTime();
+        if (timestamp.getMillis() > now.minusHours(1).getMillis()) {
+            return "yukon.common.duration.minutes";
+        }
+        if (timestamp.getMillis() > now.minusDays(1).getMillis()) {
+            return "yukon.common.duration.hours";
+        }
+        if (timestamp.getMillis() > now.minusWeeks(1).getMillis()) {
+            return "yukon.common.duration.days";
+        }
+        if (timestamp.getMillis() > now.minusMonths(1).getMillis()) {
+            return "yukon.common.duration.weeks";
+        }
+        return "yukon.common.duration.months";
+    }
+    
+    /**
+     * The following durations will be displayed in the infrastructure warnings widget based upon
+     * the timestamp of when the warning first occurred. This method gets the value of X below.
+     * X hours (if less than a day)
+     * X days (if less than a week)
+     * X weeks (if less than a month)
+     * 1 month (if less than 2 months)
+     * > 1 month (2 months or more)
+     */
+    public long getApproximateDurationValue() {
+        DateTime now = new DateTime();
+        if (timestamp.getMillis() > now.minusHours(1).getMillis()) {
+            return (now.getMillis()-timestamp.getMillis()) / Duration.ofMinutes(1).toMillis();
+        }
+        if (timestamp.getMillis() > now.minusDays(1).getMillis()) {
+            return (now.getMillis()-timestamp.getMillis()) / Duration.ofHours(1).toMillis();
+        }
+        if (timestamp.getMillis() > now.minusWeeks(1).getMillis()) {
+            return (now.getMillis()-timestamp.getMillis()) / Duration.ofDays(1).toMillis();
+        }
+        if (timestamp.getMillis() > now.minusMonths(1).getMillis()) {
+            return (now.getMillis()-timestamp.getMillis()) / Duration.ofDays(7).toMillis();
+        }
+        if (timestamp.getMillis() > now.minusMonths(2).getMillis()) {
+            return 1; // 2 months or less will display as 1 month
+        }
+        return 2;
     }
 
     @Override

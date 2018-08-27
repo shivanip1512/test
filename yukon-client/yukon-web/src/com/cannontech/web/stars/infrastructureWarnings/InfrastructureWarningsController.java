@@ -83,15 +83,7 @@ public class InfrastructureWarningsController {
             model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         }
         
-        // these values are used to provide a ROUNDED time since the warning was first observed
         model.addAttribute("epoch1990", epoch1990);
-        model.addAttribute("minute_1", new DateTime().minusMinutes(1).toInstant());
-        model.addAttribute("hour_2", new DateTime().minusHours(2).toInstant());
-        model.addAttribute("hour_12", new DateTime().minusHours(12).toInstant());
-        model.addAttribute("day_1", new DateTime().minusDays(1).toInstant());
-        model.addAttribute("day_3", new DateTime().minusDays(3).toInstant());
-        model.addAttribute("week_3", new DateTime().minusWeeks(1).toInstant());
-        model.addAttribute("month_1", new DateTime().minusMonths(1).toInstant());
 
         return "infrastructureWarnings/widgetView.jsp";
     }
