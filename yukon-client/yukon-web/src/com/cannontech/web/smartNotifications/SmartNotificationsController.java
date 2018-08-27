@@ -67,6 +67,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -471,7 +472,7 @@ public class SmartNotificationsController {
         String[] headerRow = new String[] { warningTypeHeader, statusHeader, timestampHeader };
 
         for (SmartNotificationEventData event : eventData.getResultList()) {
-            String warningType = event.getWarningType();
+            String warningType = WatchdogWarningType.getWatchdogWarningName(event.getWarningType());
             String status = event.getStatus();
             String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
             String[] dataRow = new String[] { warningType, status, timestamp };
