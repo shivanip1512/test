@@ -205,7 +205,12 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         WeatherStation weatherStation = weatherStationMap.get(weatherLocation.getStationId());
         try {
             WeatherObservation weatherObservation = noaaWeatherDataService.getCurrentWeatherObservation(weatherStation);
-            updateWeatherPoints(weatherObservation, weatherPaoId);
+            if (weatherObservation.isTimestampValid()) {
+                updateWeatherPoints(weatherObservation, weatherPaoId);
+            } else {
+                log.warn("Ignoring update weather data for station: " + weatherLocation.getStationId()
+                    + " as the timestamp" + weatherObservation.getTimestamp() + " is more than 24 hours");
+            }
         } catch (NoaaWeatherDataServiceException e) {
             log.warn("Unable to get points(humidity and temperature) for weather station: "
                      + weatherLocation.getStationId(), e);
