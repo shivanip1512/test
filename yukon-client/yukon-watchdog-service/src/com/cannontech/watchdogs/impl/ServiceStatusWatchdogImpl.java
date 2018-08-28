@@ -102,6 +102,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
                 runningServices.add(service);
             }
             if (!haveSeenRunning(service)) {
+                log.debug(service +" Service is not seen running yet, so not sending notification.");
                 return false;
             }
         }
