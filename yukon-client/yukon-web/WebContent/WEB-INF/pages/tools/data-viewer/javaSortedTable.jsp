@@ -8,18 +8,18 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/page"/>
-<form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">        
+<form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">
     <c:choose>
         <c:when test="${display.isAlarmDisplay()}">
             <span class="fr">
                 <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}"/>
                 <c:if test="${backingBean.alarmFilter eq 'ALARM_HISTORY'}">
-                    <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
+                    <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}" forceDisplayPicker="true"/></span>
                 </c:if>
             </span>
         </c:when>
         <c:otherwise>
-            <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
+            <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}" forceDisplayPicker="true"/></span>
         </c:otherwise>
     </c:choose>
 </form:form>
