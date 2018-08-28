@@ -39,10 +39,7 @@ public class RfnMeterEventService {
     @PostConstruct
     public void initialize() {
         // Build up our map of processors
-        processorsMap = Maps.newHashMap();
-        for (RfnArchiveRequestProcessor processor : processors) {
-            processorsMap.put(processor.getRfnConditionType(), processor);
-        }
+        processorsMap = Maps.uniqueIndex(processors, RfnArchiveRequestProcessor::getRfnConditionType);
     }
     
     /**

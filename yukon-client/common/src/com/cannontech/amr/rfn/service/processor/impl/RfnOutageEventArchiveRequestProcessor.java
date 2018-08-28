@@ -15,6 +15,7 @@ import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHe
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.model.InvalidEventMessageException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.message.dispatch.message.PointData;
@@ -41,13 +42,21 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
         
         rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.BAD.getRawState(), quality, now);
 
-        rfnMeterEventService.processAttributePointData(device, 
-                                                       pointDatas, 
-                                                       BuiltInAttribute.RFN_OUTAGE_COUNT, 
-                                                       eventInstant, 
-                                                       getLongEventData(event, RfnConditionDataType.COUNT), 
-                                                       quality, 
-                                                       now);
+        try {
+            rfnMeterEventService.processAttributePointData(device, 
+                                                           pointDatas, 
+                                                           BuiltInAttribute.RFN_OUTAGE_COUNT, 
+                                                           eventInstant, 
+                                                           getLongEventData(event, RfnConditionDataType.COUNT), 
+                                                           quality, 
+                                                           now);
+        } catch (InvalidEventMessageException ex) {
+            if (event instanceof RfnAlarm) {
+                log.trace(device + " outage alarm received with no COUNT, not sending RFN_OUTAGE_COUNT update");
+            } else {
+                throw ex;
+            }
+        }
     }
     
     @Override
