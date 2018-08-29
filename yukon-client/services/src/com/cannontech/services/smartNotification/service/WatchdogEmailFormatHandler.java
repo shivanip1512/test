@@ -30,15 +30,9 @@ public abstract class WatchdogEmailFormatHandler {
     public abstract Watchdogs getWatchdogs();
 
     /**
-     * Builds message body text for single smart notification event.
+     * Builds message body text for watchdog smart notification events.
      */
-    public abstract String buildSingleEventEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event, SmartNotificationVerbosity verbosity);
-    
-    /**
-     * Builds message body text for multiple smart notification events.
-     */
-    public abstract String buildMultiEventEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event,
-            SmartNotificationVerbosity verbosity);
+    public abstract String buildEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event, SmartNotificationVerbosity verbosity);
 
     /**
      * This method will sort the smart notification event based on timestamp - Descending order.

@@ -17,25 +17,11 @@ public class ServiceStatusWatchdogEmailFormatHandler extends WatchdogEmailFormat
         return Watchdogs.SERVICE_STATUS;
     }
 
-    @Override
-    public String buildSingleEventEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event,
-            SmartNotificationVerbosity verbosity) {
-        return buildEmailBodyText(watchdogWarningType, event, verbosity);
-    }
-
-    @Override
-    public String buildMultiEventEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event,
-            SmartNotificationVerbosity verbosity) {
-        return buildEmailBodyText(watchdogWarningType, event, verbosity);
-    }
-
     /**
      * This method will build the email body text for both single and multiple events.
-     * Currently it is used for both single and multiple events. In future if we need events
-     * specific customization, we can do that in the overridden buildSingleEventEmailBodyText 
-     * and buildMultiEventEmailBodyText method.
      */
-    private String buildEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event,
+    @Override
+    public String buildEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event,
             SmartNotificationVerbosity verbosity) {
         List<String> warningArgs = new ArrayList<String>();
         String warningKey = watchdogWarningType.getWatchdogName().getFormatKey() + "." + verbosity;

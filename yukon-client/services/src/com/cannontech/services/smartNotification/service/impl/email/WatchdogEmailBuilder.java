@@ -36,48 +36,34 @@ public class WatchdogEmailBuilder extends SmartNotificationEmailBuilder {
     @Override
     protected Object[] getBodyArguments(List<SmartNotificationEvent> events, SmartNotificationVerbosity verbosity,
             int eventPeriodMinutes) {
-        List<Object> argumentList = new ArrayList<>();
-        if (events.size() == 1) {
-            argumentList = getSingleEventBodyArguments(events.get(0), verbosity);
-        } else {
-            argumentList = getMultiEventBodyArguments(events, verbosity, eventPeriodMinutes);
-        }
+        List<Object> argumentList = getEventBodyArguments(events, verbosity, eventPeriodMinutes);
         return argumentList.toArray();
     }
 
     /**
      * Builds a list of arguments for the body text.
-     * 0 - email body text
-     * 1 - url
-     */
-    private List<Object> getSingleEventBodyArguments(SmartNotificationEvent event,
-            SmartNotificationVerbosity verbosity) {
-        List<Object> argumentList = new ArrayList<>();
-        WatchdogWarningType warningType = WatchdogAssembler.getWarningType(event.getParameters());
-        WatchdogEmailFormatHandler watchdogEmailHandler = getWatchdogEmailFormatHandler(warningType);
-        String emailBodyContent = watchdogEmailHandler.buildSingleEventEmailBodyText(warningType, event, verbosity);
-        argumentList.add(emailBodyContent);
-        argumentList.add(getUrl("watchdogWarnings"));
-        return argumentList;
-    }
-
-    /**
-     * Builds a list of arguments for the body text.
+     * Events > 1
      * 0 - number of events
      * 1 - time period minutes
      * 2 - email body text
      * 3 - url
+     * Events = 1
+     * 0 - email body text
+     * 1 - url
      */
-    private List<Object> getMultiEventBodyArguments(List<SmartNotificationEvent> events,
-            SmartNotificationVerbosity verbosity, int eventPeriodMinutes) {
+    private List<Object> getEventBodyArguments(List<SmartNotificationEvent> events, SmartNotificationVerbosity verbosity,
+            int eventPeriodMinutes) {
         List<Object> argumentList = new ArrayList<>();
-        argumentList.add(events.size());
-        argumentList.add(eventPeriodMinutes);
+        if (events.size() > 1) {
+            argumentList.add(events.size());
+            argumentList.add(eventPeriodMinutes);
+        }
+
         StringBuilder builder = new StringBuilder();
-        for(SmartNotificationEvent event : events) {
+        for (SmartNotificationEvent event : events) {
             WatchdogWarningType warningType = WatchdogAssembler.getWarningType(event.getParameters());
             WatchdogEmailFormatHandler watchdogEmailHandler = getWatchdogEmailFormatHandler(warningType);
-            String emailBodyContent = watchdogEmailHandler.buildMultiEventEmailBodyText(warningType, event, verbosity);
+            String emailBodyContent = watchdogEmailHandler.buildEmailBodyText(warningType, event, verbosity);
             builder.append(emailBodyContent);
         }
         argumentList.add(builder.toString());
