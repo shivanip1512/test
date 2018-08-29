@@ -4468,7 +4468,7 @@ bool completionCheck( PointDataRequestPtr   request,
         return false;
     }
 
-    CTILOG_INFO( dout, "Complete Data: Have " << nonStale << "% of " << description.at( requestType ) << " data." );
+    CTILOG_INFO( dout, "Complete Data: Have " << complete << "% of " << description.at( requestType ) << " data." );
 
     return true;
 }
