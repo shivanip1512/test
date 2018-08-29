@@ -303,10 +303,22 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             Calendar retentionDate = Calendar.getInstance();
             retentionDate.setTime(calendar.getTime());
             retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
-
-            return (file.getName().matches(regex + suffix) || 
-                    file.getName().matches(regex + suffix + ".zip") || 
-                    file.getName().matches(regex + ".zip")) && getLogCreationDate(file).before(retentionDate.getTime());
+            if (file.getName().matches(regex + suffix) || file.getName().matches(regex + suffix + ".zip")
+                || file.getName().matches(regex + ".zip")) {
+                return getLogCreationDate(file, prefix).before(retentionDate.getTime());
+            } else if (file.getName().matches("^" + "rfnCommLogs_" + "([0-9]{2}|[0-9]{8})" + suffix)) {
+                // Check for old rfnCommLogs files which are currently renamed.
+                return getLogCreationDate(file, "rfnCommLogs_").before(retentionDate.getTime());
+            } else {
+                try {
+                    // Get the date of old client log file format like DBEditor[10.24.26.137]20180531.log.
+                    Date date = FileUtil.getOldClientLogDate(file.getName());
+                    return date == null ? false : date.before(retentionDate.getTime());
+                } catch (ParseException e) {
+                    // Don't accept file to delete.
+                    return false;
+                }
+            }
         }
     }
 
@@ -327,7 +339,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * Returns the log creation date. First tries to use date in log filename, if the format isn't correct
      * it will return the file creation date.
      */
-    private Date getLogCreationDate(File file) {
+    private Date getLogCreationDate(File file, String prefix) {
         try { /* lets try to parse the filename for the date */
             DateFormat dateFormat = new SimpleDateFormat(filenameDateFormat);
             return dateFormat.parse(file.getName().replace(prefix, ""));

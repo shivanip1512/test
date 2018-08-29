@@ -1,11 +1,14 @@
 package com.cannontech.common.util;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.junit.Before;
@@ -114,5 +117,20 @@ public class FileUtilTest {
         if(FileUtil.areFilesEqual(file1, altPathFile)){
             fail("Different file paths - equality incorrect!");
         }
+    }
+    
+    @Test
+    public void testOldClientLogDate() throws ParseException {
+        // Correct file name format
+        assertTrue(FileUtil.getOldClientLogDate("DBEditor[10.24.26.137]20180531.log").equals(new SimpleDateFormat("yyyyMMdd").parse("20180531")));
+        assertTrue(FileUtil.getOldClientLogDate("Commander[10.24.26.137]20180431.log").equals(new SimpleDateFormat("yyyyMMdd").parse("20180431")));
+        // Invalid file name format. Expecting null.
+        assertTrue(FileUtil.getOldClientLogDate("DBEditor[10.24.26.13720180531.log") == null);
+        assertTrue(FileUtil.getOldClientLogDate("DBEditor_20180431.log") == null);
+        assertTrue(FileUtil.getOldClientLogDate("DBEditor_[10.24.26.137].log") == null);
+        assertTrue(FileUtil.getOldClientLogDate("DBEditor_[10.24.26.137]") == null);
+        assertTrue(FileUtil.getOldClientLogDate("Webserver_20180827.zip") == null);
+        assertTrue(FileUtil.getOldClientLogDate("Webserver_20180827.log.zip") == null);
+        
     }
 }

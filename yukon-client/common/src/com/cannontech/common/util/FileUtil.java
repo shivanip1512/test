@@ -354,4 +354,21 @@ public final class FileUtil {
         }
         return false;
     }
+
+    /**
+     * 
+     * @return Date , if fileName matches with pattern (accepts file like DBEditor[10.24.26.137]20180531.log format)
+     *  otherwise returns null
+     * @param fileName
+     * @throws ParseException
+     */
+    public static Date getOldClientLogDate(String fileName) throws ParseException {
+        Pattern pattern = Pattern.compile("(.+?)(\\[)(\\d+\\.{1}\\d+\\.{1}\\d+\\.{1}\\d+)(\\])(\\d{1,8})(\\.[^.]+$)");
+        Matcher matcher = pattern.matcher(fileName);
+        if (matcher.matches()) {
+                return new SimpleDateFormat(fileNameDateFormat).parse(matcher.group(5));
+        } else {
+            return null;
+        }
+    }
 }
