@@ -665,7 +665,7 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
 
     std::set<long>  p;
     bank->getPointRegistrationIds( p );
-    BOOST_CHECK_EQUAL( p.size(), 0 );
+    BOOST_CHECK_EQUAL( p.size(), 4 );
 
     BOOST_CHECK_EQUAL( bank->getParentId(),                     5 );
     BOOST_CHECK_EQUAL( bank->getAlarmInhibitFlag(),             false );

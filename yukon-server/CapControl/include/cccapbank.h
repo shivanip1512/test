@@ -410,6 +410,8 @@ private:
     Cti::CapControl::PointResponseManager _pointResponseManager;
 
     void restore(Cti::RowReader& rdr);
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+
 };
 
 typedef CtiCCCapBank* CtiCCCapBankPtr;

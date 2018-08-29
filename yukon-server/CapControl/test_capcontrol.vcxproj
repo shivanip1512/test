@@ -424,6 +424,7 @@
     </ClCompile>
     <ClCompile Include="CountdownKeepAlivePolicy.cpp">
     </ClCompile>
+    <ClCompile Include="DispatchPointRegistry.cpp" />
     <ClCompile Include="DynamicCommand.cpp">
     </ClCompile>
     <ClCompile Include="DynamicCommandExecutor.cpp">
@@ -593,6 +594,7 @@
   <ItemGroup>
     <ClInclude Include="include\capcontrol_test_helpers.h" />
     <ClInclude Include="include\cbcHeartbeatPolicy.h" />
+    <ClInclude Include="include\DispatchPointRegistry.h" />
     <ClInclude Include="include\MsgTriggerDmvTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

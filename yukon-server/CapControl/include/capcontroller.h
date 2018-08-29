@@ -19,6 +19,7 @@
 #include "logger.h"
 #include "yukon.h"
 #include "ctdpcptrq.h"
+#include "DispatchPointRegistry.h"
 
 #include <boost/thread.hpp>
 
@@ -75,6 +76,11 @@ class CtiCapController : public MessageListener
         void adjustAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentBus);
         void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
 
+        void registerPointIDsForPointUpdates( const std::set<long> & pointIDs );
+        void unregisterPointIDsForPointUpdates( const std::set<long> & pointIDs );
+        void registerPaoForPointUpdates( CapControlPao & pao );
+        void unregisterPaoForPointUpdates( CapControlPao & pao );
+
     protected:
 
         void porterReturnMsg(const CtiReturnMsg &retMsg);
@@ -96,12 +102,6 @@ class CtiCapController : public MessageListener
 
         void checkDispatch();
         void checkPIL();
-
-        enum class RegistrationMethod {
-            ReRegisterAllPoints,
-            RegisterOnlyNewPoints
-        };
-        void registerForPoints( const RegistrationMethod m = RegistrationMethod::RegisterOnlyNewPoints );
 
         void updateAllPointQualities(long quality);
 
@@ -140,4 +140,7 @@ class CtiCapController : public MessageListener
         CtiPCPtrQueue< CtiMessage > _outClientMsgQueue;
 
         CtiValueQueue<Cti::CapControl::EventLogEntry> _eventLogs;
+
+        DispatchPointRegistry   _registry;
+
 };

@@ -168,8 +168,6 @@ public:
     void dumpAllDynamicData();
     bool isValid();
     void setValid(bool valid);
-    bool getReregisterForPoints();
-    void setReregisterForPoints(bool reregister);
     bool getReloadFromAMFMSystemFlag();
     void setReloadFromAMFMSystemFlag(bool reload);
     bool get2wayFlagUpdate();
@@ -361,7 +359,6 @@ public:
 
     void updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdVector stationIdList, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                PaoIdSet &modifiedSubsSet,  PaoIdSet &modifiedStationIdsSet);
-    void registerForAdditionalPoints(PaoIdSet &modifiedBusIdsSet);
     void initializeAllPeakTimeFlagsAndMonitorPoints(bool setTargetVarFlag = false);
     void createAndSendClientMessages( unsigned long &msgBitMask, unsigned long &msgSubsBitMask, PaoIdSet &modifiedBusIdsSet,
                                       PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages);
@@ -506,7 +503,6 @@ private:
 
     bool _isvalid;
     bool _storeRecentlyReset;
-    bool _reregisterforpoints;
     bool _reloadfromamfmsystemflag;
     CtiTime _lastdbreloadtime;
     CtiTime _lastindividualdbreloadtime;

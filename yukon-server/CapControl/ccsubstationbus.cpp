@@ -7482,6 +7482,11 @@ void CtiCCSubstationBus::getSpecializedPointRegistrationIds( std::set<long> & re
     insertPointRegistration( registrationIDs, getVoltReductionControlId() );
     insertPointRegistration( registrationIDs, getDisableBusPointId() );
     insertPointRegistration( registrationIDs, getCommsStatePointId() );
+
+    for ( long pointID : getAllMonitorPointIds() )
+    {
+        insertPointRegistration( registrationIDs, pointID );
+    }
 }
 
 int CtiCCSubstationBus::getAlterateBusIdForPrimary() const

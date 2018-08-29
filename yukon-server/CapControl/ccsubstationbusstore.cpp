@@ -36,6 +36,8 @@
 #include "config_exceptions.h"
 
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/indirected.hpp>
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -57,6 +59,7 @@ extern std::string _MAXOPS_ALARM_CAT;
 extern long _MAXOPS_ALARM_CATID;
 extern bool _OP_STATS_DYNAMIC_UPDATE;
 extern double _IVVC_DEFAULT_DELTA;
+extern long  _VOLT_REDUCTION_SYSTEM_POINTID;
 
 using namespace std;
 using namespace Cti::CapControl;
@@ -86,7 +89,6 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore(DynamicDumpFn dynamicDumpFn) :
     _dynamicDumpFn(dynamicDumpFn),
     _isvalid(false),
     _attributeService(new AttributeService),
-    _reregisterforpoints(true),
     _reloadfromamfmsystemflag(false),
     _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
     _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
@@ -1181,9 +1183,40 @@ void CtiCCSubstationBusStore::reset()
                 CTILOG_INFO(dout, "Obtained connection to the database..." << " - Resetting substation buses from database...");            
             }
 
+            using boost::adaptors::map_values;
+            using boost::adaptors::indirected;
+
+            CTILOG_INFO( dout, "Unregistering for point changes." );
+            {
+                auto unregisterPaoPoints = 
+                    [ ]( auto & x )
+                    {
+                        CtiCapController::getInstance()->unregisterPaoForPointUpdates( x );
+                    };
+
+                boost::for_each( _paobject_specialarea_map  | map_values | indirected, unregisterPaoPoints );
+                boost::for_each( _paobject_area_map         | map_values | indirected, unregisterPaoPoints );
+                boost::for_each( _paobject_substation_map   | map_values | indirected, unregisterPaoPoints );
+                boost::for_each( _paobject_subbus_map       | map_values | indirected, unregisterPaoPoints );
+                boost::for_each( _paobject_feeder_map       | map_values | indirected, unregisterPaoPoints );
+                boost::for_each( _paobject_capbank_map      | map_values | indirected, unregisterPaoPoints );
+
+                // Other
+
+                if ( getLinkStatusPointId() > 0 )
+                {
+                    CtiCapController::getInstance()->unregisterPointIDsForPointUpdates( { getLinkStatusPointId() } );
+                }
+
+                if ( _VOLT_REDUCTION_SYSTEM_POINTID > 0 )
+                {
+                    CtiCapController::getInstance()->unregisterPointIDsForPointUpdates( { _VOLT_REDUCTION_SYSTEM_POINTID } );
+                }
+            }
+            CTILOG_INFO( dout, "Done unregistering points." );
+
             wasAlreadyRunning = deleteCapControlMaps();
 
-            CtiTime currentDateTime;
             /*************************************************************
             ******  Loading Strategies                              ******
             **************************************************************/
@@ -1300,6 +1333,34 @@ void CtiCCSubstationBusStore::reset()
                                                       &_paobject_specialarea_map);
             }
 
+            CTILOG_INFO( dout, "Registering for point changes." );
+            {
+                auto registerPaoPoints = 
+                    [ ]( auto & x )
+                    {
+                        CtiCapController::getInstance()->registerPaoForPointUpdates( x );
+                    };
+
+                boost::for_each( _paobject_specialarea_map  | map_values | indirected, registerPaoPoints );
+                boost::for_each( _paobject_area_map         | map_values | indirected, registerPaoPoints );
+                boost::for_each( _paobject_substation_map   | map_values | indirected, registerPaoPoints );
+                boost::for_each( _paobject_subbus_map       | map_values | indirected, registerPaoPoints );
+                boost::for_each( _paobject_feeder_map       | map_values | indirected, registerPaoPoints );
+                boost::for_each( _paobject_capbank_map      | map_values | indirected, registerPaoPoints );
+
+                // Other
+
+                if ( getLinkStatusPointId() > 0 )
+                {
+                    CtiCapController::getInstance()->registerPointIDsForPointUpdates( { getLinkStatusPointId() } );
+                }
+
+                if ( _VOLT_REDUCTION_SYSTEM_POINTID > 0 )
+                {
+                    CtiCapController::getInstance()->registerPointIDsForPointUpdates( { _VOLT_REDUCTION_SYSTEM_POINTID } );
+                }
+            }
+            CTILOG_INFO( dout, "Done registering for point changes." );
 
             /************************************************************
              ********    Loading Orphans                         ********
@@ -1334,13 +1395,11 @@ void CtiCCSubstationBusStore::reset()
         CTILOG_INFO(dout, "Store reset.");
 
         CtiMultiMsg_vec capMessages;
-        _reregisterforpoints = true;
         _lastdbreloadtime = _lastdbreloadtime.now();
         if ( !wasAlreadyRunning )
         {
             dumpAllDynamicData();
         }
-        CtiTime currentDateTime = CtiTime();
 
         bool systemEnabled = false;
         for(long h=0;h<_ccGeoAreas->size();h++)
@@ -1354,7 +1413,6 @@ void CtiCCSubstationBusStore::reset()
         }
         CtiCCExecutorFactory::createExecutor(new SystemStatus(systemEnabled))->execute();
 
-        long i=0;
         for ( CtiCCSpecialPtr spArea : *_ccSpecialAreas )
         {
              cascadeAreaStrategySettings(spArea);
@@ -2602,28 +2660,6 @@ void CtiCCSubstationBusStore::setValid(bool valid)
 }
 
 /*---------------------------------------------------------------------------
-    getReregisterForPoints
-
-    Gets _reregisterforpoints
----------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::getReregisterForPoints()
-{
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
-    return _reregisterforpoints;
-}
-
-/*---------------------------------------------------------------------------
-    setReregisterForPoints
-
-    Sets _reregisterforpoints
----------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::setReregisterForPoints(bool reregister)
-{
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
-    _reregisterforpoints = reregister;
-}
-
-/*---------------------------------------------------------------------------
     getReloadFromAMFMSystemFlag
 
     Gets _reloadfromamfmsystemflag
@@ -3675,6 +3711,13 @@ try
                                               &_paobject_feeder_map, &_paobject_subbus_map,
                                               &_paobject_substation_map, &_paobject_area_map,
                                               &_paobject_specialarea_map);
+
+            // start point registrations for this particular substation
+            {
+                CtiCCSubstationPtr station = findSubstationByPAObjectID( substationId );
+
+                CtiCapController::getInstance()->registerPaoForPointUpdates( *station );
+            }
         }
     }
 }
@@ -4279,6 +4322,13 @@ try
                                           &_paobject_area_map, &_paobject_specialarea_map );
 
         cascadeAreaStrategySettings( findAreaByPAObjectID( areaId ) );
+
+        // start point registrations for this particular area
+        {
+            CtiCCAreaPtr area = findAreaByPAObjectID( areaId );
+
+            CtiCapController::getInstance()->registerPaoForPointUpdates( *area );
+        }
     }
 }
 catch ( ... )
@@ -4479,6 +4529,11 @@ try
             pointid_specialarea_map->emplace( pointID, specialArea );
 
             _pointID_to_pao.emplace( pointID, specialArea );
+        }
+
+        // start point registrations for this particular special area
+        {
+            CtiCapController::getInstance()->registerPaoForPointUpdates( *specialArea );
         }
     }
 }
@@ -5145,8 +5200,13 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
             reloadOperationStatsFromDatabase(subBusId,&_paobject_capbank_map, &_paobject_feeder_map, paobject_subbus_map,
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
+            // start point registrations for this particular bus
+            {
+                CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( subBusId );
+
+                CtiCapController::getInstance()->registerPaoForPointUpdates( *bus );
+            }
         }
-        //_reregisterforpoints = true;
     }
     catch(...)
     {
@@ -5346,22 +5406,13 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                                        PointIdToFeederMultiMap *pointid_feeder_map,
                                                        ChildToParentMap *feeder_subbus_map )
 {
-    CtiCCFeederPtr feederToUpdate = NULL;
-
-    if (feederId > 0)
+    if ( feederId > 0 )
     {
-        feederToUpdate = findFeederByPAObjectID(feederId);
+        deleteFeeder( feederId );
     }
 
     try
     {
-        if (feederToUpdate != NULL)
-        {
-            CtiCCSubstationBusPtr subBus = NULL;
-            deleteFeeder(feederToUpdate->getPaoId());
-        }
-
-        CtiTime currentDateTime;
         {
             static const std::string sql =
                 "SELECT "
@@ -5856,6 +5907,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
             reloadOperationStatsFromDatabase(feederId,&_paobject_capbank_map, paobject_feeder_map, &_paobject_subbus_map,
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
+            // start point registrations for this particular feeder
+            {
+                CtiCCFeederPtr feeder = findFeederByPAObjectID( feederId );
+
+                CtiCapController::getInstance()->registerPaoForPointUpdates( *feeder );
+            }
         }
     }
     catch(...)
@@ -6381,8 +6438,14 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
         {
             reloadOperationStatsFromDatabase(capBankId, paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
+
+            // start point registrations for this particular bank
+            {
+                CtiCCCapBankPtr bank = findCapBankByPAObjectID( capBankId );
+
+                CtiCapController::getInstance()->registerPaoForPointUpdates( *bank );
+            }
         }
-        _reregisterforpoints = true;
     }
     catch(...)
     {
@@ -7009,100 +7072,101 @@ void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
 
 void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 {
-    CtiCCSubstationPtr substationToDelete = findSubstationByPAObjectID(substationId);
-
-    if (substationToDelete == NULL)
-        return;
     try
     {
-        setStoreRecentlyReset(true);
-        //Using the list because deleteSubbus(int) removes the subbus from the map, invalidating our counter for the loop.
-        //Quick fix, a more elegant solution should be found.
-        std::list<int> deleteList;
-        for(long h=0;h<_ccSubstationBuses->size();h++)
+        if ( CtiCCSubstationPtr substationToDelete = findSubstationByPAObjectID( substationId ) )
         {
-            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(h);
-            if (currentCCSubstationBus->getParentId() == substationId)
+            CtiCapController::getInstance()->unregisterPaoForPointUpdates( *substationToDelete );
+            
+            setStoreRecentlyReset(true);
+            //Using the list because deleteSubbus(int) removes the subbus from the map, invalidating our counter for the loop.
+            //Quick fix, a more elegant solution should be found.
+            std::list<int> deleteList;
+            for(long h=0;h<_ccSubstationBuses->size();h++)
             {
-                 deleteList.push_back(currentCCSubstationBus->getPaoId());
+                CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(h);
+                if (currentCCSubstationBus->getParentId() == substationId)
+                {
+                     deleteList.push_back(currentCCSubstationBus->getPaoId());
+                }
             }
-        }
-        for( std::list<int>::iterator itr = deleteList.begin(); itr != deleteList.end(); itr++)
-        {
-            deleteSubBus(*itr);
-        }
-
-        try
-        {
-            //Delete pointids on this sub
-            for ( const long pointid : *substationToDelete->getPointIds() )
+            for( std::list<int>::iterator itr = deleteList.begin(); itr != deleteList.end(); itr++)
             {
-                {    // _pointid_station_map
-                    for ( auto range = _pointid_station_map.equal_range( pointid );
-                          range.first != range.second;
-                          ++range.first )
-                    {
-                        if ( range.first->second == substationToDelete )
+                deleteSubBus(*itr);
+            }
+
+            try
+            {
+                //Delete pointids on this sub
+                for ( const long pointid : *substationToDelete->getPointIds() )
+                {
+                    {    // _pointid_station_map
+                        for ( auto range = _pointid_station_map.equal_range( pointid );
+                              range.first != range.second;
+                              ++range.first )
                         {
-                            _pointid_station_map.erase( range.first );
-                            break;
+                            if ( range.first->second == substationToDelete )
+                            {
+                                _pointid_station_map.erase( range.first );
+                                break;
+                            }
+                        }
+                    }
+                    {    // _pointID_to_pao
+                        for ( auto range = _pointID_to_pao.equal_range( pointid );
+                              range.first != range.second;
+                              ++range.first )
+                        {
+                            if ( range.first->second == substationToDelete )
+                            {
+                                _pointID_to_pao.erase( range.first );
+                                break;
+                            }
                         }
                     }
                 }
-                {    // _pointID_to_pao
-                    for ( auto range = _pointID_to_pao.equal_range( pointid );
-                          range.first != range.second;
-                          ++range.first )
+                substationToDelete->getPointIds()->clear();
+            }
+            catch(...)
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+            }
+
+            try
+            {
+                if ( const long areaId = substationToDelete->getParentId() )
+                {
+                    if ( CtiCCAreaPtr area = findAreaByPAObjectID(areaId) )
                     {
-                        if ( range.first->second == substationToDelete )
-                        {
-                            _pointID_to_pao.erase( range.first );
-                            break;
-                        }
+                        area->removeSubstationId(substationId);
                     }
                 }
-            }
-            substationToDelete->getPointIds()->clear();
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-
-        try
-        {
-            if ( const long areaId = substationToDelete->getParentId() )
-            {
-                if ( CtiCCAreaPtr area = findAreaByPAObjectID(areaId) )
+                for ( CtiCCSpecialPtr spArea : *_ccSpecialAreas )
                 {
-                    area->removeSubstationId(substationId);
+                    if ( spArea )
+                    {
+                        spArea->removeSubstationId(substationId);
+                    }
+                }
+
+                std::string substationName = substationToDelete->getPaoName();
+
+                _substation_area_map.erase(substationToDelete->getPaoId());
+                _substation_specialarea_map.erase(substationToDelete->getPaoId());
+                _ccSubstations.erase( std::remove( _ccSubstations.begin(), _ccSubstations.end(), substationToDelete ),
+                                       _ccSubstations.end() );
+
+                _paobject_substation_map.erase(substationToDelete->getPaoId());
+
+                if( _CC_DEBUG & CC_DEBUG_DELETION )
+                {
+                    CTILOG_INFO(dout, "SUBSTATION: " << substationName <<" has been deleted.");
                 }
             }
-            for ( CtiCCSpecialPtr spArea : *_ccSpecialAreas )
+            catch(...)
             {
-                if ( spArea )
-                {
-                    spArea->removeSubstationId(substationId);
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
-
-            std::string substationName = substationToDelete->getPaoName();
-
-            _substation_area_map.erase(substationToDelete->getPaoId());
-            _substation_specialarea_map.erase(substationToDelete->getPaoId());
-            _ccSubstations.erase( std::remove( _ccSubstations.begin(), _ccSubstations.end(), substationToDelete ),
-                                   _ccSubstations.end() );
-
-            _paobject_substation_map.erase(substationToDelete->getPaoId());
-
-            if( _CC_DEBUG & CC_DEBUG_DELETION )
-            {
-                CTILOG_INFO(dout, "SUBSTATION: " << substationName <<" has been deleted.");
-            }
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     catch(...)
@@ -7118,6 +7182,8 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
     {
         if ( CtiCCAreaPtr areaToDelete = findAreaByPAObjectID( areaId ) )
         {
+            CtiCapController::getInstance()->unregisterPaoForPointUpdates( *areaToDelete );
+
             setStoreRecentlyReset(true);
             try
             {
@@ -7206,6 +7272,8 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
     {
         if ( CtiCCSpecialPtr spAreaToDelete = findSpecialAreaByPAObjectID( areaId ) )
         {
+            CtiCapController::getInstance()->unregisterPaoForPointUpdates( *spAreaToDelete );
+
             setStoreRecentlyReset(true);
             try
             {
@@ -7310,6 +7378,8 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
     {
         if ( CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId) )
         {
+            CtiCapController::getInstance()->unregisterPaoForPointUpdates( *subToDelete );
+
             setStoreRecentlyReset(true);
             for ( int feederId : subToDelete->getCCFeederIds() )
             {
@@ -7440,6 +7510,8 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
     {
         if ( CtiCCFeederPtr feederToDelete = findFeederByPAObjectID( feederId ) )
         {
+            CtiCapController::getInstance()->unregisterPaoForPointUpdates( *feederToDelete );
+
             setStoreRecentlyReset(true);
 
             for ( int capBankId : feederToDelete->getAllCapBankIds() )
@@ -7494,6 +7566,8 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
     {
         if ( CtiCCCapBankPtr capBankToDelete = findCapBankByPAObjectID( capBankId ) )
         {
+            CtiCapController::getInstance()->unregisterPaoForPointUpdates( *capBankToDelete );
+
             setStoreRecentlyReset(true);
 
             //Delete pointids on this feeder
@@ -7881,47 +7955,6 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadA
     }
 }
 
-void CtiCCSubstationBusStore::registerForAdditionalPoints(PaoIdSet &modifiedBusIdsSet)
-{
-   try
-   {
-       PaoIdSet pointList;
-
-       for(std::set<long>::iterator it = modifiedBusIdsSet.begin(); it != modifiedBusIdsSet.end();it++)
-       {
-           CtiCCSubstationBus* sub = findSubBusByPAObjectID(*it);
-           if (sub == NULL)
-           {
-               continue;
-           }
-           sub->getPointRegistrationIds(pointList);
-           CtiFeeder_vec& feeds = sub->getCCFeeders();
-           for (long j = 0; j < feeds.size(); j++)
-           {
-               CtiCCFeederPtr feed = (CtiCCFeederPtr)feeds[j];
-               feed->getPointRegistrationIds(pointList);
-               CtiCCCapBank_SVector& caps = feed->getCCCapBanks();
-               for (long k = 0; k < caps.size(); k++)
-               {
-                   CtiCCCapBankPtr cap = (CtiCCCapBankPtr)caps[k];
-                   cap->addAllCapBankPointsToMsg(pointList);
-                   if ( cap->isControlDeviceTwoWay() )
-                   {
-                       cap->getTwoWayPoints().addAllCBCPointsToRegMsg(pointList);
-                   }
-               }
-           }
-       }
-
-       getPointDataHandler().getAllPointIds(pointList);
-       CtiCapController::getInstance()->getDispatchConnection()->registerForPoints(CtiCapController::getInstance(),pointList);
-   }
-   catch(...)
-   {
-       CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-   }
-}
-
 void CtiCCSubstationBusStore::initializeAllPeakTimeFlagsAndMonitorPoints(bool setTargetVarFlag)
 {
 
@@ -8183,8 +8216,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 {
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
-                registerForAdditionalPoints(modifiedBusIdsSet);
-
                 _lastindividualdbreloadtime = _lastindividualdbreloadtime.now();
 
                 initializeAllPeakTimeFlagsAndMonitorPoints(false);

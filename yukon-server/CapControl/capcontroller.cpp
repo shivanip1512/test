@@ -260,10 +260,6 @@ void CtiCapController::messageSender()
     ThreadStatusKeeper threadStatus("CapControl messageSender");
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    {
-        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-        registerForPoints( RegistrationMethod::RegisterOnlyNewPoints );
-    }
 
     try
     {
@@ -275,20 +271,6 @@ void CtiCapController::messageSender()
                 if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                 {
                     CTILOG_DEBUG(dout, "Message Sender start");
-                }
-
-                try
-                {
-
-                    if( store->getReregisterForPoints() )
-                    {
-                        registerForPoints( RegistrationMethod::ReRegisterAllPoints );
-                        store->setReregisterForPoints(false);
-                    }
-                }
-                catch(...)
-                {
-                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -459,11 +441,7 @@ void CtiCapController::controlLoop()
     try
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        {
-            CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-            registerForPoints( RegistrationMethod::RegisterOnlyNewPoints );
-        }
-        store->setReregisterForPoints(false);
+
         store->verifySubBusAndFeedersStates();
 
         CtiPAOScheduleManager* scheduleMgr = CtiPAOScheduleManager::getInstance();
@@ -508,7 +486,6 @@ void CtiCapController::controlLoop()
 
                 try
                 {
-
                     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
                     if( Now > fifteenMinCheck && secondsFrom1970 != lastThreadPulse)
@@ -530,17 +507,13 @@ void CtiCapController::controlLoop()
 
                     //  Any DBChanges or resets to process?
                     store->processAnyDBChangesOrResets( Now );
+
+                    //  Process the dispatch point registration
+                    _registry.updateRegistry( getDispatchConnection() );
                 }
                 catch(...)
                 {
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-                }
-
-                // this updates the current point registration status and sends appropriate registration messages to dispatch
-                // -- manually does the work that the CtiConnection::preWork() virtual used to do pre yukon 6.0
-                if ( getDispatchConnection()->valid() )
-                {
-                    getDispatchConnection()->refreshPointRegistration();
                 }
 
                 boost::this_thread::interruption_point();
@@ -1483,9 +1456,8 @@ void CtiCapController::checkPIL()
 
 
 /*---------------------------------------------------------------------------
-    registerForPoints
+    updateAllPointQualities
 
-    Registers for all points of the substations buses.
 ---------------------------------------------------------------------------*/
 void CtiCapController::updateAllPointQualities(long quality)
 {
@@ -1532,136 +1504,6 @@ void CtiCapController::updateAllPointQualities(long quality)
             }
         }
         currentSubstationBus->setNewPointDataReceivedFlag(true);
-    }
-
-}
-
-
-/*---------------------------------------------------------------------------
-    registerForPoints
-
-    Registers for all points of the substations buses.
----------------------------------------------------------------------------*/
-void CtiCapController::registerForPoints( const RegistrationMethod m )
-{
-    CTILOG_INFO(dout, "Registering for point changes.");
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-    {
-        std::set<long> registrationIds;
-
-        for ( const auto & mapEntry : store->getPAOAreaMap() )
-        {
-            CtiCCAreaPtr currentArea = mapEntry.second;
-
-            currentArea->getPointRegistrationIds( registrationIds );
-        }
-        for ( const auto & mapEntry : store->getPAOSpecialAreaMap() )
-        {
-            CtiCCSpecialPtr currentSpArea = mapEntry.second;
-
-            currentSpArea->getPointRegistrationIds( registrationIds );
-        }
-        for ( const auto & mapEntry : store->getPAOStationMap() )
-        {
-            const CtiCCSubstationUnqPtr& currentStation = mapEntry.second;
-
-            currentStation->getPointRegistrationIds( registrationIds );
-        }
-
-        PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
-        for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
-        {
-            CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
-
-            currentSubstationBus->getPointRegistrationIds( registrationIds );
-
-            for each (long pointId in currentSubstationBus->getAllMonitorPointIds())
-            {
-                registrationIds.insert(pointId);
-            }
-
-            CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-
-            for(long j=0; j < ccFeeders.size(); j++)
-            {
-                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)(ccFeeders.at(j));
-
-                currentFeeder->getPointRegistrationIds( registrationIds );
-
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                for(long k=0;k<ccCapBanks.size();k++)
-                {
-                    CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)(ccCapBanks[k]);
-
-                    if( currentCapBank->getStatusPointId() > 0 )
-                    {
-                        registrationIds.insert(currentCapBank->getStatusPointId());
-                    }
-                    if( currentCapBank->getOperationAnalogPointId() > 0 )
-                    {
-                        registrationIds.insert(currentCapBank->getOperationAnalogPointId());
-                    }
-                    if( currentCapBank->getDisabledStatePointId() > 0 )
-                    {
-                        registrationIds.insert(currentCapBank->getDisabledStatePointId());
-                    }
-                    if ( currentCapBank->getOperationStats().getUserDefOpSuccessPercentId() > 0)
-                    {
-                        registrationIds.insert(currentCapBank->getOperationStats().getUserDefOpSuccessPercentId());
-                    }
-                    if ( currentCapBank->getOperationStats().getDailyOpSuccessPercentId() > 0)
-                    {
-                        registrationIds.insert(currentCapBank->getOperationStats().getDailyOpSuccessPercentId());
-                    }
-                    if ( currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
-                    {
-                        registrationIds.insert(currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId());
-                    }
-                    if ( currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
-                    {
-                        registrationIds.insert(currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
-                    }
-                    if ( currentCapBank->isControlDeviceTwoWay() )
-                    {
-                        currentCapBank->getTwoWayPoints().addAllCBCPointsToRegMsg(registrationIds);
-                    }
-
-                    for ( auto pointID : currentCapBank->heartbeat._policy->getRegistrationPointIDs() )
-                    {
-                        registrationIds.insert( pointID );
-                    }
-                }
-            }
-
-
-            if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0)
-            {
-                registrationIds.insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
-            }
-
-            if (_VOLT_REDUCTION_SYSTEM_POINTID > 0)
-            {
-                registrationIds.insert(_VOLT_REDUCTION_SYSTEM_POINTID);
-            }
-
-        }
-
-        CTILOG_INFO(dout, "End Registering for point changes.");
-
-        try
-        {
-            if( m == RegistrationMethod::ReRegisterAllPoints )
-            {
-                getDispatchConnection()->unRegisterForPoints( this, registrationIds );
-            }
-            getDispatchConnection()->registerForPoints(this,registrationIds);
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
     }
 }
 
@@ -2536,7 +2378,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
                     }
                     if (value == STATE_OPENED)
                     {
-                        store->setReregisterForPoints(true);
+                        // dispatch connection will handle the point re-registration itself
                     }
                 }
             }
@@ -4460,5 +4302,33 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+}
+
+void CtiCapController::registerPointIDsForPointUpdates( const std::set<long> & pointIDs )
+{
+    _registry.addPoints( pointIDs );
+}
+
+void CtiCapController::unregisterPointIDsForPointUpdates( const std::set<long> & pointIDs )
+{
+    _registry.removePoints( pointIDs );
+}
+
+void CtiCapController::registerPaoForPointUpdates( CapControlPao & pao )
+{
+    std::set<long>  registrationIds;
+
+    pao.getPointRegistrationIds( registrationIds );
+
+    registerPointIDsForPointUpdates( registrationIds );
+}
+
+void CtiCapController::unregisterPaoForPointUpdates( CapControlPao & pao )
+{
+    std::set<long>  registrationIds;
+
+    pao.getPointRegistrationIds( registrationIds );
+
+    unregisterPointIDsForPointUpdates( registrationIds );
 }
 

@@ -418,6 +418,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="CountdownKeepAlivePolicy.cpp">
     </ClCompile>
+    <ClCompile Include="DispatchPointRegistry.cpp" />
     <ClCompile Include="DynamicCommand.cpp">
     </ClCompile>
     <ClCompile Include="DynamicCommandExecutor.cpp">
@@ -579,6 +580,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\ControlStrategy.h" />
     <ClInclude Include="include\CountdownKeepAlivePolicy.h" />
     <ClInclude Include="include\DatabaseDaoFactory.h" />
+    <ClInclude Include="include\DispatchPointRegistry.h" />
     <ClInclude Include="include\DynamicCommand.h" />
     <ClInclude Include="include\DynamicCommandExecutor.h" />
     <ClInclude Include="include\DynamicData.h" />

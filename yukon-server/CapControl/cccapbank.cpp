@@ -2447,3 +2447,19 @@ bool CtiCCCapBank::assignSpecializedPoint( const long pointID, const long pointO
     return getPointIds()->size() > initialSize;
 }
 
+void CtiCCCapBank::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+{
+    insertPointRegistration( registrationIDs, getStatusPointId() );
+    insertPointRegistration( registrationIDs, getOperationAnalogPointId() );
+
+    if ( isControlDeviceTwoWay() )
+    {
+        getTwoWayPoints().addAllCBCPointsToRegMsg( registrationIDs );
+    }
+
+    for ( auto pointID : heartbeat._policy->getRegistrationPointIDs() )
+    {
+        registrationIDs.insert( pointID );
+    }
+}
+
