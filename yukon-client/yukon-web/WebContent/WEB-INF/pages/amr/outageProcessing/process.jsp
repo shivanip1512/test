@@ -39,7 +39,7 @@
                     
                     <tags:nameValue2 nameKey=".mainDetail.deviceGroup">
                         <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                            <cti:param name="groupName">${fn:escapeXml(outageMonitor.groupName)}</cti:param>
+                            <cti:param name="groupName">${outageMonitor.groupName}</cti:param>
                         </cti:url>
                         <a href="${deviceGroupUrl}">${fn:escapeXml(outageMonitor.groupName)}</a>
                         <cm:dropdown triggerClasses="vv">
@@ -62,12 +62,12 @@
                     
                     <tags:nameValue2 nameKey=".mainDetail.outagesGroup">
                         <cti:url var="outageGroupUrl" value="/group/editor/home">
-                            <cti:param name="groupName">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</cti:param>
+                            <cti:param name="groupName">${outageGroupBase}${outageMonitor.outageMonitorName}</cti:param>
                         </cti:url>
                         <a href="${outageGroupUrl}">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</a>
                         <cm:dropdown triggerClasses="vv">
                             <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
-                                <cti:param name="groupName" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
+                                <cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${outagesGroupReportUrl}"/>
                             <cti:url var="clearOutageGroupUrl" value="/amr/outageProcessing/process/clearOutagesGroup">
@@ -76,12 +76,12 @@
                             <cm:dropdownOption icon="icon-folder-delete" key="yukon.web.components.button.clear.label" href="${clearOutageGroupUrl}"/>
                             <cti:url var="mapUrl" value="/tools/map/dynamic">
                                 <cti:param name="collectionType" value="group"/>
-                                <cti:param name="group.name" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
+                                <cti:param name="group.name" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions">
                                 <cti:param name="collectionType" value="group"/>
-                                <cti:param name="group.name" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
+                                <cti:param name="group.name" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
                         </cm:dropdown>

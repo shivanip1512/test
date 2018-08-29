@@ -102,7 +102,6 @@ public class OutageMonitorEditorController {
             outageMonitor.setTimePeriodDays(DEFAULT_TIME_PERIOD);
             outageMonitor.setNumberOfOutages(DEFAULT_NUMBER_OF_OUTAGES);
             outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
-            outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
         }
         String basePath = deviceGroupService.getFullPath(SystemGroupEnum.OUTAGE);
         model.addAttribute("outageGroupBase", basePath);
@@ -157,7 +156,8 @@ public class OutageMonitorEditorController {
             outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
         } else {
             // outage group needs new name
-            String currentProcessorName = outageMonitor.getOutageMonitorName();
+        	OutageMonitor existingOutageMonitor = outageMonitorDao.getById(outageMonitor.getOutageMonitorId());
+            String currentProcessorName = existingOutageMonitor.getOutageMonitorName();
             if (!currentProcessorName.equals(outageMonitor.getOutageMonitorName())) {
                 // try to retrieve group by new name (possible it could exist)
                 // if does not exist, get old group, give it new name

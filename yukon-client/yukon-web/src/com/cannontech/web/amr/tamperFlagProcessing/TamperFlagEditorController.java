@@ -76,7 +76,6 @@ public class TamperFlagEditorController {
         } else {
             tamperFlagMonitor=new TamperFlagMonitor();
             tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
-            tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
         }
         model.addAttribute("tamperFlagGroupBase", deviceGroupService.getFullPath(SystemGroupEnum.TAMPER_FLAG));
         model.addAttribute("tamperFlagMonitor", tamperFlagMonitor);
@@ -117,7 +116,8 @@ public class TamperFlagEditorController {
             } else {
 
                 // tamper flag group needs new name
-                String currentProcessorName = tamperFlagMonitor.getTamperFlagMonitorName();
+                TamperFlagMonitor existingTamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitor.getTamperFlagMonitorId());
+                String currentProcessorName = existingTamperFlagMonitor.getTamperFlagMonitorName();
                 if (!currentProcessorName.equals(tamperFlagMonitor.getTamperFlagMonitorName())) {
 
                     // try to retrieve group by new name (possible it could exist)

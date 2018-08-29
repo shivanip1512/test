@@ -30,7 +30,7 @@
             
             <tags:nameValue2 nameKey=".deviceGroup">
                 <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                    <cti:param name="groupName">${fn:escapeXml(statusPointMonitor.groupName)}</cti:param>
+                    <cti:param name="groupName">${statusPointMonitor.groupName}</cti:param>
                 </cti:url>
                 <a href="${deviceGroupUrl}">${fn:escapeXml(statusPointMonitor.groupName)}</a>
                 <cm:dropdown triggerClasses="vv">
