@@ -52,12 +52,12 @@
                     
                     <tags:nameValue2 nameKey=".section.mainDetail.tamperFlagGroup">
                         <cti:url var="tamperFlagGroupUrl" value="/group/editor/home">
-                            <cti:param name="groupName">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.name)}</cti:param>
+                            <cti:param name="groupName">${tamperFlagGroupBase}${tamperFlagMonitor.name}</cti:param>
                         </cti:url>
                         <a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.name)}</a>
                         <cm:dropdown triggerClasses="vv">
                             <cti:url var="tamperFlagGroupReportUrl" value="/amr/reports/groupDevicesReport">
-                                <cti:param name="groupName" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.name)}"/>
+                                <cti:param name="groupName" value="${tamperFlagGroupBase}${tamperFlagMonitor.name}"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-folder-explore" key="yukon.web.components.button.view.label" href="${tamperFlagGroupReportUrl}"/>
                             <cti:url var="clearTamperFlagGroupUrl" value="/amr/tamperFlagProcessing/process/clearTamperFlagGroup">
@@ -66,12 +66,12 @@
                             <cm:dropdownOption icon="icon-folder-delete" key="yukon.web.components.button.clear.label" href="${clearTamperFlagGroupUrl}"/>
                             <cti:url var="mapUrl" value="/tools/map/dynamic">
                                 <cti:param name="collectionType" value="group"/>
-                                <cti:param name="group.name" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.name)}"/>
+                                <cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.name}"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
                                 <cti:param name="collectionType" value="group"/>
-                                <cti:param name="group.name" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.name)}"/>
+                                <cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.name}"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-cog-go" key="yukon.web.components.button.collectionAction.label" href="${collectionActionUrl}"/>
                         </cm:dropdown>

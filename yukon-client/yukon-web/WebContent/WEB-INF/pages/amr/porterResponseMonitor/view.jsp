@@ -105,7 +105,7 @@ $(function () {
             
             <tags:nameValue2 nameKey=".deviceGroup">
                 <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                    <cti:param name="groupName">${fn:escapeXml(monitorDto.groupName)}</cti:param>
+                    <cti:param name="groupName">${monitorDto.groupName}</cti:param>
                 </cti:url>
                 <a href="${deviceGroupUrl}" >${fn:escapeXml(monitorDto.groupName)}</a>
                 <cm:dropdown triggerClasses="vv">

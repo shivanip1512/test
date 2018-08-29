@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.collectionActions">
@@ -9,7 +10,7 @@
     <c:if test="${!empty deviceCollection}">
         <input type="hidden" id="deviceCollectionCount" value="${deviceCollection.deviceCount}"/>
         <cti:msg2 var="deviceDescription" key="${deviceCollection.description}"/>
-        <input type="hidden" id="deviceCollectionDescription" value="${deviceDescription}"/>
+        <input type="hidden" id="deviceCollectionDescription" value="${fn:escapeXml(deviceDescription)}"/>
         <cti:url value="/collectionActions/home" var="refreshLink">
             <cti:mapParam value="${deviceCollection.collectionParameters}"/>
         </cti:url>
