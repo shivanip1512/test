@@ -100,7 +100,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
                 row.setEventId(rs.getInt("EventId"));
                 row.setTimestamp(rs.getInstant("Timestamp"));
                 row.setStatus(rs.getString("Status"));
-                row.setWarningType(rs.getString("WarningType") != null ? WatchdogWarningType.getWatchdogWarningName(rs.getString("WarningType")): "");
+                row.setWarningType(rs.getEnum("WarningType", WatchdogWarningType.class).getName());
                 return row;
             }
         };

@@ -36,16 +36,4 @@ public enum WatchdogWarningType {
         this.name = name;
     }
 
-    /**
-     * This method will return a user friendly watchdog warning name.
-     */
-    public static String getWatchdogWarningName(String watchdog) {
-        for (WatchdogWarningType wwt : WatchdogWarningType.values()) {
-            if (wwt.name().equalsIgnoreCase(watchdog)) {
-                return wwt.getName();
-            }
-        }
-        return watchdog;
-    }
-
 }
