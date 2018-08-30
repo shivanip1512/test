@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -303,22 +302,29 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             Calendar retentionDate = Calendar.getInstance();
             retentionDate.setTime(calendar.getTime());
             retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
-            if (file.getName().matches(regex + suffix) || file.getName().matches(regex + suffix + ".zip")
-                || file.getName().matches(regex + ".zip")) {
-                return getLogCreationDate(file, prefix).before(retentionDate.getTime());
-            } else if (file.getName().matches("^" + "rfnCommLogs_" + "([0-9]{2}|[0-9]{8})" + suffix)) {
+            Date fileDate = null;
+            if (FileUtil.isJavaLogFile(file.getName(), regex)) {
+                fileDate = FileUtil.getLogCreationDate(file.getName(), prefix);
+            } else if (FileUtil.isOldRfnCommLogFile(file.getName())) {
                 // Check for old rfnCommLogs files which are currently renamed.
-                return getLogCreationDate(file, "rfnCommLogs_").before(retentionDate.getTime());
+                fileDate = FileUtil.getLogCreationDate(file.getName(), "rfnCommLogs_");
             } else {
                 try {
                     // Get the date of old client log file format like DBEditor[10.24.26.137]20180531.log.
-                    Date date = FileUtil.getOldClientLogDate(file.getName());
-                    return date == null ? false : date.before(retentionDate.getTime());
+                    fileDate = FileUtil.getOldClientLogDate(file.getName());
                 } catch (ParseException e) {
-                    // Don't accept file to delete.
-                    return false;
+                    // Don't do anything
                 }
             }
+            if (fileDate == null) {
+                try {
+                    /* Use the files creation date */
+                    fileDate = FileUtil.getCreationDate(file);
+                } catch (IOException e) {
+                    fileDate = new Date(file.lastModified());
+                }
+            }
+            return fileDate.before(retentionDate.getTime());
         }
     }
 
@@ -333,22 +339,6 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         @Override
         public boolean accept(File file) {
             return (file.getName().matches(regex));
-        }
-    }
-    /**
-     * Returns the log creation date. First tries to use date in log filename, if the format isn't correct
-     * it will return the file creation date.
-     */
-    private Date getLogCreationDate(File file, String prefix) {
-        try { /* lets try to parse the filename for the date */
-            DateFormat dateFormat = new SimpleDateFormat(filenameDateFormat);
-            return dateFormat.parse(file.getName().replace(prefix, ""));
-        } catch (ParseException e) {/* Can't use filename (could be an old format) */}
-
-        try { /* Use the files creation date */
-            return FileUtil.getCreationDate(file);
-        } catch (IOException e) {
-            return new Date(file.lastModified());
         }
     }
 
@@ -371,7 +361,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         // Check if file is already existing
         if (tmpDir.exists()) {
             try (BufferedReader fileHeader = new BufferedReader(new FileReader(tmpDir))) {
-                fileDate = parseLogCreationDate(fileHeader.readLine());
+                fileDate = FileUtil.parseLogCreationDate(fileHeader.readLine());
             } catch (Exception e) {
                 LOGGER.error("Unable to read file header from log file.");
             }
@@ -401,15 +391,5 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 }
             }
         }
-    }
-
-    /**
-     * Return file creation date after parsing header string.
-     * @throws ParseException 
-     */
-    private static DateTime parseLogCreationDate(String header) throws ParseException {
-        String[] output = header.split("\\:");
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(output[1].trim());
-        return new DateTime(date);
     }
 }

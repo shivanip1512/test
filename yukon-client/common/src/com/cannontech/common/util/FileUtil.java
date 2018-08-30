@@ -12,6 +12,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -358,7 +360,7 @@ public final class FileUtil {
     /**
      * 
      * @return Date , if fileName matches with pattern (accepts file like DBEditor[10.24.26.137]20180531.log format)
-     *  otherwise returns null
+     *         otherwise returns null
      * @param fileName
      * @throws ParseException
      */
@@ -368,6 +370,53 @@ public final class FileUtil {
         if (matcher.matches()) {
                 return new SimpleDateFormat(fileNameDateFormat).parse(matcher.group(5));
         } else {
+            return null;
+        }
+    }
+
+    /**
+     * @return true if file name matches with either of one format fileName_YYYYMMDD.log or fileName_YYYYMMDD.log.zip or
+     *         fileName_YYYYMMDD.zip
+     *         otherwise false
+     */
+    public static boolean isJavaLogFile(String fileName, String regex) {
+        return fileName.matches(regex + ".log") || fileName.matches(regex + ".log.zip")
+               || fileName.matches(regex + ".zip");
+    }
+
+    /**
+     * @return true if file name matches with pattern rfnCommLogs__YYYYMMDD.log
+     *         otherwise false
+     * */
+    public static boolean isOldRfnCommLogFile(String fileName) {
+        return fileName.matches("^" + "rfnCommLogs_" + "([0-9]{2}|[0-9]{8})" + ".log");
+    }
+    
+    /**
+     * @return file creation date after parsing header string.
+     * @throws ParseException 
+     */
+    public static DateTime parseLogCreationDate(String header) {
+        String[] output = header.split("\\:");
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(output[1].trim());
+            return new DateTime(date);
+        } catch (ParseException | ArrayIndexOutOfBoundsException e) {
+            log.error("Unable to parse " + header);
+            return null;
+        }
+    }
+
+    /**
+     * @return Log creation date after parsing it from fileName.
+     *         If fails returns null
+     *         
+     */
+    public static Date getLogCreationDate(String fileName, String prefix) {
+        try { /* lets try to parse the filename for the date */
+            DateFormat dateFormat = new SimpleDateFormat(fileNameDateFormat);
+            return dateFormat.parse(fileName.replace(prefix, ""));
+        } catch (ParseException e) {
             return null;
         }
     }
