@@ -20,6 +20,7 @@ public class NestSyncServiceImpl implements NestSyncService{
         Date date = new Date();
         List<NestExisting> existing = nestCommunicationService.downloadExisting(date);
         List<NestExisting> modified = new ArrayList<>();
-        nestCommunicationService.uploadExisting(existing, date);
+        // not tested
+        //nestCommunicationService.uploadExisting(existing, date);
     }
 }

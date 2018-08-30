@@ -51,7 +51,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class);
     
     //move to global settings
-    private static final String auth = "SamuelTJohnston@eaton.com:724bc901d7014ae26098baf95f5c14b4";
+    private static final String email = "SamuelTJohnston@eaton.com";
+    private static final String nestKey = "724bc901d7014ae26098baf95f5c14b4";
+    private static final String url = "https://enterprise-api.nest.com/api";
 
     private Proxy getProxy() {
         return YukonHttpProxy.fromGlobalSetting(settingDao)
@@ -76,7 +78,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     @Override
     public List<NestExisting> downloadExisting(Date date) {
         InputStream inputStream = getFileInputStream(NestFileType.EXISTING);
-        List<NestExisting> existing = parseExistingCsvFile(inputStream); 
+        List<NestExisting> existing = parseExistingCsvFile(inputStream);
         writeExistingFile(existing, Action.DOWNLOAD, date);
         return existing; 
     }
@@ -85,7 +87,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         InputStream inputStream = null;
         // curl https://enterprise-api.nest.com/api/v1/users/pending/latest.csv -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA=="
         try {
-            String stringUrl = type.getUrl() + "/" + type.getFile();
+            String stringUrl = url + type.getUrl() + "/" + type.getFile();
             Proxy proxy = getProxy();
             URLConnection connection = proxy == null ? new URL(stringUrl).openConnection() : new URL(stringUrl).openConnection(getProxy());
             connection.setRequestProperty("X-Requested-With", "Curl");
@@ -98,7 +100,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     }
     
     private String encodeAuthorization() throws UnsupportedEncodingException {
-        return "Basic " + DatatypeConverter.printBase64Binary(auth.getBytes("UTF-8"));
+        String key = email + ":" + nestKey;
+        return "Basic " + DatatypeConverter.printBase64Binary(key.getBytes("UTF-8"));
     }
     
     private List<NestPending> parsePendingCsvFile(InputStream inputStream) {
