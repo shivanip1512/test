@@ -50,7 +50,7 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         if (log.isTraceEnabled()) {
             log.trace("Sending requestMessage to producer " + requestMessage.toString());
         }
-        // TODO Do we need any change here? Should we check if this is an internal message before logging the payload?
+
         if (rfnLogger.isInfoEnabled()) {
             rfnLogger.info("<<< " + requestPayload.toString());
         }
