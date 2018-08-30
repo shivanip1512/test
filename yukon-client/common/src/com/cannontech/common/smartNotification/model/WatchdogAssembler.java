@@ -22,7 +22,7 @@ public class WatchdogAssembler {
     public static SmartNotificationEvent assemble(WatchdogWarnings watchdogWarning, Instant now) {
         SmartNotificationEvent smartNotificationEvent = new SmartNotificationEvent(now);
         Map<String, Object> parameters = new LinkedHashMap<>();
-        addArgument(parameters ,watchdogWarning.getArguments());
+        addArgument(parameters, watchdogWarning.getArguments());
         smartNotificationEvent.setParameters(parameters);
         return smartNotificationEvent;
     }

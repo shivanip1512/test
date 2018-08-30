@@ -5,7 +5,7 @@ import com.cannontech.watchdog.model.Watchdogs;
 
 public enum WatchdogWarningType {
 
-    YUKON_WEB_APPLICATION_SERVICE("Yukon Web Application Service",Watchdogs.SERVICE_STATUS),
+    YUKON_WEB_APPLICATION_SERVICE("Yukon Web Application Service", Watchdogs.SERVICE_STATUS),
     YUKON_SERVICE_MANAGER("Yukon Service Manager", Watchdogs.SERVICE_STATUS),
     YUKON_NOTIFICATION_SERVER("Yukon Notification Server", Watchdogs.SERVICE_STATUS),
     YUKON_MESSAGE_BROKER("Yukon Message Broker", Watchdogs.SERVICE_STATUS),
