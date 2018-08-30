@@ -23,7 +23,7 @@ public class ServiceStatusWatchdogEmailFormatHandler extends WatchdogEmailFormat
     @Override
     public String buildEmailBodyText(WatchdogWarningType watchdogWarningType, SmartNotificationEvent event,
             SmartNotificationVerbosity verbosity) {
-        List<String> warningArgs = new ArrayList<String>();
+        List<String> warningArgs = new ArrayList<>();
         String warningKey = watchdogWarningType.getWatchdogName().getFormatKey() + "." + verbosity;
         String emailBodyText = null;
         String formattedDate = getFormattedDate(event.getTimestamp().toDate());
