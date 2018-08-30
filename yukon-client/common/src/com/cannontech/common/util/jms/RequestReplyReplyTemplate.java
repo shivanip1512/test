@@ -24,6 +24,11 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
 	private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
+    }
+    
+    public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
         super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, false);
     }
