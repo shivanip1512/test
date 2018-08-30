@@ -150,4 +150,5 @@
     
     <bean class="com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl"/>
     <bean class="com.cannontech.dr.nest.service.impl.NestSyncServiceImpl"/>
+    <bean class="com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl"/>
 </beans>

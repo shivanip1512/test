@@ -29,7 +29,7 @@ public class NestExisting {
     private String dissolve;
     private String dissolveReason;
     private String dissolveNotes;
-  
+
     @JsonCreator
     public NestExisting(@JsonProperty("REF") String ref, @JsonProperty("YEAR") String year,
             @JsonProperty("MONTH") String month, @JsonProperty("DAY") String day, @JsonProperty("NAME") String name,
