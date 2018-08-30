@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 
@@ -22,6 +23,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.model.RfnRelay;
 import com.cannontech.common.rfn.service.RfnRelayService;
@@ -44,6 +46,7 @@ public class RelayController {
     @Autowired private RfnRelayService rfnRelayService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PaoNotesService paoNotesService;
     
     private static final String baseKey = "yukon.web.modules.operator.relayDetail.";
     
@@ -88,6 +91,9 @@ public class RelayController {
         searchResult.setResultList(itemList);
         
         model.addAttribute("relays", searchResult);
+        
+        List<RfnRelay> notesList = itemList.stream().filter(relay -> paoNotesService.hasNotes(relay.getDeviceId())).collect(Collectors.toList());
+        model.addAttribute("notesList", notesList);
         
         return "/relay/list.jsp";
     }

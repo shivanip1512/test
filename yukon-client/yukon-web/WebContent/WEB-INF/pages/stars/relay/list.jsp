@@ -41,6 +41,7 @@
         <table class="compact-results-table row-highlighting">
             <thead>
                 <tr>
+                    <th class="row-icon" />
                     <tags:sort column="${name}" />                
                     <tags:sort column="${serialNumber}" />
                 </tr>
@@ -50,6 +51,12 @@
                 <c:forEach var="relay" items="${relays.resultList}">
                     <cti:url var="detailUrl" value="/stars/relay/home?deviceId=${relay.deviceId}"/>
                     <tr>
+                        <td>
+                            <c:if test="${notesList.contains(relay)}">
+                                <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${relay.deviceId}"/>
+                            </c:if>
+                        </td>
                         <td><a href="${detailUrl}">${fn:escapeXml(relay.name)}</a></td>
                         <td>${fn:escapeXml(relay.serialNumber)}</td>
                     </tr>
@@ -63,5 +70,6 @@
         <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
     </c:otherwise>
     </c:choose>
-    
+    <div class="dn" id="js-pao-notes-popup"></div>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:standardPage>
