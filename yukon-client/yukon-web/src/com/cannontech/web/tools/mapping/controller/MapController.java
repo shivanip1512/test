@@ -154,26 +154,32 @@ public class MapController {
             if (StringUtils.isNotBlank(meter.getMeter().getRoute())) {
                 model.addAttribute("showRoute", true);
             }
-            if (StringUtils.isNotBlank(meter.getMeter().getSerialOrAddress())) {
-                model.addAttribute("showAddressOrSerial", true);
-                model.addAttribute("isRf", type.isRfMeter());
+            if (!type.isRfn() && meter.getMeter().getSerialOrAddress() != null) {
+                if (StringUtils.isNotBlank(meter.getMeter().getSerialOrAddress())) {
+                    model.addAttribute("address", meter.getMeter().getSerialOrAddress());
+                }
             }
             if (StringUtils.isNotBlank(meter.getMeter().getMeterNumber())) {
                 model.addAttribute("showMeterNumber", true);
             }
         }
-        if (type.isRfGateway()) {
-            try {
-                RfnGatewayData gateway = gatewayDataCache.get(pao.getPaoIdentifier());
-                model.addAttribute("gatewayIPAddress", gateway.getIpAddress());
-            } catch (NmCommunicationException e) {
-                log.error("Failed to get gateway data for " + id, e);
-                model.addAttribute("errorMsg", e.getMessage());
-            }
-        }
         if (type.isRfn()) {
+            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
+            
+            if (type.isRfGateway()) {
+                try {
+                    RfnGatewayData gateway = gatewayDataCache.get(pao.getPaoIdentifier());
+                    model.addAttribute("gatewayIPAddress", gateway.getIpAddress());
+                } catch (NmCommunicationException e) {
+                    log.error("Failed to get gateway data for " + id, e);
+                    model.addAttribute("errorMsg", e.getMessage());
+                }
+            }
+            if (StringUtils.isNotBlank(rfnDevice.getRfnIdentifier().getSensorSerialNumber())) {
+                model.addAttribute("sensorSN", rfnDevice.getRfnIdentifier().getSensorSerialNumber());
+            }
+
             try {
-                RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
                 Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
                 model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
                 String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);

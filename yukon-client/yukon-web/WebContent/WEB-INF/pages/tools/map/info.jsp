@@ -27,14 +27,12 @@
     <c:if test="${showMeterNumber}">
         <tags:nameValue2 nameKey=".meterNumber">${fn:escapeXml(pao.meter.meterNumber)}</tags:nameValue2>
     </c:if>
-    <tags:nameValue2 nameKey=".type">${fn:escapeXml(pao.paoIdentifier.paoType.paoTypeName)}</tags:nameValue2>    
-    <c:if test="${showAddressOrSerial}">
-        <c:if test="${isRf}">
-            <tags:nameValue2 nameKey=".serial">${fn:escapeXml(pao.meter.serialOrAddress)}</tags:nameValue2>
-        </c:if>
-        <c:if test="${!isRf}">
-            <tags:nameValue2 nameKey=".address">${fn:escapeXml(pao.meter.serialOrAddress)}</tags:nameValue2>
-        </c:if>
+    <tags:nameValue2 nameKey=".type">${fn:escapeXml(pao.paoIdentifier.paoType.paoTypeName)}</tags:nameValue2>
+    <c:if test="${!empty address}">
+        <tags:nameValue2 nameKey=".address">${fn:escapeXml(address)}</tags:nameValue2>
+    </c:if>
+    <c:if test="${!empty sensorSN}">
+        <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(sensorSN)}</tags:nameValue2>
     </c:if>
     <c:if test="${!empty serialNumber}">
         <tags:nameValue2 nameKey=".serialNbr">${fn:escapeXml(serialNumber)}</tags:nameValue2>
