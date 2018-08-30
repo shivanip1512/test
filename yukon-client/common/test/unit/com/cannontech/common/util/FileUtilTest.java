@@ -1,5 +1,6 @@
 package com.cannontech.common.util;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -9,8 +10,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
@@ -120,7 +123,7 @@ public class FileUtilTest {
     }
     
     @Test
-    public void testOldClientLogDate() throws ParseException {
+    public void test_OldClientLogDate() throws ParseException {
         // Correct file name format
         assertTrue(FileUtil.getOldClientLogDate("DBEditor[10.24.26.137]20180531.log").equals(new SimpleDateFormat("yyyyMMdd").parse("20180531")));
         assertTrue(FileUtil.getOldClientLogDate("Commander[10.24.26.137]20180431.log").equals(new SimpleDateFormat("yyyyMMdd").parse("20180431")));
@@ -133,5 +136,49 @@ public class FileUtilTest {
         assertTrue(FileUtil.getOldClientLogDate("Webserver_20180827.log.zip") == null);
         
     }
- 
+    
+    @Test
+    public void test_isJavaLogFile() {
+        // Valid File names
+        String regex = "Webserver_" + "([0-9]{2}|[0-9]{8})";
+        assertTrue(FileUtil.isJavaLogFile("Webserver_20180203.log", "^" + regex));
+        assertTrue(FileUtil.isJavaLogFile("Webserver_20180203.zip", "^" + regex));
+        assertTrue(FileUtil.isJavaLogFile("Webserver_20180203.log.zip", "^" + regex));
+        
+        // Invalid File name
+        assertFalse(FileUtil.isJavaLogFile("rfnCommLogs_20180203.log.zip", "^" + regex));
+        // Invalid date in fileName
+        assertFalse(FileUtil.isJavaLogFile("Webserver_201802.zip", "^" + regex));
+    }
+    
+    @Test
+    public void test_isOldRfnCommLogFile() {
+        // Valid file name
+        assertTrue(FileUtil.isOldRfnCommLogFile("rfnCommLogs_20180203.log"));
+        // Invalid file name
+        assertFalse(FileUtil.isOldRfnCommLogFile("Webserver_20180203.log"));
+        // Invalid date in file name
+        assertFalse(FileUtil.isOldRfnCommLogFile("rfnCommLogs_201802.log"));
+    }
+    
+    @Test
+    public void test_parseLogCreationDate() throws ParseException {
+        // Valid header string
+        assertTrue(FileUtil.parseLogCreationDate("Log Creation Date : 2018-08-28").equals(new DateTime(2018,8,28,0,0)));
+        // Invalid header
+        assertTrue(FileUtil.parseLogCreationDate("Log Creation Date : 2018-08-") == null);
+        assertTrue(FileUtil.parseLogCreationDate("Log Creation Date / 2018-08-") == null);
+        assertTrue(FileUtil.parseLogCreationDate("Log Creation Date  2018-08-") == null);
+    }
+    
+    @Test
+    public void test_getLogCreationDate() {
+        // Valid file name
+        Date expectedDate = new DateTime(2018, 2, 3, 0, 0).toDate();
+        assertTrue(FileUtil.getLogCreationDate("Webserver_20180203.log", "Webserver_").equals(expectedDate));
+        assertTrue(FileUtil.getLogCreationDate("ServiceManager_20180203.log", "ServiceManager_").equals(expectedDate));
+        // Invalid file name
+        assertTrue(FileUtil.getLogCreationDate("Webserver_201802.log", "Webserver_") == null);
+        
+    }
 }
