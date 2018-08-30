@@ -241,4 +241,6 @@
     <entry key="yukon.common.pao.ECOBEE_3">ecobee3</entry>
     <entry key="yukon.common.pao.ECOBEE_3_LITE">ecobee3 Lite</entry>
     <entry key="yukon.common.pao.ECOBEE_SMART">ecobee Smart</entry>
+    
+    <entry key="yukon.common.pao.RFN_RELAY">RFN Relay</entry>
 </properties>

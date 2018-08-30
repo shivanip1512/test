@@ -20,7 +20,7 @@
     <tags:hidden path="paoSelectionMethod"/>
     <div class="dib" style="margin-left: -4px">
         <tags:selectDevicesIndividuallyOrByGroup uniqueId="${id}"
-                                                 pickerType="meterPicker"
+                                                 pickerType="devicePicker"
                                                  initialIds="${paoNoteFilter.paoIds}"
                                                  pickerCallback="yukon:paonotessearch:paosselected"
                                                  pickerCss="push-down-3"

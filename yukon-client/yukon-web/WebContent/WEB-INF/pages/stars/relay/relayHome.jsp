@@ -45,8 +45,8 @@
         <div class="column-12-12 clear">
             <div class="one column">
                 <tags:widget bean="relayInformationWidget"/>
-                
                 <tags:widget bean="rfnDeviceMetadataWidget"/>
+                <tags:widget bean="paoNotesWidget"/>
             </div>
             <div class="column two nogutter">
 
