@@ -73,7 +73,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     public void init() {
         rfnUpdateServerAvailableVersionTemplate =
                 new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm, configSource,
-                    connectionFactory, updateServerAvailableVersionRequestQueue, false);
+                    connectionFactory, updateServerAvailableVersionRequestQueue, false, true);
     }
     
     @Override

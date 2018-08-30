@@ -19,6 +19,11 @@ import com.cannontech.common.config.ConfigurationSource;
 public class RequestReplyTemplateImpl<R extends Serializable> extends RequestReplyTemplateBase<JmsReplyHandler<R>> implements RequestReplyTemplate<R> {
     
     public RequestReplyTemplateImpl(String configurationName, ConfigurationSource configurationSource,
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
+    }
+    
+    public RequestReplyTemplateImpl(String configurationName, ConfigurationSource configurationSource,
             ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
         super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, false);
     }

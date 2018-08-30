@@ -32,7 +32,7 @@ public class SimulatorsCommunicationService {
     @PostConstruct
     public void init() {
         requestTemplate = new RequestReplyTemplateImpl<>(simulatorRequestCparm, 
-                configSource, connectionFactory, SimulatorUtils.SIMULATORS_REQUEST_QUEUE, false);
+                configSource, connectionFactory, SimulatorUtils.SIMULATORS_REQUEST_QUEUE, false, true);
     }
     
     @SuppressWarnings("unchecked")

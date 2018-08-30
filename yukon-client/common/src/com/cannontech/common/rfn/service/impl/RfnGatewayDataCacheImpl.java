@@ -64,7 +64,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     @PostConstruct
     public void init() {
         requestTemplate = new RequestReplyTemplateImpl<>(gatewayDataRequestCparm, configurationSource,
-                connectionFactory, gatewayDataRequestQueue, false);
+                connectionFactory, gatewayDataRequestQueue, false, true);
     }
     
     @Override

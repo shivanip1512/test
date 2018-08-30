@@ -38,7 +38,7 @@ public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
     @PostConstruct
     public void initialize() {
         requestTemplate = new RequestReplyTemplateImpl<>("RF_GATEWAY_DATA", configurationSource, connectionFactory,
-            gatewayDataRequestQueue, false);
+            gatewayDataRequestQueue, false, true);
     }
 
     @Override
