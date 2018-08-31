@@ -935,9 +935,11 @@ yukon.protoPicker = function (okText,
                 initialIds = $(document.getElementById(destFieldSelector)).val().split(',');
             }
         } else {
-            initialIds = $.map($(':input', this.inputAreaDiv), function (val, index) {
-                return val.value;
-            });
+            if (this.inputAreaDiv) {
+                initialIds = $.map($(':input', this.inputAreaDiv), function (val, index) {
+                    return val.value;
+                });
+            }
         }
         
         if (viewMode) {
