@@ -124,7 +124,7 @@ public class ScheduleController {
             @RequestParam(defaultValue="All")String command, 
             @RequestParam(defaultValue="All")String schedule, 
             LiteYukonUser user) {
-        
+        command = getCommandName(command);
         setUpModel(command, schedule, user, model);
         return "schedule/scheduleassignmentTable.jsp";
     }
@@ -223,6 +223,7 @@ public class ScheduleController {
         String startSchedule, 
         YukonUserContext context) {
         
+        startCommand = getCommandName(startCommand);
         setUpModel(startCommand, startSchedule, context.getYukonUser(), map);
         
         List<PaoScheduleAssignment> assignments = scheduleService.getAssignmentsByFilter(startCommand, startSchedule);
@@ -258,7 +259,7 @@ public class ScheduleController {
      */
     @RequestMapping("stop-multiple")
     public  @ResponseBody Map<String, Object> stopMultiple(String stopCommand, String stopSchedule, YukonUserContext context) {
-        
+        stopCommand = getCommandName(stopCommand);
         int commandsSentCount = scheduleService.sendStopCommands(stopCommand, stopSchedule, context.getYukonUser());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
@@ -453,6 +454,14 @@ public class ScheduleController {
         map.addAttribute("scheduleList", schedList);
     }
 
+    private String getCommandName(String commandName) {
+        if(!commandName.equals("All")) {
+        ScheduleCommand scheduleCommand = ScheduleCommand.valueOf(commandName);
+        commandName = scheduleCommand.getCommandName();
+        }
+        return commandName;
+    }
+    
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
 
