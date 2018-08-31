@@ -18,9 +18,10 @@ public interface NestSimulatorService {
      * @param isWinterProgram if true, sets the PROGRAM to WINTER_RHR and put the generated thermostat serial
      *        numbers under WINTER_RHR otherwise uses SUMMER_RHR
      * @param user - user is needed to get the EC for which to get the X number of users to generate the rows
+     * @param returns file name of the file created
      * @throws Exception
      */
-    void generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram,
+    String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram,
             LiteYukonUser user) throws Exception;
 
 }

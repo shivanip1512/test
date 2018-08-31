@@ -38,7 +38,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm";
 
     @Override
-    public void generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram, LiteYukonUser user)
+    public String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram, LiteYukonUser user)
             throws Exception {
 
         if (groupNames.size() > 3 || groupNames.size() < 1) {
@@ -51,10 +51,11 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         List<AccountDto> accountsWithAddresses = new ArrayList<>();
         for (CustomerAccount account : accounts) {
             AccountDto dto = accountService.getAccountDto(account.getAccountNumber(), user);
-            if (!Strings.isEmpty(dto.getStreetAddress().getLocationAddress1()) && !Strings.isEmpty(dto.getLastName())) {
+            if (dto != null && !Strings.isEmpty(dto.getStreetAddress().getLocationAddress1())
+                && !Strings.isEmpty(dto.getLastName())) {
                 accountsWithAddresses.add(dto);
             }
-            if(accountsWithAddresses.size() == rows) {
+            if (accountsWithAddresses.size() == rows) {
                 break;
             }
         }
@@ -66,7 +67,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
             
         addStaticNestInfo(existing, groupNames);
 
-        writeToAFile(existing);
+        return writeToAFile(existing);
     }
     
     private int compareDates(String date1, String date2) {
@@ -78,13 +79,14 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         }
     }
 
-    private void writeToAFile(List<NestExisting> existing) throws IOException {
+    private String writeToAFile(List<NestExisting> existing) throws IOException {
         SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
+        String fileName = "Nest_existing_users_generated_" + formatter.format(new Date()) + ".csv";
         File directory = new File(SIMULATED_FILE_PATH);
         if (!directory.exists()){
             directory.mkdir();
         }
-        File file = new File(SIMULATED_FILE_PATH, "Nest_existing_users_generated_" + formatter.format(new Date()) + ".csv");
+        File file = new File(SIMULATED_FILE_PATH, fileName);
         ObjectWriter writer =
             new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
         try {
@@ -92,6 +94,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         } catch (IOException e) {
             throw e;
         }
+        return fileName;
     }
 
     /**
