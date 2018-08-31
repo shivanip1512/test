@@ -187,6 +187,10 @@ public class DBUpdater extends MessageFrameAdaptor {
         initApp(args);
 
         updater.run();
+        
+        // This is to terminate this process even if thread from YukonRollingFileAppender renameZippedFiles() still remains
+        // Will remove this check once a solution for closing the thread is found.
+        System.exit(1);
     }
 
     private synchronized boolean executeCommands() {
