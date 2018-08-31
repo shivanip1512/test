@@ -12,7 +12,7 @@
 <cti:uniqueIdentifier var="id" />
 <cti:msgScope paths="common.paoNote, common.paoNotesSearch, menu.tools, yukon.common">
     <cti:url var="actionUrl" value="/tools/paoNotes/search"/>
-    <form:form action="${actionUrl}" modelAttribute="paoNotesFilter" method="GET">
+    <form:form action="${actionUrl}" modelAttribute="paoNotesFilter" method="GET" cssClass="js-pao-notes-search-widget">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".noteText" valueClass="full-width" nameClass="namecolumnWidth">
                 <form:input path="text" cssClass="full-width"/>

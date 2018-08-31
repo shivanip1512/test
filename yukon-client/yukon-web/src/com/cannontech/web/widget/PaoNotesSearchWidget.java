@@ -12,8 +12,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.pao.PaoSelectionMethod;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
-import com.cannontech.common.pao.notes.filter.model.PaoSelectionMethod;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;

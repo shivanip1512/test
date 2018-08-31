@@ -4,8 +4,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.pao.PaoSelectionMethod;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
-import com.cannontech.common.pao.notes.filter.model.PaoSelectionMethod;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 

@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.notes.filter.model;
+package com.cannontech.common.pao;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
