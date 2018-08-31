@@ -29,11 +29,13 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
+import com.cannontech.common.rfn.model.RfnRelay;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -74,6 +76,7 @@ public class GatewayListController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private PaoNotesService paoNotesService;
     private Map<SortBy, Comparator<CertificateUpdate>> sorters;
     
     @PostConstruct
@@ -135,6 +138,9 @@ public class GatewayListController {
         List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
         firmwareUpdates.sort((first, second) -> second.getSendDate().compareTo(first.getSendDate()));
         model.addAttribute("firmwareUpdates", firmwareUpdates);
+        
+        List<RfnGateway> notesList = gateways.stream().filter(gateway -> paoNotesService.hasNotes(gateway.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("notesList", notesList);
         
         return "gateways/list.jsp";
     }

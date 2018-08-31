@@ -92,6 +92,7 @@
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
     <thead>
         <tr>
+            <th class="row-icon" />
             <th></th>
             <th><i:inline key=".name"/></th>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
@@ -112,6 +113,12 @@
             <tr data-gateway="${gateway.paoIdentifier.paoId}" data-loaded="${not empty gateway.data}">
                 <c:choose>
                     <c:when test="${not empty gateway.data}">
+                        <td>
+                            <c:if test="${notesList.contains(gateway)}">
+                                <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${gateway.paoIdentifier.paoId}"/>
+                            </c:if>
+                        </td>
                         <c:set var="data" value="${gateway.data}"/>
                         <c:set var="title"><cti:msg2 key=".connectionStatus.${data.connectionStatus}"/></c:set>
                         <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
@@ -419,5 +426,6 @@
 
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
-
+<div class="dn" id="js-pao-notes-popup"></div>
+<cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:standardPage>
