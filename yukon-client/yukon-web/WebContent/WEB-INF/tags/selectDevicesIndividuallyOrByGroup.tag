@@ -16,18 +16,25 @@
 <%@ attribute name="deivceGroupPickerCss" required="false" description="The css classes to be applied to the device group picker." %>
 <%@ attribute name="deviceGroupPickerPath" required="false" description="The field to bind to the device group picker." %>
 <%@ attribute name="allowMultipleGroupSelection" required="false" description="Allows multiple device groups to be selected if set to true." %>
+<%@ attribute name="defaultPaoSelectionMethod" type="com.cannontech.common.pao.PaoSelectionMethod"
+              description="The pao selection to be set by default" required="false"%>
 
-<cti:msgScope paths="device.bulk.selectDevicesIndividuallyOrByGroup">
+<cti:msgScope paths="yukon.common, device.bulk.selectDevicesIndividuallyOrByGroup">
     <cti:msg2 var="lblGroup" key=".group"/>
     <cti:msg2 var="lblSelected" key=".selected"/>
-    <cti:msg2 var="lblAllDevices" key=".allDevices"/>
+    <cti:msg2 var="lblAll" key=".all"/>
+    
     <div class="js-device-selection-container dib">
-        <div class="button-group fl" style="margin-right:10px;">
-            <tags:check name="js-select-by-device-group_${uniqueId}" label="${lblGroup}" classes="left"
-                        forceDisplayButton="true"/>
-            <tags:check name="js-select-individually_${uniqueId}" label="${lblSelected}" classes="right"
-                        forceDisplayButton="true"/>
+        <c:set var="allDevicesBtnCss" value="${(defaultPaoSelectionMethod == 'allDevices' or empty defaultPaoSelectionMethod) ? 'on' : ''}"/>
+        <c:set var="selectIndividuallyBtnCss" value="${defaultPaoSelectionMethod == 'selectIndividually' ? 'on' : ''}"/>
+        <c:set var="byDeviceGroupsBtnCss" value="${defaultPaoSelectionMethod == 'byDeviceGroups' ? 'on' : ''}"/>
+        
+        <div class="button-group button-group-toggle">
+            <cti:button label="${lblAll}" icon="icon-brick-add" classes="js-all-devices js-device-selection ${allDevicesBtnCss}"/>
+            <cti:button label="${lblGroup}" icon="icon-folder" classes="js-select-by-device-group js-device-selection ${byDeviceGroupsBtnCss}"/>
+            <cti:button label="${lblSelected}" icon="icon-table" classes="js-device-selection js-select-individually ${selectIndividuallyBtnCss}"/>
         </div>
+        
         <div class="dib dn js-picker-dialog ${pickerCss}">
             <tags:pickerDialog type="${pickerType}"
                                id="paoPicker_${uniqueId}"
@@ -37,7 +44,7 @@
                                allowEmptySelection="true"
                                multiSelectMode="true"
                                initialIds="${initialIds}"
-                               endEvent="${endEvent}"/>
+                               endEvent="${pickerCallback}"/>
 
             <c:if test="${not empty pickerPath}">
                 <tags:bind path="${pickerPath}"/>

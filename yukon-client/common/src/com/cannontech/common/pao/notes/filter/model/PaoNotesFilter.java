@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.pao.PaoSelectionMethod;
 import com.cannontech.common.util.DateRange;
 
 public class PaoNotesFilter {

@@ -29,9 +29,6 @@
     <entry key="yukon.web.common.paoNotesSearch.filteredResults">Filtered Results</entry>
     <entry key="yukon.web.common.paoNotesSearch.currentUser">Current User</entry>
     <entry key="yukon.web.common.paoNotesSearch.anyUser">Any User</entry>
-    <entry key="yukon.web.common.paoNotesSearch.allDevices">All Devices</entry>
-    <entry key="yukon.web.common.paoNotesSearch.selectIndividually">Select Individually</entry>
-    <entry key="yukon.web.common.paoNotesSearch.byDeviceGroups">By Device Group(s)</entry>
     <entry key="yukon.web.common.paoNotesSearch.devices">Devices</entry>
     
     <entry key="yukon.web.common.paoNotesPopup.title">Notes - </entry>

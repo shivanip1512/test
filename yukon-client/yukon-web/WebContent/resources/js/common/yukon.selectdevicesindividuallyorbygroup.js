@@ -16,28 +16,31 @@ yukon.selectdevicesindividuallyorbygroup = (function () {
     
     _togglePickers = function (element) {
         var container = element.closest('.js-pao-selection-container'),
-            deviceGroupBtn = container.find('input[name^="js-select-by-device-group_"]'),
-            selectedBtn = container.find('input[name^="js-select-individually_"]');
-        
-        container.find('.js-device-group-picker-container').toggleClass('dn', !deviceGroupBtn.is(':checked'));
-        container.find('.js-picker-dialog').toggleClass('dn', !selectedBtn.is(':checked'));
-    }
-    
+            deviceGroupBtn = container.find('.js-select-by-device-group'),
+            selectedBtn = container.find('.js-select-individually'),
+            allBtn = container.find('.js-all-devices');
+
+        container.find('.js-device-group-picker-container').toggleClass('dn', !deviceGroupBtn.hasClass('on'));
+        container.find('.js-picker-dialog').toggleClass('dn', !selectedBtn.hasClass('on'));
+    },
+
     mod = {
         
         /** Initialize this module. */
         init : function () {
-            
-            $(document).on('change', 'input[name^="js-select-by-device-group_"]', function (event) {
-                var container = $(this).closest('.js-pao-selection-container');
-                container.find('input[name^="js-select-individually_"]').prop('checked', false);
+
+            $(document).on('click', '.js-device-selection', function (event) {
                 _togglePickers($(this));
             });
-            
-            $(document).on('change', 'input[name^="js-select-individually_"]', function (event) {
-                var container = $(this).closest('.js-pao-selection-container');
-                container.find('input[name^="js-select-by-device-group_"]').prop('checked', false);
-                _togglePickers($(this));
+
+            $('.js-pao-selection-container').each(function (idx, item) {
+                var btn = $(item).find('button.on'),
+                    devicePicker = $(item).find('.js-picker-dialog'),
+                    deviceGroupPicker = $(item).find('.js-device-group-picker-container');
+
+                _togglePickers(btn);
+                devicePicker.find('span.b-label').css("maxWidth", "232px");
+                deviceGroupPicker.find('span.fl').css("maxWidth", "228px");
             });
             
             _initialized = true;

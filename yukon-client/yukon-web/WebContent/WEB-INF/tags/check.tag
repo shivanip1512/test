@@ -27,35 +27,32 @@
 <%@ attribute name="buttonTextStyle" description="styles applied to the button text." %>
 <%@ attribute name="id" description="The html id attribute of the radio input." %>
 <%@ attribute name="onclick" description="Event to fire on click." %>
-<%@ attribute name="forceDisplayButton" type="java.lang.Boolean" required="false" 
-              description="If true, the button is displayed in VIEW mode. Default: false." %>
 
 
 <cti:default var="checked" value="${false}"/>
 <cti:default var="disabled" value="${false}"/>
 
-<c:if test="${!forceDisplayButton}">
-    <cti:displayForPageEditModes modes="VIEW">
-        <c:if test="${not empty path}">
-            <spring:bind path="${path}">
-                <c:set var="checked" value="${status.value}" />
-            </spring:bind>
-        </c:if>
-        <c:if test="${checked}">
-            <c:choose>
-                <c:when test="${not empty pageScope.key}">
-                    <cti:msgScope paths=", yukon.web.components.button, yukon.common">
-                        <cti:msg2 key="${key}"/>
-                    </cti:msgScope>
-                </c:when>
-                <c:when test="${not empty pageScope.label}">${fn:escapeXml(label)}</c:when>
-                <c:otherwise><jsp:doBody/></c:otherwise>
-            </c:choose>
-        </c:if>
-    </cti:displayForPageEditModes>
-</c:if>
+<cti:displayForPageEditModes modes="VIEW">
+    <c:if test="${not empty path}">
+        <spring:bind path="${path}">
+            <c:set var="checked" value="${status.value}" />
+        </spring:bind>
+    </c:if>
+    <c:if test="${checked}">
+        <c:choose>
+            <c:when test="${not empty pageScope.key}">
+                <cti:msgScope paths=", yukon.web.components.button, yukon.common">
+                    <cti:msg2 key="${key}"/>
+                </cti:msgScope>
+            </c:when>
+            <c:when test="${not empty pageScope.label}">${fn:escapeXml(label)}</c:when>
+            <c:otherwise><jsp:doBody/></c:otherwise>
+        </c:choose>
+    </c:if>
+    
+</cti:displayForPageEditModes>
 
-<c:if test="${mode == 'EDIT' or mode == 'CREATE' or forceDisplayButton or empty mode}">
+<cti:displayForPageEditModes modes="CREATE,EDIT">
 
     <label class="switch-btn">
         <c:choose>
@@ -84,4 +81,4 @@
             </span>
         </span>
     </label>
-</c:if>
+</cti:displayForPageEditModes>

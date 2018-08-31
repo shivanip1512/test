@@ -41,9 +41,9 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoSelectionMethod;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao.SortBy;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
-import com.cannontech.common.pao.notes.filter.model.PaoSelectionMethod;
 import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
@@ -94,14 +94,21 @@ public class PaoNotesSearchController {
             @DefaultSort(dir = Direction.desc, sort = "createDate") SortingParameters sorting,
             @DefaultItemsPerPage(value = 25) PagingParameters paging, YukonUserContext userContext,
             String deviceGroupNames) {
-        
-        if (StringUtils.isNotEmpty(deviceGroupNames)) {
+
+        if (filter.getPaoSelectionMethod() == PaoSelectionMethod.byDeviceGroups
+            && StringUtils.isNotEmpty(deviceGroupNames)) {
             List<DeviceGroup> deviceGroups = Lists.newArrayList();
             for (String deviceGroupName : deviceGroupNames.split(",")) {
                 deviceGroups.add(deviceGroupService.resolveGroupName(deviceGroupName));
             }
             filter.setDeviceGroups(deviceGroups);
             model.addAttribute("deviceGroupNames", deviceGroupNames);
+        } else {
+            filter.setDeviceGroups(null);
+        }
+
+        if (filter.getPaoSelectionMethod() != PaoSelectionMethod.selectIndividually) {
+            filter.setPaoIds(null);
         }
         
         validator.validate(filter, bindingResult);
@@ -114,10 +121,6 @@ public class PaoNotesSearchController {
                 PaoNoteSortBy.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
         }
         model.addAttribute("searchResults", searchResults);
-        
-        if (filter.getPaoSelectionMethod() != PaoSelectionMethod.selectIndividually) {
-            filter.setPaoIds(null);
-        }
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         PaoNoteSortBy sortBy = PaoNoteSortBy.valueOf(sorting.getSort());

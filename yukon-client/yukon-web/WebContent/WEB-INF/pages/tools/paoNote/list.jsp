@@ -40,7 +40,7 @@
                 </c:if>
                 <div class="db">
                     <div id="js-note-create-dates" class="dib MT1" style="margin-left: 6%;">
-                        <i:inline key=".createDate"/> :
+                        <i:inline key=".createDate"/>:
                         <dt:date path="dateRange.min" wrapperClass="fn vam" displayValidationToRight="true"/>
                         <i:inline key="yukon.common.to"/>
                         <dt:date path="dateRange.max" wrapperClass="fn vam"/>
@@ -63,7 +63,7 @@
                 <span class="empty-list"><i:inline key=".noResults"/></span>
             </c:when>
             <c:otherwise>
-                <span class="fwn"><i:inline key=".filteredResults"/> : </span>
+                <span class="fwn"><i:inline key=".filteredResults"/>: </span>
                 <span class="badge">${searchResults.hitCount}</span>&nbsp;<i:inline key=".notes"/>
                 <span class="js-cog-menu">
                     <cm:dropdown icon="icon-cog">
