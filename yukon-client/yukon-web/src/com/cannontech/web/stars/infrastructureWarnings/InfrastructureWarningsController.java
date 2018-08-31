@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -23,6 +24,8 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.common.rfn.model.RfnRelay;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.DateFormattingService;
@@ -46,6 +49,7 @@ public class InfrastructureWarningsController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache cache;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private PaoNotesService paoNotesService;
 
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
     private final static String widgetKey = "yukon.web.widgets.";
@@ -146,6 +150,10 @@ public class InfrastructureWarningsController {
         model.addAttribute("selectedTypes", Lists.newArrayList(types));
         
         model.addAttribute("epoch1990", epoch1990);
+        
+        List<InfrastructureWarning> notesList = itemList.stream().filter(warning -> paoNotesService.hasNotes(warning.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        model.addAttribute("notesList", notesList);
+        
         return "infrastructureWarnings/detail.jsp";
     }
     

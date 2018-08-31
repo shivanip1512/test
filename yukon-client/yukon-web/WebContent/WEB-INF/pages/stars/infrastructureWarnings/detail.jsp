@@ -47,6 +47,7 @@
     </cti:url>
     <div data-url="${dataUrl}" data-static>
     <table class="compact-results-table row-highlighting">
+        <th class="row-icon" /> 
         <tags:sort column="${name}" />                
         <tags:sort column="${type}" />                
         <tags:sort column="${status}" />
@@ -56,6 +57,12 @@
             <c:when test="${warnings.hitCount > 0}">
                 <c:forEach var="warning" items="${warnings.resultList}">
                     <tr>
+                        <td>
+                            <c:if test="${notesList.contains(warning)}">
+                                <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${warning.paoIdentifier.paoId}"/>
+                            </c:if>
+                        </td>
                         <td class="wsnw">
                             <cti:paoDetailUrl yukonPao="${warning.paoIdentifier}" newTab="true">
                                 <cti:deviceName deviceId="${warning.paoIdentifier.paoId}"/>
@@ -92,6 +99,8 @@
         </c:choose>
     </table>
     <tags:pagingResultsControls result="${warnings}" adjustPageCount="true"/>
+    <div class="dn" id="js-pao-notes-popup"></div>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
     
     </cti:msgScope>
     
