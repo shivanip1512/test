@@ -66,7 +66,7 @@ public enum ScheduleCommand {
 	    if (StringUtils.isNotEmpty(commandName) && commandName.contains(VerifyNotOperatedIn.getCommandName().substring(0,41))) {
 	        return VerifyNotOperatedIn;
 	    }
-	    for (ScheduleCommand command: getVerifyCommandsList()) {
+	    for (ScheduleCommand command: ScheduleCommand.values()) {
 	        if (commandName != null && commandName.startsWith(command.getCommandName())) {
 	            return command;
 	        }
