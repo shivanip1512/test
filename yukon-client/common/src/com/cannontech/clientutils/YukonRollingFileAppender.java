@@ -116,7 +116,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * Name of the current logging file.
      */
     private String fileName;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+  //  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public YukonRollingFileAppender(final String name, final Filter filter, final Layout<? extends Serializable> layout,
             String fileName, String pattern, TriggeringPolicy policy, RolloverStrategy strategy, String applicationName,
@@ -271,7 +271,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     /**
      * Rename .log.zip files to .zip format in the log directory after 10 minutes. 
      */
-    private void renameZippedFiles() {
+/*    private void renameZippedFiles() {
         scheduler.schedule(() -> {
             File currentDirectory = new File(directory);
             File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
@@ -280,7 +280,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 file.renameTo(new File(output[0] + ".zip"));
             }
         }, 10, TimeUnit.MINUTES);
-    }
+    }*/
 
     private void setStartDate() {
         Date currentDate = new Date();
