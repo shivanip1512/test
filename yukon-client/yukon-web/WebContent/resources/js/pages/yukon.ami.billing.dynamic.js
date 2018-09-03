@@ -490,7 +490,10 @@ function updatePreview () {
         patternCanBeSaved = true;
     }).fail(function (jqXHR, textStatus, errorThrown) {
         //any exception raised on the java side is displayed on the page
-        theDiv.html("<label style='color: red;'>" + jqXHR.responseText + '</label>');
+        var errorSpan = $('<span>');
+        errorSpan.css('color', 'red');
+        errorSpan.text(jqXHR.responseText);
+        theDiv.html(errorSpan.html());
         patternCanBeSaved = false;
     });
 }
