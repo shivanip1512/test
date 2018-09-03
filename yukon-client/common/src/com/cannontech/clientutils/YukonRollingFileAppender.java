@@ -196,7 +196,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 // Do any necessary log cleanup in the directory.
                 cleanUpOldLogFiles();
                 // Rename zipped file from .log.zip format to .zip format
-                renameZippedFiles();
+              //  renameZippedFiles();
 
                 // append a header including version info at the start of the new log file
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
