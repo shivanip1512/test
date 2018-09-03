@@ -104,6 +104,13 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     private int getWebServerResponse(String webServerUrl, boolean useProxy) throws SocketTimeoutException, IOException{
         boolean isHttps = StringUtils.containsIgnoreCase(webServerUrl, "https");
         URL url = new URL(webServerUrl);
+
+        if (url.getPort() == -1) {
+            int port = isHttps ? 8443 : 8080;
+            url = new URL(url.getProtocol(), url.getHost(), port, url.getFile());
+            log.debug("Web server url " + url);
+        }
+
         HttpURLConnection conn;
         
         if (isHttps && !isHttpsSettingInitialized) {
