@@ -934,12 +934,10 @@ yukon.protoPicker = function (okText,
             if ($(document.getElementById(destFieldSelector)).val()) {
                 initialIds = $(document.getElementById(destFieldSelector)).val().split(',');
             }
-        } else {
-            if (this.inputAreaDiv) {
-                initialIds = $.map($(':input', this.inputAreaDiv), function (val, index) {
-                    return val.value;
-                });
-            }
+        } else if (this.inputAreaDiv) {
+            initialIds = $.map($(':input', this.inputAreaDiv), function (val, index) {
+                return val.value;
+            });
         }
         
         if (viewMode) {
