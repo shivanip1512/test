@@ -148,9 +148,11 @@ public class VeeReviewController {
         model.addAttribute("paging", paging);
         
         List<PaoIdentifier> notesList = paoNotesService.getPaosWithNotes(pagedRows.getResultList()
-                                                                         .stream()
-                                                                         .map(row -> row.reviewPoint.getDisplayablePao().getPaoIdentifier())
-                                                                         .collect(Collectors.toList()));
+                                                                                  .stream()
+                                                                                  .map(row -> row.reviewPoint
+                                                                                                 .getDisplayablePao()
+                                                                                                 .getPaoIdentifier())
+                                                                                  .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
     }
     

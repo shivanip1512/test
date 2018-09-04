@@ -171,9 +171,9 @@ public class DataCollectionController {
         model.addAttribute("detail", detail);
         
         List<PaoIdentifier> notesList = paoNotesService.getPaosWithNotes(detail.getResultList()
-                                                                                .stream()
-                                                                                .map(det -> det.getPaoIdentifier())
-                                                                                .collect(Collectors.toList()));
+                                                                               .stream()
+                                                                               .map(det -> det.getPaoIdentifier())
+                                                                               .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         
     }

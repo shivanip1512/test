@@ -68,7 +68,21 @@ public interface PaoNotesService {
      */
     int getNoteCount(int paoId);
 
+    /**
+     * This method returns a list of YukonPao implementations that were passed into the method and
+     * have notes associated with them.
+     * 
+     * @param list of YukonPao implementations
+     * @return list of YukonPao implementations that have notes associated with them
+     */
     <T extends YukonPao> List<T> getPaosWithNotes(List<T> paos);
 
+    /**
+     * This method returns a list of paoIds that were passed into the method and have notes
+     * associated with them.
+     * 
+     * @param list of paoIds
+     * @return list of paoIds that have notes associated with them
+     */
     List<Integer> getPaoIdsWithNotes(List<Integer> collect);
 }
