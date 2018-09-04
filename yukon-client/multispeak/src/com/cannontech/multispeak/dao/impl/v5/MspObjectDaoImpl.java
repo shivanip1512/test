@@ -321,6 +321,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - GetMethods (" + mspVendor.getCompanyName() + ") ");
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            throw e;
         }
         return methods;
     }
