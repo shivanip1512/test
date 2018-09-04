@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,8 +41,10 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final int MAX_NOTES_TO_DISPLAY = 3;
 
-    @RequestMapping(value = "render", method = RequestMethod.GET)
-    public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
+    @RequestMapping(value = "render")
+    public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        Map<String, String> widgetParameters = (Map<String, String>) request.getAttribute("widgetParameters");
+        int deviceId = Integer.parseInt(widgetParameters.get("deviceId"));
         setupModel(deviceId, userContext.getYukonUser(), model);
         return "paoNotesWidget/render.jsp";
     }
