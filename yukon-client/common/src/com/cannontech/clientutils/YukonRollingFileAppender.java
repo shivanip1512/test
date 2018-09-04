@@ -12,9 +12,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
 
 import org.apache.logging.log4j.LogManager;
@@ -196,7 +193,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 // Do any necessary log cleanup in the directory.
                 cleanUpOldLogFiles();
                 // Rename zipped file from .log.zip format to .zip format
-              //  renameZippedFiles();
+                renameZippedFiles();
 
                 // append a header including version info at the start of the new log file
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
@@ -269,18 +266,28 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     }
 
     /**
-     * Rename .log.zip files to .zip format in the log directory after 10 minutes. 
+     * Rename .log.zip files to .zip format in the log directory after 5 minutes. 
      */
-/*    private void renameZippedFiles() {
-        scheduler.schedule(() -> {
-            File currentDirectory = new File(directory);
-            File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
-            for (File file : filesForRename) {
-                String[] output = file.getAbsolutePath().split("\\.");
-                file.renameTo(new File(output[0] + ".zip"));
+    private void renameZippedFiles() {
+        Thread renameThread = new Thread("renameThread") {
+            @Override
+            public void run() {
+                try {
+                    // Sleep for 5 min
+                    Thread.sleep(300000);
+                    File currentDirectory = new File(directory);
+                    File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
+                    for (File file : filesForRename) {
+                        String[] output = file.getAbsolutePath().split("\\.");
+                        file.renameTo(new File(output[0] + ".zip"));
+                    }
+                } catch (InterruptedException e) {
+                    return;
+                }
             }
-        }, 10, TimeUnit.MINUTES);
-    }*/
+        };
+        renameThread.start();
+    }
 
     private void setStartDate() {
         Date currentDate = new Date();
