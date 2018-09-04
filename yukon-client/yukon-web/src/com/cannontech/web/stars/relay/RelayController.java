@@ -92,8 +92,10 @@ public class RelayController {
         
         model.addAttribute("relays", searchResult);
         
-        List<RfnRelay> notesList = itemList.stream().filter(relay -> paoNotesService.hasNotes(relay.getDeviceId())).collect(Collectors.toList());
-        model.addAttribute("notesList", notesList);
+        List<Integer> notesIds = paoNotesService.getPaoIdsWithNotes(itemList.stream()
+                                                                            .map(relay -> relay.getDeviceId())
+                                                                            .collect(Collectors.toList()));
+        model.addAttribute("notesIds", notesIds);
         
         return "/relay/list.jsp";
     }

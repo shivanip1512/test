@@ -52,7 +52,7 @@
                     <cti:url var="detailUrl" value="/stars/relay/home?deviceId=${relay.deviceId}"/>
                     <tr>
                         <td>
-                            <c:if test="${notesList.contains(relay)}">
+                            <c:if test="${notesIds.contains(relay.deviceId)}">
                                 <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
                                 <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${relay.deviceId}"/>
                             </c:if>

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validation.dao.RphTagUiDao;
@@ -146,7 +147,10 @@ public class VeeReviewController {
         
         model.addAttribute("paging", paging);
         
-        List<ExtendedReviewPoint> notesList = pagedRows.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.reviewPoint.getDisplayablePao().getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        List<PaoIdentifier> notesList = paoNotesService.getPaosWithNotes(pagedRows.getResultList()
+                                                                         .stream()
+                                                                         .map(row -> row.reviewPoint.getDisplayablePao().getPaoIdentifier())
+                                                                         .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
     }
     

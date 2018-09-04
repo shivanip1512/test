@@ -43,6 +43,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
@@ -172,10 +173,10 @@ public class UsageThresholdReportController {
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
         
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
-        List<ThresholdReportDetail> notesList = report.getDetail().getResultList().stream()
-                                                                          .filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId()))
-                                                                          .collect(Collectors.toList());
-        
+        List<PaoIdentifier> notesList = paoNotesService.getPaosWithNotes(report.getDetail().getResultList()
+                                                                         .stream()
+                                                                         .map(detail -> detail.getPaoIdentifier())
+                                                                         .collect(Collectors.toList()));        
         model.addAttribute("notesList", notesList);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("filter", filter);

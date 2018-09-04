@@ -42,6 +42,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
@@ -169,7 +170,10 @@ public class DataCollectionController {
 
         model.addAttribute("detail", detail);
         
-        List<DeviceCollectionDetail> notesList = detail.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        List<PaoIdentifier> notesList = paoNotesService.getPaosWithNotes(detail.getResultList()
+                                                                                .stream()
+                                                                                .map(det -> det.getPaoIdentifier())
+                                                                                .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         
     }

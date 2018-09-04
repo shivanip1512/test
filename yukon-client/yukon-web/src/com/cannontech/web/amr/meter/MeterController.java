@@ -191,7 +191,7 @@ public class MeterController {
         model.addAttribute("meterSearchResults", results);
         model.addAttribute("filterByList", filterByList);
         
-        List<YukonMeter> notesList = results.getResultList().stream().filter(pao -> paoNotesService.hasNotes(pao.getPaoIdentifier().getPaoId())).collect(Collectors.toList());
+        List<YukonMeter> notesList = paoNotesService.getPaosWithNotes(results.getResultList());
         model.addAttribute("notesList", notesList);
         
         ImmutableMap<String, YukonMeter> paoIdToMeterMap = 
