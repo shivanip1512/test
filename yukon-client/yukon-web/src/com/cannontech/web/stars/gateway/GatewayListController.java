@@ -139,7 +139,9 @@ public class GatewayListController {
         firmwareUpdates.sort((first, second) -> second.getSendDate().compareTo(first.getSendDate()));
         model.addAttribute("firmwareUpdates", firmwareUpdates);
         
-        List<RfnGateway> notesList = paoNotesService.getPaosWithNotes(gateways);
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
+                                                                             .map(gateway -> gateway.getPaoIdentifier().getPaoId())
+                                                                             .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         
         return "gateways/list.jsp";

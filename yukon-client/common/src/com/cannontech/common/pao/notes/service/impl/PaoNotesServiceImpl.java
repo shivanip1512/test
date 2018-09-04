@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao.SortBy;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
@@ -84,11 +83,6 @@ public class PaoNotesServiceImpl implements PaoNotesService {
     @Override
     public int getNoteCount(int paoId) {
         return paoNotesDao.getNoteCount(paoId);
-    }
-    
-    @Override
-    public <T extends YukonPao> List<T> getPaosWithNotes(List<T> paos) {
-        return paoNotesDao.getPaosWithNotes(paos);
     }
 
     @Override

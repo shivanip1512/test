@@ -58,7 +58,7 @@
                 <c:forEach var="warning" items="${warnings.resultList}">
                     <tr>
                         <td>
-                            <c:if test="${notesList.contains(warning.paoIdentifier)}">
+                            <c:if test="${notesList.contains(warning.paoIdentifier.paoId)}">
                                 <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
                                 <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${warning.paoIdentifier.paoId}"/>
                             </c:if>

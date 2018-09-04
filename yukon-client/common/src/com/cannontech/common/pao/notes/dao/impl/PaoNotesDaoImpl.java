@@ -3,7 +3,6 @@ package com.cannontech.common.pao.notes.dao.impl;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
@@ -13,7 +12,6 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.PaoNoteStatus;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
@@ -241,17 +239,6 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
         PaoNotesFilter filter = new PaoNotesFilter();
         filter.setPaoIds(Sets.newHashSet(paoId));
         return getAllNotesByFilterCount(filter);
-    }
-    
-    @Override
-    public <T extends YukonPao> List<T> getPaosWithNotes(List<T> paos) {
-        List<Integer> paoIds = paos.stream()
-                                   .map(pao -> pao.getPaoIdentifier().getPaoId())
-                                   .collect(Collectors.toList());
-        
-        return paos.stream()
-                   .filter(pao -> getPaoIdsWithNotes(paoIds).contains(pao.getPaoIdentifier().getPaoId()))
-                   .collect(Collectors.toList());
     }
     
     @Override

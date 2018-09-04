@@ -151,9 +151,9 @@ public class InfrastructureWarningsController {
         
         model.addAttribute("epoch1990", epoch1990);
         
-        List<PaoIdentifier> notesList = paoNotesService.getPaosWithNotes(itemList.stream()
-                                                                                 .map(warning -> warning.getPaoIdentifier())
-                                                                                 .collect(Collectors.toList()));
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(itemList.stream()
+                                                                             .map(warning -> warning.getPaoIdentifier().getPaoId())
+                                                                             .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         
         return "infrastructureWarnings/detail.jsp";

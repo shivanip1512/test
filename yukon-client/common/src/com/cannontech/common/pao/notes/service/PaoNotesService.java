@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.dao.PaoNotesDao.SortBy;
 import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.model.PaoNote;
@@ -67,15 +66,6 @@ public interface PaoNotesService {
      * @return note count for the pao object
      */
     int getNoteCount(int paoId);
-
-    /**
-     * This method returns a list of YukonPao implementations that were passed into the method and
-     * have notes associated with them.
-     * 
-     * @param list of YukonPao implementations
-     * @return list of YukonPao implementations that have notes associated with them
-     */
-    <T extends YukonPao> List<T> getPaosWithNotes(List<T> paos);
 
     /**
      * This method returns a list of paoIds that were passed into the method and have notes
