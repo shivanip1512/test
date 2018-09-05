@@ -387,7 +387,9 @@ public class StarsDatabaseCache implements DBChangeListener {
                     try {
                         account = customerAccountDao.getAccountByContactId(contactId);
                     } catch (EmptyResultDataAccessException e) {
-                        log.warn("Unable to find CustomerAccount for contact id: " + contactId, e);
+						log.warn("Unable to find CustomerAccount for contact id: " + contactId
+								+ " User may not be associated with any account.");
+						log.debug("Unable to find CustomerAccount for contact id: " + contactId, e);
                     }
                     if (account != null) {
                         
