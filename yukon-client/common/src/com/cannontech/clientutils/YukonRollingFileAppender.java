@@ -314,7 +314,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 fileDate = FileUtil.getLogCreationDate(file.getName(), prefix);
             } else if (FileUtil.isOldRfnCommLogFile(file.getName())) {
                 // Check for old rfnCommLogs files which are currently renamed.
-                fileDate = FileUtil.getLogCreationDate(file.getName(), "rfnCommLogs_");
+                fileDate = FileUtil.getLogCreationDate(file.getName(), "RfnCommsLog_");
             } else {
                 try {
                     // Get the date of old client log file format like DBEditor[10.24.26.137]20180531.log.

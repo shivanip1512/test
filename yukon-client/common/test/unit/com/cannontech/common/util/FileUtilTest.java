@@ -146,7 +146,7 @@ public class FileUtilTest {
         assertTrue(FileUtil.isJavaLogFile("Webserver_20180203.log.zip", "^" + regex));
         
         // Invalid File name
-        assertFalse(FileUtil.isJavaLogFile("rfnCommLogs_20180203.log.zip", "^" + regex));
+        assertFalse(FileUtil.isJavaLogFile("RfnCommsLog_20180203.log.zip", "^" + regex));
         // Invalid date in fileName
         assertFalse(FileUtil.isJavaLogFile("Webserver_201802.zip", "^" + regex));
     }
@@ -154,11 +154,11 @@ public class FileUtilTest {
     @Test
     public void test_isOldRfnCommLogFile() {
         // Valid file name
-        assertTrue(FileUtil.isOldRfnCommLogFile("rfnCommLogs_20180203.log"));
+        assertTrue(FileUtil.isOldRfnCommLogFile("RfnCommsLog_20180203.log"));
         // Invalid file name
         assertFalse(FileUtil.isOldRfnCommLogFile("Webserver_20180203.log"));
         // Invalid date in file name
-        assertFalse(FileUtil.isOldRfnCommLogFile("rfnCommLogs_201802.log"));
+        assertFalse(FileUtil.isOldRfnCommLogFile("RfnCommsLog_201802.log"));
     }
     
     @Test
