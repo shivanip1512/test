@@ -152,6 +152,20 @@
                 <%@ include file="../../common/dnpConfiguration.jsp" %>
             </div>
         </div>
+        <div class="page-action-area">
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <cti:button nameKey="save" type="submit" classes="primary action" />
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:url var="viewUrl" value="/stars/rtu/${rtu.id}"/>
+                <cti:button nameKey="cancel" href="${viewUrl}"/>
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:button id="cancel-btn" nameKey="cancel" />
+            </cti:displayForPageEditModes>
+        </div>
     </form:form>
     <cti:displayForPageEditModes modes="VIEW">
         <div class="column-12-12 clearfix">
