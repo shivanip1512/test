@@ -152,45 +152,6 @@
                 <%@ include file="../../common/dnpConfiguration.jsp" %>
             </div>
         </div>
-
-        <cti:displayForPageEditModes modes="VIEW">
-            <cti:tabs>
-                <cti:msg2 var="childrenTab" key=".childrenTab"/>
-                <cti:tab title="${childrenTab}">
-                    <c:if test="${empty rtu.childDevices}">
-                        <i:inline key=".noChildDevices"/>
-                    </c:if>
-                    <c:forEach var="child" items="${rtu.childDevices}">
-                        <c:set var="paoId" value="${child.paoIdentifier.paoId}"/>
-                        <cti:button renderMode="image" icon="icon-expand" classes="js-show-hide" data-paoId="${paoId}"/>
-                        <cti:paoDetailUrl yukonPao="${child}">
-                            ${fn:escapeXml(child.name)}
-                        </cti:paoDetailUrl>
-                        <div class="js-points-${paoId}" style="margin:10px 0px 10px 30px;"></div>
-                    </c:forEach>
-                </cti:tab>
-        
-                <cti:msg2 var="allPointsTab" key=".allPointsTab"/>
-                <cti:tab title="${allPointsTab}" headerClasses="js-all-points-tab">
-                    <c:set var="isPointCreate" value= "false" />
-                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                        <c:set var="isPointCreate" value= "true" />
-                    </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
-                        <c:set var="isPointCreate" value= "true" />
-                    </cti:checkRolesAndProperties>
-                    <c:if test="${isPointCreate}">
-                        <div class="stacked-lg">
-                            <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam"/></span>
-                        </div>
-                        <hr>
-                    </c:if>
-                    <cti:url var="dataUrl" value="/stars/rtu/${rtu.id}/allPoints"/>
-                    <div class="js-all-points" data-url="${dataUrl}"></div>
-                </cti:tab>
-            </cti:tabs>
-        </cti:displayForPageEditModes>
-    
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action" />
@@ -206,6 +167,51 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
+    <cti:displayForPageEditModes modes="VIEW">
+        <div class="column-12-12 clearfix">
+            <div class="column one">
+            <tags:widgetContainer deviceId="${rtu.id}">
+                <tags:widget bean="paoNotesWidget" container="section"/>
+            </tags:widgetContainer>
+            </div>
+            <div class="column two nogutter"></div>
+        </div>
+        <cti:tabs>
+            <cti:msg2 var="childrenTab" key=".childrenTab"/>
+            <cti:tab title="${childrenTab}">
+                <c:if test="${empty rtu.childDevices}">
+                    <i:inline key=".noChildDevices"/>
+                </c:if>
+                <c:forEach var="child" items="${rtu.childDevices}">
+                    <c:set var="paoId" value="${child.paoIdentifier.paoId}"/>
+                    <cti:button renderMode="image" icon="icon-expand" classes="js-show-hide" data-paoId="${paoId}"/>
+                    <cti:paoDetailUrl yukonPao="${child}">
+                        ${fn:escapeXml(child.name)}
+                    </cti:paoDetailUrl>
+                    <div class="js-points-${paoId}" style="margin:10px 0px 10px 30px;"></div>
+                </c:forEach>
+            </cti:tab>
+    
+            <cti:msg2 var="allPointsTab" key=".allPointsTab"/>
+            <cti:tab title="${allPointsTab}" headerClasses="js-all-points-tab">
+                <c:set var="isPointCreate" value= "false" />
+                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                    <c:set var="isPointCreate" value= "true" />
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
+                    <c:set var="isPointCreate" value= "true" />
+                </cti:checkRolesAndProperties>
+                <c:if test="${isPointCreate}">
+                    <div class="stacked-lg">
+                        <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam"/></span>
+                    </div>
+                    <hr>
+                </c:if>
+                <cti:url var="dataUrl" value="/stars/rtu/${rtu.id}/allPoints"/>
+                <div class="js-all-points" data-url="${dataUrl}"></div>
+            </cti:tab>
+        </cti:tabs>
+    </cti:displayForPageEditModes>
     <cti:toJson id="tcp-comm-ports" object="${tcpCommPorts}"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.rtu.js" />
 </cti:standardPage>
