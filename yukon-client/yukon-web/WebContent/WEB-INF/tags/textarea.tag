@@ -11,6 +11,7 @@
 <%@ attribute name="isResizable" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="placeholder" required="false" type="java.lang.String"%>
 <%@ attribute name="maxLength" required="false" type="java.lang.Integer"%>
+<%@ attribute name="autofocus" required="false" type="java.lang.Boolean"%>
 
 <spring:bind path="${path}">
 
@@ -35,8 +36,16 @@
         <c:set var="resizable" value="resize: none;"/>
     </c:if>
     
-    <form:textarea path="${path }" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
+    <c:choose>
+        <c:when test="${autofocus == false}">
+            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
+                   cssStyle="${resizable}" placeholder="${placeholder}" maxlength="${maxLength}" tabindex="-1"/>
+        </c:when>
+        <c:otherwise>
+            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
                    cssStyle="${resizable}" placeholder="${placeholder}" maxlength="${maxLength}"/>
+        </c:otherwise>
+    </c:choose>
 	
 	<c:if test="${status.error}">
 		<br>

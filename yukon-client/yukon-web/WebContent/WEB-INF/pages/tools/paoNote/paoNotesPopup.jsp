@@ -17,15 +17,9 @@
         <div class="column-14-10 clearfix">
             <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
                 <div class="column one">
-                    
-                    <!-- This input is here so the textarea below doesn't autofocus when the 
-                         notes popup is opened. This allows the user to see the placeholder text in
-                         the textarea when using Internet Explorer. -->
-                    <input type="text" style="display:none" autofocus="true"/>
-                    
                     <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
                     <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
-                                   maxLength="${noteTextAreaMaxLength}" placeholder="${noteTextPlaceholder}"/>
+                                   maxLength="${noteTextAreaMaxLength}" placeholder="${noteTextPlaceholder}" autofocus="false"/>
                 </div>
             </cti:checkRolesAndProperties>
             <div class="column two nogutter">
