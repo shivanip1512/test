@@ -79,14 +79,11 @@ yukon.historical.readings = (function () {
                     btns = dialog.closest('.ui-dialog').find('.ui-dialog-buttonset'),
                     primary = btns.find('.js-primary-action'),
                     secondary = btns.find('.js-secondary-action');
-                
                 yukon.ui.busy(primary);
                 secondary.prop('disabled', true);
                 form.ajaxSubmit({
                     success: function (result, status, xhr, $form) {
-                        dialog.dialog('destroy');
-                        valuesTable.html(result);
-                        valuesDialog.scrollTop(0);
+                        window.location.reload(); 
                     },
                     error: function (xhr, status, error, $form) {
                         dialog.html(xhr.responseText);
