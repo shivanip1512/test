@@ -155,7 +155,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         String groupsLabel = accessor.getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, callback);
         
-        return JsonUtils.toJson(root.toMap());
+        return JsonUtils.toJson(root.toMap(), true);
     }
     
     /**

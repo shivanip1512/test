@@ -113,7 +113,7 @@
     <c:when test="${not pageScope.linkGroupName}">
         <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);"
            title="${selectDeviceGroupChooseText}" 
-           class="chooseGroupIcon_${uniqueId} fl">${pageScope.fieldValue}&nbsp;</a>
+           class="chooseGroupIcon_${uniqueId} fl">${fn:escapeXml(pageScope.fieldValue)}&nbsp;</a>
     </c:when>
 
     <%-- LINKED GROUP NAME --%>

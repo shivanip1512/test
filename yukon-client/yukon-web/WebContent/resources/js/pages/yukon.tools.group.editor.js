@@ -79,7 +79,7 @@ yukon.tools.group.editor = (function () {
         },
 
         init : function () {
-            var hideOnGroupLoad = false;           
+            var hideOnGroupLoad = false;
             if (initialized) return;
             
             $(document).on('click', '.js-edit-grp-name', function () {
@@ -96,6 +96,15 @@ yukon.tools.group.editor = (function () {
                 var groupName = $('#groupName').val();
                 yukon.tools.group.editor.retrieveGroupDetails(groupName);
                 hideOnGroupLoad = true;
+            });
+            
+            $(document).on('click', '#js-subgroups', function (event) {
+                event.preventDefault();
+                yukon.tools.group.editor.retrieveGroupDetails($("#js-subgroup-full-name").val());
+            });
+            
+            $(document).on('yukon:devicegroup:removealldevices', function (event) {
+                yukon.tools.group.editor.removeAllDevices($("#js-group-full-name").val())
             });
             
             initialized = true;

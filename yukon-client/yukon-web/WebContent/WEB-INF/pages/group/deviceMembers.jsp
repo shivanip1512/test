@@ -15,7 +15,7 @@
 </cti:checkRolesAndProperties>
 
 <cti:url var="removeDeviceURL" value="/group/editor/removeDevice"/>
-
+<input type="hidden" id="js-group-full-name" value="${fn:escapeXml(group.fullName)}"/>
 <c:choose>
 	<c:when test="${fn:length(deviceList) > 0}">
         <div class="stacked clearfix">
@@ -60,7 +60,8 @@
             <cti:msg2 var="removeAllDevicesFromGroupLabel" key=".membersContainer.removeAllDevicesFromGroupLabel"/>
             <cti:msg2 var="removeAllDevicesFromGroupDescription" key=".membersContainer.removeAllDevicesFromGroupDescription"/>
             <div class="action-area stacked">
-                <button id="removeAllDevicesButton" onclick="yukon.tools.group.editor.removeAllDevices('${group.fullName}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
+                <button id="removeAllDevicesButton" data-ok-event="yukon:devicegroup:removealldevices" value="${removeAllDevicesFromGroupLabel}" 
+                        title="${removeAllDevicesFromGroupDescription}">
                     <i class="icon icon-cross"></i><span class="b-label">${removeAllDevicesFromGroupLabel}</span>
                 </button>
                 <d:confirm on="#removeAllDevicesButton" nameKey="membersContainer.confirmRemove"/>

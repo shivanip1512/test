@@ -301,11 +301,12 @@
                                     <c:forEach var="subGroup" items="${subGroupMap}">
                                         <tr>
                                             <td>
-                                                <cti:url var="homeUrl" value="/group/editor/home"><cti:param name="groupName" value="${subGroup.key.fullName}" /></cti:url>
+                                                <cti:url var="homeUrl" value="/group/editor/home"><cti:param name="groupName" value="${subGroup.key.fullName}"/></cti:url>
                                                 <span title="${fn:escapeXml(subGroup.key.fullName)}">
-                                                    <a href="javascript:void(0);" onclick="yukon.tools.group.editor.retrieveGroupDetails('${subGroup.key.fullName}');"><c:out value="${subGroup.key.name}"/></a>
+                                                    <input type="hidden" id="js-subgroup-full-name" value="${fn:escapeXml(subGroup.key.fullName)}"/>
+                                                    <a href="#" id="js-subgroups"><c:out value="${subGroup.key.name}"/></a>
                                                 </span>
-                                                <span class="fr">${subGroup.value} <cti:msg2 key=".devices"/></span>
+                                                <span class="fr">${subGroup.value}&nbsp;<cti:msg2 key=".devices"/></span>
                                             </td>
                                             
                                             <c:if test="${hasEditRoleProperty}">

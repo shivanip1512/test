@@ -120,7 +120,7 @@ public class GroupEditorController {
                 String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
                 model.addAttribute("extSelectedNodePath", extSelectedNodePath);
                 
-                String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap());
+                String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap(), true);
                 model.addAttribute("allGroupsDataJson", allGroupsDataJson);
                 return;
             }
@@ -160,7 +160,7 @@ public class GroupEditorController {
         String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
         model.addAttribute("extSelectedNodePath", extSelectedNodePath);
         
-        String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap());
+        String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap(), true);
         model.addAttribute("allGroupsDataJson", allGroupsDataJson);
         
         model.addAttribute("subGroupMap",subGroupMap);
@@ -200,7 +200,7 @@ public class GroupEditorController {
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
         JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.emptySet());
         
-        String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap());
+        String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap(), true);
         model.addAttribute("moveGroupDataJson", moveGroupJson); 
         
         // COPY GROUPS TREE JSON
@@ -213,7 +213,7 @@ public class GroupEditorController {
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
         JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.emptySet());
         
-        String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap());
+        String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap(), true);
         model.addAttribute("copyGroupDataJson", copyGroupJson); 
         
         // DEVICE COLLECTION
@@ -396,7 +396,7 @@ public class GroupEditorController {
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, callbacks);
-        String dataJson = JsonUtils.toJson(root.toMap());
+        String dataJson = JsonUtils.toJson(root.toMap(), true);
         
         mav.addObject("groupDataJson", dataJson);
         
@@ -624,6 +624,6 @@ public class GroupEditorController {
             }
         });
 
-        return JsonUtils.toJson(root.toMap());
+        return JsonUtils.toJson(root.toMap(), true);
     }
 }
