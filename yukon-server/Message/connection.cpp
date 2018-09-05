@@ -502,7 +502,7 @@ void CtiConnection::close()
                 {
                     std::ostringstream os;
 
-                    os << "connection.close-" << who() << ":" << GetCurrentThreadId();
+                    os << "connection.close-" << _title << "-" << getName() << "-" << GetCurrentThreadId();
                     CreateMiniDump( os.str() );
                 }
             }
