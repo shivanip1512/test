@@ -146,6 +146,11 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
+                <cti:displayForPageEditModes modes="VIEW">
+                    <tags:widgetContainer deviceId="${rtu.id}">
+                        <tags:widget bean="paoNotesWidget" container="section"/>
+                    </tags:widgetContainer>
+                </cti:displayForPageEditModes>
             </div>
             
             <div class="column two nogutter">
@@ -168,14 +173,6 @@
         </div>
     </form:form>
     <cti:displayForPageEditModes modes="VIEW">
-        <div class="column-12-12 clearfix">
-            <div class="column one">
-            <tags:widgetContainer deviceId="${rtu.id}">
-                <tags:widget bean="paoNotesWidget" container="section"/>
-            </tags:widgetContainer>
-            </div>
-            <div class="column two nogutter"></div>
-        </div>
         <cti:tabs>
             <cti:msg2 var="childrenTab" key=".childrenTab"/>
             <cti:tab title="${childrenTab}">
