@@ -385,11 +385,11 @@ public final class FileUtil {
     }
 
     /**
-     * @return true if file name matches with pattern rfnCommLogs__YYYYMMDD.log
+     * @return true if file name matches with pattern RfnCommsLog_YYYYMMDD.log
      *         otherwise false
      * */
     public static boolean isOldRfnCommLogFile(String fileName) {
-        return fileName.matches("^" + "rfnCommLogs_" + "([0-9]{2}|[0-9]{8})" + ".log");
+        return fileName.matches("^" + "RfnCommsLog_" + "([0-9]{2}|[0-9]{8})" + ".log");
     }
     
     /**
