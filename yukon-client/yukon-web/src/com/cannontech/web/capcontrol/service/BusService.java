@@ -51,4 +51,10 @@ public interface BusService {
      * Saves the schedule assignments for the bus
      */
     void saveSchedules(CapControlSubBus bus);
+
+    /**
+     * Returns whether the capbank associated with feeder is assigned to zone.
+     */
+    boolean isCapBanksAssignedToZone(List<Integer> availableFeederIds);
+
 }

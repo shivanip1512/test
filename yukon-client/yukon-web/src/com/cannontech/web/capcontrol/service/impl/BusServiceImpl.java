@@ -32,6 +32,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.models.Assignment;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.service.BusService;
+import com.cannontech.web.capcontrol.service.FeederService;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -47,6 +48,7 @@ public class BusServiceImpl implements BusService {
     @Autowired private SubstationBusDao busDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoScheduleServiceHelper paoScheduleServiceHelper;
+    @Autowired private FeederService feederService;
     
     private Logger log = YukonLogManager.getLogger(getClass());
     
@@ -212,5 +214,24 @@ public class BusServiceImpl implements BusService {
         if (pao == null || pao.getPaoType() != PaoType.CAP_CONTROL_SUBBUS) {
             throw new NotFoundException("No bus with id " + id + " found.");
         }
+    }
+
+    @Override
+    public boolean isCapBanksAssignedToZone(List<Integer> availableFeederIds) {
+        boolean isCapbankAssigned = false;
+        List<Assignment> unassignedFeeders = getUnassignedFeeders();
+        List<Integer> unassignedFeedersId = unassignedFeeders.stream().map(Assignment::getId)
+                                                                      .collect(Collectors.toList());
+        // Match the available feeder id with unassigned feeder ids to get the list of ids . Using 
+        // these ids we will check if the associated cap bank is assigned to some zone.
+        List<Integer> filteredIds = availableFeederIds.stream().filter(id -> !unassignedFeedersId.contains(id))
+                                                               .collect(Collectors.toList());
+        for (Integer feederId : filteredIds) {
+            isCapbankAssigned = feederService.isCapBanksAssignedToZone(feederId);
+            if (isCapbankAssigned) {
+                break;
+            }
+        }
+        return isCapbankAssigned;
     }
 }

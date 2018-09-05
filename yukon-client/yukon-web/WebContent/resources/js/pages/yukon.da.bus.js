@@ -30,16 +30,22 @@ yukon.da.bus = (function () {
 
                 var container = $(ev.target),
                     parentId = container.data('parentId'),
-                    children = [];
+                    children = [],
+                    available = [];
 
                 container.find('.select-box-selected .select-box-item').each(function (idx, item) {
                     children.push($(item).data('id'));
                 });
 
+                container.find('.select-box-available .select-box-item').each(function (idx, item) {
+                    available.push($(item).data('id'));
+                });
+                
                 $.ajax({
                     url: yukon.url('/capcontrol/buses/' + parentId + '/feeders'),
                     method: 'post',
-                    data: { children: children}
+                    data: { children: children,
+                            available: available}
                 }).done(function () {
                     window.location.reload();
                 });

@@ -233,4 +233,20 @@ public class FeederServiceImpl implements FeederService {
         }
     }
 
+    @Override
+    public boolean isCapBanksAssignedToZone(List<Integer> availableCapBanksIds) {
+        boolean isCapbankAssigned = false;
+        List<CapBankAssignment> unassignedCapBanks = getUnassignedCapBanks();
+        List<Integer> unassignedCapBanksId = unassignedCapBanks.stream().map(CapBankAssignment::getId)
+                                                                        .collect(Collectors.toList());
+        // Match the available capbank id with unassigned capbank ids to get the list of ids . Using 
+        // these ids we will check if the capbank is assigned to some zone.
+        List<Integer> filteredCapBankIds = availableCapBanksIds.stream().filter(id -> !unassignedCapBanksId.contains(id))
+                                                                        .collect(Collectors.toList());
+        if (!filteredCapBankIds.isEmpty()) {
+            isCapbankAssigned = capBankDao.isCapBanksAssignedToZone(filteredCapBankIds);
+        }
+        return isCapbankAssigned;
+    }
+
 }
