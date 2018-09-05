@@ -70,6 +70,7 @@
                     <table class="compact-results-table dashed">
                         <thead>
                             <tr>
+                                <th class="row-icon"/>
                                 <th><i:inline key=".serialOrMeterNumber"/></th>
                                 <th><i:inline key=".hardwareType"/></th>
                                 <th><i:inline key=".label"/></th>
@@ -97,6 +98,12 @@
                         <tbody>
                             <c:forEach var="result" items="${results.resultList}">
                                 <tr>
+                                    <td>
+                                        <c:if test="${notesList.contains(result.deviceId) and not (result.deviceId eq 0)}">
+                                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${result.deviceId}"/>
+                                        </c:if>
+                                    </td>
                                     <td>
                                         <cti:url var="inventoryUrl" value="/stars/operator/inventory/view">
                                             <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
@@ -176,5 +183,6 @@
         </tags:sectionContainer2>
         
     </c:if>
-    
+<div class="dn" id="js-pao-notes-popup"></div>
+<cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:standardPage>

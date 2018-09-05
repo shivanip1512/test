@@ -2,6 +2,7 @@ package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -50,6 +52,7 @@ public class InventorySearchController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private PhoneNumberFormattingService phoneFormattingService;
+    @Autowired private PaoNotesService paoNotesService;
 
     @RequestMapping("search")
     public String search(HttpServletRequest request,
@@ -111,6 +114,12 @@ public class InventorySearchController {
                 }
             }
             model.addAttribute("results", results);
+            
+            List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(results.getResultList()
+                                                                                .stream()
+                                                                                .map(result -> result.getDeviceId())
+                                                                                .collect(Collectors.toList()));
+            model.addAttribute("notesList", notesList);
         }
         
         model.addAttribute("showAccountNumber", StringUtils.isNotBlank(inventorySearch.getAccountNumber()));
