@@ -99,7 +99,8 @@ yukon.da.feeder = (function () {
                     parentId = container.data('parentId'),
                     children = [],
                     tripOrder = [],
-                    closeOrder = [];
+                    closeOrder = [],
+                    available = [];
 
                 container.find('.select-box-selected .select-box-item').each(function (idx, item) {
                     children.push($(item).data('id'));
@@ -110,11 +111,17 @@ yukon.da.feeder = (function () {
                 container.find('.select-box-close-order .select-box-item').each(function (idx, item) {
                     closeOrder.push($(item).data('id'));
                 });
+                container.find('.select-box-available .select-box-item').each(function (idx, item) {
+                    available.push($(item).data('id'));
+                });
 
                 $.ajax({
                     url: yukon.url('/capcontrol/feeders/' + parentId + '/capbanks'),
                     method: 'post',
-                    data: { children: children, tripOrder: tripOrder, closeOrder: closeOrder}
+                    data: { children: children,
+                            tripOrder: tripOrder,
+                            closeOrder: closeOrder,
+                            available: available}
                 }).done(function () {
                     window.location.reload();
                 });

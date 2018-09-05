@@ -113,4 +113,9 @@ public interface CapbankDao {
      */
     boolean assignCapbank(int feederId, int capbankId);
 
+    /**
+     * Returns whether the capbank is assigned to zone.
+     */
+    boolean isCapBanksAssignedToZone(List<Integer> capBanksId);
+
 }

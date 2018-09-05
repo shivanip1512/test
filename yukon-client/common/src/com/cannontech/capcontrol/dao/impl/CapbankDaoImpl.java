@@ -314,5 +314,18 @@ public class CapbankDaoImpl implements CapbankDao {
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Parent Subbus was not found for CapBank with ID: " + bankId);
         }
+    }
+
+    @Override
+    public boolean isCapBanksAssignedToZone(List<Integer> capBanksId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ZoneId FROM CapBankToZoneMapping ");
+        sql.append("WHERE DeviceId").in(capBanksId);
+        List<Integer> zoneIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+        if (zoneIds.isEmpty()) {
+            return false;
+        }
+        return true;
     }   
 }

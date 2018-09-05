@@ -306,10 +306,19 @@ public class FeederController {
     @RequestMapping(value="feeders/{feederId}/capbanks", method=RequestMethod.POST)
     public void saveCapBanks(HttpServletResponse resp, @PathVariable int feederId, FlashScope flash,
             @RequestParam(value="children[]", required=false, defaultValue="") Integer[] capBankIds,
+            @RequestParam(value="available[]", required=false, defaultValue="") List<Integer> availableCapBanksIds,
             @RequestParam(value="tripOrder[]", required=false, defaultValue="") Integer[] tripOrder,
-            @RequestParam(value="closeOrder[]", required=false, defaultValue="") Integer[] closeOrder) {
-        feederService.assignCapBanks(feederId, Arrays.asList(capBankIds), Arrays.asList(closeOrder), Arrays.asList(tripOrder));
-        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".capbanks.updated"));
-        resp.setStatus(HttpStatus.NO_CONTENT.value());
+            @RequestParam(value = "closeOrder[]", required = false, defaultValue = "") Integer[] closeOrder) {
+        boolean isCapbankAssigned = false;
+        if (!availableCapBanksIds.isEmpty()) {
+            isCapbankAssigned = feederService.isCapBanksAssignedToZone(availableCapBanksIds);
+        }
+        if (isCapbankAssigned) {
+            flash.setError(new YukonMessageSourceResolvable(feederKey + ".capbanks.update.error"));
+        } else {
+            feederService.assignCapBanks(feederId, Arrays.asList(capBankIds), Arrays.asList(closeOrder), Arrays.asList(tripOrder));
+            flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".capbanks.updated"));
+            resp.setStatus(HttpStatus.NO_CONTENT.value());
+        }
     }
 }

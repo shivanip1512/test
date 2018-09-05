@@ -55,4 +55,9 @@ public interface FeederService {
      * @return All cap banks, as {@link Assignment}s, attached to the feeder with given feederId.
      */
     List<CapBankAssignment> getAssignedCapBanksForFeeder(int feederId);
+
+    /**
+     * Returns whether the capbank is assigned to zone.
+     */
+    boolean isCapBanksAssignedToZone(List<Integer> availableCapBanksIds);
 }

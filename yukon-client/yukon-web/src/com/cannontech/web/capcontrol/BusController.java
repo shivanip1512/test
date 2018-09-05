@@ -329,10 +329,19 @@ public class BusController {
 
     @RequestMapping(value="buses/{busId}/feeders", method=RequestMethod.POST)
     public void saveFeeders(HttpServletResponse resp, @PathVariable int busId, FlashScope flash,
-            @RequestParam(value="children[]", required=false, defaultValue="") Integer[] feederIds) {
-        busService.assignFeeders(busId, Arrays.asList(feederIds));
-        flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".feeders.updated"));
-
-        resp.setStatus(HttpStatus.NO_CONTENT.value());
+            @RequestParam(value="children[]", required=false, defaultValue="") Integer[] feederIds,
+            @RequestParam(value = "available[]", required = false, defaultValue = "") List<Integer> availableFeederIds) {
+        boolean isCapbankAssigned = false;
+        if (!availableFeederIds.isEmpty()) {
+            isCapbankAssigned = busService.isCapBanksAssignedToZone(availableFeederIds);
+            if (isCapbankAssigned) {
+                flash.setError(new YukonMessageSourceResolvable(busKey + ".feeders.update.error"));
+            }
+        }
+        if (!isCapbankAssigned) {
+            busService.assignFeeders(busId, Arrays.asList(feederIds));
+            flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".feeders.updated"));
+            resp.setStatus(HttpStatus.NO_CONTENT.value());
+        }
     }
 }
