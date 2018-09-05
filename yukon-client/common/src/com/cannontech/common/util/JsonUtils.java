@@ -59,7 +59,7 @@ public class JsonUtils {
     
     /**
      * JSON representation of Object.
-     * @param isRenderedOnUI if set to true, the occurrence of substring is </ escaped. 
+     * @param isRenderedOnUI if set to true, the occurrences of "</" is replaced with "<\\/". 
      * This is to prevent XSS issues on UI. 
      */
     public static String toJson(Object object, boolean isRenderedOnUI) throws JsonProcessingException {
