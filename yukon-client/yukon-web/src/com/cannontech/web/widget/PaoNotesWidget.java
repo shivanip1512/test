@@ -41,7 +41,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final int MAX_NOTES_TO_DISPLAY = 3;
 
-    @RequestMapping(value = "render")
+    @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         Map<String, String> widgetParameters = (Map<String, String>) request.getAttribute("widgetParameters");
         int deviceId = Integer.parseInt(widgetParameters.get("deviceId"));
