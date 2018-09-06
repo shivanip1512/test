@@ -248,14 +248,11 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     @Override
     public List<Integer> getPaoIdsWithNotes(List<Integer> paoIds) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-            @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT DISTINCT PAObjectId FROM PaoNote");
-                sql.append("WHERE PaObjectId").in(paoIds);
-                return sql;
-            }
+        SqlFragmentGenerator<Integer> sqlGenerator = (subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DISTINCT PAObjectId FROM PaoNote");
+            sql.append("WHERE PaObjectId").in(subList);
+            return sql;
         };
         return template.query(sqlGenerator, paoIds, TypeRowMapper.INTEGER);
     }
