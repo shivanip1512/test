@@ -341,9 +341,10 @@
                 <span class="empty-list"><i:inline key=".switches.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
+                <table class="compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
+                            <th class="row-icon"/>
                             <th><i:inline key=".serialNumber"/></th>
                             <th><i:inline key=".displayType.SWITCH"/></th>
                             <th><i:inline key=".label"/></th>
@@ -354,6 +355,12 @@
                     <tbody>
                         <c:forEach var="hwSwitch" items="${switches}">
                             <tr>
+                                <td>
+                                    <c:if test="${notesList.contains(hwSwitch.deviceId)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${hwSwitch.deviceId}"/>
+                                    </c:if>
+                                </td>
                                 <td>
                                     <a href="${viewUrl}${hwSwitch.inventoryId}">${fn:escapeXml(hwSwitch.serialNumber)}</a>
                                 </td>
@@ -428,9 +435,10 @@
                 <span class="empty-list"><i:inline key=".thermostats.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
+                <table class="compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
+                            <th class="row-icon"/>
                             <th><i:inline key=".serialNumber"/></th>
                             <th><i:inline key=".displayType.THERMOSTAT"/></th>
                             <th><i:inline key=".label"/></th>
@@ -441,6 +449,12 @@
                     <tbody>
                         <c:forEach var="thermostat" items="${thermostats}">
                             <tr>
+                                <td>
+                                    <c:if test="${notesList.contains(thermostat.deviceId)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${thermostat.deviceId}"/>
+                                    </c:if>
+                                </td>
                                 <td>
                                     <a href="${viewUrl}${thermostat.inventoryId}">
                                         ${fn:escapeXml(thermostat.serialNumber)}
@@ -649,9 +663,10 @@
                 <span class="empty-list"><i:inline key=".gateways.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
+                <table class="compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
+                            <th class="row-icon"/>
                             <th><i:inline key=".displayName"/></th>
                             <th><i:inline key=".displayType.GATEWAY"/></th>
                             <th><i:inline key=".gateways.commStatus"/></th>
@@ -668,6 +683,12 @@
                     <tbody>
                         <c:forEach var="gateway" items="${gateways}">
                             <tr>
+                                <td>
+                                    <c:if test="${notesList.contains(gateway.deviceId)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${gateway.deviceId}"/>
+                                    </c:if>
+                                </td>
                                 <td>
                                     <a href="${viewUrl}${gateway.inventoryId}">
                                         ${fn:escapeXml(gateway.serialNumber)}
@@ -736,4 +757,6 @@
     </tags:sectionContainer2>
 </c:if>
 </cti:checkEnergyCompanyOperator>
+<div class="dn" id="js-pao-notes-popup"></div>
+<cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:standardPage>

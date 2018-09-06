@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,6 +39,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ServiceCompanyDto;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -156,6 +158,7 @@ public class OperatorHardwareController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ZigbeeDeviceService zigbeeDeviceService;
     @Autowired private HardwareConfigService hardwareConfigService;
+    @Autowired private PaoNotesService paoNotesService;
 
     private static final int THERMOSTAT_DETAIL_NUM_ITEMS = 5;
 
@@ -937,6 +940,13 @@ public class OperatorHardwareController {
         if (Lists.newArrayList(schedualableThermostats).size() > 1) {
             model.addAttribute("showSelectAll", Boolean.TRUE);
         }
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(hardwareMap.values()
+                                                                                .stream()
+                                                                                .map(hardware -> hardware.getDeviceId())
+                                                                                .filter(deviceId -> deviceId != 0)
+                                                                                .collect(Collectors.toList()));
+        
+        model.addAttribute("notesList", notesList);
 
         model.addAttribute("switchClass", HardwareClass.SWITCH);
         model.addAttribute("thermostatClass", HardwareClass.THERMOSTAT);
