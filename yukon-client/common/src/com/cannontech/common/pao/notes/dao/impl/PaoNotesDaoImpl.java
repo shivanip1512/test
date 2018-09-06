@@ -18,9 +18,13 @@ import com.cannontech.common.pao.notes.filter.model.PaoNotesFilter;
 import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -243,11 +247,16 @@ public class PaoNotesDaoImpl implements PaoNotesDao {
     
     @Override
     public List<Integer> getPaoIdsWithNotes(List<Integer> paoIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PAObjectId, COUNT(PAObjectId) AS NoteCount FROM PaoNote");
-        sql.append("WHERE PaObjectId").in(paoIds);
-        sql.append("GROUP BY PaObjectId");
-        
-        return yukonJdbcTemplate.query(sql, (YukonResultSet rs) -> rs.getInt("PAObjectId"));
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT PAObjectId FROM PaoNote");
+                sql.append("WHERE PaObjectId").in(paoIds);
+                return sql;
+            }
+        };
+        return template.query(sqlGenerator, paoIds, TypeRowMapper.INTEGER);
     }
 }
