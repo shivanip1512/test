@@ -118,6 +118,7 @@ public class InventorySearchController {
             List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(results.getResultList()
                                                                                 .stream()
                                                                                 .map(result -> result.getDeviceId())
+                                                                                .filter(deviceId -> deviceId != 0)
                                                                                 .collect(Collectors.toList()));
             model.addAttribute("notesList", notesList);
         }

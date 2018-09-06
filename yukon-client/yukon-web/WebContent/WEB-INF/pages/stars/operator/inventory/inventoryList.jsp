@@ -99,7 +99,7 @@
                             <c:forEach var="result" items="${results.resultList}">
                                 <tr>
                                     <td>
-                                        <c:if test="${notesList.contains(result.deviceId) and not (result.deviceId eq 0)}">
+                                        <c:if test="${notesList.contains(result.deviceId)}">
                                             <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
                                             <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${result.deviceId}"/>
                                         </c:if>
