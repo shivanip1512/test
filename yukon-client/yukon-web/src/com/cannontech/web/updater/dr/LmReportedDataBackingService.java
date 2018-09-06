@@ -102,11 +102,13 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
         String fieldName = idBits[1];
         String relayNum = idBits.length > 2 ? idBits[2] : null; // set if field is relay
 
+        log.info("idBits:"+idBits);
         log.info("fieldName:"+fieldName);
         ExpressComReportedAddress address = (ExpressComReportedAddress) datedObject.getObject();
         log.info("address:"+ address);
         ExpressComAddressField field = ExpressComAddressField.valueOf(fieldName);
         log.info("field:"+ field);
+        log.info("relayNum:"+ relayNum);
 
         switch (field) {
         case TIMESTAMP:
@@ -137,10 +139,26 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
             value = Integer.toString(address.getUda());
             break;
         case RELAY_PROGRAM:
+            try {
+                log.info("RELAY_PROGRAM");
+                log.info(1);
+                Integer.valueOf(relayNum);
+                log.info(2);
+                address.getRelayByNumber(Integer.valueOf(relayNum));
+                log.info(3);
+                address.getRelayByNumber(Integer.valueOf(relayNum)).getProgram();
+                log.info(4);
+                Integer.toString(address.getRelayByNumber(Integer.valueOf(relayNum)).getProgram());
+                log.info(5);
+            } catch (Exception e) {
+                log.error(e);
+            }
             value = Integer.toString(address.getRelayByNumber(Integer.valueOf(relayNum)).getProgram());
+            log.info(6);
             break;
         case RELAY_SPLINTER:
             try {
+                log.info("RELAY_SPLINTER");
                 log.info(1);
                 Integer.valueOf(relayNum);
                 log.info(2);
