@@ -19,7 +19,7 @@
                 <div class="column one">
                     <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
                     <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
-                                   maxLength="${noteTextAreaMaxLength}" placeholder="${noteTextPlaceholder}"/>
+                                   maxLength="${noteTextAreaMaxLength}" placeholder="${noteTextPlaceholder}" autofocus="false"/>
                 </div>
             </cti:checkRolesAndProperties>
             <div class="column two nogutter">
