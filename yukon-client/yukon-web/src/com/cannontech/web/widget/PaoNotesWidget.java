@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.notes.model.PaoNote;
 import com.cannontech.common.pao.notes.search.result.model.PaoNotesSearchResult;
@@ -43,6 +44,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
     @Autowired private PaoNoteValidator paoNoteValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final int MAX_NOTES_TO_DISPLAY = 3;
+    private static final Logger log = YukonLogManager.getLogger(PaoNotesWidget.class);
 
     @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
@@ -52,7 +54,7 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
             Boolean hideTableBorder = WidgetParameterHelper.getBooleanParameter(request, "hideTableBorders");
             model.addAttribute("hideTableBorder", hideTableBorder);
         } catch (ServletRequestBindingException e) {
-            Log.debug("Error rendering Notes widget", e);
+            log.error("Error rendering Notes widget", e);
         }
         
         setupModel(deviceId, userContext.getYukonUser(), model);
