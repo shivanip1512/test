@@ -334,11 +334,10 @@ public class BusController {
         boolean isCapbankAssigned = false;
         if (!availableFeederIds.isEmpty()) {
             isCapbankAssigned = busService.isCapBanksAssignedToZone(availableFeederIds);
-            if (isCapbankAssigned) {
-                flash.setError(new YukonMessageSourceResolvable(busKey + ".feeders.update.error"));
-            }
         }
-        if (!isCapbankAssigned) {
+        if (isCapbankAssigned) {
+            flash.setError(new YukonMessageSourceResolvable(busKey + ".feeders.update.error"));
+        } else {
             busService.assignFeeders(busId, Arrays.asList(feederIds));
             flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".feeders.updated"));
             resp.setStatus(HttpStatus.NO_CONTENT.value());
