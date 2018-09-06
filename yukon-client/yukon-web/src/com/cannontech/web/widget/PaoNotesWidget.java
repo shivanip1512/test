@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -50,7 +51,9 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
             deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
             Boolean hideTableBorder = WidgetParameterHelper.getBooleanParameter(request, "hideTableBorders");
             model.addAttribute("hideTableBorder", hideTableBorder);
-        } catch (ServletRequestBindingException e) {}
+        } catch (ServletRequestBindingException e) {
+            Log.debug("Error rendering Notes widget", e);
+        }
         
         setupModel(deviceId, userContext.getYukonUser(), model);
         return "paoNotesWidget/render.jsp";
