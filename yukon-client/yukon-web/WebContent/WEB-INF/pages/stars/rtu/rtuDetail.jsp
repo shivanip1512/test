@@ -171,7 +171,7 @@
         <div class="column-12-12 clearfix">
             <div class="column one">
             <tags:widgetContainer deviceId="${rtu.id}">
-                <tags:widget bean="paoNotesWidget" container="section"/>
+                <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true"/>
             </tags:widgetContainer>
             </div>
             <div class="column two nogutter"></div>

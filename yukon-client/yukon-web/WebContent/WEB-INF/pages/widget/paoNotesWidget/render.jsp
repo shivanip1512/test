@@ -7,7 +7,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="common.paoNote, web.components.ajaxConfirm, yukon.common">
-    <tags:setFormEditMode mode="EDIT"/>
     <span class="js-notes-containing-widget"/>
     <form:form id="create-note-form" method="POST" modelAttribute="createPaoNote">
         <cti:csrfToken/>
@@ -19,7 +18,7 @@
                     <td width="80%" class="P0">
                         <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
                         <tags:textarea rows="3" cols="46" path="noteText" id="createNoteTextarea" isResizable="false"
-                                       placeholder="${noteTextPlaceholder}" maxLength="${noteTextAreaMaxLength}"/>
+                                       placeholder="${noteTextPlaceholder}" maxLength="${noteTextAreaMaxLength}" forceDisplayTextarea="true"/>
                     </td>
                     <td width="20%" class="vam">
                         <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-note M0 fr" busy="true"/>
@@ -36,7 +35,8 @@
             <span class="empty-list"><i:inline key=".noNotes"/></span>
         </c:when>
         <c:otherwise>
-            <table class="row-highlighting striped bordered-div wrbw" style="width:100%; table-layout:fixed;">
+            <c:set var="borderClass" value="${hideTableBorder ? '' : 'bordered-div'}"/>
+            <table class="row-highlighting ${borderClass} striped wrbw" style="width:100%; table-layout:fixed;">
                 <c:forEach var="recentNote" items="${recentNotes}" varStatus="status">
                     <c:set var="noteId" value="${recentNote.paoNote.noteId}"/>
                     <tr>
@@ -103,7 +103,7 @@
         </c:otherwise>
     </c:choose>
 
-    <div class="action-area">
+    <div class="buffered">
         <cti:url value="/tools/paoNotes/search" var="allNotesUrl">
             <cti:param name="paoSelectionMethod" value="selectIndividually"/>
             <cti:param name="paoIds" value="${createPaoNote.paoId}"/>

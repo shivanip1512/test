@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +32,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.paonote.validator.PaoNoteValidator;
 import com.cannontech.web.security.annotation.CheckAccessLevel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @Controller
 @RequestMapping("/paoNotesWidget/*")
@@ -43,8 +45,13 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
 
     @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
-        Map<String, String> widgetParameters = (Map<String, String>) request.getAttribute("widgetParameters");
-        int deviceId = Integer.parseInt(widgetParameters.get("deviceId"));
+        int deviceId = 0;
+        try {
+            deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+            Boolean hideTableBorder = WidgetParameterHelper.getBooleanParameter(request, "hideTableBorders");
+            model.addAttribute("hideTableBorder", hideTableBorder);
+        } catch (ServletRequestBindingException e) {}
+        
         setupModel(deviceId, userContext.getYukonUser(), model);
         return "paoNotesWidget/render.jsp";
     }
