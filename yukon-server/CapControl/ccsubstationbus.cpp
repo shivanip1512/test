@@ -27,6 +27,7 @@ using Cti::CapControl::serializeFlag;
 using Cti::CapControl::populateFlag;
 using Cti::CapControl::calculateKVARSolution;
 using Cti::CapControl::formatMapInfo;
+using Cti::CapControl::eligibleForVoltageControl;
 
 using std::endl;
 using std::set;
@@ -5589,7 +5590,7 @@ CtiCCCapBankPtr CtiCCSubstationBus::canConsiderPoint( const CtiCCMonitorPoint & 
         {
             if ( CtiCCCapBankPtr bank = feeder->getMonitorPointParentBank( point ) )
             {
-                if ( bank->isSwitched() && ! bank->getDisableFlag() )
+                if ( eligibleForVoltageControl( *bank ) )
                 {
                     return bank;
                 }
@@ -6458,8 +6459,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
             CtiCCCapBankPtr parentBank = getMonitorPointParentBankAndFeeder(point, parentFeeder);
             if ( parentBank && parentFeeder )
             {
-                if ( parentBank->isSwitched() &&
-                     ! parentBank->getDisableFlag() && 
+                if ( eligibleForVoltageControl( *parentBank ) &&
                      ! parentFeeder->getDisableFlag() && 
                      ( parentBank->getControlStatus() == CtiCCCapBank::Open ||
                        parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
@@ -6534,7 +6534,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                     {
                         for ( CtiCCCapBankPtr currentCapBank : currentFeeder->getCCCapBanks() )
                         {
-                            if ( currentCapBank->isSwitched() && ! currentCapBank->getDisableFlag() )
+                            if ( eligibleForVoltageControl( *currentCapBank ) )
                             {
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::Open || currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
                                 {
@@ -6621,8 +6621,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
             CtiCCCapBankPtr parentBank = getMonitorPointParentBankAndFeeder(point, parentFeeder);
             if ( parentBank && parentFeeder )
             {
-                if ( parentBank->isSwitched() &&
-                     ! parentBank->getDisableFlag() &&
+                if ( eligibleForVoltageControl( *parentBank ) &&
                      ! parentFeeder->getDisableFlag() && 
                      ( parentBank->getControlStatus() == CtiCCCapBank::Close ||
                        parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
@@ -6697,7 +6696,7 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
                     {
                         for ( CtiCCCapBankPtr currentCapBank : currentFeeder->getCCCapBanks() )
                         {
-                            if ( currentCapBank->isSwitched() && ! currentCapBank->getDisableFlag() )
+                            if ( eligibleForVoltageControl( *currentCapBank ) )
                             {
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::Close || currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
                                 {
@@ -6827,8 +6826,8 @@ bool CtiCCSubstationBus::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCap
         CtiCCCapBankPtr otherBank = getMonitorPointParentBank( *otherPoint );
 
         if ( otherBank &&
-                ! otherBank->getDisableFlag() &&
-                    ( otherPoint->getPointId() != mPointID ) )
+             eligibleForVoltageControl( *otherBank ) &&
+                ( otherPoint->getPointId() != mPointID ) )
         {
             for ( const PointResponse & pResponse : potentialCap->getPointResponses() )
             {

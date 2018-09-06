@@ -160,4 +160,6 @@ std::string formatMapInfo( const T & object )
         : "";
 }
 
+bool eligibleForVoltageControl( CtiCCCapBank & bank );
+
 }}

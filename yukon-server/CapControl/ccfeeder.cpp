@@ -23,6 +23,7 @@ using Cti::CapControl::serializeFlag;
 using Cti::CapControl::populateFlag;
 using Cti::CapControl::calculateKVARSolution;
 using Cti::CapControl::formatMapInfo;
+using Cti::CapControl::eligibleForVoltageControl;
 
 using namespace Cti::Messaging::CapControl;
 using std::endl;
@@ -3782,10 +3783,9 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             parentBank = getMonitorPointParentBank(point);
             if (parentBank != NULL)
             {
-                if ( parentBank->isSwitched() &&
-                     ! parentBank->getDisableFlag() &&
-                        ( parentBank->getControlStatus() == CtiCCCapBank::Open ||
-                          parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
+                if ( eligibleForVoltageControl( *parentBank ) &&
+                    ( parentBank->getControlStatus() == CtiCCCapBank::Open ||
+                      parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
                 {
                     try
                     {
@@ -3843,10 +3843,9 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             {
                 for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    if ( currentCapBank->isSwitched() &&
-                         ! currentCapBank->getDisableFlag() &&
-                            ( currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
-                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
+                    if ( eligibleForVoltageControl( *currentCapBank ) &&
+                        ( currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
+                          currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
                     {
                         if (point.getDeviceId() != currentCapBank->getPaoId())
                         {
@@ -3906,10 +3905,9 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             CtiCCCapBankPtr parentBank = getMonitorPointParentBank(point);
             if (parentBank != NULL)
             {
-                if ( parentBank->isSwitched() &&
-                     ! parentBank->getDisableFlag() &&
-                        ( parentBank->getControlStatus() == CtiCCCapBank::Close ||
-                          parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
+                if ( eligibleForVoltageControl( *parentBank ) &&
+                    ( parentBank->getControlStatus() == CtiCCCapBank::Close ||
+                      parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                 {
                     try
                     {
@@ -3966,10 +3964,9 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             {
                 for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    if ( currentCapBank->isSwitched() &&
-                         ! currentCapBank->getDisableFlag() &&
-                            ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-                              currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
+                    if ( eligibleForVoltageControl( *currentCapBank ) &&
+                        ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
+                          currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                     {
                         if (point.getDeviceId() != currentCapBank->getPaoId())
                         {
@@ -4090,8 +4087,8 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
         CtiCCCapBankPtr otherBank = getMonitorPointParentBank( *otherPoint );
 
         if ( otherBank &&
-                ! otherBank->getDisableFlag() &&
-                  ( otherPoint->getPointId() != mPointID ) )
+             eligibleForVoltageControl( *otherBank ) &&
+              ( otherPoint->getPointId() != mPointID ) )
         {
             for ( const PointResponse & pResponse : potentialCap->getPointResponses() )
             {
@@ -4192,7 +4189,7 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
         {
             CtiCCCapBankPtr bank = getMonitorPointParentBank( *point );
 
-            if ( bank && bank->isSwitched() && ! bank->getDisableFlag() )
+            if ( bank && eligibleForVoltageControl( *bank ) )
             {
                 double upperBound = upperLimit;
                 double lowerBound = lowerLimit;
@@ -4334,7 +4331,7 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
             {
                 CtiCCCapBankPtr bank = getMonitorPointParentBank( *point );
 
-                if ( bank && ! bank->getDisableFlag() )
+                if ( bank && eligibleForVoltageControl( *bank ) )
                 {
                     if ( point->getTimeStamp() > ( getLastOperationTime() - 30 )
                             && point->getTimeStamp() >= ( currentDateTime - ( 60 * _POINT_AGE ) ) )

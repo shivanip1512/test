@@ -36,6 +36,7 @@ using Cti::CapControl::sendCapControlOperationMessage;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::formatMapInfo;
+using Cti::CapControl::eligibleForVoltageControl;
 
 using namespace Cti::Messaging::CapControl;
 
@@ -2613,9 +2614,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             // if banks operational state isn't switched or if disabled
             // or not in one of the above 4 states we aren't eligible for control.
 
-            if ( ciStringEqual(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
+            if ( eligibleForVoltageControl( *currentBank ) &&
                  !currentBank->getLocalControlFlag() &&
-                 !currentBank->getDisableFlag() &&
                  !currentBank->getIgnoreFlag() &&
                  (isCapBankOpen || isCapBankClosed) &&
                  (deltas.find(currentBank->getPointIdByAttribute( Attribute::Voltage)) != deltas.end()))

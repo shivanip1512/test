@@ -346,5 +346,11 @@ double calculateKVARSolution( const std::string & controlUnits, double setPoint,
     return 0.0;
 }
 
+bool eligibleForVoltageControl( CtiCCCapBank & bank )
+{
+    return bank.isSwitched()
+           && ( ! bank.getDisableFlag() || bank.getMaxDailyOpsHitFlag() );
+}
+
 }
 }
