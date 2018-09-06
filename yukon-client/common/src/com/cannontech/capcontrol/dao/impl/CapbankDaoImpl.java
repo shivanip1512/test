@@ -320,12 +320,8 @@ public class CapbankDaoImpl implements CapbankDao {
     public boolean isCapBanksAssignedToZone(List<Integer> capBanksId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ZoneId FROM CapBankToZoneMapping ");
+        sql.append("SELECT COUNT(Zoneid) FROM CapBankToZoneMapping ");
         sql.append("WHERE DeviceId").in(capBanksId);
-        List<Integer> zoneIds = yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
-        if (zoneIds.isEmpty()) {
-            return false;
-        }
-        return true;
-    }   
+        return yukonJdbcTemplate.queryForInt(sql) > 0;
+    }
 }
