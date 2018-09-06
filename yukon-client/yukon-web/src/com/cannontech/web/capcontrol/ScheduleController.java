@@ -455,7 +455,7 @@ public class ScheduleController {
     }
 
     private String getCommandName(String commandName) {
-        if (!commandName.equals("All")) {
+        if (!commandName.equals(NO_FILTER)) {
             ScheduleCommand scheduleCommand = ScheduleCommand.valueOf(commandName);
             commandName = scheduleCommand.getCommandName();
         }
