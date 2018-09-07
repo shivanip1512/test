@@ -3713,9 +3713,8 @@ try
                                               &_paobject_specialarea_map);
 
             // start point registrations for this particular substation
+            if ( CtiCCSubstationPtr station = findSubstationByPAObjectID( substationId ) )
             {
-                CtiCCSubstationPtr station = findSubstationByPAObjectID( substationId );
-
                 CtiCapController::getInstance()->registerPaoForPointUpdates( *station );
             }
         }
@@ -4324,9 +4323,8 @@ try
         cascadeAreaStrategySettings( findAreaByPAObjectID( areaId ) );
 
         // start point registrations for this particular area
+        if ( CtiCCAreaPtr area = findAreaByPAObjectID( areaId ) )
         {
-            CtiCCAreaPtr area = findAreaByPAObjectID( areaId );
-
             CtiCapController::getInstance()->registerPaoForPointUpdates( *area );
         }
     }
@@ -4532,9 +4530,7 @@ try
         }
 
         // start point registrations for this particular special area
-        {
-            CtiCapController::getInstance()->registerPaoForPointUpdates( *specialArea );
-        }
+        CtiCapController::getInstance()->registerPaoForPointUpdates( *specialArea );
     }
 }
 catch ( ... )
@@ -5201,9 +5197,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
             // start point registrations for this particular bus
+            if ( CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( subBusId ) )
             {
-                CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( subBusId );
-
                 CtiCapController::getInstance()->registerPaoForPointUpdates( *bus );
             }
         }
@@ -5908,9 +5903,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
             // start point registrations for this particular feeder
+            if ( CtiCCFeederPtr feeder = findFeederByPAObjectID( feederId ) )
             {
-                CtiCCFeederPtr feeder = findFeederByPAObjectID( feederId );
-
                 CtiCapController::getInstance()->registerPaoForPointUpdates( *feeder );
             }
         }
@@ -6440,9 +6434,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
             // start point registrations for this particular bank
+            if ( CtiCCCapBankPtr bank = findCapBankByPAObjectID( capBankId ) )
             {
-                CtiCCCapBankPtr bank = findCapBankByPAObjectID( capBankId );
-
                 CtiCapController::getInstance()->registerPaoForPointUpdates( *bank );
             }
         }
