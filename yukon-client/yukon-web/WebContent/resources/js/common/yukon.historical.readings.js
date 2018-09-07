@@ -79,7 +79,6 @@ yukon.historical.readings = (function () {
                     btns = dialog.closest('.ui-dialog').find('.ui-dialog-buttonset'),
                     primary = btns.find('.js-primary-action'),
                     secondary = btns.find('.js-secondary-action');
-                    parentDialog = dialog.parent();
                 yukon.ui.busy(primary);
                 secondary.prop('disabled', true);
                 form.ajaxSubmit({
