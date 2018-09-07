@@ -12,9 +12,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.Deflater;
 
 import org.apache.logging.log4j.LogManager;
@@ -116,7 +113,6 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * Name of the current logging file.
      */
     private String fileName;
-    private ScheduledExecutorService scheduler;
 
     public YukonRollingFileAppender(final String name, final Filter filter, final Layout<? extends Serializable> layout,
             String fileName, String pattern, TriggeringPolicy policy, RolloverStrategy strategy, String applicationName,
@@ -197,6 +193,8 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 cleanUpOldLogFiles();
                 // Rename zipped file from .log.zip format to .zip format
                 renameZippedFiles();
+                // Fall back if renaming do not happen in initial attempt.
+                scheduleZippedFilesRename();
 
                 // append a header including version info at the start of the new log file
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
@@ -269,26 +267,39 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     }
 
     /**
-     * Rename .log.zip files to .zip format in the log directory after 5 minutes. 
+     * Starts a daemon thread which try to rename .log.zip files to .zip format in the log directory after 5
+     * minutes. This is fall back in case it fails in initial attempt. 
+     * Its a demon thread so it do not blocks the applications which runs for few minutes.
      */
-    private void renameZippedFiles() {
-        scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.schedule(() -> {
-            File currentDirectory = new File(directory);
-            File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
-            for (File file : filesForRename) {
-                String[] output = file.getAbsolutePath().split("\\.");
-                file.renameTo(new File(output[0] + ".zip"));
+    private void scheduleZippedFilesRename() {
+        Thread renameThread = new Thread("renameThread") {
+            @Override
+            public void run() {
+                try {
+                    // Sleep for 5 min
+                    Thread.sleep(300000);
+                    renameZippedFiles();
+                } catch (InterruptedException e) {
+                    return;
+                }
             }
-            stopScheduler(); 
-        }, 5, TimeUnit.MINUTES);
-          
+        };
+        renameThread.setDaemon(true);
+        renameThread.start();
     }
 
-    private void stopScheduler() {
-        scheduler.shutdownNow();
+    /**
+     * Rename .log.zip files to .zip format in the log directory.
+     */
+    private void renameZippedFiles() {
+        File currentDirectory = new File(directory);
+        File[] filesForRename = currentDirectory.listFiles(new LogFilesToRenameFilter());
+        for (File file : filesForRename) {
+            String[] output = file.getAbsolutePath().split("\\.");
+            file.renameTo(new File(output[0] + ".zip"));
+        }
     }
-    
+
     private void setStartDate() {
         Date currentDate = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
