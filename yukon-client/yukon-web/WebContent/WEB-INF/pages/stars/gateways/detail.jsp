@@ -62,7 +62,7 @@
     
         <div class="one column">
             <tags:widget bean="gatewayInformationWidget" container="section"/>
-            <tags:widget bean="paoNotesWidget" container="section"/> 
+            <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true"/> 
         </div>
         
         <div class="column two nogutter">
