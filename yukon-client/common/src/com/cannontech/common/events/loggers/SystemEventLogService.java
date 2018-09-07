@@ -66,7 +66,7 @@ public interface SystemEventLogService {
         
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginOutboundVoice(@Arg(ArgEnum.username) LiteYukonUser user,
-                                   @Arg(ArgEnum.remoteAddress) String remoteAddress);    
+                                   @Arg(ArgEnum.remoteAddress) String remoteAddress);
         
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginConsumerAttempted(@Arg(ArgEnum.username) String username,
@@ -75,6 +75,13 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginConsumer(@Arg(ArgEnum.username) LiteYukonUser user,
                               @Arg(ArgEnum.eventSource) EventSource eventSource);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.logout")
+    public void logoutWeb(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.remoteAddress) String remoteAddress);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.logout")
+    public void unexpectedLogout(@Arg(ArgEnum.username) LiteYukonUser user,
+                                 @Arg(ArgEnum.remoteAddress) String remoteAddress, @Arg(ArgEnum.logoutReason) String logoutReason);
     
     /* System Admin */
     /* Maintenance */

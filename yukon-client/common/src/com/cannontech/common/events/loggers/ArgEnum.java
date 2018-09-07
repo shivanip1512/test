@@ -43,6 +43,7 @@ public enum ArgEnum {
     jobId,
     loadGroupIds,
     loadGroupName,
+    logoutReason,
     media,
     message,
     meterDescription,

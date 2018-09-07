@@ -144,7 +144,9 @@ public class LoginServiceImpl implements LoginService {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         HttpSession session = request.getSession(false);
         session.invalidate();
-        
+        log.info("User " + user + " (userid=" + user.getUserID() + ") has been logged out from "
+            + request.getRemoteAddr() + " Reason :" + reason);
+        systemEventLogService.unexpectedLogout(user, request.getRemoteAddr(), reason);
         ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() 
                 + " (userid=" + user.getUserID() + ") has been logged out from " 
                 + request.getRemoteAddr() + ". Reason: " + reason);
@@ -167,9 +169,10 @@ public class LoginServiceImpl implements LoginService {
             
             redirect = "/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
             log.trace("Role Property: redirect = '" + redirect + "'");
+            log.info("User " + user + " (userid=" + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
+            systemEventLogService.logoutWeb(user, request.getRemoteAddr());
             ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid="
                 + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
-            
             if (savedUsers != null) {
                 
                 Properties oldContext = savedUsers.getProperties();

@@ -834,6 +834,8 @@ public class DevEventLogCreationService {
                 systemEventLogService.loginPasswordChangeAttempted(user, devEventLog.getEventSource());
                 systemEventLogService.loginUsernameChangeAttempted(user, newUsername, devEventLog.getEventSource());
                 systemEventLogService.loginWeb(user, remoteAddress);
+                systemEventLogService.logoutWeb(user, remoteAddress);
+                systemEventLogService.unexpectedLogout(user, remoteAddress, "Some Reason");
                 
                 systemEventLogService.passwordRequestAttempted("barney", "barney@eaton.com", "123123123", EventSource.CONSUMER);
                 systemEventLogService.rphDeleteDanglingEntries(rowsDeleted, start, finish);
