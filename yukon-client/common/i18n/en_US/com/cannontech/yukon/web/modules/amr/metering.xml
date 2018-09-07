@@ -325,7 +325,7 @@
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.value.editValue.title">Edit Point Value</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.value.confirmDelete.title">Delete Point Value</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.value.confirmDelete.message">Are you sure you want to delete the point value with Timestamp: {0}?</entry>
-    <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.value.editConfirmation">Point Value with Timestamp: {0} has been changed successfully. Please close dialog and allow a few seconds for changes to be reflected.</entry>
+    <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.value.editConfirmation">Point Value with Timestamp: {0} has been changed successfully. Please allow a few seconds for these changes to be reflected. You must close this window and select the link again for this display to update.</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.value.deleteConfirmation">Point Value with Timestamp: {0} has been deleted successfully.</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.editDisabled">Edit and Delete are not allowed for the latest point value.</entry>
     
