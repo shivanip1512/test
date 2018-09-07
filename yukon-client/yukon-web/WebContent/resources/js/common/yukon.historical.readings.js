@@ -84,7 +84,7 @@ yukon.historical.readings = (function () {
                 secondary.prop('disabled', true);
                 form.ajaxSubmit({
                     success: function (result, status, xhr, $form) {
-                        dialog.dialog('close');
+                        dialog.dialog('destroy');
                         valuesTable.html(result);
                         valuesDialog.scrollTop(0);
                     },
