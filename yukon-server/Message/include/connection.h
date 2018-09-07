@@ -15,6 +15,8 @@
 #include "connection_base.h"
 #include "worker_thread.h"
 
+#include <atomic>
+
 namespace cms {
 class Connection;
 class Session;
@@ -25,6 +27,17 @@ class Destination;
 class MessageConsumer;
 class MessageProducer;
 class CMSException;
+}
+
+namespace decaf {
+namespace internal {
+namespace util {
+namespace concurrent {
+struct Threading;
+struct ThreadHandle;
+}
+}
+}
 }
 
 namespace Cti {
@@ -67,6 +80,7 @@ protected:
     CtiTime _peerConnectTime;
 
     Cti::WorkerThread _outthread;
+    std::atomic<decaf::internal::util::concurrent::ThreadHandle*> _amqOutThreadHandle;
 
     Que_t  _outQueue; // contains message to send
     Que_t* _inQueue;  // contains message received
