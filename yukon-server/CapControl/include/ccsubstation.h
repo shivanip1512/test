@@ -95,7 +95,7 @@ private:
     void restoreStaticData(Cti::RowReader& rdr);
     void restoreDynamicData(Cti::RowReader& rdr);
 
-    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const override;
     void handleSpecializedPointData( const CtiPointDataMsg & message ) override;
 
     CtiCCSubstation& operator=( const CtiCCSubstation& right ) = delete;

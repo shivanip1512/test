@@ -1268,9 +1268,7 @@ BOOST_AUTO_TEST_CASE( test_ccArea_point_assignment )
             551
         };
 
-        std::set<long>  registeredPoints;
-
-        areas[ 2 ].getPointRegistrationIds( registeredPoints );
+        std::set<long>  registeredPoints = areas[ 2 ].getPointRegistrationIds();
 
         BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
     }
@@ -1345,9 +1343,7 @@ BOOST_AUTO_TEST_CASE( test_ccArea_point_assignment )
             551, 671, 681, 683, 690, 1000
         };
 
-        std::set<long>  registeredPoints;
-
-        areas[ 2 ].getPointRegistrationIds( registeredPoints );
+        std::set<long>  registeredPoints = areas[ 2 ].getPointRegistrationIds();
 
         BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
     }
@@ -1441,9 +1437,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_point_assignment )
             551
         };
 
-        std::set<long>  registeredPoints;
-
-        areas[ 2 ].getPointRegistrationIds( registeredPoints );
+        std::set<long>  registeredPoints = areas[ 2 ].getPointRegistrationIds();
 
         BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
     }
@@ -1518,9 +1512,7 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_point_assignment )
             551, 671, 681, 683, 690, 1000
         };
 
-        std::set<long>  registeredPoints;
-
-        areas[ 2 ].getPointRegistrationIds( registeredPoints );
+        std::set<long>  registeredPoints = areas[ 2 ].getPointRegistrationIds();
 
         BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
     }

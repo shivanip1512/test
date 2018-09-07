@@ -52,11 +52,12 @@ public:
     void removePointId(const long pId);
     void addPointId(const long ID);
 
-    CtiCCOperationStats &    getOperationStats();
+    CtiCCOperationStats & getOperationStats();
+    const CtiCCOperationStats & getOperationStats() const;
     CtiCCConfirmationStats & getConfirmationStats();
 
     void assignPoint( Cti::RowReader& rdr );
-    void getPointRegistrationIds( std::set<long> & registrationIDs );
+    std::set<long> getPointRegistrationIds() const;
 
     void restore( Cti::RowReader& rdr );
 
@@ -73,7 +74,7 @@ private:
     bool assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
 
     virtual bool assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
-    virtual void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs );
+    virtual void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const;
     virtual void handleSpecializedPointData( const CtiPointDataMsg & message );
 
     int _paoId;

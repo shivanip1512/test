@@ -663,8 +663,7 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
     bank->getTwoWayPoints().addAllCBCPointsToRegMsg(points);
     BOOST_CHECK_EQUAL( points.size(), 4 );
 
-    std::set<long>  p;
-    bank->getPointRegistrationIds( p );
+    std::set<long>  p = bank->getPointRegistrationIds();
     BOOST_CHECK_EQUAL( p.size(), 4 );
 
     BOOST_CHECK_EQUAL( bank->getParentId(),                     5 );

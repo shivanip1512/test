@@ -767,9 +767,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstation_point_assignment )
             101
         };
 
-        std::set<long>  registeredPoints;
-
-        substations[ 3 ].getPointRegistrationIds( registeredPoints );
+        std::set<long>  registeredPoints = substations[ 3 ].getPointRegistrationIds();
 
         BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
     }
@@ -844,9 +842,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstation_point_assignment )
             101, 671, 681, 683, 690, 1000
         };
 
-        std::set<long>  registeredPoints;
-
-        substations[ 3 ].getPointRegistrationIds( registeredPoints );
+        std::set<long>  registeredPoints = substations[ 3 ].getPointRegistrationIds();
 
         BOOST_CHECK_EQUAL_RANGES( expected, registeredPoints );
     }

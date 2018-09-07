@@ -178,7 +178,7 @@ public:
     bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
                                                  long minConfirmPercent, long failPercent);
 
-    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const override;
     CtiCCCapBank* getMonitorPointParentBank(const CtiCCMonitorPoint & point);
 
     bool isDataOldAndFallBackNecessary(std::string controlUnits);

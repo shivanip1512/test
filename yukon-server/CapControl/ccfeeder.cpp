@@ -4373,7 +4373,7 @@ bool CtiCCFeeder::scanAllMonitorPoints()
     return issueAltScans( _multipleMonitorPoints, banks );
 }
 
-void CtiCCFeeder::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+void CtiCCFeeder::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
 {
     Conductor::getSpecializedPointRegistrationIds( registrationIDs );
 }

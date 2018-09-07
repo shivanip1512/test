@@ -2187,7 +2187,7 @@ const string& CtiCCCapBank::convertOperationalState( int num )
     }
 }
 
-bool CtiCCCapBank::isControlDeviceTwoWay()
+bool CtiCCCapBank::isControlDeviceTwoWay() const
 {
     switch ( resolveDeviceType( getControlDeviceType() ) )
     {
@@ -2447,7 +2447,7 @@ bool CtiCCCapBank::assignSpecializedPoint( const long pointID, const long pointO
     return getPointIds()->size() > initialSize;
 }
 
-void CtiCCCapBank::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+void CtiCCCapBank::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
 {
     insertPointRegistration( registrationIDs, getStatusPointId() );
     insertPointRegistration( registrationIDs, getOperationAnalogPointId() );

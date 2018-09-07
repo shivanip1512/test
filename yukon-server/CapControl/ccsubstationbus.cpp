@@ -7473,7 +7473,7 @@ void CtiCCSubstationBus::verifyControlledStatusFlags()
     }
 }
 
-void CtiCCSubstationBus::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+void CtiCCSubstationBus::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
 {
     Conductor::getSpecializedPointRegistrationIds( registrationIDs );
 
@@ -7850,7 +7850,7 @@ const map <long, CtiCCMonitorPointPtr>& CtiCCSubstationBus::getAllMonitorPoints(
 {
     return _monitorPoints;
 }
-std::vector <long> CtiCCSubstationBus::getAllMonitorPointIds()
+std::vector <long> CtiCCSubstationBus::getAllMonitorPointIds() const
 {
     std::vector<long> pointIds;
     for each (const map<long, CtiCCMonitorPointPtr>::value_type & entry in _monitorPoints)

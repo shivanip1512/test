@@ -4314,21 +4314,13 @@ void CtiCapController::unregisterPointIDsForPointUpdates( const std::set<long> &
     _registry.removePoints( pointIDs );
 }
 
-void CtiCapController::registerPaoForPointUpdates( CapControlPao & pao )
+void CtiCapController::registerPaoForPointUpdates( const CapControlPao & pao )
 {
-    std::set<long>  registrationIds;
-
-    pao.getPointRegistrationIds( registrationIds );
-
-    registerPointIDsForPointUpdates( registrationIds );
+    registerPointIDsForPointUpdates( pao.getPointRegistrationIds() );
 }
 
-void CtiCapController::unregisterPaoForPointUpdates( CapControlPao & pao )
+void CtiCapController::unregisterPaoForPointUpdates( const CapControlPao & pao )
 {
-    std::set<long>  registrationIds;
-
-    pao.getPointRegistrationIds( registrationIds );
-
-    unregisterPointIDsForPointUpdates( registrationIds );
+    unregisterPointIDsForPointUpdates( pao.getPointRegistrationIds() );
 }
 

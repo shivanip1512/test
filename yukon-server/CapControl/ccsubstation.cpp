@@ -399,7 +399,7 @@ void CtiCCSubstation::updatePowerFactorData()
     setEstPFactor( Cti::CapControl::calculatePowerFactor( totalEstimatedVars, totalWatts ) );
 }
 
-void CtiCCSubstation::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+void CtiCCSubstation::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
 {
     insertPointRegistration( registrationIDs, getVoltReductionControlId() );
 }

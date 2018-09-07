@@ -191,6 +191,11 @@ CtiCCOperationStats & CapControlPao::getOperationStats()
     return _operationStats;
 }
 
+const CtiCCOperationStats & CapControlPao::getOperationStats() const
+{
+    return _operationStats;
+}
+
 CtiCCConfirmationStats & CapControlPao::getConfirmationStats()
 {
     return _confirmationStats;
@@ -291,8 +296,10 @@ bool CapControlPao::assignSpecializedPoint( const long pointID, const long point
 /*
     Insert the point IDs into the supplied set that this object needs to register with dispatch.
 */
-void CapControlPao::getPointRegistrationIds( std::set<long> & registrationIDs )
+std::set<long> CapControlPao::getPointRegistrationIds() const
 {
+    std::set<long>  registrationIDs;
+
     getSpecializedPointRegistrationIds( registrationIDs );
 
     insertPointRegistration( registrationIDs, getDisabledStatePointId() );
@@ -301,12 +308,14 @@ void CapControlPao::getPointRegistrationIds( std::set<long> & registrationIDs )
     insertPointRegistration( registrationIDs, getOperationStats().getDailyOpSuccessPercentId() );
     insertPointRegistration( registrationIDs, getOperationStats().getWeeklyOpSuccessPercentId() );
     insertPointRegistration( registrationIDs, getOperationStats().getMonthlyOpSuccessPercentId() );
+
+    return registrationIDs;
 }
 
 /*
     Virtual function to be overridden by child classes to supply additional point IDs to register with dispatch.
 */
-void CapControlPao::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+void CapControlPao::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
 {
 
 }

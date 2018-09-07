@@ -214,7 +214,7 @@ public:
 
     void checkAndUpdateRecentlyControlledFlag();
 
-    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const override;
     void verifyControlledStatusFlags();
     long getNextTODStartTime();
 
@@ -239,7 +239,7 @@ public:
     bool updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint);
 
     const std::map <long, CtiCCMonitorPointPtr>& getAllMonitorPoints();
-    std::vector <long> getAllMonitorPointIds();
+    std::vector <long> getAllMonitorPointIds() const;
     std::vector <CtiCCMonitorPointPtr> getAllCapBankMonitorPoints();
     void removeAllMonitorPoints();
     CtiCCMonitorPointPtr getMonitorPoint(long pointId);

@@ -210,7 +210,7 @@ void CtiCCAreaBase::updatePowerFactorData()
     setEstPFactor( calculatePowerFactor( totalEstimatedVars, totalWatts ) );
 }
 
-void CtiCCAreaBase::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+void CtiCCAreaBase::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
 {
     insertPointRegistration( registrationIDs, getVoltReductionControlPointId() );
 }

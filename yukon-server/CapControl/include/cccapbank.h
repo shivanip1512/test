@@ -217,7 +217,7 @@ public:
     bool isFailedStatus();
     bool isQuestionableStatus();
     bool isFailedOrQuestionableStatus();
-    bool isControlDeviceTwoWay();
+    bool isControlDeviceTwoWay() const;
     long getPointIdByAttribute( const Attribute & attribute );
 
     Cti::CapControl::PointResponse getPointResponse(const CtiCCMonitorPoint & point);
@@ -410,7 +410,7 @@ private:
     Cti::CapControl::PointResponseManager _pointResponseManager;
 
     void restore(Cti::RowReader& rdr);
-    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const override;
 
 };
 

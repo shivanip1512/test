@@ -78,8 +78,8 @@ class CtiCapController : public MessageListener
 
         void registerPointIDsForPointUpdates( const std::set<long> & pointIDs );
         void unregisterPointIDsForPointUpdates( const std::set<long> & pointIDs );
-        void registerPaoForPointUpdates( CapControlPao & pao );
-        void unregisterPaoForPointUpdates( CapControlPao & pao );
+        void registerPaoForPointUpdates( const CapControlPao & pao );
+        void unregisterPaoForPointUpdates( const CapControlPao & pao );
 
     protected:
 

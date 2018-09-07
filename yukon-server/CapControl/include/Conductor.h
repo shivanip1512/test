@@ -188,7 +188,7 @@ protected:
     Conductor( const Conductor & condutor ) = default;
     Conductor & operator=( const Conductor & rhs ) = delete;
 
-    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const override;
 
     bool issueAltScans( const std::vector<CtiCCMonitorPointPtr> & points, const std::vector<CtiCCCapBankPtr> & banks );
 

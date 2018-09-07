@@ -285,7 +285,7 @@ void Conductor::updateRegression( CtiRegression & regression, const std::string 
     }
 }
 
-void Conductor::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+void Conductor::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
 {
     insertPointRegistration( registrationIDs, getCurrentVarLoadPointId() );
     insertPointRegistration( registrationIDs, getCurrentWattLoadPointId() );
