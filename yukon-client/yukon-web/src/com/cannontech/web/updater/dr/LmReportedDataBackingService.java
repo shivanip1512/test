@@ -3,11 +3,9 @@ package com.cannontech.web.updater.dr;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
@@ -21,7 +19,6 @@ import com.cannontech.dr.dao.SepReportedAddressDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.updater.DefaultDataUpdaterService;
 import com.cannontech.web.updater.UpdateBackingServiceBase;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -33,7 +30,6 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
     @Autowired private SepReportedAddressDao sepReportedAddressDao;
     @Autowired @Qualifier("main") private Executor executor;
-    private final static Logger log = YukonLogManager.getLogger(LmReportedDataBackingService.class);
 
     private final Cache<Integer, DatedObject<LmReportedAddress>> currentAddresses =
         CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterAccess(5, TimeUnit.MINUTES).build();
@@ -103,11 +99,8 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
         String fieldName = idBits[1];
         String relayNum = idBits.length > 2 ? idBits[2] : null; // set if field is relay
 
-        log.info("fieldName:"+fieldName);
         ExpressComReportedAddress address = (ExpressComReportedAddress) datedObject.getObject();
-        log.info("address:"+ address);
         ExpressComAddressField field = ExpressComAddressField.valueOf(fieldName);
-        log.info("field:"+ field);
 
         switch (field) {
         case TIMESTAMP:
@@ -141,26 +134,12 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
             value = Integer.toString(address.getRelayByNumber(Integer.valueOf(relayNum)).getProgram());
             break;
         case RELAY_SPLINTER:
-            try {
-                log.info(1);
-                Integer.valueOf(relayNum);
-                log.info(2);
-                address.getRelayByNumber(Integer.valueOf(relayNum));
-                log.info(3);
-                address.getRelayByNumber(Integer.valueOf(relayNum)).getSplinter();
-                log.info(4);
-                Integer.toString(address.getRelayByNumber(Integer.valueOf(relayNum)).getSplinter());
-                log.info(5);
-            } catch (Exception e) {
-                log.error(e);
-            }
             value = Integer.toString(address.getRelayByNumber(Integer.valueOf(relayNum)).getSplinter());
-            log.info(6);
             break;
         default:
             break;
         }
-        log.info("value:" + value);
+
         return value;
     }
 
