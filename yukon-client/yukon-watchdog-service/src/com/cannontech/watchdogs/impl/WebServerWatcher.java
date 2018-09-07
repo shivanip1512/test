@@ -106,7 +106,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
         URL url = new URL(webServerUrl);
 
         if (url.getPort() == -1) {
-            int port = isHttps ? 8443 : 8080;
+            int port = isHttps ? 443 : 80;
             url = new URL(url.getProtocol(), url.getHost(), port, url.getFile());
             log.debug("Web server url " + url);
         }
