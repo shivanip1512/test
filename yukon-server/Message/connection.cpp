@@ -15,6 +15,8 @@
 #include "millisecond_timer.h"
 #include "logManager.h"
 
+#include <decaf/internal/util/concurrent/Threading.h>
+
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace std;
@@ -41,7 +43,8 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _connectionId(++connectionId),
     _outthread( WorkerThread::Function([this]{ outThreadFunc(); })
             .name( boost::replace_all_copy( title, " ", "" ) + "_outThread" ) // use the title and remove all white spaces to set the thread name
-            .priority( THREAD_PRIORITY_HIGHEST ))
+            .priority( THREAD_PRIORITY_HIGHEST )),
+    _amqOutThreadHandle{nullptr}
 {
     CTILOG_DEBUG( dout, who() << " - CtiConnection::CtiConnection() @0x" << std::hex << this );
 
@@ -145,6 +148,8 @@ void CtiConnection::outThreadFunc()
 
                     continue;
                 }
+
+                _amqOutThreadHandle.store(decaf::internal::util::concurrent::Threading::getCurrentThreadHandle());
 
                 _bConnected = true;
             }
@@ -495,6 +500,18 @@ void CtiConnection::close()
 
         if ( ! _outthread.tryJoinFor( Chrono::seconds( 35 ) ) )
         {
+            if( const auto threadHandle = _amqOutThreadHandle.load() )
+            {
+                CTILOG_WARN(dout, who() << "_outthread did not join.  Interrupting AMQ native thread.");
+
+                decaf::internal::util::concurrent::Threading::interrupt(threadHandle);
+            }
+            else
+            {
+                CTILOG_WARN(dout, who() << "_outthread did not join.  Missing AMQ thread handle, cannot interrupt AMQ send, if any.");
+            }
+
+            if( ! _outthread.tryJoinFor( Chrono::seconds( 5 ) ) )
             {
                 Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
  
@@ -505,11 +522,11 @@ void CtiConnection::close()
                     os << "connection.close-" << _title << "-" << getName() << "-" << GetCurrentThreadId();
                     CreateMiniDump( os.str() );
                 }
+
+                std::this_thread::sleep_for( std::chrono::seconds( 10 ) );
+
+                abort();
             }
-
-            std::this_thread::sleep_for( std::chrono::seconds( 10 ) );
-
-            abort();
         }
 
         forceTermination();
