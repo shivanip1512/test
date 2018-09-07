@@ -83,7 +83,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
             WatchdogWarnings watchdogWarning = new WatchdogWarnings(type, arguments);
             warnings.add(watchdogWarning);
             warnings.stream().forEach(warning -> log.info(
-                "A Watchdog Warning is generated : " + warning.getWarningType() + " is "
+                "A Watchdog Warning is generated : " + warning.getWarningType().getName() + " is "
                     + warning.getArguments().get(SERVICE_STATUS)));
         }
         return warnings;
