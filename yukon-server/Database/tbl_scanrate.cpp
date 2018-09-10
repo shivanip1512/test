@@ -100,6 +100,12 @@ void CtiTableDeviceScanRate::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["scangroup"] >> _scanGroup;
     rdr["alternaterate"] >> _alternateRate;
 
+    //  The UI uses 0 to indicate None
+    if( ! _alternateRate )
+    {
+        _alternateRate = _scanRate;
+    }
+
     _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
 }
 
