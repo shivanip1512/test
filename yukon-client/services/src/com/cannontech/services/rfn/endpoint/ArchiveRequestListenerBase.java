@@ -171,7 +171,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                     + "not match any templates.", e);
                 throw new RuntimeException("Creation failed for " + identifier, e);
             } catch (DeviceCreationException e) {
-                log.warn("Creation failed for " + identifier + ", possible race condition.  Trying another lookup.");
+                log.warn("Creation failed for " + identifier + ", checking cache for any new entries.");
                 //  Try another lookup in case someone else beat us to it
                 try {
                     return rfnDeviceLookupService.getDevice(identifier);
