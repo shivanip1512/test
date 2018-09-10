@@ -145,6 +145,7 @@ PointQuality_t convertQuality(uint8_t quality)
 }
 
 auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
+try
 {
     auto& payload = p.payload;
 
@@ -201,6 +202,12 @@ auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
     }
 
     return dr;
+}
+catch( const YukonErrorException& ex )
+{
+    CTILOG_EXCEPTION_ERROR(dout, ex, "Error processing data streaming packet for " << p.rfnIdentifier);
+
+    return { p.rfnIdentifier };
 }
 
 StreamBufferSink& operator<<(StreamBufferSink& s, const RfDataStreamingProcessor::Value &v)
