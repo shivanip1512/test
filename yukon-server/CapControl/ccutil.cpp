@@ -346,6 +346,13 @@ double calculateKVARSolution( const std::string & controlUnits, double setPoint,
     return 0.0;
 }
 
+/* 
+    Normally a disabled bank is completely ignored by the control strategies, but for some of the voltage control
+        strategies (MultiVolt, MultiVoltVar and IVVC) we want to allow the voltage on a bank to be used by the
+        control algorithm while doing cost calculations - even though we won't attempt to actually control it.
+        The getMaxDailyOpsHitFlag is set when we disable a bank due to its maximum operations setting.  If it is
+        set, we still want to use the bank even if it is disabled.
+*/
 bool eligibleForVoltageControl( CtiCCCapBank & bank )
 {
     return bank.isSwitched()
