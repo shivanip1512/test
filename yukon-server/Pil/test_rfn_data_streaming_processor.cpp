@@ -171,6 +171,80 @@ BOOST_AUTO_TEST_CASE( test_processPacket_no_points )
     BOOST_CHECK( report.values.empty() );
 }
 
+BOOST_AUTO_TEST_CASE(test_processPacket_invalid_format_id)
+{
+    test_RfDataStreamingProcessor::Packet p;
+
+    p.rfnIdentifier = Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" };
+
+    p.payload = { 0x71, 0x00 };
+
+    auto report = test_RfDataStreamingProcessor::processPacket(p);
+
+    BOOST_CHECK_EQUAL(report.rfnId.manufacturer, "JIMMY");
+    BOOST_CHECK_EQUAL(report.rfnId.model, "JOHNS");
+    BOOST_CHECK_EQUAL(report.rfnId.serialNumber, "GARGANTUAN");
+
+    BOOST_CHECK(report.values.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_processPacket_empty_payload)
+{
+    test_RfDataStreamingProcessor::Packet p;
+
+    p.rfnIdentifier = Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" };
+
+    p.payload.clear();  //  just for readability, it was already empty
+
+    auto report = test_RfDataStreamingProcessor::processPacket(p);
+
+    BOOST_CHECK_EQUAL(report.rfnId.manufacturer, "JIMMY");
+    BOOST_CHECK_EQUAL(report.rfnId.model, "JOHNS");
+    BOOST_CHECK_EQUAL(report.rfnId.serialNumber, "GARGANTUAN");
+
+    BOOST_CHECK(report.values.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_processPacket_incomplete_header)
+{
+    test_RfDataStreamingProcessor::Packet p;
+
+    p.rfnIdentifier = Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" };
+
+    p.payload = { 0x01 };
+
+    auto report = test_RfDataStreamingProcessor::processPacket(p);
+
+    BOOST_CHECK_EQUAL(report.rfnId.manufacturer, "JIMMY");
+    BOOST_CHECK_EQUAL(report.rfnId.model, "JOHNS");
+    BOOST_CHECK_EQUAL(report.rfnId.serialNumber, "GARGANTUAN");
+
+    BOOST_CHECK(report.values.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_processPacket_incomplete_payload)
+{
+    test_RfDataStreamingProcessor::Packet p;
+
+    p.rfnIdentifier = Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" };
+
+    p.payload = { 
+        0x01, 
+        0x01,
+        0xf0, 0x0f,
+        0x00, 0x00, 0x00, 0x00,
+        0x00,
+        0x00, 0x00, 0x01 /*, 0x01*/ };  //  missing the last byte
+
+    auto report = test_RfDataStreamingProcessor::processPacket(p);
+
+    BOOST_CHECK_EQUAL(report.rfnId.manufacturer, "JIMMY");
+    BOOST_CHECK_EQUAL(report.rfnId.model, "JOHNS");
+    BOOST_CHECK_EQUAL(report.rfnId.serialNumber, "GARGANTUAN");
+
+    BOOST_CHECK(report.values.empty());
+}
+
 BOOST_AUTO_TEST_CASE( test_processPacket_large_metricid )
 {
     test_RfDataStreamingProcessor::Packet p;
