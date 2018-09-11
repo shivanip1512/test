@@ -89,10 +89,10 @@
                 <tags:widget bean="deviceGroupWidget" />
             </div>
             <div class="column two nogutter">
-                <c:set var="whatsThis" value="<div id='trendWidgetWhatsThisText'></div>" />
+                <cti:msg2 key="yukon.web.attributeGraphType.USAGE_WATER.description" var="trendWidgetHelpText" blankIfMissing="true"/>
                 <div id="trendWidget">
                     <tags:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport"
-                        helpText="${whatsThis}" />
+                        helpText="${trendWidgetHelpText}" />
                 </div>
 
                 <c:if test="${showEvents}"><tags:widget bean="meterEventsWidget"/></c:if>

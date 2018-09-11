@@ -149,9 +149,9 @@
             </div>
             
             <div class="column two nogutter">
-                <c:set var="whatsThis" value="<div id='trendWidgetWhatsThisText'></div>"/>
+                <cti:msg2 key="yukon.web.attributeGraphType.DAILY_USAGE.description" var="trendWidgetHelpText" blankIfMissing="true"/> 
                 <div id="trendWidget">
-                   <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${whatsThis}"/>
+                   <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${trendWidgetHelpText}"/>
                 </div>
                 
                 <c:if test="${showDisconnect}">
