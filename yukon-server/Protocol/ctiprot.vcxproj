@@ -402,7 +402,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="expresscom.cpp">
     </ClCompile>
     <ClCompile Include="id_ctiprot.cpp">
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp17</LanguageStandard>
     </ClCompile>
     <ClCompile Include="ion_datastream.cpp">
     </ClCompile>
