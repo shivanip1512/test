@@ -62,8 +62,8 @@
                         <form id="removeGroupForm" action="<cti:url value="/group/editor/removeGroup"/>" method="post" class="di">
                             <cti:csrfToken/>
                             <input type="hidden" name="removeGroupName" value="${fn:escapeXml(group.fullName)}">
-                            <span id="removeGroupLink" onclick="yukon.tools.group.editor.removeGroup('removeGroupForm')" >
-                                <cti:link key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup" href="javascript:void(0);"/>
+                            <span id="removeGroupLink" data-form-id="removeGroupForm" data-ok-event="yukon:devicegroup:removegroup">
+                                <cti:link key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup" href="#"/>
                             </span>
                             <d:confirm on="#removeGroupLink" nameKey="removeGroup.areYouSure"/>
                         </form>
@@ -318,11 +318,12 @@
                                                 
                                                             <cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
                                                             <form style="display: inline;" id="${subId}removeSubGroupForm" action="<cti:url value="/group/editor/removeGroup"/>" method="post">
-                                                                <cti:csrfToken/>    
+                                                                <cti:csrfToken/>
                                                                 <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.key.fullName)}">
                                                                 <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                                                 <div class="dib">
-                                                                    <span id="removeGroupButton" onclick="yukon.tools.group.editor.removeGroup('${subId}removeSubGroupForm');">
+                                                                    <span id="removeGroupButton" data-ok-event="yukon:devicegroup:removegroup"
+                                                                          data-form-id="${subId}removeSubGroupForm">
                                                                         <a href="#"><i class="icon icon-cross"></i></a>
                                                                     </span>
                                                                     <d:confirm on="#removeGroupButton" nameKey="removeGroup.areYouSure"/>

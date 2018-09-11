@@ -107,6 +107,10 @@ yukon.tools.group.editor = (function () {
                 yukon.tools.group.editor.removeAllDevices($("#js-group-full-name").val())
             });
             
+            $(document).on('yukon:devicegroup:removegroup', function (event) {
+                yukon.tools.group.editor.removeGroup($(event.target).data('form-id'));
+            });
+            
             initialized = true;
 
         }
