@@ -52,19 +52,16 @@ echo Service will try to guess them from the registry.
 goto okJavaHome
 :gotJreHome
 if not exist "%JRE_HOME%\bin\java.exe" goto noJavaHome
-if not exist "%JRE_HOME%\bin\javaw.exe" goto noJavaHome
 goto okJavaHome
 :gotJdkHome
 if not exist "%JAVA_HOME%\bin\javac.exe" goto noJavaHome
 rem Java 9 has a different directory structure
 if exist "%JAVA_HOME%\jre\bin\java.exe" goto preJava9Layout
 if not exist "%JAVA_HOME%\bin\java.exe" goto noJavaHome
-if not exist "%JAVA_HOME%\bin\javaw.exe" goto noJavaHome
 if not "%JRE_HOME%" == "" goto okJavaHome
 set "JRE_HOME=%JAVA_HOME%"
 goto okJavaHome
 :preJava9Layout
-if not exist "%JAVA_HOME%\jre\bin\javaw.exe" goto noJavaHome
 if not "%JRE_HOME%" == "" goto okJavaHome
 set "JRE_HOME=%JAVA_HOME%\jre"
 goto okJavaHome
@@ -167,7 +164,7 @@ if "%JvmMs%" == "" set JvmMs=128
 if "%JvmMx%" == "" set JvmMx=256
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 9.0.8 Server - http://tomcat.apache.org/" ^
+    --Description "Apache Tomcat 9.0.12 Server - https://tomcat.apache.org/" ^
     --DisplayName "%DISPLAYNAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
