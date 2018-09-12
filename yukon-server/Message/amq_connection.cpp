@@ -148,7 +148,7 @@ void ActiveMQConnectionManager::run()
             }
         }
 
-        sleep(1000);
+        sleep(200);
     }
 }
 
