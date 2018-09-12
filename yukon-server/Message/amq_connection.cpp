@@ -110,6 +110,16 @@ void ActiveMQConnectionManager::releaseConnectionObjects()
 }
 
 
+bool ActiveMQConnectionManager::MessagingTasks::empty() const
+{
+    return newCallbacks    .empty()
+        && outgoingMessages.empty()
+        && tempQueueReplies.empty()
+        && sessionReplies  .empty()
+        && incomingMessages.empty();
+}
+
+
 void ActiveMQConnectionManager::run()
 {
     while( ! isSet(SHUTDOWN) )
@@ -118,15 +128,24 @@ void ActiveMQConnectionManager::run()
         {
             if( verifyConnectionObjects() )
             {
-                updateCallbacks();
+                MessagingTasks tasks;
 
-                sendOutgoingMessages();
+                {
+                    std::unique_lock<std::mutex> taskLock(_taskMux);
 
-                dispatchTempQueueReplies();
+                    while( _newTasks.empty() && ! isSet(SHUTDOWN)  )
+                    {
+                        _newTask.wait_for(taskLock, std::chrono::seconds(5));  //  only wait for 5 seconds to expedite shutdown
+                    }
 
-                dispatchSessionReplies();
+                    std::swap(tasks, _newTasks);
+                }
 
-                dispatchIncomingMessages();
+                updateCallbacks         (std::move(tasks.newCallbacks));
+                sendOutgoingMessages    (std::move(tasks.outgoingMessages));
+                dispatchTempQueueReplies(std::move(tasks.tempQueueReplies));
+                dispatchSessionReplies  (std::move(tasks.sessionReplies));
+                dispatchIncomingMessages(std::move(tasks.incomingMessages));
             }
         }
         catch( ActiveMQ::ConnectionException &e )
@@ -146,8 +165,6 @@ void ActiveMQConnectionManager::run()
                 CTILOG_EXCEPTION_ERROR(dout, e);
             }
         }
-
-        sleep(1000);
     }
 }
 
@@ -270,32 +287,24 @@ auto ActiveMQConnectionManager::createSessionConsumer(const SessionCallback call
 }
 
 
-void ActiveMQConnectionManager::updateCallbacks()
+void ActiveMQConnectionManager::updateCallbacks(CallbacksPerQueue newCallbacks)
 {
-    CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
+    createConsumersForCallbacks(newCallbacks);
 
-    createConsumersForCallbacks(_newCallbacks);
-
-    std::move(_newCallbacks.begin(),
-              _newCallbacks.end(),
+    std::move(newCallbacks.begin(),
+              newCallbacks.end(),
               std::inserter(_namedCallbacks, _namedCallbacks.end()));
-
-    _newCallbacks.clear();
 }
 
 
-void ActiveMQConnectionManager::sendOutgoingMessages()
+void ActiveMQConnectionManager::sendOutgoingMessages(EnvelopeQueue messages)
 {
-    std::vector<std::unique_ptr<Envelope>> messages;
-
+    while( ! messages.empty() )
     {
-        CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
+        auto e = std::move(messages.front());
 
-        messages.swap(_outgoingMessages);
-    }
+        messages.pop();
 
-    for( auto& e : messages )
-    {
         auto message = e->extractMessage(*_producerSession);
 
         if( debugActivityInfo() )
@@ -409,21 +418,10 @@ auto ActiveMQConnectionManager::makeReturnLabel(SessionCallback& sessionCallback
 }
 
 
-void ActiveMQConnectionManager::dispatchIncomingMessages()
+void ActiveMQConnectionManager::dispatchIncomingMessages(IncomingPerQueue incomingMessages)
 {
-    IncomingPerQueue incomingMessages;
-
+    for( auto& [queue, descriptors] : incomingMessages )
     {
-        CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
-
-        incomingMessages.swap(_newIncomingMessages);
-    }
-
-    for( const auto &inbound : incomingMessages )
-    {
-        const auto &queue       = inbound.first;
-        const auto &descriptors = inbound.second;
-
         if( debugActivityInfo() )
         {
             CTILOG_DEBUG(dout, "Received incoming message(s) for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
@@ -432,8 +430,11 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
         const auto callbackRange = _namedCallbacks.equal_range(queue);
         const auto callbacks     = boost::make_iterator_range(callbackRange.first, callbackRange.second) | boost::adaptors::map_values;
 
-        for( const auto &md : descriptors )
+        while( ! descriptors.empty() )
         {
+            auto md = std::move(descriptors.front());
+            descriptors.pop();
+
             if( debugActivityInfo() )
             {
                 CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
@@ -454,21 +455,10 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
 }
 
 
-void ActiveMQConnectionManager::dispatchTempQueueReplies()
+void ActiveMQConnectionManager::dispatchTempQueueReplies(RepliesByDestination replies)
 {
-    RepliesByDestination replies;
-
+    for( const auto& [destination, descriptor] : replies )
     {
-        CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
-
-        _tempQueueReplies.swap(replies);
-    }
-
-    for( const auto &kv : replies )
-    {
-        const auto &destination = kv.first;
-        const auto &descriptor  = kv.second;
-
         //  need the iterator so we can delete later
         auto itr = _replyConsumers.find(destination);
 
@@ -515,21 +505,10 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 }
 
 
-void ActiveMQConnectionManager::dispatchSessionReplies()
+void ActiveMQConnectionManager::dispatchSessionReplies(RepliesByDestination replies)
 {
-    RepliesByDestination replies;
-
+    for( auto& [destination, descriptor] : replies )
     {
-        CtiLockGuard<CtiCriticalSection> lock(_sessionRepliesMux);
-
-        _sessionReplies.swap(replies);
-    }
-
-    for( auto& kv : replies )
-    {
-        const auto &destination = kv.first;
-        const auto &descriptor  = kv.second;
-
         if( auto consumer = mapFindRef(_sessionConsumers, destination) )
         {
             const auto& callback = (*consumer)->callback;
@@ -644,6 +623,47 @@ void ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
 }
 
 
+template<class T, class U>
+void emplaceHelper(std::queue<T>& q, U && value)
+{
+    q.emplace(std::move(value));
+}
+
+
+template<class T, class U, class V>
+void emplaceHelper(std::multimap<T, U>& mm, T key, V && value)
+{
+    mm.emplace(key, std::move(value));
+}
+
+
+template<class T, class U>
+void emplaceHelper(std::map<T, std::queue<U>>& m, T key, U && value)
+{
+    m[key].emplace(std::move(value));
+}
+
+
+template<class Container, typename... Arguments>
+void ActiveMQConnectionManager::emplaceTask(Container& c, Arguments&&... args)
+{
+    std::unique_lock<std::mutex> taskLock(_taskMux);
+
+    emplaceHelper(c, std::move(args)...);
+
+    _newTask.notify_one();
+}
+
+
+void ActiveMQConnectionManager::kickstart()
+{
+    if( !isRunning() )
+    {
+        start();
+    }
+}
+
+
 void ActiveMQConnectionManager::enqueueOutgoingMessage(
         const std::string &queueName,
         StreamableMessage::auto_type&& message,
@@ -675,16 +695,9 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
     e->message = std::move(message);
     e->returnAddress = std::move(returnAddress);
 
-    {
-        CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
+    emplaceTask(_newTasks.outgoingMessages, std::move(e));
 
-        _outgoingMessages.emplace_back(std::move(e));
-    }
-
-    if( ! isRunning() )
-    {
-        start();
-    }
+    kickstart();
 }
 
 
@@ -718,16 +731,9 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
         CTILOG_DEBUG(dout,  "Enqueuing outbound message for queue \"" << queueName << "\"" << std::endl << message);
     }
 
-    {
-        CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
+    emplaceTask(_newTasks.outgoingMessages, std::move(e));
 
-        _outgoingMessages.emplace_back(std::move(e));
-    }
-
-    if( ! isRunning() )
-    {
-        start();
-    }
+    kickstart();
 }
 
 
@@ -772,51 +778,39 @@ auto ActiveMQConnectionManager::registerSessionCallback(MessageCallback::type ca
 
 void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback)
 {
-    {
-        CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
+    emplaceTask(_newTasks.newCallbacks, &queue, std::move(callback));
 
-        _newCallbacks.emplace(&queue, std::move(callback));
-    }
-
-    if( ! isRunning() )
-    {
-        start();
-    }
+    kickstart();
 }
 
 
 void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback)
 {
-    {
-        CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
+    auto wrappedCallback = 
+        std::make_unique<SimpleMessageCallback>(
+            [=, &queue](const MessageDescriptor &md)
+            {
+                auto tempQueueProducer = ActiveMQ::createDestinationProducer(*_producerSession, md.replyTo);
 
-        _newCallbacks.emplace(&queue,
-                std::make_unique<SimpleMessageCallback>(
-                    [=, &queue](const MessageDescriptor &md)
-                    {
-                        auto tempQueueProducer = ActiveMQ::createDestinationProducer(*_producerSession, md.replyTo);
+                auto result = callback(md);
 
-                        auto result = callback(md);
+                if( ! result )
+                {
+                    CTILOG_WARN(dout, "Callback-with-reply returned no reply for queue " << queue.name);
 
-                        if( ! result )
-                        {
-                            CTILOG_WARN(dout, "Callback-with-reply returned no reply for queue " << queue.name);
+                    return;
+                }
 
-                            return;
-                        }
+                std::unique_ptr<cms::BytesMessage> bytesMessage{ _producerSession->createBytesMessage() };
 
-                        std::unique_ptr<cms::BytesMessage> bytesMessage{ _producerSession->createBytesMessage() };
+                bytesMessage->writeBytes(*result);
 
-                        bytesMessage->writeBytes(*result);
+                tempQueueProducer->send(bytesMessage.release());
+        });
 
-                        tempQueueProducer->send(bytesMessage.release());
-                    }));
-    }
+    emplaceTask(_newTasks.newCallbacks, &queue, std::move(wrappedCallback));
 
-    if( !isRunning() )
-    {
-        start();
-    }
+    kickstart();
 }
 
 
@@ -843,11 +837,7 @@ void ActiveMQConnectionManager::acceptNamedMessage(const ActiveMQ::Queues::Inbou
                 << reinterpret_cast<unsigned long>(queue) << ": " << md->msg);
         }
 
-        {
-            CtiLockGuard<CtiCriticalSection> lock(_newIncomingMessagesMux);
-
-            _newIncomingMessages[queue].emplace_back(std::move(md));
-        }
+        emplaceTask(_newTasks.incomingMessages, queue, std::move(md));
     }
 }
 
@@ -872,11 +862,7 @@ void ActiveMQConnectionManager::acceptSingleReply(const cms::Message *message)
                     << ActiveMQ::destPhysicalName(*dest) << ": " << md->msg);
             }
 
-            {
-                CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
-
-                _tempQueueReplies.emplace(ActiveMQ::destPhysicalName(*dest), std::move(md));
-            }
+            emplaceTask(_newTasks.tempQueueReplies, ActiveMQ::destPhysicalName(*dest), std::move(md));
         }
     }
 }
@@ -902,11 +888,7 @@ void ActiveMQConnectionManager::acceptSessionReply(const cms::Message *message)
                     << ActiveMQ::destPhysicalName(*dest) << ": " << md->msg);
             }
 
-            {
-                CtiLockGuard<CtiCriticalSection> lock(_sessionRepliesMux);
-
-                _sessionReplies.emplace(ActiveMQ::destPhysicalName(*dest), std::move(md));
-            }
+            emplaceTask(_newTasks.sessionReplies, ActiveMQ::destPhysicalName(*dest), std::move(md));
         }
     }
 }

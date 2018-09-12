@@ -10,6 +10,7 @@
 
 #include <chrono>
 #include <queue>
+#include <condition_variable>
 
 namespace cms {
 class Connection;
@@ -225,6 +226,9 @@ private:
 
     const std::string _broker_uri;
 
+    std::mutex _taskMux;
+    std::condition_variable _newTask;
+
     //  Connection/session objects
     std::unique_ptr<ActiveMQ::ManagedConnection> _connection;
     std::unique_ptr<cms::Session> _producerSession;
@@ -242,20 +246,36 @@ private:
         virtual ~Envelope() = default;
     };
 
-    using EnvelopeQueue = std::vector<std::unique_ptr<Envelope>>;
-    CtiCriticalSection _outgoingMessagesMux;
-    EnvelopeQueue      _outgoingMessages;
+    using EnvelopeQueue        = std::queue<std::unique_ptr<Envelope>>;
+    using IncomingPerQueue     = std::map<const ActiveMQ::Queues::InboundQueue *, std::queue<std::unique_ptr<MessageDescriptor>>>;
+    using CallbacksPerQueue    = std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback::Ptr>;
+    using RepliesByDestination = std::multimap<std::string, std::unique_ptr<MessageDescriptor>>;
 
-    typedef std::map<const ActiveMQ::Queues::InboundQueue *, std::vector<std::unique_ptr<MessageDescriptor>>> IncomingPerQueue;
-    CtiCriticalSection _newIncomingMessagesMux;
-    IncomingPerQueue   _newIncomingMessages;
+    struct MessagingTasks
+    {
+        EnvelopeQueue        outgoingMessages;
+        IncomingPerQueue     incomingMessages;
+        CallbacksPerQueue    newCallbacks;
+        RepliesByDestination tempQueueReplies;
+        RepliesByDestination sessionReplies;
+
+        MessagingTasks() = default;
+        MessagingTasks(MessagingTasks&&) = default;
+        MessagingTasks& operator=(MessagingTasks&&) = default;
+
+        bool empty() const;
+    };
+
+    MessagingTasks _newTasks;
+
+    template<class Container, typename... Arguments>
+    void emplaceTask(Container& c, Arguments&&... args);
+        
+    void kickstart();
 
     using ProducersByQueueName = std::map<std::string, std::unique_ptr<ActiveMQ::QueueProducer>>;
     ProducersByQueueName _producers;
 
-    typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback::Ptr> CallbacksPerQueue;
-    CtiCriticalSection _newCallbackMux;
-    CallbacksPerQueue  _newCallbacks;
     CallbacksPerQueue  _namedCallbacks;
 
     //  Consumer and listener - binds to acceptNamedMessage
@@ -297,13 +317,6 @@ private:
 
     std::multimap<CtiTime, ExpirationHandler> _replyExpirations;
 
-    typedef std::multimap<std::string, std::unique_ptr<MessageDescriptor>> RepliesByDestination;
-    CtiCriticalSection   _tempQueueRepliesMux;
-    RepliesByDestination _tempQueueReplies;
-
-    CtiCriticalSection   _sessionRepliesMux;
-    RepliesByDestination _sessionReplies;
-
     enum
     {
         DefaultTimeToLiveMillis = 3600 * 1000  //  1 hour
@@ -312,18 +325,18 @@ private:
     bool verifyConnectionObjects();
     void releaseConnectionObjects();
 
-    void updateCallbacks();
+    void updateCallbacks(CallbacksPerQueue newCallbacks);
 
     void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
     void createNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
     auto createSessionConsumer(const SessionCallback callback) -> const cms::Destination*;
 
-    void sendOutgoingMessages();
+    void sendOutgoingMessages(EnvelopeQueue messages);
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
 
-    void dispatchIncomingMessages();
-    void dispatchTempQueueReplies();
-    void dispatchSessionReplies();
+    void dispatchIncomingMessages(IncomingPerQueue incomingMessages);
+    void dispatchTempQueueReplies(RepliesByDestination tempQueueReplies);
+    void dispatchSessionReplies  (RepliesByDestination sessionReplies);
 };
 
 }
