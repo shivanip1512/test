@@ -582,9 +582,9 @@
                                 <c:if test="${not starsMeters}">
                                     <td>
                                         <c:if test="${notesList.contains(meter.deviceId)}">
-                                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
-                                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${meter.deviceId}"/>
-                                        </c:if>
+                                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${meter.deviceId}"/>
+                                        </c:if>
                                     </td>
                                 </c:if>
                                 <td>
