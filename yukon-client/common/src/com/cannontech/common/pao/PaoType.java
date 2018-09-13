@@ -172,6 +172,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_GROUP_DIGI_SEP(DeviceTypes.LM_GROUP_DIGI_SEP, "DIGI SEP GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_ECOBEE(DeviceTypes.LM_GROUP_ECOBEE, "ECOBEE GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_HONEYWELL(DeviceTypes.LM_GROUP_HONEYWELL, "HONEYWELL GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_NEST(DeviceTypes.LM_GROUP_NEST, "NEST GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON, "EMETCON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EXPRESSCOMM(DeviceTypes.LM_GROUP_EXPRESSCOMM, "EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_RFN_EXPRESSCOMM(DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM, "RFN EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
@@ -191,6 +192,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_SEP_PROGRAM(DeviceTypes.LM_SEP_PROGRAM, "LM SEP PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_ECOBEE_PROGRAM(DeviceTypes.LM_ECOBEE_PROGRAM, "ECOBEE PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_HONEYWELL_PROGRAM(DeviceTypes.LM_HONEYWELL_PROGRAM, "HONEYWELL PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_NEST_PROGRAM(DeviceTypes.LM_NEST_PROGRAM, "NEST PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA, "LM CONTROL AREA", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SCENARIO(DeviceTypes.LM_SCENARIO, "LMSCENARIO", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     
@@ -270,6 +272,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFW201(DeviceTypes.RFW201, "RFW-201", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFG201(DeviceTypes.RFG201, "RFG-201", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
+    NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ;
     
     private final int deviceTypeId;
@@ -313,6 +317,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> thermostatTypes;
     private final static ImmutableSet<PaoType> tlvReportingTypes;
     private final static ImmutableSet<PaoType> gasMeterTypes;
+    private final static ImmutableSet<PaoType> nestTypes;
 
     public final static int INVALID = -1;
     
@@ -339,13 +344,15 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_ENERGY_EXCHANGE_PROGRAM,
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
-            LM_HONEYWELL_PROGRAM);
+            LM_HONEYWELL_PROGRAM,
+            LM_NEST_PROGRAM);
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
-            LM_HONEYWELL_PROGRAM);
+            LM_HONEYWELL_PROGRAM,
+            LM_NEST_PROGRAM);
         
         cbcTypes = ImmutableSet.of(
             CBC_EXPRESSCOM,
@@ -666,9 +673,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART, ECOBEE_3_LITE);
         honeywellTypes = ImmutableSet.of(HONEYWELL_9000, HONEYWELL_FOCUSPRO, HONEYWELL_VISIONPRO_8000, HONEYWELL_THERMOSTAT);
+        nestTypes = ImmutableSet.of(NEST);
         b = ImmutableSet.builder();
         b.addAll(ecobeeTypes);
         b.addAll(honeywellTypes);
+        b.addAll(nestTypes);
         thermostatTypes = b.build();
         
         b = ImmutableSet.builder();
@@ -763,6 +772,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isHoneywell() {
         return honeywellTypes.contains(this);
+    }
+    
+    public boolean isNest() {
+        return nestTypes.contains(this);
     }
     
     public boolean isMeter() {
@@ -998,6 +1011,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getHoneywellTypes() {
         return honeywellTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getNestTypes() {
+        return nestTypes;
     }
     
     public static ImmutableSet<PaoType> getTransmitterTypes() {
