@@ -550,9 +550,12 @@
                 <span class="empty-list"><i:inline key=".meters.none"/></span>
             </c:when>
             <c:otherwise>
-                <table class="three-column-table compact-results-table dashed row-highlighting has-actions">
+                <table class="compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
+                            <c:if test="${not starsMeters}">
+                                <th class="row-icon"/>
+                            </c:if>
                             <th>
                                 <c:choose>
                                     <c:when test="${starsMeters}">
@@ -567,13 +570,23 @@
                                 <th><i:inline key=".displayType.METER"/></th>
                             </c:if>
                             <th><i:inline key=".label"/></th>
-                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
+                            <c:if test="${not starsMeters}">
+                                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
+                            </c:if>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="meter" items="${meters}">
                             <tr>
+                                <c:if test="${not starsMeters}">
+                                    <td>
+                                        <c:if test="${notesList.contains(meter.deviceId)}">
+                                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${meter.deviceId}"/>
+                                        </c:if>
+                                    </td>
+                                </c:if>
                                 <td>
                                     <a href="${meterUrl}${meter.inventoryId}">
                                         ${fn:escapeXml(meter.displayName)}
