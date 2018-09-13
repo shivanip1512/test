@@ -1933,7 +1933,9 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
         {
             if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
             {   
-                if ( ! bank->getDisableFlag() )     // only care about enabled banks
+                // only care about enabled banks OR disabled banks that were disabled 
+                //  because they have hit their max operation count for the day
+                if ( eligibleForVoltageControl( *bank ) )
                 {
                     for ( CtiCCMonitorPointPtr point : bank->getMonitorPoint() )
                     {
@@ -2581,22 +2583,14 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     //calculate estimated bus weights etc from historical data
 
-    CtiFeeder_vec& feeders = subbus->getCCFeeders();
-
-    // for each feeder
     std::set<long> reportedIds;
 
-    for ( CtiFeeder_vec::iterator fb = feeders.begin(), fe = feeders.end(); fb != fe; ++fb )
+    // for each feeder
+    for ( CtiCCFeederPtr currentFeeder : subbus->getCCFeeders() )
     {
-        CtiCCFeederPtr currentFeeder = *fb;
-        CtiCCCapBank_SVector& capbanks =  currentFeeder->getCCCapBanks();
-
-
         // for each capbank
-        for ( CtiCCCapBank_SVector::iterator cb = capbanks.begin(), ce = capbanks.end(); cb != ce; ++cb )
+        for ( CtiCCCapBankPtr currentBank : currentFeeder->getCCCapBanks() )
         {
-            CtiCCCapBankPtr currentBank = *cb;
-
             PointValueMap deltas(pointValues);  // copy our pointValues map
 
             bool isCapBankOpen = (currentBank->getControlStatus() == CtiCCCapBank::Open ||
@@ -2614,9 +2608,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             // if banks operational state isn't switched or if disabled
             // or not in one of the above 4 states we aren't eligible for control.
 
-            if ( eligibleForVoltageControl( *currentBank ) &&
-                 !currentBank->getLocalControlFlag() &&
-                 !currentBank->getIgnoreFlag() &&
+            if ( currentBank->isSwitched() &&
+                 ! currentBank->getDisableFlag() &&
+                 ! currentBank->getLocalControlFlag() &&
+                 ! currentBank->getIgnoreFlag() &&
                  (isCapBankOpen || isCapBankClosed) &&
                  (deltas.find(currentBank->getPointIdByAttribute( Attribute::Voltage)) != deltas.end()))
             {
