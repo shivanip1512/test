@@ -54,6 +54,7 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.google.common.base.Stopwatch;
@@ -72,6 +73,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
     
     YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
         new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
@@ -327,30 +329,38 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
-                        sql.append("SELECT * FROM (");
-                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+                        
+                        if (databaseVendor.isOracle()) {
+                            sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        }
+                        else 
+                        {
+                            // Microsoft SQL
+                            sql.append("SELECT DISTINCT TOP ");
+                            sql.append(maxRows);
+                            sql.append(" yp.paobjectid, rph.pointid, rph.timestamp,");
+                        }
                         sql.append("rph.value, rph.quality, p.pointtype");
-                        sql.append(", ROW_NUMBER() OVER (");
-                        sql.append("PARTITION BY rph.pointid");
-                        appendOrderByClause(sql, order, orderBy);
-                        sql.append(") rn");
                         sql.append("FROM rawpointhistory rph");
                         sql.append("JOIN point p ON rph.pointId = p.pointId");
                         sql.append("JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
                         sql.append("AND p.PointType").eq_k(pointIdentifier.getPointType());
-                        appendTimeStampClause(sql, dateRange);
+                        if (excludeQualities != null && !excludeQualities.isEmpty()) {
+                            sql.append("AND rph.Quality").notIn(excludeQualities);
+                        }
                         appendChangeIdClause(sql, changeIdRange);
+                        appendTimeStampClause(sql, dateRange);
                         sql.append("AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
                             sql.append("AND yp.DisableFlag").eq(YNBoolean.NO);
                         }
-                        if (excludeQualities != null && !excludeQualities.isEmpty()) {
-                            sql.append("AND rph.Quality").notIn(excludeQualities);
+                        if (databaseVendor.isOracle()) {
+                            sql.append("AND ROWNUM <= ");
+                            sql.append(maxRows);
                         }
-                        sql.append(") numberedRows");
-                        sql.append("WHERE numberedRows.rn").lte(maxRows);
-                        sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
+                        appendOrderByClause(sql, order, orderBy);
 
                         return sql;
                     }
