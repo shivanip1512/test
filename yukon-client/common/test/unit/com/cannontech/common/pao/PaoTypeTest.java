@@ -151,6 +151,7 @@ public class PaoTypeTest {
                             PaoType.LM_GROUP_DIGI_SEP,
                             PaoType.LM_GROUP_ECOBEE,
                             PaoType.LM_GROUP_HONEYWELL,
+                            PaoType.LM_GROUP_NEST,
                             PaoType.LM_GROUP_EMETCON,
                             PaoType.LM_GROUP_EXPRESSCOMM,
                             PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -169,6 +170,7 @@ public class PaoTypeTest {
                             PaoType.LM_SEP_PROGRAM,
                             PaoType.LM_ECOBEE_PROGRAM,
                             PaoType.LM_HONEYWELL_PROGRAM,
+                            PaoType.LM_NEST_PROGRAM,
                             PaoType.LM_CONTROL_AREA,
                             PaoType.LM_SCENARIO,
                             PaoType.CAPBANK,
@@ -365,6 +367,7 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
                         PaoType.LM_GROUP_HONEYWELL,
+                        PaoType.LM_GROUP_NEST,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -383,6 +386,7 @@ public class PaoTypeTest {
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
                         PaoType.LM_HONEYWELL_PROGRAM,
+                        PaoType.LM_NEST_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -435,6 +439,7 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.NEST,
                         PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
@@ -478,6 +483,7 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
                         PaoType.LM_GROUP_HONEYWELL,
+                        PaoType.LM_GROUP_NEST,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -496,6 +502,7 @@ public class PaoTypeTest {
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
                         PaoType.LM_HONEYWELL_PROGRAM,
+                        PaoType.LM_NEST_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -563,6 +570,7 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.NEST,
                         PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
@@ -669,6 +677,7 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
                         PaoType.LM_GROUP_HONEYWELL,
+                        PaoType.LM_GROUP_NEST,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -687,6 +696,7 @@ public class PaoTypeTest {
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
                         PaoType.LM_HONEYWELL_PROGRAM,
+                        PaoType.LM_NEST_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -753,6 +763,7 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.NEST,
                         PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
@@ -870,6 +881,7 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
                         PaoType.LM_GROUP_HONEYWELL,
+                        PaoType.LM_GROUP_NEST,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -888,6 +900,7 @@ public class PaoTypeTest {
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
                         PaoType.LM_HONEYWELL_PROGRAM,
+                        PaoType.LM_NEST_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -954,6 +967,7 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.NEST,
                         PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
@@ -1087,6 +1101,7 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
                         PaoType.LM_GROUP_HONEYWELL,
+                        PaoType.LM_GROUP_NEST,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -1105,6 +1120,7 @@ public class PaoTypeTest {
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
                         PaoType.LM_HONEYWELL_PROGRAM,
+                        PaoType.LM_NEST_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -1171,6 +1187,7 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.NEST,
                         PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
@@ -1309,6 +1326,7 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
                         PaoType.LM_GROUP_HONEYWELL,
+                        PaoType.LM_GROUP_NEST,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -1327,6 +1345,7 @@ public class PaoTypeTest {
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
                         PaoType.LM_HONEYWELL_PROGRAM,
+                        PaoType.LM_NEST_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -1381,6 +1400,7 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.NEST,
                         PaoType.RFN_RELAY);
     
     @Test
