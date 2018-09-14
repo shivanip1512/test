@@ -23,5 +23,10 @@ public interface NestSimulatorService {
      */
     String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram,
             LiteYukonUser user) throws Exception;
+    
+    /**
+     * Save fileName in database.
+     */
+    void saveSettings(String fileName);
 
 }
