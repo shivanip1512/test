@@ -9,8 +9,9 @@
 <%-- Cooper Tracking Ids --%>
 <%-- ******************* --%>
 <%-- **IMPORTANT** : New Ids need to be generated for every general release of Yukon --%>
+<%-- See Confluence: http://cipt0534.nam.ci.root:8090/display/EEST/Google+Analytics --%>
 <c:set var="cooperDev" value="UA-30935838-8"/>
-<c:set var="cooperProd" value="UA-30935838-12"/>
+<c:set var="cooperProd" value="UA-30935838-13"/>
 
 <cti:globalSetting var="enabled" globalSettingType="GOOGLE_ANALYTICS_ENABLED"/>
 <cti:globalSetting var="additionalTrackingIds" globalSettingType="GOOGLE_ANALYTICS_TRACKING_IDS"/>
