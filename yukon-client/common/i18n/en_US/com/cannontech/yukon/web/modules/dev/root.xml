@@ -391,7 +391,6 @@
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationSuccessful">File generated successfully</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.rowsThermostatError">Rows and No of Thermostat cannot be blank</entry>
     
-    
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.helpText"><![CDATA[
     <ul>
     <li>Group Name: Comma separated list of group names. Minimum 1 and maximum 3 group names are allowed. </li>
@@ -401,6 +400,16 @@
     <li>Use this file for nest: Set generated file as file to use when working with Nest. </li>
     </ul>
      ]]></entry>
+    
+    <entry key="yukon.web.modules.dev.nest.sync.helpText"><![CDATA[
+    <ul>
+    <li>Sync button: Sync Yukon and Nest. </li>
+    <li>Download existing file: Download file from nest/yukon. Value of Global Setting -> Demand Response -> Nest API URL decide from where the file will be downloaded.
+    To use yukon instead of nest, set the URL as: http://server_path:port/context/dev/nestApi</li>
+    </ul>
+     ]]></entry>
+     
+     
 
     <!-- I18N Demo -->
     <entry key="yukon.web.modules.dev.i18nDemo.pageName">Localization</entry>

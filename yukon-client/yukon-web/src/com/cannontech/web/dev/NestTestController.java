@@ -1,6 +1,7 @@
 package com.cannontech.web.dev;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import org.jsoup.helper.StringUtil;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -30,6 +32,7 @@ import com.cannontech.web.security.annotation.CheckCparm;
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class NestTestController {
     @Autowired NestSimulatorService nestService;
+    @Autowired NestCommunicationService nestComm;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping(value = "home", method = RequestMethod.GET)
@@ -103,5 +106,10 @@ public class NestTestController {
         // TODO - Call to nest sync service
         return "redirect:home";
     }
-
+    
+    @RequestMapping(value = "/downloadExisting", method = RequestMethod.GET)
+    public String downloadExisting() {
+        nestComm.downloadExisting(new Date());
+        return "redirect:home";
+    }
 }
