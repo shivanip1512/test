@@ -366,6 +366,42 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.assignThermostat">Assign Thermostat</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.saved">Saved Successfully</entry>
     
+    
+    <!-- Nest Test -->
+    <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>
+    <entry key="yukon.web.modules.dev.nest.useNestFile.fileName">Existing File Name</entry>
+    <entry key="yukon.web.modules.dev.nest.useNestFile.blankFileName">File Name cannot be blank</entry>
+    <entry key="yukon.web.modules.dev.nest.useNestFile.fileNotExists">This file do not exist at {0}</entry>
+    <entry key="yukon.web.modules.dev.nest.useNestFile.savedSuccessfully">Saved successfully</entry>
+    
+    <entry key="yukon.web.modules.dev.nest.useNestFile.helpText"><![CDATA[
+    <ul>
+    <li>File name: File name of existing file located at {0}. Provide file name with extension (.csv) </li>
+    </ul>
+     ]]></entry>
+    
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.groupName">Group Name</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.noOfRows">Rows</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.noOfThermostats">Number of thermostats</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.winterProgram">Winter Program</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.defaultFile">Set as default file</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.generateFile">Generate File</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.groupSizeError">Group Name should be more than 1 less than 3</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationError">Error in file generation. Check logs</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationSuccessful">File generated successfully</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.rowsThermostatError">Rows and No of Thermostat cannot be blank</entry>
+    
+    
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.helpText"><![CDATA[
+    <ul>
+    <li>Group Name: Comma separated list of group names. Minimum 1 and maximum 3 group names are allowed. </li>
+    <li>Rows: Number of rows to generate in the file. </li>
+    <li>Number of thermostats: maximum number of thermostats per account, the generated serial numbers will be random up to the maximum number. Example: 2 thermostats, the row might have 1 or 2 serial numbers. </li>
+    <li>Winter Program: If checked the file will indicate that all thermostats are under the a "winter" program otherwise it will be under the "summer" program. </li>
+    <li>Use this file for nest: Set generated file as file to use when working with Nest. </li>
+    </ul>
+     ]]></entry>
+
     <!-- I18N Demo -->
     <entry key="yukon.web.modules.dev.i18nDemo.pageName">Localization</entry>
     <entry key="yukon.web.modules.dev.i18nDemo.scopes.pageName">Localization Scoping</entry>

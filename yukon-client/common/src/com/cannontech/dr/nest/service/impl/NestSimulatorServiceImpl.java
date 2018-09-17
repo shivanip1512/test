@@ -22,6 +22,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestFileType;
 import com.cannontech.dr.nest.service.NestSimulatorService;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -33,6 +35,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
 
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private AccountService accountService;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
 
     public static final String SIMULATED_FILE_PATH = CtiUtilities.getNestDirPath() + System.getProperty("file.separator") + "Simulator";
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm";
@@ -40,10 +43,6 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     @Override
     public String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram, LiteYukonUser user)
             throws Exception {
-
-        if (groupNames.size() > 3 || groupNames.size() < 1) {
-            throw new Exception("Minimum of 1 group and maximum of 3 groups are allowed");
-        }
 
         List<CustomerAccount> accounts = customerAccountDao.getAll().stream()
                 .filter(account -> account.getAccountNumber() != null && !account.getAccountNumber().equals("(none)"))
@@ -103,12 +102,22 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     private void addStaticNestInfo(List<NestExisting> existing, List<String> groupNames) {
         existing.add(new NestExisting("***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***",
             "***", "***", "***", "***", "***", "***", "***", "***", "***"));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
-            getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
-            getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED"));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-            getGroupName(groupNames, 2), "", "OTHER"));
+        if (groupNames.size() == 1) {
+            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
+                getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
+        } else if (groupNames.size() == 2) {
+            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
+                getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
+            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
+                getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED"));
+        } else if (groupNames.size() == 3) {
+            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
+                getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
+            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
+                getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED"));
+            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                getGroupName(groupNames, 2), "", "OTHER"));
+        }
     }
 
     /**
@@ -179,5 +188,15 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
                 getRandomGroup(groupNames), "", "", "");
 
         return existing;
+    }
+    
+    @Override
+    public void saveSettings(String fileName) {
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.NEST_FILE_NAME, fileName);
+    }
+    
+    @Override
+    public String getStringValue(YukonSimulatorSettingsKey key) {
+        return yukonSimulatorSettingsDao.getStringValue(key);
     }
 }
