@@ -3,6 +3,7 @@ package com.cannontech.dr.nest.service;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
 public interface NestSimulatorService {
 
@@ -28,5 +29,10 @@ public interface NestSimulatorService {
      * Save fileName in database.
      */
     void saveSettings(String fileName);
+    
+    /**
+     * Gets the saved value from database for the passed key.
+     */
+    String getStringValue(YukonSimulatorSettingsKey key);
 
 }

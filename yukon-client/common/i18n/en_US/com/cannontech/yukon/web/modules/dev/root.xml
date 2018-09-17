@@ -371,13 +371,20 @@
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>
     <entry key="yukon.web.modules.dev.nest.useNestFile.fileName">Existing File Name</entry>
     <entry key="yukon.web.modules.dev.nest.useNestFile.blankFileName">File Name cannot be blank</entry>
+    <entry key="yukon.web.modules.dev.nest.useNestFile.fileNotExists">This file do not exist at {0}</entry>
     <entry key="yukon.web.modules.dev.nest.useNestFile.savedSuccessfully">Saved successfully</entry>
+    
+    <entry key="yukon.web.modules.dev.nest.useNestFile.helpText"><![CDATA[
+    <ul>
+    <li>File name: File name of existing file located at {0}. Provide file name with extension (.csv) </li>
+    </ul>
+     ]]></entry>
     
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.groupName">Group Name</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.noOfRows">Rows</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.noOfThermostats">Number of thermostats</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.winterProgram">Winter Program</entry>
-    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.useFileForNest">Use this file for nest</entry>
+    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.defaultFile">Set as default file</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.generateFile">Generate File</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.groupSizeError">Group Name should be more than 1 less than 3</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationError">Error in file generation. Check logs</entry>

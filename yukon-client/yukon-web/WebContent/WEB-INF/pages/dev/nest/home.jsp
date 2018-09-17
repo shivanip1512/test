@@ -7,10 +7,10 @@
     <cti:url var="useNestFileUrl" value="useAsNestFile" />
     <form id="nestForm" action="${useNestFileUrl}" method="POST">
     <cti:csrfToken/>
-        <tags:sectionContainer title="Set Existing File For Nest">
+        <tags:sectionContainer title="Set Existing File For Nest" helpText="${helpTextForExistingFile}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".useNestFile.fileName">
-                    <input id="fileName" name="fileName" type="text" maxlength="50" size="50">
+                    <input id="fileName" name="fileName" type="text" maxlength="50" size="50" value = "${defaultFileName}">
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         
@@ -43,18 +43,30 @@
                           <tags:nameValue2 nameKey=".nestFileGenerator.winterProgram">
                                 <input id="noOfThermostats" name="winterProgram" type="checkbox">
                          </tags:nameValue2>
-                         <tags:nameValue2 nameKey=".nestFileGenerator.useFileForNest">
-                                <input id="setFileForNest" name="useFileForNest" type="checkbox">
+                         <tags:nameValue2 nameKey=".nestFileGenerator.defaultFile">
+                                <input id="defaultFile" name="defaultFile" type="checkbox">
                          </tags:nameValue2>
                     </tags:nameValueContainer2>
+                    <div class="column nogutter">
+                        <div class="action-area">
+                            <button id="generateFile" type="submit" classes="js-blocker">Generate File</button>
+                        </div>
+                    </div>
                 </tags:sectionContainer>
             </div>
 
-            <div class="column nogutter">
-                <div class="action-area">
-                   <button id="generateFile" type="submit" classes="js-blocker">Generate File</button>
-                </div>
-            </div>
         </div>
     </form>
+    
+    <!-- For generating new file for nest -->
+    <cti:url var="syncYukonAndNest" value="syncYukonAndNest" />
+    <form id="syncYukonAndNest" action="${syncYukonAndNest}" method="GET">
+    <tags:sectionContainer title="Sync Yukon and Nest">
+            <div class="column nogutter">
+                <div class="action-area">
+                    <button id="sync" type="submit" classes="js-blocker">Sync</button>
+                </div>
+            </div>
+        </tags:sectionContainer>
+    </form> 
 </cti:standardPage>

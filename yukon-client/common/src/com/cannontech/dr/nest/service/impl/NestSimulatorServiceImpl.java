@@ -194,4 +194,9 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     public void saveSettings(String fileName) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.NEST_FILE_NAME, fileName);
     }
+    
+    @Override
+    public String getStringValue(YukonSimulatorSettingsKey key) {
+        return yukonSimulatorSettingsDao.getStringValue(key);
+    }
 }

@@ -5,7 +5,7 @@ public class NestFileGenerationSetting {
     private Integer noOfRows;
     private Integer noOfThermostats;
     private boolean winterProgram;
-    private boolean useFileForNest;
+    private boolean defaultFile;
 
     public String getGroupName() {
         return groupName;
@@ -39,12 +39,12 @@ public class NestFileGenerationSetting {
         this.winterProgram = winterProgram;
     }
 
-    public boolean isUseFileForNest() {
-        return useFileForNest;
+    public boolean isDefaultFile() {
+        return defaultFile;
     }
 
-    public void setUseFileForNest(boolean useFileForNest) {
-        this.useFileForNest = useFileForNest;
+    public void setDefaultFile(boolean defaultFile) {
+        this.defaultFile = defaultFile;
     }
 
 }
