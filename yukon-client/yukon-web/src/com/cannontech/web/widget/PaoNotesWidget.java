@@ -51,8 +51,10 @@ public class PaoNotesWidget extends AdvancedWidgetControllerBase {
         int deviceId = 0;
         try {
             deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-            Boolean hideTableBorder = WidgetParameterHelper.getBooleanParameter(request, "hideTableBorders");
-            model.addAttribute("hideTableBorder", hideTableBorder);
+            Boolean hideTableBorders = WidgetParameterHelper.getBooleanParameter(request, "hideTableBorders");
+            if (hideTableBorders != null) {
+                model.addAttribute("hideTableBorders", hideTableBorders);
+            }
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering Notes widget", e);
         }

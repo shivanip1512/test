@@ -14,23 +14,23 @@
         <cti:csrfToken/>
         <form:hidden path="paoId"/>
         <form:hidden path="createUserName"/>
-        <div class="column-14-10 clearfix">
+        <div class="column-12-9-3 clearfix">
             <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
                 <div class="column one">
                     <cti:msg2 var="noteTextPlaceholder" key=".noteText.placeHolder" argument="${maxCharactersInNote}"/>
-                    <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="72" isResizable="false" 
+                    <tags:textarea id="createPopupNoteTextarea" path="noteText" rows="3" cols="0" isResizable="false" classes="tadw"
                                    maxLength="${noteTextAreaMaxLength}" placeholder="${noteTextPlaceholder}" autofocus="false"/>
                 </div>
             </cti:checkRolesAndProperties>
-            <div class="column two nogutter">
-                <c:set var="searchStyle" value="margin-right : -147%;"/>
+            <div class="column two">
                 <cti:checkRolesAndProperties value="MANAGE_NOTES" level = "OWNER">
-                    <c:set var="searchStyle" value=""/>
                     <cti:button nameKey="create" icon="icon-plus-green" classes="js-create-popup-note fl" busy="true"/>
                 </cti:checkRolesAndProperties>
+            </div>
+            <div class="column three nogutter">
                 <cti:url value="/tools/paoNotes/search" var="searchUrl"/>
                 <cti:msg2 var="allNotesTooltip" key=".viewAll.title"/>
-                <div class="fr" style="${searchStyle}">
+                <div class="fr">
                     <a href="${searchUrl}" title="${allNotesTooltip}"><i:inline key=".viewAll"/></a>
                 </div>
             </div>

@@ -355,4 +355,7 @@ $(function() { updateServiceCompanyInfo();});
            <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
-</form:form>
+</form:form>    
+<c:if test="${isTwoWayDevice}">
+    <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true" deviceId="${deviceId}"/>
+</c:if>

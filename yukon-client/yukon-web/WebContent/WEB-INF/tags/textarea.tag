@@ -13,6 +13,7 @@
 <%@ attribute name="maxLength" required="false" type="java.lang.Integer"%>
 <%@ attribute name="autofocus" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="forceDisplayTextarea" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="classes" required="false" type="java.lang.String"%>
 
 <spring:bind path="${path}">
 
@@ -37,11 +38,11 @@
     
     <c:choose>
         <c:when test="${autofocus == false}">
-            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
+            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass} ${classes}" id="${id}" 
                    cssStyle="${resizable}" placeholder="${placeholder}" maxlength="${maxLength}" tabindex="-1"/>
         </c:when>
         <c:otherwise>
-            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass}" id="${id}" 
+            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass} ${classes}" id="${id}" 
                    cssStyle="${resizable}" placeholder="${placeholder}" maxlength="${maxLength}"/>
         </c:otherwise>
     </c:choose>
