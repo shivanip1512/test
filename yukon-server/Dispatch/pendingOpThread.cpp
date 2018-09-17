@@ -11,6 +11,7 @@
 #include "database_transaction.h"
 #include "control_history_association.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "ControlHistoryAssociationResponse.h"
 
 #include "std_helper.h"

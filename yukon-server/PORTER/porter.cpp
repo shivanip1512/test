@@ -72,6 +72,7 @@
 
 #include "connection_client.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "porter_message_serialization.h"
 
 #include "NetworkManagerMessaging.h"

@@ -31,6 +31,7 @@
 #include "cparms.h"
 #include "connection_client.h"
 #include "amq_constants.h"
+#include "amq_queues.h"
 #include "streamAmqConnection.h"
 
 #include "module_util.h"

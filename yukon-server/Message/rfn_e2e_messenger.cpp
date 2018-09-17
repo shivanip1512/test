@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "rfn_e2e_messenger.h"
+#include "amq_queues.h"
 
 #include "message_factory.h"
 

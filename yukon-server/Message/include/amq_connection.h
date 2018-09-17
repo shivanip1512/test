@@ -32,51 +32,8 @@ class QueueProducer;
 class TempQueueConsumer;
 
 namespace Queues {
-
-struct IM_EX_MSG OutboundQueue
-{
-    std::string name;
-
-    static const OutboundQueue PorterResponses;
-    static const OutboundQueue SmartEnergyProfileControl;
-    static const OutboundQueue SmartEnergyProfileRestore;
-    static const OutboundQueue EcobeeCyclingControl;
-    static const OutboundQueue EcobeeRestore;
-    static const OutboundQueue HoneywellCyclingControl;
-    static const OutboundQueue HoneywellRestore;
-    static const OutboundQueue HistoryRowAssociationResponse;
-    static const OutboundQueue IvvcAnalysisMessage;
-    static const OutboundQueue CapControlOperationMessage;
-    static const OutboundQueue RfnBroadcast;
-    static const OutboundQueue NetworkManagerRequest;
-    static const OutboundQueue NetworkManagerE2eDataRequest;
-    static const OutboundQueue ScannerOutMessages;
-    static const OutboundQueue ScannerInMessages;
-    static const OutboundQueue GetBatteryNodeChannelConfigRequest;
-    static const OutboundQueue SetBatteryNodeChannelConfigRequest;
-    static const OutboundQueue DeviceCreationRequest;
-    static const OutboundQueue RfnDataStreamingUpdate;
-
-private:
-    OutboundQueue(std::string name);
-};
-
-
-struct IM_EX_MSG InboundQueue
-{
-    std::string name;
-
-    static const InboundQueue NetworkManagerResponse;
-    static const InboundQueue NetworkManagerE2eDataConfirm;
-    static const InboundQueue NetworkManagerE2eDataIndication;
-    static const InboundQueue ScannerOutMessages;
-    static const InboundQueue ScannerInMessages;
-    static const InboundQueue PorterDynamicPaoInfoRequest;
-
-private:
-    InboundQueue(std::string name);
-};
-
+class OutboundQueue;
+class InboundQueue;
 }
 }
 
@@ -200,40 +157,6 @@ protected:
 
     using ReturnLabel = std::unique_ptr<ReturnAddress>;
 
-    const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
-
-    virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
-            StreamableMessage::auto_type&& message,
-            ReturnLabel returnAddress);
-    virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
-            const SerializedMessage &message,
-            ReturnLabel returnAddress);
-
-    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
-    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
-        
-    void acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
-    void acceptSingleReply (const cms::Message *message);
-    void acceptSessionReply(const cms::Message *message);
-
-private:
-
-    void run();
-
-    CtiCriticalSection _closeConnectionMux;
-
-    const std::string _broker_uri;
-
-    std::mutex _taskMux;
-    std::condition_variable _newTask;
-
-    //  Connection/session objects
-    std::unique_ptr<ActiveMQ::ManagedConnection> _connection;
-    std::unique_ptr<cms::Session> _producerSession;
-    std::unique_ptr<cms::Session> _consumerSession;
-
     //  Message submission objects and methods
     struct Envelope
     {
@@ -266,13 +189,49 @@ private:
         bool empty() const;
     };
 
+    void processTasks(MessagingTasks tasks);
+
+    const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
+
+    virtual void enqueueOutgoingMessage(
+            const std::string &queueName,
+            StreamableMessage::auto_type&& message,
+            ReturnLabel returnAddress);
+    virtual void enqueueOutgoingMessage(
+            const std::string &queueName,
+            const SerializedMessage &message,
+            ReturnLabel returnAddress);
+
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
+        
+    void acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
+    void acceptSingleReply (const cms::Message *message);
+    void acceptSessionReply(const cms::Message *message);
+
+    virtual void kickstart();
+
+private:
+
+    void run();
+
+    CtiCriticalSection _closeConnectionMux;
+
+    const std::string _broker_uri;
+
+    std::mutex _taskMux;
+    std::condition_variable _newTask;
+
+    //  Connection/session objects
+    std::unique_ptr<ActiveMQ::ManagedConnection> _connection;
+    std::unique_ptr<cms::Session> _producerSession;
+    std::unique_ptr<cms::Session> _consumerSession;
+
     MessagingTasks _newTasks;
 
     template<class Container, typename... Arguments>
     void emplaceTask(Container& c, Arguments&&... args);
         
-    void kickstart();
-
     using ProducersByQueueName = std::map<std::string, std::unique_ptr<ActiveMQ::QueueProducer>>;
     ProducersByQueueName _producers;
 

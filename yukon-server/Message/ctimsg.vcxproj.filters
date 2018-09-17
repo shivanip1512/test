@@ -171,6 +171,9 @@
     <ClCompile Include="DeviceCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="amq_queues.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\amq_connection.h">
@@ -372,6 +375,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Serialization\message_serialization_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\amq_queues.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

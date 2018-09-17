@@ -34,6 +34,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "PorterResponseMessage.h"
 #include "DeviceCreation.h"
 #include "RfnDataStreamingUpdate.h"

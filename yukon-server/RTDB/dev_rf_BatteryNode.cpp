@@ -6,6 +6,7 @@
 #include "config_data_rfn.h"
 #include "config_helpers.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "message_factory.h"
 
 #include <future>

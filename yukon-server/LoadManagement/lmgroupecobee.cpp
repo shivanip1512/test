@@ -3,6 +3,7 @@
 #include "lmid.h"
 #include "logger.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "LMGroupEcobee.h"
 #include "LMEcobeeMessages.h"
 

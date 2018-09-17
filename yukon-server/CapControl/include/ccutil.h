@@ -5,6 +5,7 @@
 #include "msg_pcrequest.h"
 #include "mgr_paosched.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "CapControlOperationMessage.h"
 #include "cctwowaycbcpoints.h"
 

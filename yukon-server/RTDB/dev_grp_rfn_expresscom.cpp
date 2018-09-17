@@ -11,6 +11,7 @@
 #include "utility.h"
 #include "devicetypes.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "RfnBroadcastMessage.h"
 #include "RfnBroadcastReplyMessage.h"
 
