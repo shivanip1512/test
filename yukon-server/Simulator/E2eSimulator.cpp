@@ -21,7 +21,7 @@
 #include "amq_util.h"
 #include "amq_connection.h"
 #include "amq_constants.h"
-
+#include "amq_queues.h"
 #include "CParms.h"
 
 #include "prot_dnpSlave.h"
@@ -145,7 +145,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
             float delay = dist(rd) * gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_DELAY_SECONDS", 3);
 
-            std::async(std::launch::async,
+            std::thread {
                 [this](float delay, E2eDataRequestMsg requestMsg) {
 
                     CTILOG_INFO(dout, "Delaying " << delay << " seconds");
@@ -213,7 +213,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                             CTILOG_INFO(dout, "Not sending DNP3 response for " << requestMsg.rfnIdentifier);
                         }
                     }
-                }, delay, *requestMsg);
+                }, delay, *requestMsg };
         }
     }
 }
