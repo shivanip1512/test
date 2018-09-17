@@ -58,15 +58,15 @@
         </div>
     </form>
     
-    <!-- For generating new file for nest -->
+    <!-- Sync Yukon with Nest -->
     <cti:url var="syncYukonAndNest" value="syncYukonAndNest" />
     <form id="syncYukonAndNest" action="${syncYukonAndNest}" method="GET">
     <tags:sectionContainer title="Sync Yukon and Nest">
-            <div class="column nogutter">
-                <div class="action-area">
-                    <button id="sync" type="submit" classes="js-blocker">Sync</button>
-                </div>
+       <div class="column nogutter">
+           <div class="action-area">
+                <button id="sync" type="submit" classes="js-blocker">Sync</button>
             </div>
-        </tags:sectionContainer>
+       </div>
+    </tags:sectionContainer>
     </form> 
 </cti:standardPage>
