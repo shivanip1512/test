@@ -28,11 +28,11 @@ public interface NestSimulatorService {
     /**
      * Save fileName in database.
      */
-    void saveSettings(String fileName);
-    
+    void saveFileName(String fileName);
+
     /**
      * Gets the saved value from database for the passed key.
      */
-    String getStringValue(YukonSimulatorSettingsKey key);
+    String getFileName(YukonSimulatorSettingsKey key);
 
 }

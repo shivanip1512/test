@@ -102,30 +102,23 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     private void addStaticNestInfo(List<NestExisting> existing, List<String> groupNames) {
         existing.add(new NestExisting("***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***",
             "***", "***", "***", "***", "***", "***", "***", "***", "***"));
-        if (groupNames.size() == 1) {
-            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
-                getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
-        } else if (groupNames.size() == 2) {
-            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
-                getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
-            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
-                getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED"));
-        } else if (groupNames.size() == 3) {
-            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
-                getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
-            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
-                getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED"));
-            existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-                getGroupName(groupNames, 2), "", "OTHER"));
-        }
+        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
+            getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
+        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
+            getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED"));
+        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+            getGroupName(groupNames, 2), "", "OTHER"));
     }
 
     /**
      * Returns the group name or an empty string
      */
     private String getGroupName(List<String> groupNames, int index) {
-        String groupName = groupNames.get(index);
-        return groupName == null ? "" : groupName;
+        try {
+            return groupNames.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            return "";
+        }
     }
 
     /**
@@ -191,12 +184,12 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     }
     
     @Override
-    public void saveSettings(String fileName) {
+    public void saveFileName(String fileName) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.NEST_FILE_NAME, fileName);
     }
-    
+
     @Override
-    public String getStringValue(YukonSimulatorSettingsKey key) {
+    public String getFileName(YukonSimulatorSettingsKey key) {
         return yukonSimulatorSettingsDao.getStringValue(key);
     }
 }

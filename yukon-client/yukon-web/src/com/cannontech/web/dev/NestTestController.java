@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.jsoup.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
+import com.cannontech.dr.nest.service.impl.NestSyncServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
@@ -31,13 +34,16 @@ import com.cannontech.web.security.annotation.CheckCparm;
 @RequestMapping("/nest/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class NestTestController {
+    private static final Logger log = YukonLogManager.getLogger(NestTestController.class); 
+    
     @Autowired NestSimulatorService nestService;
     @Autowired NestCommunicationService nestComm;
+    @Autowired NestSyncServiceImpl nestSync; 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, YukonUserContext userContext) {
-        String defaultFileName = nestService.getStringValue(YukonSimulatorSettingsKey.NEST_FILE_NAME);
+        String defaultFileName = nestService.getFileName(YukonSimulatorSettingsKey.NEST_FILE_NAME);
         model.addAttribute("defaultFileName", defaultFileName);
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -60,7 +66,7 @@ public class NestTestController {
                 return "redirect:home";
             }
         }
-        nestService.saveSettings(fileName);
+        nestService.saveFileName(fileName);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.useNestFile.savedSuccessfully"));
         return "redirect:home";
     }
@@ -87,13 +93,14 @@ public class NestTestController {
             generatedFileName = nestService.generateExistingFile(groupNames, settings.getNoOfRows(),
                 settings.getNoOfThermostats(), settings.isWinterProgram(), userContext.getYukonUser());
         } catch (Exception e) {
+            log.error("Error generating nest file " + e);
             flash.setError(
                 new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationError"));
             return "redirect:home";
         }
 
         if (settings.isDefaultFile()) {
-            nestService.saveSettings(generatedFileName);
+            nestService.saveFileName(generatedFileName);
         }
 
         flash.setConfirm(
@@ -102,11 +109,11 @@ public class NestTestController {
     }
     
     @RequestMapping(value = "/syncYukonAndNest", method = RequestMethod.GET)
-    public String syncYukonAndNest() {
-        // TODO - Call to nest sync service
+    public String sync() {
+        nestSync.sync();
         return "redirect:home";
     }
-    
+
     @RequestMapping(value = "/downloadExisting", method = RequestMethod.GET)
     public String downloadExisting() {
         nestComm.downloadExisting(new Date());
