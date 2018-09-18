@@ -120,6 +120,16 @@ bool ActiveMQConnectionManager::MessagingTasks::empty() const
 }
 
 
+auto ActiveMQConnectionManager::getTasks() -> MessagingTasks
+{
+    MessagingTasks tasks;
+
+    std::swap(tasks, _newTasks);
+
+    return tasks;
+}
+
+
 void ActiveMQConnectionManager::run()
 {
     while( ! isSet(SHUTDOWN) )
@@ -131,14 +141,16 @@ void ActiveMQConnectionManager::run()
                 MessagingTasks tasks;
 
                 {
-                    std::unique_lock<std::mutex> taskLock(_taskMux);
+                    std::unique_lock taskLock(_taskMux);
 
-                    while( _newTasks.empty() && ! isSet(SHUTDOWN)  )
+                    tasks = getTasks();
+
+                    while( tasks.empty() && ! isSet(SHUTDOWN)  )
                     {
                         _newTask.wait_for(taskLock, std::chrono::seconds(5));  //  only wait for 5 seconds to expedite shutdown
-                    }
 
-                    std::swap(tasks, _newTasks);
+                        tasks = getTasks();
+                    }
                 }
 
                 processTasks(std::move(tasks));
@@ -253,7 +265,7 @@ void ActiveMQConnectionManager::createNamedConsumer(const ActiveMQ::Queues::Inbo
             std::make_unique<ActiveMQ::MessageListener>(
                     [=](const cms::Message *msg)
                     {
-                        acceptNamedMessage(inboundQueue, msg);
+                        acceptNamedMessage(msg, inboundQueue);
                     });
 
     consumer->managedConsumer->setMessageListener(
@@ -653,7 +665,7 @@ void emplaceHelper(std::map<T, std::queue<U>>& m, T key, U && value)
 template<class Container, typename... Arguments>
 void ActiveMQConnectionManager::emplaceTask(Container& c, Arguments&&... args)
 {
-    std::unique_lock<std::mutex> taskLock(_taskMux);
+    std::unique_lock taskLock(_taskMux);
 
     emplaceHelper(c, std::move(args)...);
 
@@ -820,31 +832,37 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 }
 
 
-void ActiveMQConnectionManager::acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message)
+void ActiveMQConnectionManager::acceptNamedMessage(const cms::Message *message, const ActiveMQ::Queues::InboundQueue *queue)
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
-        auto md = std::make_unique<MessageDescriptor>();
+        const auto replyTo = bytesMessage->getCMSReplyTo()
+                ? bytesMessage->getCMSReplyTo()->clone()
+                : nullptr;
 
-        md->type = bytesMessage->getCMSType();
+        std::vector<unsigned char> payload(bytesMessage->getBodyLength());
 
-        if( auto cmsReplyTo = bytesMessage->getCMSReplyTo() )
-        {
-            md->replyTo = cmsReplyTo->clone();
-        }
-
-        md->msg.resize(bytesMessage->getBodyLength());
-
-        bytesMessage->readBytes(md->msg);
+        bytesMessage->readBytes(payload);
 
         if( debugActivityInfo() )
         {
             CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
-                << reinterpret_cast<unsigned long>(queue) << ": " << md->msg);
+                << reinterpret_cast<unsigned long>(queue) << ": " << payload);
         }
 
-        emplaceTask(_newTasks.incomingMessages, queue, std::move(md));
+        emplaceNamedMessage(queue, bytesMessage->getCMSType(), payload, replyTo);
     }
+}
+
+void ActiveMQConnectionManager::emplaceNamedMessage(const ActiveMQ::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo)
+{
+    auto md = std::make_unique<MessageDescriptor>();
+
+    md->type = type;
+    md->msg = payload;
+    md->replyTo = replyTo;
+
+    emplaceTask(_newTasks.incomingMessages, queue, std::move(md));
 }
 
 

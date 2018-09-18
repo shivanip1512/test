@@ -45,7 +45,7 @@ public:
 
     using SerializedMessage = std::vector<unsigned char>;
 
-    struct MessageDescriptor
+    struct IM_EX_MSG MessageDescriptor
     {
         std::string type;
         SerializedMessage msg;
@@ -189,6 +189,8 @@ protected:
         bool empty() const;
     };
 
+    MessagingTasks getTasks();
+
     void processTasks(MessagingTasks tasks);
 
     const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
@@ -205,11 +207,10 @@ protected:
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
         
-    void acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
-    void acceptSingleReply (const cms::Message *message);
-    void acceptSessionReply(const cms::Message *message);
+    virtual void emplaceNamedMessage(const ActiveMQ::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo);
 
     virtual void kickstart();
+    virtual void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
 
 private:
 
@@ -286,7 +287,6 @@ private:
 
     void updateCallbacks(CallbacksPerQueue newCallbacks);
 
-    void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
     void createNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
     auto createSessionConsumer(const SessionCallback callback) -> const cms::Destination*;
 
@@ -296,6 +296,10 @@ private:
     void dispatchIncomingMessages(IncomingPerQueue incomingMessages);
     void dispatchTempQueueReplies(RepliesByDestination tempQueueReplies);
     void dispatchSessionReplies  (RepliesByDestination sessionReplies);
+
+    void acceptNamedMessage(const cms::Message *message, const ActiveMQ::Queues::InboundQueue *queue);
+    void acceptSingleReply (const cms::Message *message);
+    void acceptSessionReply(const cms::Message *message);
 };
 
 }
