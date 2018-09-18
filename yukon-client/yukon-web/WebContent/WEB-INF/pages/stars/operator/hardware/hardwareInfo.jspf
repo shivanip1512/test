@@ -356,6 +356,6 @@ $(function() { updateServiceCompanyInfo();});
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
 </form:form>    
-<c:if test="${isTwoWayDevice}">
-    <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true" deviceId="${deviceId}"/>
+<c:if test="${hardware.deviceId > 0}">
+    <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true" deviceId="${hardware.deviceId}"/>
 </c:if>

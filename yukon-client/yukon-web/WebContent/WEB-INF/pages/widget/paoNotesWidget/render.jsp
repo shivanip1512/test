@@ -75,7 +75,7 @@
                                         <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
                                     </c:if>
                                 </div>
-                                <div id="js-save-note-group-${noteId}" class="button-group fr dn" style="top: 40%;">
+                                <div id="js-save-note-group-${noteId}" class="button-group fr dn">
                                     <cti:button id="js-save-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
                                                 data-note-id="${noteId}" title="${saveText}"/>
                                     <cti:button id="js-cancel-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
