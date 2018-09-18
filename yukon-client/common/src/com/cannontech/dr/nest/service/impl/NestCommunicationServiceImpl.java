@@ -18,9 +18,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -28,8 +26,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -41,7 +41,6 @@ import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestFileType;
-import com.cannontech.dr.nest.model.NestPending;
 import com.cannontech.dr.nest.model.SchemaViolationResponse;
 import com.cannontech.dr.nest.model.StandardEvent;
 import com.cannontech.dr.nest.service.NestCommunicationService;
@@ -54,11 +53,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class NestCommunicationServiceImpl implements NestCommunicationService{
-    
-    private enum Action{
-        UPLOAD,
-        DOWNLOAD
-    }
     
     private final RestTemplate restTemplate;
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class); 
@@ -83,19 +77,20 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
         restTemplate.setRequestFactory(factory);
     }
-    private static final String controlCritical = "/energy/v2/rush_hour_rewards/events/critical";
-    private static final String controlStandard = "/energy/v2/rush_hour_rewards/events/standard";
+    private static final String control = "/energy/v2/rush_hour_rewards/events/";
+    private static final String critical = control + "critical";
+    private static final String standard = control + "standard";
+
     
     /**
-     * curl https://enterprise-api.nest.com/api/energy/v2/rush_hour_rewards/events/standard -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA==" -H "Content-Type: application/json" -d "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Group1\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}"
+     * curl https://enterprise-api.nest.com/api/energy/v2/rush_hour_rewards/events/standard -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA==" -H "Content-Type: application/json" -d "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Test\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}"
      */
     @Override
     public NestEventId createStandardEvent(StandardEvent event) {
         log.debug("Sending request to create standard event");
-        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + controlStandard;
+        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + standard;
         log.debug("Request url:"+requestUrl);
-        //String response = getNestResponseViaHttpRequest(requestUrl, event);
-        String response = getNestResponseViaRest(requestUrl, event);
+        String response = getNestResponse(requestUrl, event);
         
         return getNestEventId(response);
     }
@@ -103,12 +98,34 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     @Override
     public NestEventId createCriticalEvent(CriticalEvent event) {
         log.debug("Sending request to create critical event");
-        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + controlCritical;
+        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + critical;
         log.debug("Request url:"+requestUrl);
-        String response = getNestResponseViaHttpRequest(requestUrl, event);
-        //String response = getNestResponseViaRest(requestUrl, event);
+        String response = getNestResponse(requestUrl, event);
         
         return getNestEventId(response);
+    }
+    
+    @Override
+    public boolean cancelEvent(String nestEventId) {
+        log.debug("Canceling event " + nestEventId);
+        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + control + nestEventId;
+        log.debug("Request url:" + requestUrl);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", encodeAuthorization());
+        
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        try {
+            HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.DELETE, entity, String.class);
+            //204 = On success
+            // Asked Nest about stop and cancel of event
+            //Can't test yet as I can't start event yet
+            return true;
+        } catch (HttpClientErrorException e) {
+            log.error("Error canceling Nest event", e);
+        }
+        
+        return true;
     }
     
     private NestEventId getNestEventId(String response) {
@@ -127,64 +144,31 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
     }
     
-    private String getNestResponseViaRest(String url, CriticalEvent event) {
-        String requestJson;
+    private String getNestResponse(String url, CriticalEvent event) {
         try {
-            requestJson = JsonUtils.toJson(event);
-            log.debug(requestJson);
+            log.debug(JsonUtils.toJson(event));
         } catch (JsonProcessingException e) {
             throw new NestException("Unable to convert " + event + " to json");
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", encodeAuthorization());
-        //requestJson = "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Group1\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}";
  
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-        String response = restTemplate.postForObject(url, entity, String.class);
-        log.debug("response:"+response);
+        HttpEntity<CriticalEvent> entity = new HttpEntity<>(event, headers);
+        String response;
+        try {
+            response = restTemplate.postForObject(url, entity, String.class);
+        } catch (HttpClientErrorException e) {
+            response = e.getResponseBodyAsString();
+        }
+        log.debug("response:" + response);
         return response;
     }
-    
-    private String getNestResponseViaHttpRequest(String url, CriticalEvent event) {
-        try {
-            log.debug(JsonUtils.toJson(event));
-        } catch (JsonProcessingException e) {
-            throw new NestException("Unable to convert " + event + " to json");
-        }
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpPost httppost = new HttpPost(url);
-            httppost.addHeader("content-type", "application/json");
-            httppost.setHeader("Authorization", encodeAuthorization());
-            if (host != null) {
-                RequestConfig requestConfig = RequestConfig.custom().setProxy(host).build();
-                httppost.setConfig(requestConfig);
-            }
-
-            StringEntity entity = new StringEntity(JsonUtils.toJson(event), ContentType.APPLICATION_FORM_URLENCODED);
-
-            httppost.setEntity(entity);
-            log.debug("executing request: " + httppost.getRequestLine() + httppost.getConfig());
-            HttpResponse response = httpclient.execute(httppost);
-            org.apache.http.HttpEntity resEntity = httpclient.execute(httppost).getEntity();
-            log.debug(response.getStatusLine());
-            if (resEntity != null) {
-                String str = EntityUtils.toString(resEntity);
-                log.debug("response:" + str);
-                return str;
-            }
-            throw new NestException("Error getting response from Nest");
-        } catch (IOException e) {
-            throw new NestException("Error sending event message to Nest", e);
-        }
-    }
-    
+        
     @Override
     public List<NestExisting> downloadExisting(Date date) {
         InputStream inputStream = getFileInputStream(NestFileType.EXISTING);
-        List<NestExisting> existing = parseExistingCsvFile(inputStream);
-        writeExistingFile(existing, Action.DOWNLOAD, date);
-        return existing; 
+        return parseExistingCsvFile(inputStream); 
     }
         
     private InputStream getFileInputStream(NestFileType type) {
@@ -213,10 +197,16 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
     }
     
-    private File writeExistingFile(List<NestExisting> existing, Action action, Date date) {
+    private File getDebugFile(NestFileType type, Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
+        return new File(CtiUtilities.getNestDirPath(),
+            type.toString() + "_EXISTING_" + formatter.format(date) + ".csv");
+    }
+    
+    private File writeExistingFile(List<NestExisting> existing, Date date) {
         ObjectWriter writer =
             new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
-        File file = getDebugFile(NestFileType.EXISTING, action, date);
+        File file = getDebugFile(NestFileType.EXISTING, date);
         try {
             writer.writeValues(file).writeAll(existing);
             return file;
@@ -241,15 +231,10 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         log.debug(existing);
         return existing;
     }
-        
-    private File getDebugFile(NestFileType type, Action action, Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
-        return new File(CtiUtilities.getNestDirPath(),
-            type.toString() + "_" + action + "_" + formatter.format(date) + ".csv");
-    }
 
     @Override
     public void uploadExisting(List<NestExisting> existing, Date date) {
+        File file = null;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httppost = new HttpPost(NestFileType.EXISTING.getUrl());
             httppost.addHeader("content-type", "text/csv");
@@ -260,7 +245,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
                 httppost.setConfig(requestConfig);
             }
             // File file = new File(CtiUtilities.getNestDirPath(), "EXISTING.csv");
-            File file = writeExistingFile(existing, Action.UPLOAD, date);
+            file = writeExistingFile(existing, date);
             FileEntity entity = new FileEntity(file);
             log.debug(EntityUtils.toString(entity));
             httppost.setEntity(entity);
@@ -269,46 +254,16 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             org.apache.http.HttpEntity resEntity = response.getEntity();
             log.debug(response.getStatusLine());
             if (resEntity != null) {
-                String str =EntityUtils.toString(resEntity);
+                String str = EntityUtils.toString(resEntity);
                 log.debug(str);
             }
         } catch (NestException | IOException e) {
             log.error(e);
-        }
-    }
-    
-    
-    @Override
-    public List<NestPending> downloadPending(Date date) {
-        InputStream inputStream = getFileInputStream(NestFileType.PENDING);
-        List<NestPending> pending = parsePendingCsvFile(inputStream);
-        writePendingFile(pending, Action.DOWNLOAD, date);
-        return pending; 
-    }
-    
-    private void writePendingFile(List<NestPending> pending, Action action, Date date) {
-        ObjectWriter writer =
-            new CsvMapper().writerFor(NestPending.class).with(NestFileType.PENDING.getSchema().withHeader());
-        File file = getDebugFile(NestFileType.PENDING, action, date);
-        try {
-            writer.writeValues(file).writeAll(pending);
-        } catch (IOException e) {
-            log.error(e);
-        }
-    }
-    
-    private List<NestPending> parsePendingCsvFile(InputStream inputStream) {
-        List<NestPending> pending = new ArrayList<>();
-        if (inputStream != null) {
-            CsvSchema schema = CsvSchema.emptySchema().withHeader().withNullValue("");
-            try {
-                MappingIterator<NestPending> it =
-                    new CsvMapper().readerFor(NestPending.class).with(schema).readValues(inputStream);
-                pending.addAll(it.readAll());
-            } catch (IOException e) {
-                log.error(e);
+        } finally {
+            if(log.isDebugEnabled() && file != null) {
+                //id debug is not enabled delete the file we sent to Nest
+                file.delete();
             }
         }
-        return pending;
-    }
+    }    
 }

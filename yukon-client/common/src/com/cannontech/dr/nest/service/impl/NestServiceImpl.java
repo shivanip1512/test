@@ -13,11 +13,13 @@ import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.StandardEvent;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestService;
+import com.cannontech.dr.service.ControlHistoryService;
 import com.google.common.collect.Lists;
 
 public class NestServiceImpl implements NestService {
 
     @Autowired private NestCommunicationService nestCommunicationService;
+    @Autowired private ControlHistoryService controlHistoryService;
     
     private ConcurrentHashMap<String, String> groupsToEventIds = new ConcurrentHashMap<>();
 
@@ -35,11 +37,15 @@ public class NestServiceImpl implements NestService {
         StandardEvent standardEvent = new StandardEvent("2018-09-14T00:00:00.000Z", "PT30M", groups, loadShaping);
         NestEventId eventId = nestCommunicationService.createStandardEvent(standardEvent);
         
+    
+        
         if(eventId == null) {
             //got an error - log?
-            //feedback loop to LM?
+            //don't send message controlHistoryService?
+           // controlHistoryService.sendControlHistoryShedMessage(groupId, startTime, controlType, associationId, controlDurationSeconds, reductionRatio);sendControlHistoryRestoreMessage(groupId, time);
         } else{
             groupsToEventIds.put("Test", eventId.getId());
+            //send message controlHistoryService?
         }
     }
 }

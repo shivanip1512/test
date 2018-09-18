@@ -6,12 +6,9 @@ import java.util.List;
 import com.cannontech.dr.nest.model.CriticalEvent;
 import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.NestExisting;
-import com.cannontech.dr.nest.model.NestPending;
 import com.cannontech.dr.nest.model.StandardEvent;
 
 public interface NestCommunicationService{
-
-    List<NestPending> downloadPending(Date date);
 
     List<NestExisting> downloadExisting(Date date);
 
@@ -20,4 +17,6 @@ public interface NestCommunicationService{
     NestEventId createStandardEvent(StandardEvent event);
 
     NestEventId createCriticalEvent(CriticalEvent event);
+
+    boolean cancelEvent(String nestEventId);
 }
