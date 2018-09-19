@@ -61,7 +61,7 @@
                                               placeholder="${noteTextPlaceholder}" class="tadw"></textarea>
                                 </div>
                             </div>
-                            <div class="column two nogutter js-note-actions cv fr" style="right: 0;">
+                            <div class="column two nogutter js-note-actions cv" style="right: 0;">
                                 <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
                                 <cti:msg2 var="deleteText" key=".delete.hoverText"/>
                                 <cti:msg2 var="editText" key=".edit.hoverText"/>
