@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,6 +42,8 @@ import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.base.Function;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -51,6 +55,8 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private CommandDao commandDao;
     @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
+
+    private static Cache<Pair<DeviceGroup, SimpleDevice>, Boolean> deviceGroupCache = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
     private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
     
@@ -214,7 +220,12 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }
         
         SimpleDevice simpleDevice = new SimpleDevice(pao);
-        boolean result = deviceGroupDao.isDeviceInGroup(group, simpleDevice);
+        Pair<DeviceGroup, SimpleDevice> pair = Pair.of(group, simpleDevice);
+        Boolean result = deviceGroupCache.getIfPresent(pair);
+        if (result == null) {
+            result = deviceGroupDao.isDeviceInGroup(group, simpleDevice);
+            deviceGroupCache.put(pair, result);
+        }
         return result;
     }
     
