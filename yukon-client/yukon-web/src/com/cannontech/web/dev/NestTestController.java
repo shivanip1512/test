@@ -18,6 +18,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
@@ -109,14 +110,17 @@ public class NestTestController {
     }
     
     @RequestMapping(value = "/syncYukonAndNest", method = RequestMethod.GET)
-    public String sync() {
+    public String sync(FlashScope flash) {
         nestSync.sync();
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.sync.success"));
         return "redirect:home";
     }
 
     @RequestMapping(value = "/downloadExisting", method = RequestMethod.GET)
-    public String downloadExisting() {
-        nestComm.downloadExisting(new Date());
+    public String downloadExisting(FlashScope flash) {
+        List<NestExisting> nestExisting = nestComm.downloadExisting(new Date());
+        log.debug("Nest Existing " + nestExisting);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.downloadExisting.success"));
         return "redirect:home";
     }
 }
