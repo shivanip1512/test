@@ -825,3 +825,12 @@ input[readonly], input[readonly="readonly"] {
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
 }
+/** Center vertically when vertical-align: middle isn't an option. This requires position: relative;
+    on the parent element. see https://www.w3schools.com/css/css_align.asp */
+.cv {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+}

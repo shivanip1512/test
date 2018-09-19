@@ -38,7 +38,7 @@
                 <c:forEach var="recentNote" items="${recentNotes}" varStatus="status">
                     <c:set var="noteId" value="${recentNote.paoNote.noteId}"/>
                     <tr>
-                        <td class="column-18-6 clearfix">
+                        <td class="column-18-6 clearfix pr">
                             <div class="column one">
                                 <div id="js-note-${noteId}">
                                     <!-- This needs to be on a single line. Any whitespace will be visible to the user, due to wsp style. -->
@@ -61,7 +61,7 @@
                                               placeholder="${noteTextPlaceholder}" class="tadw"></textarea>
                                 </div>
                             </div>
-                            <div class="column two nogutter js-note-actions">
+                            <div class="column two nogutter js-note-actions cv fr" style="right: 0;">
                                 <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
                                 <cti:msg2 var="deleteText" key=".delete.hoverText"/>
                                 <cti:msg2 var="editText" key=".edit.hoverText"/>
