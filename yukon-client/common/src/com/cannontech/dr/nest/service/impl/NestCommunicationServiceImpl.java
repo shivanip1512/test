@@ -181,7 +181,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         log.debug("Nest Url:"+stringUrl);
         // curl https://enterprise-api.nest.com/api/v1/users/pending/latest.csv -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA=="
         try {
-            URLConnection connection = proxy == null ? new URL(stringUrl).openConnection() : new URL(stringUrl).openConnection(proxy);
+            URLConnection connection =
+                useProxy(stringUrl) ? new URL(stringUrl).openConnection(proxy) : new URL(stringUrl).openConnection();
             connection.setRequestProperty("X-Requested-With", "Curl");
             connection.setRequestProperty("Authorization", encodeAuthorization());
             inputStream = connection.getInputStream();
@@ -190,6 +191,15 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             throw new NestException("Error connecting to ", e);
         }
         return inputStream;
+    }
+    
+    private boolean useProxy(String stringUrl) {
+        if (proxy == null) {
+            return false;
+        } else if ((stringUrl.contains("localhost") || stringUrl.contains("127.0.0.1"))) {
+            return false;
+        }
+        return true;
     }
     
     private String encodeAuthorization() {
