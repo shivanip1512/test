@@ -1,10 +1,12 @@
 package com.cannontech.dr.pxwhite.service.impl;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -20,7 +22,8 @@ public class PxWhiteErrorHandler implements ResponseErrorHandler {
     public void handleError(ClientHttpResponse response) throws IOException {
         HttpStatus status = response.getStatusCode();
         String statusText = response.getStatusText();
-        log.info("Received error response for request. " + status.name() + " - " + statusText);
+        log.info("Received error response for request. " + status.value() + " " + status.name() + " - " + statusText);
+        log.info("Body: " + StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()));
         throw new PxWhiteCommunicationException(response);
     }
 

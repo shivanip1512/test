@@ -1,5 +1,11 @@
 package com.cannontech.dr.pxwhite.service;
 
+import java.util.List;
+
+import org.joda.time.Instant;
+
+import com.cannontech.dr.pxwhite.model.PxWhiteDeviceData;
+import com.cannontech.dr.pxwhite.model.PxWhiteDeviceTimeSeriesData;
 import com.cannontech.dr.pxwhite.model.TokenDetails;
 import com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationException;
 
@@ -33,4 +39,17 @@ public interface PxWhiteCommunicationService {
      */
     public TokenDetails getTokenDetails(String token) throws PxWhiteCommunicationException;
     
+    /**
+     * Get the current values for a set of tags on a device. Tags are data channel identifiers in PX White.
+     */
+    public PxWhiteDeviceData getDeviceDataCurrentValues(String token, String deviceId, List<String> tags)  throws PxWhiteCommunicationException;
+    
+    /**
+     * Get time series data for a set of tags on a device. These tags are PX White data channel identifiers,
+     * combined with a "trait" marker in the form "channel.trait". The valid traits for a regular non-array channel are 
+     * "v", "avg", "min", or "max". The "v" represents the actual value captured on the timestamp. If the .trait part 
+     * is missing, the default trait "v" is implied.
+     * The query range is not allowed to exceed 6 months, and no more than 4 tags can be specified, for performance.
+     */
+    public PxWhiteDeviceTimeSeriesData getDeviceDataByDateRange(String token, String deviceId, List<String> tags, Instant startDate, Instant endDate)  throws PxWhiteCommunicationException;
 }

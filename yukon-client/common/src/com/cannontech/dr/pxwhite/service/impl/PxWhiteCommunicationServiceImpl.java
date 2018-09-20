@@ -1,6 +1,12 @@
 package com.cannontech.dr.pxwhite.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.logging.log4j.core.Logger;
+import org.apache.tomcat.util.buf.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.pxwhite.model.PxWhiteCredentials;
+import com.cannontech.dr.pxwhite.model.PxWhiteDeviceData;
+import com.cannontech.dr.pxwhite.model.PxWhiteDeviceTimeSeriesData;
 import com.cannontech.dr.pxwhite.model.PxWhiteRenewToken;
 import com.cannontech.dr.pxwhite.model.PxWhiteTokenResponse;
 import com.cannontech.dr.pxwhite.model.TokenDetails;
@@ -21,13 +29,15 @@ import com.cannontech.system.dao.GlobalSettingDao;
 public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(PxWhiteCommunicationServiceImpl.class);
     
+    // Base PX White API url //TODO: config
+    private static final String urlBase = "https://adopteriotwebapi.eaton.com/api";
+    
     // PX White API endpoints
     private static final String urlSuffixGetSecurityToken = "/v1/security/token";
     private static final String urlSuffixRefreshSecurityToken = "/v1/security/token/refresh";
     private static final String urlSuffixGetTokenDetails = "/v1/security/tokendetails";
-    
-    // Base PX White API url //TODO: config
-    private static final String urlBase = "https://adopteriotwebapi.eaton.com/api";
+    private static final String urlSuffixDeviceDataCurrentValues = "/v1/devices/{deviceId}/timeseries/latest?tags={tags}";
+    private static final String urlSuffixDeviceDataOverRange = "/v1/devices/{deviceId}/timeseries?tag_trait_list={tags}&start={start}&end={end}";
     
     // Template for making requests and receiving responses
     private final RestTemplate restTemplate;
@@ -71,6 +81,41 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
         return response.getBody();
     }
     
+    @Override
+    public PxWhiteDeviceData getDeviceDataCurrentValues(String token, String deviceId, List<String> tags) {
+        String tagsString = StringUtils.join(tags, ',');
+        log.info("Getting device data current value. DeviceId: " + deviceId + ", Tags: " + tagsString);
+        
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("deviceId", deviceId);
+        urlParams.put("tags", tagsString);
+        
+        String url = urlBase + urlSuffixDeviceDataCurrentValues;
+        log.info("Url: ", url, "Params: " + urlParams.toString());
+        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
+        ResponseEntity<PxWhiteDeviceData> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, PxWhiteDeviceData.class, urlParams);
+        return response.getBody();
+    }
+    
+    @Override
+    public PxWhiteDeviceTimeSeriesData getDeviceDataByDateRange(String token, String deviceId, List<String> tags, Instant startDate, Instant endDate) {
+        String tagsString = StringUtils.join(tags, ',');
+        log.info("Getting device data over range. DeviceId: " + deviceId + ", Tags: " + tagsString 
+                 + ", StartDate: " + startDate + ", EndDate: " + endDate);
+        
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("deviceId", deviceId);
+        urlParams.put("tags", tagsString);
+        urlParams.put("start", startDate.toString()); //Outputs as ISO 8601
+        urlParams.put("end", endDate.toString()); //Outputs as ISO 8601
+        String url = urlBase + urlSuffixDeviceDataOverRange;
+        
+        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
+        ResponseEntity<PxWhiteDeviceTimeSeriesData> response = restTemplate.exchange(url,  HttpMethod.GET, requestEntity, PxWhiteDeviceTimeSeriesData.class, urlParams);
+        
+        return response.getBody();
+    }
+    
     private HttpEntity<String> getEmptyRequestWithAuthHeaders(String token) {
         return getRequestWithAuthHeaders("", token);
     }
@@ -80,5 +125,4 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
         headers.add("Authorization", "Bearer " + token);
         return new HttpEntity<>(requestObject, headers);
     }
-    
 }
