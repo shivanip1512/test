@@ -167,22 +167,27 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         
     @Override
     public List<NestExisting> downloadExisting(Date date) {
+        log.debug("Downloading Nest existing file");
         InputStream inputStream = getFileInputStream(NestFileType.EXISTING);
-        return parseExistingCsvFile(inputStream); 
+        List<NestExisting> existing = parseExistingCsvFile(inputStream);
+        log.debug("Download of the Nest file complete");
+        return existing; 
     }
         
     private InputStream getFileInputStream(NestFileType type) {
         InputStream inputStream = null;
+        String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
+        String stringUrl = nestUrl + type.getUrl() + "/" + type.getFile();
+        log.debug("Nest Url:"+stringUrl);
         // curl https://enterprise-api.nest.com/api/v1/users/pending/latest.csv -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA=="
         try {
-            String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
-            String stringUrl = nestUrl + type.getUrl() + "/" + type.getFile();
             URLConnection connection = proxy == null ? new URL(stringUrl).openConnection() : new URL(stringUrl).openConnection(proxy);
             connection.setRequestProperty("X-Requested-With", "Curl");
             connection.setRequestProperty("Authorization", encodeAuthorization());
             inputStream = connection.getInputStream();
         } catch (NestException | IOException e) {
-            log.error(e);
+            log.error("Error connecting to "+stringUrl, e);
+            throw new NestException("Error connecting to ", e);
         }
         return inputStream;
     }

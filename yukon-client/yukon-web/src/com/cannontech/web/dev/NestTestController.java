@@ -118,8 +118,9 @@ public class NestTestController {
 
     @RequestMapping(value = "/downloadExisting", method = RequestMethod.GET)
     public String downloadExisting(FlashScope flash) {
+        log.info("Downloding existing file");
         List<NestExisting> nestExisting = nestComm.downloadExisting(new Date());
-        log.debug("Nest Existing " + nestExisting);
+        log.info("Nest Existing " + nestExisting);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.downloadExisting.success"));
         return "redirect:home";
     }

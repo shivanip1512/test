@@ -83,7 +83,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         String fileName = "Nest_existing_users_generated_" + formatter.format(new Date()) + ".csv";
         File directory = new File(SIMULATED_FILE_PATH);
         if (!directory.exists()){
-            directory.mkdir();
+            directory.mkdirs();
         }
         File file = new File(SIMULATED_FILE_PATH, fileName);
         ObjectWriter writer =

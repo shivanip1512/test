@@ -31,6 +31,7 @@ public class NestTestAPIController {
 
     @RequestMapping(value = "/v1/users/current/latest.csv")
     public void existing(HttpServletResponse response) {
+        log.info("Reading existing file");
         String filePath = NestSimulatorServiceImpl.SIMULATED_FILE_PATH;
         String defaultFileName = nestService.getFileName(YukonSimulatorSettingsKey.NEST_FILE_NAME);
         String readFile = filePath + "\\" + defaultFileName;
