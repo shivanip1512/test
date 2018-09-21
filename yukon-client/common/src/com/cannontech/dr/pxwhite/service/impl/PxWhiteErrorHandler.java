@@ -22,8 +22,8 @@ public class PxWhiteErrorHandler implements ResponseErrorHandler {
     public void handleError(ClientHttpResponse response) throws IOException {
         HttpStatus status = response.getStatusCode();
         String statusText = response.getStatusText();
-        log.info("Received error response for request. " + status.value() + " " + status.name() + " - " + statusText);
-        log.info("Body: " + StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()));
+        log.error("Received error response for request. " + status.value() + " " + status.name() + " - " + statusText);
+        log.error("Body: " + StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()));
         throw new PxWhiteCommunicationException(response);
     }
 
