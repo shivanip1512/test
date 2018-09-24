@@ -41,6 +41,7 @@
                 <table class="compact-results-table has-actions row-highlighting">
                     <thead>
                         <tr>
+                            <th class="row-icon" />
                             <tags:sort column="${name}" />
                             <tags:sort column="${type}" />
                             <tags:sort column="${status}" />
@@ -55,6 +56,12 @@
                                 <cti:msg2 var="rtuStatus" key="yukon.common.disabled"/>
                             </c:if>
                             <tr>
+                                <td>
+                                    <c:if test="${notesList.contains(rtu.paoIdentifier.paoId)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${rtu.paoIdentifier.paoId}"/>
+                                    </c:if>
+                                </td>
                                 <c:choose>
                                     <c:when test="${rtu.paoType == 'RTU_DNP'}">
                                         <cti:url var="rtuDnpUrl" value="/stars/rtu/${rtu.paoIdentifier.paoId}"/>
@@ -80,5 +87,8 @@
     </c:choose>
 
     <cti:includeScript link="/resources/js/pages/yukon.assets.rtu.js" />
-
+    
+    <div class="dn" id="js-pao-notes-popup"></div>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
+    
 </cti:standardPage>

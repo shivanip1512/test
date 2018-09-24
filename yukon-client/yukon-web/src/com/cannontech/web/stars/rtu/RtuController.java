@@ -37,6 +37,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.rtu.model.RtuPointDetail;
@@ -75,6 +76,7 @@ public class RtuController {
     @Autowired private RtuService rtuService;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private RtuDnpValidator validator;
+    @Autowired private PaoNotesService paoNotesService;
 
     private static final String baseKey = "yukon.web.modules.operator.rtuDetail.";
 
@@ -140,6 +142,11 @@ public class RtuController {
             columns.add(col);
             model.addAttribute(column.name(), col);
         }
+        
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(itemList.stream()
+                                                                             .map(gateway -> gateway.getPaoIdentifier().getPaoId())
+                                                                             .collect(Collectors.toList()));
+        model.addAttribute("notesList", notesList);
 
         return "/rtu/list.jsp";
     }
