@@ -1,6 +1,7 @@
 package com.cannontech.web.dev;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.dr.nest.model.NestExisting;
+import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSyncServiceImpl;
@@ -35,6 +38,7 @@ public class NestTestController {
     private static final Logger log = YukonLogManager.getLogger(NestTestController.class); 
     
     @Autowired NestSimulatorService nestService;
+    @Autowired NestCommunicationService nestComm;
     @Autowired NestSyncServiceImpl nestSync; 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
@@ -106,8 +110,18 @@ public class NestTestController {
     }
     
     @RequestMapping(value = "/syncYukonAndNest", method = RequestMethod.GET)
-    public String sync() {
+    public String sync(FlashScope flash) {
         nestSync.sync();
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.sync.success"));
+        return "redirect:home";
+    }
+
+    @RequestMapping(value = "/downloadExisting", method = RequestMethod.GET)
+    public String downloadExisting(FlashScope flash) {
+        log.info("Downloding existing file");
+        List<NestExisting> nestExisting = nestComm.downloadExisting(new Date());
+        log.info("Nest Existing " + nestExisting);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.downloadExisting.success"));
         return "redirect:home";
     }
 }

@@ -177,7 +177,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         try {
             String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
             String stringUrl = nestUrl + type.getUrl() + "/" + type.getFile();
-            URLConnection connection = proxy == null ? new URL(stringUrl).openConnection() : new URL(stringUrl).openConnection(proxy);
+            URLConnection connection =
+                    useProxy(stringUrl) ? new URL(stringUrl).openConnection(proxy) : new URL(stringUrl).openConnection();
             connection.setRequestProperty("X-Requested-With", "Curl");
             connection.setRequestProperty("Authorization", encodeAuthorization());
             inputStream = connection.getInputStream();
@@ -185,6 +186,15 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             log.error(e);
         }
         return inputStream;
+    }
+    
+    private boolean useProxy(String stringUrl) {
+        if (proxy == null) {
+            return false;
+        } else if ((stringUrl.contains("localhost") || stringUrl.contains("127.0.0.1"))) {
+            return false;
+        }
+        return true;
     }
     
     private String encodeAuthorization() {

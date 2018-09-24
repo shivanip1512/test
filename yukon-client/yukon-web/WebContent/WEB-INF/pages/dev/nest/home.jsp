@@ -10,7 +10,7 @@
         <tags:sectionContainer title="Set Existing File For Nest" helpText="${helpTextForExistingFile}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".useNestFile.fileName">
-                    <input id="fileName" name="fileName" type="text" maxlength="50" size="50" value = "${defaultFileName}">
+                    <input id="fileName" name="fileName" type="text" maxlength="100" size="50" value = "${defaultFileName}">
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         
@@ -59,14 +59,23 @@
     </form>
     
     <!-- Sync Yukon with Nest -->
+    <cti:msg2 key=".sync.helpText" var="helpText"/>
+    <tags:sectionContainer title="Sync Yukon and Nest" helpText="${helpText}">
     <cti:url var="syncYukonAndNest" value="syncYukonAndNest" />
-    <form id="syncYukonAndNest" action="${syncYukonAndNest}" method="GET">
-    <tags:sectionContainer title="Sync Yukon and Nest">
+    <form id="syncYukonAndNestForm" action="${syncYukonAndNest}" method="GET">
        <div class="column nogutter">
            <div class="action-area">
                 <button id="sync" type="submit" classes="js-blocker">Sync</button>
             </div>
        </div>
+    </form>
+    <cti:url var="downloadExisting" value="downloadExisting" />
+    <form id="downloadExistingForm" action="${downloadExisting}" method="GET">
+       <div class="column nogutter">
+           <div class="action-area">
+                <button id="download" type="submit" classes="js-blocker">Download Existing File</button>
+            </div>
+       </div>
+    </form>
     </tags:sectionContainer>
-    </form> 
 </cti:standardPage>
