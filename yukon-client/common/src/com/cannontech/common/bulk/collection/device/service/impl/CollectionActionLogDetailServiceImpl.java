@@ -1,10 +1,9 @@
 package com.cannontech.common.bulk.collection.device.service.impl;
 
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.CONFIG_NAME;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_TYPE;
-
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,10 +19,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry;
@@ -43,6 +44,8 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -56,10 +59,14 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ScheduledExecutor executor;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private CollectionActionDao collectionActionDao;
     
     private static final String header="yukon.web.modules.tools.collectionActions.log.header.";
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionLogDetailServiceImpl.class);
+    
+    private static volatile DateTime cleanupTime = null;
 
     
     /**
@@ -110,6 +117,11 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     @Override
     public void appendToLog(CollectionActionResult result, List<CollectionActionLogDetail> details) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+        // Delete old Collection Action logs. Cleanup should not be done more than once a day.
+        if (cleanupTime == null || cleanupTime.isBefore(new DateTime().minusDays(1))) {
+            cleanupTime = new DateTime();
+            deleteOldCollectionActionLogs();
+        }
         if (!hasLog(result.getCacheKey())) {
             cache.put(result.getCacheKey(), new HashSet<>());
             addHeader(accessor, result);
@@ -231,5 +243,23 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
             return true;
         }
         return false;
+    }
+
+    private void deleteOldCollectionActionLogs() {
+        int daysToKeep = globalSettingDao.getInteger(GlobalSettingType.HISTORY_CLEANUP_DAYS_TO_KEEP);
+        DateTime retentionDate = new DateTime().minusDays(daysToKeep);
+        // Get Collection Action logs which are older than retentionDate (based on HISTORY_CLEANUP_DAYS_TO_KEEP)
+        List<String> filesToDelete = collectionActionDao.getAllOldCollectionActionIds(retentionDate)
+                                                        .stream()
+                                                        .map(i -> String.valueOf(i) + ".csv")
+                                                        .collect(Collectors.toList());
+        if (filesToDelete.isEmpty()) {
+            return;
+        }
+        File currentDirectory = new File(CtiUtilities.getCollectionActionDirPath());
+        File[] files = currentDirectory.listFiles(file -> filesToDelete.contains(file.getName()));
+        for (File file : files) {
+            file.delete();
+        }
     }
 }

@@ -1,10 +1,10 @@
 package com.cannontech.common.bulk.collection.device.dao.impl;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
@@ -455,5 +455,19 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         updateSql.append("WHERE CollectionActionId").eq(cacheKey);
         updateSql.append("AND PAObjectId").eq(deviceId);
         jdbcTemplate.update(updateSql);
+    }
+    
+    @Override
+    public List<Integer> getAllOldCollectionActionIds(DateTime retentionDate) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CollectionActionId");
+        sql.append("FROM CollectionAction");
+        sql.append("WHERE StopTime").lte(retentionDate);
+        return jdbcTemplate.query(sql, new YukonRowMapper<Integer>() {
+            @Override
+            public Integer mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getInt("CollectionActionId");
+            }
+        });
     }
 }

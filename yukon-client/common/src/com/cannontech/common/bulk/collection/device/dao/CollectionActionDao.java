@@ -3,6 +3,8 @@ package com.cannontech.common.bulk.collection.device.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilteredResult;
@@ -54,4 +56,9 @@ public interface CollectionActionDao {
     Integer findCollectionActionIdFromCreId(int creId);
 
     void updateCollectionActionRequest(int cacheKey, int deviceId, CommandRequestExecutionStatus status);
+
+    /**
+     * @returns List of collectionIds which are older than retentionDate
+     */
+    List<Integer> getAllOldCollectionActionIds(DateTime retentionDate);
 }
