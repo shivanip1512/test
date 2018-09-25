@@ -8,6 +8,7 @@ import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface RtuService {
@@ -34,5 +35,8 @@ public interface RtuService {
      * This method return deleted status of RTU deletion. 
      */
     boolean deleteRtu(int id);
-
+    /**
+     * This method return RTU ID once it create a new RTU object. 
+     */
+    Integer copyRtu(RtuDnp newRtu);
 }

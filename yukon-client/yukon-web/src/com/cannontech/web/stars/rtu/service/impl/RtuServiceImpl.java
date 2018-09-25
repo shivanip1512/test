@@ -13,6 +13,8 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.rtu.model.RtuDnp;
+import com.cannontech.common.rtu.model.RtuPointDetail;
 import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -20,6 +22,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -122,4 +125,31 @@ public class RtuServiceImpl implements RtuService{
             return false;
         }
     }
+
+    @Override
+    public Integer copyRtu(RtuDnp rtuDnp) {
+        String newName = rtuDnp.getName();
+        Integer slaveAddress = rtuDnp.getDeviceAddress().getSlaveAddress();
+        boolean copyPoints = rtuDnp.isCopyPoints();
+        Integer oldRtuId = rtuDnp.getId();
+        rtuDnp = rtuDnpService.getRtuDnp(oldRtuId);
+        rtuDnp.setName(newName);
+        rtuDnp.getDeviceAddress().setSlaveAddress(slaveAddress);
+        rtuDnp.setId(null);
+        int newPaoId = rtuDnpService.save(rtuDnp);
+        // Copy Points check : start
+        if (copyPoints) {
+            List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(oldRtuId);
+            if (rtuPointDetails != null && rtuPointDetails.size() > 0) {
+                for (RtuPointDetail pointDetail : rtuPointDetails) {
+                    boolean disabled = "Y".equalsIgnoreCase(pointDetail.getServiceFlag()) ? true : false;
+                    PointUtil.createPoint(
+                        pointDetail.getPaoPointIdentifier().getPointIdentifier().getPointType().getPointTypeId(),
+                        pointDetail.getPointName(), newPaoId, disabled);
+                }
+            }
+        }
+        return newPaoId;
+    }
+
 }

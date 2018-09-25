@@ -102,6 +102,18 @@ yukon.assets.rtu = (function() {
                 yukon.ui.blockPage();
                 $('#delete-rtu-form').submit();
             });
+            $(document).on("yukon:rtu:copy", function () {
+                yukon.ui.blockPage();
+                $('#rtu-copy-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        window.location.href=yukon.url('/stars/rtu/' + data.pointId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#copy-rtu-popup').html(xhr.responseText);
+                        yukon.ui.initContent('#copy-rtu-popup');
+                        yukon.ui.unblockPage();}
+                });
+            });
             // Initiablize the data-url for that table that displays all the RTUs.
             $('#rtu-list-container').data('url', yukon.url('/stars/rtu-list?' + $('#filter-rtu-form').serialize()));
             

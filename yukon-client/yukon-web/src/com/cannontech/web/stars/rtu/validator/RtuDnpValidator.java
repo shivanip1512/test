@@ -56,8 +56,9 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
                     boolean nameAvailable = paoDao.isNameAvailable(rtuDnp.getName(), rtuDnp.getPaoType());
 
                     if (!nameAvailable) {
-                        if (!idSpecified) {
+                        if (!idSpecified || rtuDnp.isCopyFlag()) {
                             // For create, we must have an available name
+                        	//For Copy, We have used flag as idSpecified flag will be true
                             errors.rejectValue("name", "yukon.web.error.nameConflict");
                         } else {
                             // For edit, we can use our own existing name
@@ -73,6 +74,13 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
     }
 
     private void validateCommPort(RtuDnp rtuDnp, Errors errors) {
+    	
+    	 DeviceAddress deviceAddress = rtuDnp.getDeviceAddress();
+    	 
+    	 if (!errors.hasFieldErrors("deviceAddress.slaveAddress")) {
+             YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(), 0, 65535,
+                 true);
+         }
 
         if (rtuDnp.getDeviceDirectCommSettings() == null) {
             return;
@@ -81,18 +89,11 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
         Integer portId = rtuDnp.getDeviceDirectCommSettings().getPortID();
         YukonValidationUtils.checkRange(errors, "deviceDirectCommSettings.portID", portId, 0, Integer.MAX_VALUE, true);
 
-        DeviceAddress deviceAddress = rtuDnp.getDeviceAddress();
-
         YukonValidationUtils.checkRange(errors, "deviceAddress.postCommWait", deviceAddress.getPostCommWait(), 0, 99999,
             true);
         if(!errors.hasFieldErrors("deviceAddress.masterAddress")) {
             YukonValidationUtils.checkRange(errors, "deviceAddress.masterAddress", deviceAddress.getMasterAddress(), 0,
                 65535, true);
-        }
-
-        if (!errors.hasFieldErrors("deviceAddress.slaveAddress")) {
-            YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(), 0, 65535,
-                true);
         }
 
         if (!errors.hasFieldErrors("deviceAddress.masterAddress") && !errors.hasFieldErrors("deviceAddress.slaveAddress")) {
