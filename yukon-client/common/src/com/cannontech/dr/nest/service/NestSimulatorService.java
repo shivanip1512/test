@@ -20,10 +20,9 @@ public interface NestSimulatorService {
      *        numbers under WINTER_RHR otherwise uses SUMMER_RHR
      * @param user - user is needed to get the EC for which to get the X number of users to generate the rows
      * @param returns file name of the file created
-     * @throws Exception
      */
     String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram,
-            LiteYukonUser user) throws Exception;
+            LiteYukonUser user);
     
     /**
      * Save fileName in database.

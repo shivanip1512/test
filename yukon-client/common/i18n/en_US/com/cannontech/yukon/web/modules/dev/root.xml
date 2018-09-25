@@ -387,7 +387,6 @@
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.defaultFile">Set as default file</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.generateFile">Generate File</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.groupSizeError">Group Name should be more than 1 less than 3</entry>
-    <entry key="yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationError">Error in file generation. Check logs</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationSuccessful">File generated successfully</entry>
     <entry key="yukon.web.modules.dev.nest.nestFileGenerator.rowsThermostatError">Rows and No of Thermostat cannot be blank</entry>
     

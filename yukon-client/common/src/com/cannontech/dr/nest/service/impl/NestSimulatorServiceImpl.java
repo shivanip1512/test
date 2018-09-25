@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestFileType;
+import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
@@ -36,13 +37,13 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private AccountService accountService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-
+    
     public static final String SIMULATED_FILE_PATH = CtiUtilities.getNestDirPath() + System.getProperty("file.separator") + "Simulator";
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm";
+    public String fileGenerated = "Generated";
 
     @Override
-    public String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram, LiteYukonUser user)
-            throws Exception {
+    public String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram, LiteYukonUser user){
 
         List<CustomerAccount> accounts = customerAccountDao.getAll().stream()
                 .filter(account -> account.getAccountNumber() != null && !account.getAccountNumber().equals("(none)"))
@@ -78,22 +79,16 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         }
     }
 
-    private String writeToAFile(List<NestExisting> existing) throws IOException {
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
-        String fileName = "Nest_existing_users_generated_" + formatter.format(new Date()) + ".csv";
-        File directory = new File(SIMULATED_FILE_PATH);
-        if (!directory.exists()){
-            directory.mkdirs();
-        }
-        File file = new File(SIMULATED_FILE_PATH, fileName);
+    private String writeToAFile(List<NestExisting> existing) {
+        File file = NestCommunicationService.createFile(SIMULATED_FILE_PATH, fileGenerated);
         ObjectWriter writer =
             new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
         try {
             writer.writeValues(file).writeAll(existing);
         } catch (IOException e) {
-            throw e;
+            new NestException("Error writing to a file", e);
         }
-        return fileName;
+        return file.getName();
     }
 
     /**
@@ -102,12 +97,12 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     private void addStaticNestInfo(List<NestExisting> existing, List<String> groupNames) {
         existing.add(new NestExisting("***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***",
             "***", "***", "***", "***", "***", "***", "***", "***", "***"));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
-            getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED"));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
-            getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED"));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-            getGroupName(groupNames, 2), "", "OTHER"));
+        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
+            getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED", ""));
+        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
+            getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED", ""));
+        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+            getGroupName(groupNames, 2), "", "OTHER", ""));
     }
 
     /**

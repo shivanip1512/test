@@ -1,7 +1,6 @@
 package com.cannontech.web.dev;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -89,17 +88,9 @@ public class NestTestController {
             return "redirect:home";
         }
         
-        String generatedFileName;
-        try {
-            generatedFileName = nestService.generateExistingFile(groupNames, settings.getNoOfRows(),
+        String generatedFileName = nestService.generateExistingFile(groupNames, settings.getNoOfRows(),
                 settings.getNoOfThermostats(), settings.isWinterProgram(), userContext.getYukonUser());
-        } catch (Exception e) {
-            log.error("Error generating nest file " + e);
-            flash.setError(
-                new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationError"));
-            return "redirect:home";
-        }
-
+    
         if (settings.isDefaultFile()) {
             nestService.saveFileName(generatedFileName);
         }
@@ -111,7 +102,7 @@ public class NestTestController {
     
     @RequestMapping(value = "/syncYukonAndNest", method = RequestMethod.GET)
     public String sync(FlashScope flash) {
-        nestSync.sync();
+        nestSync.sync(true);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.sync.success"));
         return "redirect:home";
     }
@@ -119,7 +110,7 @@ public class NestTestController {
     @RequestMapping(value = "/downloadExisting", method = RequestMethod.GET)
     public String downloadExisting(FlashScope flash) {
         log.info("Downloding existing file");
-        List<NestExisting> nestExisting = nestComm.downloadExisting(new Date());
+        List<NestExisting> nestExisting = nestComm.downloadExisting();
         log.info("Nest Existing " + nestExisting);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.downloadExisting.success"));
         return "redirect:home";

@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +58,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     private Proxy proxy;
     private HttpHost host;
     private GlobalSettingDao settingDao;
+    public static final String DEBUG_FILE_PATH = CtiUtilities.getNestDirPath() + System.getProperty("file.separator") + "Debug";
+    public String fileDebug = "Existing";
          
     @Autowired
     public NestCommunicationServiceImpl(GlobalSettingDao settingDao) {
@@ -166,7 +167,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     }
         
     @Override
-    public List<NestExisting> downloadExisting(Date date) {
+    public List<NestExisting> downloadExisting() {
         log.debug("Downloading Nest existing file");
         InputStream inputStream = getFileInputStream(NestFileType.EXISTING);
         List<NestExisting> existing = parseExistingCsvFile(inputStream);
@@ -212,22 +213,15 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
     }
     
-    private File getDebugFile(NestFileType type, Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd_hh-mm-ss");
-        return new File(CtiUtilities.getNestDirPath(),
-            type.toString() + "_EXISTING_" + formatter.format(date) + ".csv");
-    }
-    
     private File writeExistingFile(List<NestExisting> existing, Date date) {
         ObjectWriter writer =
             new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
-        File file = getDebugFile(NestFileType.EXISTING, date);
+        File file =  NestCommunicationService.createFile(DEBUG_FILE_PATH, fileDebug);
         try {
             writer.writeValues(file).writeAll(existing);
             return file;
         } catch (IOException e) {
-            log.error(e);
-            return null;
+            throw new NestException("Unable to craete a file "+ file.getName(), e);
         }
     }
 
@@ -240,7 +234,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
                     new CsvMapper().readerFor(NestExisting.class).with(schema).readValues(inputStream);
                 existing.addAll(it.readAll());
             } catch (IOException e) {
-                log.error(e);
+                throw new NestException("Unable to parse exising file ", e);
             }
         }
         log.debug(existing);
@@ -280,5 +274,5 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
                 file.delete();
             }
         }
-    }    
+    }
 }
