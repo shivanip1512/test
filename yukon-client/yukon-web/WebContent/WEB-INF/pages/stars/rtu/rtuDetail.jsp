@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="operator" page="rtuDetail.${mode}">
 
@@ -34,6 +35,16 @@
                     </cti:url>
                     <cm:dropdownOption key="yukon.web.components.button.otherActions.label" href="${url}" icon="icon-cog-go"/>
                 </cti:displayForPageEditModes>
+                <li class="divider"></li>
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" 
+                                    id="delete-option" data-ok-event="yukon:rtu:delete"/>
+                <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${rtu.name}" />
+                <cti:url var="deleteUrl" value="/stars/rtu/delete" />
+                <form:form id="delete-rtu-form" action="${deleteUrl}" method="delete" commandName="rtu">
+                   <tags:hidden path="id"/>
+                   <tags:hidden path="name"/>
+                   <cti:csrfToken/>
+                </form:form>
             </div>
         </cti:displayForPageEditModes>
     </cti:checkRolesAndProperties>

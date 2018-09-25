@@ -6,13 +6,16 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.lite.LitePoint;
@@ -30,6 +33,9 @@ public class RtuServiceImpl implements RtuService{
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private RtuDnpService rtuDnpService;
+    @Autowired private DeviceDao deviceDao;
+    
+    private static final Logger log = YukonLogManager.getLogger(RtuServiceImpl.class);
     
     @Override
     public List<MessageSourceResolvable> generateDuplicatePointsErrorMessages(int paoId, PointIdentifier pointIdentifier, HttpServletRequest request) {
@@ -104,5 +110,16 @@ public class RtuServiceImpl implements RtuService{
                                                                     .filter(rtu -> rtuTypes.contains(rtu.getPaoType()))
                                                                     .collect(Collectors.toList());
         return filteredRtus;
+    }
+
+    @Override
+    public boolean deleteRtu(int id) {
+        try {
+            deviceDao.removeDevice(id);
+            return true;
+        } catch (Exception e) {
+            log.error("Unable to delete RTU with id " + id, e);
+            return false;
+        }
     }
 }

@@ -172,7 +172,29 @@ public class RtuController {
         setDeviceScanRate(rtu);
         return setupModel(rtu, model);
     }
-
+    
+    /**
+     * RTU Detail - Delete functionality.
+     * @param rtuDnp : RtuDnp Object
+     * @param model : ModelMap Object
+     * @param flash : FlashScope Object
+     */
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    @RequestMapping(value = "rtu/delete", method = RequestMethod.DELETE)
+    public String delete(@ModelAttribute("rtu") RtuDnp rtuDnp, ModelMap model, FlashScope flash) {
+        boolean success = rtuService.deleteRtu(rtuDnp.getId());
+        if (success) {
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", rtuDnp.getName()));
+            return "redirect:/stars/rtu-list";
+        } else {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.failure"));
+            model.addAttribute("mode", PageEditMode.VIEW);
+            RtuDnp rtu = rtuDnpService.getRtuDnp(rtuDnp.getId());
+            getPointsForModel(rtu.getId(), model);
+            setDeviceScanRate(rtu);
+            return setupModel(rtu, model);
+        }
+    }
     @RequestMapping(value = "rtu/create", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String create(ModelMap model) {

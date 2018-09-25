@@ -98,7 +98,10 @@ yukon.assets.rtu = (function() {
                     window.location.href = yukon.url('/tools/redirectToCommander');
                 });
             });
-            
+            $(document).on("yukon:rtu:delete", function () {
+                yukon.ui.blockPage();
+                $('#delete-rtu-form').submit();
+            });
             // Initiablize the data-url for that table that displays all the RTUs.
             $('#rtu-list-container').data('url', yukon.url('/stars/rtu-list?' + $('#filter-rtu-form').serialize()));
             
