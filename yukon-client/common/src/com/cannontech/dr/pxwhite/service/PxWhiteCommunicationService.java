@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import com.cannontech.dr.pxwhite.model.PxWhiteDeviceChannels;
 import com.cannontech.dr.pxwhite.model.PxWhiteDeviceData;
 import com.cannontech.dr.pxwhite.model.PxWhiteDeviceTimeSeriesData;
 import com.cannontech.dr.pxwhite.model.TokenDetails;
@@ -42,7 +43,7 @@ public interface PxWhiteCommunicationService {
     /**
      * Get the current values for a set of tags on a device. Tags are data channel identifiers in PX White.
      */
-    public PxWhiteDeviceData getDeviceDataCurrentValues(String token, String deviceId, List<String> tags)  throws PxWhiteCommunicationException;
+    public PxWhiteDeviceData getDeviceDataCurrentValues(String token, String deviceId, List<String> tags) throws PxWhiteCommunicationException;
     
     /**
      * Get time series data for a set of tags on a device. These tags are PX White data channel identifiers,
@@ -51,5 +52,10 @@ public interface PxWhiteCommunicationService {
      * is missing, the default trait "v" is implied.
      * The query range is not allowed to exceed 6 months, and no more than 4 tags can be specified, for performance.
      */
-    public PxWhiteDeviceTimeSeriesData getDeviceDataByDateRange(String token, String deviceId, List<String> tags, Instant startDate, Instant endDate)  throws PxWhiteCommunicationException;
+    public PxWhiteDeviceTimeSeriesData getDeviceDataByDateRange(String token, String deviceId, List<String> tags, Instant startDate, Instant endDate) throws PxWhiteCommunicationException;
+    
+    /**
+     * Get data channel information for a device.
+     */
+    public PxWhiteDeviceChannels getChannels(String token, String deviceId) throws PxWhiteCommunicationException;
 }

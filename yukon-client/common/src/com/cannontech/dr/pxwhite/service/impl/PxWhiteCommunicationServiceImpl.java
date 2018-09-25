@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.pxwhite.model.PxWhiteCredentials;
+import com.cannontech.dr.pxwhite.model.PxWhiteDeviceChannels;
 import com.cannontech.dr.pxwhite.model.PxWhiteDeviceData;
 import com.cannontech.dr.pxwhite.model.PxWhiteDeviceTimeSeriesData;
 import com.cannontech.dr.pxwhite.model.PxWhiteRenewToken;
@@ -38,6 +39,7 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
     private static final String urlSuffixGetTokenDetails = "/v1/security/tokendetails";
     private static final String urlSuffixDeviceDataCurrentValues = "/v1/devices/{deviceId}/timeseries/latest?tags={tags}";
     private static final String urlSuffixDeviceDataOverRange = "/v1/devices/{deviceId}/timeseries?tag_trait_list={tags}&start={start}&end={end}";
+    private static final String urlSuffixDeviceChannels = "/v1/devices/{deviceId}/channels";
     
     // Template for making requests and receiving responses
     private final RestTemplate restTemplate;
@@ -111,7 +113,21 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
         String url = urlBase + urlSuffixDeviceDataOverRange;
         
         HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
-        ResponseEntity<PxWhiteDeviceTimeSeriesData> response = restTemplate.exchange(url,  HttpMethod.GET, requestEntity, PxWhiteDeviceTimeSeriesData.class, urlParams);
+        ResponseEntity<PxWhiteDeviceTimeSeriesData> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, PxWhiteDeviceTimeSeriesData.class, urlParams);
+        
+        return response.getBody();
+    }
+    
+    @Override
+    public PxWhiteDeviceChannels getChannels(String token, String deviceId) {
+        log.info("Getting device channels. DeviceId: " + deviceId);
+        
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("deviceId", deviceId);
+        String url = urlBase + urlSuffixDeviceChannels;
+        
+        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
+        ResponseEntity<PxWhiteDeviceChannels> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, PxWhiteDeviceChannels.class, urlParams);
         
         return response.getBody();
     }
