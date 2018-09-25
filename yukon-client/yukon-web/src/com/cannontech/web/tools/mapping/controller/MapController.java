@@ -31,8 +31,6 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.inventory.Hardware;
-import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -68,8 +66,6 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
@@ -101,8 +97,6 @@ public class MapController {
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private RfnDeviceMetadataService metadataService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private InventoryDao inventoryDao;
-    @Autowired private HardwareUiService hardwareUiService;
     @Autowired private PaoDao paoDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private DateFormattingService dateFormattingService;
@@ -205,13 +199,6 @@ public class MapController {
                 model.addAttribute("errorMsg", e.getMessage());
             } catch (NotFoundException e) {
                 log.error("Failed to find RFN Device for " + id, e);           
-            }
-        }
-        if (type.isRfLcr()) {
-            InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(id);
-            Hardware hardware = hardwareUiService.getHardware(inventory.getInventoryId());
-            if (StringUtils.isNotBlank(hardware.getSerialNumber())) {
-                model.addAttribute("serialNumber", hardware.getSerialNumber());
             }
         }
 

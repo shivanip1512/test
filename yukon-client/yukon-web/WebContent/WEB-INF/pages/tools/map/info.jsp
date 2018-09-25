@@ -34,9 +34,6 @@
     <c:if test="${!empty sensorSN}">
         <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(sensorSN)}</tags:nameValue2>
     </c:if>
-    <c:if test="${!empty serialNumber}">
-        <tags:nameValue2 nameKey=".serialNbr">${fn:escapeXml(serialNumber)}</tags:nameValue2>
-    </c:if>
     <c:if test="${!empty primaryGateway}">
         <tags:nameValue2 nameKey=".primaryGateway"><cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl></tags:nameValue2>
     </c:if>
