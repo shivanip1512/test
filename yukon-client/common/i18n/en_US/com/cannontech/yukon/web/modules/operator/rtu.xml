@@ -86,6 +86,5 @@
     <entry key="yukon.web.modules.operator.rtuDetail.copy.success">Copy of RTU was successfully created.</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.copy">Copy RTU</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.copy.copyPoints">Copy Points</entry>
-    <entry key="yukon.web.modules.operator.rtuDetail.address">Address</entry>
     
 </properties>

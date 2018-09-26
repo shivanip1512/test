@@ -106,12 +106,13 @@ yukon.assets.rtu = (function() {
                 yukon.ui.blockPage();
                 $('#rtu-copy-form').ajaxSubmit({
                     success: function (data, status, xhr, $form) {
-                        window.location.href=yukon.url('/stars/rtu/' + data.pointId);
+                        window.location.href=yukon.url('/stars/rtu/' + data.paoId);
                     },
                     error: function (xhr, status, error, $form) {
                         $('#copy-rtu-popup').html(xhr.responseText);
                         yukon.ui.initContent('#copy-rtu-popup');
-                        yukon.ui.unblockPage();}
+                        yukon.ui.unblockPage();
+                    }
                 });
             });
             // Initiablize the data-url for that table that displays all the RTUs.

@@ -66,6 +66,7 @@ import com.cannontech.web.deviceConfiguration.enumeration.DnpTimeOffset.Offsets;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.rtu.service.RtuService;
+import com.cannontech.web.stars.rtu.validator.RtuDnpValidationUtil;
 import com.cannontech.web.stars.rtu.validator.RtuDnpValidator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -84,6 +85,7 @@ public class RtuController {
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private RtuDnpValidator validator;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private RtuDnpValidationUtil rtuDnpValidationUtil;
 
     private static final String baseKey = "yukon.web.modules.operator.rtuDetail.";
 
@@ -199,23 +201,16 @@ public class RtuController {
             return setupModel(rtu, model);
         }
     }
+
     /**
      * RTU Detail - Copy functionality.
-     * @param newRtu : RtuDnp
-     * @param result : BindingResult
-     * @param model: ModelMap
-     * @param flash : FlashScope
-     * @param response : HttpServletResponse
-     * @throws JsonGenerationException
-     * @throws JsonMappingException
-     * @throws IOException
      */
     @RequestMapping(value = "rtu/copy", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String copy(@ModelAttribute("rtu") RtuDnp newRtu, BindingResult result, ModelMap model, FlashScope flash,
             HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
-        newRtu.setCopyFlag(true);
-        validator.validate(newRtu, result);
+        rtuDnpValidationUtil.validateName(newRtu, result, true);
+        rtuDnpValidationUtil.validateSlaveAddress(newRtu, result);
         if (result.hasErrors()) {
             model.addAttribute("rtu", newRtu);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -223,7 +218,7 @@ public class RtuController {
         }
         Integer pointId = rtuService.copyRtu(newRtu);
         Map<String, String> json = new HashMap<>();
-        json.put("pointId", pointId.toString());
+        json.put("paoId", pointId.toString());
         response.setContentType("application/json");
         JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success"));
@@ -232,30 +227,26 @@ public class RtuController {
 
     /**
      * RTU Detail - Copy Popup functionality.
-     * 
-     * @param flash : FlashScope
-     * @param id : Selected RTU ID
-     * @param model : ModelMap Object
-     * @param userContext : YukonUserContext
      */
-    @RequestMapping(value = "rtu/{id}/render-rtu", method = RequestMethod.GET)
+    @RequestMapping(value = "rtu/{rtuId}/render-copy-rtu", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String renderRtuPopup(FlashScope flash, @PathVariable int id, ModelMap model, YukonUserContext userContext) {
+    public String renderCopyRtuPopup(@PathVariable int rtuId, ModelMap model, YukonUserContext userContext) {
         RtuDnp rtuDnp = null;
         if (model.containsAttribute("rtu")) {
             rtuDnp = (RtuDnp) model.get("rtu");
         } else {
-            rtuDnp = rtuDnpService.getRtuDnp(id);
-            List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(id);
+            rtuDnp = rtuDnpService.getRtuDnp(rtuId);
+            List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(rtuId);
             if (rtuPointDetails != null && rtuPointDetails.size() > 0) {
-                rtuDnp.setPointsAvailable(true);
+                rtuDnp.setCopyPointFlag(true);
             }
             MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
-            rtuDnp.setName(messageSourceAccessor.getMessage("yukon.web.billing.formatNameCopy", rtuDnp.getName()));
+            rtuDnp.setName(messageSourceAccessor.getMessage("yukon.common.copyof", rtuDnp.getName()));
             model.addAttribute("rtu", rtuDnp);
         }
         return "rtu/copyRtuPopup.jsp";
     }
+
     @RequestMapping(value = "rtu/create", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String create(ModelMap model) {

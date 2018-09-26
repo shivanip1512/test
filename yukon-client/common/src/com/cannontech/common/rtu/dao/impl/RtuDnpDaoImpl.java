@@ -32,7 +32,6 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
 
             rtuPointDetail.setPointName(rs.getString("PointName"));
             rtuPointDetail.setDeviceName(rs.getString("PAOName"));
-            rtuPointDetail.setServiceFlag(rs.getString("ServiceFlag"));
 
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectId", "Type");
             PointIdentifier pointIdentifier = rs.getPointIdentifier("PointType", "PointOffset");
@@ -72,7 +71,7 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
         if (sortBy == null) {
             sql.append("SELECT COUNT(*)");
         } else {
-            sql.append("SELECT PointId, PointType, PointName, PointOffset, P.ServiceFlag, P.PAObjectID, pao.Type, pao.PAOName");
+            sql.append("SELECT PointId, PointType, PointName, PointOffset, P.PAObjectID, pao.Type, pao.PAOName");
         }
         sql.append("FROM Point P");
         sql.append("  JOIN YukonPaobject pao ON pao.PaobjectId = p.PaobjectId");

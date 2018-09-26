@@ -36,7 +36,7 @@ public interface RtuService {
      */
     boolean deleteRtu(int id);
     /**
-     * This method return RTU ID once it create a new RTU object. 
+     * This method copies the RTU and returns the pao object id of the copied RTU. 
      */
     Integer copyRtu(RtuDnp newRtu);
 }

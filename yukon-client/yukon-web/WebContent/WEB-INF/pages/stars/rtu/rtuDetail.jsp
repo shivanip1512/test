@@ -50,7 +50,7 @@
             </div>
             <!-- Copy RTU dialog -->
             <cti:msg2 var="copyRtuPopUpTitle" key="yukon.web.modules.operator.rtuDetail.copy"/>
-            <cti:url var="renderCopyRtuUrl" value="/stars/rtu/${rtu.id}/render-rtu"/>
+            <cti:url var="renderCopyRtuUrl" value="/stars/rtu/${rtu.id}/render-copy-rtu"/>
             <cti:msg2 var="copyText" key="components.button.copy.label"/>
             <div class="dn" id="copy-rtu-popup" data-title="${copyRtuPopUpTitle}" data-dialog data-ok-text="${copyText}" 
                  data-event="yukon:rtu:copy" data-url="${renderCopyRtuUrl}"></div>

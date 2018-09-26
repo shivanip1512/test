@@ -30,9 +30,7 @@ public class RtuDnp implements YukonPao {
     private Integer dnpConfigId;
     private String ipAddress = CtiUtilities.STRING_NONE;
     private String port = CtiUtilities.STRING_NONE;
-    private boolean isPointsAvailable;
-    private boolean copyPoints;
-    private boolean copyFlag;
+    private boolean copyPointFlag;
   
     public Integer getId() {
         return id;
@@ -174,27 +172,12 @@ public class RtuDnp implements YukonPao {
         this.port = port;
     }
 
-	public boolean isPointsAvailable() {
-		return isPointsAvailable;
-	}
+    public boolean isCopyPointFlag() {
+        return copyPointFlag;
+    }
 
-	public void setPointsAvailable(boolean isPointsAvailable) {
-		this.isPointsAvailable = isPointsAvailable;
-	}
+    public void setCopyPointFlag(boolean copyPointFlag) {
+        this.copyPointFlag = copyPointFlag;
+    }
 
-	public boolean isCopyPoints() {
-		return copyPoints;
-	}
-
-	public void setCopyPoints(boolean copyPoints) {
-		this.copyPoints = copyPoints;
-	}
-
-	public boolean isCopyFlag() {
-		return copyFlag;
-	}
-
-	public void setCopyFlag(boolean copyFlag) {
-		this.copyFlag = copyFlag;
-	}
 }

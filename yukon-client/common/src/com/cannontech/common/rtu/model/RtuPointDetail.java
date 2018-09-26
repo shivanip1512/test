@@ -8,7 +8,6 @@ public class RtuPointDetail {
     private String pointName;
     private String deviceName;
     private PaoPointIdentifier paoPointIdentifier;
-    private String serviceFlag;
 
     private String format = "SHORT";
 
@@ -52,15 +51,7 @@ public class RtuPointDetail {
         this.paoPointIdentifier = paoPointIdentifier;
     }
 
-    public String getServiceFlag() {
-		return serviceFlag;
-	}
-
-	public void setServiceFlag(String serviceFlag) {
-		this.serviceFlag = serviceFlag;
-	}
-
-	@Override
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

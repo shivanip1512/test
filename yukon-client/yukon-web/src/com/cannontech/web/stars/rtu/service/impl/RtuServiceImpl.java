@@ -13,8 +13,8 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.rtu.model.RtuDnp;
-import com.cannontech.common.rtu.model.RtuPointDetail;
 import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -22,7 +22,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -37,6 +37,7 @@ public class RtuServiceImpl implements RtuService{
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private RtuDnpService rtuDnpService;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoCreationHelper paoCreationHelper;
     
     private static final Logger log = YukonLogManager.getLogger(RtuServiceImpl.class);
     
@@ -130,7 +131,7 @@ public class RtuServiceImpl implements RtuService{
     public Integer copyRtu(RtuDnp rtuDnp) {
         String newName = rtuDnp.getName();
         Integer slaveAddress = rtuDnp.getDeviceAddress().getSlaveAddress();
-        boolean copyPoints = rtuDnp.isCopyPoints();
+        boolean copyPointFlag = rtuDnp.isCopyPointFlag();
         Integer oldRtuId = rtuDnp.getId();
         rtuDnp = rtuDnpService.getRtuDnp(oldRtuId);
         rtuDnp.setName(newName);
@@ -138,16 +139,9 @@ public class RtuServiceImpl implements RtuService{
         rtuDnp.setId(null);
         int newPaoId = rtuDnpService.save(rtuDnp);
         // Copy Points check : start
-        if (copyPoints) {
-            List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(oldRtuId);
-            if (rtuPointDetails != null && rtuPointDetails.size() > 0) {
-                for (RtuPointDetail pointDetail : rtuPointDetails) {
-                    boolean disabled = "Y".equalsIgnoreCase(pointDetail.getServiceFlag()) ? true : false;
-                    PointUtil.createPoint(
-                        pointDetail.getPaoPointIdentifier().getPointIdentifier().getPointType().getPointTypeId(),
-                        pointDetail.getPointName(), newPaoId, disabled);
-                }
-            }
+        if (copyPointFlag) {
+            List<PointBase> points = pointDao.getPointsForPao(oldRtuId);
+            paoCreationHelper.applyPoints(newPaoId, points);
         }
         return newPaoId;
     }
