@@ -182,9 +182,6 @@ public class RtuController {
     
     /**
      * RTU Detail - Delete functionality.
-     * @param rtuDnp : RtuDnp Object
-     * @param model : ModelMap Object
-     * @param flash : FlashScope Object
      */
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     @RequestMapping(value = "rtu/delete", method = RequestMethod.DELETE)

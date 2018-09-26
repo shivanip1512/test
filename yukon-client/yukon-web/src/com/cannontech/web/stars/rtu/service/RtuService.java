@@ -32,7 +32,7 @@ public interface RtuService {
      */
     List<LiteYukonPAObject> getRtusByType(List<PaoType> rtuTypes);
     /**
-     * This method return deleted status of RTU deletion. 
+     * This method delete RTU and returns status of deletion. 
      */
     boolean deleteRtu(int id);
     /**

@@ -42,7 +42,7 @@
                                     id="delete-option" data-ok-event="yukon:rtu:delete"/>
                 <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${rtu.name}" />
                 <cti:url var="deleteUrl" value="/stars/rtu/delete" />
-                <form:form id="delete-rtu-form" action="${deleteUrl}" method="delete" commandName="rtu">
+                <form:form id="delete-rtu-form" action="${deleteUrl}" method="delete" modelAttribute="rtu">
                    <tags:hidden path="id"/>
                    <tags:hidden path="name"/>
                    <cti:csrfToken/>
