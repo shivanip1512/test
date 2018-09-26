@@ -88,6 +88,25 @@ AND Name = 'WarningType';
 INSERT INTO DBUpdates VALUES ('YUK-18744', '7.2.0', GETDATE());
 /* @end YUK-18744 */
 
+/* @start YUK-18870 */
+CREATE TABLE LMNestLoadShapingGear (
+    GearId               NUMERIC              NOT NULL,
+    PreparationOption    VARCHAR(20)          NOT NULL,
+    PeakOption           VARCHAR(20)          NOT NULL,
+    PostPeakOption       VARCHAR(20)          NOT NULL,
+    CONSTRAINT PK_LMNestLoadShapingGear PRIMARY KEY (GearId)
+);
+GO
+
+ALTER TABLE LMNestLoadShapingGear
+    ADD CONSTRAINT FK_NLSGear_LMProgramDirectGear FOREIGN KEY (GearId)
+        REFERENCES LMProgramDirectGear (GearID)
+            ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-18870', '7.2.0', GETDATE());
+/* @start YUK-18870 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/22/2018 2:54:24 PM                         */
+/* Created on:     9/26/2018 2:44:19 PM                         */
 /*==============================================================*/
 
 
@@ -7069,6 +7069,18 @@ create table LMMacsScheduleCustomerList (
 go
 
 /*==============================================================*/
+/* Table: LMNestLoadShapingGear                                 */
+/*==============================================================*/
+create table LMNestLoadShapingGear (
+   GearId               numeric              not null,
+   PreparationOption    varchar(20)          not null,
+   PeakOption           varchar(20)          not null,
+   PostPeakOption       varchar(20)          not null,
+   constraint PK_LMNestLoadShapingGear primary key (GearId)
+)
+go
+
+/*==============================================================*/
 /* Table: LMPROGRAM                                             */
 /*==============================================================*/
 create table LMPROGRAM (
@@ -13991,6 +14003,12 @@ go
 alter table LMMacsScheduleCustomerList
    add constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
       references CICustomerBase (CustomerID)
+go
+
+alter table LMNestLoadShapingGear
+   add constraint FK_NLSGear_LMProgramDirectGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+         on delete cascade
 go
 
 alter table LMPROGRAM
