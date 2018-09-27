@@ -458,10 +458,11 @@ yukon.tools.map = (function() {
                     }
                 } else {
                     var target = ev.originalEvent.target;
-                    //check if user clicked on the cog or the error hide-reveal
+                    //check if user clicked on the cog, the error hide-reveal, or notes icon
                     var cog = $(target).closest('.js-cog-menu'),
-                        error = $(target).closest('.hide-reveal-container');
-                    if (cog.length === 0 && error.length === 0) {
+                        error = $(target).closest('.hide-reveal-container'),
+                        notesIcon = $(target).closest('.js-view-all-notes');
+                    if (cog.length === 0 && error.length === 0 && notesIcon.length === 0) {
                         $('#marker-info').hide();
                     }
                 }

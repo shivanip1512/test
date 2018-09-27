@@ -149,5 +149,7 @@
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
     <cti:includeScript link="/resources/js/common/yukon.mapping.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.tools.map.js"/>
-
+    <div class="dn" id="js-pao-notes-popup"></div>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
+    
 </cti:standardPage>

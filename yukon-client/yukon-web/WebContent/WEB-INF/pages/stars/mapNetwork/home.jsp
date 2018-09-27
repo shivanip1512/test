@@ -38,5 +38,7 @@
     <cti:includeScript link="/resources/js/pages/yukon.map.network.js"/>
     <cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
+    <div class="dn" id="js-pao-notes-popup"></div>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
     
 </cti:standardPage>

@@ -11,18 +11,24 @@
 <tags:nameValueContainer2 tableClass="name-collapse">
     <tags:nameValue2 nameKey=".device">
         <cti:paoDetailUrl yukonPao="${pao}" newTab="true">${fn:escapeXml(pao.name)}</cti:paoDetailUrl>
-        <cm:dropdown icon="icon-cog" triggerClasses="js-cog-menu" style="padding-left:10px;">
-            <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
-            <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
-                <cm:dropdownOption key=".viewNeighbors" classes="js-device-neighbors" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
-                <c:if test="${!pao.paoIdentifier.paoType.isRfGateway()}">
-                    <cm:dropdownOption key=".viewPrimaryRoute" classes="js-device-route" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
-                </c:if>
+        <div class="fr" style="padding-left: 10px">
+            <c:if test="${hasNotes}">
+                <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${pao.paoIdentifier.paoId}"/>
             </c:if>
-            <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
-                <cm:dropdownOption id="remove-pin" data-device-id="${pao.paoIdentifier.paoId}" key=".deleteCoordinates.delete" data-popup="#confirm-delete" showIcon="false"/>
-            </cti:checkRolesAndProperties>
-        </cm:dropdown>
+            <cm:dropdown icon="icon-cog" triggerClasses="js-cog-menu">
+                <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
+                    <cm:dropdownOption key=".viewNeighbors" classes="js-device-neighbors" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                    <c:if test="${!pao.paoIdentifier.paoType.isRfGateway()}">
+                        <cm:dropdownOption key=".viewPrimaryRoute" classes="js-device-route" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                    </c:if>
+                </c:if>
+                <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
+                    <cm:dropdownOption id="remove-pin" data-device-id="${pao.paoIdentifier.paoId}" key=".deleteCoordinates.delete" data-popup="#confirm-delete" showIcon="false"/>
+                </cti:checkRolesAndProperties>
+            </cm:dropdown>
+        </div>
     </tags:nameValue2>
     <c:if test="${showMeterNumber}">
         <tags:nameValue2 nameKey=".meterNumber">${fn:escapeXml(pao.meter.meterNumber)}</tags:nameValue2>
@@ -74,5 +80,4 @@
     
     <i:inline key=".deleteCoordinates" arguments="${pao.name}"/>
 </div>
-
 </cti:msgScope>

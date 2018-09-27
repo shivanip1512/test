@@ -41,6 +41,7 @@ import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.PaoLocationDetails;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -100,6 +101,7 @@ public class MapController {
     @Autowired private PaoDao paoDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private PaoNotesService paoNotesService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -212,6 +214,8 @@ public class MapController {
             }
         }
         model.addAttribute("attributes", supported);
+        
+        model.addAttribute("hasNotes", paoNotesService.hasNotes(id));
         
         return "map/info.jsp";
     }
