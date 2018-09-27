@@ -19,7 +19,36 @@ ALTER TABLE LMNestLoadShapingGear
 GO
 
 INSERT INTO DBUpdates VALUES ('YUK-18870', '7.1.2', GETDATE());
-/* @start YUK-18870 */
+/* @end YUK-18870 */
+
+/* @start YUK-18868 */
+CREATE TABLE NestSync (
+   SyncId               NUMERIC             NOT NULL,
+   SyncStartTime        DATETIME            NOT NULL,
+   SyncStopTime         DATETIME            NULL,
+   CONSTRAINT PK_NestSync PRIMARY KEY (SyncId)
+);
+
+CREATE TABLE NestSyncDetail (
+    SyncDetailId        NUMERIC             NOT NULL,
+    SyncId              NUMERIC             NOT NULL,
+    SyncType            VARCHAR(60)         NOT NULL,
+    SyncReasonKey       VARCHAR(100)        NOT NULL,
+    SyncReasonValue     VARCHAR(100)        NULL,
+    SyncActionKey       VARCHAR(100)        NOT NULL,
+    SyncActionValue     VARCHAR(100)        NULL,
+    CONSTRAINT PK_NestSyncDetail PRIMARY KEY (SyncDetailId)
+);
+GO
+
+ALTER TABLE NestSyncDetail
+    ADD CONSTRAINT FK_NestSync_NestSyncDetail FOREIGN KEY (SyncId)
+        REFERENCES NestSync (SyncId)
+            ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-18868', '7.2.0', GETDATE());
+/* @end YUK-18868 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

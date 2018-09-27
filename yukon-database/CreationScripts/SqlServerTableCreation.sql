@@ -7549,6 +7549,32 @@ SubstationName ASC
 go
 
 /*==============================================================*/
+/* Table: NestSync                                              */
+/*==============================================================*/
+create table NestSync (
+   SyncId               numeric              not null,
+   SyncStartTime        datetime             not null,
+   SyncStopTime         datetime             null,
+   constraint PK_NestSync primary key (SyncId)
+)
+go
+
+/*==============================================================*/
+/* Table: NestSyncDetail                                        */
+/*==============================================================*/
+create table NestSyncDetail (
+   SyncDetailId         numeric              not null,
+   SyncId               numeric              not null,
+   SyncType             varchar(60)          not null,
+   SyncReasonKey        varchar(100)         not null,
+   SyncReasonValue      varchar(100)         null,
+   SyncActionKey        varchar(100)         not null,
+   SyncActionValue      varchar(100)         null,
+   constraint PK_NestSyncDetail primary key (SyncDetailId)
+)
+go
+
+/*==============================================================*/
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination (
@@ -14212,6 +14238,12 @@ go
 alter table MspLMInterfaceMapping
    add constraint FK_MspLMInterMap_YukonPAObj foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
+go
+
+alter table NestSyncDetail
+   add constraint FK_NestSync_NestSyncDetail foreign key (SyncId)
+      references NestSync (SyncId)
          on delete cascade
 go
 
