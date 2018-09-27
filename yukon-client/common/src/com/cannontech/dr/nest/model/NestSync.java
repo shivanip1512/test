@@ -6,7 +6,7 @@ import org.joda.time.Instant;
 
 public class NestSync {
     private int id;
-    private Instant startTime;
+    private Instant startTime = new Instant();
     private Instant stopTime;
     private List<NestSyncDetail> details;
     

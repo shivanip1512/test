@@ -8,7 +8,6 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
@@ -40,6 +39,7 @@ import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestFileType;
+import com.cannontech.dr.nest.model.NestUploadInfo;
 import com.cannontech.dr.nest.model.SchemaViolationResponse;
 import com.cannontech.dr.nest.model.StandardEvent;
 import com.cannontech.dr.nest.service.NestCommunicationService;
@@ -58,7 +58,6 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     private Proxy proxy;
     private HttpHost host;
     private GlobalSettingDao settingDao;
-    public static final String DEBUG_FILE_PATH = CtiUtilities.getNestDirPath() + System.getProperty("file.separator") + "Debug";
     public String fileDebug = "Existing";
          
     @Autowired
@@ -90,7 +89,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     public NestEventId createStandardEvent(StandardEvent event) {
         log.debug("Sending request to create standard event");
         String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + standard;
-        log.debug("Request url:"+requestUrl);
+        log.debug("Request url {}", requestUrl);
         String response = getNestResponse(requestUrl, event);
         
         return getNestEventId(response);
@@ -100,7 +99,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     public NestEventId createCriticalEvent(CriticalEvent event) {
         log.debug("Sending request to create critical event");
         String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + critical;
-        log.debug("Request url:"+requestUrl);
+        log.debug("Request url {}", requestUrl);
         String response = getNestResponse(requestUrl, event);
         
         return getNestEventId(response);
@@ -108,9 +107,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     
     @Override
     public boolean cancelEvent(String nestEventId) {
-        log.debug("Canceling event " + nestEventId);
+        log.debug("Canceling event {}", nestEventId);
         String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + control + nestEventId;
-        log.debug("Request url:" + requestUrl);
+        log.debug("Request url {}", requestUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", encodeAuthorization());
@@ -184,7 +183,6 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         try {
             URLConnection connection =
                 useProxy(stringUrl) ? new URL(stringUrl).openConnection(proxy) : new URL(stringUrl).openConnection();
-            connection.setRequestProperty("X-Requested-With", "Curl");
             connection.setRequestProperty("Authorization", encodeAuthorization());
             inputStream = connection.getInputStream();
         } catch (NestException | IOException e) {
@@ -213,18 +211,6 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
     }
     
-    private File writeExistingFile(List<NestExisting> existing, Date date) {
-        ObjectWriter writer =
-            new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
-        File file =  NestCommunicationService.createFile(DEBUG_FILE_PATH, fileDebug);
-        try {
-            writer.writeValues(file).writeAll(existing);
-            return file;
-        } catch (IOException e) {
-            throw new NestException("Unable to craete a file "+ file.getName(), e);
-        }
-    }
-
     private List<NestExisting> parseExistingCsvFile(InputStream inputStream) {
         List<NestExisting> existing = new ArrayList<>();
         if (inputStream != null) {
@@ -240,12 +226,20 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         log.debug(existing);
         return existing;
     }
-
+    
+    /**
+     * Example of error response from Nest if group doesn't exist.
+     * {"num_group_changes":0,"num_dissolved":0,"errors":[{"row_number":2,"header":["REF","YEAR","MONTH","DAY","NAME","EMAIL","SERVICE_ADDRESS","SERVICE_CITY","SERVICE_STATE","SERVICE_POSTAL_CODE","ACCOUNT_NUMBER","CONTRACT_APPROVED","PROGRAMS","WINTER_RHR","SUMMER_RHR","ASSIGN_GROUP","GROUP","DISSOLVE","DISSOLVE_REASON","DISSOLVE_NOTES"],"fields":["a5a1305e-79d2-4a98-9fc9-f6112a39f9b2","2018","8","21","Marina Feldman","******","ATRIA Corporate Center1","Plymouth","MN","55441","1","2018-08-20 11:32:06","SUMMER_RHR","","09AA01AC35170N2N","Y","A","","",""],"errors":["invalid value for GROUP: 'A'"]}]}
+     * @return 
+     */
     @Override
-    public void uploadExisting(List<NestExisting> existing, Date date) {
-        File file = null;
+    public NestUploadInfo uploadExisting(List<NestExisting> existing) {
+        log.debug("Uploading file {}", existing);
+        File uploadFile = null;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpPost httppost = new HttpPost(NestFileType.EXISTING.getUrl());
+            String requestUrl =
+                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestFileType.EXISTING.getUrl();
+            HttpPost httppost = new HttpPost(requestUrl);
             httppost.addHeader("content-type", "text/csv");
             httppost.addHeader("Accept", "application/json");
             httppost.setHeader("Authorization", encodeAuthorization());
@@ -253,26 +247,32 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
                 RequestConfig requestConfig = RequestConfig.custom().setProxy(host).build();
                 httppost.setConfig(requestConfig);
             }
-            // File file = new File(CtiUtilities.getNestDirPath(), "EXISTING.csv");
-            file = writeExistingFile(existing, date);
-            FileEntity entity = new FileEntity(file);
-            log.debug(EntityUtils.toString(entity));
-            httppost.setEntity(entity);
-            log.debug("executing request " + httppost.getRequestLine() + httppost.getConfig());
+
+            uploadFile = NestCommunicationService.createFile(CtiUtilities.getNestDirPath(), "upload");
+            ObjectWriter writer =
+                new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
+            writer.writeValues(uploadFile).writeAll(existing).close();
+            httppost.setEntity(new FileEntity(uploadFile));
+
+            log.debug(EntityUtils.toString(httppost.getEntity()));
+            log.debug("executing request {} {}", httppost.getRequestLine(), httppost.getConfig());
             HttpResponse response = httpclient.execute(httppost);
             org.apache.http.HttpEntity resEntity = response.getEntity();
             log.debug(response.getStatusLine());
             if (resEntity != null) {
                 String str = EntityUtils.toString(resEntity);
                 log.debug(str);
+                NestUploadInfo info = JsonUtils.fromJson(str, NestUploadInfo.class);
+                log.debug(info);
+                return info;
             }
-        } catch (NestException | IOException e) {
-            log.error(e);
+        } catch (IOException e) {
+            throw new NestException("Error uploading existing file to Nest", e);
         } finally {
-            if(log.isDebugEnabled() && file != null) {
-                //id debug is not enabled delete the file we sent to Nest
-                file.delete();
+            if (uploadFile != null) {
+                uploadFile.delete();
             }
         }
+        return null;
     }
 }

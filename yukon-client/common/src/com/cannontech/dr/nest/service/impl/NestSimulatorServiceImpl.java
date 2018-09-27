@@ -84,7 +84,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         ObjectWriter writer =
             new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
         try {
-            writer.writeValues(file).writeAll(existing);
+            writer.writeValues(file).writeAll(existing).close();
         } catch (IOException e) {
             new NestException("Error writing to a file", e);
         }

@@ -11,11 +11,12 @@ import com.cannontech.dr.nest.model.CriticalEvent;
 import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
+import com.cannontech.dr.nest.model.NestUploadInfo;
 import com.cannontech.dr.nest.model.StandardEvent;
 
 public interface NestCommunicationService{
 
-    void uploadExisting(List<NestExisting> existing, Date date);
+    NestUploadInfo uploadExisting(List<NestExisting> existing);
 
     NestEventId createStandardEvent(StandardEvent event);
 

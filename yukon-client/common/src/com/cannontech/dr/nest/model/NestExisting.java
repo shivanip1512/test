@@ -107,6 +107,10 @@ public class NestExisting {
         return assignGroup;
     }
     
+    public void setAssignGroup(String assignGroup) {
+        this.assignGroup = assignGroup;
+    }
+
     @JsonProperty("GROUP")
     public String getGroup() {
         return group;
@@ -166,5 +170,17 @@ public class NestExisting {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 + System.getProperty("line.separator");
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public void setDissolve(String dissolve) {
+        this.dissolve = dissolve;
+    }
+
+    public void setDissolveReason(String dissolveReason) {
+        this.dissolveReason = dissolveReason;
     }
 }
