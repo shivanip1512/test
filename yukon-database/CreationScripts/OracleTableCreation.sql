@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/26/2018 2:45:28 PM                         */
+/* Created on:     9/27/2018 2:37:30 PM                         */
 /*==============================================================*/
 
 
@@ -7123,6 +7123,30 @@ create unique index INDX_StratName_SubName_UNQ on MspLMInterfaceMapping (
 );
 
 /*==============================================================*/
+/* Table: NestSync                                              */
+/*==============================================================*/
+create table NestSync  (
+   SyncId               NUMBER                          not null,
+   SyncStartTime        DATE                            not null,
+   SyncStopTime         DATE,
+   constraint PK_NestSync primary key (SyncId)
+);
+
+/*==============================================================*/
+/* Table: NestSyncDetail                                        */
+/*==============================================================*/
+create table NestSyncDetail  (
+   SyncDetailId         NUMBER                          not null,
+   SyncId               NUMBER                          not null,
+   SyncType             VARCHAR2(60)                    not null,
+   SyncReasonKey        VARCHAR2(100)                   not null,
+   SyncReasonValue      VARCHAR2(100),
+   SyncActionKey        VARCHAR2(100)                   not null,
+   SyncActionValue      VARCHAR2(100),
+   constraint PK_NestSyncDetail primary key (SyncDetailId)
+);
+
+/*==============================================================*/
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination  (
@@ -13087,6 +13111,11 @@ alter table MeterHardwareBase
 alter table MspLMInterfaceMapping
    add constraint FK_MspLMInterMap_YukonPAObj foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
+      on delete cascade;
+
+alter table NestSyncDetail
+   add constraint FK_NestSync_NestSyncDetail foreign key (SyncId)
+      references NestSync (SyncId)
       on delete cascade;
 
 alter table NotificationDestination
