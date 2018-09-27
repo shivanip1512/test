@@ -33,7 +33,7 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
 
     @Override
     protected void doValidation(RtuDnp rtuDnp, Errors errors) {
-        rtuDnpValidationUtil.validateName(rtuDnp, errors,false);
+        rtuDnpValidationUtil.validateName(rtuDnp, errors, false);
         validateCommPort(rtuDnp, errors);
         validateScanIntervals(rtuDnp, errors);
     }

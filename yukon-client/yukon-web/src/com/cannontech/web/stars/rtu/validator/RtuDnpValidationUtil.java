@@ -53,7 +53,7 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         DeviceAddress deviceAddress = rtuDnp.getDeviceAddress();
         if (!errors.hasFieldErrors("deviceAddress.slaveAddress")) {
             YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(), 0,
-                65535, true);
+                2147483647, true);
         }
     }
 
