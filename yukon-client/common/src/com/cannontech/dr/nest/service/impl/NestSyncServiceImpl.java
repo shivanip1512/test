@@ -35,7 +35,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     
     @Autowired private IDatabaseCache dbCache;
     private boolean syncInProgress = false;
-    private final String EMPTY_ROW = "***";
+    public static final String EMPTY_ROW = "***";
     private static final Logger log = YukonLogManager.getLogger(NestSyncServiceImpl.class);
     @Autowired private NestDao nestDao;
         
@@ -51,7 +51,6 @@ public class NestSyncServiceImpl implements NestSyncService{
         log.info("Nest sync started");
         persistedSystemValueDao.setValue(PersistedSystemValueKey.NEST_SYNC_TIME, new Instant());
         NestSync sync = new NestSync();
-        sync.setStartTime(new Instant());
         nestDao.saveSyncInfo(sync);
         List<NestExisting> existing = nestCommunicationService.downloadExisting();
         if (!existing.isEmpty()) {
@@ -81,10 +80,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     }
 
     private void processGroups(List<NestExisting> existing, int syncId) {
-        List<String> groupsInNest = existing.stream()
-                .filter(row -> !row.getGroup().equals(EMPTY_ROW) && Strings.isEmpty(row.getRef()) && Strings.isNotEmpty(row.getGroup()))
-                .map(row -> row.getGroup())
-                .collect(Collectors.toList());
+        List<String> groupsInNest = parseGroupsFromTheNestFile(existing);
         
         List<String> groupsInYukon = dbCache.getAllLMGroups().stream()
                     .filter(group -> group.getPaoType() == PaoType.LM_GROUP_NEST)
@@ -98,6 +94,15 @@ public class NestSyncServiceImpl implements NestSyncService{
         List<String> groupsOnlyInYukon = new ArrayList<>(groupsInYukon);
         groupsInNest.removeAll(groupsInNest);
         logGroupDiscrepancies(groupsOnlyInYukon, syncId);  
+    }
+    
+    private List<String> parseGroupsFromTheNestFile(List<NestExisting> existing) {
+        List<String> groupsInNest = existing.stream()
+                .filter(row -> Strings.isNotEmpty(row.getGroup()) && !row.getGroup().equals(EMPTY_ROW))
+                .map(row -> row.getGroup())
+                .distinct()
+                .collect(Collectors.toList());
+        return groupsInNest;
     }
     
     private void createGroups(List<String> groups, int syncId) {

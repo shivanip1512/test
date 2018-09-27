@@ -43,4 +43,11 @@ public class NestTestAPIController {
             log.error("Exception is reading existing file from yukon " + e);
         }
     }
+    
+    @RequestMapping(value = "/v1/users/current")
+    public void upload(HttpServletResponse response) {
+      
+        
+        log.info("Upload existing file");
+    } 
 }
