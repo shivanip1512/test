@@ -66,7 +66,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionLogDetailServiceImpl.class);
     
-    private static volatile DateTime cleanupTime = null;
+    private static volatile DateTime cleanupTime;
 
     
     /**
@@ -246,20 +246,26 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     }
 
     private void deleteOldCollectionActionLogs() {
+        log.info("Deletion of old collection action log started.");
         int daysToKeep = globalSettingDao.getInteger(GlobalSettingType.HISTORY_CLEANUP_DAYS_TO_KEEP);
         DateTime retentionDate = new DateTime().minusDays(daysToKeep);
         // Get Collection Action logs which are older than retentionDate (based on HISTORY_CLEANUP_DAYS_TO_KEEP)
         List<String> filesToDelete = collectionActionDao.getAllOldCollectionActionIds(retentionDate)
                                                         .stream()
-                                                        .map(i -> String.valueOf(i) + ".csv")
+                                                        .map(collectionId -> String.valueOf(collectionId) + ".csv")
                                                         .collect(Collectors.toList());
         if (filesToDelete.isEmpty()) {
             return;
         }
         File currentDirectory = new File(CtiUtilities.getCollectionActionDirPath());
         File[] files = currentDirectory.listFiles(file -> filesToDelete.contains(file.getName()));
+        if (files.length == 0) {
+            log.info("No collection action log file found to delete.");
+        }
         for (File file : files) {
-            file.delete();
+            if (file.delete()) {
+                log.info("Collection action log file " + file.getName() + " has deleted.");
+            }
         }
     }
 }
