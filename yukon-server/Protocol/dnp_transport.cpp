@@ -195,6 +195,11 @@ YukonError_t TransportLayer::decode( DatalinkLayer &_datalink )
             break;
         }
 
+        case Complete:
+        {
+            CTILOG_DEBUG(dout, "DNP transport state: Complete (" << _ioState << ")");
+        }
+
         default:
         {
             CTILOG_ERROR(dout, "unhandled state ("<< _ioState <<")");

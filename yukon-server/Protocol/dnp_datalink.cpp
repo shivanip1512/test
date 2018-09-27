@@ -321,6 +321,13 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                 break;
             }
 
+            case State_IO_Complete:
+            {
+                CTILOG_DEBUG(dout, "DNP datalink state: Complete (" << _io_state << ")");
+
+                break;
+            }
+
             default:
             {
                 CTILOG_ERROR(dout, "unhandled state "<< _io_state);
