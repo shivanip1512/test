@@ -355,7 +355,10 @@ $(function() { updateServiceCompanyInfo();});
            <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
-</form:form>    
-<c:if test="${hardware.deviceId > 0}">
-    <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true" deviceId="${hardware.deviceId}"/>
-</c:if>
+</form:form>
+
+<cti:displayForPageEditModes modes="VIEW">
+    <c:if test="${hardware.deviceId > 0}">
+        <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true" deviceId="${hardware.deviceId}"/>
+    </c:if>
+</cti:displayForPageEditModes>
