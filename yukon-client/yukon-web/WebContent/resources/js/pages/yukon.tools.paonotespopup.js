@@ -153,7 +153,7 @@ yukon.tools.paonotespopup = (function () {
                 
                 // If all notes were deleted for this device, hide all of the note icons for that device
                 var paoId = $(this).find('#create-popup-note-form #paoId').val();
-                if ($(this).find('tr[id^="js-popup-note-row-"]').length < 1) {
+                if (!$(this).find('tr[id^="js-popup-note-row-"]').exists()) {
                     $('.js-view-all-notes').each(function(index, noteIcon) {
                         if($(noteIcon).data('pao-id') == paoId) {
                             $(noteIcon).hide();
