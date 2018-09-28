@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
@@ -105,6 +106,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
       List<LiteYukonPAObject> paos = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION);
       List<WeatherLocation> weatherDevices = new ArrayList<>();
 
+      primaryWeatherLocation(paos);
       for (LiteYukonPAObject pao : paos) {
           WeatherLocation weatherLocation = createWeatherLocationFromPao(pao);
           if (weatherLocation != null) {
@@ -135,16 +137,18 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         String latitude = doubleFormat.format(geoCoordinate.getLatitude());
         String longitude = doubleFormat.format(geoCoordinate.getLongitude());
         int paoId = weatherPao.getPaoIdentifier().getPaoId();
+        String primaryLocation = Boolean.FALSE.toString();
 
         staticPaoInfoDao.saveValue(PaoInfo.WEATHER_LOCATION_LATITUDE, paoId, latitude);
         staticPaoInfoDao.saveValue(PaoInfo.WEATHER_LOCATION_LONGITUDE, paoId, longitude);
         staticPaoInfoDao.saveValue(PaoInfo.WEATHER_LOCATION_STATIONID, paoId, stationId);
+        staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paoId, primaryLocation);
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
         LitePoint temperaturePoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.TEMPERATURE);
         LitePoint humidityPoint = attributeService.getPointForAttribute(paoIdentifier, BuiltInAttribute.HUMIDITY);
 
         WeatherLocation weatherLocation =
-            new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, geoCoordinate);
+            new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, geoCoordinate, Boolean.parseBoolean(primaryLocation));
         return weatherLocation;
     }
 
@@ -171,6 +175,12 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         String lonStr = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_LONGITUDE, pao.getLiteID());
         String latStr = staticPaoInfoDao.getValue(PaoInfo.WEATHER_LOCATION_LATITUDE, pao.getLiteID());
 
+        String primaryLocation = null;
+        try {
+            primaryLocation = staticPaoInfoDao.getValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paoId);
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("Unable to get primary weather location for Pao with id: " + paoId);
+        }
         GeographicCoordinate coordinate = new GeographicCoordinate(Double.parseDouble(lonStr), Double.parseDouble(latStr));
 
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION);
@@ -192,11 +202,42 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         }
 
         WeatherLocation weatherLocation
-            = new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, coordinate);
+            = new WeatherLocation(paoIdentifier, temperaturePoint, humidityPoint, name, stationId, coordinate, Boolean.parseBoolean(primaryLocation));
 
         return weatherLocation;
     }
+
     
+    /**
+     * This method will be used to select existing weather location as primary.
+     * As we may have existing weather location in system so we will be making the first weather location
+     * as primary. Also in case the primary location is deleted then again the weather location created first
+     * will be made primary. 
+     */
+    private void primaryWeatherLocation(List<LiteYukonPAObject> paos) {
+        boolean primary = true;
+        boolean atleastOnePrimaryLocation = false;
+        for (LiteYukonPAObject pao : paos) {
+            int paoId = pao.getPaoIdentifier().getPaoId();
+
+            String primaryLocation = null;
+            try {
+                primaryLocation = staticPaoInfoDao.getValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paoId);
+                if ("true".equalsIgnoreCase(primaryLocation)) {
+                    atleastOnePrimaryLocation = true;
+                }
+            } catch (EmptyResultDataAccessException e) {
+                if (primaryLocation == null) {
+                    staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paoId, String.valueOf(primary));
+                    primary = false;
+                }
+            }
+        }
+        if (!atleastOnePrimaryLocation) {
+            staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paos.get(0).getPaoIdentifier().getPaoId(), String.valueOf(true));
+        }
+    }
+
     @Override
     public void updatePointsForNewWeatherLocation(WeatherLocation weatherLocation) {
         
@@ -247,5 +288,20 @@ public class WeatherDataServiceImpl implements WeatherDataService {
             }
 
         }
+    }
+
+    @Transactional
+    @Override
+    public void updatePrimaryWeatherLocation(int paoId) {
+        List<LiteYukonPAObject> paos = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION);
+        List<LiteYukonPAObject> liteYukonPAObject = paos.stream().filter(pao -> pao.getPaoIdentifier().getPaoId() != paoId)
+                                                                 .filter(pao -> "true".equalsIgnoreCase(staticPaoInfoDao
+                                                                 .getValue(PaoInfo.PRIMARY_WEATHER_LOCATION,pao.getPaoIdentifier().getPaoId())))
+                                                                 .collect(Collectors.toList());
+
+        liteYukonPAObject.stream().forEach(litePao -> staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION,
+            litePao.getPaoIdentifier().getPaoId(), String.valueOf(false)));
+
+        staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paoId, String.valueOf(true));
     }
 }

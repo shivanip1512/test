@@ -15,6 +15,11 @@ public interface WeatherDataService {
 
     void deleteWeatherLocation(int paoId);
 
+    /**
+     * Update the primary weather location.
+     */
+    void updatePrimaryWeatherLocation(int paoId);
+
     boolean isNameAvailableForWeatherLocation(String name);
 
     /**

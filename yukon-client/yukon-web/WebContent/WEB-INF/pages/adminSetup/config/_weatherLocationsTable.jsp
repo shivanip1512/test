@@ -20,6 +20,7 @@
         </div>
         <table class="compact-results-table">
             <thead>
+                <th><i:inline key=".primary"/></th>
                 <th><i:inline key=".name"/></th>
                 <th><i:inline key=".stationId"/></th>
                 <th><i:inline key=".stationDescription"/></th>
@@ -31,6 +32,12 @@
             <tbody>
                 <c:forEach var="weatherLocation" items="${weatherLocations}">
                     <tr>
+                        <td><input type="radio" name="primaryWeatherLocation" value="${weatherLocation.paoIdentifier.paoId}"
+                            <c:if test="${weatherLocation.primary == true}">
+                                checked="checked"
+                            </c:if> 
+                            </input>
+                        </td>
                         <td>${fn:escapeXml(weatherLocation.name)}</td>
                         <td>
                             ${fn:escapeXml(weatherLocation.stationId)}

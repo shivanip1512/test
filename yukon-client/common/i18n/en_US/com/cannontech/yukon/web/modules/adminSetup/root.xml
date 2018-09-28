@@ -114,6 +114,7 @@
     <entry key="yukon.web.modules.adminSetup.config.weather.loadingWeatherLocations">Loading Weather Locations</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.longitude">Longitude</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.latitude">Latitude</entry>
+    <entry key="yukon.web.modules.adminSetup.config.weather.primary">Primary</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.name">Name</entry>
 	<entry key="yukon.web.modules.adminSetup.config.weather.noWeatherLocations">No Weather Locations</entry>
 	<entry key="yukon.web.modules.adminSetup.config.weather.outdatedData">Outdated or no Data</entry>

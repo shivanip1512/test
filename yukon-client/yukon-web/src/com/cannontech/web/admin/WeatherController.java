@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -66,6 +67,12 @@ public class WeatherController {
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "success.removedWeatherLocation"));
         }
         return "redirect:weather";
+    }
+
+    @RequestMapping(value = "/config/updatePrimaryWeatherLocation", method = RequestMethod.POST)
+    public String updatePrimaryWeatherLocation(FlashScope flashScope, int paoId) {
+        weatherDataService.updatePrimaryWeatherLocation(paoId);
+        return "redirect:weatherLocationsTable";
     }
 
     @RequestMapping("/config/saveWeatherLocation")

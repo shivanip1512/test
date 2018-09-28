@@ -68,6 +68,18 @@ yukon.weather = (function() {
         });
     },
 
+    /** Update the primary weather location */
+    _updatePrimaryWeatherLocation = function() {
+        var paoId = $(this).val();
+        $.ajax({
+            type: "POST",
+            url: yukon.url('/admin/config/updatePrimaryWeatherLocation'),
+            data: {
+                paoId: paoId
+            }
+        });
+       },
+
     mod = {
         init: function () {
             if (_initialized) {
@@ -83,6 +95,8 @@ yukon.weather = (function() {
             $(document).on("submit", "#saveWeatherLocationForm", function (){return false;});
 
             _reloadWeatherStations();
+
+            $(document).on('change', '[name="primaryWeatherLocation"]', _updatePrimaryWeatherLocation);
 
             _initialized = true;
         },
