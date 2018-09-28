@@ -1,10 +1,13 @@
 package com.cannontech.web.dev;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -12,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -20,6 +24,7 @@ import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
 @Controller
 @RequestMapping("/nestApi/*")
@@ -44,10 +49,21 @@ public class NestTestAPIController {
         }
     }
     
-    @RequestMapping(value = "/v1/users/current")
-    public void upload(HttpServletResponse response) {
-      
-        
-        log.info("Upload existing file");
+    @IgnoreCsrfCheck
+    @RequestMapping(value = "/v1/users/current", method = RequestMethod.POST)
+    public void upload(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            StringBuilder stringBuilder = new StringBuilder();
+            try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(request.getInputStream()))) {
+                char[] charBuffer = new char[1024];
+                int bytesRead;  
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            }
+            log.info("Data " + stringBuilder.toString());
+        } catch (IOException e) {
+            log.error("Error in parsing " + e);
+        }
     } 
 }
