@@ -24,6 +24,7 @@ import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupGolay;
 import com.cannontech.database.data.device.lm.LMGroupHoneywell;
 import com.cannontech.database.data.device.lm.LMGroupMCT;
+import com.cannontech.database.data.device.lm.LMGroupNest;
 import com.cannontech.database.data.device.lm.LMGroupPlcExpressCom;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.device.lm.LMGroupRfnExpressCom;
@@ -371,6 +372,9 @@ public final class DeviceFactory {
             break;
         case LM_GROUP_HONEYWELL:
             returnDevice = new LMGroupHoneywell();
+            break;
+        case LM_GROUP_NEST:
+            returnDevice = new LMGroupNest();
             break;
         case LM_GROUP_VERSACOM:
             returnDevice = new LMGroupVersacom();
