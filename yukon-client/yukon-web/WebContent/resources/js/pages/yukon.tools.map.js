@@ -462,7 +462,7 @@ yukon.tools.map = (function() {
                     var cog = $(target).closest('.js-cog-menu'),
                         error = $(target).closest('.hide-reveal-container'),
                         notesIcon = $(target).closest('.js-view-all-notes');
-                    if (cog.length === 0 && error.length === 0 && notesIcon.length === 0) {
+                    if (cog.exists() && error.exists() && notesIcon.exists()) {
                         $('#marker-info').hide();
                     }
                 }
