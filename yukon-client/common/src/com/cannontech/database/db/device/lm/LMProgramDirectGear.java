@@ -212,8 +212,9 @@ public abstract class LMProgramDirectGear
 				}
 				else if(gear instanceof BeatThePeakGear){
 				    gear.retrieve();
-				}
-				else {
+                } else if (gear instanceof LMNestGear) {
+                    gear.retrieve();
+                } else {
 					gear.setGearName(name);
 					gear.setGearNumber(gearNum);
 					
