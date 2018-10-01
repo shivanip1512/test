@@ -28,7 +28,7 @@ public interface NestCommunicationService{
      * Sends standard event to Nest
      * 
      * @param event to send to Nest
-     * @return null is success otherwise error
+     * @return null if success otherwise error
      */
     NestError sendStandardEvent(StandardEvent event);
 
@@ -36,7 +36,7 @@ public interface NestCommunicationService{
      * Sends critical event to Nest
      * 
      * @param event to send to Nest
-     * @return null is success otherwise error
+     * @return null if success otherwise error
      */
     NestError sendCriticalEvent(CriticalEvent event);
 
@@ -44,7 +44,7 @@ public interface NestCommunicationService{
      * Attempts to cancel event with Nest
      * 
      * @param history contains the information needed to cancel event
-     * @return true is success
+     * @return true if success
      */
     boolean cancelEvent(NestControlHistory history);
 
@@ -55,7 +55,7 @@ public interface NestCommunicationService{
      */
     List<NestExisting> downloadExisting();
       
-    public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("MM-dd-YYYY_hh-mm-ss");
+    public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
 
     static File createFile(String path, String name) {
         String fileName = FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + name + ".csv";
