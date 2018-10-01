@@ -10,6 +10,8 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.JsonUtils;
+import com.cannontech.dr.pxwhite.model.PxWhiteErrorMessage;
 
 /**
  * Error handler for PX White REST API calls. Treats any 4xx or 5xx response as an error, and throws a
@@ -23,7 +25,17 @@ public class PxWhiteErrorHandler implements ResponseErrorHandler {
         HttpStatus status = response.getStatusCode();
         String statusText = response.getStatusText();
         log.error("Received error response for request. " + status.value() + " " + status.name() + " - " + statusText);
-        log.error("Body: " + StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()));
+        String body = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+        
+        try {
+            // Try to parse an error object from JSON in the response body.
+            PxWhiteErrorMessage error = parseErrorMessage(body);
+            throw new PxWhiteCommunicationException(response, error);
+        } catch (IOException e) {
+            // Couldn't parse the error object, log the response content so we can at least see it
+            log.debug("No error message found in response body, or message was in an unrecognized format.", e);
+            log.error("Body: " + body);
+        }
         throw new PxWhiteCommunicationException(response);
     }
 
@@ -31,6 +43,10 @@ public class PxWhiteErrorHandler implements ResponseErrorHandler {
     public boolean hasError(ClientHttpResponse response) throws IOException {
         HttpStatus status = response.getStatusCode();
         return status.is4xxClientError() || status.is5xxServerError();
+    }
+    
+    private static PxWhiteErrorMessage parseErrorMessage(String errorMessageString) throws IOException {
+        return JsonUtils.fromJson(errorMessageString, PxWhiteErrorMessage.class);
     }
     
 }

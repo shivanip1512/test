@@ -58,4 +58,9 @@ public interface PxWhiteCommunicationService {
      * Get data channel information for a device.
      */
     public PxWhiteDeviceChannels getChannels(String token, String deviceId) throws PxWhiteCommunicationException;
+    
+    /**
+     * Send a command to the specified channel on a particular device.
+     */
+    public boolean sendCommand(String token, String deviceId, String channelId, String command) throws PxWhiteCommunicationException;
 }

@@ -45,6 +45,26 @@ public interface JsonSerializers {
     public static final DateTimeFormatter HONEYWELL_WRAPPER_DATE_TIME = 
             DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZoneUTC();
     
+    public static final DateTimeFormatter PX_WHITE_ERROR_MESSAGE_DATE_TIME = 
+            DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZZ");
+    
+    class TO_DATE_PX_WHITE_ERROR extends JsonSerializer<Instant> {
+        @Override
+        public void serialize(Instant date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            String dateString = PX_WHITE_ERROR_MESSAGE_DATE_TIME.print(date);
+            jsonGenerator.writeString(dateString);
+        }
+    }
+    
+    class FROM_DATE_PX_WHITE_ERROR extends JsonDeserializer<Instant> {
+        @Override
+        public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
+                throws IOException, JsonProcessingException {
+            return PX_WHITE_ERROR_MESSAGE_DATE_TIME.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+        }
+    }
+    
     class TO_DURATION extends JsonSerializer<Duration> {
         @Override
         public void serialize(Duration duration, JsonGenerator jsonGenerator, SerializerProvider notUsed)
