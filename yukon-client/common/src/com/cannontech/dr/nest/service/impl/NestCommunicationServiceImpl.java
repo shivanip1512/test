@@ -34,7 +34,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YukonHttpProxy;
+import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.CriticalEvent;
+import com.cannontech.dr.nest.model.NestControlHistory;
+import com.cannontech.dr.nest.model.NestError;
 import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
@@ -58,7 +61,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     private Proxy proxy;
     private HttpHost host;
     private GlobalSettingDao settingDao;
-    public String fileDebug = "Existing";
+    private NestDao nestDao;
          
     @Autowired
     public NestCommunicationServiceImpl(GlobalSettingDao settingDao) {
@@ -81,34 +84,33 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     private static final String critical = control + "critical";
     private static final String standard = control + "standard";
 
-    
     /**
      * curl https://enterprise-api.nest.com/api/energy/v2/rush_hour_rewards/events/standard -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA==" -H "Content-Type: application/json" -d "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Test\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}"
      */
     @Override
-    public NestEventId createStandardEvent(StandardEvent event) {
+    public NestError sendStandardEvent(StandardEvent event) {
         log.debug("Sending request to create standard event");
         String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + standard;
         log.debug("Request url {}", requestUrl);
         String response = getNestResponse(requestUrl, event);
         
-        return getNestEventId(response);
+        return processNestReply(response, event);
     }
     
     @Override
-    public NestEventId createCriticalEvent(CriticalEvent event) {
+    public NestError sendCriticalEvent(CriticalEvent event) {
         log.debug("Sending request to create critical event");
         String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + critical;
         log.debug("Request url {}", requestUrl);
         String response = getNestResponse(requestUrl, event);
         
-        return getNestEventId(response);
+        return processNestReply(response, event);
     }
     
     @Override
-    public boolean cancelEvent(String nestEventId) {
-        log.debug("Canceling event {}", nestEventId);
-        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + control + nestEventId;
+    public boolean cancelEvent(NestControlHistory history) {
+        log.debug("Canceling event {}", history);
+        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + control + history.getKey();
         log.debug("Request url {}", requestUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -116,10 +118,12 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         
         HttpEntity<?> entity = new HttpEntity<>(headers);
         try {
+            nestDao.updateCancelRequestTime(history.getId());
             HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.DELETE, entity, String.class);
             //204 = On success
-            // Asked Nest about stop and cancel of event
             //Can't test yet as I can't start event yet
+            //I am not sure what to store as a response yet
+            nestDao.updateNestResponse(history.getId(), response.getBody());
             return true;
         } catch (HttpClientErrorException e) {
             log.error("Error canceling Nest event", e);
@@ -128,20 +132,29 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         return true;
     }
     
-    private NestEventId getNestEventId(String response) {
+    private NestError processNestReply(String response, CriticalEvent event) {
         try {
             NestEventId nestId = JsonUtils.fromJson(response, NestEventId.class);
-            return nestId;
+            //This table will only have an entry if response is success
+            NestControlHistory history = new NestControlHistory();
+            history.setStartTime(event.getStart());
+            history.setStopTime(event.getStop());
+            history.setKey(nestId.getId());
+            nestDao.createControlHistory(history);
         } catch (IOException e) {
             try {
                 SchemaViolationResponse error = JsonUtils.fromJson(response, SchemaViolationResponse.class);
-                log.debug("error="+ error);
-                //build a user friendly error and log as event log?
-                return null;
+                log.error("Reply from Nest contains an error="+ error);
+                if(!error.getViolations().isEmpty()) {
+                    //schema violation
+                    throw new NestException("Reply from Nest contains an error. Error:" + error);
+                }
+                return error.getError();
             } catch (IOException e1) {
                 throw new NestException("Error getting valid reponse from Nest. Reponse:" + response);
             }
         }
+        return null;
     }
     
     private String getNestResponse(String url, CriticalEvent event) {
