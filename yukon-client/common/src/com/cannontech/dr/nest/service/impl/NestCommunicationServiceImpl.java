@@ -256,7 +256,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             httppost.addHeader("content-type", "text/csv");
             httppost.addHeader("Accept", "application/json");
             httppost.setHeader("Authorization", encodeAuthorization());
-            if (host != null) {
+            if (host != null && useProxy(requestUrl)) {
                 RequestConfig requestConfig = RequestConfig.custom().setProxy(host).build();
                 httppost.setConfig(requestConfig);
             }
