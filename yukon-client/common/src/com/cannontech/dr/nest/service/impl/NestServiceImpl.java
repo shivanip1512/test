@@ -1,19 +1,23 @@
 package com.cannontech.dr.nest.service.impl;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.DissolveReason;
 import com.cannontech.dr.nest.model.LoadShaping;
 import com.cannontech.dr.nest.model.LoadShapingPeak;
 import com.cannontech.dr.nest.model.LoadShapingPost;
 import com.cannontech.dr.nest.model.LoadShapingPreparation;
-import com.cannontech.dr.nest.model.NestEventId;
+import com.cannontech.dr.nest.model.NestControlHistory;
+import com.cannontech.dr.nest.model.NestError;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestUploadInfo;
@@ -22,46 +26,66 @@ import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.nest.service.NestSyncService;
 import com.cannontech.dr.service.ControlHistoryService;
-import com.google.common.collect.Lists;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Sets;
 
 public class NestServiceImpl implements NestService {
 
     @Autowired private NestCommunicationService nestCommunicationService;
     @Autowired private NestSyncService nestSyncService;
+    @Autowired private NestDao nestDao;
     @Autowired private ControlHistoryService controlHistoryService;
+    @Autowired private ProgramDao programDao;
+    @Autowired private IDatabaseCache dbCache;
     
-    private ConcurrentHashMap<String, String> groupsToEventIds = new ConcurrentHashMap<>();
     private static final Logger log = YukonLogManager.getLogger(NestServiceImpl.class);
 
     @Override
-    public void control() {
-
-        //yukon.notif.stream.dr.NestCriticalCyclingControlMessage and yukon.notif.stream.dr.NestStandardCyclingControlMessage
+    public NestError control(int programId, int gearId, Instant startTime, Instant stopTime) {
         
-        List<String> groups = Lists.newArrayList("Test");
-
-        // CriticalEvent criticalEvent = new CriticalEvent("2018-09-14T00:00:00.000Z", "PT30M", groups);
-        // String eventId = nestCommunicationService.createCriticalEvent(criticalEvent);
-        // groupsToEventIds.put("Group1", eventId);
-
+        List<String> groupNames = getNestGroupNames(programId);        
+        /**
+         * CREATE TABLE LMNestLoadShapingGear (
+    GearId               NUMERIC              NOT NULL,
+    PreparationOption    VARCHAR(20)          NOT NULL,
+    PeakOption           VARCHAR(20)          NOT NULL,
+    PostPeakOption       VARCHAR(20)          NOT NULL,
+    CONSTRAINT PK_LMNestLoadShapingGear PRIMARY KEY (GearId)
+);*/
         LoadShaping loadShaping =
             new LoadShaping(LoadShapingPreparation.STANDARD, LoadShapingPeak.STANDARD, LoadShapingPost.STANDARD);
-        StandardEvent standardEvent = new StandardEvent("2018-09-14T00:00:00.000Z", "PT30M", groups, loadShaping);
-        NestEventId eventId = nestCommunicationService.createStandardEvent(standardEvent);
+        StandardEvent standardEvent = new StandardEvent("2018-09-14T00:00:00.000Z", "PT30M",  groupNames, loadShaping);
+        standardEvent.setStart(startTime);
+        standardEvent.setStop(stopTime);
         
-    
-        
-        if(eventId == null) {
-            //got an error - log?
-            //don't send message controlHistoryService?
-           // controlHistoryService.sendControlHistoryShedMessage(groupId, startTime, controlType, associationId, controlDurationSeconds, reductionRatio);sendControlHistoryRestoreMessage(groupId, time);
-        } else{
-            groupsToEventIds.put("Test", eventId.getId());
-            //send message controlHistoryService?
-        }
+        return nestCommunicationService.sendStandardEvent(standardEvent);
     }
     
-    
+    @Override
+    public void stopControl(int programId) {
+        List<String> groupNames = getNestGroupNames(programId);
+        groupNames.forEach(group -> {
+            NestControlHistory history = nestDao.getRecentHistoryForGroup(group);
+            if (history == null) {
+                log.error("Nest Control History for programId {} group {} is not found. Unable to cancel control.",
+                    programId, group);
+            } else {
+                // NEST - add event log
+                boolean success = nestCommunicationService.cancelEvent(history);
+            }
+        });
+    }
+
+    private List<String> getNestGroupNames(int programId){
+        List<Integer> groupId = programDao.getDistinctGroupIdsByProgramIds(Sets.newHashSet(programId));
+        
+        return dbCache.getAllLMGroups().stream()
+            .filter(g -> g.getPaoType() == PaoType.LM_GROUP_NEST && groupId.contains(g.getLiteID()))
+            .map(g -> g.getPaoName())
+            .collect(Collectors.toList());   
+    }
+     
     @Override
     public NestUploadInfo dissolveAccountWithNest(String accountNumber) {
         //NEST - add event log
@@ -101,6 +125,6 @@ public class NestServiceImpl implements NestService {
         return existing.stream()
                 .filter(row -> Strings.isNotBlank(row.getAccountNumber()) && row.getAccountNumber().equals(accountNumber))
                 .findFirst()
-                .orElseThrow(() -> new NestException("Account " + accountNumber + " is not fund in the Nest file"));
+                .orElseThrow(() -> new NestException("Account " + accountNumber + " is not found in the Nest file"));
     }
 }

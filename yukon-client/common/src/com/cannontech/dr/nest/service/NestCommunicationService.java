@@ -8,7 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.dr.nest.model.CriticalEvent;
-import com.cannontech.dr.nest.model.NestEventId;
+import com.cannontech.dr.nest.model.NestControlHistory;
+import com.cannontech.dr.nest.model.NestError;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestUploadInfo;
@@ -16,14 +17,42 @@ import com.cannontech.dr.nest.model.StandardEvent;
 
 public interface NestCommunicationService{
 
+    /**
+     * Uploads existing file
+     * 
+     * @param existing - file rows
+     */
     NestUploadInfo uploadExisting(List<NestExisting> existing);
 
-    NestEventId createStandardEvent(StandardEvent event);
+    /**
+     * Sends standard event to Nest
+     * 
+     * @param event to send to Nest
+     * @return null is success otherwise error
+     */
+    NestError sendStandardEvent(StandardEvent event);
 
-    NestEventId createCriticalEvent(CriticalEvent event);
+    /**
+     * Sends critical event to Nest
+     * 
+     * @param event to send to Nest
+     * @return null is success otherwise error
+     */
+    NestError sendCriticalEvent(CriticalEvent event);
 
-    boolean cancelEvent(String nestEventId);
+    /**
+     * Attempts to cancel event with Nest
+     * 
+     * @param history contains the information needed to cancel event
+     * @return true is success
+     */
+    boolean cancelEvent(NestControlHistory history);
 
+    /**
+     * Downloads Nest existing file
+     * 
+     * @return file data
+     */
     List<NestExisting> downloadExisting();
       
     public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("MM-dd-YYYY_hh-mm-ss");
