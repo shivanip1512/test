@@ -173,6 +173,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         
+        HardwareType hardwareType = getHardwareType(dto, energyCompany);
+        if (!isOperationAllowedForDevice(hardwareType)) {
+            throw new StarsClientRequestException(
+                "This operation is not supported for the device type " + hardwareType);
+        }
+        
         // Get Inventory, if exists on account
         LiteInventoryBase  liteInv = getInventoryOnAccount(dto, energyCompany);
         // Inventory already exists on the account
@@ -181,7 +187,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
                 
         // add device to account
-        liteInv = internalAddDeviceToAccount(dto, energyCompany, user);
+        liteInv = internalAddDeviceToAccount(dto, energyCompany, user, hardwareType);
 
         return liteInv;
     }
@@ -254,7 +260,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
     private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto,
                                                          EnergyCompany energyCompany, 
-                                                         LiteYukonUser user) {
+                                                         LiteYukonUser user,
+                                                         HardwareType ht) {
 
         boolean isNewDevice = false;
         LiteInventoryBase lib = getInventory(dto, energyCompany);
@@ -288,8 +295,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         // call service to add device on the customer account
         lib = starsInventoryBaseService.addDeviceToAccount(lib, lsec, user, true);
         if (isNewDevice) {
-            YukonListEntry deviceType = getDeviceType(dto, energyCompany);
-            HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
             if (ht.isRf()) {
                 try {
                     // add rf device
@@ -401,7 +406,11 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
-
+        HardwareType hardwareType = getHardwareType(dto, energyCompany);
+        if (!isOperationAllowedForDevice(hardwareType)) {
+            throw new StarsClientRequestException(
+                "This operation is not supported for the device type " + hardwareType);
+        }
         LiteInventoryBase lib = null;
         
         // Get Inventory if exists on account
@@ -419,7 +428,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
         } else {
             // add device to account
-            lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator);
+            lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator, hardwareType);
         }
         return lib;
     };
@@ -431,6 +440,11 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
+        HardwareType hardwareType = getHardwareType(dto, energyCompany);
+        if (!isOperationAllowedForDevice(hardwareType)) {
+            throw new StarsClientRequestException(
+                "This operation is not supported for the device type " + hardwareType);
+        }
         
         // Get Inventory if exists on account
         liteInv = getInventoryOnAccount(dto, energyCompany);
@@ -449,5 +463,19 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         // Remove device from the account
         starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
+    }
+    // Get the hardware type for the device and energy company.
+    private HardwareType getHardwareType(LmDeviceDto device, EnergyCompany energyCompany ) {
+        YukonListEntry deviceType = getDeviceType(device, energyCompany);
+        HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
+        return ht;
+    }
+    
+    // Check if the hardwareType supports the operation
+    private boolean isOperationAllowedForDevice(HardwareType ht) {
+        if (ht.isNest()) {
+            return false;
+        }
+        return true;
     }
 }

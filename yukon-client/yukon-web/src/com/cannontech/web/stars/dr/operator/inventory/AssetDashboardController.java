@@ -147,7 +147,8 @@ public class AssetDashboardController {
                 @Override
                 public boolean apply(YukonListEntry input) {
                     HardwareType type = HardwareType.valueOf(input.getYukonDefID());
-                    return type != HardwareType.YUKON_METER && type != HardwareType.NON_YUKON_METER;
+                    return type != HardwareType.YUKON_METER && type != HardwareType.NON_YUKON_METER
+                        && type != HardwareType.NEST_THERMOSTAT;
                 }
             });
             model.addAttribute("addHardwareTypes", addHardwareTypes.iterator());

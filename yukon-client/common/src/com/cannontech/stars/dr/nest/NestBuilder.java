@@ -11,7 +11,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.model.CompleteNest;
+import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
@@ -35,9 +35,8 @@ public class NestBuilder implements HardwareTypeExtensionProvider {
     public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
 
         try {
-            CompleteNest nestPao = new CompleteNest();
+            CompleteDevice nestPao = new CompleteDevice();
             nestPao.setPaoName(serialNumber);
-            nestPao.setSerialNumber(serialNumber);
 
             paoPersistenceService.createPaoWithDefaultPoints(nestPao, hardwareTypeToPaoType.get(hardwareType));
 
@@ -72,8 +71,7 @@ public class NestBuilder implements HardwareTypeExtensionProvider {
 
     public void updateDevice(int inventoryId, String serialNumber, int deviceId, YukonPao pao) {
 
-        CompleteNest nestThermostat = paoPersistenceService.retreivePao(pao, CompleteNest.class);
-        nestThermostat.setSerialNumber(serialNumber);
+        CompleteDevice nestThermostat = paoPersistenceService.retreivePao(pao, CompleteDevice.class);
 
         paoPersistenceService.updatePao(nestThermostat);
         inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, deviceId);
