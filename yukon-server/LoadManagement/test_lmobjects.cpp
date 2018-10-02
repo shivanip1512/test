@@ -14,6 +14,10 @@
 #include "lmgrouphoneywell.h"
 #include "honeywellCycleGear.h"
 
+#include "lmgroupnest.h"
+
+#include "lmfactory.h"
+
 extern CtiTime gInvalidCtiTime;
 
 
@@ -472,6 +476,59 @@ BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_cycle_gear)
     clone->setProgramPAOId(clone->getProgramPAOId() + 1);
 
     BOOST_CHECK(gear != *clone);
+}
+
+BOOST_AUTO_TEST_CASE( test_lmobjects_nest_group )
+{
+    typedef Cti::Test::StringRow<10>            LMGroupRow;
+    typedef Cti::Test::TestReader<LMGroupRow>   LMGroupReader;
+
+    LMGroupRow columnNames =
+    {
+        "GroupID",
+        "Category",
+        "PaoClass",
+        "PaoName",
+        "Type",
+        "Description",
+        "DisableFlag",
+        "AlarmInhibit",
+        "ControlInhibit",
+        "KwCapacity"
+    };
+
+    std::vector<LMGroupRow> resultRows
+    {
+        {
+            "1500",
+            "DEVICE",
+            "GROUP",
+            "Test Nest Group",
+            "NEST GROUP",
+            "(none)",
+            "N",
+            "N",
+            "N",
+            "2.71828"
+        }
+    };
+
+    LMGroupReader reader( columnNames, resultRows );
+
+    reader();   // advance the reader to the first (and only) result row
+
+    CtiLMGroupFactory   groupFactory;
+
+    CtiLMGroupPtr group = groupFactory.createLMGroup( reader );
+
+    // did we get a nest group from the factory?
+
+    BOOST_CHECK_EQUAL( group->getPAOId(),           1500 );
+    BOOST_CHECK_EQUAL( group->getPAOCategory(),     "DEVICE" );
+    BOOST_CHECK_EQUAL( group->getPAOClass(),        "GROUP" );
+    BOOST_CHECK_EQUAL( group->getPAOName(),         "Test Nest Group" );
+    BOOST_CHECK_EQUAL( group->getPAOType(),         TYPE_LMGROUP_NEST );
+    BOOST_CHECK_EQUAL( group->getPAOTypeString(),   "NEST GROUP" );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

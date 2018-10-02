@@ -23,6 +23,7 @@
 #include "lmgroupmacro.h"
 #include "lmgroupecobee.h"
 #include "lmgrouphoneywell.h"
+#include "lmgroupnest.h"
 
 using std::string;
 using std::endl;
@@ -68,6 +69,9 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(Cti::RowReader &rdr)
         break;
     case TYPE_LMGROUP_HONEYWELL:
         lm_group = CTIDBG_new LMGroupHoneywell(rdr);
+        break;
+    case TYPE_LMGROUP_NEST:
+        lm_group = CTIDBG_new LMGroupNest(rdr);
         break;
     case TYPE_LMGROUP_MCT:
         lm_group = CTIDBG_new CtiLMGroupMCT(rdr);
