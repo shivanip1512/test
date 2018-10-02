@@ -98,6 +98,7 @@ yukon.mapping = (function () {
             $('.js-type').text(pao.device.paoIdentifier.paoType);
             $('.js-status-display').toggleClass('dn', pao.statusDisplay === null);
             $('.js-status').text(pao.statusDisplay);
+            updateDeviceStatusClass(pao.statusDisplay);
             $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway === null);
             if (pao.primaryGatewayUrl != null) {
                 var nameSpan = $('<span />');
@@ -212,6 +213,27 @@ yukon.mapping = (function () {
         
         hideNeighborsLegend: function() {
             $('.js-legend-neighbors').hide();
+        },
+        
+        updateDeviceStatusClass: function(deviceStatus) {
+            var statusClass;
+            $('.js-status').removeClass("success");
+            $('.js-status').removeClass("error");
+            $('.js-status').removeClass("warning");
+            switch(deviceStatus) {
+                case 'Ready':
+                    statusClass = "success";
+                    break;
+                case 'Not Ready':
+                    statusClass = "error";
+                    break;
+                case 'Unknown':
+                    statusClass = "warning";
+                    break;
+                default :
+                    break;
+            }
+            $('.js-status').addClass(statusClass);
         }
 
     };

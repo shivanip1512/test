@@ -645,6 +645,7 @@ yukon.map.network = (function () {
                                     var deviceStatus = $('.js-device-status').val();
                                     if (deviceStatus) {
                                         $('.js-status').text(deviceStatus);
+                                        yukon.mapping.updateDeviceStatusClass(deviceStatus);
                                         $('.js-status-display').show();
                                     }
                                     if (nearby != null) {
