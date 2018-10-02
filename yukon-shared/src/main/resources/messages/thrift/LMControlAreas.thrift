@@ -175,6 +175,11 @@ struct LMGroupHoneywell
     1: required     LMGroupBase                     _baseMessage;
 }
 
+struct LMGroupNest
+{
+    1: required     LMGroupBase                     _baseMessage;
+}
+
 struct LMGroupEmetcon
 {
     1: required     LMGroupBase                     _baseMessage;

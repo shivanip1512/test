@@ -6,6 +6,7 @@
 #include "lmgroupdigisep.h"
 #include "lmgroupecobee.h"
 #include "lmgrouphoneywell.h"
+#include "lmgroupnest.h"
 #include "lmgroupemetcon.h"
 #include "lmgroupexpresscom.h"
 #include "lmgroupgolay.h"
@@ -33,6 +34,8 @@ MessagePtr<Thrift::LMGroupDigiSEP>::type     populateThrift ( const ::LMGroupDig
 MessagePtr<Thrift::LMGroupEcobee>::type      populateThrift ( const ::LMGroupEcobee& imsg );
 
 MessagePtr<Thrift::LMGroupHoneywell>::type   populateThrift ( const ::LMGroupHoneywell& imsg );
+
+MessagePtr<Thrift::LMGroupNest>::type        populateThrift ( const ::LMGroupNest& imsg );
 
 MessagePtr<Thrift::LMGroupEmetcon>::type     populateThrift ( const ::CtiLMGroupEmetcon& imsg );
 
