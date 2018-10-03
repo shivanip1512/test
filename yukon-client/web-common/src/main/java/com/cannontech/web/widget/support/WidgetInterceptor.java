@@ -54,16 +54,10 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
     }
 
     public ScopeHolder createScope(Object handler, Map<String, String> existingParams) {
-        Object target;
-        if(handler instanceof WidgetMultiActionController) {
-            target = ((WidgetMultiActionController) handler).getWidgetController();
-        } else {
-            target = handler;
-        }
-        
-        String className = ((HandlerMethod)target).getBean().getClass().getSimpleName();
+        String className = ((HandlerMethod) handler).getBean().getClass().getSimpleName();
         String beanName = existingParams.get("shortName");
-        ScopeHolder scope = MessageScopeHelper.MessageScope.createScope(beanName, "widgets." + beanName, "widgetClasses." + className);
+        ScopeHolder scope =
+            MessageScopeHelper.MessageScope.createScope(beanName, "widgets." + beanName, "widgetClasses." + className);
         return scope;
     }
     

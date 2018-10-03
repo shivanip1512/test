@@ -32,6 +32,5 @@
         <property name="suffix" value=".jsp"/>
     </bean>
     
-    <bean name="/test/*" class="com.cannontech.web.widget.support.WidgetTestController"/>
     <bean class="com.cannontech.web.widget.support.WebApplicationContextAwareBean" />
 </beans>

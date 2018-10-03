@@ -13,7 +13,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 import com.cannontech.web.security.csrf.CsrfTokenService;
-import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     private static final String INVALID_CSRF_TOKEN = "invalidCsrfToken";
@@ -65,13 +64,6 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
         if (isProxy(bean)) {
             return AopUtils.getTargetClass(bean);
         }
-
-        if (bean instanceof WidgetMultiActionController) {
-            WidgetMultiActionController controller = (WidgetMultiActionController) bean;
-            Object widgetController = controller.getWidgetController();
-            return widgetController.getClass();
-        }
-
         return bean.getClass();
     }
 
