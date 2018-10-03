@@ -72,7 +72,7 @@ public class PaoCreationHelper {
      * @param paoId
      * @param pointsToCreate
      */
-    public void applyPoints(int paoId, List<PointBase> pointsToCreate) {
+    private void applyPoints(int paoId, List<PointBase> pointsToCreate) {
     	MultiDBPersistent pointsToAdd = new MultiDBPersistent();
         Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
         Set<PointBase> calculatedPoints = Sets.newHashSet();

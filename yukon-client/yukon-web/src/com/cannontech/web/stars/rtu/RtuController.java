@@ -19,6 +19,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -212,6 +213,12 @@ public class RtuController {
         rtuDnpValidationUtil.validateName(newRtu, result, true);
         rtuDnpValidationUtil.validateSlaveAddress(newRtu, result);
         if (result.hasErrors()) {
+            List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(newRtu.getId());
+            if (!CollectionUtils.isEmpty(rtuPointDetails)) {
+                model.addAttribute("isPointsAvailable", true);
+            } else {
+                model.addAttribute("isPointsAvailable", false);
+            }
             model.addAttribute("rtu", newRtu);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "rtu/copyRtuPopup.jsp";
@@ -237,8 +244,11 @@ public class RtuController {
         } else {
             rtuDnp = rtuDnpService.getRtuDnp(rtuId);
             List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(rtuId);
-            if (rtuPointDetails != null && rtuPointDetails.size() > 0) {
+            if (!CollectionUtils.isEmpty(rtuPointDetails)) {
+                model.addAttribute("isPointsAvailable", true);
                 rtuDnp.setCopyPointFlag(true);
+            } else {
+                model.addAttribute("isPointsAvailable", false);
             }
             MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
             rtuDnp.setName(messageSourceAccessor.getMessage("yukon.common.copyof", rtuDnp.getName()));

@@ -138,10 +138,11 @@ public class RtuServiceImpl implements RtuService{
         rtuDnp.getDeviceAddress().setSlaveAddress(slaveAddress);
         rtuDnp.setId(null);
         int newPaoId = rtuDnpService.save(rtuDnp);
+        rtuDnp.setId(newPaoId);
         // Copy Points check : start
         if (copyPointFlag) {
             List<PointBase> points = pointDao.getPointsForPao(oldRtuId);
-            paoCreationHelper.applyPoints(newPaoId, points);
+            paoCreationHelper.applyPoints(rtuDnp, points);
         }
         return newPaoId;
     }
