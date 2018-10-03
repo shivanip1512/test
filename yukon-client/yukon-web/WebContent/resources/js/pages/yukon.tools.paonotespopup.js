@@ -151,14 +151,10 @@ yukon.tools.paonotespopup = (function () {
                     window.location.reload(true);
                 }
                 
-                // If all notes were deleted for this device, hide all of the note icons for that device
+                // If all notes were deleted for this device, hide all of the note icons for this device
                 var paoId = Number($(this).find('#paoId').val());
                 if (!$(this).find('tr[id^="js-popup-note-row-"]').exists()) {
-                    $('.js-view-all-notes').each(function(index, noteIcon) {
-                        if($(noteIcon).data('pao-id') === paoId) {
-                            $(noteIcon).remove();
-                        }
-                    });
+                    $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').remove();
                 }
             });
             
