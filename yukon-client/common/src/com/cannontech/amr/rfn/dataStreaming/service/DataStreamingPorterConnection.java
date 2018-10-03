@@ -50,6 +50,9 @@ public class DataStreamingPorterConnection {
         case CONFIGURE_DATA_STREAMING:
             command = sendCommand;
             break;
+        case REMOVE_DATA_STREAMING:
+            command = sendCommand;
+            break;
         default:
             throw new UnsupportedOperationException(action.toString());
         }
