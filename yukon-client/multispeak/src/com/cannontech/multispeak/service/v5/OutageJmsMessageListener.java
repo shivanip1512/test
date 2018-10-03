@@ -19,6 +19,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfEndDeviceState;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.ObjectRef;
@@ -47,6 +51,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
     @Autowired private NOTClient notClient;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OutageEventLogService outageEventLogService;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
     private AtomicLong atomicLong = new AtomicLong();
@@ -70,12 +75,24 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
 
     @PostConstruct
     public void initialize() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.MULTISPEAK,
+            new DatabaseChangeEventListener() {
+                @Override
+                public void eventReceived(DatabaseChangeEvent event) {
+                    loadOutageSupportedVendors();
+                }
+            });
+
         ImmutableMap.Builder<OutageActionType, EndDeviceStateKind> mapBuilder = ImmutableMap.builder();
         mapBuilder.put(OutageActionType.NoResponse, EndDeviceStateKind.NO_RESPONSE);
         mapBuilder.put(OutageActionType.Outage, EndDeviceStateKind.OUTAGED);
         mapBuilder.put(OutageActionType.Restoration, EndDeviceStateKind.STARTING_UP);
         outageMap = mapBuilder.build();
+        loadOutageSupportedVendors();
 
+    }
+
+    private void loadOutageSupportedVendors(){
         List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(true);
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {

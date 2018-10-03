@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v3.ArrayOfOutageDetectionEvent;
 import com.cannontech.msp.beans.v3.ArrayOfString;
@@ -51,6 +54,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
     @Autowired private OAClient oaClient;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OutageEventLogService outageEventLogService;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private ImmutableMap<OutageActionType, OutageEventType> outageMap = ImmutableMap.of();
     private static final Logger log = YukonLogManager.getLogger(OutageJmsMessageListener.class);
@@ -59,12 +63,23 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
 
     @PostConstruct
     public void initialize() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.MULTISPEAK,
+            new DatabaseChangeEventListener() {
+                @Override
+                public void eventReceived(DatabaseChangeEvent event) {
+                    loadOutageSupportedVendors();
+                }
+            });
+
         ImmutableMap.Builder<OutageActionType, OutageEventType> mapBuilder = ImmutableMap.builder();
         mapBuilder.put(OutageActionType.NoResponse, OutageEventType.NO_RESPONSE);
         mapBuilder.put(OutageActionType.Outage, OutageEventType.OUTAGE);
         mapBuilder.put(OutageActionType.Restoration, OutageEventType.RESTORATION);
         outageMap = mapBuilder.build();
-        
+        loadOutageSupportedVendors();
+    }
+
+    private void loadOutageSupportedVendors() {
         List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(true);
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {

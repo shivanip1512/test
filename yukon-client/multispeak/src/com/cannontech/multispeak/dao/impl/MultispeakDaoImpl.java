@@ -21,6 +21,9 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
@@ -31,6 +34,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private TransactionTemplate transactionTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private static final Map<String, MultispeakVendor> vendorCache =
         Collections.synchronizedMap(new HashMap<String, MultispeakVendor>());
@@ -250,7 +254,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                 clearMultispeakVendorCache();
             };
         });
-
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MULTISPEAK, mspVendor.getVendorID());
     }
 
     @Override
@@ -290,6 +294,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                 clearMultispeakVendorCache();
             };
         });
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MULTISPEAK, mspVendor.getVendorID());
     }
 
     @Override
@@ -310,6 +315,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                 }
             };
         });
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MULTISPEAK, vendorID);
     }
 
     @Override
