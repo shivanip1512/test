@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Data for a single device, which may contain many values for multiple channels.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxWhiteDeviceTimeSeriesData {
     private final String deviceId;

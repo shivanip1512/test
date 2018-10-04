@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Data for a single channel on a single device.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxWhiteDeviceDataResult {
     private final String tag;
@@ -15,7 +18,7 @@ public class PxWhiteDeviceDataResult {
     
     @JsonCreator
     public PxWhiteDeviceDataResult(@JsonProperty("tag") String tag,
-                                   @JsonProperty("time") Instant time,//converter
+                                   @JsonProperty("time") Instant time,
                                    @JsonProperty("value") String value,
                                    @JsonProperty("nvalue") String nValue) {
         this.tag = tag;

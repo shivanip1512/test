@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Response object for PX White token detail requests.
+ * Information about a PX White token, including expiration info, and info for the user who owns the token.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TokenDetails {

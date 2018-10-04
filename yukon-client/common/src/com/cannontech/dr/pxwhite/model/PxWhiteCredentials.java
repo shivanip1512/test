@@ -4,9 +4,9 @@ package com.cannontech.dr.pxwhite.model;
  * Credentials for authenticating with PX White.
  */
 public class PxWhiteCredentials {
-    private final String user;
+    private final String user; //typically an email address
     private final String password;
-    private final String applicationId;
+    private final String applicationId; //In the UUID form aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee (8-4-4-4-12)
     
     public PxWhiteCredentials(String user, String password, String applicationId) {
         this.user = user;

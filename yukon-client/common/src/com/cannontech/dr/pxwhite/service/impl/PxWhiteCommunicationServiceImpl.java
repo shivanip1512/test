@@ -31,7 +31,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(PxWhiteCommunicationServiceImpl.class);
     
-    // Base PX White API url //TODO: config
+    // Base PX White API url
     private static final String urlBase = "https://adopteriotwebapi.eaton.com/api";
     
     // PX White API endpoints
@@ -88,14 +88,13 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
     @Override
     public PxWhiteDeviceData getDeviceDataCurrentValues(String token, String deviceId, List<String> tags) {
         String tagsString = StringUtils.join(tags, ',');
-        log.info("Getting device data current value. DeviceId: " + deviceId + ", Tags: " + tagsString);
+        log.debug("Getting device data current value. DeviceId: " + deviceId + ", Tags: " + tagsString);
         
         Map<String, String> urlParams = new HashMap<>();
         urlParams.put("deviceId", deviceId);
         urlParams.put("tags", tagsString);
         
         String url = urlBase + urlSuffixDeviceDataCurrentValues;
-        log.info("Url: ", url, "Params: " + urlParams.toString());
         HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
         ResponseEntity<PxWhiteDeviceData> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, PxWhiteDeviceData.class, urlParams);
         return response.getBody();
@@ -104,13 +103,14 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
     @Override
     public PxWhiteDeviceTimeSeriesData getDeviceDataByDateRange(String token, String deviceId, List<String> tags, Instant startDate, Instant endDate) {
         String tagsString = StringUtils.join(tags, ',');
-        log.info("Getting device data over range. DeviceId: " + deviceId + ", Tags: " + tagsString 
+        log.debug("Getting device data over range. DeviceId: " + deviceId + ", Tags: " + tagsString 
                  + ", StartDate: " + startDate + ", EndDate: " + endDate);
         
         Map<String, String> urlParams = new HashMap<>();
         urlParams.put("deviceId", deviceId);
         urlParams.put("tags", tagsString);
         urlParams.put("start", startDate.toString()); //Outputs as ISO 8601
+        // End date is optional. This method could be modified to handle a null end date and omit this query parameter.
         urlParams.put("end", endDate.toString()); //Outputs as ISO 8601
         String url = urlBase + urlSuffixDeviceDataOverRange;
         
@@ -122,7 +122,7 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
     
     @Override
     public PxWhiteDeviceChannels getChannels(String token, String deviceId) {
-        log.info("Getting device channels. DeviceId: " + deviceId);
+        log.debug("Getting device channels. DeviceId: " + deviceId);
         
         Map<String, String> urlParams = new HashMap<>();
         urlParams.put("deviceId", deviceId);
@@ -135,12 +135,12 @@ public class PxWhiteCommunicationServiceImpl implements PxWhiteCommunicationServ
     }
     
     @Override
-    public boolean sendCommand(String token, String deviceId, String channelTag, String commandString) {
-        log.info("Sending command. DeviceId: " + deviceId + ", channel tag: " + channelTag + ", command: " + commandString);
+    public boolean sendCommand(String token, String deviceId, String tag, String commandString) {
+        log.debug("Sending command. DeviceId: " + deviceId + ", channel tag: " + tag + ", command: " + commandString);
         
         Map<String, String> urlParams = new HashMap<>();
         urlParams.put("deviceId", deviceId);
-        urlParams.put("tag", channelTag);
+        urlParams.put("tag", tag);
         String url = urlBase + urlSuffixDeviceCommand;
         
         PxWhiteDeviceCommand command = new PxWhiteDeviceCommand(commandString);

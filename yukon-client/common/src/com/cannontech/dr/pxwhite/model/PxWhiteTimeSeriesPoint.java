@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Data containing a single value and timestamp.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxWhiteTimeSeriesPoint {
     private final Instant timestamp;

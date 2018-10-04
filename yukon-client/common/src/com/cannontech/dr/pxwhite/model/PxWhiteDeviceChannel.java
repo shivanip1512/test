@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Describes a single data channel. The "tag" field is typically used to address channels. The "writable" field
+ * determines whether it is permissable to send data or commands to that channel, as well as read it.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxWhiteDeviceChannel {
     private final String tag;

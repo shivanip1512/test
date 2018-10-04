@@ -34,7 +34,7 @@ public class PxWhiteErrorHandler implements ResponseErrorHandler {
         } catch (IOException e) {
             // Couldn't parse the error object, log the response content so we can at least see it
             log.debug("No error message found in response body, or message was in an unrecognized format.", e);
-            log.error("Body: " + body);
+            log.error("Error Response Body: " + body);
         }
         throw new PxWhiteCommunicationException(response);
     }

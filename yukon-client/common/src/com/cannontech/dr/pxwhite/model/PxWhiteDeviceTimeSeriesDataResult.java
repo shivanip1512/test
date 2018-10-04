@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Data for a single channel + trait combo, which may contain many values with different timestamps.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxWhiteDeviceTimeSeriesDataResult {
     private final String tag;
