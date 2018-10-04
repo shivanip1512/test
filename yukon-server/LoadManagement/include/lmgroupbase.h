@@ -122,6 +122,8 @@ public:
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const = 0;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const = 0;
 
+    CtiRequestMsg * buildRequestMessage( const std::string & request, const int priority ) const;
+
     virtual BOOL doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime);
 
     virtual void setDirty(BOOL b=TRUE);

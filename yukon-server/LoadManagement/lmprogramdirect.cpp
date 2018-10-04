@@ -38,8 +38,6 @@ using std::endl;
 using std::vector;
 using std::set;
 
-using Cti::MacroOffset;
-
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 extern LMScheduledMessageHolder gScheduledStopMessages;
@@ -5686,15 +5684,7 @@ bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr & lm_gr
             CTILOG_DEBUG(dout, "Sending restore command to  LM Group: " << lm_group->getPAOName() << ", string: " << controlString << ", priority: " << priority);
         }
 
-        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(),
-                                                             controlString,
-                                                             0,
-                                                             0,
-                                                             0,
-                                                             MacroOffset::none,
-                                                             0,
-                                                             0,
-                                                             priority);
+        CtiRequestMsg* requestMsg = lm_group->buildRequestMessage( controlString, priority );
 
         if ( repeatCount > 0 )
         {

@@ -882,15 +882,7 @@ CtiRequestMsg* CtiLMGroupBase::createLatchingRequestMsg(bool do_shed, int priori
         control_str = "control restore";
     }
 
-    CtiRequestMsg* req_msg = CTIDBG_new CtiRequestMsg(getPAOId(),
-                                                      control_str,
-                                                      0,
-                                                      0,
-                                                      0,
-                                                      MacroOffset::none,
-                                                      0,
-                                                      0,
-                                                      priority);
+    CtiRequestMsg* req_msg = buildRequestMessage( control_str, priority );
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -987,7 +979,20 @@ CtiRequestMsg* CtiLMGroupBase::createStopCycleMsg(LONG period, CtiTime &currentT
     setLastControlString(controlString);
     setLastControlSent(currentTime);
 
-    return new CtiRequestMsg(getPAOId(), controlString, 0, 0, 0, 0, 0, 0, priority);
+    return buildRequestMessage( controlString, priority );
+}
+
+CtiRequestMsg * CtiLMGroupBase::buildRequestMessage( const std::string & request, const int priority ) const
+{
+    return new CtiRequestMsg( getPAOId(),
+                              request,
+                              0,
+                              0,
+                              0,
+                              MacroOffset::none,
+                              0,
+                              0,
+                              priority );
 }
 
 /*---------------------------------------------------------------------------
