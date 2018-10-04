@@ -214,7 +214,7 @@ public class RtuController {
         rtuDnpValidationUtil.validateSlaveAddress(newRtu, result);
         if (result.hasErrors()) {
             List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(newRtu.getId());
-            if (!CollectionUtils.isEmpty(rtuPointDetails)) {
+            if (CollectionUtils.isNotEmpty(rtuPointDetails)) {
                 model.addAttribute("isPointsAvailable", true);
             } else {
                 model.addAttribute("isPointsAvailable", false);
@@ -223,9 +223,9 @@ public class RtuController {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "rtu/copyRtuPopup.jsp";
         }
-        Integer pointId = rtuService.copyRtu(newRtu);
+        Integer paoId = rtuService.copyRtu(newRtu);
         Map<String, String> json = new HashMap<>();
-        json.put("paoId", pointId.toString());
+        json.put("paoId", paoId.toString());
         response.setContentType("application/json");
         JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success"));
