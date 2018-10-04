@@ -19,6 +19,7 @@ public enum FlotOptionKey {
     XAXIS_MAX("max"),
     XAXIS_AUTOSCALEMARGIN("autoscaleMargin"),
     YAXIS("yaxis"),
+    YAXES("yaxes"),
     YAXIS_POSITION("position"),
     YAXIS_AXISLABEL("axisLabel"),
     YAXIS_MODE("mode"),

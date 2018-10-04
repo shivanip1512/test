@@ -28,4 +28,5 @@
 	<entry key="yukon.common.chart.model.converterType.POWERFACTOR">{0}</entry>
 	<entry key="yukon.common.chart.model.converterType.POWERFACTOR.label">Power Factor</entry>
 	<entry key="yukon.common.chart.model.converterType.POWERFACTOR.title">Power Factor</entry>
+	<entry key="yukon.common.chart.yLabel.temperature">Temperature</entry>
 </properties>

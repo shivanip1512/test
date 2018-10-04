@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
-import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.user.YukonUserContext;
@@ -27,6 +25,7 @@ import com.cannontech.web.common.chart.model.FlotPieDatas;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class FlotChartServiceImpl implements FlotChartService {
@@ -34,18 +33,16 @@ public class FlotChartServiceImpl implements FlotChartService {
     @Autowired private ChartService chartService;
 
     @Override
-    public Map<String, Object> getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin,
-                                                 Double yMax,  ChartInterval interval, ConverterType converterType,
-                                                 GraphType graphType, String yLabel, YukonUserContext userContext) {
-        List<Graph<ChartValue<Double>>> graphs = 
-                chartService.getGraphs(pointIds, start.toDate(), stop.toDate(), interval, converterType, userContext);
+    public Map<String, Object> getMeterGraphData(Map<Integer, GraphDetail> graphDetailMap, Instant start, Instant stop, Double yMin,
+                                                 Double yMax, GraphType graphType, ChartInterval interval, YukonUserContext userContext) {
+        Map<Integer, Graph<ChartValue<Double>>> graphs = 
+                chartService.getGraphs(graphDetailMap, start.toDate(), stop.toDate(), interval, userContext);
 
         // datas
         List<Object> jsonDataContainer = new ArrayList<>();
-        for (Graph<ChartValue<Double>> graph : graphs) {
-            List<Object> dataArray = getDataArray(graph.getChartData());
-            jsonDataContainer.add(Collections.singletonMap("data", dataArray));
-        }
+        graphs.forEach((pointId,graph) -> {
+            jsonDataContainer.add(new TrendData (getDataArray(graph.getChartData()), graphDetailMap.get(pointId).getAxisIndex()));
+        });
         // if we have no data, then add an empty array to jsonData so a blank graph is displayed properly
         if (graphs.isEmpty()) {
             jsonDataContainer.add(Collections.emptyList());
@@ -61,17 +58,20 @@ public class FlotChartServiceImpl implements FlotChartService {
         Map<String, Object> options = Maps.newHashMapWithExpectedSize(3);
         options.put(FlotOptionKey.SERIES.getKey(), series);
 
-        Map<String, Object> yAxis = new HashMap<>();
-        yAxis.put(FlotOptionKey.YAXIS_POSITION.getKey(), "left");
-        yAxis.put(FlotOptionKey.YAXIS_AXISLABEL.getKey(), yLabel);
-
-        if (yMin != null) {
-            yAxis.put(FlotOptionKey.YAXIS_MIN.getKey(), yMin);
-        }
-        if (yMax != null) {
-            yAxis.put(FlotOptionKey.YAXIS_MAX.getKey(), yMax);
-        }
-        options.put(FlotOptionKey.YAXIS.getKey(), yAxis);
+        List<Map<String, Object>> yaxesList = Lists.newArrayList();
+        graphDetailMap.forEach((pointId, graphDetail) -> {
+            Map<String, Object> yAxes = new HashMap<>();
+            yAxes.put(FlotOptionKey.YAXIS_POSITION.getKey(), graphDetail.getyAxisPosition());
+            yAxes.put(FlotOptionKey.YAXIS_AXISLABEL.getKey(), graphDetail.getyLabelUnits());
+            if (yMin != null) {
+                yAxes.put(FlotOptionKey.YAXIS_MIN.getKey(), yMin);
+            }
+            if (yMax != null) {
+                yAxes.put(FlotOptionKey.YAXIS_MAX.getKey(), yMax);
+            }
+            yaxesList.add(yAxes);
+        });
+        options.put(FlotOptionKey.YAXES.getKey(), yaxesList);
 
         Map<String, Object> xAxis = new HashMap<>();
         xAxis.put(FlotOptionKey.XAXIS_MODE.getKey(), "time");
@@ -267,4 +267,5 @@ public class FlotChartServiceImpl implements FlotChartService {
         int barWidth = (int) Math.ceil(milliDiff / numDataPoints);
         return barWidth;
     }
+    
 }

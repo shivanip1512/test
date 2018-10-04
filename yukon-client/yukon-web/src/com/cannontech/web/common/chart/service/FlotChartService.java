@@ -1,16 +1,15 @@
 package com.cannontech.web.common.chart.service;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.joda.time.Instant;
 
 import com.cannontech.common.chart.model.ChartInterval;
-import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.common.chart.model.FlotPieDatas;
+import com.cannontech.web.common.chart.service.impl.GraphDetail;
 
 public interface FlotChartService {
     
@@ -46,9 +45,8 @@ public interface FlotChartService {
      *  
      *  @return JSONObject
      */
-    Map<String, Object> getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin, Double yMax,
-                                ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
-                                YukonUserContext userContext);
+    Map<String, Object> getMeterGraphData(Map<Integer, GraphDetail> graphDetailMap, Instant start, Instant stop, Double yMin, Double yMax,
+            GraphType graphType, ChartInterval interval, YukonUserContext userContext);
 
     /**
      * Returns a Map to be converted to json for IVVC SubBus and Zone charts
