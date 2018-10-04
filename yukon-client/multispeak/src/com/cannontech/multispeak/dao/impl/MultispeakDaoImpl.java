@@ -254,7 +254,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                 clearMultispeakVendorCache();
             };
         });
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MULTISPEAK, mspVendor.getVendorID());
+        if (mspVendor.getVendorID() != MultispeakVendor.CANNON_MSP_VENDORID) {
+            dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MULTISPEAK, mspVendor.getVendorID());
+        }
     }
 
     @Override
@@ -294,7 +296,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                 clearMultispeakVendorCache();
             };
         });
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MULTISPEAK, mspVendor.getVendorID());
+        if (mspVendor.getVendorID() != MultispeakVendor.CANNON_MSP_VENDORID) {
+            dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MULTISPEAK, mspVendor.getVendorID());
+        }
     }
 
     @Override
@@ -315,7 +319,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                 }
             };
         });
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MULTISPEAK, vendorID);
+        if (vendorID != MultispeakVendor.CANNON_MSP_VENDORID) {
+            dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MULTISPEAK, vendorID);
+        }
     }
 
     @Override
