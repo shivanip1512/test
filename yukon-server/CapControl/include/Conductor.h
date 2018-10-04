@@ -190,7 +190,7 @@ protected:
 
     void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
 
-    bool issueAltScans( const std::vector<CtiCCMonitorPointPtr> & points, const std::vector<CtiCCCapBankPtr> & banks );
+    bool issueTwoWayScans( const std::vector<CtiCCMonitorPointPtr> & points, const std::vector<CtiCCCapBankPtr> & banks );
 
 private:
 

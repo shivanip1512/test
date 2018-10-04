@@ -5716,7 +5716,7 @@ bool CtiCCSubstationBus::isScanFlagSet()
 
 bool CtiCCSubstationBus::scanAllMonitorPoints()
 {
-    return issueAltScans( _multipleMonitorPoints, getAllCapBanks() );
+    return issueTwoWayScans( _multipleMonitorPoints, getAllCapBanks() );
 }
 
 void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
