@@ -595,6 +595,13 @@ public boolean isInputValid()
         return false;
     }
     
+    if (getJComboBoxGearType().getSelectedItem() == GearControlMethod.NestStandardCycle) {
+         if (!getNestStandardCycleGearPanel().isInputValid()) {
+             setErrorString("Peak as Uniform and Post as Ramping is not valid combination");
+             return false;
+          }
+     }
+    
     return true;
 }
 
