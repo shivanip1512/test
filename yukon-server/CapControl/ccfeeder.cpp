@@ -4374,7 +4374,7 @@ bool CtiCCFeeder::scanAllMonitorPoints()
     // gah - sorted_vector -> vector
     std::vector<CtiCCCapBankPtr>    banks{ _cccapbanks.begin(), _cccapbanks.end() };
     
-    return issueAltScans( _multipleMonitorPoints, banks );
+    return issueTwoWayScans( _multipleMonitorPoints, banks );
 }
 
 void CtiCCFeeder::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const
