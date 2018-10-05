@@ -14,8 +14,7 @@ public class PxWhiteCommunicationException extends IOException {
     private final PxWhiteErrorMessage errorMessage;
     
     public PxWhiteCommunicationException(ClientHttpResponse response) {
-        this.response = response;
-        errorMessage = null;
+        this(response, null);
     }
     
     public PxWhiteCommunicationException(ClientHttpResponse response, PxWhiteErrorMessage errorMessage) {
