@@ -70,7 +70,7 @@ public class WeatherController {
     }
 
     @RequestMapping(value = "/config/updatePrimaryWeatherLocation", method = RequestMethod.POST)
-    public String updatePrimaryWeatherLocation(FlashScope flashScope, int paoId) {
+    public String updatePrimaryWeatherLocation(int paoId) {
         weatherDataService.updatePrimaryWeatherLocation(paoId);
         return "redirect:weatherLocationsTable";
     }

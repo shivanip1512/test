@@ -46,4 +46,6 @@ public interface WeatherDataService {
      * Update weather points for any weather location
      */
     void updateWeatherPoints(WeatherObservation weatherObservation, int paoId);
+
+    Integer getPrimaryWeatherLocationPaoId();
 }
