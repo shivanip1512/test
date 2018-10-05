@@ -33,15 +33,15 @@ public class FlotChartServiceImpl implements FlotChartService {
     @Autowired private ChartService chartService;
 
     @Override
-    public Map<String, Object> getMeterGraphData(Map<Integer, GraphDetail> graphDetailMap, Instant start, Instant stop, Double yMin,
+    public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
                                                  Double yMax, GraphType graphType, ChartInterval interval, YukonUserContext userContext) {
-        Map<Integer, Graph<ChartValue<Double>>> graphs = 
-                chartService.getGraphs(graphDetailMap, start.toDate(), stop.toDate(), interval, userContext);
+         List <Graph<ChartValue<Double>>> graphs = 
+                chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), interval, userContext);
 
         // datas
         List<Object> jsonDataContainer = new ArrayList<>();
-        graphs.forEach((pointId,graph) -> {
-            jsonDataContainer.add(new TrendData (getDataArray(graph.getChartData()), graphDetailMap.get(pointId).getAxisIndex()));
+        graphs.forEach(graph -> {
+            jsonDataContainer.add(new TrendData (getDataArray(graph.getChartData()), graph.getAxisIndex()));
         });
         // if we have no data, then add an empty array to jsonData so a blank graph is displayed properly
         if (graphs.isEmpty()) {
@@ -59,7 +59,7 @@ public class FlotChartServiceImpl implements FlotChartService {
         options.put(FlotOptionKey.SERIES.getKey(), series);
 
         List<Map<String, Object>> yaxesList = Lists.newArrayList();
-        graphDetailMap.forEach((pointId, graphDetail) -> {
+        graphDetails.forEach(graphDetail -> {
             Map<String, Object> yAxes = new HashMap<>();
             yAxes.put(FlotOptionKey.YAXIS_POSITION.getKey(), graphDetail.getyAxisPosition());
             yAxes.put(FlotOptionKey.YAXIS_AXISLABEL.getKey(), graphDetail.getyLabelUnits());

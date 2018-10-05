@@ -1,5 +1,6 @@
 package com.cannontech.web.common.chart.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Instant;
@@ -45,7 +46,7 @@ public interface FlotChartService {
      *  
      *  @return JSONObject
      */
-    Map<String, Object> getMeterGraphData(Map<Integer, GraphDetail> graphDetailMap, Instant start, Instant stop, Double yMin, Double yMax,
+    Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin, Double yMax,
             GraphType graphType, ChartInterval interval, YukonUserContext userContext);
 
     /**

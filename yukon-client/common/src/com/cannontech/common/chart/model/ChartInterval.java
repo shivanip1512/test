@@ -3,6 +3,7 @@ package com.cannontech.common.chart.model;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.context.MessageSourceResolvable;
 
@@ -39,6 +40,11 @@ public enum ChartInterval {
             return new Date(cal.getTimeInMillis());
         }
 
+        @Override
+        public long getMillis() {
+            return TimeUnit.DAYS.toMillis(30);
+        }
+
     },
     DAY {
         @Override
@@ -61,6 +67,11 @@ public enum ChartInterval {
                 increment(cal);
             }
             return new Date(cal.getTimeInMillis());
+        }
+
+        @Override
+        public long getMillis() {
+            return TimeUnit.DAYS.toMillis(1);
         }
     },
     DAY_MIDNIGHT {
@@ -96,6 +107,11 @@ public enum ChartInterval {
             }
             return cal.getTime();
         }
+
+        @Override
+        public long getMillis() {
+            return TimeUnit.DAYS.toMillis(1);
+        }
     },
     HOUR {
         @Override
@@ -126,12 +142,17 @@ public enum ChartInterval {
             }
             return new Date(cal.getTimeInMillis());
         }
+
+        @Override
+        public long getMillis() {
+            return TimeUnit.HOURS.toMillis(1);
+        }
     },
     MINUTE {
         @Override
         public Date increment(Date date) {
             long time = date.getTime();
-            time += (60 * 1000);
+            time += getMillis();
 
             return new Date(time);
          }
@@ -162,12 +183,17 @@ public enum ChartInterval {
             return DateFormatEnum.DATEHM;
         }
 
+        @Override
+        public long getMillis() {
+            return TimeUnit.MINUTES.toMillis(1);
+        }
+
     },
     FIFTEENSECOND {
         @Override
         public Date increment(Date date) {
             long time = date.getTime();
-            time += (15 * 1000);
+            time += getMillis();
 
             return new Date(time);
         }
@@ -198,6 +224,11 @@ public enum ChartInterval {
             return DateFormatEnum.BOTH;
         }
 
+        @Override
+        public long getMillis() {
+            return TimeUnit.SECONDS.toMillis(15);
+        }
+
     }, 
     WEEK {
         @Override
@@ -223,13 +254,18 @@ public enum ChartInterval {
             return cal.getTime();
         }
 
+        @Override
+        public long getMillis() {
+            return TimeUnit.DAYS.toMillis(7);
+        }
+
     }, 
     
     FIVEMINUTE {
         @Override
         public Date increment(Date date) {
             long time = date.getTime();
-            time += (5 * 60 * 1000);
+            time += getMillis();
 
             return new Date(time);
         }
@@ -261,13 +297,18 @@ public enum ChartInterval {
             return DateFormatEnum.DATEHM;
         }
 
+        @Override
+        public long getMillis() {
+            return TimeUnit.MINUTES.toMillis(5);
+        }
+
     },
     
     FIFTEENMINUTE {
         @Override
         public Date increment(Date date) {
             long time = date.getTime();
-            time += (15 * 60 * 1000);
+            time += getMillis();
 
             return new Date(time);
         }
@@ -297,6 +338,11 @@ public enum ChartInterval {
         @Override
         public DateFormatEnum getFormat() {
             return DateFormatEnum.DATEHM;
+        }
+
+        @Override
+        public long getMillis() {
+            return TimeUnit.MINUTES.toMillis(15);
         }
 
     };
@@ -329,6 +375,13 @@ public enum ChartInterval {
      * @return The date rounded down to the interval
      */
     public abstract Date roundDownToIntervalUnit(Date date);
+    
+    /**
+     * @return milliseconds based on ChartInterval.
+     * Example : For ChartInterval = FIFTEENMINUTE , return milliseconds = 15 * 60 * 1000;
+     */
+    public abstract long getMillis();
+    
 
     /**
      * Method to get the date formatter for this interval

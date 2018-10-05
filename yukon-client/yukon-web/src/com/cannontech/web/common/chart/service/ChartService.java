@@ -1,7 +1,7 @@
 package com.cannontech.web.common.chart.service;
 
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
@@ -16,14 +16,14 @@ public interface ChartService {
 
     /**
      * Method to get a list of graphs to be trended
-     * @param graphDetailMap - map of poitId and GraphDetail
+     * @param graphDetails - list of GraphDetail
      * @param startDate - Start date for graph
      * @param stopDate - End date for graph
      * @param converterType - Type of graph to be generated
      * @param userContext
      * @return A list containing one graph per point
      */
-    public Map<Integer ,Graph<ChartValue<Double>>> getGraphs(Map<Integer, GraphDetail> graphDetailMap, Date startDate, Date stopDate, ChartInterval unit,
+    public List<Graph<ChartValue<Double>>> getGraphs(List<GraphDetail> graphDetails, Date startDate, Date stopDate, ChartInterval unit,
                                   YukonUserContext userContext);
 
     /**

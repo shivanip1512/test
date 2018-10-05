@@ -5,15 +5,11 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
@@ -38,8 +34,6 @@ import com.cannontech.web.common.chart.service.ChartService;
  * Implementation of the ChartService
  */
 public class ChartServiceImpl implements ChartService {
-
-    private Logger log = YukonLogManager.getLogger(ChartServiceImpl.class);
     
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private PointDao pointDao;
@@ -48,19 +42,18 @@ public class ChartServiceImpl implements ChartService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    public Map<Integer,Graph<ChartValue<Double>>> getGraphs(Map<Integer, GraphDetail> graphDetailMap, Date startDate, Date stopDate,
+    public List<Graph<ChartValue<Double>>> getGraphs(List<GraphDetail> graphDetails, Date startDate, Date stopDate,
             ChartInterval interval, YukonUserContext userContext) {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        Map<Integer,Graph<ChartValue<Double>>> graphMap = new HashMap<>();
+        List<Graph<ChartValue<Double>>> graphs = new ArrayList<>();
 
         int colorIdx = 0;
         ChartColorsEnum[] colors = ChartColorsEnum.values();
 
-        for (Map.Entry<Integer, GraphDetail> entry : graphDetailMap.entrySet()) {
-            int pointId = entry.getKey().intValue();
-            GraphDetail graphDetail = entry.getValue();
+        for (GraphDetail graphDetail : graphDetails) {
+            int pointId = graphDetail.getPointId();
             // Get the point data for the time period
             
             List<PointValueHolder> pointData = rphDao.getPointDataWithDisabledPaos(pointId, startDate, stopDate);
@@ -99,7 +92,11 @@ public class ChartServiceImpl implements ChartService {
             List<ChartValue<Double>> axisChartData = new ArrayList<>();
             LiteYukonPAObject pao = cache.getAllPaosMap().get(lPoint.getPaobjectID());
             if (pao.getPaoType() == PaoType.WEATHER_LOCATION) {
-                axisChartData = getXAxisValuesForTemperature(interval, chartData);
+                if (interval.getMillis() >= ChartInterval.DAY.getMillis()) {
+                    axisChartData = getXAxisMinMaxValues(interval, chartData, true);
+                } else {
+                    axisChartData = chartData;
+                }
             } else {
                 axisChartData = getXAxisMinMaxValues(interval, chartData, false);
                 // Convert data to specified graph type
@@ -112,7 +109,7 @@ public class ChartServiceImpl implements ChartService {
             graph.setChartData(axisChartData);
             graph.setSeriesTitle(lPoint.getPointName());
             graph.setFormat(pointValueFormat);
-
+            graph.setAxisIndex(graphDetail.getAxisIndex());
             graph.setColor(colors[colorIdx]);
             colorIdx++;
             if (colorIdx == colors.length) {
@@ -120,12 +117,12 @@ public class ChartServiceImpl implements ChartService {
             }
 
             // don't include zero-data graphs if there are more than one graph - amCharts chokes.
-            if (graphDetailMap.size() == 1 || chartData.size() > 0) {
-                graphMap.put(pointId, graph);
+            if (graphDetails.size() == 1 || chartData.size() > 0) {
+                graphs.add(graph);
             }
         }
 
-        return graphMap;
+        return graphs;
 
     }
 
@@ -180,8 +177,7 @@ public class ChartServiceImpl implements ChartService {
                  * This should only affect the graph'd data and not any raw data exports
                  */
                 currentMax = thisValue;
-            } else if (isMinRequired
-                && (thisValue.getValue() < currentMin.getValue() || isValueRepeated(currentMin, thisValue))) {
+            } else if (isMinRequired && (thisValue.getValue() < currentMin.getValue() || isValueRepeated(currentMin, thisValue))) {
                 // Update minimum ChartValue with latest interval.
                 currentMin = thisValue;
             }
@@ -199,7 +195,7 @@ public class ChartServiceImpl implements ChartService {
         ChartValue<Double> adjustedMax = adjustForFlotTimezone(max);
         if (isMinRequired) {
             ChartValue<Double> adjustedMin = adjustForFlotTimezone(min);
-        if (min.getTime() > max.getTime()) {
+            if (adjustedMin.getTime() > adjustedMax.getTime()) {
                 minMaxChartValues.add(adjustedMax);
                 minMaxChartValues.add(adjustedMin);
             } else {
@@ -219,27 +215,6 @@ public class ChartServiceImpl implements ChartService {
         return oldValue.getValue().doubleValue() == currentValue.getValue().doubleValue()
                                                     && currentValue.getTime() > oldValue.getTime();
     }
-    /**
-     * 
-     * @return List of ChartValues based on Chart interval.
-     */
-    private List<ChartValue<Double>> getXAxisValuesForTemperature(ChartInterval interval,
-            List<ChartValue<Double>> chartData) {
-        switch (interval) {
-        case FIVEMINUTE:
-        case FIFTEENMINUTE:
-        case HOUR:
-            return chartData;
-        case DAY:
-        case WEEK:
-        case MONTH:
-            return getXAxisMinMaxValues(interval, chartData, true);
-        default:
-            break;
-        }
-        return null; // This should not happen.
-    }
-    
     /**
      * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
      * Here we fake it out by adding the server timezone offset to the timestamp

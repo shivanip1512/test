@@ -10,6 +10,15 @@ public class Graph<T> {
     private List<T> chartData = null;
     private NumberFormat format = null;
     private ChartColorsEnum color = null;
+    private int axisIndex;
+
+    public int getAxisIndex() {
+        return axisIndex;
+    }
+
+    public void setAxisIndex(int axisIndex) {
+        this.axisIndex = axisIndex;
+    }
 
     public String getSeriesTitle() {
         return seriesTitle;
