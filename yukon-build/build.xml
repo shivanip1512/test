@@ -86,7 +86,7 @@
         <antcall target="runUnitTests" />
     </target>
     
-    <target name="build-server" depends="init,clean,svn-info-build">
+    <target name="build-server" depends="init,clean">
         <echo message="building module yukon-server" />
         <mkdir dir="${log.dir}" />
 
