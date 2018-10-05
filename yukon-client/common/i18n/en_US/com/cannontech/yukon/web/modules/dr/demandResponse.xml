@@ -581,6 +581,12 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 ]]></entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.footer">This email was generated at {0}</entry>
 
+<entry key="yukon.web.modules.dr.nest.loadShapingType.STANDARD">Standard</entry>
+<entry key="yukon.web.modules.dr.nest.loadShapingType.RAMPING">Ramping</entry>
+<entry key="yukon.web.modules.dr.nest.loadShapingType.NONE">None</entry>
+<entry key="yukon.web.modules.dr.nest.loadShapingType.UNIFORM">Uniform</entry>
+<entry key="yukon.web.modules.dr.nest.loadShapingType.SYMMETRIC">Symmetric</entry>
+
 <entry key="yukon.web.modules.dr.rf.details.pageName">RF Broadcast Performance Details</entry>
 <entry key="yukon.web.modules.dr.rf.details.dateRange">Date Range</entry>
 <entry key="yukon.web.modules.dr.rf.details.numTests">Tests Found</entry>
@@ -840,7 +846,8 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.gearControlMethod.SepCycle">SEP Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.EcobeeCycle">ecobee Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellCycle">Honeywell Cycle</entry>
-<entry key="yukon.web.modules.dr.gearControlMethod.NestCycle">Nest Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.NestStandardCycle">Nest Standard Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.NestCriticalCycle">Nest Critical Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.MasterCycle">Master Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.Rotation">Rotation</entry>

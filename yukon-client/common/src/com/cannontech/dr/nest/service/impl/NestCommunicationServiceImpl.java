@@ -145,7 +145,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             try {
                 SchemaViolationResponse error = JsonUtils.fromJson(response, SchemaViolationResponse.class);
                 log.error("Reply from Nest contains an error="+ error);
-                if(!error.getViolations().isEmpty()) {
+                if (error.getViolations() != null && !error.getViolations().isEmpty()) {
                     //schema violation
                     throw new NestException("Reply from Nest contains an error. Error:" + error);
                 }

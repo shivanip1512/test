@@ -1,81 +1,16 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="dev" page="nest">
-
-    <!-- For setting existing file to use for nest -->
-    <cti:url var="useNestFileUrl" value="useAsNestFile" />
-    <form id="nestForm" action="${useNestFileUrl}" method="POST">
-    <cti:csrfToken/>
-        <tags:sectionContainer title="Set Existing File For Nest" helpText="${helpTextForExistingFile}">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".useNestFile.fileName">
-                    <input id="fileName" name="fileName" type="text" maxlength="100" size="50" value = "${defaultFileName}">
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-        
-            <div class="column nogutter">
-                <div class="action-area">
-                    <button id="setFile" type="submit" classes="js-blocker">Set Nest File</button>
-                </div>
-            </div>
-        </tags:sectionContainer>
-    </form> 
-    
-    <!-- For generating new file for nest -->
-    <cti:url var="generateFileUrl" value="generateFile" />
-    <form id="generateNestFileForm" action="${generateFileUrl}" method="POST" modelAttribute = "NestFileGenerationSetting">
-    <cti:csrfToken/>
-    <cti:msg2 key=".nestFileGenerator.helpText" var="helpText"/>
-        <div class="column-8-8-8">
-            <div>
-                <tags:sectionContainer title="Nest File Generation" helpText="${helpText}">
-                    <tags:nameValueContainer2>
-                         <tags:nameValue2 nameKey=".nestFileGenerator.groupName">
-                            <input id="groupName" name="groupName" type="text" maxlength="50" size="50">
-                         </tags:nameValue2>
-                         <tags:nameValue2 nameKey=".nestFileGenerator.noOfRows">
-                            <input id="noOfRows" name="noOfRows" type="text" maxlength="3" size="3" value="1">
-                         </tags:nameValue2>
-                         <tags:nameValue2 nameKey=".nestFileGenerator.noOfThermostats">
-                            <input id="noOfThermostats" name="noOfThermostats" type="text" maxlength="3" size="3" value="1">
-                         </tags:nameValue2>
-                          <tags:nameValue2 nameKey=".nestFileGenerator.winterProgram">
-                                <input id="noOfThermostats" name="winterProgram" type="checkbox">
-                         </tags:nameValue2>
-                         <tags:nameValue2 nameKey=".nestFileGenerator.defaultFile">
-                                <input id="defaultFile" name="defaultFile" type="checkbox">
-                         </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <div class="column nogutter">
-                        <div class="action-area">
-                            <button id="generateFile" type="submit" classes="js-blocker">Generate File</button>
-                        </div>
-                    </div>
-                </tags:sectionContainer>
-            </div>
-
-        </div>
-    </form>
-    
-    <!-- Sync Yukon with Nest -->
-    <cti:msg2 key=".sync.helpText" var="helpText"/>
-    <tags:sectionContainer title="Sync Yukon and Nest" helpText="${helpText}">
-    <cti:url var="syncYukonAndNest" value="syncYukonAndNest" />
-    <form id="syncYukonAndNestForm" action="${syncYukonAndNest}" method="GET">
-       <div class="column nogutter">
-           <div class="action-area">
-                <button id="sync" type="submit" classes="js-blocker">Sync</button>
-            </div>
-       </div>
-    </form>
-    <cti:url var="downloadExisting" value="downloadExisting" />
-    <form id="downloadExistingForm" action="${downloadExisting}" method="GET">
-       <div class="column nogutter">
-           <div class="action-area">
-                <button id="download" type="submit" classes="js-blocker">Download Existing File</button>
-            </div>
-       </div>
-    </form>
-    </tags:sectionContainer>
+<div class="column-12-12 clearfix">
+    <div class="column one">
+        <h3>Pages</h3>
+        <ul class="simple-list stacked">
+            <li><a href="viewNestFileSetting"><i:inline key=".nestFileSettings.label"/></a></li>
+            <li><a href="viewNestSync"><i:inline key=".nestSync.label"/></a></li>
+            <li><a href="viewControlEvents"><i:inline key=".controlEvents.label"/></a></li>
+    </div>
+</div>
 </cti:standardPage>
