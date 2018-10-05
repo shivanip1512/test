@@ -199,6 +199,7 @@ public class RtuController {
             RtuDnp rtu = rtuDnpService.getRtuDnp(rtuDnp.getId());
             getPointsForModel(rtu.getId(), model);
             setDeviceScanRate(rtu);
+            model.addAttribute("rtu", rtu);
             return setupModel(rtu, model);
         }
     }
