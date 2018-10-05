@@ -5,8 +5,8 @@ import org.joda.time.LocalTime;
 public class NestSyncSettings {
 
     private boolean sync;
-    private LocalTime syncTime;
-
+    private LocalTime scheduledSyncTime;
+    
     public boolean isSync() {
         return sync;
     }
@@ -15,18 +15,18 @@ public class NestSyncSettings {
         this.sync = sync;
     }
 
-    public LocalTime getSyncTime() {
-        return syncTime;
+    public LocalTime getScheduledSyncTime() {
+        return scheduledSyncTime;
     }
-    
-    public void setSyncTime(LocalTime syncTime) {
-        this.syncTime = syncTime;
+
+    public void setScheduledSyncTime(LocalTime scheduledSyncTime) {
+        this.scheduledSyncTime = scheduledSyncTime;
     }
-    
+
     @Override
     public String toString() {
-        return String.format("EcobeeSettings [sync=%s, syncTime=%s]",
-                      sync, syncTime);
+        return String.format("NestSyncSettings [sync=%s, scheduledSyncTime=%s]",
+                      sync, scheduledSyncTime);
     }
     
 }
