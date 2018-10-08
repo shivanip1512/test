@@ -37,9 +37,7 @@
                 <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td width="253" valign="middle"></td>
                 <td width="57" valign="middle">
-                <form name="logoutForm"  action="/servlet/LoginController">
-                    <input type="hidden" name="ACTION" value="LOGOUT">
-                </form>
+                <form name="logoutForm"  action="/servlet/LoginController/logout"/>
                 <div align="left"><span class="MainText"><a href="javascript:document.logoutForm.submit()" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>

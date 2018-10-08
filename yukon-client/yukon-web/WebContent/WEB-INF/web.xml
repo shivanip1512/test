@@ -525,7 +525,7 @@
         <url-pattern>/home</url-pattern>
         <url-pattern>/login/*</url-pattern>
         <url-pattern>/integrationLogin</url-pattern>
-        <url-pattern>/servlet/LoginController</url-pattern>
+        <url-pattern>/servlet/LoginController/*</url-pattern>
         <url-pattern>/index.jsp</url-pattern>
         <url-pattern>/operator/Operations.jsp</url-pattern>
         <url-pattern>/remoteLogin</url-pattern>

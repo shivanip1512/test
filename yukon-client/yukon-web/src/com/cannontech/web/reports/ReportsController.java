@@ -8,10 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
@@ -26,12 +27,14 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.InputUtil;
 
-public class ReportsController extends MultiActionController  {
+@Controller
+@RequestMapping("/simple/*")
+public class ReportsController {
     
-    private SimpleReportService simpleReportService = null;
-    private SimpleReportOutputter simpleReportOutputter = null;
+    @Autowired private SimpleReportService simpleReportService;
+    @Autowired private SimpleReportOutputter simpleReportOutputter;
     
-    
+    @RequestMapping(value = "htmlView", method = RequestMethod.GET)
     public ModelAndView htmlView(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
     	// get report definition, model
@@ -53,7 +56,8 @@ public class ReportsController extends MultiActionController  {
         
     	return mav;
     }
-
+    
+    @RequestMapping(value = "extView", method = RequestMethod.GET)
     @SuppressWarnings("unchecked")
     public ModelAndView extView(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
@@ -148,7 +152,7 @@ public class ReportsController extends MultiActionController  {
         return mav;
     }
 
-    
+    @RequestMapping(value = "jsonData", method = RequestMethod.GET)
     public ModelAndView jsonData(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -181,6 +185,7 @@ public class ReportsController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value = "csvView", method = RequestMethod.GET)
     public ModelAndView csvView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -211,6 +216,7 @@ public class ReportsController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value = "pdfView", method = RequestMethod.GET)
     public ModelAndView pdfView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
                 
@@ -227,16 +233,6 @@ public class ReportsController extends MultiActionController  {
         simpleReportOutputter.outputPdfReport(reportDefinition, reportModel, outputStream, userContext);
         
         return null;
-    }
-    
-    @Autowired
-    public void setSimpleReportOutputter(SimpleReportOutputter simpleReportOutputter) {
-        this.simpleReportOutputter = simpleReportOutputter;
-    }
-
-    @Required
-    public void setSimpleReportService(SimpleReportService simpleReportService) {
-        this.simpleReportService = simpleReportService;
     }
 
 }

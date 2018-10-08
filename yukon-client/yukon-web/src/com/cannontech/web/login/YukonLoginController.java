@@ -5,9 +5,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
@@ -25,7 +27,8 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
 import com.cannontech.web.stars.service.PasswordResetService;
 
-public class YukonLoginController extends MultiActionController {
+@Controller
+public class YukonLoginController {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private LoginCookieHelper loginCookieHelper;
     @Autowired private LoginService loginService;
@@ -37,6 +40,7 @@ public class YukonLoginController extends MultiActionController {
      * @param request unused
      * @param response unused
      */
+    @RequestMapping(value = {"/login.jsp", "controller", "/servlet/LoginController"}, method = RequestMethod.GET)
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView();
         if (request.getSession() != null && request.getSession().getAttribute(LoginController.YUKON_USER) != null) {
@@ -51,6 +55,7 @@ public class YukonLoginController extends MultiActionController {
         return mav;
     }
 
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = ServletRequestUtils.getRequiredStringParameter(request, LoginController.USERNAME);
         String password = ServletRequestUtils.getRequiredStringParameter(request, LoginController.PASSWORD);
@@ -144,16 +149,19 @@ public class YukonLoginController extends MultiActionController {
         return result;
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         loginService.logout(request, response);
         return null;
     }
 
+    @RequestMapping(value = "/clientLogin", method = RequestMethod.POST)
     public ModelAndView clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
         loginService.clientLogin(request, response);
         return null;
     }
 
+    @RequestMapping(value = "/outboundVoiceLogin", method = RequestMethod.POST)
     public ModelAndView outboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
         loginService.outboundVoiceLogin(request, response);
         return null;

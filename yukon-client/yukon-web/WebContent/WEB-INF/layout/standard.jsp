@@ -102,7 +102,7 @@
                                 <cm:dropdownOption icon="icon-user" href="${userProfileUrl}">
                                     <cti:msg2 key="yukon.web.components.button.profile.label"/>
                                 </cm:dropdownOption>
-                                <cti:url value="/servlet/LoginController?ACTION=LOGOUT" var="logoutUrl"/>
+                                <cti:url value="/servlet/LoginController/logout" var="logoutUrl"/>
                                 <cm:dropdownOption icon="icon-door-open" href="${logoutUrl}">
                                     <cti:msg2 key="yukon.web.components.button.logout.label"/>
                                 </cm:dropdownOption>

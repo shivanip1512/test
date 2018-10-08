@@ -147,7 +147,7 @@ function hideRevealSectionSetup(showElement, hideElement, clickableElement,
         <tr>
             <td colspan="2" class="leftMenuHeader">
                 <cti:checkRolesAndProperties value="RESIDENTIAL_SIGN_OUT_ENABLED">
-                    <a href="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
+                    <a href="<cti:url value="/servlet/LoginController/logout"/>">
                         <cti:msg key="yukon.web.menu.logout"/>
                     </a>
                 </cti:checkRolesAndProperties>&nbsp;

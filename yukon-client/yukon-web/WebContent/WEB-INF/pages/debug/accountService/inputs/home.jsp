@@ -42,7 +42,8 @@
             <td class="functionality"><i:inline key=".deleteAccount"/></td>
             <td class="doc"><i:inline key=".section3"/></td>
             <td class="inputTest">
-                <form action="/debug/accountService/inputs/deleteAccount" method="post">
+            <cti:url var="deleteAccountUrl" value="/debug/accountService/inputs/deleteAccount"/>
+                <form action="${deleteAccountUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".accountNumber" >
@@ -66,7 +67,8 @@
             <td class="functionality"><i:inline key=".addAccount"/></td>
             <td class="doc"></td>
             <td class="inputTest">
-                <form action="/debug/accountService/inputs/addAccount" method="post">
+            <cti:url var="addAccountUrl" value="/debug/accountService/inputs/addAccount"/>
+                <form action="${addAccountUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >
@@ -179,7 +181,8 @@
             <td class="functionality"><i:inline key=".updateAccount"/></td>
             <td class="doc"></td>
             <td class="inputTest">
-                <form action="/debug/accountService/inputs/updateAccount" method="post">
+            <cti:url var="updateAccountUrl" value="/debug/accountService/inputs/updateAccount"/>
+                <form action="${updateAccountUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >

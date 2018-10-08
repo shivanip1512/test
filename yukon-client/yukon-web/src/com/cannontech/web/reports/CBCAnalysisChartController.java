@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
@@ -35,18 +37,21 @@ import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.web.capcontrol.CBCWebUtils;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 
+@Controller
+@RequestMapping("/cbcAnalysisChart/*")
 @CheckFalseRoleProperty(YukonRoleProperty.HIDE_REPORTS)
-public class CBCAnalysisChartController extends MultiActionController  {
+public class CBCAnalysisChartController {
     
-    private PointDao pointDao = null;
-    private CapControlCache capControlCache = null;
-    private SubstationBusDao substationBusDao = null;
-    private FeederDao feederDao = null;
+    @Autowired private PointDao pointDao;
+    @Autowired private CapControlCache capControlCache;
+    @Autowired private SubstationBusDao substationBusDao;
+    @Autowired private FeederDao feederDao;
 
     /**
      * @param request
      * @param response
      */
+    @RequestMapping(value = "cbcChart", method = RequestMethod.GET)
     public ModelAndView cbcChart(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // PARAMETERS
         // ------------------------------------------------------------------------------------------------------
@@ -263,25 +268,5 @@ public class CBCAnalysisChartController extends MultiActionController  {
         mav.addObject("targetReportInfo", targetReportInfo);
         
         return mav;
-    }
-
-    @Required
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    @Required
-    public void setSubstationBusDao(SubstationBusDao substationBusDao) {
-        this.substationBusDao = substationBusDao;
-    }
-
-    @Required
-    public void setFeederDao(FeederDao feederDao) {
-        this.feederDao = feederDao;
-    }
-
-    @Required
-    public void setCapControlCache(CapControlCache capControlCache) {
-        this.capControlCache = capControlCache;
     }
 }

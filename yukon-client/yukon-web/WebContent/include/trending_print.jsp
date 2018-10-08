@@ -11,7 +11,7 @@
 	if (!YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(lYukonUser.getUserID()).equals(lYukonUser))
 	{
 		// User login no longer valid
-		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
+		response.sendRedirect(request.getContextPath() + "/servlet/LoginController/logout");
 		return;
 	}
 %>

@@ -9,16 +9,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
@@ -31,19 +32,19 @@ import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 
-public class LoadControlServiceInputsTestController extends MultiActionController {
+@Controller
+@RequestMapping("/loadControlService/inputs/*")
+public class LoadControlServiceInputsTestController {
     
     @Autowired private DateFormattingService dateformattingService;
     @Autowired private LoadControlService loadControlService;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private StarsControllableDeviceHelper starsControllableDeviceHelper;
     @Autowired private ProgramService programService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private LoadControlProgramDao loadControlProgramDao;
-    @Autowired private LoadControlClientConnection loadControlClientConnection;
     
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         return returnMav(request, new ArrayList<String>(0));
     }
@@ -51,6 +52,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // PROGRAM STATUS BY PROGRAM NAME
     //====================================================================================================================================
+    @RequestMapping(value = "getProgramStatusByProgramName", method = RequestMethod.POST)
     public ModelAndView getProgramStatusByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
     	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -68,6 +70,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // ALL CURRENTLY ACTIVE PROGRAMS 
     //====================================================================================================================================
+    @RequestMapping(value = "getAllCurrentlyActivePrograms", method = RequestMethod.POST)
     public ModelAndView getAllCurrentlyActivePrograms(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
     	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -90,6 +93,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // START CONTROL BY SCENARIO NAME
     //====================================================================================================================================
+    @RequestMapping(value = "startControlByScenarioName", method = RequestMethod.POST)
     public ModelAndView startControlByScenarioName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -121,6 +125,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // START CONTROL BY PROGRAM NAME
     //====================================================================================================================================
+    @RequestMapping(value = "startControlByProgramName", method = RequestMethod.POST)
     public ModelAndView startControlByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -154,6 +159,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // STOP CONTROL BY SCENARIO NAME
     //====================================================================================================================================
+    @RequestMapping(value = "stopControlByScenarioName", method = RequestMethod.POST)
     public ModelAndView stopControlByScenarioName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -184,6 +190,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // STOP CONTROL BY PROGRAM NAME
     //====================================================================================================================================
+    @RequestMapping(value = "stopControlByProgramName", method = RequestMethod.POST)
     public ModelAndView stopControlByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -215,6 +222,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // SCENARIOS LIST OF PROGRAM STARTING GEARS
     //====================================================================================================================================
+    @RequestMapping(value = "getScenarioProgramStartGears", method = RequestMethod.POST)
     public ModelAndView getScenarioProgramStartGears(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
     	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -232,6 +240,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // ENROLLING A DEVICE IN A PROGRAM
     //====================================================================================================================================
+    @RequestMapping(value = "enrollingADeviceInAProgram", method = RequestMethod.POST)
     public ModelAndView enrollingADeviceInAProgram(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
         List<String> results = new ArrayList<String>();
@@ -256,6 +265,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // UNENROLLING A DEVICE IN A PROGRAM
     //====================================================================================================================================
+    @RequestMapping(value = "unenrollingADeviceInAProgram", method = RequestMethod.POST)
     public ModelAndView unenrollingADeviceInAProgram(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
         List<String> results = new ArrayList<String>();
@@ -279,6 +289,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // ADD A DEVICE TO AN ACCOUNT
     //====================================================================================================================================
+    @RequestMapping(value = "addDeviceToAccount", method = RequestMethod.POST)
     public ModelAndView addDeviceToAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         List<String> results = new ArrayList<String>();        
@@ -301,6 +312,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // UPDATE A DEVICE ON AN ACCOUNT
     //====================================================================================================================================
+    @RequestMapping(value = "updateDeviceOnAccount", method = RequestMethod.POST)
     public ModelAndView updateDeviceOnAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         List<String> results = new ArrayList<String>();        
@@ -323,6 +335,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     // REMOVE A DEVICE FROM AN ACCOUNT
     //====================================================================================================================================
+    @RequestMapping(value = "removeDeviceFromAccount", method = RequestMethod.POST)
     public ModelAndView removeDeviceFromAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         List<String> results = new ArrayList<String>();        

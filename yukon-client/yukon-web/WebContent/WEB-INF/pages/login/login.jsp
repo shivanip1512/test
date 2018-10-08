@@ -34,7 +34,7 @@
                                 <cti:msg2 key="yukon.web.login.invalidUrlAccess"/>
                             </div>
                         </c:if>
-                        <form name="form1" method="post" action="<cti:url value="/servlet/LoginController"/>">
+                        <form name="form1" method="post" action="<cti:url value="/servlet/LoginController/login"/>">
                             <cti:csrfToken/>
                             <div class="clearfix stacked"><input type="text" id="login_email" name="USERNAME" class="fl js-focus" placeholder="<cti:msg2 key="yukon.web.login.username"/>"></div>
                             <div class="clearfix">
@@ -49,7 +49,6 @@
                                 <cti:msg2 key="yukon.web.login.login" var="login"/>
                                 <cti:button type="submit" name="login" classes="action primary" label="${login}"/>
                                 <input type="hidden" name="REDIRECTED_FROM" value="${fn:escapeXml(param.REDIRECTED_FROM)}">
-                                <input type="hidden" name="ACTION" value="LOGIN">
                             </div>
                         </form>
                     </div>

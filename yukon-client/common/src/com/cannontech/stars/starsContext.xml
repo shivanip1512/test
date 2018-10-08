@@ -96,13 +96,6 @@
 
 	<bean id="lmDeviceDtoConverter" class="com.cannontech.stars.service.impl.LmDeviceDtoConverterImpl"/>
 
-    <bean id="deviceActivationService" class="com.cannontech.stars.dr.hardware.service.impl.DeviceActivationServiceImpl"/>
-
-    <bean id="deviceVerificationService" class="com.cannontech.stars.dr.hardware.service.impl.DeviceVerificationServiceImpl">
-        <property name="hardwareBaseDao" ref="hardwareBaseDao" />
-        <property name="porterConnection" ref="porterConnection"/>
-    </bean>
-
     <bean id="enrollmentService" class="com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl"/>
     <bean class="com.cannontech.stars.dr.enrollment.service.impl.AlternateEnrollmentServiceImpl"/>
 

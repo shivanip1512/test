@@ -100,7 +100,7 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
 	<!--End Failed message   -->
 		
 	      <tr>
-          <FORM METHOD="POST" ACTION="/scripts/jrun.dll/servlet/LoginController">
+          <FORM METHOD="POST" ACTION="/scripts/jrun.dll/servlet/LoginController/login">
             <cti:csrfToken/>
             <td width="40%" height="20"> 
               <p align=RIGHT>&nbsp;<font size="-1" face="Arial">Username:</font>
@@ -122,7 +122,6 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
           <tr> 
             <td width="40%" height="20">&nbsp; </td>
             <td width="60%" height="20"> <input type="image" src="SubmitButton.gif" width="58" height="20" border="0"></td>
-            <INPUT NAME="ACTION" TYPE="hidden" VALUE = "LOGIN">
             <INPUT NAME="DATABASEALIAS" TYPE="hidden" VALUE="yukon">
            </form> 
           </tr>

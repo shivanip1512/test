@@ -40,7 +40,8 @@
         <tr>
             <td class="functionality"><i:inline key=".programStatusByName"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/getProgramStatusByProgramName" method="post">
+            <cti:url var="programStatusByNameUrl" value="/debug/loadControlService/inputs/getProgramStatusByProgramName"/>
+                <form action="${programStatusByNameUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
@@ -60,7 +61,8 @@
         <tr>
             <td class="functionality"><i:inline key=".programStatusAllActive"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/getAllCurrentlyActivePrograms" method="post">
+            <cti:url var="programStatusAllActiveUrl" value="/debug/loadControlService/inputs/getAllCurrentlyActivePrograms"/>
+                <form action="${programStatusAllActiveUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".run" >
@@ -76,7 +78,8 @@
         <tr>
             <td class="functionality"><i:inline key=".startByScenarioName"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/startControlByScenarioName" method="post">
+            <cti:url var="startByScenarioNameUrl" value="/debug/loadControlService/inputs/startControlByScenarioName"/>
+                <form action="${startByScenarioNameUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
@@ -113,7 +116,8 @@
         <tr>
             <td class="functionality"><i:inline key=".startByProgramName"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/startControlByProgramName" method="post">
+            <cti:url var="startByProgramNameUrl" value="/debug/loadControlService/inputs/startControlByProgramName"/>
+                <form action="${startByProgramName}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
@@ -154,7 +158,8 @@
         <tr>
             <td class="functionality"><i:inline key=".stopByScenarioName"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/stopControlByScenarioName" method="post">
+            <cti:url var="stopByScenarioNameUrl" value="/debug/loadControlService/inputs/stopControlByScenarioName"/>
+                <form action="${stopByScenarioNameUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
@@ -186,7 +191,8 @@
         <tr>
             <td class="functionality"><i:inline key=".stopByProgramName"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/stopControlByProgramName" method="post">
+            <cti:url var="stopByProgramNameUrl" value="/debug/loadControlService/inputs/stopControlByProgramName"/>
+                <form action="${stopByProgramNameUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
@@ -218,7 +224,8 @@
         <tr>
             <td class="functionality"><i:inline key=".scenarioProgramList"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/getScenarioProgramStartGears" method="post">
+            <cti:url var="scenarioProgramListUrl" value="/debug/loadControlService/inputs/getScenarioProgramStartGears"/>
+                <form action="${scenarioProgramListUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
@@ -237,7 +244,8 @@
         <tr>
             <td class="functionality"><i:inline key=".enrollingInAProgram"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/enrollingADeviceInAProgram" method="post">
+            <cti:url var="enrollingInAProgramUrl" value="/debug/loadControlService/inputs/enrollingADeviceInAProgram"/>
+                <form action="${enrollingInAProgramUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
@@ -279,7 +287,8 @@
         <tr>
             <td class="functionality"><i:inline key=".unenrollingInAProgram"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/unenrollingADeviceInAProgram" method="post">
+            <cti:url var="unenrollingInAProgramUrl" value="/debug/loadControlService/inputs/unenrollingADeviceInAProgram"/>
+                <form action="${unenrollingInAProgramUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
@@ -317,7 +326,8 @@
         <tr>
             <td class="functionality"><i:inline key=".addDevice"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/addDeviceToAccount" method="post">
+            <cti:url var="addDeviceUrl" value="/debug/loadControlService/inputs/addDeviceToAccount"/>
+                <form action="${addDeviceUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
@@ -352,7 +362,8 @@
         <tr>
             <td class="functionality"><i:inline key=".updateDevice"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/updateDeviceOnAccount" method="post">
+            <cti:url var="updateDeviceUrl" value="/debug/loadControlService/inputs/updateDeviceOnAccount"/>
+                <form action="${updateDeviceUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
@@ -387,7 +398,8 @@
         <tr>
             <td class="functionality"><i:inline key=".removeDevice"/></td>
             <td class="inputTest">
-                <form action="/debug/loadControlService/inputs/removeDeviceFromAccount" method="post">
+            <cti:url var="removeDeviceUrl" value="/debug/loadControlService/inputs/removeDeviceFromAccount"/>
+                <form action="${removeDeviceUrl}" method="post">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
