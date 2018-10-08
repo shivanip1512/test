@@ -53,7 +53,10 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     @Autowired private SimplePointAccessDao pointAccessDao;
     @Autowired private NoaaWeatherDataService noaaWeatherDataService;
     private DecimalFormat doubleFormat = new DecimalFormat("#.#####");
-    private Integer primaryWeatherLocationPaoId = null;
+    private volatile Integer primaryWeatherLocationPaoId = null; // getPrimaryWeatherLocationPaoId method will
+                                                                 // cache this value so that we don't have to
+                                                                 // call database again and again for primary
+                                                                 // weather location.
 
     @Override
     public WeatherLocation findWeatherLocationForPao(int paoId) {
@@ -107,9 +110,6 @@ public class WeatherDataServiceImpl implements WeatherDataService {
       List<LiteYukonPAObject> paos = paoDao.getLiteYukonPAObjectByType(PaoType.WEATHER_LOCATION);
       List<WeatherLocation> weatherDevices = new ArrayList<>();
 
-        if (!paos.isEmpty() && primaryWeatherLocationPaoId == null) {
-            getPrimaryWeatherLocationPaoId();
-        }
       for (LiteYukonPAObject pao : paos) {
           WeatherLocation weatherLocation = createWeatherLocationFromPao(pao);
           if (weatherLocation != null) {
@@ -159,7 +159,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
     public void deleteWeatherLocation(int paoId) {
         paoPersistenceService.deletePao(new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION));
         if (isPrimaryWeatherLocation(paoId)) {
-            setPrimaryWeatherLocationPaoId(null);
+            primaryWeatherLocationPaoId = null;
         }
     }
 
@@ -229,7 +229,6 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                     String isPrimaryLocation = staticPaoInfoDao.getValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paoId);
                     if (YNBoolean.YES.getDatabaseRepresentation().toString().equals(isPrimaryLocation)) {
                         primaryWeatherLocationPaoId = paoId;
-                        setPrimaryWeatherLocationPaoId(primaryWeatherLocationPaoId);
                         break;
                     }
                 } catch (EmptyResultDataAccessException e) {
@@ -240,7 +239,6 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                 primaryWeatherLocationPaoId = paos.get(0).getPaoIdentifier().getPaoId();
                 staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION, primaryWeatherLocationPaoId,
                     YNBoolean.YES.getDatabaseRepresentation().toString());
-                setPrimaryWeatherLocationPaoId(primaryWeatherLocationPaoId);
             }
         }
         return primaryWeatherLocationPaoId;
@@ -308,7 +306,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION, paoId,
             YNBoolean.YES.getDatabaseRepresentation().toString());
 
-        setPrimaryWeatherLocationPaoId(paoId);
+        primaryWeatherLocationPaoId = paoId;
     }
 
     
@@ -316,14 +314,10 @@ public class WeatherDataServiceImpl implements WeatherDataService {
      * This method will check the cached paoId with the passed argument paoId.
      */
     private boolean isPrimaryWeatherLocation(int paoId) {
-        if (primaryWeatherLocationPaoId != null && primaryWeatherLocationPaoId.intValue() == paoId) {
+        if (getPrimaryWeatherLocationPaoId() != null && getPrimaryWeatherLocationPaoId().intValue() == paoId) {
             return true;
         }
         return false;
-    }
-
-    private synchronized void setPrimaryWeatherLocationPaoId(Integer primaryWeatherLocationPaoId) {
-        this.primaryWeatherLocationPaoId = primaryWeatherLocationPaoId;
     }
 
 }
