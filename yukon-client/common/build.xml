@@ -163,7 +163,7 @@
     </target>
 
     <!-- Run tests. This target must be supplied a halt and destdir property -->
-    <target name="executeTests" depends="compileUnitTests">
+    <target name="executeTests">
 
         <property name="test.results.dir" value="test/testResults"/>
         <!-- Clear out any old results -->
