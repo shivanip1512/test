@@ -3,10 +3,8 @@ package com.cannontech.spring;
 import java.util.Timer;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.access.BeanFactoryLocator;
-import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.access.ContextSingletonBeanFactoryLocator;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -25,8 +23,8 @@ public class YukonSpringHook {
     public static String WATCHDOG_BEAN_FACTORY_KEY = "com.cannontech.context.watchdog";
     private static String factoryKey;
     
+    private static final String BEAN_REF_RESOURCE_LOCATION = "classpath*:beanRefContext.xml";
     private static ApplicationContext applicationContext = null;
-    private static BeanFactoryReference beanFactoryRef = null;
     
     public synchronized static ApplicationContext getContext() {
         if (applicationContext == null) {
@@ -60,9 +58,7 @@ public class YukonSpringHook {
             }
         }
         log.info("Creating context: " + factoryKey);
-        BeanFactoryLocator bfl = ContextSingletonBeanFactoryLocator.getInstance();
-        beanFactoryRef = bfl.useBeanFactory(factoryKey);
-        applicationContext = (ApplicationContext) beanFactoryRef.getFactory();
+        applicationContext = (ApplicationContext) ApplicationContextUtil.INSTANCE.getApplicationContext(BEAN_REF_RESOURCE_LOCATION).getBean(factoryKey);
     }
 
     /**
@@ -123,14 +119,21 @@ public class YukonSpringHook {
         return getBean("globalScheduledExecutor", ScheduledExecutor.class);
     }
     
-    public static void shutdownContext() {
-        if (beanFactoryRef != null) {
+    public static  synchronized void shutdownContext() {
+
+        if (applicationContext != null) {
             log.info("Shutting down context: " + factoryKey);
+            ApplicationContext savedCtx;
+            savedCtx = applicationContext;
             applicationContext = null;
-            beanFactoryRef.release();
-            beanFactoryRef = null;
+
+            if (savedCtx != null && savedCtx instanceof ConfigurableApplicationContext) {
+                ((ConfigurableApplicationContext) savedCtx).close();
+            }
             factoryKey = null;
-        } else {
+        }
+
+        else {
             log.warn("shutdownContext called before context was initialized");
         }
     }

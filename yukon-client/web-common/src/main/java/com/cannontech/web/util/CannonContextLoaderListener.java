@@ -43,7 +43,7 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class CannonContextLoaderListener implements ServletContextListener {
 
-    private ContextLoader contextLoader;
+    private CustomContextLoader contextLoader;
 
 
     /**
@@ -69,17 +69,17 @@ public class CannonContextLoaderListener implements ServletContextListener {
     }
 
     /**
-     * Create the ContextLoader to use. Can be overridden in subclasses.
-     * @return the new ContextLoader
+     * Create the CustomContextLoader to use. Can be overridden in subclasses.
+     * @return the new CustomContextLoader
      */
-    protected ContextLoader createContextLoader() {
-        return new ContextLoader();
+    protected CustomContextLoader createContextLoader() {
+        return new CustomContextLoader();
     }
 
     /**
      * Return the ContextLoader used by this listener.
      */
-    public ContextLoader getContextLoader() {
+    public CustomContextLoader getContextLoader() {
         return contextLoader;
     }
 
