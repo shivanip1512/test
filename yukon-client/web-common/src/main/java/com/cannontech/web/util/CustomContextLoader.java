@@ -7,6 +7,15 @@ import org.springframework.web.context.ContextLoader;
 
 import com.cannontech.spring.ApplicationContextUtil;
 
+
+/**
+ * Performs the actual initialization work for the root application context.
+ * Parent context is defined in web.xml using context-param with param-name locatorFactorySelector and
+ * parentContextKey.
+ * spring 5 do not provide any default implementation of loadParentContext which caters loading of parent
+ * context (locatorFactorySelector & parentContextKey).
+ * Created {@link CustomContextLoader} class to support parent cpntext
+ */
 public class CustomContextLoader extends ContextLoader {
 
     public static final String LOCATOR_FACTORY_SELECTOR_PARAM = "locatorFactorySelector";
