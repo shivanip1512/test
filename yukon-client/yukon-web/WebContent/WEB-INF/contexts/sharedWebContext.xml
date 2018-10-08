@@ -14,6 +14,86 @@
          is duplicated in all CannonDispatcherServlet contexts. -->
 
     <context:annotation-config/>
+    
+    <mvc:resources mapping="/resources/**/*.js" location="/resources/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    
+    <mvc:resources mapping="/resources/**/*.css" location="/resources/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    
+    <mvc:resources mapping="/resources/**/*.png" location="/resources/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    
+    <mvc:resources mapping="/resources/**/*.gif" location="/resources/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    
+    <mvc:resources mapping="/WebConfig/**/*.png" location="/WebConfig/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    
+    <mvc:resources mapping="/WebConfig/**/*.css" location="/WebConfig/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    
+    <mvc:resources mapping="/WebConfig/**/*.gif" location="/WebConfig/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    
+    <mvc:resources mapping="/include/**/*.css" location="/include/">
+        <mvc:resource-chain resource-cache="true" auto-registration="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
 
     <mvc:annotation-driven>
         <mvc:argument-resolvers>

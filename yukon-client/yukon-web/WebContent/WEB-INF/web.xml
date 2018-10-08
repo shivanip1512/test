@@ -484,6 +484,10 @@
         <url-pattern>/WebConfig/yukon/styles/buttons.css</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/buttons.default.css</url-pattern>
         <url-pattern>/WebConfig/yukon/styles/overrides.css</url-pattern>
+        <url-pattern>*.js</url-pattern>
+        <url-pattern>*.css</url-pattern>
+        <url-pattern>*.png</url-pattern>
+        <url-pattern>*.gif</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -840,4 +844,65 @@
         <error-code>400</error-code>
         <location>/400s.jsp</location>
     </error-page>
+    
+    <filter>
+        <filter-name>resourceUrlEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.servlet.resource.ResourceUrlEncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>resourceUrlEncodingFilter</filter-name>
+        <servlet-name>common</servlet-name>
+        <servlet-name>login</servlet-name>
+        <servlet-name>tools</servlet-name>
+        <servlet-name>vv</servlet-name>
+        <servlet-name>dev</servlet-name>
+        <servlet-name>dashboards</servlet-name>
+        <servlet-name>smartNotifications</servlet-name>
+        <servlet-name>deviceConfiguration</servlet-name>
+        <servlet-name>bulk</servlet-name>
+        <servlet-name>collectionActions</servlet-name>
+        <servlet-name>commander</servlet-name>
+        <servlet-name>picker</servlet-name>
+        <servlet-name>jws</servlet-name>
+        <servlet-name>dynamicBilling</servlet-name>
+        <servlet-name>scheduledBilling</servlet-name>
+        <servlet-name>contextualMenu</servlet-name>
+        <servlet-name>support</servlet-name>
+        <servlet-name>adminSetup</servlet-name>
+        <servlet-name>lucene-index</servlet-name>
+        <servlet-name>amr</servlet-name>
+        <servlet-name>meter</servlet-name>
+        <servlet-name>chart</servlet-name>
+        <servlet-name>group</servlet-name>
+        <servlet-name>httpRemote</servlet-name>
+        <servlet-name>capcontrol</servlet-name>
+        <servlet-name>multispeak</servlet-name>
+        <servlet-name>macsscheduler</servlet-name>
+        <servlet-name>stars</servlet-name>
+        <servlet-name>starsDemandResponseAdmin</servlet-name>
+        <servlet-name>componentDispatcher</servlet-name>
+        <servlet-name>dataUpdater</servlet-name>
+        <servlet-name>static</servlet-name>
+        <servlet-name>debug</servlet-name>
+        <servlet-name>dr</servlet-name>
+        <servlet-name>reports</servlet-name>
+        <servlet-name>user</servlet-name>
+        <servlet-name>billing</servlet-name>
+        <servlet-name>layout</servlet-name>
+        <servlet-name>springRedirect</servlet-name>
+        <servlet-name>LoggingServlet</servlet-name>
+        <servlet-name>ConnServlet</servlet-name>
+        <servlet-name>GraphGenerator</servlet-name>
+        <servlet-name>ReportGenerator</servlet-name>
+        <servlet-name>PILConnectionServlet</servlet-name>
+        <servlet-name>ScheduleController</servlet-name>
+        <servlet-name>CommanderServlet</servlet-name>
+        <servlet-name>CurtailmentServlet</servlet-name>
+        <servlet-name>LCConnectionServlet</servlet-name>
+        <servlet-name>Download</servlet-name>
+        <servlet-name>BillingServlet</servlet-name>
+        <servlet-name>PWordRequest</servlet-name>
+        <servlet-name>CallbackServlet</servlet-name>
+        <url-pattern>/analysis/Reports.jsp</url-pattern>
+    </filter-mapping>
 </web-app>

@@ -3,6 +3,7 @@ package com.cannontech.web.taglib;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
@@ -25,8 +26,9 @@ public class IncludeCssTag extends SimpleTagSupport {
             try {
                 PageContext pageContext = (PageContext) getJspContext();
                 HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+                HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
                 out.write("<link rel=\"stylesheet\" href=\"");
-                out.write(request.getContextPath() + resolveLink());
+                out.write(response.encodeURL(request.getContextPath() + resolveLink()));
                 out.write("\">");
             } catch (IOException e) {
                 // This should not happen unless the sky is falling.

@@ -24,17 +24,17 @@
 
 <%-- Standard CSS Files --%>
 <c:forEach items="${standardCssFiles}" var="file">
-    <link rel="stylesheet" href="<cti:url value="${file}"/>">
+    <link rel="stylesheet" href="<c:url value="${file}"/>">
 </c:forEach>
 
 <%-- Module CSS files from module_config.xml --%>
 <c:forEach items="${moduleConfigCss}" var="file">
-    <link rel="stylesheet" href="<cti:url value="${file}"/>">
+    <link rel="stylesheet" href="<c:url value="${file}"/>">
 </c:forEach>
 
 <%-- Individual files from includeCss tag on the request page --%>
 <c:forEach items="${innerContentCss}" var="file">
-    <link rel="stylesheet" href="<cti:url value="${file}"/>">
+    <link rel="stylesheet" href="<c:url value="${file}"/>">
 </c:forEach>
 
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
@@ -42,20 +42,20 @@
 
 <%-- Library Script Files --%>
 <c:forEach items="${libraryScriptFiles}" var="file">
-    <script src="<cti:url value="${file}"/>"></script>
+    <script src="<c:url value="${file}"/>"></script>
 </c:forEach>
 
 <tags:jsGlobals/>
 
 <%-- Yukon Script Files --%>
 <c:forEach items="${yukonScriptFiles}" var="file">
-    <script src="<cti:url value="${file}"/>"></script>
+    <script src="<c:url value="${file}"/>"></script>
 </c:forEach>
 
 <c:if test="${!empty info.smartNotificationsEvent}">
-    <script src="<cti:url value="/resources/js/common/yukon.format.time.js"/>"></script>
-    <script src="<cti:url value="/resources/js/common/yukon.ui.timeSlider.js"/>"></script>
-    <script src="<cti:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
+    <script src="<c:url value="/resources/js/common/yukon.format.time.js"/>"></script>
+    <script src="<c:url value="/resources/js/common/yukon.ui.timeSlider.js"/>"></script>
+    <script src="<c:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
 </c:if>
 
 <audio id="alert-audio">
