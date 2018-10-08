@@ -163,45 +163,49 @@ public class MapController {
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
             
             if (type.isRfGateway()) {
+                // Gateways should get information from RfnGatewayData (not metadata)
                 try {
                     RfnGatewayData gateway = gatewayDataCache.get(pao.getPaoIdentifier());
                     model.addAttribute("gatewayIPAddress", gateway.getIpAddress());
+                    model.addAttribute("macAddress", gateway.getMacAddress());
                 } catch (NmCommunicationException e) {
                     log.error("Failed to get gateway data for " + id, e);
                     model.addAttribute("errorMsg", e.getMessage());
+                }
+            } else {
+                try {
+                    Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
+                    model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
+                    String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
+                    model.addAttribute("primaryGatewayName", primaryGatewayName);
+                    String nodeSN = metadataService.getMetaDataValueAsString(RfnMetadata.NODE_SERIAL_NUMBER, metadata);
+                    model.addAttribute("nodeSN", nodeSN);
+                    //primary gateway from NM contains the IP Address too
+                    List<LiteYukonPAObject> foundGateways;
+                    foundGateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
+                    if (foundGateways.size() > 0) {
+                        model.addAttribute("primaryGateway", foundGateways.get(0));
+                    } else {
+                        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                        for (RfnGateway gateway : gateways) {
+                            if (gateway.getNameWithIPAddress().equals(primaryGatewayName)) {
+                                model.addAttribute("primaryGateway", gateway);
+                                break;
+                            }
+                        }
+                    }
+                } catch (NmCommunicationException e) {
+                    log.error("Failed to get metadata for " + id, e);
+                    model.addAttribute("errorMsg", e.getMessage());
+                } catch (NotFoundException e) {
+                    log.error("Failed to find RFN Device for " + id, e);           
                 }
             }
             if (StringUtils.isNotBlank(rfnDevice.getRfnIdentifier().getSensorSerialNumber())) {
                 model.addAttribute("sensorSN", rfnDevice.getRfnIdentifier().getSensorSerialNumber());
             }
 
-            try {
-                Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
-                model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
-                String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
-                model.addAttribute("primaryGatewayName", primaryGatewayName);
-                String nodeSN = metadataService.getMetaDataValueAsString(RfnMetadata.NODE_SERIAL_NUMBER, metadata);
-                model.addAttribute("nodeSN", nodeSN);
-                //primary gateway from NM contains the IP Address too
-                List<LiteYukonPAObject> foundGateways;
-                foundGateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
-                if (foundGateways.size() > 0) {
-                    model.addAttribute("primaryGateway", foundGateways.get(0));
-                } else {
-                    List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-                    for (RfnGateway gateway : gateways) {
-                        if (gateway.getNameWithIPAddress().equals(primaryGatewayName)) {
-                            model.addAttribute("primaryGateway", gateway);
-                            break;
-                        }
-                    }
-                }
-            } catch (NmCommunicationException e) {
-                log.error("Failed to get metadata for " + id, e);
-                model.addAttribute("errorMsg", e.getMessage());
-            } catch (NotFoundException e) {
-                log.error("Failed to find RFN Device for " + id, e);           
-            }
+
         }
 
         model.addAttribute("pao", displayable);

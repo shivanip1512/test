@@ -341,12 +341,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private void addMetadata(MappingInfo info, MessageSourceAccessor accessor) {
         PaoType type = info.getDevice().getPaoIdentifier().getPaoType();
         if (type.isRfGateway()) {
+            // Gateways should get information from RfnGatewayData (not metadata)
             try {
                 RfnGatewayData gateway = gatewayDataCache.get(info.getDevice().getPaoIdentifier());
                 info.setConnectionStatus(gateway.getConnectionStatus());
                 info.setIpAddress(gateway.getIpAddress());
-                Map<RfnMetadata, Object> metadata = metadataService.getMetadata(info.getDevice());
-                info.setMacAddress(metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
+                info.setMacAddress(gateway.getMacAddress());
             } catch (NmCommunicationException e) {
                 // ignore, status will be set to "UNKNOWN"
                 log.error("Failed to get gateway data for " + info.getDevice(), e);
