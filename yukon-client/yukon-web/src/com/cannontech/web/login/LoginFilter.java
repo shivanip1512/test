@@ -63,6 +63,7 @@ public class LoginFilter implements Filter {
                          "/login/change-password",
                          "/login/check-password",
                          "/servlet/LoginController",
+                         "/servlet/LoginController/*",
                          "/soap/*",
                          "/multispeak/v3/*",
                          "/multispeak/v5/*", 
