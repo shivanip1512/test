@@ -49,6 +49,7 @@ pipeline {
                         quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
                         
                         bat './yukon-build/go.bat build-client'
+
                         stash name: 'yukon-client', excludes: '*.java'
                         
                         //junit './yukon-client/*/test/testResults/*.xml'
@@ -94,8 +95,9 @@ pipeline {
                             local: 'yukon-shared',
                             remote: 'https://svn.cooperpowereas.net/software/yukon/trunk/yukon-shared']],
                         quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+
                         bat './yukon-build/go.bat build-server'
-                        archiveArtifacts artifacts: 'yukon-server/bin/*', excludes: 'output/*.md'
+
                         stash name: 'yukon-server', includes: 'yukon-server/bin/*'
                     }
                 }
@@ -152,6 +154,8 @@ pipeline {
                     quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
                     
                 bat './yukon-build/go.bat build-dist'
+
+                archiveArtifacts artifacts: 'dist/*'
             }
         }
     }
