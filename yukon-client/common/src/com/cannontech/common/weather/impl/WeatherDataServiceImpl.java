@@ -235,7 +235,7 @@ public class WeatherDataServiceImpl implements WeatherDataService {
                     continue;
                 }
             }
-            if (primaryWeatherLocationPaoId == null) {
+            if (primaryWeatherLocationPaoId == null && !paos.isEmpty()) {
                 primaryWeatherLocationPaoId = paos.get(0).getPaoIdentifier().getPaoId();
                 staticPaoInfoDao.saveValue(PaoInfo.PRIMARY_WEATHER_LOCATION, primaryWeatherLocationPaoId,
                     YNBoolean.YES.getDatabaseRepresentation().toString());
