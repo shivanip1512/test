@@ -405,7 +405,7 @@
         </exec>   
     </target>
         
-    <target name="updatedbscripts">
+    <target name="updatedbscripts" depends="init">
         <echo message="version: ${version.major}.${version.minor}.${version.revision}" />
         <ant dir="${basedir}/yukon-database"
              target="build"
