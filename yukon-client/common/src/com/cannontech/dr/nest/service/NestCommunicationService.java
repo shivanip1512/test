@@ -2,10 +2,12 @@ package com.cannontech.dr.nest.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.cannontech.dr.nest.model.CriticalEvent;
 import com.cannontech.dr.nest.model.NestControlHistory;
@@ -28,17 +30,17 @@ public interface NestCommunicationService{
      * Sends standard event to Nest
      * 
      * @param event to send to Nest
-     * @return null if success otherwise error
+     * @return optional error we got from Nest
      */
-    NestError sendStandardEvent(StandardEvent event);
+    Optional<NestError> sendStandardEvent(StandardEvent event);
 
     /**
      * Sends critical event to Nest
      * 
      * @param event to send to Nest
-     * @return null if success otherwise error
+     * @return optional error we got from Nest
      */
-    NestError sendCriticalEvent(CriticalEvent event);
+    Optional<NestError> sendCriticalEvent(CriticalEvent event);
 
     /**
      * Attempts to cancel event with Nest
@@ -54,6 +56,13 @@ public interface NestCommunicationService{
      * @return file data
      */
     List<NestExisting> downloadExisting();
+    
+    /**
+     * Parses file. Used by simulator.
+     * 
+     * @return file data
+     */
+    List<NestExisting> parseExistingCsvFile(InputStream inputStream);
       
     public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
 
@@ -81,4 +90,10 @@ public interface NestCommunicationService{
             throw new NestException("Unable to parse date:" + date, e);
         }
     }
+
+    /**
+     * Sends event to Nest and gets a response. This methods is used by simulator as we want to display the
+     * not formated response we get from Nest.
+     */
+    String getNestResponse(String url, CriticalEvent event);
 }

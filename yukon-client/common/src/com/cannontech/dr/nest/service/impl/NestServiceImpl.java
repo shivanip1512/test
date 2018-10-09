@@ -1,6 +1,7 @@
 package com.cannontech.dr.nest.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
@@ -42,7 +43,7 @@ public class NestServiceImpl implements NestService {
     private static final Logger log = YukonLogManager.getLogger(NestServiceImpl.class);
 
     @Override
-    public NestError control(int programId, int gearId, Instant startTime, Instant stopTime) {
+    public Optional<NestError> control(int programId, int gearId, Instant startTime, Instant stopTime) {
         
         List<String> groupNames = getNestGroupNames(programId);        
         /**

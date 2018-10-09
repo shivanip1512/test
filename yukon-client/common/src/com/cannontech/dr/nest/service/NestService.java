@@ -1,5 +1,7 @@
 package com.cannontech.dr.nest.service;
 
+import java.util.Optional;
+
 import org.joda.time.Instant;
 
 import com.cannontech.dr.nest.model.NestError;
@@ -28,9 +30,9 @@ public interface NestService {
     /**
      * 1. Finds all Nest groups for the program
      * 2. Sends control request
-     * @return null if success otherwise returns error
+     * @return optional error we got from Nest
      */
-    NestError control(int programId, int gearId, Instant startTime, Instant stopTime);
+    Optional<NestError> control(int programId, int gearId, Instant startTime, Instant stopTime);
 
     /**
      * 1. Finds all Nest groups for the program

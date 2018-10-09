@@ -44,7 +44,7 @@
                                 <input id="noOfThermostats" name="winterProgram" type="checkbox">
                          </tags:nameValue2>
                          <tags:nameValue2 nameKey=".nestFileGenerator.defaultFile">
-                                <input id="defaultFile" name="defaultFile" type="checkbox">
+                                <input id="defaultFile" name="defaultFile" type="checkbox" checked>
                          </tags:nameValue2>
                     </tags:nameValueContainer2>
                     <div class="column nogutter">

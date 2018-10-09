@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class NestUploadInfo {
@@ -23,14 +24,47 @@ public class NestUploadInfo {
         this.errors = errors;
     }
 
+    @JsonProperty("num_group_changes")
+    public int getNumOfGroupChanges() {
+        return numOfGroupChanges;
+    }
+
+    @JsonProperty("num_group_changes")
+    public void setNumOfGroupChanges(int numOfGroupChanges) {
+        this.numOfGroupChanges = numOfGroupChanges;
+    }
+
+    @JsonProperty("num_dissolved")
+    public int getNumOfDissolved() {
+        return numOfDissolved;
+    }
+
+    @JsonProperty("num_dissolved")
+    public void setNumOfDissolved(int numOfDissolved) {
+        this.numOfDissolved = numOfDissolved;
+    }
+
+    @JsonProperty("errors")
+    public List<NestUploadError> getErrors() {
+        return errors;
+    }
+
+    @JsonProperty("errors")
+    public void setErrors(List<NestUploadError> errors) {
+        this.errors = errors;
+    }
+
+    @JsonIgnore
     public boolean isGroupChangeSuccessful() {
         return numOfGroupChanges == 1;
     }
     
+    @JsonIgnore
     public boolean isAccountDissolved() {
         return numOfDissolved == 1;
     }
     
+    @JsonIgnore
     public List<String> getNestErrors(){
         return errors.stream()
                 .map(e -> e.getErrors())

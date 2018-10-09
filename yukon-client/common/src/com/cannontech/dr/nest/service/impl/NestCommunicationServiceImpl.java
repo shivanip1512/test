@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -81,14 +82,14 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         restTemplate.setRequestFactory(factory);
     }
     private static final String control = "/energy/v2/rush_hour_rewards/events/";
-    private static final String critical = control + "critical";
-    private static final String standard = control + "standard";
+    public static final String critical = control + "critical";
+    public static final String standard = control + "standard";
 
     /**
      * curl https://enterprise-api.nest.com/api/energy/v2/rush_hour_rewards/events/standard -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA==" -H "Content-Type: application/json" -d "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Test\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}"
      */
     @Override
-    public NestError sendStandardEvent(StandardEvent event) {
+    public Optional<NestError> sendStandardEvent(StandardEvent event) {
         log.debug("Sending request to create standard event");
         String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + standard;
         log.debug("Request url {}", requestUrl);
@@ -98,10 +99,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     }
     
     @Override
-    public NestError sendCriticalEvent(CriticalEvent event) {
+    public Optional<NestError> sendCriticalEvent(CriticalEvent event) {
         log.debug("Sending request to create critical event");
         String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + critical;
-        log.debug("Request url {}", requestUrl);
         String response = getNestResponse(requestUrl, event);
         
         return processNestReply(response, event);
@@ -132,7 +132,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         return true;
     }
     
-    private NestError processNestReply(String response, CriticalEvent event) {
+    private Optional<NestError> processNestReply(String response, CriticalEvent event) {
+        NestError nestError = null;
         try {
             NestEventId nestId = JsonUtils.fromJson(response, NestEventId.class);
             //This table will only have an entry if response is success
@@ -149,15 +150,17 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
                     //schema violation
                     throw new NestException("Reply from Nest contains an error. Error:" + error);
                 }
-                return error.getError();
+                nestError = error.getError();
             } catch (IOException e1) {
                 throw new NestException("Error getting valid reponse from Nest. Reponse:" + response);
             }
         }
-        return null;
+        return Optional.of(nestError);
     }
     
-    private String getNestResponse(String url, CriticalEvent event) {
+    @Override
+    public String getNestResponse(String url, CriticalEvent event) {
+        log.debug("Request url {}", url);
         try {
             log.debug(JsonUtils.toJson(event));
         } catch (JsonProcessingException e) {
@@ -224,7 +227,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
     }
     
-    private List<NestExisting> parseExistingCsvFile(InputStream inputStream) {
+    @Override
+    public List<NestExisting> parseExistingCsvFile(InputStream inputStream) {
         List<NestExisting> existing = new ArrayList<>();
         if (inputStream != null) {
             CsvSchema schema = CsvSchema.emptySchema().withHeader().withNullValue("");

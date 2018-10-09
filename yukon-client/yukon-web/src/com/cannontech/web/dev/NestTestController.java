@@ -33,17 +33,19 @@ import com.cannontech.dr.nest.model.LoadShaping;
 import com.cannontech.dr.nest.model.LoadShapingPeak;
 import com.cannontech.dr.nest.model.LoadShapingPost;
 import com.cannontech.dr.nest.model.LoadShapingPreparation;
-import com.cannontech.dr.nest.model.NestError;
-import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.StandardEvent;
 import com.cannontech.dr.nest.service.NestCommunicationService;
+import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
+import com.cannontech.dr.nest.service.NestSyncService;
+import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
-import com.cannontech.dr.nest.service.impl.NestSyncServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.NestFileGenerationSetting;
@@ -59,9 +61,11 @@ public class NestTestController {
     
     @Autowired NestSimulatorService nestService;
     @Autowired NestCommunicationService nestComm;
-    @Autowired NestSyncServiceImpl nestSync; 
+    @Autowired NestSyncService nestSync; 
+    @Autowired NestService nestS; 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private GlobalSettingDao settingDao;
     
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
@@ -142,7 +146,7 @@ public class NestTestController {
 
         flash.setConfirm(
             new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.nestFileGenerator.fileGenerationSuccessful"));
-        return "redirect:fileSettings";
+        return "redirect:viewNestFileSetting";
     }
     
     @RequestMapping(value = "/syncYukonAndNest", method = RequestMethod.GET)
@@ -201,30 +205,22 @@ public class NestTestController {
         List<String> groupNames = StringUtils.parseStringsForList(nestParameters.getGroupName(), ",");
         String period = new Period(nestParameters.getStartTime(), nestParameters.getStopTime()).toString();
 
-        String message = org.apache.commons.lang3.StringUtils.EMPTY;
-        NestError nestError;
         if (nestParameters.getControlMethod() == GearControlMethod.NestCriticalCycle) {
             CriticalEvent criticalEvent =
                 new CriticalEvent(nestParameters.getStartTime().toString(), period, groupNames);
-            try {
-                nestError = nestComm.sendCriticalEvent(criticalEvent);
-                message = nestError.getMessage();
-            } catch (NestException e) {
-                message = e.getMessage();
-            }
+            String requestUrl =
+                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestCommunicationServiceImpl.critical;
+            return nestComm.getNestResponse(requestUrl, criticalEvent);
 
         } else if (nestParameters.getControlMethod() == GearControlMethod.NestStandardCycle) {
             LoadShaping loadShaping = new LoadShaping(nestParameters.getLoadShapingPreparation(),
                 nestParameters.getLoadShapingPeak(), nestParameters.getLoadShapingPost());
             StandardEvent standardEvent =
                 new StandardEvent(nestParameters.getStartTime().toString(), period, groupNames, loadShaping);
-            try {
-                nestError = nestComm.sendStandardEvent(standardEvent);
-                message = nestError.getMessage();
-            } catch (NestException e) {
-                message = e.getMessage();
-            }
+            String requestUrl =
+                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestCommunicationServiceImpl.standard;
+            return nestComm.getNestResponse(requestUrl, standardEvent);
         }
-        return message;
+        return "";
     }
 }
