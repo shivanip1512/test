@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.model;
 
+import java.util.Optional;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.gateway.AppMode;
@@ -282,6 +283,18 @@ public final class RfnGatewayData {
 
     public String getIpv6PrefixSuggested() {
         return ipv6PrefixSuggested;
+    }
+    
+    public String getMacAddress() {
+        Optional<Radio> mac =
+            radios.stream()
+                //FFFFFFFFFFFF is an erroneous radio MAC address reported by the gateway when the gateway application starts up before the radio has finished loading
+                .filter(radio -> !radio.getMacAddress().isEmpty() && !radio.getMacAddress().equals("FFFFFFFFFF"))
+                .findFirst();
+        if (mac.isPresent()) {
+            return (String) mac.get().getMacAddress();
+        }
+        return null;
     }
 
     @Override
