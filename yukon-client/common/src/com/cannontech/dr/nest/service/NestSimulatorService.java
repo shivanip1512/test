@@ -1,8 +1,10 @@
 package com.cannontech.dr.nest.service;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.nest.model.NestUploadInfo;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
 public interface NestSimulatorService {
@@ -33,5 +35,8 @@ public interface NestSimulatorService {
      * Gets the saved value from database for the passed key.
      */
     String getFileName(YukonSimulatorSettingsKey key);
+
+
+    NestUploadInfo upload(InputStream inputStream);
 
 }

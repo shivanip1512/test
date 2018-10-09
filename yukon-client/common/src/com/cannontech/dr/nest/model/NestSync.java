@@ -1,14 +1,11 @@
 package com.cannontech.dr.nest.model;
 
-import java.util.List;
-
 import org.joda.time.Instant;
 
 public class NestSync {
     private int id;
     private Instant startTime = new Instant();
     private Instant stopTime;
-    private List<NestSyncDetail> details;
     
     public int getId() {
         return id;
@@ -27,11 +24,5 @@ public class NestSync {
     }
     public void setStopTime(Instant stopTime) {
         this.stopTime = stopTime;
-    }
-    public List<NestSyncDetail> getDetails() {
-        return details;
-    }
-    public void setDetails(List<NestSyncDetail> details) {
-        this.details = details;
     }
 }

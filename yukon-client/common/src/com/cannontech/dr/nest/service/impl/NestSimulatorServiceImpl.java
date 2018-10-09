@@ -1,7 +1,11 @@
 package com.cannontech.dr.nest.service.impl;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,8 +13,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +27,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestFileType;
+import com.cannontech.dr.nest.model.NestUploadInfo;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
@@ -37,11 +44,66 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private AccountService accountService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private NestCommunicationService nestCommunicationService;
     
     public static final String SIMULATED_FILE_PATH = CtiUtilities.getNestDirPath() + System.getProperty("file.separator") + "Simulator";
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm";
     public String fileGenerated = "Generated";
 
+    @Override
+    public NestUploadInfo upload(InputStream uploadedStream){
+        
+        NestUploadInfo info = null;
+        
+        String path = NestSimulatorServiceImpl.SIMULATED_FILE_PATH;
+        String fileName = getFileName(YukonSimulatorSettingsKey.NEST_FILE_NAME);
+        File file = new File(path, fileName);
+        InputStream existingStream;
+        try {
+            existingStream = new DataInputStream(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            throw new NestException("Unable to read file " + path + fileName);
+        }
+        List<NestExisting> existing = nestCommunicationService.parseExistingCsvFile(existingStream);
+        List<NestExisting> uploaded = nestCommunicationService.parseExistingCsvFile(uploadedStream);
+        
+        try {
+            existingStream.close();
+            FileDeleteStrategy.FORCE.delete(file);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        NestExisting uploadedRecord = uploaded.stream()
+                .filter(row -> Strings.isNotBlank(row.getAccountNumber()))
+                .findFirst().get();
+        
+        if(!Strings.isEmpty(uploadedRecord.getDissolve()) && uploadedRecord.getDissolve().equals("Y")) {
+            existing.removeIf(row -> !Strings.isEmpty(row.getAccountNumber()) && row.getAccountNumber().equals(uploadedRecord.getAccountNumber()));
+            info = new NestUploadInfo(0, 1, new ArrayList<>());
+        }
+       
+       if(!Strings.isEmpty(uploadedRecord.getAssignGroup()) && uploadedRecord.getAssignGroup().equals("Y")) {
+            int index = IntStream.range(0, existing.size())
+                    .filter(i-> existing.get(i).getAccountNumber().equals(uploadedRecord.getAccountNumber()))
+                    .findFirst()
+                    .getAsInt();
+            existing.remove(index);
+            uploadedRecord.setAssignGroup(null);
+            existing.add(index, uploadedRecord);
+            info = new NestUploadInfo(0, 1, new ArrayList<>());
+        }
+        try {
+            FileDeleteStrategy.FORCE.delete(file);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        writeToAFile(new File(path, fileName), existing);
+        return info;
+    }
+    
     @Override
     public String generateExistingFile(List<String> groupNames, int rows, int maxSerialNumbers, boolean isWinterProgram, LiteYukonUser user){
 
@@ -67,7 +129,8 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
             
         addStaticNestInfo(existing, groupNames);
 
-        return writeToAFile(existing);
+        File file = NestCommunicationService.createFile(SIMULATED_FILE_PATH, fileGenerated);
+        return writeToAFile(file, existing);
     }
     
     private int compareDates(String date1, String date2) {
@@ -79,8 +142,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         }
     }
 
-    private String writeToAFile(List<NestExisting> existing) {
-        File file = NestCommunicationService.createFile(SIMULATED_FILE_PATH, fileGenerated);
+    private String writeToAFile(File file, List<NestExisting> existing) {
         ObjectWriter writer =
             new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
         try {
