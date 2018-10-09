@@ -256,7 +256,7 @@
         <echo message="SVN Version: ${svnversion}" file="${install.bag}/svnversion.txt"/>
 
         <!-- Location of the stand-alone build module -->
-        <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012Spring SAB\System\IsCmdBld.exe" />
+        <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012SpringSP1 SAB\System\IsCmdBld.exe" />
         <!-- Location of the installer data file -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
         
