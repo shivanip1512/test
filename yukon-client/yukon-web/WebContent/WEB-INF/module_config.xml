@@ -462,6 +462,9 @@
           <page name="ecobee.details" type="BASIC">
             <link>/dr/ecobee/details</link>
           </page>
+          <page name="nest.details" type="BASIC">
+            <link>/dr/nest/details</link>
+          </page>
           <page name="recentEventParticipation.details" type="BASIC">
             <link>/dr/recentEventParticipation/details</link>
           </page>
