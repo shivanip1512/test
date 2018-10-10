@@ -155,7 +155,7 @@ pipeline {
                         remote: 'https://svn.cooperpowereas.net/software/yukon/trunk/yukon-database']],
                     quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
                     
-                bat './yukon-build/go.bat build-dist'
+                bat './yukon-build/go.bat clean build-dist-pdb'
 
                 archiveArtifacts artifacts: './yukon-build/dist/*'
             }
