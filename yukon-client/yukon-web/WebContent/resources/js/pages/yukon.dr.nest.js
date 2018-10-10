@@ -6,7 +6,6 @@ yukon.namespace('yukon.dr.ecobee');
  * @requires JQUERY
  * @requires JQUERY UI
  * @requires yukon
- * @requires yukon.date.time.picker
  */
 yukon.dr.ecobee = (function () {
 
