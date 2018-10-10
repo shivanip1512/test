@@ -313,4 +313,12 @@ public class PaoNotesSearchController {
         model.addAttribute("maxCharactersInNote", MAX_CHARACTERS_IN_NOTE);
         model.addAttribute("noteTextAreaMaxLength", NOTE_TEXTAREA_MAX_LENGTH);
     }
+    
+    @RequestMapping(value = "hasNotes", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> hasNotes(ModelMap model, YukonUserContext userContext, int paoId) {
+        Map<String, Object> jsonResponse = new HashMap<>();
+        jsonResponse.put("hasNotes", paoNotesService.hasNotes(paoId));
+        return jsonResponse;
+    }
 }

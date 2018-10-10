@@ -83,12 +83,14 @@ yukon.mapping = (function () {
             if (pao.deviceDetailUrl != null) {
                 var nameSpan = $('<span />'),
                     deviceLink = '<a href="' + yukon.url(pao.deviceDetailUrl) + '" target=_blank>' + nameSpan.text(pao.device.name).html() + '</a>',
-                    cogMenu = $('.js-cog-menu').clone().removeClass('dn');
-                cogMenu.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
+                    actionsDiv = $('#actionsDiv').clone().removeClass('dn');
+                actionsDiv.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
+                actionsDiv.find('.js-view-all-notes').attr('data-pao-id', pao.device.paoIdentifier.paoId);
+                yukon.tools.paonotespopup.hideShowNotesIcons(pao.device.paoIdentifier.paoId);
                 if (pao.device.paoIdentifier.paoType === 'RFN_GATEWAY' || pao.device.paoIdentifier.paoType === 'GWY800') {
-                    cogMenu.find('.js-device-route').addClass('dn');
+                    actionsDiv.find('.js-device-route').addClass('dn');
                 }
-                $('.js-device').html(deviceLink + cogMenu[0].outerHTML);
+                $('.js-device').html(deviceLink + actionsDiv[0].outerHTML);
             } else {
                 $('.js-device').text(pao.device.name);
             }
@@ -98,7 +100,7 @@ yukon.mapping = (function () {
             $('.js-type').text(pao.device.paoIdentifier.paoType);
             $('.js-status-display').toggleClass('dn', pao.statusDisplay === null);
             $('.js-status').text(pao.statusDisplay);
-            updateDeviceStatusClass(pao.statusDisplay);
+            mod.updateDeviceStatusClass(pao.statusDisplay);
             $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway === null);
             if (pao.primaryGatewayUrl != null) {
                 var nameSpan = $('<span />');

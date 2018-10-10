@@ -163,8 +163,22 @@ yukon.tools.paonotespopup = (function () {
             });
             
             _initialized = true;
-        }
+        },
     
+        // Given a device/pao id, determine if the device has notes and either show or hide all of the notes
+        // icons on the page for that device.
+        hideShowNotesIcons: function (paoId) {
+            if (paoId != null) {
+                $.post(yukon.url('/tools/paoNotes/hasNotes'), {paoId: paoId})
+                    .done(function(data) {
+                        if (data.hasNotes) {
+                            $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').show();
+                        } else {
+                            $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').hide();
+                        }
+                    });
+            }
+        }
     };
  
     return mod;
