@@ -447,7 +447,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                     || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_SEP_PROGRAM
                     || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_ECOBEE_PROGRAM
                     || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_ENERGY_EXCHANGE_PROGRAM
-					|| getAllLoadManagement().get(i).getPaoType() == PaoType.LM_HONEYWELL_PROGRAM) {
+                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_HONEYWELL_PROGRAM
+                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_NEST_PROGRAM) {
                     allLMPrograms.add(getAllLoadManagement().get(i));
                 }
             }
