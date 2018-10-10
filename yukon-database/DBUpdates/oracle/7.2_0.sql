@@ -132,6 +132,21 @@ ALTER TABLE NestSyncDetail
 INSERT INTO DBUpdates VALUES ('YUK-18868', '7.2.0', SYSDATE);
 /* @end YUK-18868 */
 
+/* @start YUK-18897 */
+CREATE TABLE LMNestControlEvent  (
+    NestControlEventId      NUMBER          NOT NULL,
+    NestGroup               VARCHAR2(20)    NOT NULL,
+    NestKey                 VARCHAR2(20)    NOT NULL,
+    StartTime               DATE            NOT NULL,
+    StopTime                DATE,
+    CancelRequestTime       DATE,
+    CancelResponse          DATE,
+    CONSTRAINT PK_LMNestControlEvent PRIMARY KEY (NestControlEventId)
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-18897', '7.2.0', SYSDATE);
+/* @end YUK-18897 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
