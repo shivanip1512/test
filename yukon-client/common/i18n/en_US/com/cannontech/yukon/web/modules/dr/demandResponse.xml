@@ -587,8 +587,6 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.nest.forceSync">Force Sync</entry>
 <entry key="yukon.web.modules.dr.nest.lastSync">Last sync time</entry>
 <entry key="yukon.web.modules.dr.nest.syncSchedule">Scheduled Sync</entry>
-<entry key="yukon.web.modules.dr.nest.syncNow">Sync Now</entry>
-<entry key="yukon.web.modules.dr.nest.nestSync">Sync Now</entry>
 <entry key="yukon.web.modules.dr.nest.nestSyncInProgress">Sync is currently in progress</entry>
 <entry key="yukon.web.modules.dr.nest.nextSync">Next Sync Available: </entry>
 
