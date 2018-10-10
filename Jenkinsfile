@@ -111,6 +111,8 @@ pipeline {
             steps {
                 unstash 'yukon-client'
                 unstash 'yukon-server'
+                
+                // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
                 checkout([$class: 'SubversionSCM',
                     additionalCredentials: [],
                     excludedCommitMessages: '',
@@ -132,7 +134,7 @@ pipeline {
                         ignoreExternalsOption: true,
                         local: 'yukon-build',
                         remote: 'https://svn.cooperpowereas.net/software/yukon/trunk/yukon-build']],
-                    quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                    quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
                         
                 bat './yukon-build/go.bat build-install'
                 
@@ -155,7 +157,7 @@ pipeline {
                     
                 bat './yukon-build/go.bat build-dist'
 
-                archiveArtifacts artifacts: 'dist/*'
+                archiveArtifacts artifacts: './yukon-build/dist/*'
             }
         }
     }

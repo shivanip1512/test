@@ -7,9 +7,9 @@
         <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
     </tstamp>
     <property name="module.name" value="yukon" />
-    <property name="log.dir" value="../logs" />
-    <property name="dist.dir" value="../dist" />
-    <property name="temp.dir" value="../temp" />
+    <property name="log.dir" value="${basedir}/yukon-build/logs" />
+    <property name="dist.dir" value="${basedir}/yukon-build/dist" />
+    <property name="temp.dir" value="${basedir}/yukon-build/temp" />
 
     <target name="targets">
         <echo message="The following targets are available" />
