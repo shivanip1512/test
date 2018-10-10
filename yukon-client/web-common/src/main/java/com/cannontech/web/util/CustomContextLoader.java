@@ -14,7 +14,7 @@ import com.cannontech.spring.ApplicationContextUtil;
  * parentContextKey.
  * spring 5 do not provide any default implementation of loadParentContext which caters loading of parent
  * context (locatorFactorySelector & parentContextKey).
- * Created {@link CustomContextLoader} class to support parent cpntext
+ * Created {@link CustomContextLoader} class to support parent context
  */
 public class CustomContextLoader extends ContextLoader {
 
@@ -25,7 +25,7 @@ public class CustomContextLoader extends ContextLoader {
     protected ApplicationContext loadParentContext(ServletContext servletContext) {
         String locatorFactorySelector = servletContext.getInitParameter(LOCATOR_FACTORY_SELECTOR_PARAM);
         String parentContextKey = servletContext.getInitParameter(LOCATOR_FACTORY_KEY_PARAM);
-        return (ApplicationContext) ApplicationContextUtil.INSTANCE.getApplicationContext(locatorFactorySelector).getBean(
+        return (ApplicationContext) ApplicationContextUtil.getApplicationContext(locatorFactorySelector).getBean(
             parentContextKey);
     }
 }

@@ -58,7 +58,7 @@ public class YukonSpringHook {
             }
         }
         log.info("Creating context: " + factoryKey);
-        applicationContext = (ApplicationContext) ApplicationContextUtil.INSTANCE.getApplicationContext(BEAN_REF_RESOURCE_LOCATION).getBean(factoryKey);
+        applicationContext = (ApplicationContext) ApplicationContextUtil.getApplicationContext(BEAN_REF_RESOURCE_LOCATION).getBean(factoryKey);
     }
 
     /**

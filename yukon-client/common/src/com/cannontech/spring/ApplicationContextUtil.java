@@ -3,16 +3,14 @@ package com.cannontech.spring;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-
 /**
- * Singleton class to create application context and use that context.
+ * This class is used to create application context for given resourceLocation.
  */
 
-public enum ApplicationContextUtil {
-    INSTANCE;
-    ApplicationContext context;
+public final class ApplicationContextUtil {
+    public static ApplicationContext context;
 
-    public ApplicationContext getApplicationContext(String resourceLocation) {
+    public static ApplicationContext getApplicationContext(String resourceLocation) {
         if (context == null)
             context = new ClassPathXmlApplicationContext(resourceLocation);
         return context;
