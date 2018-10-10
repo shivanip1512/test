@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/10/2018 10:22:08 AM                       */
+/* Created on:     10/10/2018 1:31:58 PM                        */
 /*==============================================================*/
 
 
@@ -7078,7 +7078,7 @@ create table LMNestControlEvent (
    StartTime            datetime             not null,
    StopTime             datetime             null,
    CancelRequestTime    datetime             null,
-   CancelResponse       datetime             null,
+   CancelResponse       varchar(200)         null,
    constraint PK_LMNestControlEvent primary key (NestControlEventId)
 )
 go
