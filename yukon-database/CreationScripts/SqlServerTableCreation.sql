@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/26/2018 2:44:19 PM                         */
+/* Created on:     10/10/2018 10:22:08 AM                       */
 /*==============================================================*/
 
 
@@ -7064,6 +7064,21 @@ create table LMMacsScheduleCustomerList (
    LMCustomerDeviceID   numeric              not null,
    CustomerOrder        numeric              not null,
    constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID)
+)
+go
+
+/*==============================================================*/
+/* Table: LMNestControlEvent                                    */
+/*==============================================================*/
+create table LMNestControlEvent (
+   NestControlEventId   numeric              not null,
+   NestGroup            varchar(20)          not null,
+   NestKey              varchar(20)          not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             null,
+   CancelRequestTime    datetime             null,
+   CancelResponse       datetime             null,
+   constraint PK_LMNestControlEvent primary key (NestControlEventId)
 )
 go
 

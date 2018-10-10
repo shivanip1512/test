@@ -47,8 +47,23 @@ ALTER TABLE NestSyncDetail
             ON DELETE CASCADE;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-18868', '7.2.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-18868', '7.1.2', GETDATE());
 /* @end YUK-18868 */
+
+/* @start YUK-18897 */
+CREATE TABLE LMNestControlEvent (
+    NestControlEventId      NUMERIC         NOT NULL,
+    NestGroup               VARCHAR(20)     NOT NULL,
+    NestKey                 VARCHAR(20)     NOT NULL,
+    StartTime               DATETIME        NOT NULL,
+    StopTime                DATETIME        NULL,
+    CancelRequestTime       DATETIME        NULL,
+    CancelResponse          DATETIME        NULL,
+    CONSTRAINT PK_LMNestControlEvent PRIMARY KEY (NestControlEventId)
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-18897', '7.1.2', GETDATE());
+/* @end YUK-18897 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

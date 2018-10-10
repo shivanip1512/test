@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/26/2018 2:45:28 PM                         */
+/* Created on:     10/10/2018 10:22:56 AM                       */
 /*==============================================================*/
 
 
@@ -6671,6 +6671,20 @@ create table LMMacsScheduleCustomerList  (
    LMCustomerDeviceID   NUMBER                          not null,
    CustomerOrder        NUMBER                          not null,
    constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID)
+);
+
+/*==============================================================*/
+/* Table: LMNestControlEvent                                    */
+/*==============================================================*/
+create table LMNestControlEvent  (
+   NestControlEventId   NUMBER                          not null,
+   NestGroup            VARCHAR2(20)                    not null,
+   NestKey              VARCHAR2(20)                    not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE,
+   CancelRequestTime    DATE,
+   CancelResponse       DATE,
+   constraint PK_LMNestControlEvent primary key (NestControlEventId)
 );
 
 /*==============================================================*/
