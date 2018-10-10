@@ -1,7 +1,6 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -38,5 +37,5 @@
     </tags:sectionContainer2>
     <tags:sectionContainer2 nameKey="nestSyncDiscrepancies" id="discrepancies">
     </tags:sectionContainer2>
-<cti:includeScript link="/resources/js/pages/yukon.dr.nest.js"/>
+	<cti:includeScript link="/resources/js/pages/yukon.dr.nest.js"/>
 </cti:standardPage>

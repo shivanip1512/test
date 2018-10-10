@@ -6,7 +6,6 @@ yukon.namespace('yukon.dr.nest');
  * @requires JQUERY
  * @requires JQUERY UI
  * @requires yukon
- * @requires yukon.date.time.picker
  */
 yukon.dr.nest = (function () {
 
