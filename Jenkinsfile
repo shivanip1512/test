@@ -59,7 +59,7 @@ pipeline {
                         
                         bat './yukon-build/go.bat build-client'
 
-                        stash name: ${params.YUKON_CLIENT}, excludes: '*.java'
+                        stash name: 'yukon-client', excludes: '*.java'
                         
                         //junit './yukon-client/*/test/testResults/*.xml'
                     }
@@ -107,7 +107,7 @@ pipeline {
 
                         bat './yukon-build/go.bat build-server'
 
-                        stash name: ${params.YUKON_SERVER}, includes: 'yukon-server/bin/*'
+                        stash name: 'yukon-server', includes: 'yukon-server/bin/*'
                     }
                 }
                 
