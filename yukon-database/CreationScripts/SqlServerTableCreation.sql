@@ -7077,7 +7077,7 @@ create table LMNestControlEvent (
    StartTime            datetime             not null,
    StopTime             datetime             null,
    CancelRequestTime    datetime             null,
-   CancelResponse       datetime             null,
+   CancelResponse       varchar(200)         null,
    constraint PK_LMNestControlEvent primary key (NestControlEventId)
 )
 go

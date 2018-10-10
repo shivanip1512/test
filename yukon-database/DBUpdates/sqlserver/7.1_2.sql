@@ -58,7 +58,7 @@ CREATE TABLE LMNestControlEvent (
     StartTime               DATETIME        NOT NULL,
     StopTime                DATETIME        NULL,
     CancelRequestTime       DATETIME        NULL,
-    CancelResponse          DATETIME        NULL,
+    CancelResponse          VARCHAR(200)   NULL,
     CONSTRAINT PK_LMNestControlEvent PRIMARY KEY (NestControlEventId)
 );
 

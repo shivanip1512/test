@@ -6683,7 +6683,7 @@ create table LMNestControlEvent  (
    StartTime            DATE                            not null,
    StopTime             DATE,
    CancelRequestTime    DATE,
-   CancelResponse       DATE,
+   CancelResponse       VARCHAR2(200),
    constraint PK_LMNestControlEvent primary key (NestControlEventId)
 );
 
