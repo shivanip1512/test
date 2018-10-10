@@ -98,7 +98,7 @@ pipeline {
 
                         bat './yukon-build/go.bat build-server'
 
-                        stash name: 'yukon-server', includes: 'yukon-server/bin/*', 'yukon-server/pdb/*'
+                        stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*'
                     }
                 }
                 
