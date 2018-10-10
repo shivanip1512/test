@@ -51,6 +51,7 @@ yukon.assets.gateway.list = (function () {
                         } else {
                             clone.find("div.js-streaming-unsupported").removeClass("dn");
                         }
+                        clone.find('.js-view-all-notes').attr("data-pao-id", paoId);
                         clone.attr('data-gateway', paoId)
                         .removeClass('js-loaded-row')
                         .find('.js-gw-name a').text(gateway.name)
@@ -95,6 +96,7 @@ yukon.assets.gateway.list = (function () {
                     .toggleClass('progress-bar-danger', data.collectionDanger);
                     if (percent == 100) percent = 100;
                     row.find('.js-gw-data-collection-percent').text(percent + '%');
+                    row.find('.js-view-all-notes').toggleClass('dn', !gateway.hasNotes);
                 }
             });
             

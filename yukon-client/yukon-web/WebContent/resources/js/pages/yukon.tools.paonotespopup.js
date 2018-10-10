@@ -154,7 +154,11 @@ yukon.tools.paonotespopup = (function () {
                 // If all notes were deleted for this device, hide all of the note icons for this device
                 var paoId = Number($(this).find('#paoId').val());
                 if (!$(this).find('tr[id^="js-popup-note-row-"]').exists()) {
-                    $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').remove();
+                    if ($("#gateways-table").exists()) {
+                        $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').addClass('dn');
+                    } else {
+                        $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').remove();
+                    }
                 }
             });
             

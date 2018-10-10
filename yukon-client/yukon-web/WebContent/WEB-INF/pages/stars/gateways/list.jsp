@@ -89,18 +89,19 @@
 
 <div class="y-resizable stacked-lg">
 <div>
+
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
     <thead>
         <tr>
-            <th class="row-icon" />
-            <th></th>
+            <th class="row-icon"/>
+            <th class="row-icon"/>
             <th><i:inline key=".name"/></th>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                <th><i:inline key=".streamingCapacity"/></th>
+                <th width="10%"><i:inline key=".streamingCapacity"/></th>
             </cti:checkRolesAndProperties>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".ipaddress"/></th>
-            <th><i:inline key=".firmwareVersion"/></th>
+            <th width="10%"><i:inline key=".firmwareVersion"/></th>
             <th><i:inline key=".lastComms"/></th>
             <th><i:inline key=".detail.dataCollection.title"/></th>
             <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
@@ -111,14 +112,15 @@
         <c:forEach items="${gateways}" var="gateway">
             <cti:url var="detailUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
             <tr data-gateway="${gateway.paoIdentifier.paoId}" data-loaded="${not empty gateway.data}">
+                <td>
+                    <c:if test="${notesList.contains(gateway.paoIdentifier.paoId)}">
+                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${gateway.paoIdentifier.paoId}"/>
+                    </c:if>
+                </td>
                 <c:choose>
                     <c:when test="${not empty gateway.data}">
-                        <td>
-                            <c:if test="${notesList.contains(gateway.paoIdentifier.paoId)}">
-                                <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
-                                <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${gateway.paoIdentifier.paoId}"/>
-                            </c:if>
-                        </td>
+                        
                         <c:set var="data" value="${gateway.data}"/>
                         <c:set var="title"><cti:msg2 key=".connectionStatus.${data.connectionStatus}"/></c:set>
                         <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
@@ -127,7 +129,7 @@
                         </td>
                         <td class="js-gw-name"><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
                         <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                            <td class="js-gw-capacity">
+                            <td class="js-gw-capacity" width="10%">
                                 <c:choose>
                                     <c:when test="${gateway.dataStreamingSupported}">
                                         <c:set var="color" value="badge-success"/>
@@ -147,7 +149,7 @@
                         </cti:checkRolesAndProperties>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
-                        <td class="js-gw-rv">
+                        <td class="js-gw-rv" width="10%">
                             <span class="js-gw-rv-text">
                                 ${fn:escapeXml(gateway.data.releaseVersion)}
                             </span>
@@ -338,6 +340,9 @@
 <div id="gateway-templates" class="dn">
     <table>
         <tr class="js-loaded-row" data-gateway="" data-loaded="true">
+            <td class="js-notes">
+                <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp dn" title="${viewAllNotesTitle}" data-pao-id=""/>
+            </td>
             <td class="js-gw-conn-status"><span class="state-box"></span></td>
             <td class="js-gw-name"><a></a></td>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">

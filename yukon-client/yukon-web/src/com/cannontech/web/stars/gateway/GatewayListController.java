@@ -153,6 +153,9 @@ public class GatewayListController {
         
         Map<Integer, Object> json = new HashMap<>();
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
+            .map(gateway -> gateway.getPaoIdentifier().getPaoId())
+            .collect(Collectors.toList()));
         try {
             Map<String, String>  upgradeVersions = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateServerVersions();
             gateways.forEach(gateway -> {
@@ -165,6 +168,7 @@ public class GatewayListController {
                     gateway.setUpgradeVersion(upgradeVersion); 
                 }
                 Map<String, Object> data = helper.buildGatewayModel(gateway, userContext);
+                data.put("hasNotes", notesList.contains(gateway.getPaoIdentifier().getPaoId()));
                 json.put(gateway.getPaoIdentifier().getPaoId(), data);
             });
             
