@@ -157,7 +157,7 @@ pipeline {
                     
                 bat './yukon-build/go.bat clean build-dist-pdb'
 
-                archiveArtifacts artifacts: './yukon-build/dist/*'
+                archiveArtifacts artifacts: 'yukon-build/dist/*'
             }
         }
     }
