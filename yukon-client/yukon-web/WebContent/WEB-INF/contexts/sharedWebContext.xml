@@ -15,6 +15,8 @@
 
     <context:annotation-config/>
     
+    <!-- The below configuration specified with mvc:resources is to append version (i.e. a fingerprint based on the file content)
+         to the files/resources specified by the mapping attribute. The location of the file/resource is specified by the location attribute.-->
     <mvc:resources mapping="/resources/**/*.js" location="/resources/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
@@ -24,7 +26,6 @@
             </mvc:resolvers>
         </mvc:resource-chain>
     </mvc:resources>
-    
     <mvc:resources mapping="/resources/**/*.css" location="/resources/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
@@ -34,7 +35,6 @@
             </mvc:resolvers>
         </mvc:resource-chain>
     </mvc:resources>
-    
     <mvc:resources mapping="/resources/**/*.png" location="/resources/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
@@ -44,7 +44,6 @@
             </mvc:resolvers>
         </mvc:resource-chain>
     </mvc:resources>
-    
     <mvc:resources mapping="/resources/**/*.gif" location="/resources/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
@@ -54,7 +53,6 @@
             </mvc:resolvers>
         </mvc:resource-chain>
     </mvc:resources>
-    
     <mvc:resources mapping="/WebConfig/**/*.png" location="/WebConfig/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
@@ -64,7 +62,6 @@
             </mvc:resolvers>
         </mvc:resource-chain>
     </mvc:resources>
-    
     <mvc:resources mapping="/WebConfig/**/*.css" location="/WebConfig/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
@@ -74,7 +71,6 @@
             </mvc:resolvers>
         </mvc:resource-chain>
     </mvc:resources>
-    
     <mvc:resources mapping="/WebConfig/**/*.gif" location="/WebConfig/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
@@ -84,7 +80,6 @@
             </mvc:resolvers>
         </mvc:resource-chain>
     </mvc:resources>
-    
     <mvc:resources mapping="/include/**/*.css" location="/include/">
         <mvc:resource-chain resource-cache="true" auto-registration="true">
             <mvc:resolvers>
