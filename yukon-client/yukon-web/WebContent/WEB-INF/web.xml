@@ -884,19 +884,7 @@
         <servlet-name>billing</servlet-name>
         <servlet-name>layout</servlet-name>
         <servlet-name>springRedirect</servlet-name>
-        <servlet-name>LoggingServlet</servlet-name>
-        <servlet-name>ConnServlet</servlet-name>
-        <servlet-name>GraphGenerator</servlet-name>
-        <servlet-name>ReportGenerator</servlet-name>
-        <servlet-name>PILConnectionServlet</servlet-name>
-        <servlet-name>ScheduleController</servlet-name>
-        <servlet-name>CommanderServlet</servlet-name>
-        <servlet-name>CurtailmentServlet</servlet-name>
-        <servlet-name>LCConnectionServlet</servlet-name>
-        <servlet-name>Download</servlet-name>
-        <servlet-name>BillingServlet</servlet-name>
-        <servlet-name>PWordRequest</servlet-name>
-        <servlet-name>CallbackServlet</servlet-name>
         <url-pattern>/analysis/Reports.jsp</url-pattern>
+        <url-pattern>/billing/*</url-pattern>
     </filter-mapping>
 </web-app>
