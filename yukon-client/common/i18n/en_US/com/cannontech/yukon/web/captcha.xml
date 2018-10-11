@@ -11,6 +11,6 @@
 <entry key="yukon.web.captcha.captchaErrorCode.INVALID_HOST">Error while validating host/domain . Please try again or contact your energy company.</entry>
 <entry key="yukon.web.captcha.captchaErrorCode.INCORRECT_CAPTCHA_SOL">The CAPTCHA solution supplied is incorrect.  Please try again.</entry>
 <entry key="yukon.web.captcha.captchaErrorCode.TIMEOUT_OR_DUPLICATE">The CAPTCHA solution supplied is timed out or duplicate.  Please try again.</entry>
-<entry key="yukon.web.captcha.captchaErrorCode.DEFAULT_MESSAGE">An error occured while validating CAPTCHA.  Please try again.</entry>
+<entry key="yukon.web.captcha.captchaErrorCode.DEFAULT_CAPTCHA_ERROR_CODE">An error occured while validating CAPTCHA.  Please try again.</entry>
 
 </properties>

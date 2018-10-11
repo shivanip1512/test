@@ -16,7 +16,7 @@ public enum CaptchaErrorCode implements DisplayableEnum {
     INVALID_HOST(false),
     INCORRECT_CAPTCHA_SOL(false),
     TIMEOUT_OR_DUPLICATE(false),
-    DEFAULT_MESSAGE(false);
+    DEFAULT_CAPTCHA_ERROR_CODE(false);
 
     private boolean valid;
     private static final String displayKeyPrefix = "yukon.web.captcha.captchaErrorCode.";
@@ -43,7 +43,7 @@ public enum CaptchaErrorCode implements DisplayableEnum {
                 captchaResponse -> captchaResponseUpper.equals(captchaResponse.toString()))) {
                 return valueOf(captchaResponseUpper);
             } else {
-                return DEFAULT_MESSAGE;
+                return DEFAULT_CAPTCHA_ERROR_CODE;
             }
         }
     }
