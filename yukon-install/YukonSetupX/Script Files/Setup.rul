@@ -618,6 +618,10 @@ begin
 	//Remove Lucene indexes so they're rebuilt on startup
     sDir = TARGETDIR ^ "\\cache";
     DeleteDir(sDir, ALLCONTENTS);
+
+    // Remove temp folder gracefully
+    sDir = TARGETDIR ^ "\\Client\\bin\\temp";
+    DeleteDir(sDir, ALLCONTENTS);
     
     RemoveActiveMQFolders();
 
