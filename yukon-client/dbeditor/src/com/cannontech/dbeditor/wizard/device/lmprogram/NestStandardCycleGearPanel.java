@@ -177,9 +177,9 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 ivjJComboBoxLoadShapingPeak.setPreferredSize(new java.awt.Dimension(50, 23));
                 ivjJComboBoxLoadShapingPeak.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
                 ivjJComboBoxLoadShapingPeak.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                ivjJComboBoxLoadShapingPeak.addItem(LoadShapingPeak.UNIFORM);
                 ivjJComboBoxLoadShapingPeak.addItem(LoadShapingPeak.STANDARD);
                 ivjJComboBoxLoadShapingPeak.addItem(LoadShapingPeak.SYMMETRIC);
-                ivjJComboBoxLoadShapingPeak.addItem(LoadShapingPeak.UNIFORM);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
