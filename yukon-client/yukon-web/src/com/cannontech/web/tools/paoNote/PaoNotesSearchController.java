@@ -314,7 +314,7 @@ public class PaoNotesSearchController {
         model.addAttribute("noteTextAreaMaxLength", NOTE_TEXTAREA_MAX_LENGTH);
     }
     
-    @RequestMapping(value = "hasNotes", method = RequestMethod.POST)
+    @RequestMapping(value = "hasNotes", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> hasNotes(ModelMap model, YukonUserContext userContext, int paoId) {
         Map<String, Object> jsonResponse = new HashMap<>();

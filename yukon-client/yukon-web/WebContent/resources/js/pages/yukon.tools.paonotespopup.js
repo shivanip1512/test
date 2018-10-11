@@ -169,7 +169,7 @@ yukon.tools.paonotespopup = (function () {
         // icons on the page for that device.
         hideShowNotesIcons: function (paoId) {
             if (paoId != null) {
-                $.post(yukon.url('/tools/paoNotes/hasNotes'), {paoId: paoId})
+                $.getJSON(yukon.url('/tools/paoNotes/hasNotes'), {paoId: paoId})
                     .done(function(data) {
                         if (data.hasNotes) {
                             $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').show();
