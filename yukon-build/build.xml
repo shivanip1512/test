@@ -114,7 +114,7 @@
         <!-- <antcall target="server-unit-tests"/>  this has been breaking the build, removed for now. -->
     </target>
 
-    <target name="build-install">
+    <target name="build-install" depends="init">
         <echo message="building module yukon-install" />
         <mkdir dir="${log.dir}" />
         
