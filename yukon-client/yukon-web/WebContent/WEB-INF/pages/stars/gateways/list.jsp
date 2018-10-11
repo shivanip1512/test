@@ -93,18 +93,18 @@
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
     <thead>
         <tr>
-            <th class="row-icon"/>
-            <th class="row-icon"/>
-            <th><i:inline key=".name"/></th>
+            <th class="row-icon vab"/>
+            <th class="row-icon vab"/>
+            <th class="vab"><i:inline key=".name"/></th>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                <th width="10%"><i:inline key=".streamingCapacity"/></th>
+                <th class="vab" width="10%"><i:inline key=".streamingCapacity"/></th>
             </cti:checkRolesAndProperties>
-            <th><i:inline key=".serialNumber"/></th>
-            <th><i:inline key=".ipaddress"/></th>
-            <th width="10%"><i:inline key=".firmwareVersion"/></th>
-            <th><i:inline key=".lastComms"/></th>
-            <th><i:inline key=".detail.dataCollection.title"/></th>
-            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
+            <th class="vab"><i:inline key=".serialNumber"/></th>
+            <th class="vab"><i:inline key=".ipaddress"/></th>
+            <th class="vab" width="10%"><i:inline key=".firmwareVersion"/></th>
+            <th class="vab"><i:inline key=".lastComms"/></th>
+            <th class="vab"><i:inline key=".detail.dataCollection.title"/></th>
+            <th class="action-column vab"><cti:icon icon="icon-cog" classes="M0"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>
