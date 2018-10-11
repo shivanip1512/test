@@ -6,12 +6,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.cannontech.common.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 
 public class WidgetUtils {
-    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     public static Map<String,String> combineParameters(Map<String,String> outer, Map<String,? extends Object> inner) {
         Map<String,String> emptyMap1 = Collections.emptyMap();
@@ -31,7 +30,7 @@ public class WidgetUtils {
     }
 
     public static String generateJsonString(Object obj) throws JsonProcessingException {
-        return jsonObjectMapper.writeValueAsString(obj);
+        return JsonUtils.toJson(obj, true);
     }
 
     /**

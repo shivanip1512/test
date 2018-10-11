@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,13 +87,13 @@ public class DataCollectionController {
             DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
             DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
             if (summary.getTotalDeviceCount() == 0) {
-                String errorMsg = accessor.getMessage(widgetKey + "dataCollectionWidget.noDevicesFound", deviceGroup);
+                String errorMsg = accessor.getMessage(widgetKey + "dataCollectionWidget.noDevicesFound", StringEscapeUtils.escapeXml11(deviceGroup));
                 json.put("errorMessage", errorMsg);
             } else {
                 json.put("summary",  summary);
             }
         } catch (NotFoundException e) {
-            String errorMsg = accessor.getMessage(widgetKey + "dataCollectionWidget.deviceGroupNotFound", deviceGroup);
+            String errorMsg = accessor.getMessage(widgetKey + "dataCollectionWidget.deviceGroupNotFound", StringEscapeUtils.escapeXml11(deviceGroup));
             log.error(errorMsg);
             json.put("errorMessage", errorMsg);
         }

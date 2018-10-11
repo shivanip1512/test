@@ -57,6 +57,19 @@ public class JsonUtils {
         return writer.writeValueAsString(object);
     }
     
+    /**
+     * JSON representation of Object.
+     * @param isRenderedOnUI if set to true, the occurrences of "</" is replaced with "<\\/". 
+     * This is to prevent XSS issues on UI. 
+     */
+    public static String toJson(Object object, boolean isRenderedOnUI) throws JsonProcessingException {
+        if (isRenderedOnUI) {
+            return toJson(object).replace("</", "<\\/");
+        } else {
+            return toJson(object);
+        }
+    }
+    
     public static ObjectWriter getWriter() {
         return writer;
     }
