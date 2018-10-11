@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<project name="VMAutomation" default="targets" basedir=".">
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+    <property environment="env"/>
+
+    <property name="guest_username" value="${env.VM_GUEST_USERNAME}" />
+    <property name="guest_password" value="${env.VM_GUEST_PASSWORD}" />
+    <property name="guest_address" value="${env.VM_GUEST_ADDRESS}" />
+    <property name="backup_schema" value="${env.BACKUP_SCHEMA}" />
+
+    <tstamp>
+        <format property="CURRENT_DATE" pattern="yyyyMMdd-HHmmss"  locale="en,US" />
+    </tstamp>
+
+    <target name="targets">
+        <echo message="The following targets are available"/>
+        <echo message=" start_cyme_oracle_backup               - take oracle backup on provided guest address"/>
+    </target>
+
+    <target name="start_cyme_oracle_backup">
+        <sshexec host="${guest_address}"
+                 trust="true"
+                 username="${guest_username}"
+                 password="${guest_password}"
+                 verbose="true"
+                 command="expdp cyme_max/cyme_max schemas=${backup_schema} DUMPFILE=Cyme_${backup_schema}_${CURRENT_DATE}.dmp DIRECTORY=data_pump_dir LOGFILE=CymeLog_${backup_schema}_${CURRENT_DATE}.log"/>
+    </target>
+</project>

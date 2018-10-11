@@ -154,12 +154,12 @@
 
     <target name="create_oracle_tables">
         <echo message="DB name: ${database.name}"/>
-    	<echo message="Connecting through - ${database.name}/${database.name}@${database.server}:1521/${db.sid}"/>
+    	<echo message="Connecting through - ${database.name}/${database.name}@${db.sid}"/>
         <property name="oracle.table.creation.query" value="C:\Yukon\YukonMisc\YukonDatabase\DatabaseCreation" />
 
         <!-- Run the oracle creation scripts -->
         <exec executable="sqlplus" failonerror="true">
-            <arg value="${database.name}/${database.name}@${database.server}:1521/${db.sid}"/>
+            <arg value="${database.name}/${database.name}@${db.sid}"/>
             <arg value="@${oracle.table.creation.query}\OracleTableCreation.sql"/>
         </exec>
     </target>
@@ -239,8 +239,6 @@
             <arg value="Yukon Load Management Service"/> </exec>
         <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
             <arg value="Yukon Foreign Data Service"/> </exec>
-        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
-            <arg value="YukonWatchdogService"/> </exec>
         <!-- YUK-17115 - temporary sleep to allow Cap Control to start without crashing. -->
         <sleep seconds="30"/>
         <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
@@ -250,6 +248,9 @@
     	<sleep seconds="10"/>
     	<exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
     	            <arg value="YukonWebApplicationService"/> </exec>
+    	<sleep seconds="10"/>
+        <exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
+            <arg value="YukonWatchdogService"/> </exec>
     </target>
 
     <!-- Stop all the services -->

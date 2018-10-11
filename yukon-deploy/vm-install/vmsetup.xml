@@ -133,7 +133,10 @@
     </target>
     
     <target name="create_snapshot">
-	<echo message= "Running Create Snapshot Command: /c C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -PSConsoleFile &quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot; -command &quot;connect-viserver -server ${physical_address}; New-Snapshot -VM ${guest_name} -Name AutomaticallyCreatedSnapshot -confirm:$false -memory:$true&quot;"/>
+        <echo message="Sleeping for 2 minutes to help snapshot be more successful"/>
+        <sleep minutes="2"/>
+    	
+        <echo message= "Running Create Snapshot Command: /c C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -PSConsoleFile &quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot; -command &quot;connect-viserver -server ${physical_address}; New-Snapshot -VM ${guest_name} -Name AutomaticallyCreatedSnapshot -confirm:$false -memory:$true&quot;"/>
         <exec dir="${vmclone-dir}" executable="cmd" failonerror="true">
 	    <arg value="/c"/>
 	    <arg value="C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe"/>
@@ -537,6 +540,7 @@
             </fileset> 
         </path>
 
+    	<echo message="Dropping oracle db using connection string jdbc:oracle:thin:@${db.sqlserverhost}:1521:${db.sid} Username ${database.username} Passowrd ${database.password}"/>
         <!-- Drop Oracle database -->
         <sql
             driver="oracle.jdbc.driver.OracleDriver"
@@ -551,7 +555,6 @@
                 l_cnt integer;
             BEGIN
                 SELECT COUNT(*) INTO i FROM user_tablespaces WHERE tablespace_name = UPPER('${db.name}');
-                EXECUTE IMMEDIATE 'ALTER SYSTEM SET DB_CREATE_FILE_DEST = ''C:\APP\ADMINISTRATOR\PRODUCT\12.1.0\DBHOME_1\NETWORK\ADMIN\TRUNK''';
             IF i!=0 THEN
                 EXECUTE IMMEDIATE 'DROP TABLESPACE ${db.name} INCLUDING CONTENTS AND DATAFILES CASCADE CONSTRAINTS';
                 EXECUTE IMMEDIATE 'DROP TABLESPACE ${db.name.temp} INCLUDING CONTENTS AND DATAFILES CASCADE CONSTRAINTS';
@@ -648,7 +651,6 @@
         <property name="database.username" value="sa"/>
         <property name="database.password" value="cannontech123"/>
         <property name="db.sid" value="${env.DATABASE_SQLSERVER}"/>
-        <property name="datafilepath" value="C:\app\Administrator\product\12.1.0\dbhome_1\NETWORK\ADMIN\trunk"/>
         <echo message="Creating new database ${db.name}"/>
 
         <path id="antclasspath"> 
@@ -663,14 +665,26 @@
             url="jdbc:oracle:thin:@${db.sqlserverhost}:1521:${db.sid}"
             userid="${database.username}"
             password="${database.password}"
-            classpathref="antclasspath">
-
-            CREATE TABLESPACE ${db.name};
-            CREATE TEMPORARY TABLESPACE ${db.name.temp} TEMPFILE '${datafilepath}\${db.name.temp}.ora' SIZE 5M AUTOEXTEND ON;
-            CREATE USER ${db.name} IDENTIFIED BY ${db.name} DEFAULT TABLESPACE ${db.name} TEMPORARY TABLESPACE ${db.name.temp};
-            GRANT DBA TO ${db.name};
+            classpathref="antclasspath"
+            delimiter="/"
+            delimitertype="row">
+            DECLARE
+                i NUMBER;
+            BEGIN
+                EXECUTE IMMEDIATE 'CREATE TABLESPACE ${db.name} DATAFILE ''${db.name}.ora'' SIZE 10M REUSE AUTOEXTEND ON';
+                EXECUTE IMMEDIATE 'CREATE TEMPORARY TABLESPACE ${db.name.temp} TEMPFILE ''${db.name.temp}.ora'' SIZE 5M AUTOEXTEND ON';
+            
+                SELECT COUNT(*) INTO i FROM dba_users WHERE username='${db.name}';
+                IF( i = 0 ) THEN
+                    EXECUTE IMMEDIATE 'CREATE USER ${db.name} IDENTIFIED BY ${db.name} DEFAULT TABLESPACE ${db.name} TEMPORARY TABLESPACE ${db.name.temp}';
+                    EXECUTE IMMEDIATE 'GRANT DBA TO ${db.name}';
+                END IF;
+            END;
+            /
         </sql>
 
+        <echo message="Tablespace ${db.name} created"/>
+        
         <antcall target="populate_oracle_db"/>
     </target>
 	
