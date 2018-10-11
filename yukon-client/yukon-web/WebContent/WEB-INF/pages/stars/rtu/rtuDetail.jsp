@@ -156,7 +156,7 @@
                             <tags:switchButton path="scanWindow" toggleGroup="scanWindow" toggleAction="hide"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".scanType" data-toggle-group="scanWindow">
-                            ${rtu.deviceWindow.type}
+                            ${fn:escapeXml(rtu.deviceWindow.type)}
                             <tags:hidden path="deviceWindow.type"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".winTimeRange" valueClass="full-width" data-toggle-group="scanWindow">

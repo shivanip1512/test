@@ -3,6 +3,7 @@ package com.cannontech.web.widget;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -70,7 +72,14 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
             }
             Pattern pattern = Pattern.compile(",");
             monitorIds = pattern.splitAsStream(monitors)
-                    .map(Integer::valueOf)
+                    .map( monitor -> {
+                        if (NumberUtils.isNumber(monitor)) {
+                            return Integer.valueOf (monitor);
+                        } else {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
         } catch (ServletRequestBindingException e) {
             log.error(e.getMessage());
