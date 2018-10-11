@@ -3,6 +3,8 @@ package com.cannontech.web.common.captcha.service.impl;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -14,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.system.GlobalSettingType;
@@ -33,6 +36,7 @@ public class CaptchaServiceImpl implements CaptchaService{
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private @Qualifier("captcha") RestOperations restTemplate;
+    private static final Logger log = YukonLogManager.getLogger(CaptchaServiceImpl.class);
     
     @PostConstruct 
     public void init() {
@@ -73,6 +77,9 @@ public class CaptchaServiceImpl implements CaptchaService{
                 restTemplate.postForEntity(siteVerifyServiceUrl, request, ReCaptchaResponse.class);
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 reCaptchaResponse = responseEntity.getBody();
+                if (CollectionUtils.isNotEmpty(reCaptchaResponse.getErrorCodes())) {
+                    log.info("CaptchaErrorCode received from reCAPTCHA : " + reCaptchaResponse.getErrorCodes().get(0));
+                }
                 if (reCaptchaResponse != null && reCaptchaResponse.isSuccess()
                     && !StringUtils.equals(reCaptchaResponse.getHostname(), captcha.getRemoteAddr())) {
                     reCaptchaResponse.getErrorCodes().add("invalid-host");
