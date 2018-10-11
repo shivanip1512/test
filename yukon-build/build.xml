@@ -7,9 +7,9 @@
         <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
     </tstamp>
     <property name="module.name" value="yukon" />
-    <property name="log.dir" value="../logs" />
-    <property name="dist.dir" value="../dist" />
-    <property name="temp.dir" value="../temp" />
+    <property name="log.dir" value="${basedir}/yukon-build/logs" />
+    <property name="dist.dir" value="${basedir}/yukon-build/dist" />
+    <property name="temp.dir" value="${basedir}/yukon-build/temp" />
 
     <target name="targets">
         <echo message="The following targets are available" />
@@ -86,7 +86,7 @@
         <antcall target="runUnitTests" />
     </target>
     
-    <target name="build-server" depends="init,clean,svn-info-build">
+    <target name="build-server" depends="init,clean">
         <echo message="building module yukon-server" />
         <mkdir dir="${log.dir}" />
 
@@ -114,7 +114,7 @@
         <!-- <antcall target="server-unit-tests"/>  this has been breaking the build, removed for now. -->
     </target>
 
-    <target name="build-install">
+    <target name="build-install" depends="init">
         <echo message="building module yukon-install" />
         <mkdir dir="${log.dir}" />
         
@@ -251,12 +251,12 @@
             <fileset dir="${install.bag}/Yukon Base/Client/bin" includes="*.exe,*.conf,*.dll"/>
         </copy>
         
-        <exec executable="svnversion" outputproperty="svnversion" />
+        <exec executable="svnversion" dir='${basedir}/yukon-build' outputproperty="svnversion" />
         <echo message="SVN Version: ${svnversion}"/>
         <echo message="SVN Version: ${svnversion}" file="${install.bag}/svnversion.txt"/>
 
         <!-- Location of the stand-alone build module -->
-        <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012Spring SAB\System\IsCmdBld.exe" />
+        <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012SpringSP1 SAB\System\IsCmdBld.exe" />
         <!-- Location of the installer data file -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
         
@@ -405,7 +405,7 @@
         </exec>   
     </target>
         
-    <target name="updatedbscripts">
+    <target name="updatedbscripts" depends="init">
         <echo message="version: ${version.major}.${version.minor}.${version.revision}" />
         <ant dir="${basedir}/yukon-database"
              target="build"
