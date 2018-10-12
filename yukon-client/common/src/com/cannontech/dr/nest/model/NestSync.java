@@ -1,7 +1,5 @@
 package com.cannontech.dr.nest.model;
 
-import java.util.List;
-
 import org.joda.time.Instant;
 
 public class NestSync {

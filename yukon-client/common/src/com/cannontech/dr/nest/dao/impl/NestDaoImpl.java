@@ -47,17 +47,19 @@ public class NestDaoImpl implements NestDao {
     
     @Override
     public void saveSyncDetails(List<NestSyncDetail> details) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        List<List<Object>> values = details.stream().map(detail -> {
-            List<Object> row =
-                Lists.newArrayList(nextValueHelper.getNextValue("NestSyncDetail"), detail.getSyncId(), detail.getType(),
-                    detail.getReasonKey(), detail.getReasonValue(), detail.getActionKey(), detail.getActionValue());
-            return row;
-        }).collect(Collectors.toList());
-
-        sql.batchInsertInto("NestSyncDetail").columns("SyncDetailId", "SyncId", "SyncType", "SyncReasonKey",
-            "SyncReasonValue", "SyncActionKey", "SyncActionValue").values(values);
-        jdbcTemplate.yukonBatchUpdate(sql);
+        if(!details.isEmpty()) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            List<List<Object>> values = details.stream().map(detail -> {
+                List<Object> row =
+                    Lists.newArrayList(nextValueHelper.getNextValue("NestSyncDetail"), detail.getSyncId(), detail.getType(),
+                        detail.getReasonKey(), detail.getReasonValue(), detail.getActionKey(), detail.getActionValue());
+                return row;
+            }).collect(Collectors.toList());
+    
+            sql.batchInsertInto("NestSyncDetail").columns("SyncDetailId", "SyncId", "SyncType", "SyncReasonKey",
+                "SyncReasonValue", "SyncActionKey", "SyncActionValue").values(values);
+            jdbcTemplate.yukonBatchUpdate(sql);
+        }
     }
     
     @Override

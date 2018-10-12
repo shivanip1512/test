@@ -9,10 +9,23 @@ public interface NestSyncService {
      * 
      * 
      * Sync Load Groups
-            If group exists in Nest file but not in Yukon:
-            -   Create a Load Group in Yukon with the same name as in Nest.
-            If Nest group exists in Yukon but not in Nest:
-            -   Flag the group as “Manual fix” to notify the user that he should clean up the Groups by either setting up the same group in Nest or deleting the group from Yukon.
+       If group exists in Nest file but not in Yukon:
+         Create a Load Group in Yukon with the same name as in Nest.
+         
+       If Nest group exists in Yukon but not in Nest:
+          Flag the group as “Manual” fix, notify the user that he should clean up the Groups by either setting up the same group in Nest or deleting the group from Yukon.
+       
+       If lm group that is not of a type "Nest" exists in Yukon with the same name as a group in Nest:
+          Flag the group as “Manual” fix, notify the user to change the group name 
+           
+       If Load Programs/Areas are not setup correctly 
+          Flag the group as “Manual” fix, notify the user to set up programs  
+       
+       
+       
+       
+       
+       //todo
        Sync Accounts
             If the account is in the Nest file but not in Yukon, create account in Yukon.
             If the address on the Yukon account is missing, and the account was found in Nest file, update the Yukon account with the Nest address.

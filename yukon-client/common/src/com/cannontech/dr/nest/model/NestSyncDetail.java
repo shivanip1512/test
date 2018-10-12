@@ -8,6 +8,22 @@ public class NestSyncDetail {
     private String reasonValue;
     private NestSyncI18nKey actionKey;
     private String actionValue;
+    
+    public NestSyncDetail(int id, int syncId, NestSyncType type, NestSyncI18nKey reasonKey, String reasonValue,
+            NestSyncI18nKey actionKey, String actionValue) {
+        this.id = id;
+        this.syncId = syncId;
+        this.type = type;
+        this.reasonKey = reasonKey;
+        this.reasonValue = reasonValue;
+        this.actionKey = actionKey;
+        this.actionValue = actionValue;
+    }
+    
+    public NestSyncDetail() {
+ 
+    }
+
     public int getId() {
         return id;
     }
