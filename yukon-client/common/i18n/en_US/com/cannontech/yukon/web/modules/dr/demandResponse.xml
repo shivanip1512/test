@@ -583,12 +583,55 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 
 <entry key="yukon.web.modules.dr.nest.details.pageName">Nest Details</entry>
 <entry key="yukon.web.modules.dr.nest.details.nestSyncControls.title">Nest Sync Settings</entry>
+<entry key="yukon.web.modules.dr.nest.details.nestSyncControls.helpText"><![CDATA[
+The following sync settings are available:<br>
+<ul>
+    <li><b>Scheduled Sync</b>: When turned On, a time slider will display to select the time to schedule the daily synchronization between Yukon and Nest. 
+        Click on the Save button to save any changes.</li>
+    <li><b>Sync Now</b>: Forces a synchronization between Yukon and Nest.</li>
+    <li><b>Last Sync Time</b>: Displays the last date/time that Yukon was synced with Nest.</li>
+</ul>
+]]></entry>
 <entry key="yukon.web.modules.dr.nest.details.nestSyncDiscrepancies.title">Discrepancies</entry>
+<entry key="yukon.web.modules.dr.nest.details.nestSyncDiscrepancies.helpText"><![CDATA[
+The Discrepancies table will list any differences between Nest and Yukon.  The following filter options are available:<br>
+<ul>
+    <li><b>Sync Time</b>: the date/time that Yukon was synced with Nest</li>
+    <li><b>Type</b>: Auto/Manual (whether the action required is automatically completed or needs to be done manually)</li>
+</ul>
+The resulting table will list the Type of discrepancy (Auto/Manual), Reason for the discrepancy, and Action that was completed (Auto) or that needs to be completed (Manual).  
+There is an option to download the results in the cog menu.<br>
+Examples of discrepancies that will be displayed:
+<ul>
+    <li>A group is found in Yukon but not in Nest.</li>
+    <li>A group is found in Nest but not in Yukon.</li>
+    <li>A program or area is not found for a Nest group.</li>
+    <li>A group already exists in Yukon with the group name, but is not a nest group.</li>
+</ul>
+]]></entry>
 <entry key="yukon.web.modules.dr.nest.forceSync">Force Sync</entry>
 <entry key="yukon.web.modules.dr.nest.lastSync">Last Sync Time</entry>
 <entry key="yukon.web.modules.dr.nest.syncSchedule">Scheduled Sync</entry>
 <entry key="yukon.web.modules.dr.nest.nestSyncInProgress">Sync is currently in progress.</entry>
 <entry key="yukon.web.modules.dr.nest.nextSync">Next Sync Available:</entry>
+<entry key="yukon.web.modules.dr.nest.noDiscrepancies">No discrepancies were found between Yukon and Nest with the selected filters.</entry>
+<entry key="yukon.web.modules.dr.nest.type">Type</entry>
+<entry key="yukon.web.modules.dr.nest.reason">Reason</entry>
+<entry key="yukon.web.modules.dr.nest.action">Action</entry>
+<entry key="yukon.web.modules.dr.nest.syncTime">Sync Time</entry>
+
+<!-- Nest Type, Reason and Action Keys -->
+<entry key="yukon.web.modules.dr.nest.MANUAL">Manual</entry>
+<entry key="yukon.web.modules.dr.nest.AUTO">Auto</entry>
+<entry key="yukon.web.modules.dr.nest.FOUND_GROUP_ONLY_IN_NEST">Group {0} was found in Nest but not in Yukon.</entry>
+<entry key="yukon.web.modules.dr.nest.FOUND_GROUP_ONLY_IN_YUKON">Group {0} was found in Yukon but not in Nest.</entry>
+<entry key="yukon.web.modules.dr.nest.FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME">A group with the name {0} was found in Yukon, but is not a Nest group.</entry>
+<entry key="yukon.web.modules.dr.nest.AUTO_CREATED_GROUP_IN_YUKON">Yukon has created group {0}.</entry>
+<entry key="yukon.web.modules.dr.nest.MANUALLY_DELETE_GROUP_FROM_YUKON">Please delete Nest group {0} from Yukon.</entry>
+<entry key="yukon.web.modules.dr.nest.MODIFY_YUKON_GROUP_NOT_TO_CONFLICT_WITH_NEST_GROUP">Please modify the existing Yukon group {0} to not conflict with the Nest group.</entry>
+<entry key="yukon.web.modules.dr.nest.NOT_FOUND_PROGRAM_FOR_NEST_GROUP">Program was not found for Nest group {0}.</entry>
+<entry key="yukon.web.modules.dr.nest.NOT_FOUND_AREA_FOR_NEST_GROUP">Area was not found for Nest group {0}.</entry>
+<entry key="yukon.web.modules.dr.nest.SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP">Please setup the Program and Area correctly for Nest group {0}.</entry>
 
 <entry key="yukon.web.modules.dr.nest.loadShapingType.STANDARD">Standard</entry>
 <entry key="yukon.web.modules.dr.nest.loadShapingType.RAMPING">Ramping</entry>

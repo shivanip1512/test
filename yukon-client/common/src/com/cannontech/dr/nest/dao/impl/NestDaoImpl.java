@@ -88,16 +88,18 @@ public class NestDaoImpl implements NestDao {
         jdbcTemplate.query(sql, rse);
         
         SearchResults<NestSyncDetail> searchResults = new SearchResults<>();
-        searchResults.setBounds(start, count, getNestSyncDetailCount(syncId));
+        searchResults.setBounds(start, count, getNestSyncDetailCount(syncId, syncTypes));
+        searchResults.setResultList(rse.getResultList());
         
         return searchResults;
     }
     
-    private int getNestSyncDetailCount(int syncId) {
+    private int getNestSyncDetailCount(int syncId, List<NestSyncType> syncTypes) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
         sql.append("FROM NestSyncDetail");
         sql.append("WHERE SyncId").eq(syncId);
+        sql.append("AND SyncType").in(syncTypes);
         return jdbcTemplate.queryForInt(sql);
     }
     

@@ -25,6 +25,28 @@ yukon.dr.nest = (function () {
                 }
             });
             
+            $(document).on('change', 'input[name=types], select[name=syncId]', function() {
+                var formData = $('#discrepancyForm').serialize(),
+                    table = $('#discrepancyContainer'),
+                    params = {};
+                yukon.ui.getSortingPagingParameters(params);
+                $.ajax({
+                    url: yukon.url('/dr/nest/discrepancies?' + $.param(params)),
+                    data: formData
+                }).done(function (data) {
+                    table.html(data);
+                    table.data('url', yukon.url('/dr/nest/discrepancies?' + formData));
+                    //update the badge with the correct number of results
+                    var count = $('#badgeCount').val();
+                    $('.js-count').html(count);
+                });  
+            });
+            
+            $(document).on('click', '.js-download', function () {
+                var formData = $('#discrepancyForm').serialize();
+                window.location = yukon.url('/dr/nest/download?' + formData);
+            });
+            
             if ('true' === $('#nest-sync').val()) {
                 $('.nest-sync-button-group-toggle .yes').addClass('on');
                 $('.nest-sync-button-group-toggle .no').removeClass('on');

@@ -133,6 +133,7 @@
 <entry key="yukon.common.filter">Filter</entry>
 <entry key="yukon.common.filters">Filters</entry>
 <entry key="yukon.common.filterBy">Filter By:</entry>
+<entry key="yukon.common.filteredResults">Filtered Results:</entry>
 <entry key="yukon.common.finished">Finished</entry>
 <entry key="yukon.common.float.hundred_millionths">{0,number,#,##0.00000000}</entry>
 <entry key="yukon.common.float.hundred_thousandths">{0,number,#,##0.00000}</entry>

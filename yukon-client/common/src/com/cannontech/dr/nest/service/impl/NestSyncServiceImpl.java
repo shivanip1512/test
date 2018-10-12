@@ -3,7 +3,7 @@ package com.cannontech.dr.nest.service.impl;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CREATED_GROUP_IN_YUKON;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_GROUP_ONLY_IN_NEST;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_GROUP_ONLY_IN_YUKON;
-import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_NONE_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.MANUALLY_DELETE_GROUP_FROM_YUKON;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.MODIFY_YUKON_GROUP_NOT_TO_CONFLICT_WITH_NEST_GROUP;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_FOUND_AREA_FOR_NEST_GROUP;
@@ -208,7 +208,7 @@ public class NestSyncServiceImpl implements NestSyncService{
         log.debug("Groups in Yukon that is not Nest that have the same name as Group in Nest {}", nonNestGroupsWithNestGroupName);
         groupsInNest.removeAll(nonNestGroupsWithNestGroupName);
         List<NestSyncDetail> details = nonNestGroupsWithNestGroupName.stream().map(group -> {
-            return new NestSyncDetail(0, syncId, MANUAL, FOUND_NONE_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME, group,
+            return new NestSyncDetail(0, syncId, MANUAL, FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME, group,
                 MODIFY_YUKON_GROUP_NOT_TO_CONFLICT_WITH_NEST_GROUP, group);
         }).collect(Collectors.toList());
         return details;
