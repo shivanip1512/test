@@ -362,7 +362,7 @@ yukon.protoPicker = function (okText,
         this.resultsDiv.innerHTML = '';
         errorHolder = document.createElement('div');
         errorHolder.id = this.errorHolderId;
-        errorHolder.innerHTML = yg.ajaxError;
+        errorHolder.innerHTML = yg.text.ajaxError;
         this.resultsDiv.appendChild(errorHolder);
     },
     
