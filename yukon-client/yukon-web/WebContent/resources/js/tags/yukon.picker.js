@@ -356,12 +356,13 @@ yukon.protoPicker = function (okText,
     
     ajaxError = function (transport, textStatus, errorThrown) {
         
+        debug.log(transport.responseText);
         this.inSearch = false;
         unblock();
         this.resultsDiv.innerHTML = '';
         errorHolder = document.createElement('div');
         errorHolder.id = this.errorHolderId;
-        errorHolder.innerHTML = 'There was a problem searching the index: ' + transport.responseText;
+        errorHolder.innerHTML = yg.text.ajaxError;
         this.resultsDiv.appendChild(errorHolder);
     },
     
