@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project name="Yukon Ant Build Script" default="targets" basedir="..">
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
 	
     <property environment="env" />
     <tstamp/>
