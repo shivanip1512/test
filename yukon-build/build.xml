@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <project name="Yukon Ant Build Script" default="targets" basedir="..">
-    
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+	
     <property environment="env" />
     <tstamp/>
     <tstamp>
@@ -176,15 +177,21 @@
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
             tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
 
-        <signjar alias="cannon5" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
-            <fileset dir="${client.bin}">
-                <include name="*.jar"/>
-                <exclude name="activation.jar"/>
-                <exclude name="azure-core-0.9.7.jar"/>
-                <exclude name="azure-servicebus-0.9.7.jar"/>
-                <exclude name="sqljdbc42.jar"/>
-            </fileset>
-        </signjar>
+        <for param="file" parallel="true" threadCount="20">
+            <path>
+                <fileset dir="${client.bin}">
+                    <include name="*.jar"/>
+                    <exclude name="activation.jar"/>
+                    <exclude name="azure-core-0.9.7.jar"/>
+                    <exclude name="azure-servicebus-0.9.7.jar"/>
+                    <exclude name="sqljdbc42.jar"/>
+                </fileset>
+            </path>
+            
+            <sequential>
+                <signjar jar="@{file}" alias="cannon5" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore"/>
+            </sequential>
+        </for>
 
         <!-- Yukon Base Component (Server) -->      
         <property name="server.dir" value="${install.bag}/Yukon Base/Server"/>
