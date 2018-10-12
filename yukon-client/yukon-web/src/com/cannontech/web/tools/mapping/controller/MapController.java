@@ -161,7 +161,8 @@ public class MapController {
         }
         if (type.isRfn()) {
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
-            
+            model.addAttribute("sensorSN", rfnDevice.getRfnIdentifier().getSensorSerialNumber());
+
             if (type.isRfGateway()) {
                 // Gateways should get information from RfnGatewayData (not metadata)
                 try {
@@ -201,11 +202,6 @@ public class MapController {
                     log.error("Failed to find RFN Device for " + id, e);           
                 }
             }
-            if (StringUtils.isNotBlank(rfnDevice.getRfnIdentifier().getSensorSerialNumber())) {
-                model.addAttribute("sensorSN", rfnDevice.getRfnIdentifier().getSensorSerialNumber());
-            }
-
-
         }
 
         model.addAttribute("pao", displayable);
