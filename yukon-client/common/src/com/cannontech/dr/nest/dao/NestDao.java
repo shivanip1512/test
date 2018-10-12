@@ -2,31 +2,21 @@ package com.cannontech.dr.nest.dao;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.nest.model.NestControlHistory;
 import com.cannontech.dr.nest.model.NestSync;
 import com.cannontech.dr.nest.model.NestSyncDetail;
+import com.cannontech.dr.nest.model.NestSyncType;
 
 public interface NestDao {
 
     public enum SortBy {
-        Type("SyncType"),
-        Reason("SyncReasonKey"),
-        Action("SyncActionKey"),
+        SYNCTYPE,
+        SYNCREASONKEY,
+        SYNCACTIONKEY,
         ;
-        
-        private String dbString;
-        SortBy(String dbString) {
-            this.dbString = dbString;
-        }
-        
-        public String getDbString() {
-            return dbString;
-        }
     }
     
     /**
@@ -60,12 +50,13 @@ public interface NestDao {
     void createControlHistory(NestControlHistory history);
 
     /**
-     * Returns list of previous sync date times sorted by most recent
+     * Returns list of previous sync sorted by most recent
      */
-    List<DateTime> getNestSyncsDates();
+    List<NestSync> getNestSyncs();
     
     /**
      * return searchResults with NestSync discrepancies information
      */
-    SearchResults<NestSyncDetail> getNestSyncDetail(DateTime dateTime, PagingParameters paging, SortBy sortBy, Direction direction);
+    SearchResults<NestSyncDetail> getNestSyncDetail(int syncId, PagingParameters paging, SortBy sortBy, Direction direction, List<NestSyncType> syncTypes);
+
 }

@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -45,6 +45,17 @@ public class NestDaoImpl implements NestDao {
         }
     };
     
+    private YukonRowMapper<NestSync> nestSyncRowMapper = new YukonRowMapper<NestSync>() {
+        @Override
+        public NestSync mapRow(YukonResultSet rs) throws SQLException {
+            NestSync row = new NestSync();
+            row.setId(rs.getInt("SyncId"));
+            row.setStartTime(new Instant(rs.getDate("SyncStartTime")));
+            row.setStopTime(new Instant(rs.getDate("SyncStopTime")));
+            return row;
+        }
+    };
+    
     @Override
     public void saveSyncDetails(List<NestSyncDetail> details) {
         if(!details.isEmpty()) {
@@ -63,42 +74,40 @@ public class NestDaoImpl implements NestDao {
     }
     
     @Override
-    public SearchResults<NestSyncDetail> getNestSyncDetail(DateTime dateTime, PagingParameters paging, SortBy sortBy, Direction direction) {
+    public SearchResults<NestSyncDetail> getNestSyncDetail(int syncId, PagingParameters paging, SortBy sortBy, Direction direction, List<NestSyncType> syncTypes) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
-        sql.append("SELECT nsd.SyncDetailId as SyncDetailId, nsd.SyncId as SyncId, nsd.SyncType as SyncType, nsd.SyncReasonKey as SyncReasonKey, nsd.SyncReasonValue as SyncReasonValue, nsd.SyncActionKey as SyncActionKey, nsd.AyncActionValue as AyncActionValue, ns.SyncStartTime");
-        sql.append("FROM NestSyncDetail nsd");
-        sql.append("JOIN NestSync ns ON nsd.SyncId = ns.SyncId");
-        sql.append("WHERE ns.SyncStartTime").eq(dateTime);
-        sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        sql.append("SELECT SyncDetailId, SyncId, SyncType, SyncReasonKey, SyncReasonValue, SyncActionKey, SyncActionValue");
+        sql.append("FROM NestSyncDetail");
+        sql.append("WHERE SyncId").eq(syncId);
+        sql.append("AND SyncType").in(syncTypes);
+        sql.append("ORDER BY").append(sortBy).append(direction);
         
         PagingResultSetExtractor<NestSyncDetail> rse = new PagingResultSetExtractor<>(start, count, nestSyncDetailRowMapper);
         jdbcTemplate.query(sql, rse);
         
         SearchResults<NestSyncDetail> searchResults = new SearchResults<>();
-        searchResults.setBounds(start, count, getNestSyncDetailCount(dateTime));
+        searchResults.setBounds(start, count, getNestSyncDetailCount(syncId));
         
         return searchResults;
     }
     
-    private int getNestSyncDetailCount(DateTime dateTime) {
+    private int getNestSyncDetailCount(int syncId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
-        sql.append("FROM NestSyncDetail nsd");
-        sql.append("JOIN NestSync ns ON nsd.SyncId = ns.SyncId");
-        sql.append("WHERE ns.SyncStartTime").eq(dateTime);
+        sql.append("FROM NestSyncDetail");
+        sql.append("WHERE SyncId").eq(syncId);
         return jdbcTemplate.queryForInt(sql);
     }
     
     @Override
-    public List<DateTime> getNestSyncsDates() {
+    public List<NestSync> getNestSyncs() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT SyncStartTime");
+        sql.append("SELECT SyncId, SyncStartTime, SyncStopTime");
         sql.append("FROM NestSync");
         sql.append("ORDER BY SyncId Desc");
-        
-        return jdbcTemplate.queryForList(sql.toString(), DateTime.class);
+        return jdbcTemplate.query(sql, nestSyncRowMapper);
 
     }
     
