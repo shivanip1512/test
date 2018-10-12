@@ -292,7 +292,7 @@ public final class RfnGatewayData {
                 .filter(radio -> !radio.getMacAddress().isEmpty() && !radio.getMacAddress().equals("FFFFFFFFFF"))
                 .findFirst();
         if (mac.isPresent()) {
-            return (String) mac.get().getMacAddress();
+            return mac.get().getMacAddress();
         }
         return null;
     }
