@@ -4042,8 +4042,15 @@ void CtiCCSubstationBus::getNextCapBankToVerify(EventLogEntries &ccEvents)
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                 if( currentCapBank->getVerificationFlag() && !currentCapBank->getVerificationDoneFlag() )
                 {
-                    _currentVerificationCapBankId = currentCapBank->getPaoId();
-                    return;
+                    if( !currentCapBank->getLocalControlFlag() )
+                    {
+                        _currentVerificationCapBankId = currentCapBank->getPaoId();
+                        return;
+                    }
+                    else
+                    {
+                        CTILOG_INFO( dout, "Skipped cap bank " << currentCapBank->getPaoName() << " for verification because it is in local control mode." );
+                    }
                 }
             }
             currentFeeder->setVerificationDoneFlag(true);
@@ -5311,7 +5318,7 @@ void CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy, Even
                     string textInfo = string("CapBank: ");
                     textInfo += currentCapBank->getPaoName();
                     CtiCCEventType_t eventAction = capControlEnableVerification;
-                    if (!currentCapBank->getDisableFlag())
+                    if (!currentCapBank->getDisableFlag() && !currentCapBank->getLocalControlFlag())
                     {
                         if (!getOverlappingVerificationFlag())
                         {
@@ -5334,9 +5341,16 @@ void CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy, Even
                     }
                     else
                     {
-
-                        textInfo += " Disabled! Will not verify.";
-                        eventAction = capControlDisableVerification;
+                        if (currentCapBank->getDisableFlag())
+                        {
+                            textInfo += " Disabled! Will not verify.";
+                            eventAction = capControlDisableVerification;
+                        }
+                        else
+                        {
+                            textInfo += " in local control mode! Will not verify.";
+                            eventAction = capControlDisableVerification;
+                        }
                     }
                     long stationId, areaId, spAreaId;
                     store->getSubBusParentInfo(this, spAreaId, areaId, stationId);

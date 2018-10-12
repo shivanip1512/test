@@ -294,6 +294,7 @@
     <entry key="yukon.web.modules.capcontrol.menu.reset.label">Reset</entry>
     <entry key="yukon.web.modules.capcontrol.menu.capBankState.note"><![CDATA[No message will be sent <br> to a field device]]></entry>
     <entry key="yukon.web.modules.capcontrol.menu.pointNotFound">Required point does not exist.</entry>
+    <entry key="yukon.web.modules.capcontrol.menu.bankInLocalControl">Cannot verify a bank that is in local control mode.</entry>
     
     <!-- commentsPage.jsp -->
     <entry key="yukon.web.modules.capcontrol.comments.title">Comments for {0}</entry>

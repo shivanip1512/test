@@ -236,7 +236,8 @@ public class MenuController {
         if (allowFlip && is701xDevice) {
             commands.add(new CommandOption(CommandType.FLIP_7010_CAPBANK));
         }
-        commands.add(new CommandOption(CommandType.VERIFY_SELECTED_BANK));
+        String disabledTextKey = "yukon.web.modules.capcontrol.menu.bankInLocalControl";
+        commands.add(new CommandOption(CommandType.VERIFY_SELECTED_BANK, !capBank.getLocalControlFlag(), disabledTextKey));
         model.addAttribute("commands", commands);
     }
 
