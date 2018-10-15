@@ -3,6 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <%-- MODULE, MENU --%>
 <cti:standardPage page="bulk.bulkImporter" module="tools">
@@ -23,41 +24,41 @@
 <div class="warning stacked"><i:inline key=".header" arguments="${bulkImportUrl}"/></div>
 
 <cti:url var="uploadUrl" value="/amr/bulkimporter/upload"/>
-<form id="actionsForm" method="post" action="${uploadUrl}" enctype="multipart/form-data">
+<form:form id="actionsForm" method="post" action="${uploadUrl}" enctype="multipart/form-data">
     <cti:csrfToken/>
-<cti:msg2 var="actionsHeader" key=".actions.header" />
-<cti:msg2 var="actionsLoadDataLabel" key=".actions.loadDataFromFileLabel" />
-<cti:msg2 var="actionsBulkImporterLabel" key=".actions.bulkImporterCommsLabel" />
-<cti:msg2 var="actionsClearResultsLabel" key=".actions.clearImportResultsLabel" />
-<cti:msg2 var="lastReportResultHeader" key=".lastReportResult.header" />
-<cti:msg2 var="allResultsLabel" key=".lastReportResult.allResultsLabel" />
-<cti:msg2 var="failedEntriesLabel" key=".lastReportResult.failedEntriesLabel" />
-<cti:msg2 var="pendingCommsLabel" key=".lastReportResult.pendingCommsLabel" />
-<cti:msg2 var="failedCommsLabel" key=".lastReportResult.failedCommsLabel" />
-<cti:msg2 var="importCountLabel" key=".lastReportResult.importCountLabel" />
-<cti:msg2 var="prevImportLabel" key=".lastReportResult.prevImportLabel" />
-<cti:msg2 var="nextImportLabel" key=".lastReportResult.nextImportLabel" />
-<cti:msg2 var="tabularDataLabel" key=".lastReportResult.tabularDataLabel" />
+    <cti:msg2 var="actionsHeader" key=".actions.header" />
+    <cti:msg2 var="actionsLoadDataLabel" key=".actions.loadDataFromFileLabel" />
+    <cti:msg2 var="actionsBulkImporterLabel" key=".actions.bulkImporterCommsLabel" />
+    <cti:msg2 var="actionsClearResultsLabel" key=".actions.clearImportResultsLabel" />
+    <cti:msg2 var="lastReportResultHeader" key=".lastReportResult.header" />
+    <cti:msg2 var="allResultsLabel" key=".lastReportResult.allResultsLabel" />
+    <cti:msg2 var="failedEntriesLabel" key=".lastReportResult.failedEntriesLabel" />
+    <cti:msg2 var="pendingCommsLabel" key=".lastReportResult.pendingCommsLabel" />
+    <cti:msg2 var="failedCommsLabel" key=".lastReportResult.failedCommsLabel" />
+    <cti:msg2 var="importCountLabel" key=".lastReportResult.importCountLabel" />
+    <cti:msg2 var="prevImportLabel" key=".lastReportResult.prevImportLabel" />
+    <cti:msg2 var="nextImportLabel" key=".lastReportResult.nextImportLabel" />
+    <cti:msg2 var="tabularDataLabel" key=".lastReportResult.tabularDataLabel" />
 
-<tags:boxContainer title="${actionsHeader}" hideEnabled="false">
-    <tags:nameValueContainer>
-        <%-- UPLOAD FILE --%>
-        <tags:nameValue name="${actionsLoadDataLabel}">
-            <tags:file name="dataFile"/>
-            <cti:button type="submit" name="importFile" value="Load" label="Load"/>
-            <%-- IMPORT MSG --%>
-            <c:if test="${not empty msgStr}">
-                <br />
-                <c:if test="${msgType == '1'}">${fn:escapeXml(msgStr)}</c:if>
-                <c:if test="${msgType == '0'}"><div class="error">${fn:escapeXml(msgStr)}</div></c:if>
-            </c:if>
-        </tags:nameValue>
-        <%-- TOGGLE BULK IMPORTER COMMUNICATION --%>
-        <tags:nameValue name="${actionsBulkImporterLabel}">
-        <c:choose>
-            <c:when test="${importerCommunicationsEnabled}">On</c:when>
-            <c:otherwise>Off</c:otherwise>
-        </c:choose>
+    <tags:boxContainer title="${actionsHeader}" hideEnabled="false">
+        <tags:nameValueContainer>
+            <%-- UPLOAD FILE --%>
+            <tags:nameValue name="${actionsLoadDataLabel}">
+                <tags:file name="dataFile"/>
+                <cti:button type="submit" name="importFile" value="Load" label="Load"/>
+                <%-- IMPORT MSG --%>
+                <c:if test="${not empty msgStr}">
+                    <br />
+                    <c:if test="${msgType == '1'}">${fn:escapeXml(msgStr)}</c:if>
+                    <c:if test="${msgType == '0'}"><div class="error">${fn:escapeXml(msgStr)}</div></c:if>
+                </c:if>
+            </tags:nameValue>
+            <%-- TOGGLE BULK IMPORTER COMMUNICATION --%>
+            <tags:nameValue name="${actionsBulkImporterLabel}">
+            <c:choose>
+                <c:when test="${importerCommunicationsEnabled}">On</c:when>
+                <c:otherwise>Off</c:otherwise>
+            </c:choose>
         </tags:nameValue>
         <%-- CLEAR IMPORTS --%>
         <tags:nameValue name="${actionsClearResultsLabel}">
@@ -178,7 +179,7 @@
         </div>
     </div>    
 </tags:boxContainer>
-</form>
+</form:form>
 
     <cti:includeScript link="/resources/js/pages/yukon.ami.bulk.import.js"/>
 

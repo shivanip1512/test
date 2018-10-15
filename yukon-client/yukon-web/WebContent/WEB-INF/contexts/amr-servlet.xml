@@ -6,95 +6,11 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.cannontech.web.amr"/>
-
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <props>
-                <prop key="/bulkimporter/upload">BulkImporterUploadController</prop>
-                <prop key="/bulkimporter/home">BulkImporterHomeController</prop>
-                <prop key="/profile/*">ProfileController</prop>
-                <prop key="/voltageAndTou/*">VoltageAndTouController</prop>
-                <prop key="/manualCommand/*">ManualCommandController</prop>
-                <prop key="/reports/*">AMRReportsController</prop>
-            </props>
-        </property>
-    </bean>
+    <context:component-scan base-package="com.cannontech.web.amr, com.cannontech.web.bulkimporter"/>
     
-    <bean id="viewResolver"
-      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/amr/"/>
-    </bean>
-    
-    <bean id="BulkImporterUploadController" class="com.cannontech.web.bulkimporter.BulkImporterUploadController">
-    
-        <property name="bulkImportDataDao" ref="bulkImportDataDao"/>
-        
-        <property name="methodNameResolver">
-            <bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-                 <property name="methodParamNames">
-                     <list>
-                         <value>importFile</value>
-                         <value>forceManualImportEvent</value>
-                         <value>clearImports</value>
-                     </list>
-                 </property>
-            </bean>
-        </property>
-    </bean>
-
-    <bean id="BulkImporterHomeController" class="com.cannontech.web.bulkimporter.BulkImporterHomeController"/>
-    
-    <bean id="ProfileController" class="com.cannontech.web.amr.profile.ProfileController">
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-    </bean>
-    
-    <bean id="VoltageAndTouController" class="com.cannontech.web.amr.voltagetou.VoltageAndTouController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="databaseCache" ref="databaseCache"/>
-    </bean>
-    
-    <bean id="ManualCommandController" class="com.cannontech.web.amr.manual.ManualCommandController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-    </bean>
-        
-    <bean id="AMRReportsController" class="com.cannontech.web.amr.reports.AMRReportsController">
-        <property name="pointDao" ref="pointDao"/>
-        <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
     
 </beans>

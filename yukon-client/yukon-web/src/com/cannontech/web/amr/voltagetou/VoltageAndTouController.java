@@ -7,11 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -21,13 +21,16 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class VoltageAndTouController extends MultiActionController {
+@Controller
+@RequestMapping("/voltageAndTou/*")
+public class VoltageAndTouController  {
 
-    private IDatabaseCache databaseCache;
-    private DeviceDao deviceDao;
-    private PaoLoadingService paoLoadingService;
-    private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = new ModelAndView("voltageAndTou.jsp");
@@ -50,25 +53,5 @@ public class VoltageAndTouController extends MultiActionController {
         }
 
         return mav;
-    }
-
-    @Required
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
-
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

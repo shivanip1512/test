@@ -427,12 +427,6 @@
         <servlet-class>com.cannontech.servlet.ScheduleController</servlet-class>
     </servlet>
     <servlet>
-        <description>Send operation commmands to deviceID.</description>
-        <display-name>CommanderServlet</display-name>
-        <servlet-name>CommanderServlet</servlet-name>
-        <servlet-class>com.cannontech.servlet.CommanderServlet</servlet-class>
-    </servlet>
-    <servlet>
         <description>Handles acknowledging of mandatory curtailments.</description>
         <display-name>CurtailmentServlet</display-name>
         <servlet-name>CurtailmentServlet</servlet-name>
@@ -724,10 +718,6 @@
     <servlet-mapping>
         <servlet-name>ScheduleController</servlet-name>
         <url-pattern>/servlet/ScheduleController</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CommanderServlet</servlet-name>
-        <url-pattern>/servlet/CommanderServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CurtailmentServlet</servlet-name>

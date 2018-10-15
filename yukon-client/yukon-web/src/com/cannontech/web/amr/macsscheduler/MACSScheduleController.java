@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.macsscheduler.model.MacsException;
 import com.cannontech.amr.macsscheduler.model.MacsSchedule;
@@ -72,7 +71,7 @@ import com.google.common.collect.Lists;
 @CheckRole(YukonRole.SCHEDULER)
 @Controller
 @RequestMapping("/schedules/*")
-public class MACSScheduleController extends MultiActionController {
+public class MACSScheduleController {
     @Autowired private MACSScheduleService service;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private RolePropertyDao rolePropertyDao;

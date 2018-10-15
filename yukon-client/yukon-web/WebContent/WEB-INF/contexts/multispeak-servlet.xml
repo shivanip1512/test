@@ -225,19 +225,6 @@
     <bean id="multispeakController" class="com.cannontech.web.multispeak.MultispeakController"/>
     
     <bean class="com.cannontech.web.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncController" />
-    
-    <bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-        <property name="methodParamNames">
-            <list>
-                <value>view</value>
-                <value>add</value>
-                <value>remove</value>
-                <value>removeAll</value>
-                <value>update</value>
-            </list>
-        </property>
-    </bean>
-    
     <!-- VISUAL DISPLAYS SERVICE -->
     <bean id="visualDisplaysService" class="com.cannontech.web.multispeak.visualDisplays.service.impl.VisualDisplaysServiceImpl"/>
     

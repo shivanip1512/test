@@ -2,7 +2,6 @@ package com.cannontech.web.bulkimporter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.bulk.importdata.dao.BulkImportDataDao;
@@ -39,10 +39,13 @@ import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.exception.NoImportFileException;
 
+
+@Controller
 @CheckRoleProperty(YukonRoleProperty.IMPORTER_ENABLED)
-public class BulkImporterUploadController extends MultiActionController  {
+@RequestMapping("/bulkimporter/*")
+public class BulkImporterUploadController  {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    private BulkImportDataDao bulkImportDataDao = null;
+    @Autowired private BulkImportDataDao bulkImportDataDao;
     
     /**
      * Check for basic problems in file submission. Call the saveFileData method, consolidate success/error
@@ -53,6 +56,7 @@ public class BulkImporterUploadController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value="/upload",  params = "importFile" , method = RequestMethod.POST)
     public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) throws Exception {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContextUtils.getYukonUserContext(request));
         // mav
@@ -114,6 +118,7 @@ public class BulkImporterUploadController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value="/upload", params = "forceManualImportEvent" , method = RequestMethod.POST)
     public ModelAndView forceManualImportEvent(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
@@ -135,6 +140,7 @@ public class BulkImporterUploadController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value="/upload", params = "clearImports" , method = RequestMethod.POST)
     public ModelAndView clearImports(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
@@ -256,9 +262,4 @@ public class BulkImporterUploadController extends MultiActionController  {
         return msgs;
     }
 
-    @Required
-    public void setBulkImportDataDao(BulkImportDataDao bulkImportDataDao) {
-        this.bulkImportDataDao = bulkImportDataDao;
-    }
-    
 }

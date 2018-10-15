@@ -4,10 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -20,10 +21,12 @@ import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.simplereport.YukonReportDefinitionFactory;
 
-public class AMRReportsController extends MultiActionController  {
+@Controller
+@RequestMapping("/reports/*")
+public class AMRReportsController {
     
-    private PointDao pointDao;
-    private SimpleReportService simpleReportService;
+    @Autowired private PointDao pointDao;
+    @Autowired private SimpleReportService simpleReportService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     @Autowired private DeviceDao deviceDao;
@@ -35,6 +38,8 @@ public class AMRReportsController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+
+    @RequestMapping(value = "hbcArchivedDataReport", method = RequestMethod.GET)
     public ModelAndView hbcArchivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
@@ -59,6 +64,7 @@ public class AMRReportsController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value = "archivedDataReport", method = RequestMethod.GET)
     public ModelAndView archivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
@@ -105,6 +111,7 @@ public class AMRReportsController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value = "bulkImportResultsReport", method = RequestMethod.GET)
     public ModelAndView bulkImportResultsReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
@@ -133,6 +140,7 @@ public class AMRReportsController extends MultiActionController  {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value = "groupDevicesReport", method = RequestMethod.GET)
     public ModelAndView groupDevicesReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("reports/htmlGroupDevicesReportView.jsp");
@@ -151,13 +159,4 @@ public class AMRReportsController extends MultiActionController  {
         return mav;
     }
 
-    @Required
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    @Required
-    public void setSimpleReportService(SimpleReportService simpleReportService) {
-        this.simpleReportService = simpleReportService;
-    }
 }

@@ -5,10 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -23,13 +24,16 @@ import com.cannontech.util.ServletUtil;
 /**
  * Spring controller class for profile
  */
-public class ProfileController extends MultiActionController {
+@Controller
+@RequestMapping("/profile/*")
+public class ProfileController{
 
-    private RolePropertyDao rolePropertyDao;
-    private DeviceDao deviceDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    private PaoLoadingService paoLoadingService;
+   @Autowired private RolePropertyDao rolePropertyDao;
+   @Autowired private DeviceDao deviceDao;
+   @Autowired private PaoDefinitionDao paoDefinitionDao;
+   @Autowired private PaoLoadingService paoLoadingService;
     
+   @RequestMapping(value = "home", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 
@@ -56,26 +60,6 @@ public class ProfileController extends MultiActionController {
         mav.addObject("peakReportSupported", peakReportSupported);
         
         return mav;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-    
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-		this.deviceDao = deviceDao;
-	}
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
-
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
     }
 
 }

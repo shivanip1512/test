@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.GroupMetersDao;
@@ -49,7 +48,7 @@ import com.google.common.collect.ListMultimap;
 @RequestMapping("/outageProcessing/process/*")
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
-public class OutageProcessingController extends MultiActionController {
+public class OutageProcessingController {
 
     @Autowired private OutageMonitorDao outageMonitorDao;
 	@Autowired private OutageMonitorService outageMonitorService;
