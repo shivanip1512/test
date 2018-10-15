@@ -151,6 +151,7 @@
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.noTrendsAvailable">No trends available for device</entry>
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.dailyUsageData">Daily Usage Data</entry>
+    <entry key="yukon.web.widgetClasses.CsrTrendWidget.temperature">Temperature:</entry>
     
     <!-- hbcTrendWidget/render.jsp -->
     <entry key="yukon.web.widgetClasses.HbcTrendWidget.whatsThis">What's this?</entry>

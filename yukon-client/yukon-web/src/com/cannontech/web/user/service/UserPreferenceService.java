@@ -112,4 +112,19 @@ public interface UserPreferenceService {
      */
     void updateUserPreferences(Integer userId, List<UserPreference> preferences);
 
+    /**
+     * Return temperature preferences for a user in cache / DB
+     * 
+     * @param LiteYukonUser
+     */
+    public boolean getDefaultTemperatureSelection(LiteYukonUser user);
+
+    /**
+     * Updates new temperature selection preferences for a user in cache / DB
+     * 
+     * @param user, user details
+     * @param isSelected, boolean value for temperature selection
+     */
+    public boolean updateTemperatureSelection(LiteYukonUser user, boolean isSelected);
+
 }

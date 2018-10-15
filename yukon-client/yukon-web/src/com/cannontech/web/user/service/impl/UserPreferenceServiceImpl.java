@@ -17,6 +17,7 @@ import com.cannontech.core.users.model.PreferenceTrendZoomOption;
 import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.user.service.UserPreferenceService;
 
@@ -159,5 +160,18 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
         }
         this.savePreference(user, UserPreferenceName.PORTER_QUEUE_COUNTS_ZOOM, prefType.name());
         return prefType;
+    }
+
+    @Override
+    public boolean getDefaultTemperatureSelection(LiteYukonUser user) {
+        String prefValue = this.getPreference(user, UserPreferenceName.TREND_TEMPERATURE);
+        return "Y".equalsIgnoreCase(prefValue) ? true : false;
+    }
+
+    @Override
+    public boolean updateTemperatureSelection(LiteYukonUser user, boolean isSelected) {
+        String prefValue = YNBoolean.valueOf(isSelected).getDatabaseRepresentation().toString();
+        this.savePreference(user, UserPreferenceName.TREND_TEMPERATURE , prefValue);
+        return true;
     }
 }

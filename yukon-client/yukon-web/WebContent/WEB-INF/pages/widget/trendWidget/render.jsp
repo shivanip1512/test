@@ -12,6 +12,13 @@ $(function () {
     // init for a specific DOM element and its children
     dateTimePicker.ancestorInit('#optionalDateFields');
 });
+
+$(document).ready(function(){
+    $('#temperature').click(function() {
+        ${widgetParameters.jsWidget}.doDirectActionRefresh('render?isTemperatureChecked=' + this.checked);
+    });
+});
+
 </script>
 
 <c:choose>
@@ -21,7 +28,9 @@ $(function () {
         <h4 class="tac"><cti:msg2 key=".meter"/> <cti:deviceName deviceId="${widgetParameters.deviceId}"/></h4>
 
         <%-- THE CHART --%>
-        <flot:trend title="${title}" pointIds="${pointId}"
+        <flot:trend title="${title}" pointIds="${pointId}" 
+            primaryWeatherLocationId ="${primaryWeatherLocationId}" 
+            isTemperatureChecked = "${isTemperatureChecked}"
             startDate="${startDate.time}" endDate="${stopDateAdjusted.time}"
             interval="${interval}"
             converterType="${attributeGraphType.converterType}"
@@ -95,8 +104,17 @@ $(function () {
                 </c:otherwise>
                 
             </c:choose>
-        
-        
+
+            <%-- TEMPRATURE OPTION --%>
+            <c:if test="${primaryWeatherLocationId != null}">
+                <tr>
+                    <td class="wsnw"><i:inline key=".temperature"/></td>
+                    <td>
+                        <input type="checkbox" id="temperature" <c:if test="${isTemperatureChecked}">checked="checked"</c:if>/>
+                    </td>
+                </tr>
+            </c:if>
+
             <%-- CHART STYLE --%>
             <tr>
                 <td class="wsnw"><i:inline key=".chartStyle"/></td>

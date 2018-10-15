@@ -48,6 +48,8 @@ public class ChartController {
     @RequestMapping(value="chart", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> chart(YukonUserContext userContext,
                         String pointIds,
+                        Integer primaryWeatherLocationId,
+                        boolean isTemperatureChecked,
                         ChartInterval interval,
                         long startDate,
                         long endDate,
@@ -66,14 +68,9 @@ public class ChartController {
         List<GraphDetail> graphDetails = new ArrayList<>();
         graphDetails.add(new GraphDetail(pointId, converterType, leftYLabelUnits, 1, "left"));
         
-        // TODO : Below code may require some code reactor after (YUK-18799) 
-        // Get primary weather station and add it to the graph map 
-        // This also need some control coming from UI (may be a check box selected for temp).
-        boolean isTempratureChecked = false; // Needs to be updated
-        if (isTempratureChecked) {
-            int paoId = 0; // This paoId will be replaced with primary weather station Id (YUK-18799)
+        if (isTemperatureChecked) {
             LitePoint litePoint = attributeService.findPointForAttribute(
-                new PaoIdentifier(paoId, PaoType.WEATHER_LOCATION), BuiltInAttribute.TEMPERATURE);
+                new PaoIdentifier(primaryWeatherLocationId, PaoType.WEATHER_LOCATION), BuiltInAttribute.TEMPERATURE);
             if (litePoint != null) {
                 String rightYLabelUnits = messageSourceAccessor.getMessage("yukon.common.chart.yLabel.temperature");
                 graphDetails.add(new GraphDetail(litePoint.getPointID(), ConverterType.RAW, rightYLabelUnits, 2, "right"));

@@ -75,6 +75,7 @@
     <entry key="yukon.web.modules.user.preferences.ALERT_SOUND">Alert Sound</entry>
     <entry key="yukon.web.modules.user.preferences.COMMANDER_PRIORITY">Command Priority</entry>
     <entry key="yukon.web.modules.user.preferences.COMMANDER_QUEUE_COMMAND">Queue Command</entry>
+    <entry key="yukon.web.modules.user.preferences.TREND_TEMPERATURE">Temperature</entry>
     
     <!-- Trend Zoom -->
     <entry key="yukon.web.modules.user.preferences.TREND_ZOOM">Trends Zoom</entry>

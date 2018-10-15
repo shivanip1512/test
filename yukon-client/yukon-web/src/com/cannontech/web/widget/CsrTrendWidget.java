@@ -35,6 +35,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.MutableRange;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.weather.WeatherDataService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
@@ -63,6 +64,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
     @Autowired private DeviceDao deviceDao;
     @Autowired private AttributeService attributeService;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private WeatherDataService weatherDataService;
 
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
     @Autowired @Qualifier("csrTrendWidgetCachingWidgetParameterGrabber")
@@ -171,7 +173,9 @@ public class CsrTrendWidget extends WidgetControllerBase {
             stopDateAdjusted = DateUtils.addMilliseconds(dateRange.getMax(), 
                                                         (int) TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS) - 1);
         }
-
+        Integer primaryWeatherLocationId = weatherDataService.getPrimaryWeatherLocationPaoId();
+        mav.addObject("primaryWeatherLocationId", primaryWeatherLocationId);
+        mav.addObject("isTemperatureChecked", isTemperatureChecked(request, userContext.getYukonUser()));
         mav.addObject("attributeGraphType", attributeGraphType);
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", chartPeriod);
@@ -280,5 +284,17 @@ public class CsrTrendWidget extends WidgetControllerBase {
 
     public void setDefaultAttribute(BuiltInAttribute defaultAttribute) {
         this.defaultAttribute = defaultAttribute;
+    }
+
+    private boolean isTemperatureChecked(HttpServletRequest request, LiteYukonUser user) {
+        if (request.getParameter("isTemperatureChecked") == null) {
+            return userPreferenceService.getDefaultTemperatureSelection(user);
+        }
+        boolean tempSelected = Boolean.valueOf(request.getParameter("isTemperatureChecked"));
+        if (tempSelected != userPreferenceService.getDefaultTemperatureSelection(user)) {
+            // update this value
+            userPreferenceService.updateTemperatureSelection(user, tempSelected);
+        }
+        return tempSelected;
     }
 }

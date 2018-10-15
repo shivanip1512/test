@@ -117,7 +117,7 @@ public enum ChartInterval {
         @Override
         public Date increment(Date date) {
             long time = date.getTime();
-            time += (60 * 60 * 1000);
+            time += getMillis();
 
             return new Date(time);
         }

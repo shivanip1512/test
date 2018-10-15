@@ -9,6 +9,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.system.OnOff;
 import com.cannontech.web.input.type.InputType;
 
@@ -43,7 +44,8 @@ public enum UserPreferenceName implements DisplayableEnum {
     COMMANDER_LAST_ROUTE_ID(InputTypeFactory.integerType(), null, PreferenceType.TEMPORARY),
     COMMANDER_LAST_SERIAL_NUMBER(InputTypeFactory.stringType(), null, PreferenceType.TEMPORARY),
     COMMANDER_LAST_TARGET(InputTypeFactory.stringType(), null, PreferenceType.TEMPORARY),
-    COMMANDER_LAST_PAO_ID(InputTypeFactory.integerType(), null, PreferenceType.TEMPORARY);
+    COMMANDER_LAST_PAO_ID(InputTypeFactory.integerType(), null, PreferenceType.TEMPORARY),
+    TREND_TEMPERATURE (InputTypeFactory.stringType(), YNBoolean.NO.getDatabaseRepresentation().toString(), PreferenceType.EDITABLE);
 
     final private InputType<?> valueType;
     final private String defaultValue;

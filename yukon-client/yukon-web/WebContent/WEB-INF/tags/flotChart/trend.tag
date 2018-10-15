@@ -2,6 +2,8 @@
 
 <%@ attribute name="title" required="true"%>
 <%@ attribute name="pointIds" required="true" description="Comma seperated list of pointIds"%>
+<%@ attribute name="primaryWeatherLocationId" description="Primary Weather Location Id"%>
+<%@ attribute name="isTemperatureChecked" description="Checkbox selection (true or false) for temperature option"%>
 <%@ attribute name="startDate" required="true"%>
 <%@ attribute name="endDate" required="true"%>
 <%@ attribute name="interval" required="true" description="Either ChartInterval.java object or the String representation"%>
@@ -21,6 +23,8 @@
 
 <c:url var="chartUrl" scope="page" value="/amr/chart/chart">
     <c:param name="pointIds" value="${pointIds}" />
+    <c:param name="primaryWeatherLocationId" value="${primaryWeatherLocationId}" />
+    <c:param name="isTemperatureChecked" value="${isTemperatureChecked}" />
     <c:param name="startDate" value="${startDate}" />
     <c:param name="endDate" value="${endDate}" />
     <c:param name="interval" value="${interval}" />
