@@ -3,7 +3,7 @@
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 # Valid operations are start, stop, restart
-param([switch]$Elevated,[string]$Operation='restart')
+param([switch]$Elevated,[string]$Operation='restart',[switch]$ExitWhenComplete)
 
 function Test-Admin {
   $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -135,7 +135,7 @@ Function StopServices {
             $Service.Stop()
             try {
                 $Service.WaitForStatus([ServiceProcess.ServiceControllerStatus]::Stopped, $timespan)
-				Write-Host "$ServiceToStop stopped."
+                Write-Host "$ServiceToStop stopped."
             }
             catch [ServiceProcess.TimeoutException] {
                 Write-Host "Timeout stopping service $($Service.Name)"
@@ -217,7 +217,7 @@ If($Operation -ne 'start')
 
     do
     {
-	    Start-Sleep -s 7
+        Start-Sleep -s 7
         $SERVICES_STOPPED = CheckServiceStatus($STOPPED)
         if($SERVICES_STOPPED)
         {
@@ -261,4 +261,8 @@ If($Operation -ne 'stop')
     }
 }
 Write-Host ""
-Read-Host -Prompt "Press Enter to exit"
+
+If(-Not($ExitWhenComplete)) 
+{
+    Read-Host -Prompt "Press Enter to exit"
+}

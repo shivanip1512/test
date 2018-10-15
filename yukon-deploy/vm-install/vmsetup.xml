@@ -724,6 +724,17 @@
             </else>
         </if>
     </target>
+    
+    <target name="remote_upgrade_powershell" depends="find_guestid">
+        <property name="db.type" value="${env.DATABASE_TYPE}"/>
+        
+      
+        <sshexec host="${guest_address}"
+                            trust="true"
+                            username="${guest_userid}"
+                            password="${guest_password}"
+                            command="powershell c:/YukonSetup.ps1 -databaseType ${db.type}"/>
+    </target>
 		
 
     <target name="populate_oracle_db" depends="find_guestid">
