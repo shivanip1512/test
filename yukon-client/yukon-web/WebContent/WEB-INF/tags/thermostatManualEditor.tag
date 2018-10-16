@@ -25,7 +25,7 @@
             <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
             <c:choose>
                 <c:when test="${not multipleThermostatsSelected and canEditLabel}">
-                    <form:form action="/stars/consumer/thermostat/saveLabel" commandName="thermostat" method="post">
+                    <form:form action="/stars/consumer/thermostat/saveLabel" modelAttribute="thermostat" method="post">
                         <cti:csrfToken/>
                         <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                         <form:hidden path="id"/>
