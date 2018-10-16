@@ -209,6 +209,7 @@
     <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
     <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.noTrendsAvailable">No trends available for device</entry>
     <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.meter">Meter</entry>
+    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.temperature">Temperature:</entry>
     
         <!-- GasCsrTrendWidget/render.jsp -->
     <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.whatsThis">What's this?</entry>

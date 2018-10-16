@@ -24,6 +24,9 @@
 <c:url var="chartUrl" scope="page" value="/amr/chart/chart">
     <c:param name="pointIds" value="${pointIds}" />
     <c:param name="primaryWeatherLocationId" value="${primaryWeatherLocationId}" />
+    <c:if test="${empty isTemperatureChecked}">
+        <c:set var="isTemperatureChecked" value="false"/>
+    </c:if>
     <c:param name="isTemperatureChecked" value="${isTemperatureChecked}" />
     <c:param name="startDate" value="${startDate}" />
     <c:param name="endDate" value="${endDate}" />
