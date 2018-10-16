@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="VMAutomation" default="targets" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="VMAutomation" default="targets" basedir=".." xmlns:if="ant:if" xmlns:unless="ant:unless">
 
 
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
@@ -905,12 +905,12 @@
 
 	<target name="copy_installer_to_vm">
 		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
-        <echo message="fileset dir= E:\JenkinsHome\jobs\${hudson.job}\builds\${hudson.build}\archive\dist" />
+        <echo message="fileset dir= ${basedir}/yukon-build/dist" />
         <!--- Using parallel to add a timeout to this task which keeps hanging -->
         <parallel threadCount="1" timeout="300000">
             <sequential>
                 <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
-                    <fileset dir="E:\JenkinsHome\jobs\${hudson.job}\builds\${hudson.build}\archive\dist">
+                    <fileset dir="${basedir}/yukon-build/dist">
                         <include name="*"/>
                     </fileset>
                 </scp>
