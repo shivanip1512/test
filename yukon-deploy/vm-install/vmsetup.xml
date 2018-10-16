@@ -339,7 +339,7 @@
 	<target name="copy_support_files" depends="find_guestid, copy_installer_to_vm">
 		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
 	        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
-	            <fileset dir="copy-to-vm">
+	            <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
 	                <include name="*"/>
 	            	<exclude name="master.cfg"/>
 	            </fileset>
@@ -347,7 +347,7 @@
 		
 		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
 	        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
-	            <fileset dir="third-party">
+	            <fileset dir="${basedir}/yukon-deploy/vm-install/third-party">
 	                <include name="*"/>
 	            </fileset>
 	        </scp>
@@ -356,7 +356,7 @@
 	<target name="copy_master_cfg" depends="setup_master_cfg">
         <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
             <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
-                <fileset dir="copy-to-vm">
+                <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
                     <include name="master.cfg"/>
                 </fileset>
             </scp>
@@ -492,7 +492,7 @@
 
         <!-- copy over new master config -->
         <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
-            <fileset dir="copy-to-vm">
+            <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
                 <include name="master.cfg"/>
             </fileset>
         </scp>
@@ -535,7 +535,7 @@
         <property name="db.sid" value="${env.DATABASE_SQLSERVER}"/>
 
         <path id="antclasspath"> 
-            <fileset dir="third-party"> 
+            <fileset dir="${basedir}/yukon-deploy/vm-install/third-party"> 
                 <include name="ojdbc6.jar"/> 
             </fileset> 
         </path>
@@ -654,7 +654,7 @@
         <echo message="Creating new database ${db.name}"/>
 
         <path id="antclasspath"> 
-        <fileset dir="third-party"> 
+        <fileset dir="${basedir}/yukon-deploy/vm-install/third-party"> 
             <include name="ojdbc6.jar"/> 
         </fileset> 
         </path>
@@ -748,7 +748,7 @@
         </tstamp>
 
         <path id="antclasspath"> 
-            <fileset dir="third-party"> 
+            <fileset dir="${basedir}/yukon-deploy/vm-install/third-party"> 
                 <include name="ojdbc6.jar"/> 
             </fileset> 
         </path>
