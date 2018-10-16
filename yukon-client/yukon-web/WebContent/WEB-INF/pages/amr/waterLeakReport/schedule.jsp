@@ -10,7 +10,7 @@
 
 <cti:msgScope paths="modules.amr.waterLeakReport.report">
 <cti:flashScopeMessages/>
-<form:form id="schedule-form" action="schedule" method="post" commandName="fileExportData">
+<form:form id="schedule-form" action="schedule" method="post" modelAttribute="fileExportData">
 
     <c:if test="${not empty jobId}">
         <input type="hidden" name="jobId" value="${jobId}">

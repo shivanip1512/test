@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.tools.tdc">
     <cti:url var="saveUrl" value="/tools/data-viewer/altScanRateSend"/>
-    <form:form id="tdc-alt-scan-rate-form" commandName="backingBean" action="${saveUrl}">
+    <form:form id="tdc-alt-scan-rate-form" modelAttribute="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="deviceId" />
         <tags:nameValueContainer2>

@@ -10,7 +10,7 @@
     <tags:setFormEditMode mode="${mode}" />
 
     <cti:url var="action" value="/tools/data-viewer/save" />
-    <form:form id="custom-form" commandName="display" action="${action}" method="POST">
+    <form:form id="custom-form" modelAttribute="display" action="${action}" method="POST">
             <cti:csrfToken />
             <form:hidden path="displayId" />
             <input type="hidden" id="selectedPoints" name="pointIds"/>

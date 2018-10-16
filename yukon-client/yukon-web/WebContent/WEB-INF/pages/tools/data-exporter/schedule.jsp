@@ -8,7 +8,7 @@
 
 <cti:standardPage page="bulk.archivedValueExporterScheduleSetup" module="tools">
     
-    <form:form id="scheduleForm" commandName="exportData" action="doSchedule">
+    <form:form id="scheduleForm" modelAttribute="exportData" action="doSchedule">
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="adeParameters">
             <tags:nameValueContainer2 id="adeParametersContainer">

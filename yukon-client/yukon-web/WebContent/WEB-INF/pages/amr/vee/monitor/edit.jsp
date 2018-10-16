@@ -28,7 +28,7 @@
     
     <%-- MISC FORMS --%>
     <cti:url var="deleteUrl" value="/amr/vee/monitor/delete"/>
-    <form:form id="deleteMonitorForm" action="${deleteUrl}" method="post" commandName="validationMonitor">
+    <form:form id="deleteMonitorForm" action="${deleteUrl}" method="post" modelAttribute="validationMonitor">
         <cti:csrfToken/>
         <tags:hidden path="validationMonitorId"/>
         <tags:hidden path="name"/>
@@ -46,7 +46,7 @@
     
     <%-- UPDATE FORM --%>
     <cti:url var="updateUrl" value="/amr/vee/monitor/update"/>
-    <form:form id="updateForm" action="${updateUrl}" method="post" commandName="validationMonitor">
+    <form:form id="updateForm" action="${updateUrl}" method="post" modelAttribute="validationMonitor">
         <cti:csrfToken/>
         <c:if test="${not empty validationMonitorId}">
             <form:hidden path="validationMonitorId" />

@@ -52,7 +52,7 @@ $( function () {
     <cti:msg2 key=".confirmQuestion" htmlEscape="true" argument="${program.name}"/>
 </h4>
 
-<form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
+<form:form id="stopProgramForm" modelAttribute="backingBean" onsubmit="return submitForm();">
     <cti:csrfToken/>
     <form:hidden path="programId"/>
     <c:if test="${!stopGearAllowed}">

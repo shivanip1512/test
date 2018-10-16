@@ -13,7 +13,7 @@
     <cti:url var="detailUrl" value="${urlPath}"/>
     <hr>
     <div><i:inline key=".filterBy"/></div>
-    <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter" class="dib full-width push-down-4">
+    <form:form id="filter-form" action="${detailUrl}" method="GET" modelAttribute="filter" class="dib full-width push-down-4">
         <div>
             <div class="fl MR10">
                 <cti:msg2 var="actionLabel" key=".action"/>    

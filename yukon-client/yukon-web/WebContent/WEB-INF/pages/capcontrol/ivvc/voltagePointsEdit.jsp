@@ -12,7 +12,7 @@
     <cti:includeScript link="/resources/js/pages/yukon.da.voltage.points.edit.js"/>
     
     <tags:boxContainer2 nameKey=".title">
-        <form:form id="voltagePointsForm" action="updateVoltagePoints" commandName="zoneVoltagePointsHolder">
+        <form:form id="voltagePointsForm" action="updateVoltagePoints" modelAttribute="zoneVoltagePointsHolder">
             <cti:csrfToken/>
             <input name="zoneId" value="${zoneId}" type="hidden"/>
             <table class="compact-results-table no-stripes js-voltage-points">

@@ -21,7 +21,7 @@
 	<tags:sectionContainer2 nameKey="title">
     <div>
     <cti:url var="detailUrl" value="/common/deviceDefinition.xml"/>
-    <form:form id="filterForm" action="${detailUrl}" method="GET" commandName="definitionsFilter">
+    <form:form id="filterForm" action="${detailUrl}" method="GET" modelAttribute="definitionsFilter">
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".deviceType"/></strong>

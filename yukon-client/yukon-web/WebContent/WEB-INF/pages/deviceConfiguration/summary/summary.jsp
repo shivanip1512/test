@@ -11,7 +11,7 @@
             <span class="fr cp"><cti:icon icon="icon-help" data-popup="#summary-help"/></span>
             <cti:msg2 var="helpTitle" key=".helpTitle"/>
             <div id="summary-help" class="dn" data-dialog data-cancel-omit="true" data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div>
-            <form:form id="filter-form" action="filter" method="get" commandName="filter">
+            <form:form id="filter-form" action="filter" method="get" modelAttribute="filter">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".configurations">
                         <form:select multiple="true" path="configurationIds" size="6" style="min-width:200px;">

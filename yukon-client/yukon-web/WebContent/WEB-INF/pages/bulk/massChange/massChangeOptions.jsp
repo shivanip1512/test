@@ -9,7 +9,7 @@
     </c:if>
     
     <cti:url var="massChangeAction" value="/bulk/massChangeOptions"/>
-    <form:form method="post" action="${massChangeAction}" commandName="massChangeOptions">
+    <form:form method="post" action="${massChangeAction}" modelAttribute="massChangeOptions">
         <cti:csrfToken/>
         <%-- DEVICE COLLECTION --%>
         <cti:deviceCollection deviceCollection="${deviceCollection}" />

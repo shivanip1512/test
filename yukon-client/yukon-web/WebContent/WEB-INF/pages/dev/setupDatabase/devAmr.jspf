@@ -16,7 +16,7 @@
      <cti:button nameKey="status" type="submit" href="${statusUrl}"  busy="true" classes="action primary"/>
     
     <br> <br>
-    <form:form commandName="devAmr" action="setupAMR" method="post" id="setupAMRForm">
+    <form:form modelAttribute="devAmr" action="setupAMR" method="post" id="setupAMRForm">
         <cti:csrfToken/>
         <div class="widgetContent">
             <tags:nameValueContainer2>

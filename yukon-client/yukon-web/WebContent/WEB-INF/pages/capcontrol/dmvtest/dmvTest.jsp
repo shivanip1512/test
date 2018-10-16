@@ -28,7 +28,7 @@
         </div>
     </cti:displayForPageEditModes>
     <cti:url var="action" value="/capcontrol/dmvTest" />
-    <form:form id="dmvTest-form" commandName="dmvTest" action="${action}" method="POST">
+    <form:form id="dmvTest-form" modelAttribute="dmvTest" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="dmvTestId" />
         <div key= "yukon.web.modules.capcontrol.dmvTest.helpText"/>

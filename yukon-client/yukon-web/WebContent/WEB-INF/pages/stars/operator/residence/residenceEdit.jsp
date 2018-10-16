@@ -11,7 +11,7 @@
     <tags:setFormEditMode mode="${mode}"/>
 
     <cti:url var="submitUrl" value="/stars/operator/residence/residenceUpdate"/>
-	<form:form commandName="customerResidence" action="${submitUrl}" method="POST">
+	<form:form modelAttribute="customerResidence" action="${submitUrl}" method="POST">
 	    <cti:csrfToken/>
 		<input type="hidden" name="accountId" value="${accountId}"/>
 		<form:hidden path="accountSiteId"/>

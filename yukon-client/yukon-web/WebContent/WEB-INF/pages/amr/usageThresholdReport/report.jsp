@@ -10,7 +10,7 @@
 
 <cti:standardPage module="amr" page="usageThresholdReport.report">
      <tags:sectionContainer2 nameKey="criteria">
-        <form:form id="filter-form" action="report" method="post" commandName="criteria">
+        <form:form id="filter-form" action="report" method="post" modelAttribute="criteria">
             <cti:csrfToken/>
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".criteria.devices">

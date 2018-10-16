@@ -123,7 +123,7 @@ $( function () {
     </c:if>
 </h4>
 
-<form:form id="startMultipleProgramsForm" commandName="backingBean" onsubmit="return submitForm();">
+<form:form id="startMultipleProgramsForm" modelAttribute="backingBean" onsubmit="return submitForm();">
     <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>

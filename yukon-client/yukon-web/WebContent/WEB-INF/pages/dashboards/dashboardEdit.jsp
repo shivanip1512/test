@@ -14,7 +14,7 @@
     <br/><br/>
     
     <cti:url var="action" value="/dashboards/save"/>
-    <form:form commandName="dashboard" action="${action}" method="POST">
+    <form:form modelAttribute="dashboard" action="${action}" method="POST">
         <cti:csrfToken/>
 
         <form:hidden path="dashboardId"/>

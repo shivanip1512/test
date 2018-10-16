@@ -8,7 +8,7 @@
 <cti:standardPage module="dev" page="rfnTest">
         <cti:msg2 key="modules.dev.rfnTest.rfnConfigNotification.helpText" var="helpText"/>
     <tags:sectionContainer title="RFN Config Notification Test"  helpText="${helpText}">
-        <form:form action="sendConfigNotification" method="post" commandName="meterReading">
+        <form:form action="sendConfigNotification" method="post" modelAttribute="meterReading">
         <cti:csrfToken/>
             <tags:nameValueContainer tableClass="natural-width">
                 

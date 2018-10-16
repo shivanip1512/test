@@ -217,7 +217,7 @@ $( function () {
 </h4>
 
 <cti:url var="submitUrl" value="/dr/program/stop/stopMultiple"/>
-<form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
+<form:form id="stopProgramForm" modelAttribute="backingBean" onsubmit="return submitForm();">
     <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>

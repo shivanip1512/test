@@ -8,7 +8,7 @@
     <cti:flashScopeMessages/>
     
     <cti:url var="copyPointUrl" value="/tools/points/copy-point"/>
-    <form:form id="copy-point-form" action="${copyPointUrl}" method="post" commandName="copyPointModel">
+    <form:form id="copy-point-form" action="${copyPointUrl}" method="post" modelAttribute="copyPointModel">
         <cti:csrfToken/>
         <form:hidden path="pointId"/>
         <form:hidden path="pointType" id="copy-point-pointType"/>

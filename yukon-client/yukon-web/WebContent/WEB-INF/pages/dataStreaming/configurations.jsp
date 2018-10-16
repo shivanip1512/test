@@ -7,7 +7,7 @@
 <cti:standardPage module="tools" page="dataStreaming">
 
     <cti:url var="filterUrl" value="/tools/dataStreaming/configurations"/>
-    <form:form action="${filterUrl}" method="get" commandName="filter">
+    <form:form action="${filterUrl}" method="get" modelAttribute="filter">
 
     <div id="page-actions" class="dn">
         <cti:url var="summaryUrl" value="/tools/dataStreaming/summary"/>

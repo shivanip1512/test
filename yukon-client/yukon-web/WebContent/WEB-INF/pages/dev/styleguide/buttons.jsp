@@ -356,7 +356,7 @@
         <tags:radio name="vehicle" value="red" classes="middle" disabled="true">JetSki</tags:radio>
         <tags:radio name="vehicle" value="red" classes="right">Airplane</tags:radio>
         
-        <form:form commandName="bean" cssClass="buffered">
+        <form:form modelAttribute="bean" cssClass="buffered">
             <tags:radio path="phase" key=".phase.A" classes="left" checked="true" value="A"/>
             <tags:radio path="phase" key=".phase.B" classes="middle" value="B"/>
             <tags:radio path="phase" key=".phase.C" classes="right" value="C"/>
@@ -378,7 +378,7 @@
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;middle&quot; disabled=&quot;true&quot;&gt;JetSki&lt;/tags:radio&gt;
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;right&quot;&gt;Airplane&lt;/tags:radio&gt;
 
-&lt;form:form commandName=&quot;bean&quot; cssClass=&quot;buffered&quot;&gt;
+&lt;form:form modelAttribute=&quot;bean&quot; cssClass=&quot;buffered&quot;&gt;
     &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.A&quot; classes=&quot;left&quot; checked=&quot;true&quot; value=&quot;A&quot;/&gt;
     &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.B&quot; classes=&quot;middle&quot; value=&quot;B&quot;/&gt;
     &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.C&quot; classes=&quot;right&quot; value=&quot;C&quot;/&gt;
@@ -408,7 +408,7 @@
             <tags:check name="soda" label="Soda"/>
         </div>
         
-        <form:form commandName="jobfilter" cssClass="buffered">
+        <form:form modelAttribute="jobfilter" cssClass="buffered">
             <div class="button-group">
                 <tags:check path="status" value="CANCELLED" key=".jobRunStatus.CANCELLED"/>
                 <tags:check path="status" value="COMPLETED" key=".jobRunStatus.COMPLETED"/>
@@ -436,7 +436,7 @@
   &lt;tags:check name="soda" label="Soda"/&gt;
 &lt;/div&gt;
 
-&lt;form:form commandName="jobfilter" cssClass="buffered"&gt;
+&lt;form:form modelAttribute="jobfilter" cssClass="buffered"&gt;
   &lt;div class="button-group"&gt;
       &lt;tags:check path="jobRunStatus" value="CANCELLED" key=".jobRunStatus.CANCELLED"/&gt;
       &lt;tags:check path="jobRunStatus" value="COMPLETED" key=".jobRunStatus.COMPLETED"/&gt;

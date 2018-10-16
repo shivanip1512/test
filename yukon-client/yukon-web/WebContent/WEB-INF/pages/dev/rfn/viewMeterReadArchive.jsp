@@ -18,7 +18,7 @@
 </script>
 
     <tags:sectionContainer title="RFN Meter Read Archive Request Test">
-        <form:form action="sendMeterReadArchiveRequest" method="post" commandName="meterReading">
+        <form:form action="sendMeterReadArchiveRequest" method="post" modelAttribute="meterReading">
             <cti:csrfToken/>
             <tags:nameValueContainer tableClass="natural-width">
                 

@@ -7,7 +7,7 @@
 <cti:msgScope paths="modules.smartNotifications">
 
     <cti:url var="action" value="/notifications/subscription/saveDetails"/>
-    <form:form id="notification-details" commandName="subscription" action="${action}" method="POST">       
+    <form:form id="notification-details" modelAttribute="subscription" action="${action}" method="POST">       
         <cti:csrfToken/>
         <form:hidden path="id"/>
         <span class="fr">

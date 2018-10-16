@@ -16,7 +16,7 @@
     </script>
 
     <tags:sectionContainer2 nameKey="sendEvent">
-        <form:form action="sendEvent" method="post" commandName="event" id="eventForm">
+        <form:form action="sendEvent" method="post" modelAttribute="event" id="eventForm">
             <cti:csrfToken/>
             <tags:nameValueContainer>
                 <tags:nameValue name="Serial Number">

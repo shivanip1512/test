@@ -17,7 +17,7 @@
     </script>
     
     <cti:url var="url" value="/stars/operator/inventory/applyFilter"/>
-    <form:form id="selectionForm" cssClass="js-no-submit-on-enter" commandName="filterModel" action="${url}" method="post">
+    <form:form id="selectionForm" cssClass="js-no-submit-on-enter" modelAttribute="filterModel" action="${url}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="removeRule" id="removeRule">
         <div class="stacked">

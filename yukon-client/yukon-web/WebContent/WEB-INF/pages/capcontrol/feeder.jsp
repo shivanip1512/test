@@ -68,7 +68,7 @@
         <cti:url var="action" value="/capcontrol/feeders?parentId=${parent.liteID}"/>
     </c:if>
 </cti:displayForPageEditModes>
-<form:form commandName="feeder" action="${action}" method="POST">
+<form:form modelAttribute="feeder" action="${action}" method="POST">
     <cti:csrfToken/>
     <div class="column-12-12">
         <div class="column one">

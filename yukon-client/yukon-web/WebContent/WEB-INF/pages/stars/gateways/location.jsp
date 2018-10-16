@@ -15,7 +15,7 @@
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
 
 <cti:url var="url" value="/stars/gateways/${location.paoId}/location"/>
-<form:form id="gateway-location-form" action="${url}" method="post" commandName="location">
+<form:form id="gateway-location-form" action="${url}" method="post" modelAttribute="location">
     <cti:csrfToken/>
     <form:hidden path="paoId"/>
     <tags:nameValueContainer2 tableClass="with-form-controls">

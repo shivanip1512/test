@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.tools.bulk.archivedValueExporter">
 
-<form:form commandName="attribute" id="attribute-form" cssClass="js-no-submit-on-enter">
+<form:form modelAttribute="attribute" id="attribute-form" cssClass="js-no-submit-on-enter">
     <cti:csrfToken/>
     <tags:nameValueContainer2>
         <tags:selectNameValue id="chooseAttrib" nameKey=".attribute" path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>

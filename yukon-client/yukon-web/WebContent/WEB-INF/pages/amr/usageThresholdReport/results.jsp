@@ -39,7 +39,7 @@
             <span class="fr cp"><cti:icon icon="icon-help" data-popup="#results-help"/></span>
             <cti:msg2 var="helpTitle" key=".helpTitle"/>
             <div id="results-help" class="dn" data-dialog data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div>
-            <form:form id="filter-results-form" action="results" method="get" commandName="filter">
+            <form:form id="filter-results-form" action="results" method="get" modelAttribute="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
                 <tags:nameValueContainer2>

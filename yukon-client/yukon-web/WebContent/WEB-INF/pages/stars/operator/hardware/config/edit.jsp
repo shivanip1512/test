@@ -54,7 +54,7 @@ updateSub = function (data) {
 
 <cti:url var="submitUrl" value="/stars/operator/hardware/config/commit"/>
 
-<form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
+<form:form id="editForm" name="editForm" action="${submitUrl}" modelAttribute="configuration">
     
     <div class="column-16-8 clearfix stacked">
         <div class="column one">

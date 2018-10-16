@@ -11,7 +11,7 @@
 </c:if>
 
 <cti:url var="action" value="/group/composedGroup/save"/>
-<form:form commandName="rules" action="${action}" method="post">
+<form:form modelAttribute="rules" action="${action}" method="post">
 
     <cti:csrfToken/>
     <form:hidden path="groupName"/>

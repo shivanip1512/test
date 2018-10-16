@@ -9,7 +9,7 @@
 </c:if>
 
 <cti:msgScope paths="yukon.web.widgets.disconnectMeterWidget">
-<form:form id="meter-disconnect-addr-form" method="post" commandName="addressEditorBean" onsubmit="return false;">
+<form:form id="meter-disconnect-addr-form" method="post" modelAttribute="addressEditorBean" onsubmit="return false;">
     <form:hidden cssClass="js-meter-info-id" path="deviceId" />
     <input type="hidden" name="shortName" value="disconnectAddressWidget" />
     <input type="hidden" name="identity" value="false">

@@ -22,7 +22,7 @@
         </div>
     </c:if>
         
-    <form:form commandName="devRoleProperties" action="setupRoleProperties" method="post" id="setupRolePropertiesForm">
+    <form:form modelAttribute="devRoleProperties" action="setupRoleProperties" method="post" id="setupRolePropertiesForm">
         <cti:csrfToken/>
         <div class="widgetMessage"></div>
         <div class="widgetContent">

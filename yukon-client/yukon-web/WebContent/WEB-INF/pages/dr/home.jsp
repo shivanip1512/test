@@ -116,7 +116,7 @@
                     data-title="<cti:msg2 key=".rfPerformance.configure.title"/>"
                     data-load-event="yukon.dr.rf.config.load"
                     class="dn">
-                    <form:form action="rf/performance" method="POST" commandName="settings">
+                    <form:form action="rf/performance" method="POST" modelAttribute="settings">
                         <cti:csrfToken/>
                         <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                             <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" 

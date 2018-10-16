@@ -13,7 +13,7 @@ $(document).on('click', '.bulkInject', function(event) {
 });
 </script>
 
-<form:form commandName="bulkInjection" action="sendBulkData" method="post" id="populateDbForm">
+<form:form modelAttribute="bulkInjection" action="sendBulkData" method="post" id="populateDbForm">
     <cti:csrfToken/>
     <tags:nameValueContainer2>
         <%-- device group --%>

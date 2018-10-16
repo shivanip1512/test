@@ -32,7 +32,7 @@
     </cti:displayForPageEditModes>
 
     <cti:url var="action" value="/capcontrol/strategies" />
-    <form:form id="strategy-from" commandName="strategy" action="${action}" method="POST">
+    <form:form id="strategy-from" modelAttribute="strategy" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="id" />
         

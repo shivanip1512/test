@@ -14,7 +14,7 @@
     <cti:url var="baseUrl" value="${url}" />
     
     <hr/>
-    <form:form id="filter-form" action="${baseUrl}" commandName="filter" method="get">
+    <form:form id="filter-form" action="${baseUrl}" modelAttribute="filter" method="get">
         <i:inline key="yukon.common.filterBy"/>
         <cti:msg2 var="allCategories" key=".allCategories"/>
         <tags:selectWithItems path="category" items="${categories}" defaultItemLabel="${allCategories}" />

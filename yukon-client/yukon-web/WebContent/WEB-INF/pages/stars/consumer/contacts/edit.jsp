@@ -70,7 +70,7 @@
     
     <div id="contactForm">
         <cti:url var="actionUrl" value="${actionUrl}"/>
-        <form:form commandName="contact" action="${actionUrl}" >
+        <form:form modelAttribute="contact" action="${actionUrl}" >
             <cti:csrfToken/>
             <tags:sectionContainer2 nameKey="${mode}">
                 <form:hidden path="contactID"/>

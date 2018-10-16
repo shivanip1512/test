@@ -8,7 +8,7 @@
     <tags:setFormEditMode mode="${mode}"/>
     
     <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updateMeterConfig"/>
-    <form:form commandName="meter" action="${updateMeterConfigUrl}">
+    <form:form modelAttribute="meter" action="${updateMeterConfigUrl}">
         <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}"/>
         <form:hidden path="deviceId"/>

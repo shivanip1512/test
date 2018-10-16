@@ -67,7 +67,7 @@
         <cti:url var="action" value="/capcontrol/capbanks?parentId=${parent.liteID}"/>
     </c:if>
 </cti:displayForPageEditModes>
-    <form:form id="capbank-edit-form" commandName="capbank" action="${action}" method="POST">
+    <form:form id="capbank-edit-form" modelAttribute="capbank" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="id" />
         <div class="column-14-10 clearfix">

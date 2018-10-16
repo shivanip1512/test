@@ -16,7 +16,7 @@
         <c:set var="urlPath" value="${urlPath}/${parameter}"/>
     </c:if>
     <cti:url var="detailUrl" value="${urlPath}"/>
-    <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter">
+    <form:form id="filter-form" action="${detailUrl}" method="GET" modelAttribute="filter">
         <div class="column-14-10 clearfix stacked">
             <h3><i:inline key="yukon.common.filters"/></h3>
             <div class="column one filter-container">

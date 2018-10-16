@@ -58,7 +58,7 @@
     </cti:checkRolesAndProperties>
 
     <cti:url var="action" value="/stars/rtu/save" />
-    <form:form commandName="rtu" action="${action}" method="post">
+    <form:form modelAttribute="rtu" action="${action}" method="post">
         <cti:csrfToken />
         <form:hidden id="rtuId" path="id" />
 

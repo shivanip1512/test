@@ -20,7 +20,7 @@
 
         <c:set var="showNextButton" value="false" />
         <cti:url var="actionUrl" value="/stars/consumer/optout/optOutQuestions"/>
-        <form:form id="form" action="${actionUrl}" method="POST" commandName="optOutBackingBean">
+        <form:form id="form" action="${actionUrl}" method="POST" modelAttribute="optOutBackingBean">
             <cti:csrfToken/>
             <table class="results-table" align="center" width="99%">
                 <tr>

@@ -9,7 +9,7 @@
     
     <%-- SEACRH WIDGET --%>
     <tags:sectionContainer2 nameKey="inventorySearch">
-        <form:form commandName="inventorySearch" action="search" method="get" >
+        <form:form modelAttribute="inventorySearch" action="search" method="get" >
             <div class="column-8-8-8 clearfix">
                 <div class="column one">
                     <div class="stacked">

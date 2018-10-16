@@ -22,7 +22,7 @@
         
         <tags:sectionContainer2 nameKey="infoContainer" styleClass="stacked-lg">
             <cti:url var="url" value="/admin/users/${user.userId}"/>
-            <form:form commandName="user" action="${url}" method="post">
+            <form:form modelAttribute="user" action="${url}" method="post">
                 <cti:csrfToken/>
                 <form:hidden path="userId"/>
                 <tags:nameValueContainer2>

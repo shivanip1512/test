@@ -9,7 +9,7 @@
 
 <cti:msgScope paths="modules.tools.bulk.archivedValueExporter">
 
-    <form:form id="field-form" commandName="exportField">
+    <form:form id="field-form" modelAttribute="exportField">
         <cti:csrfToken/>
         <div class="notes stacked tac"><i:inline key=".note"/></div>
         

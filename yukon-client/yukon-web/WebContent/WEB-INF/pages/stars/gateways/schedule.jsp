@@ -12,7 +12,7 @@
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
 
 <cti:url var="url" value="/stars/gateways/${id}/schedule"/>
-<form:form id="gateway-schedule-form" action="${url}" method="post" commandName="schedule">
+<form:form id="gateway-schedule-form" action="${url}" method="post" modelAttribute="schedule">
     <cti:csrfToken/>
     
     <cti:uniqueIdentifier var="uid" prefix="schedule"/>

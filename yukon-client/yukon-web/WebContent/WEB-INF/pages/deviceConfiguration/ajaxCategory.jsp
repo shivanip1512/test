@@ -10,7 +10,7 @@
 <input id="popup-title" type="hidden" value="${popupTitle}"/>
 
 <cti:url var="saveInPlaceUrl" value="/deviceConfiguration/category/saveInPlace"/>
-<form:form id="category-form" commandName="categoryEditBean" action="${saveInPlaceUrl}" cssClass="js-no-submit-on-enter">
+<form:form id="category-form" modelAttribute="categoryEditBean" action="${saveInPlaceUrl}" cssClass="js-no-submit-on-enter">
     <cti:csrfToken/>
     <form:hidden path="categoryType"/>
     <form:hidden path="categoryId"/>

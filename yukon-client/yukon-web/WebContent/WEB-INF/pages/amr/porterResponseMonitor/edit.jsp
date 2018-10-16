@@ -71,7 +71,7 @@
         </tr>
     </table>
     
-    <form:form id="deleteMonitorForm" action="${deleteURL}" method="post" commandName="monitorDto">
+    <form:form id="deleteMonitorForm" action="${deleteURL}" method="post" modelAttribute="monitorDto">
         <cti:csrfToken/>
         <form:hidden path="monitorId"/>
         <form:hidden path="name"/>
@@ -80,7 +80,7 @@
         <form:hidden path="stateGroup"/>
     </form:form>
 
-    <form:form commandName="monitorDto" action="update" method="post">
+    <form:form modelAttribute="monitorDto" action="update" method="post">
         <cti:csrfToken/>
         <form:hidden path="monitorId"/>
         <form:hidden path="stateGroup"/>

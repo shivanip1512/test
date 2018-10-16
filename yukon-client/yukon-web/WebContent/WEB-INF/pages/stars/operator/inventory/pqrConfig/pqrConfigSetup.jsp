@@ -22,7 +22,7 @@
     <cti:msg2 var="secs" key="yukon.common.units.SECONDS"/>
     
     <cti:url var="submitUrl" value="/stars/operator/inventory/pqrConfig/confirm"/>
-    <form:form commandName="config" action="${submitUrl}" method="post">
+    <form:form modelAttribute="config" action="${submitUrl}" method="post">
         <cti:csrfToken/>
         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
         

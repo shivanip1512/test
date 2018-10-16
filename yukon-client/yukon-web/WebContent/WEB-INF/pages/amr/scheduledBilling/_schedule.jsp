@@ -12,7 +12,7 @@
 <div class="error dn js-errors"></div>
 <div class="success dn js-success"></div>
 
-	<form:form id="scheduleForm" commandName="exportData" action="/scheduledBilling/scheduleExport" cssClass="stacked">
+	<form:form id="scheduleForm" modelAttribute="exportData" action="/scheduledBilling/scheduleExport" cssClass="stacked">
         <cti:csrfToken/>
         <div class="column-12-12 clearfix">
             <div class="column one">

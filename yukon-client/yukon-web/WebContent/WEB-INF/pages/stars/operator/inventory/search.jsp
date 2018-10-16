@@ -4,7 +4,7 @@
 
 <tags:sectionContainer2 nameKey="inventorySearch">
 
-    <form:form commandName="inventorySearch" action="search" method="get" >
+    <form:form modelAttribute="inventorySearch" action="search" method="get" >
         <tags:nameValueContainer2 id="inventorySearch" >
             <tags:nameValue2 nameKey=".serialNumber">
                 <form:input path="serialNumber" class="full-width js-focus"/>

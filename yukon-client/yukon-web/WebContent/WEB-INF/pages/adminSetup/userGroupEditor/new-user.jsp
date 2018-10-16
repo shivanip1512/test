@@ -8,7 +8,7 @@
 
 <cti:msgScope paths="modules.adminSetup.auth.user,yukon.common">
 
-<form:form id="new-user-form" commandName="user" method="post">
+<form:form id="new-user-form" modelAttribute="user" method="post">
     <cti:csrfToken/>
     
     <tags:nameValueContainer2 tableClass="with-form-controls">

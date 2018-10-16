@@ -27,7 +27,7 @@
 <div class="column-12-12 clearfix">
     <div class="column one">
         <cti:url var="url" value="/stars/operator/inventory/controlAudit/start"/>
-        <form:form commandName="settings" action="${url}">
+        <form:form modelAttribute="settings" action="${url}">
             <cti:csrfToken/>
             <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
             <dt:dateTime path="from" value="${settings.from}" wrapperClass="fn M0"/>

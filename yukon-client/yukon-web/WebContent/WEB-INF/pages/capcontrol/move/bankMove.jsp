@@ -70,7 +70,7 @@ function getTreeStructure() {
 
 <div>
     <cti:url var="moveUrl" value="/capcontrol/command/bankMove"/>
-    <form:form commandName="bankMoveBean" action="${moveUrl}">
+    <form:form modelAttribute="bankMoveBean" action="${moveUrl}">
         <cti:csrfToken/>
         <input type="hidden" name="substationId" value="${substationId}">
         <input type="hidden" name="selectedFeeder" value="${oldFeederId}" id="selectedFeeder">

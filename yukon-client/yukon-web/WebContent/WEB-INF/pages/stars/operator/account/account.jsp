@@ -41,7 +41,7 @@
             <cti:url value="/stars/operator/account/createAccount" var="action"/>
         </cti:displayForPageEditModes>
         
-        <form:form id="updateForm" commandName="accountGeneral" action="${action}">
+        <form:form id="updateForm" modelAttribute="accountGeneral" action="${action}">
             <cti:csrfToken/>
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="loginMode" value="${loginMode}">
@@ -327,7 +327,7 @@
                         data-title="<cti:msg2 key=".changePassword"/>" 
                         data-event="yukon:assets:account:password:save"
                         data-ok-text="<cti:msg2 key="yukon.common.save"/>">
-                        <form:form id="change-password-form" commandName="login" action="${url}">
+                        <form:form id="change-password-form" modelAttribute="login" action="${url}">
                             <cti:csrfToken/>
                             <input type="hidden" name="accountId" value="${accountId}">
                             <input type="hidden" name="loginMode" value="${loginMode}">

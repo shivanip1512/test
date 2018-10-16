@@ -10,7 +10,7 @@
 <div id="invalidCommanderPriority" class="error user-message dn">
     <cti:msg2 key=".commandPriority.error.invalid" arguments="${minCmdPriority}-${maxCmdPriority}"/>
 </div>
-<form:form commandName="commandParams">
+<form:form modelAttribute="commandParams">
     <cti:dataGrid cols="2"
         tableClasses="collectionActionAlignment collectionActionCellPadding">
     <cti:dataGridCell>

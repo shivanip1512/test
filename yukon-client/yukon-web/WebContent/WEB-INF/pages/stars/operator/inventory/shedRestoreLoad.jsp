@@ -5,7 +5,7 @@
 
 <cti:msgScope paths="modules.operator.hardware.shedRestoreLoad">
 
-<form:form id="shed-restore-load-form" method="post" commandName="shedRestoreLoad" onsubmit="return false;">
+<form:form id="shed-restore-load-form" method="post" modelAttribute="shedRestoreLoad" onsubmit="return false;">
   <cti:csrfToken/>
   <form:hidden path="inventoryId" value="${inventoryId}"/>
   <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="true">

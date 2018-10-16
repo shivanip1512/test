@@ -16,7 +16,7 @@
     <cti:includeScript link="/resources/js/pages/yukon.substation.route.mapping.js" />
 
     <cti:url var="action" value="/admin/substations/routeMapping/save"/>
-    <form:form id="substation-form" name="substationForm" commandName="substationRouteMapping" action="${action}">
+    <form:form id="substation-form" name="substationForm" modelAttribute="substationRouteMapping" action="${action}">
         <cti:csrfToken/>
 
         <form:select id="selectedRoutes" path="selectedRoutes" multiple="multiple" cssClass="dn">

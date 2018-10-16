@@ -17,7 +17,7 @@
 </cti:displayForPageEditModes>
 
 <cti:url var="submitUrl" value="saveQuestion"/>
-<form:form id="question-form" commandName="question" action="${submitUrl}" data-answer-keys="${dataAnswerKeys}" htmlEscape="false">
+<form:form id="question-form" modelAttribute="question" action="${submitUrl}" data-answer-keys="${dataAnswerKeys}" htmlEscape="false">
     <cti:csrfToken/>
     <form:hidden path="surveyId"/>
     <form:hidden path="surveyQuestionId"/>

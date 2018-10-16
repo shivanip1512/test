@@ -9,7 +9,7 @@
 
 <cti:standardPage module="tools" page="dataStreaming.summary">
     <cti:url var="action" value="/tools/dataStreaming/exportSearch" />
-    <form:form id="searchForm" commandName="searchFilters" action="${action}" method="GET">
+    <form:form id="searchForm" modelAttribute="searchFilters" action="${action}" method="GET">
         <cti:csrfToken />
 
         <tags:sectionContainer2 nameKey="filterSection" hideEnabled="true" hideInitially="false" id="searchSection">

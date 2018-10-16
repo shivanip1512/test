@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.dr.program.startProgram">
 
 <cti:url var="submitUrl" value="/dr/program/start/start"/>
-<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
+<form:form id="startProgramForm" modelAttribute="backingBean" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
     <cti:csrfToken/>
     <form:hidden path="programId"/>
     <form:hidden path="gearNumber"/>

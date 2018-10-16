@@ -13,7 +13,7 @@
 </c:if>
 
 <cti:standardPage module="adminSetup" page="list.EDIT">
-<form:form action="save" commandName="list" id="editListForm">
+<form:form action="save" modelAttribute="list" id="editListForm">
     <cti:csrfToken/>
 <form:hidden path="listId"/>
 <form:hidden path="energyCompanyId"/>

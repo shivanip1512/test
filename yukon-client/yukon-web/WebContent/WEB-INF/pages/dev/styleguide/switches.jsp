@@ -80,7 +80,7 @@
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <form:form commandName="thing" action="/some/cool/url">
+        <form:form modelAttribute="thing" action="/some/cool/url">
             <tags:switch path="enabled"/>
             <tags:switch path="enabled" disabled="true"/>
         </form:form>
@@ -88,7 +88,7 @@
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;form:form commandName=&quot;thing&quot; action=&quot;/some/cool/url&quot;&gt;
+&lt;form:form modelAttribute=&quot;thing&quot; action=&quot;/some/cool/url&quot;&gt;
     &lt;tags:switch path=&quot;enabled&quot;/&gt;
     &lt;tags:switch path=&quot;enabled&quot; disabled=&quot;true&quot;/&gt;
 &lt;/form:form&gt;
@@ -176,7 +176,7 @@
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <form:form commandName="thing" action="/some/cool/url">
+        <form:form modelAttribute="thing" action="/some/cool/url">
             <tags:switchButton path="enabled"/>
             <tags:switchButton path="enabled" disabled="true"/>
             <tags:switchButton path="enabled" inverse="true"/>
@@ -185,7 +185,7 @@
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;form:form commandName=&quot;thing&quot; action=&quot;/some/cool/url&quot;&gt;
+&lt;form:form modelAttribute=&quot;thing&quot; action=&quot;/some/cool/url&quot;&gt;
     &lt;tags:switchButton path=&quot;enabled&quot;/&gt;
     &lt;tags:switchButton path=&quot;enabled&quot; disabled=&quot;true&quot;/&gt;
     &lt;tags:switchButton path=&quot;enabled&quot; inverse=&quot;true&quot;/&gt;

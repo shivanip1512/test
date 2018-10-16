@@ -7,7 +7,7 @@
 <cti:msgScope paths="yukon.common.point">
     <cti:flashScopeMessages/>
     <cti:url var="saveUrl" value="/meter/historicalReadings/edit"/>
-    <form:form id="manual-entry-form" commandName="backingBean" action="${saveUrl}" method="post">
+    <form:form id="manual-entry-form" modelAttribute="backingBean" action="${saveUrl}" method="post">
         <cti:csrfToken/>
         <form:hidden path="pointId" />
         <cti:formatDate var="dateTime" type="BOTH" value="${backingBean.timestamp}"/>

@@ -27,7 +27,7 @@
         <c:set var="method" value="put"/>
     </c:otherwise>
 </c:choose>
-<form:form id="gateway-settings-form" action="${url}" method="${method}" commandName="settings">
+<form:form id="gateway-settings-form" action="${url}" method="${method}" modelAttribute="settings">
     <cti:csrfToken/>
     <tags:hidden path="id" />
     <tags:nameValueContainer2 tableClass="with-form-controls">

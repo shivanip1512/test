@@ -53,7 +53,7 @@
     <cti:toJson id="module-config" object="${jsConfig}"/>
     
     <cti:url var="action" value="/tools/data-exporter/format"/>
-    <form:form id="format-form" commandName="format" action="${action}">
+    <form:form id="format-form" modelAttribute="format" action="${action}">
         <cti:csrfToken/>
         <form:hidden id="format-id" path="formatId"/>
         <form:hidden id="format-type" path="formatType"/>

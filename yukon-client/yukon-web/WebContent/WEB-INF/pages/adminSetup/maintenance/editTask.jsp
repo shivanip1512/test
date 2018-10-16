@@ -10,7 +10,7 @@
     <d:confirm on=".js-toggle-task" nameKey="${confrimToggleTaskMsgKey}" argument="${msgArgument}"/>
     <d:confirm on=".js-update-task" nameKey="confirmUpdate" argument="${taskTypeMsg}"/>
     
-    <form:form id="maintenance-task-form" action="updateTask" commandName="maintenanceEditorBean" method="post">
+    <form:form id="maintenance-task-form" action="updateTask" modelAttribute="maintenanceEditorBean" method="post">
         <cti:csrfToken/>
         <form:hidden path="taskDetails.taskType"/>
             <tags:sectionContainer2 nameKey="${maintenanceEditorBean.taskDetails.taskType}">

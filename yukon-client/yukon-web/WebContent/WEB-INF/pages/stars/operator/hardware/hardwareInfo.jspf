@@ -52,7 +52,7 @@ function updateServiceCompanyInfo() {
 $(function() { updateServiceCompanyInfo();});
 </script>
         
-<form:form id="updateForm" commandName="hardware" action="${action}">
+<form:form id="updateForm" modelAttribute="hardware" action="${action}">
     <cti:csrfToken/>
     <input type="hidden" name="inventoryId" value="${inventoryId}">
     <form:hidden path="accountId"/>

@@ -18,7 +18,7 @@
     
         <div class="filter-section">
             <cti:url var="baseUrlWithContextPath" value="/dr/controlArea/list"/>
-            <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
+            <form:form action="${baseUrlWithContextPath}" modelAttribute="filter" method="get">
                 <i:inline key="yukon.common.filterBy"/>&nbsp;
                 <cti:msg2 var="namePlaceholder" key=".filter.name"/>
                 <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>

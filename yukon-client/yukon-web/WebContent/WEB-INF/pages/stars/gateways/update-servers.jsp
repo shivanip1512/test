@@ -13,7 +13,7 @@
 
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
 
-<form:form id="update-servers-form" commandName="allSettings" action="${updateUrl}">
+<form:form id="update-servers-form" modelAttribute="allSettings" action="${updateUrl}">
     <cti:csrfToken/>
     <div class="scroll-lg js-resize-with-dialog">
     <table class="compact-results-table with-form-controls">

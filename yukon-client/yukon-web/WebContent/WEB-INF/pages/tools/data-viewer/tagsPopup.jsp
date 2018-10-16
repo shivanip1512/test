@@ -11,7 +11,7 @@
     <cti:flashScopeMessages/>
 
 
-    <form:form id="tdc-tags-form" cssClass="js-no-submit-on-enter" commandName="backingBean">
+    <form:form id="tdc-tags-form" cssClass="js-no-submit-on-enter" modelAttribute="backingBean">
         <cti:csrfToken/> 
         <form:hidden path="deviceId" /> 
         <form:hidden path="pointId" /> 

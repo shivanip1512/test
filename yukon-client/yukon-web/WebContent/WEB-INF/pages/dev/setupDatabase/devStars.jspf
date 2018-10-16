@@ -8,7 +8,7 @@
 <div id="stars" class="devWidget">
     <cti:flashScopeMessages />
 <div class="widgetMessage"></div>
-    <form:form commandName="devStars" action="setupStars" method="post" id="setupStarsForm">
+    <form:form modelAttribute="devStars" action="setupStars" method="post" id="setupStarsForm">
         <cti:csrfToken/>
         <div class="widgetContent">
            <tags:nameValueContainer2>

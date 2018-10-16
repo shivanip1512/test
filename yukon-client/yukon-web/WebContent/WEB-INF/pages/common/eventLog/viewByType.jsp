@@ -70,7 +70,7 @@
     </table>
      <c:choose>
             <c:when test="${not empty filter}">
-                <form:form id="filter-form" commandName="filter" method="get">
+                <form:form id="filter-form" modelAttribute="filter" method="get">
                     <form:hidden path="eventLogType"/>
                     <tags:nameValueContainer2 >
         

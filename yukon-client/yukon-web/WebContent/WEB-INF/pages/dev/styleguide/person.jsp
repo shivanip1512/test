@@ -5,7 +5,7 @@
 
 <cti:msgScope paths="modules.dev">
 <c:set var="method" value="${create ? 'post' : 'put'}"/>
-<form:form commandName="person" action="person" method="${method}" cssClass="js-new-person-form">
+<form:form modelAttribute="person" action="person" method="${method}" cssClass="js-new-person-form">
     <form:hidden path="id"/>
     <tags:nameValueContainer2>
         <c:if test="${!create}">

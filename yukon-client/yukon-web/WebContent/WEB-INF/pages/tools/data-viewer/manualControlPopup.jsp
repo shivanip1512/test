@@ -9,7 +9,7 @@
 <cti:msgScope paths="modules.tools.tdc">
     <cti:flashScopeMessages/>
     <cti:url var="saveUrl" value="/tools/data-viewer/manualControlSend"/>
-    <form:form id="tdc-manual-control-form" cssClass="js-no-submit-on-enter" commandName="backingBean" action="${saveUrl}">
+    <form:form id="tdc-manual-control-form" cssClass="js-no-submit-on-enter" modelAttribute="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="deviceId" />
         <form:hidden path="pointId" />

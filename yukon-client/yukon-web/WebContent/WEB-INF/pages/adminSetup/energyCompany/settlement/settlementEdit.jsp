@@ -56,7 +56,7 @@ $(function() {
         <cti:param name="ecId" value="${ecId}" />
     </cti:url>
 
-    <form:form commandName="settlementDto" method="post" action="${edit}">
+    <form:form modelAttribute="settlementDto" method="post" action="${edit}">
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="configurations">
             <table class="name-value-table natural-width">

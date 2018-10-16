@@ -73,7 +73,7 @@
 <cti:toJson id="pao-type-map" object="${paoTypeMap}"/>
 
 <cti:url var="action" value="/capcontrol/regulators"/>
-<form:form id="regulator-form" commandName="regulator" action="${action}" method="POST">
+<form:form id="regulator-form" modelAttribute="regulator" action="${action}" method="POST">
     
     <cti:csrfToken/>
     <form:hidden id="regulator-id" path="id"/>

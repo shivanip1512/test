@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.tools.tdc">
     <cti:url var="saveUrl" value="/tools/data-viewer/enableDisableSend"/>
-    <form:form id="tdc-enable-disable-form" cssClass="js-no-submit-on-enter" commandName="backingBean" action="${saveUrl}">
+    <form:form id="tdc-enable-disable-form" cssClass="js-no-submit-on-enter" modelAttribute="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>

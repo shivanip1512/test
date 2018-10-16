@@ -27,7 +27,7 @@
     </cti:displayForPageEditModes>
     <cti:msg2 var="confirmDeleteMsg" key=".confirmDelete" argument="${schedule.name}"/>
     <input type="hidden" class="js-confirm-delete" value="${confirmDeleteMsg}"/>
-    <form:form commandName="schedule" action="" method="post" data-mode="${mode}">
+    <form:form modelAttribute="schedule" action="" method="post" data-mode="${mode}">
         <cti:csrfToken/>
         <form:hidden path="id"/>
         <form:hidden path="lastRunTime"/>

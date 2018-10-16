@@ -17,7 +17,7 @@
 
     <div class="filter-section">
         <cti:url var="baseUrlWithContext" value="${baseUrl}"/>
-        <form:form action="${baseUrlWithContext}" commandName="filter" method="get">
+        <form:form action="${baseUrlWithContext}" modelAttribute="filter" method="get">
             <i:inline key="yukon.common.filterBy"/>&nbsp;
             <c:if test="${!empty param.programId}">
                 <input type="hidden" name="programId" value="${param.programId}"/>

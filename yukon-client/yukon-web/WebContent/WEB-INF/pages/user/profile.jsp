@@ -249,7 +249,7 @@ $(document).ready(function(){
                 <hr/>
                 
                <cti:url var="action" value="/notifications/subscriptions"/>
-                <form:form id="filter-form" action="${action}" commandName="filter" method="get">
+                <form:form id="filter-form" action="${action}" modelAttribute="filter" method="get">
                     <i:inline key="yukon.common.filterBy"/>
                     <cti:msg2 var="allTypes" key=".allTypes"/>
                     <tags:selectWithItems path="eventType" items="${eventTypes}" defaultItemLabel="${allTypes}" />

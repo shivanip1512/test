@@ -124,7 +124,7 @@
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
     
-     <form:form id="serviceCompanyForm" commandName="serviceCompany" action="${action}" name="serviceCompanyForm">
+     <form:form id="serviceCompanyForm" modelAttribute="serviceCompany" action="${action}" name="serviceCompanyForm">
         <cti:csrfToken/>
         <tags:hidden path="companyId"/>
             

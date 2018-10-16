@@ -110,7 +110,7 @@
     <c:if test="${showSwitchCheckingPopup}">
         <cti:flashScopeMessages/>
     </c:if>
-    <form:form commandName="serialNumberSwitch" action="${checkSnUrl}Switch">
+    <form:form modelAttribute="serialNumberSwitch" action="${checkSnUrl}Switch">
         <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">
@@ -133,7 +133,7 @@
     <c:if test="${showThermostatCheckingPopup}">
         <cti:flashScopeMessages/>
     </c:if>
-    <form:form commandName="serialNumberThermostat" action="${checkSnUrl}Thermostat">
+    <form:form modelAttribute="serialNumberThermostat" action="${checkSnUrl}Thermostat">
         <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">
@@ -157,7 +157,7 @@
     <c:if test="${showGatewayCheckingPopup}">
         <cti:flashScopeMessages/>
     </c:if>
-    <form:form commandName="serialNumberGateway" action="${checkSnUrl}Gateway">
+    <form:form modelAttribute="serialNumberGateway" action="${checkSnUrl}Gateway">
         <cti:csrfToken/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">

@@ -351,7 +351,7 @@ public class PersonValidator extends SimpleValidator&lt;Person&gt; {
 <h4 class="subtle">person.jsp Code:</h4>
 <pre class="code prettyprint">
 &lt;cti:msgScope paths=&quot;modules.dev.dialogs&quot;&gt;
-&lt;form:form commandName=&quot;person&quot; action=&quot;person&quot; method=&quot;post&quot; cssClass=&quot;js-new-person-form&quot;&gt;
+&lt;form:form modelAttribute=&quot;person&quot; action=&quot;person&quot; method=&quot;post&quot; cssClass=&quot;js-new-person-form&quot;&gt;
     &lt;tags:nameValueContainer2 tableClass=&quot;with-form-controls&quot;&gt;
         &lt;tags:inputNameValue nameKey=&quot;.name&quot; path=&quot;name&quot;/&gt;
         &lt;tags:inputNameValue nameKey=&quot;.age&quot; path=&quot;age&quot;/&gt;

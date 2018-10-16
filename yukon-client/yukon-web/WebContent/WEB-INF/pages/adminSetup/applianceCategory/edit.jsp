@@ -19,7 +19,7 @@
 <div id="program-unassign" title="<cti:msg2 key=".unassignProgram.title"/>" class="dn"></div>
 
 
-<form:form id="category-form" commandName="applianceCategory" action="save" data-mode="${mode}">
+<form:form id="category-form" modelAttribute="applianceCategory" action="save" data-mode="${mode}">
 
     <cti:csrfToken/>
     <form:hidden path="energyCompanyId"/>

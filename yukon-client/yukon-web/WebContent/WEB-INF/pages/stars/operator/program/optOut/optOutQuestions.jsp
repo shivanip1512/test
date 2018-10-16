@@ -8,7 +8,7 @@
 
 <cti:standardPage module="operator" page="optOut.confirm">
 
-<form:form commandName="optOutBackingBean" method="POST"
+<form:form modelAttribute="optOutBackingBean" method="POST"
     action="/stars/operator/program/optOut/optOutQuestions">
     <cti:csrfToken/>
     <form:hidden path="durationInDays" />

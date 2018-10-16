@@ -17,7 +17,7 @@
     <cti:url var="action" value="/capcontrol/ivvc/wizard/createZone"/>
 </cti:displayForPageEditModes>
 
-<form:form id="zoneDetailsForm" commandName="zoneDto" action="${action}" >
+<form:form id="zoneDetailsForm" modelAttribute="zoneDto" action="${action}" >
     <cti:csrfToken/>
     <form:hidden path="zoneId"/>
     <form:hidden path="parentId"/>

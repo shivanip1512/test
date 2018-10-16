@@ -7,7 +7,7 @@
 
 <cti:url var="action" value="/widget/relayInformationWidget/edit"/>
 
-<form:form id="relay-info-form" action="${action}" method="put" commandName="relay">
+<form:form id="relay-info-form" action="${action}" method="put" modelAttribute="relay">
 
     <cti:csrfToken/>     
     

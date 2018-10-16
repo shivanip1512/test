@@ -20,7 +20,7 @@
 </c:if>
 
 <form:form id="program-form" 
-    commandName="backingBean" 
+    modelAttribute="backingBean" 
     action="saveAssignedProgram"
     data-multiple="${backingBean.multiple}"
     data-virtual="${backingBean.virtual}">

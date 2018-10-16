@@ -17,7 +17,7 @@
     </div>
 
     <cti:url var="assignUrl"  value="/bulk/dataStreaming/verification" />
-    <form:form id="verificationForm" method="post" commandName="verificationInfo" action="${assignUrl}">
+    <form:form id="verificationForm" method="post" modelAttribute="verificationInfo" action="${assignUrl}">
         <cti:csrfToken/>
         
         <c:forEach var="failDevice" items="${verificationInfo.failedVerificationDevices}" varStatus="status">

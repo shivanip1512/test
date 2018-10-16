@@ -9,7 +9,7 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 
-    <form:form commandName="categoryEditBean" id="categoryForm" action="save">
+    <form:form modelAttribute="categoryEditBean" id="categoryForm" action="save">
         <cti:csrfToken/>
         <form:hidden path="categoryType"/>
         <form:hidden path="categoryId"/>

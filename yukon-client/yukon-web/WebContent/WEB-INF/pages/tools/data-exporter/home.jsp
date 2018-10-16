@@ -34,7 +34,7 @@
                 <div class="empty-list stacked"><i:inline key=".noFormatsCreated"/></div>
                 <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </c:if>
-            <form:form id="exporter-form" commandName="archivedValuesExporter" action="${action}">
+            <form:form id="exporter-form" modelAttribute="archivedValuesExporter" action="${action}">
                 <cti:csrfToken/>
                 <form:hidden id="format-type" path="archivedValuesExportFormatType"/>
                 <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}"/>
@@ -105,7 +105,7 @@
 
     <div id="run-dialog" class="dn">
          <cti:flashScopeMessages />
-         <form:form commandName="archivedValuesExporter" >
+         <form:form modelAttribute="archivedValuesExporter" >
             <cti:csrfToken/>
              <div class="js-run-inputs">
                 <div class="stacked js-fixed">
@@ -144,7 +144,7 @@
 
     <div id="schedule-dialog" class="dn">
          <cti:flashScopeMessages />
-         <form:form id="scheduleForm" commandName="archivedValuesExporter" >
+         <form:form id="scheduleForm" modelAttribute="archivedValuesExporter" >
             <cti:csrfToken/>
              <div class="js-schedule-inputs">
                 <div class="stacked js-fixed">

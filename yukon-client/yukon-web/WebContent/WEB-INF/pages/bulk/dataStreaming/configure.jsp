@@ -9,7 +9,7 @@
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.configure" deviceCollection="${deviceCollection}">
         <div class="page-action-area">
             <cti:url var="assignUrl"  value="/bulk/dataStreaming/configure" />
-            <form:form id="configureForm" method="post" commandName="configuration" action="${assignUrl}">
+            <form:form id="configureForm" method="post" modelAttribute="configuration" action="${assignUrl}">
                 <cti:csrfToken/>
                 
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />

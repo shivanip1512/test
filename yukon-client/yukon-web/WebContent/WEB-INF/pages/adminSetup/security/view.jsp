@@ -26,7 +26,7 @@
     
     <cti:msg2 key=".addKeyDialog.title" var="addDialogTitle"/>
     <div class="dn" id="addNewKeyDialog" data-dialog data-title="${addDialogTitle}" data-event="addKeyFormSubmit">
-     <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
+     <form:form method="POST" modelAttribute="encryptionKey" action="saveNewKey" autocomplete="off">
         <tags:nameValueContainer2>
                 <cti:csrfToken/>
                 <h3><i:inline key=".addNewKeyHeading" /></h3>
@@ -48,7 +48,7 @@
     
     <cti:msg2 key=".importHoneywellKeyFileDialog.title" var="importHoneywellKeyDialogTitle"/>
     <div class="dn" id="importHoneywellKeyDialog" data-dialog data-title="${importHoneywellKeyDialogTitle}" data-event="importHoneywellKeyFileFormSubmit">
-            <form:form method="POST" commandName="honeywellFileImportBindingBean" action="importHoneywellKeyFile" autocomplete="off" enctype="multipart/form-data">
+            <form:form method="POST" modelAttribute="honeywellFileImportBindingBean" action="importHoneywellKeyFile" autocomplete="off" enctype="multipart/form-data">
                 <tags:nameValueContainer2>
                 <cti:csrfToken/>
                 <tags:nameValue2 nameKey=".importKeyFile">
@@ -93,7 +93,7 @@
                             <tr>
                                 <td>${fn:escapeXml(route.paoName)}</td>
                                 <td>${fn:escapeXml(route.type.paoTypeName)}</td>
-                                <form:form id="routes_${route.paobjectId}" commandName="encryptedRoute" method="POST" autocomplete="off" action="${actionUrl}">
+                                <form:form id="routes_${route.paobjectId}" modelAttribute="encryptedRoute" method="POST" autocomplete="off" action="${actionUrl}">
                                     <cti:csrfToken/>
                                     <c:set var="btnAction" value="add" />
                                     <c:if test="${route.encrypted}">

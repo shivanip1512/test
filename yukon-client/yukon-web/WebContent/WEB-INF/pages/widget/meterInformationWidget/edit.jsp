@@ -17,7 +17,7 @@
     </c:otherwise>
 </c:choose>
 
-<form:form id="meter-info-form" action="${action}" method="put" commandName="meter">
+<form:form id="meter-info-form" action="${action}" method="put" modelAttribute="meter">
 
     <cti:csrfToken/>
     <form:hidden cssClass="js-meter-info-id" path="deviceId"/>

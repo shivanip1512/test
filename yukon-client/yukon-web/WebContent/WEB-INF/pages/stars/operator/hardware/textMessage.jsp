@@ -23,7 +23,7 @@ $( function () {
 <!-- Send Text Message Popup -->
 <tags:setFormEditMode mode="${mode}"/>
 
-<form:form commandName="textMessage" id="myform" onsubmit="return submitForm();" action="/stars/operator/hardware/zb/sendTextMessage">
+<form:form modelAttribute="textMessage" id="myform" onsubmit="return submitForm();" action="/stars/operator/hardware/zb/sendTextMessage">
     <cti:csrfToken/>
     <form:hidden path="accountId"/>
     <form:hidden path="inventoryId"/>

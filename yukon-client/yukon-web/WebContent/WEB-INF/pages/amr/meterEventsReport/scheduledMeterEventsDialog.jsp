@@ -9,7 +9,7 @@
     </div>
     
     <cti:toJson id="scheduleModelData" object="${scheduleModelData}"/>
-    <form:form id="schedule-form" action="saveScheduledMeterEventJob" method="post" commandName="exportData">
+    <form:form id="schedule-form" action="saveScheduledMeterEventJob" method="post" modelAttribute="exportData">
         <cti:csrfToken/>
         <cti:deviceCollection deviceCollection="${deviceCollection}" />
         <tags:nameValueContainer2>

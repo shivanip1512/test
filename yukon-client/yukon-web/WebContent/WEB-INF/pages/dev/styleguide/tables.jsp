@@ -384,7 +384,7 @@
         a form input.  They have support to handle <a href="http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/view.html">spring binding</a>.
     </p>
     <h4 class="subtle">Example:</h4>
-    <form:form commandName="signup">
+    <form:form modelAttribute="signup">
         <tags:nameValueContainer2>
             <tags:inputNameValue nameKey=".name" path="name"/>
             <tags:selectNameValue nameKey=".type" items="${signupTypes}" path="type"/>
@@ -395,7 +395,7 @@
     </form:form>
     <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;form:form commandName=&quot;signup&quot;&gt;
+&lt;form:form modelAttribute=&quot;signup&quot;&gt;
     &lt;tags:nameValueContainer2&gt;
         &lt;tags:inputNameValue nameKey=&quot;.name&quot; path=&quot;name&quot;/&gt;
         &lt;tags:selectNameValue nameKey=&quot;.type&quot; items=&quot;&#36;{signupTypes}&quot; path=&quot;type&quot;/&gt;

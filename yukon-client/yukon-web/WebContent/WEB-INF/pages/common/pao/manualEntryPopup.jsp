@@ -7,7 +7,7 @@
 <cti:msgScope paths="yukon.common.point">
     <cti:flashScopeMessages/>
     <cti:url var="saveUrl" value="/tools/points/manualEntrySend"/>
-    <form:form id="manual-entry-form" cssClass="js-no-submit-on-enter" commandName="backingBean" action="${saveUrl}">
+    <form:form id="manual-entry-form" cssClass="js-no-submit-on-enter" modelAttribute="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>

@@ -10,7 +10,7 @@
     <cti:includeScript link="/resources/js/pages/yukon.da.voltage.deltas.js"/>
 
     <cti:url var="action" value="/capcontrol/ivvc/zone/deltaUpdate"/>
-    <form:form id="delta-form" action="${action}" method="POST" commandName="zoneVoltageDeltas">
+    <form:form id="delta-form" action="${action}" method="POST" modelAttribute="zoneVoltageDeltas">
         <cti:csrfToken/>
         <input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 

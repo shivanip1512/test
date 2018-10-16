@@ -7,7 +7,7 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="dev" page="rfnTest.viewMappingSimulator">
-    <form:form id="mapping-form" action="startMappingSimulator" commandName="currentSettings" method="POST">
+    <form:form id="mapping-form" action="startMappingSimulator" modelAttribute="currentSettings" method="POST">
         <cti:csrfToken/>
     
     <div class="column-12-12 clearfix">

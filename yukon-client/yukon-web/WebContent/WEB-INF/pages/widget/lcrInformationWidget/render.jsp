@@ -11,7 +11,7 @@
 
 <tags:nameValueContainer2>
 
-    <form:form commandName="hardware">
+    <form:form modelAttribute="hardware">
     
     <tags:nameValue2 nameKey=".serialNumber">
         <cti:url var="inventoryUrl" value="/stars/operator/inventory/view">

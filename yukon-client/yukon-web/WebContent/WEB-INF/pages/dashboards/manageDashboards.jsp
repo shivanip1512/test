@@ -88,7 +88,7 @@
     <cti:msg2 var="settingsTab" key=".settingsTab"/>
     <cti:tab title="${settingsTab}">
         <cti:url var="action" value="/dashboards/saveSettings"/>
-        <form:form commandName="dashboardSettings" action="${action}" method="POST">
+        <form:form modelAttribute="dashboardSettings" action="${action}" method="POST">
             <cti:csrfToken/>
             <tags:nameValueContainer2>
                 <c:forEach var="setting" items="${dashboardSettings.settings}" varStatus="status">

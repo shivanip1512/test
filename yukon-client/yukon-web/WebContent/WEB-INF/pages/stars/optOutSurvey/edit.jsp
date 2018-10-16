@@ -12,7 +12,7 @@
 <cti:flashScopeMessages/>
 
 <cti:url var="submitUrl" value="/stars/optOutSurvey/save"/>
-<form:form commandName="optOutSurveyDto" action="${submitUrl}">
+<form:form modelAttribute="optOutSurveyDto" action="${submitUrl}">
     <cti:csrfToken/>
     <form:hidden path="optOutSurveyId"/>
     <form:hidden path="energyCompanyId"/>

@@ -45,7 +45,7 @@
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
     
-     <form:form commandName="operatorLogin" action="${action}" name="operatorLoginForm">
+     <form:form modelAttribute="operatorLogin" action="${action}" name="operatorLoginForm">
         <cti:csrfToken/>
         <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:hidden path="userId"/>

@@ -19,7 +19,7 @@
         <br>
         <br>
 
-        <form:form id="form" commandName="optOutBackingBean" method="POST"
+        <form:form id="form" modelAttribute="optOutBackingBean" method="POST"
              action="${actionUrl}">
             <cti:csrfToken/>
             <form:hidden path="durationInDays" />

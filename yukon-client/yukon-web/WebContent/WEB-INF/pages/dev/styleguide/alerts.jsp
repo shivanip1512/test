@@ -196,7 +196,7 @@ $('.js-clear-my-alerts').click(function (ev) {
     <div class="column two nogutter">
         <cti:flashScopeMessages/>
         <cti:url var="url" value="/dev/styleguide/alerts/flash-scope-test"/>
-        <form:form commandName="person" action="${url}" method="post">
+        <form:form modelAttribute="person" action="${url}" method="post">
             <cti:csrfToken/>
             <tags:nameValueContainer2 tableClass="with-form-controls">
                 <tags:inputNameValue nameKey=".name" path="name"/>
@@ -212,7 +212,7 @@ $('.js-clear-my-alerts').click(function (ev) {
 <pre class="code prettyprint">
 &lt;cti:flashScopeMessages/&gt;
 &lt;cti:url var=&quot;url&quot; value=&quot;/dev/styleguide/alerts/flash-scope-test&quot;/&gt;
-&lt;form:form commandName=&quot;person&quot; action=&quot;${url}&quot; method=&quot;post&quot;&gt;
+&lt;form:form modelAttribute=&quot;person&quot; action=&quot;${url}&quot; method=&quot;post&quot;&gt;
     &lt;cti:csrfToken/&gt;
     &lt;tags:nameValueContainer2&gt;
         &lt;tags:inputNameValue nameKey=&quot;.name&quot; path=&quot;name&quot;/&gt;

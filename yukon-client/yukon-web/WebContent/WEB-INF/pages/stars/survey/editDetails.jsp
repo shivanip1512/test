@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.adminSetup.survey.list">
 
 <cti:url var="submitUrl" value="saveDetails"/>
-<form:form id="survey-details-form" commandName="survey" action="${submitUrl}">
+<form:form id="survey-details-form" modelAttribute="survey" action="${submitUrl}">
     <cti:csrfToken/>
     <form:hidden path="surveyId"/>
     <form:hidden path="energyCompanyId"/>

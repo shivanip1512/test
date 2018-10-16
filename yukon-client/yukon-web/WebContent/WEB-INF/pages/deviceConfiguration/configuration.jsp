@@ -27,7 +27,7 @@
     </table>
 </cti:displayForPageEditModes>
 
-<form:form commandName="deviceConfig" action="save">
+<form:form modelAttribute="deviceConfig" action="save">
     <cti:csrfToken/>
     <form:hidden path="configId"/>
     
@@ -85,7 +85,7 @@
         
         <%-- CATEGORIES --%>
         <div class="column one">
-            <form:form commandName="deviceConfigTypes" action="addSupportedType">
+            <form:form modelAttribute="deviceConfigTypes" action="addSupportedType">
                 <cti:csrfToken/>
                 <input type="hidden" name="configId" value="${deviceConfig.configId}"/>
                 

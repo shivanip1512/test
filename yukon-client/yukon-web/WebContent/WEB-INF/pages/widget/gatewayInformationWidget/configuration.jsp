@@ -16,7 +16,7 @@
     <cti:param name="shortName" value="gatewayInformationWidget"/>
 </cti:url>
 
-<form:form id="gateway-configuration-form" action="${url}" method="POST" commandName="configuration">
+<form:form id="gateway-configuration-form" action="${url}" method="POST" modelAttribute="configuration">
     <cti:csrfToken/>
     <tags:hidden path="id" />
     <tags:nameValueContainer2>

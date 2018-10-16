@@ -13,7 +13,7 @@
     
     <%-- CREATE FORM --%>
     <cti:url var="createUrl" value="/amr/statusPointMonitoring/create"/>
-    <form:form commandName="statusPointMonitor" id="basicInfoForm" action="${createUrl}" method="post">
+    <form:form modelAttribute="statusPointMonitor" id="basicInfoForm" action="${createUrl}" method="post">
         <cti:csrfToken/>
         <form:hidden path="statusPointMonitorId"/>
                     

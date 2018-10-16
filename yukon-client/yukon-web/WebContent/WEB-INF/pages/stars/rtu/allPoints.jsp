@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.operator.rtuDetail">
         
     <cti:url var="action" value="/stars/rtu/${rtuId}/allPoints"/>
-    <form:form id="rtuAllPoints" commandName="filter" action="${action}" method="get">
+    <form:form id="rtuAllPoints" modelAttribute="filter" action="${action}" method="get">
         <i:inline key="yukon.common.filterBy"/>
         <cti:msg2 var="selectDevices" key=".selectDevices"/>
         <tags:selectWithItems items="${devices}" path="deviceIds" itemLabel="name" itemValue="id"  dataPlaceholder="${selectDevices}" inputClass="js-chosen"/>

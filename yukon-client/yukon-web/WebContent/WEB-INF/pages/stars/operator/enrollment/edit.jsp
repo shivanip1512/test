@@ -12,7 +12,7 @@
 <cti:url var="submitUrl" value="/stars/operator/enrollment/confirmSave">
     <cti:param name="isAdd" value="${isAdd}"/>
 </cti:url>
-<form:form id="edit-enroll-form" commandName="programEnrollment" action="${submitUrl}">
+<form:form id="edit-enroll-form" modelAttribute="programEnrollment" action="${submitUrl}">
     <cti:csrfToken/>
     <input type="hidden" name="accountId" value="${accountId}"/>
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>

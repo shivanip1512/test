@@ -15,7 +15,7 @@
     
         <div class="filter-section">
             <cti:url var="url" value="${baseUrl}"/>
-            <form:form action="${url}" commandName="filter" method="get">
+            <form:form action="${url}" modelAttribute="filter" method="get">
                 <i:inline key="yukon.common.filterBy"/>
                 <c:if test="${!empty param.controlAreaId}">
                     <input type="hidden" name="controlAreaId" value="${param.controlAreaId}"/>

@@ -31,7 +31,7 @@ $(function() {
     <div class="column one">
         
         <tags:sectionContainer2 nameKey="infoContainer">
-            <form:form commandName="generalInfo" method="post" action="update">
+            <form:form modelAttribute="generalInfo" method="post" action="update">
                 <cti:csrfToken/>
                 <form:hidden path="ecId"/>
                 

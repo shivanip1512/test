@@ -21,7 +21,7 @@
     </c:if>
 
     <%-- MISC FORMS --%>
-    <form:form id="deleteMonitorForm" action="${deleteURL}" method="post" commandName="outageMonitor">
+    <form:form id="deleteMonitorForm" action="${deleteURL}" method="post" modelAttribute="outageMonitor">
         <cti:csrfToken/>
         <form:hidden path="outageMonitorId"/>
         <form:hidden path="name"/>
@@ -33,7 +33,7 @@
     </form>
         
         <%-- UPDATE FORM --%>
-    <form:form id="updateForm" action="${updateURL}" method="post" commandName="outageMonitor">
+    <form:form id="updateForm" action="${updateURL}" method="post" modelAttribute="outageMonitor">
         <cti:csrfToken/>
         <form:hidden path="outageMonitorId" id="outageMonitorId"/>
         <form:hidden path="evaluatorStatus" />

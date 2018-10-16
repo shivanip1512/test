@@ -1,7 +1,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:setFormEditMode mode="${mode}"/>
-<form:form id="formulaForm" commandName="formulaBean" action="create">
+<form:form id="formulaForm" modelAttribute="formulaBean" action="create">
     <cti:csrfToken/>
     <div class="column-12-12 clearfix">
         <div class="column one">

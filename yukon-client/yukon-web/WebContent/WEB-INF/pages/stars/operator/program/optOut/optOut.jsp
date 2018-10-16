@@ -39,7 +39,7 @@
         <i:inline key=".description"/><br><br>
     </cti:checkRolesAndProperties>
     <cti:url var="optOutUrl" value="/stars/operator/program/optOut/deviceSelection"/>
-    <form:form id="optOutForm" action="${optOutUrl}" commandName="optOutBackingBean">
+    <form:form id="optOutForm" action="${optOutUrl}" modelAttribute="optOutBackingBean">
          <cti:csrfToken/>   
          <input type="hidden" name="accountId" value="${accountId}" />
 

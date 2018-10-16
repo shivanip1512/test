@@ -15,7 +15,7 @@
         <div class="column-12-12">
             <div class="column one">
                 <cti:url var="importUrl" value="/stars/operator/account/uploadImportFiles"/>
-                <form:form id="importForm" commandName="accountImportData" action="${importUrl}" enctype="multipart/form-data">
+                <form:form id="importForm" modelAttribute="accountImportData" action="${importUrl}" enctype="multipart/form-data">
                     <cti:csrfToken/>
                     <%-- note --%>
                     <div class="stacked">

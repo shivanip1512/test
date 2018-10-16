@@ -15,7 +15,7 @@
     <i:inline key=".firmwareUpdate.note"/>
 </div>
 
-<form:form id="firmware-upgrade-form" commandName="gateways" action="${updateUrl}">
+<form:form id="firmware-upgrade-form" modelAttribute="gateways" action="${updateUrl}">
     <cti:csrfToken/>
     <div class="scroll-lg js-resize-with-dialog">
     <table class="compact-results-table with-form-controls js-select-all-container">

@@ -43,7 +43,7 @@
     
     <tags:sectionContainer2 nameKey="filter" hideEnabled="true">
     
-        <form:form id="filter-form" action="report" method="get" commandName="filter">
+        <form:form id="filter-form" action="report" method="get" modelAttribute="filter">
             
             <tags:nameValueContainer2 tableClass="with-form-controls">
                 <tags:nameValue2 nameKey=".filter.devices">

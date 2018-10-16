@@ -4,7 +4,7 @@
 
 <cti:msgScope paths="modules.adminSetup.auth.role.group,yukon.common">
 
-<form:form id="new-role-group-form" commandName="group" method="post">
+<form:form id="new-role-group-form" modelAttribute="group" method="post">
     <cti:csrfToken/>
     
     <tags:nameValueContainer2 tableClass="with-form-controls">

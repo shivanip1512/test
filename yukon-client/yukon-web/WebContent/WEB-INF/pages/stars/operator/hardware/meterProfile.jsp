@@ -49,7 +49,7 @@ $(document).on('click', '#cancelDeleteBtn', function() {
         <c:set var="action" value="create" />
     </cti:displayForPageEditModes>
     
-    <form:form commandName="hardware" action="${action}" method="post">
+    <form:form modelAttribute="hardware" action="${action}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
         <form:hidden path="accountId"/>

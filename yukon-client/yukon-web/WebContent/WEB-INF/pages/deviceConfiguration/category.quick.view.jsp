@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<form:form commandName="categoryEditBean">
+<form:form modelAttribute="categoryEditBean">
 
     <c:set var="mode" value="VIEW" />
     <%@ include file="category.jspf" %>

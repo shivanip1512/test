@@ -9,7 +9,7 @@
 
 <cti:msgScope paths="modules.tools.configs.config">
 <div id="supportedTypePopup">
-    <form:form id="supported-types-form" commandName="deviceConfigTypes" action="addSupportedTypes">
+    <form:form id="supported-types-form" modelAttribute="deviceConfigTypes" action="addSupportedTypes">
         <cti:csrfToken/>
         <form:hidden path="configId"/>
 

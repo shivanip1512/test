@@ -29,7 +29,7 @@ function taskFinished() {
 <div class="column-12-12 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="settings">
-            <form:form action="do" method= "GET" commandName="abr">
+            <form:form action="do" method= "GET" modelAttribute="abr">
                 
                 <tags:hidden path="hardwareTypeId"/>
                 <tags:nameValueContainer2>

@@ -46,7 +46,7 @@
     
 
     <cti:url var="action" value="/tools/points/${pointModel.pointBase.point.pointType}" />
-    <form:form id="point-form" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
+    <form:form id="point-form" modelAttribute="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
         <form:hidden path="pointBase.point.pointID" id="pointId"/>
         <cti:csrfToken />
 

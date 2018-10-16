@@ -57,7 +57,7 @@ $(function () {
 </script>
 
 <cti:url var="submitUrl" value="/dr/program/stop/stopMultiple"/>
-<form:form id="stopMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
+<form:form id="stopMultipleProgramsForm" modelAttribute="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'stopMultipleProgramsForm')">
     <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>

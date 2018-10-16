@@ -17,7 +17,7 @@
                     <tags:alertBox key="yukon.web.modules.passwordPolicyError.MIN_PASSWORD_AGE_NOT_MET"/>
                 </c:if>
             </div>
-            <form:form id="change-password-form" commandName="login" action="change-password">
+            <form:form id="change-password-form" modelAttribute="login" action="change-password">
                 <cti:csrfToken/>
                 <div class="column-12-12">
                     <div class="column one">

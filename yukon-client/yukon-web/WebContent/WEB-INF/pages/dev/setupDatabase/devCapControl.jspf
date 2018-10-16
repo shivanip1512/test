@@ -8,7 +8,7 @@
 <div id="capControl" class="devWidget">
     <cti:flashScopeMessages />
     <div class="widgetMessage"></div>
-    <form:form commandName="devCapControl" action="setupCapControl" method="post" id="setupCapControlForm">
+    <form:form modelAttribute="devCapControl" action="setupCapControl" method="post" id="setupCapControlForm">
         <cti:csrfToken/>
         <div class="widgetContent">
             <tags:nameValueContainer2>

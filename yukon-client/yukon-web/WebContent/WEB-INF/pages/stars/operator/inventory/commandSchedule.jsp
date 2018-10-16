@@ -10,7 +10,7 @@
 <cti:standardPage module="operator" page="commandSchedule.${mode}">
     <tags:setFormEditMode mode="${mode}"/>
     
-    <form:form id="updateForm" commandName="schedule" action="${updateFormURL}">
+    <form:form id="updateForm" modelAttribute="schedule" action="${updateFormURL}">
         <cti:csrfToken/>
         <form:hidden path="commandSchedule.commandScheduleId"/>
         <form:hidden path="commandSchedule.startTimeCronString"/>

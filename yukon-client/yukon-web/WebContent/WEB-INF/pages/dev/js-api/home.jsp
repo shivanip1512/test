@@ -1307,7 +1307,7 @@ $(&#39;.js-remove-alerts&#39;).click(function () {
 </p>
 <h4 class="subtle">Example:</h4>
 <div class="stacked clearfix">
-    <form:form commandName="company" class="js-reindexing-example">
+    <form:form modelAttribute="company" class="js-reindexing-example">
         <table>
             <thead></thead>
             <tfoot>
@@ -1388,7 +1388,7 @@ $(&#39;.js-remove-alerts&#39;).click(function () {
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;form:form commandName=&quot;company&quot; class=&quot;js-reindexing-example&quot;&gt;
+&lt;form:form modelAttribute=&quot;company&quot; class=&quot;js-reindexing-example&quot;&gt;
     &lt;table&gt;
         &lt;thead&gt;&lt;/thead&gt;
         &lt;tfoot&gt;

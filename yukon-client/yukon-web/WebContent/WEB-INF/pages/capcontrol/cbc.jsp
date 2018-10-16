@@ -32,7 +32,7 @@
     </div>
 
     <cti:url var="action" value="/capcontrol/cbc" />
-    <form:form id="cbc-edit-form" commandName="cbc" action="${action}" method="POST">
+    <form:form id="cbc-edit-form" modelAttribute="cbc" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="id" />
         <%-- TODO --%>

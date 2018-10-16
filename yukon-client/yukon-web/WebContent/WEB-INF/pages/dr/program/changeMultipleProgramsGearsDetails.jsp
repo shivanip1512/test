@@ -50,7 +50,7 @@ $(function() {
 </h4>
 
 <cti:url var="submitUrl" value="/dr/program/changeMultipleGears"/>
-<form:form id="changeGearForm" commandName="filter" action="${submitUrl}" onsubmit="return submitForm();">
+<form:form id="changeGearForm" modelAttribute="filter" action="${submitUrl}" onsubmit="return submitForm();">
     <cti:csrfToken/>
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>

@@ -11,7 +11,7 @@
         <div class="column one">
             <tags:sectionContainer2 nameKey="setupContainer">
                 <cti:url var="url" value="/stars/operator/inventory/deviceReconfig/save"/>
-                <form:form id="saveForm" commandName="deviceReconfigOptions" action="${url}" method="post">
+                <form:form id="saveForm" modelAttribute="deviceReconfigOptions" action="${url}" method="post">
                     <cti:csrfToken/>
                     <div class="stacked">
                         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>

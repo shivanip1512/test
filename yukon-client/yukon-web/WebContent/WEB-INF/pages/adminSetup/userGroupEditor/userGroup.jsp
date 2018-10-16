@@ -15,7 +15,7 @@
     <div class="column one">
         <tags:sectionContainer2 nameKey="infoContainer">
             <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
-            <form:form commandName="userGroup" action="${url}" method="post">
+            <form:form modelAttribute="userGroup" action="${url}" method="post">
                 <cti:csrfToken/>
                 <form:hidden id="user-group-id" path="userGroupId"/>
                 

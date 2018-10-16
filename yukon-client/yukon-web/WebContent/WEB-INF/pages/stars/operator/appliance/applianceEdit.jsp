@@ -18,7 +18,7 @@
             <tags:sectionContainer2 nameKey="applianceInfo">
 
                 <cti:url var="updateUrl" value="/stars/operator/appliances/applianceUpdate"/>
-                <form:form commandName="starsAppliance" action="${updateUrl}">
+                <form:form modelAttribute="starsAppliance" action="${updateUrl}">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <input type="hidden" name="applianceId" value="${starsAppliance.applianceID}">

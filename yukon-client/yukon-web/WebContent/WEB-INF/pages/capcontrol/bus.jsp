@@ -67,7 +67,7 @@
         <cti:url var="action" value="/capcontrol/buses?parentId=${parent.liteID}"/>
     </c:if>
 </cti:displayForPageEditModes>
-<form:form commandName="bus" action="${action}" method="POST">
+<form:form modelAttribute="bus" action="${action}" method="POST">
     <cti:csrfToken/>
     <div class="column-12-12">
         <div class="column one">

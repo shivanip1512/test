@@ -37,7 +37,7 @@ $(function () {
     <%-- Filter Options --%>
     <cti:msg2 var="filterOptionsLabel" key=".filterOptions"/>
     <tags:sectionContainer title="${filterOptionsLabel}">
-        <form:form id="filter-form" action="viewByCategory" commandName="filter" method="get">
+        <form:form id="filter-form" action="viewByCategory" modelAttribute="filter" method="get">
             <tags:nameValueContainer2>
                 
                 <tags:nameValue2 nameKey=".categories">

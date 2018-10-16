@@ -24,7 +24,7 @@
 </table>
 </c:if>
 
-<form:form commandName="settings" id="config-form" action="send">
+<form:form modelAttribute="settings" id="config-form" action="send">
     <cti:csrfToken/>
     
     <div class="dn js-inventory-params">

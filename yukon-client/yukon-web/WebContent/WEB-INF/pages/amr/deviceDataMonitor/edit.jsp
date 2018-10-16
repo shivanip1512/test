@@ -36,7 +36,7 @@
         <cti:url value="/amr/deviceDataMonitor/create" var="action"/>
         <c:set var="modeMsg" value="${0}" /> 
     </cti:displayForPageEditModes>
-    <form:form commandName="monitor" action="${action}" method="post" cssClass="js-monitor-form">
+    <form:form modelAttribute="monitor" action="${action}" method="post" cssClass="js-monitor-form">
         <cti:csrfToken/>
         <cti:displayForPageEditModes modes="EDIT">
             <form:hidden path="id" id="monitor-id" />

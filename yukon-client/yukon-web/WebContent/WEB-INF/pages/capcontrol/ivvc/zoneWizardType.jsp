@@ -9,7 +9,7 @@
 <tags:standardPageFragment module="capcontrol" pageName="ivvc" fragmentName="selectZoneType">
 
 <cti:url var="selectedTypeUrl" value="/capcontrol/ivvc/wizard/wizardTypeSelected"/>
-<form:form id="zoneTypeForm" commandName="zoneDto" action="${selectedTypeUrl}" >
+<form:form id="zoneTypeForm" modelAttribute="zoneDto" action="${selectedTypeUrl}" >
     <cti:csrfToken/>
     <form:hidden path="substationBusId"/>
     <form:hidden path="parentId"/>

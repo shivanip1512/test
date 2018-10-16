@@ -19,7 +19,7 @@ $(function() {
     <tags:setFormEditMode mode="${mode}"/>
 
     <cti:url var="contactUpdateUrl" value="/stars/operator/contacts/contactUpdate"/>
-    <form:form id="contactsUpdateForm" commandName="contactDto" action="${contactUpdateUrl}" method="post">
+    <form:form id="contactsUpdateForm" modelAttribute="contactDto" action="${contactUpdateUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="contactId" value="${contactDto.contactId}">
         <input type="hidden" name="accountId" value="${accountId}"/>

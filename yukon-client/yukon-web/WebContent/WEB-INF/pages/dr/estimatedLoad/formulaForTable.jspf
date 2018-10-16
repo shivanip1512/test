@@ -2,7 +2,7 @@
 
 <input id="formula-row-index" type="hidden" value="${formulaBean.numberOfEntries}"/>
 
-<form:form id="formulaForm" commandName="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
+<form:form id="formulaForm" modelAttribute="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
 
     <cti:csrfToken/>
     <div class="column-10-14 clearfix">

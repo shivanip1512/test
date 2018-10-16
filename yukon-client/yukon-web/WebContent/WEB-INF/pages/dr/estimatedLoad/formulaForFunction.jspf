@@ -4,7 +4,7 @@
 <input id="formula-row-index" type="hidden" value="${fn:length(formulaBean.functions)}"/>
 
 <c:set var="formulaId" value="${formulaBean.formulaId}"/>
-<form:form id="formulaForm" commandName="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
+<form:form id="formulaForm" modelAttribute="formulaBean" action="edit?formulaId=${formulaBean.formulaId}">
     <cti:csrfToken/>
     <div class="column-10-14 clearfix">
         <div class="column one">

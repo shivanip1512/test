@@ -32,7 +32,7 @@
 </cti:linkTabbedContainer>
     <c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
     <cti:url var="saveUrl" value="/multispeak/setup/save"/>
-    <form:form modelAttribute="multispeak" id="mspForm" name="mspForm" method="post" action="${saveUrl}" commandName="multispeak">
+    <form:form modelAttribute="multispeak" id="mspForm" name="mspForm" method="post" action="${saveUrl}">
         <cti:csrfToken/>
         <c:set var="viewMode" value="${false}" />
         <cti:displayForPageEditModes modes="VIEW">

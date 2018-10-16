@@ -101,7 +101,7 @@ $(function() {
         <cti:url var="action" value="/capcontrol/substations?parentId=${parent.liteID}"/>
     </c:if>
 </cti:displayForPageEditModes>
-<form:form commandName="substation" action="${action}" method="POST">
+<form:form modelAttribute="substation" action="${action}" method="POST">
     <form:hidden path="id"/>
     <cti:csrfToken/>
                 <cti:msg2 var="infoTab" key=".infoTab"/>

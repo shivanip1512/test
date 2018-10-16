@@ -6,7 +6,7 @@
 
 <cti:flashScopeMessages/>
 
-<form:form method="POST" commandName="fileImportBindingBean" action="importKeyFile" autocomplete="off" enctype="multipart/form-data">
+<form:form method="POST" modelAttribute="fileImportBindingBean" action="importKeyFile" autocomplete="off" enctype="multipart/form-data">
    <tags:nameValueContainer2>
     <cti:csrfToken/>
     <tags:nameValue2 nameKey=".importKeyFile">

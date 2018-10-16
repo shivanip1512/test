@@ -16,7 +16,7 @@
         </c:if>
     
         <%-- MISC FORMS --%>
-        <form:form id="deleteMonitorForm" action="${monitorDeleteURL}" method="post" commandName="tamperFlagMonitor">
+        <form:form id="deleteMonitorForm" action="${monitorDeleteURL}" method="post" modelAttribute="tamperFlagMonitor">
             <cti:csrfToken/>
             <tags:hidden path="tamperFlagMonitorId"/>
             <tags:hidden path="name"/>
@@ -28,7 +28,7 @@
         </form>
         
         <%-- UPDATE FORM --%>
-       <form:form id="updateForm" action="${updateURL}" method="post" commandName="tamperFlagMonitor">
+       <form:form id="updateForm" action="${updateURL}" method="post" modelAttribute="tamperFlagMonitor">
             <cti:csrfToken/>
             <c:if test="${not empty tamperFlagMonitorId}">
                 <form:hidden path="tamperFlagMonitorId" />

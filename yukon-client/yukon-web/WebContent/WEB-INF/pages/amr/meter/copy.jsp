@@ -6,7 +6,7 @@
 <cti:msgScope paths="yukon.web.widgets.meterInformationWidget">
 <input id="device-id" type="hidden" value="${deviceId}">
 <cti:url var="action" value="/meter/copy/${deviceId}"/>
-<form:form id="meter-create-form" action="${action}" method="post" commandName="meter">
+<form:form id="meter-create-form" action="${action}" method="post" modelAttribute="meter">
     <cti:csrfToken/>
     <c:if test="${errorMessage != null}">
         <div class="user-message error">

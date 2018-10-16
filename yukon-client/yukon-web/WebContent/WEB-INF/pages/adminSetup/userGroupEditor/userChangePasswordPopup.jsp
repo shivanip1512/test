@@ -15,7 +15,7 @@
         </div>
         <div class="column one">
             <cti:url var="url" value="/admin/users/${userId}/change-password" />
-            <form:form id="change-password-form" commandName="password" action="${url}" method="post">
+            <form:form id="change-password-form" modelAttribute="password" action="${url}" method="post">
                 <cti:csrfToken />
                 <input type="hidden" name="userId" value="${userId}">
                 <tags:nameValueContainer2>

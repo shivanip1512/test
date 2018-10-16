@@ -11,7 +11,7 @@
 <cti:standardPage module="consumer" page="optoutconfirm">
 <cti:standardMenu/>
 <cti:flashScopeMessages/>
-<form:form id="form" commandName="optOutBackingBean" method="POST" action="${actionUrl}">
+<form:form id="form" modelAttribute="optOutBackingBean" method="POST" action="${actionUrl}">
     <cti:csrfToken/>
     <h3><cti:msg key="yukon.dr.consumer.optoutconfirm.header"/></h3>
 

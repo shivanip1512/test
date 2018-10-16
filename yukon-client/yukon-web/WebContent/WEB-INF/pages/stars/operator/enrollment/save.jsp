@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.operator.enrollmentList">
 
 <cti:url var="submitUrl" value="/stars/operator/enrollment/save"/>
-<form:form id="save-enroll-form" commandName="programEnrollment" action="${submitUrl}">
+<form:form id="save-enroll-form" modelAttribute="programEnrollment" action="${submitUrl}">
     <cti:csrfToken/>
     <input type="hidden" name="isAdd" value="${isAdd}"/>
     <input type="hidden" name="accountId" value="${accountId}"/>

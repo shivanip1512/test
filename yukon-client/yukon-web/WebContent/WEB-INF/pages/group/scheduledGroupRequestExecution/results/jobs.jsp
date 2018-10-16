@@ -20,7 +20,7 @@
 <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filter.section"/>">
     <cti:flashScopeMessages/>
     <cti:url var="filterUrl" value="/group/scheduledGroupRequestExecutionResults/jobs"/>
-    <form:form action="${filterUrl}" method="get" commandName="filter">
+    <form:form action="${filterUrl}" method="get" modelAttribute="filter">
 
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".filter.dateRange">

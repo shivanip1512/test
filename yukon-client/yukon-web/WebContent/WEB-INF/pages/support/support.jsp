@@ -114,7 +114,7 @@ $(function() {
             <cti:tabs>
                 <cti:msg2 key=".supportBundle.createNewHeading" var="createNewHeading"/>
                 <cti:tab title="${createNewHeading}" >
-                    <form:form id="createBundleForm" commandName="supportBundle" action="${createBundleURL}" method="POST">
+                    <form:form id="createBundleForm" modelAttribute="supportBundle" action="${createBundleURL}" method="POST">
                         <cti:csrfToken/>
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".supportBundle.custNameLbl">

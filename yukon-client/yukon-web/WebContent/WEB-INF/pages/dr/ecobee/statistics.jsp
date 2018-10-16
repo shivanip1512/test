@@ -33,7 +33,7 @@
                 data-title="<cti:msg2 key=".ecobee.configure.title"/>"
                 data-load-event="yukon_dr_ecobee_config_load"
                 class="dn">
-                <form:form action="ecobee/settings" method="POST" commandName="ecobeeSettings">
+                <form:form action="ecobee/settings" method="POST" modelAttribute="ecobeeSettings">
                     <cti:csrfToken/>
                     <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                         <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle" valueClass="full-width">

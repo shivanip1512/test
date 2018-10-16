@@ -70,7 +70,7 @@
 </table>
 
 <cti:url var="submitUrl" value="/stars/surveyReport/config"/>
-<form:form action="${submitUrl}" commandName="reportConfig">
+<form:form action="${submitUrl}" modelAttribute="reportConfig">
     <cti:csrfToken/>
     <form:hidden path="accountNumber"/>
     <c:forEach var="answer" items="${reportConfig.answerIds}">

@@ -16,7 +16,7 @@
     <tags:setFormEditMode mode="${mode}" />
 
     <cti:url var="action" value="/macsscheduler/schedules/save" />
-    <form:form id="macs-schedule" commandName="schedule" action="${action}" method="POST">
+    <form:form id="macs-schedule" modelAttribute="schedule" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="id" />
         <form:hidden path="generateScript"/>
