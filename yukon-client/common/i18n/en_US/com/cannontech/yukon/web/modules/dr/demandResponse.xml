@@ -596,8 +596,8 @@ The following sync settings are available:<br>
 <entry key="yukon.web.modules.dr.nest.details.nestSyncDiscrepancies.helpText"><![CDATA[
 The Discrepancies table will list any differences between Nest and Yukon.  The following filter options are available:<br>
 <ul>
-    <li><b>Sync Time</b>: the date/time that Yukon was synced with Nest</li>
-    <li><b>Type</b>: Auto/Manual (whether the action required is automatically completed or needs to be done manually)</li>
+    <li><b>Sync Time</b>: the date/time that Yukon was synced with Nest.</li>
+    <li><b>Type</b>: Auto/Manual (whether the action required is automatically completed or needs to be done manually).</li>
 </ul>
 The resulting table will list the Type of discrepancy (Auto/Manual), Reason for the discrepancy, and Action that was completed (Auto) or that needs to be completed (Manual).  
 There is an option to download the results in the cog menu.<br>
