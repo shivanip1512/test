@@ -6674,31 +6674,6 @@ create table LMMacsScheduleCustomerList  (
 );
 
 /*==============================================================*/
-/* Table: LMNestControlEvent                                    */
-/*==============================================================*/
-create table LMNestControlEvent  (
-   NestControlEventId   NUMBER                          not null,
-   NestGroup            VARCHAR2(20)                    not null,
-   NestKey              VARCHAR2(20)                    not null,
-   StartTime            DATE                            not null,
-   StopTime             DATE,
-   CancelRequestTime    DATE,
-   CancelResponse       VARCHAR2(200),
-   constraint PK_LMNestControlEvent primary key (NestControlEventId)
-);
-
-/*==============================================================*/
-/* Table: LMNestLoadShapingGear                                 */
-/*==============================================================*/
-create table LMNestLoadShapingGear  (
-   GearId               NUMBER                          not null,
-   PreparationOption    VARCHAR2(20)                    not null,
-   PeakOption           VARCHAR2(20)                    not null,
-   PostPeakOption       VARCHAR2(20)                    not null,
-   constraint PK_LMNestLoadShapingGear primary key (GearId)
-);
-
-/*==============================================================*/
 /* Table: LMPROGRAM                                             */
 /*==============================================================*/
 create table LMPROGRAM  (
@@ -7133,30 +7108,6 @@ create table MspLMInterfaceMapping  (
 create unique index INDX_StratName_SubName_UNQ on MspLMInterfaceMapping (
    StrategyName ASC,
    SubstationName ASC
-);
-
-/*==============================================================*/
-/* Table: NestSync                                              */
-/*==============================================================*/
-create table NestSync  (
-   SyncId               NUMBER                          not null,
-   SyncStartTime        DATE                            not null,
-   SyncStopTime         DATE,
-   constraint PK_NestSync primary key (SyncId)
-);
-
-/*==============================================================*/
-/* Table: NestSyncDetail                                        */
-/*==============================================================*/
-create table NestSyncDetail  (
-   SyncDetailId         NUMBER                          not null,
-   SyncId               NUMBER                          not null,
-   SyncType             VARCHAR2(60)                    not null,
-   SyncReasonKey        VARCHAR2(100)                   not null,
-   SyncReasonValue      VARCHAR2(100),
-   SyncActionKey        VARCHAR2(100)                   not null,
-   SyncActionValue      VARCHAR2(100),
-   constraint PK_NestSyncDetail primary key (SyncDetailId)
 );
 
 /*==============================================================*/
@@ -12956,11 +12907,6 @@ alter table LMMacsScheduleCustomerList
    add constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
       references CICustomerBase (CustomerID);
 
-alter table LMNestLoadShapingGear
-   add constraint FK_NLSGear_LMProgramDirectGear foreign key (GearId)
-      references LMProgramDirectGear (GearID)
-      on delete cascade;
-
 alter table LMPROGRAM
    add constraint FK_LMPr_PrgCon foreign key (ConstraintID)
       references LMProgramConstraints (ConstraintID);
@@ -13124,11 +13070,6 @@ alter table MeterHardwareBase
 alter table MspLMInterfaceMapping
    add constraint FK_MspLMInterMap_YukonPAObj foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
-      on delete cascade;
-
-alter table NestSyncDetail
-   add constraint FK_NestSync_NestSyncDetail foreign key (SyncId)
-      references NestSync (SyncId)
       on delete cascade;
 
 alter table NotificationDestination
