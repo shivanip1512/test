@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="VMAutomation" default="targets" basedir=".." xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="VMAutomation" default="targets" basedir="../.." xmlns:if="ant:if" xmlns:unless="ant:unless">
 
 
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
