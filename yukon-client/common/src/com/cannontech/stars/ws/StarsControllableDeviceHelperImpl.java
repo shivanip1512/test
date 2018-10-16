@@ -174,10 +174,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         
         HardwareType hardwareType = getHardwareType(dto, energyCompany);
-        if (!isOperationAllowedForDevice(hardwareType)) {
-            throw new StarsClientRequestException(
-                "This operation is not supported for the device type " + hardwareType);
-        }
         
         // Get Inventory, if exists on account
         LiteInventoryBase  liteInv = getInventoryOnAccount(dto, energyCompany);
@@ -407,10 +403,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
         HardwareType hardwareType = getHardwareType(dto, energyCompany);
-        if (!isOperationAllowedForDevice(hardwareType)) {
-            throw new StarsClientRequestException(
-                "This operation is not supported for the device type " + hardwareType);
-        }
+ 
         LiteInventoryBase lib = null;
         
         // Get Inventory if exists on account
@@ -440,11 +433,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
-        HardwareType hardwareType = getHardwareType(dto, energyCompany);
-        if (!isOperationAllowedForDevice(hardwareType)) {
-            throw new StarsClientRequestException(
-                "This operation is not supported for the device type " + hardwareType);
-        }
         
         // Get Inventory if exists on account
         liteInv = getInventoryOnAccount(dto, energyCompany);
@@ -469,13 +457,5 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         YukonListEntry deviceType = getDeviceType(device, energyCompany);
         HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
         return ht;
-    }
-    
-    // Check if the hardwareType supports the operation
-    private boolean isOperationAllowedForDevice(HardwareType ht) {
-        if (ht.isNest()) {
-            return false;
-        }
-        return true;
     }
 }

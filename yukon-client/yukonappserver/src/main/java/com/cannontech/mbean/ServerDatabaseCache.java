@@ -219,7 +219,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         allContactsMap.clear();
-        allContactNotifsMap = new HashMap<Integer, LiteContactNotification>();
+        allContactNotifsMap = new HashMap<>();
         
         ContactLoader contactLoader = new ContactLoader(allContactsMap, allContactNotifsMap, databaseAlias);
         contactLoader.run();
@@ -250,7 +250,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allMeters;
         }
         
-        allMeters = new ConcurrentHashMap<Integer, SimpleMeter>();
+        allMeters = new ConcurrentHashMap<>();
         List<SimpleMeter> allSimpleMeters = meterDao.getAllSimpleMeters();
         for (SimpleMeter meter : allSimpleMeters) {
             allMeters.put(meter.getPaoIdentifier().getPaoId(), meter);
@@ -365,7 +365,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     public synchronized Map<Integer, LiteCommand> getAllCommands() {
         
         if (allCommands == null) {
-            allCommands = new ConcurrentHashMap<Integer, LiteCommand>();
+            allCommands = new ConcurrentHashMap<>();
             for (LiteCommand command : commandDao.getAllCommands()) {
                 allCommands.put(command.getLiteID(), command);
             }
@@ -553,7 +553,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allLitePaos;
         }
         
-        allLitePaos = new ConcurrentHashMap<Integer, LiteYukonPAObject>();
+        allLitePaos = new ConcurrentHashMap<>();
         
         List<LiteYukonPAObject> paos = paoDao.getAllPaos();
         for (LiteYukonPAObject pao : paos) {
@@ -583,7 +583,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             return allPointLimits;
         }
         
-        allPointLimits = new ConcurrentHashMap<Integer, LitePointLimit>();
+        allPointLimits = new ConcurrentHashMap<>();
         
         for (LitePointLimit limit : pointDao.getAllPointLimits()) {
             allPointLimits.put(limit.getPointID(), limit);
@@ -667,7 +667,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         getYukonGroupRolePropertyMap() {
         if (allYukonGroupRolePropertiesMap == null) {
             allYukonGroupRolePropertiesMap =
-                new HashMap<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>>();
+                new HashMap<>();
             final YukonGroupRoleLoader l =
                 new YukonGroupRoleLoader(allYukonGroupRolePropertiesMap, getAllYukonGroups(), getAllYukonRoles(),
                     getAllYukonRoleProperties(), databaseAlias);
@@ -801,7 +801,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allDevices = null;
                 allMcts = null;
                 allLoadManagement = null; // PAOGroups are here, oops!
-                
+                allLMGroups = null;
+                allLMPrograms = null;
+                allLMControlAreas = null;
                 PaoType paoType = PaoType.getForDbString(dbChangeMsg.getObjectType());
                 
 				/*
