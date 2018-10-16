@@ -115,7 +115,16 @@ pipeline {
                 label "install"
             }
             steps {
+                // The stashed folders are modified during the build, which means a simple
+                // unstash leaves data behind. Here we manually wipe these folders before unstashing.
+                dir('yukon-client') {
+                    deleteDir()
+                }                            
                 unstash 'yukon-client'
+                
+                dir('yukon-server') {
+                    deleteDir()
+                }
                 unstash 'yukon-server'
                 
                 // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
