@@ -148,7 +148,7 @@ public class NestSyncServiceImpl implements NestSyncService{
        
         invalidGroups.removeAll(validGroups);
         if(!invalidGroups.isEmpty()) {
-            log.debug("Program/Area is not setup for {} groups. Skipping any account creation/changes in Yukon");
+            log.debug("Program/Area is not setup for {} groups. Skipping any account creation/changes in Yukon", invalidGroups);
         }
         existing.forEach(row -> syncAccount(syncId, thermostatsToCreate, usersToCreate, groups, groupsToPrograms,
             programIdentToProgramName, row));
