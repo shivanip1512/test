@@ -5,9 +5,7 @@
 
 #include <set>
 
-namespace Cti {
-namespace Protocols {
-namespace DNP {
+namespace Cti::Protocols::DNP {
 
 namespace Transport {
 
@@ -41,6 +39,10 @@ private:
     enum IOState
     {
         Uninitialized = 0,
+
+        //  DNP loopback (short-circuit to Datalink layer)
+        Loopback,
+
         Output,
         Input,
         Complete,
@@ -55,6 +57,8 @@ public:
     TransportLayer( const TransportLayer &aRef );
 
     TransportLayer &operator=( const TransportLayer &aRef );
+
+    int initLoopback();
 
     int initForOutput( unsigned char *buf, unsigned len );
     int initForInput ( unsigned char *buf, unsigned len );
@@ -140,6 +144,3 @@ public:
 
 }
 }
-}
-}
-

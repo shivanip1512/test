@@ -9,9 +9,7 @@
 using std::endl;
 using std::vector;
 
-namespace Cti {
-namespace Protocols {
-namespace DNP {
+namespace Cti::Protocols::DNP {
 
 DatalinkLayer::DatalinkLayer() :
     _io_state(State_IO_Uninitialized),
@@ -61,6 +59,16 @@ unsigned short DatalinkLayer::getDstAddress() const  {  return _dst;  }
 void DatalinkLayer::setDatalinkConfirm()
 {
     _dl_confirm = true;
+}
+
+
+void DatalinkLayer::setToLoopback()
+{
+    _io_state        = State_IO_Complete;
+    _errorCondition  = ClientErrors::None;
+    _control_state   = State_Control_Request_LinkStatus_Out;
+    _comm_errors     = 0;
+    _protocol_errors = 0;
 }
 
 
@@ -209,9 +217,13 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 
     if( isControlPending() )
     {
-        if( !_dl_confirm )
+        //  we're in State_IO_Complete if it's a loopback
+        if( _io_state != State_IO_Complete )
         {
-            CTILOG_WARN(dout, "datalink control message received, but DL confirm is not enabled for this devicetype");
+            if( !_dl_confirm )
+            {
+                CTILOG_WARN(dout, "datalink control message received, but DL confirm is not enabled for this devicetype");
+            }
         }
 
         //  Can't return yet - decodeControl could increment _protocol_errors, which is checked at the bottom of this method
@@ -657,6 +669,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
         }
 
         case State_Control_Request_DLReset_In:
+        case State_Control_Request_LinkStatus_In:
         {
             recvPacket(_control_packet, xfer);
 
@@ -782,6 +795,8 @@ YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
 
             case State_Control_Request_LinkStatus_In:
             {
+                _in_recv += _in_actual;
+
                 if( DatalinkPacket::isEntirePacket(_control_packet, _in_recv) )
                 {
                     if( arePacketCRCsValid(_control_packet) &&
@@ -1127,7 +1142,5 @@ IM_EX_PROT unsigned short DatalinkLayer::crc( const unsigned char *buf, const in
     return ~new_crc;
 }
 
-}
-}
 }
 

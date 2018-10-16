@@ -4,9 +4,7 @@
 
 #include "dnp_datalink_packet.h"
 
-namespace Cti {
-namespace Protocols {
-namespace DNP {
+namespace Cti::Protocols::DNP {
 
 class DatalinkLayer
 {
@@ -94,8 +92,6 @@ private:
 
     static bool isValidAckPacket ( const packet_t &p );
 
-    static bool areFramingBytesValid( const packet_t &p );
-
     static bool isHeaderCRCValid( const DatalinkPacket::dlp_header &header );
     static bool isDataBlockCRCValid( const unsigned char *block, unsigned length );
     static bool arePacketCRCsValid( const packet_t &packet );
@@ -120,6 +116,8 @@ public:
     unsigned short getSrcAddress() const;
     unsigned short getDstAddress() const;
     void setDatalinkConfirm();
+
+    void setToLoopback();
 
     void setToOutput( unsigned char *buf, unsigned int len );
     void setToInput ( void );
@@ -171,7 +169,5 @@ public:
 };
 
 
-}
-}
 }
 

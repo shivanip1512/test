@@ -121,6 +121,12 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
             }
             case Command_Loopback:
             {
+                _app_layer.setLoopback();
+                
+                break;
+            }
+            case Command_ReadInternalIndications:
+            {
                 _app_layer.setCommand(ApplicationLayer::RequestDelayMeasurement);
 
                 break;
@@ -344,7 +350,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
         }
     }
 
-    if( !retVal )
+    if( ! retVal )
     {
         retVal = _datalink.generate(xfer);
     }
@@ -553,6 +559,13 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
             break;
         }
 
+        case Command_ReadInternalIndications:
+        {
+            _string_results.push_back("Successfully read internal indications");
+
+            break;
+        }
+
         default:
         {
             break;
@@ -675,7 +688,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
         {
             _string_results.clear();
         }
-        else
+        else if( _app_layer.hasInternalIndications() )
         {
             // if we have an error code set in the IIN bits, push it to our return code
             YukonError_t iin_error_code = _app_layer.getIINErrorCode();
@@ -703,7 +716,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
             }
         }
 
-        if( _app_layer.needsTime() && _command != Command_WriteTime )
+        if( _app_layer.hasInternalIndications() && _app_layer.needsTime() && _command != Command_WriteTime )
         {
             auto itr = boost::range::find(_additional_commands, Command_WriteTime);
 
@@ -716,7 +729,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
         // Point value for the message regarding device restart.
         bool deviceRestarted = false;
 
-        if( _app_layer.hasDeviceRestarted() )
+        if( _app_layer.hasInternalIndications() && _app_layer.hasDeviceRestarted() )
         {
             deviceRestarted = true;
 
@@ -750,24 +763,27 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
             }
         }
 
-        const int IINStatusPointOffset_RestartBit = 9999;
+        if( _app_layer.hasInternalIndications() )
+        {
+            const int IINStatusPointOffset_RestartBit = 9999;
 
-        // Add the point message for the restart bit.
-        CtiPointDataMsg* pt_msg =
-            new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
-                                deviceRestarted,
-                                NormalQuality,
-                                StatusPointType);
+            // Add the point message for the restart bit.
+            CtiPointDataMsg* pt_msg =
+                new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
+                                    deviceRestarted,
+                                    NormalQuality,
+                                    StatusPointType);
 
-        // We need to set up a millisecond time for the point message.
-        SYSTEMTIME st;
-        GetLocalTime(&st);
+            // We need to set up a millisecond time for the point message.
+            SYSTEMTIME st;
+            GetLocalTime(&st);
 
-        pt_msg->setTimeWithMillis(
-           CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
-           st.wMilliseconds );
+            pt_msg->setTimeWithMillis(
+               CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
+               st.wMilliseconds );
 
-        _point_results.push_back(pt_msg);
+            _point_results.push_back(pt_msg);
+        }
     }
 
     return retVal;

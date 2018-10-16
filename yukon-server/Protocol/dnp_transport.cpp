@@ -7,9 +7,7 @@
 using std::endl;
 using std::vector;
 
-namespace Cti {
-namespace Protocols {
-namespace DNP {
+namespace Cti::Protocols::DNP {
 
 using Transport::TransportPacket;
 
@@ -39,6 +37,13 @@ TransportLayer &TransportLayer::operator=(const TransportLayer &aRef)
     return *this;
 }
 
+
+int TransportLayer::initLoopback()
+{
+    _ioState = Loopback;
+
+    return ClientErrors::None;
+}
 
 int TransportLayer::initForOutput(unsigned char *buf, unsigned len)
 {
@@ -90,6 +95,13 @@ YukonError_t TransportLayer::generate( DatalinkLayer &_datalink )
 {
     switch( _ioState )
     {
+        case Loopback:
+        {
+            _datalink.setToLoopback();
+
+            break;
+        }
+
         case Output:
         {
             TransportPacket out_packet(_payload_out.used == 0,
@@ -139,6 +151,13 @@ YukonError_t TransportLayer::decode( DatalinkLayer &_datalink )
 
     switch( _ioState )
     {
+        case Loopback:
+        {
+            _ioState = Complete;
+
+            break;
+        }
+
         case Output:
         {
             _sequence_out = (_sequence_out + 1) & 0x3f;
@@ -198,6 +217,8 @@ YukonError_t TransportLayer::decode( DatalinkLayer &_datalink )
         case Complete:
         {
             CTILOG_DEBUG(dout, "DNP transport state: Complete (" << _ioState << ")");
+
+            break;
         }
 
         default:
@@ -319,7 +340,5 @@ void TransportLayer::setIoStateComplete()
     _ioState = Complete;
 }
 
-}
-}
 }
 

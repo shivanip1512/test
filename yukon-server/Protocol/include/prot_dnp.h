@@ -15,8 +15,7 @@
 
 #include <map>
 
-namespace Cti {
-namespace Protocols {
+namespace Cti::Protocols {
 
 class IM_EX_PROT DnpProtocol : public Interface
 {
@@ -68,8 +67,6 @@ public:
     void setConfigData( unsigned internalRetries, DNP::TimeOffset timeOffset, bool enableDnpTimesyncs,
                         bool omitTimeRequest, bool enableUnsolicitedClass1, bool enableUnsolicitedClass2,
                         bool enableUnsolicitedClass3, bool enableNonUpdatedOnFailedScan);
-
-    void setInternalRetries( unsigned retries ) const;
 
     YukonError_t generate( CtiXfer &xfer ) override;
     YukonError_t decode  ( CtiXfer &xfer, YukonError_t status ) override;
@@ -135,7 +132,8 @@ public:
 
         Command_ResetDeviceRestartBit,
 
-        Command_Loopback,  //  actually a time-delay request
+        Command_Loopback,  
+        Command_ReadInternalIndications,  //  actually a time-delay request
 
         Command_UnsolicitedEnable,
         Command_UnsolicitedDisable,
@@ -156,6 +154,6 @@ struct DnpPacketFinder : public Protocols::PacketFinder
 };
 
 }
-}
+
 }
 

@@ -6,9 +6,7 @@
 #include "dnp_transport.h"
 #include "dnp_configuration.h"
 
-namespace Cti {
-namespace Protocols {
-namespace DNP {
+namespace Cti::Protocols::DNP {
 
 class ApplicationLayer
 {
@@ -107,6 +105,9 @@ private:
         SendFirstResponse,
         SendResponse,
 
+        //  DNP loopback (short-circuit to Datalink layer)
+        Loopback,
+
         Complete
 
     } _appState;
@@ -115,7 +116,7 @@ private:
 
     unsigned _comm_errors;
 
-    indications _iin;
+    std::optional<indications> _iin;
 
     object_block_queue _out_object_blocks,
                        _in_object_blocks;
@@ -134,6 +135,8 @@ public:
 
     //  initialization functions
     void setConfigData( const config_data* config );
+
+    void setLoopback();
 
     void setCommand( FunctionCode fc );
     void setCommand( FunctionCode fc, ObjectBlockPtr obj );
@@ -159,6 +162,7 @@ public:
 
     //  post-completion processing
     void getObjects( object_block_queue &object_queue );
+    bool hasInternalIndications() const;
     std::string getInternalIndications( void ) const;
     YukonError_t getIINErrorCode() const;
 
@@ -207,7 +211,5 @@ public:
     };
 };
 
-}
-}
 }
 

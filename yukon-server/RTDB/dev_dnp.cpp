@@ -163,6 +163,16 @@ try
             break;
         }
 
+        case GetStatusRequest:
+        {
+            if( parse.getFlags() & CMD_FLAG_GS_INTERNAL )
+            {
+                command = DnpProtocol::Command_ReadInternalIndications;
+            }
+
+            break;
+        }
+
         case ControlRequest:
         {
             CtiPointStatusSPtr pStatus;
@@ -544,7 +554,6 @@ try
         }
 
         case GetValueRequest:
-        case GetStatusRequest:
         case PutStatusRequest:
         default:
         {

@@ -9,9 +9,7 @@
 using std::endl;
 using std::string;
 
-namespace Cti {
-namespace Protocols {
-namespace DNP {
+namespace Cti::Protocols::DNP {
 
 ApplicationLayer::ApplicationLayer() :
     _request_function(RequestConfirm),
@@ -23,13 +21,24 @@ ApplicationLayer::ApplicationLayer() :
     memset( &_request,     0, sizeof(request_t) );
     memset( &_response,    0, sizeof(response_t) );
     memset( &_acknowledge, 0, sizeof(acknowledge_t) );
-
-    _iin.raw = 0;
 }
 
 void ApplicationLayer::setConfigData( const config_data* config )
 {
     _config = config;
+}
+
+void ApplicationLayer::setLoopback()
+{
+    eraseInboundObjectBlocks();
+    eraseOutboundObjectBlocks();
+
+    _appState       = Loopback;
+    _errorCondition = ClientErrors::None;
+    _comm_errors = 0;
+
+    //  setLoopback(), setCommand(), and initUnsolicited() are the only places where _iin is cleared
+    _iin.reset();
 }
 
 void ApplicationLayer::setCommand( FunctionCode fc )
@@ -43,8 +52,8 @@ void ApplicationLayer::setCommand( FunctionCode fc )
     _errorCondition = ClientErrors::None;
     _comm_errors = 0;
 
-    //  this and initUnsolicited() are the only places where _iin is cleared
-    _iin.raw = 0;
+    //  setLoopback(), setCommand(), and initUnsolicited() are the only places where _iin is cleared
+    _iin.reset();
 }
 
 
@@ -76,8 +85,8 @@ void ApplicationLayer::initUnsolicited( void )
     _errorCondition = ClientErrors::None;
     _comm_errors = 0;
 
-    //  this and setCommand() are the only places where _iin is cleared
-    _iin.raw = 0;
+    //  setLoopback(), setCommand(), and initUnsolicited() are the only places where _iin is cleared
+    _iin.reset();
 }
 
 
@@ -135,8 +144,15 @@ void ApplicationLayer::processResponse( void )
 
     //  ACH:  if class_1_events || class_2_events || class_3_events, we need to do something...  pass it up to the protocol layer, eh?
 
-    //  OR'ing them all together should catch all of the interesting indications from all frames
-    _iin.raw |= _response.ind.raw;
+    if( ! _iin.has_value() )
+    {
+        _iin = _response.ind;
+    }
+    else
+    {
+        //  OR'ing them all together should catch all of the interesting indications from all frames
+        _iin->raw |= _response.ind.raw;
+    }
 
     for( auto &ob : restoreObjectBlocks(_response.buf, _response.buf_len) )
     {
@@ -289,45 +305,56 @@ string ApplicationLayer::getInternalIndications( void ) const
 {
     string iin;
 
-    if( _iin.raw )          iin += "Internal indications:\n";
+    if( _iin && _iin->raw )
+    {
+        iin += "Internal indications:\n";
 
-    if( _iin.broadcast      ) iin += "Broadcast message received\n";
-    if( _iin.class_1_events ) iin += "Class 1 data available\n";
-    if( _iin.class_2_events ) iin += "Class 2 data available\n";
-    if( _iin.class_3_events ) iin += "Class 3 data available\n";
-    if( _iin.need_time      ) iin += "Time synchronization needed\n";
-    if( _iin.local_control  ) iin += "Some digital output points in local mode - control disabled\n";
-    if( _iin.device_trouble ) iin += "Device trouble (see device spec for details)\n";
-    if( _iin.device_restart ) iin += "Device restart\n";
+        if( _iin->broadcast )               iin += "Broadcast message received\n";
+        if( _iin->class_1_events )          iin += "Class 1 data available\n";
+        if( _iin->class_2_events )          iin += "Class 2 data available\n";
+        if( _iin->class_3_events )          iin += "Class 3 data available\n";
+        if( _iin->need_time )               iin += "Time synchronization needed\n";
+        if( _iin->local_control )           iin += "Some digital output points in local mode - control disabled\n";
+        if( _iin->device_trouble )          iin += "Device trouble (see device spec for details)\n";
+        if( _iin->device_restart )          iin += "Device restart\n";
 
-    if( _iin.no_func_code_support  ) iin += "Function code not implemented\n";
-    if( _iin.object_unknown        ) iin += "Requested objects unknown\n";
-    if( _iin.parameter_error       ) iin += "Parameter error\n";
-    if( _iin.event_buffer_overflow ) iin += "Event buffers have overflowed\n";
-    if( _iin.already_executing     ) iin += "Request already executing\n";
-    if( _iin.config_corrupt        ) iin += "DNP configuration is corrupt\n";
+        if( _iin->no_func_code_support )    iin += "Function code not implemented\n";
+        if( _iin->object_unknown )          iin += "Requested objects unknown\n";
+        if( _iin->parameter_error )         iin += "Parameter error\n";
+        if( _iin->event_buffer_overflow )   iin += "Event buffers have overflowed\n";
+        if( _iin->already_executing )       iin += "Request already executing\n";
+        if( _iin->config_corrupt )          iin += "DNP configuration is corrupt\n";
+    }
 
     return iin;
 }
 
 YukonError_t ApplicationLayer::getIINErrorCode() const
 {
-    if( _iin.no_func_code_support ) return ClientErrors::FunctionCodeNotImplemented;
-    if( _iin.object_unknown )       return ClientErrors::UnknownObject;
-    if( _iin.parameter_error )      return ClientErrors::ParameterError;
-    if( _iin.already_executing )    return ClientErrors::OperationAlreadyExecuting;
+    if( _iin )
+    {
+        if( _iin->no_func_code_support ) return ClientErrors::FunctionCodeNotImplemented;
+        if( _iin->object_unknown )       return ClientErrors::UnknownObject;
+        if( _iin->parameter_error )      return ClientErrors::ParameterError;
+        if( _iin->already_executing )    return ClientErrors::OperationAlreadyExecuting;
+    }
 
     return ClientErrors::None;
 }
 
+bool ApplicationLayer::hasInternalIndications() const
+{
+    return _iin.has_value();
+}
+
 bool ApplicationLayer::hasDeviceRestarted() const
 {
-    return _iin.device_restart;
+    return _iin && _iin->device_restart;
 }
 
 bool ApplicationLayer::needsTime() const
 {
-    return _config && _config->enableDnpTimesyncs && _iin.need_time;
+    return _config && _config->enableDnpTimesyncs && _iin && _iin->need_time;
 }
 
 bool ApplicationLayer::isTransactionComplete( void ) const
@@ -373,6 +400,13 @@ YukonError_t ApplicationLayer::generate( TransportLayer &_transport )
 {
     switch( _appState )
     {
+        case Loopback:
+        {
+            _transport.initLoopback();
+            
+            break;
+        }
+
         case SendFirstResponse:
         {
             _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
@@ -455,6 +489,13 @@ YukonError_t ApplicationLayer::decode( TransportLayer &_transport )
 
     switch( _appState )
     {
+        case Loopback:
+        {
+            _appState = Complete;
+
+            break;
+        }
+
         case SendFirstResponse:
         {
             _appState = SendResponse;
@@ -574,7 +615,5 @@ void ApplicationLayer::generateAck( acknowledge_t *ack_packet, const control_hea
     ack_packet->ctrl.unsolicited = ctrl.unsolicited;
 }
 
-}
-}
 }
 
