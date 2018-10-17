@@ -31,8 +31,8 @@ yukon.tools.composedGroup = (function () {
             init : function () {
                 $(document).on('click', '.js-add-rule', function () {
                     var template = $('.js-template').clone().removeClass('js-template');
-
-                    $('.js-rules-list').append(template.show());
+                    $('.js-rules-list').append(template);
+                    template.show();
                     _indexForSpring();
                 });
 
