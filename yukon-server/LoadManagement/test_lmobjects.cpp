@@ -14,12 +14,6 @@
 #include "lmgrouphoneywell.h"
 #include "honeywellCycleGear.h"
 
-#include "lmgroupnest.h"
-
-#include "NestLoadShapingOptions.h"
-
-#include "lmfactory.h"
-
 extern CtiTime gInvalidCtiTime;
 
 
@@ -478,75 +472,6 @@ BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_cycle_gear)
     clone->setProgramPAOId(clone->getProgramPAOId() + 1);
 
     BOOST_CHECK(gear != *clone);
-}
-
-BOOST_AUTO_TEST_CASE( test_lmobjects_nest_group )
-{
-    typedef Cti::Test::StringRow<10>            LMGroupRow;
-    typedef Cti::Test::TestReader<LMGroupRow>   LMGroupReader;
-
-    LMGroupRow columnNames =
-    {
-        "GroupID",
-        "Category",
-        "PaoClass",
-        "PaoName",
-        "Type",
-        "Description",
-        "DisableFlag",
-        "AlarmInhibit",
-        "ControlInhibit",
-        "KwCapacity"
-    };
-
-    std::vector<LMGroupRow> resultRows
-    {
-        {
-            "1500",
-            "DEVICE",
-            "GROUP",
-            "Test Nest Group",
-            "NEST GROUP",
-            "(none)",
-            "N",
-            "N",
-            "N",
-            "2.71828"
-        }
-    };
-
-    LMGroupReader reader( columnNames, resultRows );
-
-    reader();   // advance the reader to the first (and only) result row
-
-    CtiLMGroupFactory   groupFactory;
-
-    CtiLMGroupPtr group = groupFactory.createLMGroup( reader );
-
-    // did we get a nest group from the factory?
-
-    BOOST_CHECK_EQUAL( group->getPAOId(),           1500 );
-    BOOST_CHECK_EQUAL( group->getPAOCategory(),     "DEVICE" );
-    BOOST_CHECK_EQUAL( group->getPAOClass(),        "GROUP" );
-    BOOST_CHECK_EQUAL( group->getPAOName(),         "Test Nest Group" );
-    BOOST_CHECK_EQUAL( group->getPAOType(),         TYPE_LMGROUP_NEST );
-    BOOST_CHECK_EQUAL( group->getPAOTypeString(),   "NEST GROUP" );
-}
-
-BOOST_AUTO_TEST_CASE( test_lmobjects_nest_load_shaping_options )
-{
-    // Document the enumeration values
-
-    BOOST_CHECK_EQUAL( 0,   NestLoadShaping::PreparationOption::Standard.getValue() );
-    BOOST_CHECK_EQUAL( 1,   NestLoadShaping::PreparationOption::None.getValue() );
-    BOOST_CHECK_EQUAL( 2,   NestLoadShaping::PreparationOption::Ramping.getValue() );
-
-    BOOST_CHECK_EQUAL( 0,   NestLoadShaping::PeakOption::Standard.getValue() );
-    BOOST_CHECK_EQUAL( 1,   NestLoadShaping::PeakOption::Uniform.getValue() );
-    BOOST_CHECK_EQUAL( 2,   NestLoadShaping::PeakOption::Symmetric.getValue() );
-
-    BOOST_CHECK_EQUAL( 0,   NestLoadShaping::PostOption::Standard.getValue() );
-    BOOST_CHECK_EQUAL( 1,   NestLoadShaping::PostOption::Ramping.getValue() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

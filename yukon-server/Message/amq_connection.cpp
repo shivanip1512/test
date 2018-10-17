@@ -940,12 +940,6 @@ const IM_EX_MSG OutboundQueue
         OutboundQueue::HoneywellRestore
                 ("yukon.notif.stream.dr.HoneywellRestoreMessage");
 const IM_EX_MSG OutboundQueue
-        OutboundQueue::NestCriticalCyclingControl
-                ("yukon.notif.stream.dr.NestCriticalCyclingControlMessage");
-const IM_EX_MSG OutboundQueue
-        OutboundQueue::NestStandardCyclingControl
-                ("yukon.notif.stream.dr.NestStandardCyclingControlMessage");
-const IM_EX_MSG OutboundQueue
         OutboundQueue::HistoryRowAssociationResponse
                 ("yukon.notif.stream.dr.HistoryRowAssociationResponse");
 const IM_EX_MSG OutboundQueue

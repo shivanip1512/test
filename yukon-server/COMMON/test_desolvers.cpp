@@ -159,7 +159,6 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("DIGI SEP GROUP")
         ("ECOBEE GROUP")
         ("HONEYWELL GROUP")
-        ("NEST GROUP")
         ("MCT GROUP")
         ("GOLAY GROUP")
         ("SA-DIGITAL GROUP")
@@ -183,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9832, empty);
+            .repeat(9833, empty);
 
     std::vector<std::string> results;
 

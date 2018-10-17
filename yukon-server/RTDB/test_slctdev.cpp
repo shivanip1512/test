@@ -227,21 +227,21 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceGroupExpresscom")
         //  140
         ("class CtiDeviceGroupRfnExpresscom")
-        .repeat(4, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(3, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceGroupMCT")
         ("class CtiDeviceGroupGolay")
         ("class CtiDeviceGroupSADigital")
         ("class CtiDeviceGroupSA105")
         ("class CtiDeviceGroupSA205")
-        //  150
         ("class CtiDeviceGroupSA305")
+        //  150
         ("class Cti::Devices::MctBroadcastDevice")
-        .repeat(8, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(9, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  160
-        .repeat(5, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(4, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceMacro")
         ("class CtiDeviceSystem")
-        .repeat(9833, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(9834, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
             ;
 
     std::vector<std::string> results;
@@ -461,9 +461,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "go_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "po_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "honeywell program",              "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
-        { "honeywell group",                "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
-        { "nest program",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
-        { "nest group",                     "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" }
+        { "honeywell group",                "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" }
     };
 
     std::vector<DeviceTypeRow> rowVec;

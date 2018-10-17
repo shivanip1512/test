@@ -361,7 +361,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
-    <ClCompile Include="lmgroupnest.cpp" />
     <ClCompile Include="LMScheduledMessageHolder.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">
     </ClCompile>
@@ -451,14 +450,10 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="main.cpp">
     </ClCompile>
-    <ClCompile Include="NestCriticalCycleGear.cpp" />
-    <ClCompile Include="NestLoadShapingOptions.cpp" />
-    <ClCompile Include="NestStandardCycleGear.cpp" />
     <ClCompile Include="sepcyclegear.cpp">
     </ClCompile>
     <ClCompile Include="septempoffsetgear.cpp">
     </ClCompile>
-    <ClCompile Include="SmartGroupBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h" />
@@ -472,7 +467,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\honeywellCycleGear.h" />
     <ClInclude Include="include\id_loadmanagement.h" />
     <ClInclude Include="include\lmgrouphoneywell.h" />
-    <ClInclude Include="include\lmgroupnest.h" />
     <ClInclude Include="include\lm_group_serialization.h" />
     <ClInclude Include="include\lm_message_serialization.h" />
     <ClInclude Include="include\lm_program_serialization.h" />
@@ -518,15 +512,10 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\lmutility.h" />
     <ClInclude Include="include\loadmanager.h" />
     <ClInclude Include="include\LMScheduledMessageHolder.h" />
-    <ClInclude Include="include\NestControlinterface.h" />
-    <ClInclude Include="include\NestCriticalCycleGear.h" />
-    <ClInclude Include="include\NestLoadShapingOptions.h" />
-    <ClInclude Include="include\NestStandardCycleGear.h" />
     <ClInclude Include="include\SEPControlInterface.h" />
     <ClInclude Include="include\sepcyclegear.h" />
     <ClInclude Include="include\septempoffsetgear.h" />
     <ClInclude Include="include\smartgearbase.h" />
-    <ClInclude Include="include\SmartGroupBase.h" />
     <ClInclude Include="include\test_lm_serialization.h" />
   </ItemGroup>
   <ItemGroup>

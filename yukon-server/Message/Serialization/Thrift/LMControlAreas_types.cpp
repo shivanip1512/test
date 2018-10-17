@@ -3780,98 +3780,6 @@ void LMGroupHoneywell::printTo(std::ostream& out) const {
 }
 
 
-LMGroupNest::~LMGroupNest() throw() {
-}
-
-
-void LMGroupNest::__set__baseMessage(const LMGroupBase& val) {
-  this->_baseMessage = val;
-}
-std::ostream& operator<<(std::ostream& out, const LMGroupNest& obj)
-{
-  obj.printTo(out);
-  return out;
-}
-
-
-uint32_t LMGroupNest::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-  bool isset__baseMessage = false;
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->_baseMessage.read(iprot);
-          isset__baseMessage = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  if (!isset__baseMessage)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  return xfer;
-}
-
-uint32_t LMGroupNest::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("LMGroupNest");
-
-  xfer += oprot->writeFieldBegin("_baseMessage", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += this->_baseMessage.write(oprot);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-void swap(LMGroupNest &a, LMGroupNest &b) {
-  using ::std::swap;
-  swap(a._baseMessage, b._baseMessage);
-}
-
-LMGroupNest::LMGroupNest(const LMGroupNest& other34) {
-  _baseMessage = other34._baseMessage;
-}
-LMGroupNest& LMGroupNest::operator=(const LMGroupNest& other35) {
-  _baseMessage = other35._baseMessage;
-  return *this;
-}
-void LMGroupNest::printTo(std::ostream& out) const {
-  using ::apache::thrift::to_string;
-  out << "LMGroupNest(";
-  out << "_baseMessage=" << to_string(_baseMessage);
-  out << ")";
-}
-
-
 LMGroupEmetcon::~LMGroupEmetcon() throw() {
 }
 
@@ -3949,11 +3857,11 @@ void swap(LMGroupEmetcon &a, LMGroupEmetcon &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupEmetcon::LMGroupEmetcon(const LMGroupEmetcon& other36) {
-  _baseMessage = other36._baseMessage;
+LMGroupEmetcon::LMGroupEmetcon(const LMGroupEmetcon& other34) {
+  _baseMessage = other34._baseMessage;
 }
-LMGroupEmetcon& LMGroupEmetcon::operator=(const LMGroupEmetcon& other37) {
-  _baseMessage = other37._baseMessage;
+LMGroupEmetcon& LMGroupEmetcon::operator=(const LMGroupEmetcon& other35) {
+  _baseMessage = other35._baseMessage;
   return *this;
 }
 void LMGroupEmetcon::printTo(std::ostream& out) const {
@@ -4041,11 +3949,11 @@ void swap(LMGroupExpresscom &a, LMGroupExpresscom &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupExpresscom::LMGroupExpresscom(const LMGroupExpresscom& other38) {
-  _baseMessage = other38._baseMessage;
+LMGroupExpresscom::LMGroupExpresscom(const LMGroupExpresscom& other36) {
+  _baseMessage = other36._baseMessage;
 }
-LMGroupExpresscom& LMGroupExpresscom::operator=(const LMGroupExpresscom& other39) {
-  _baseMessage = other39._baseMessage;
+LMGroupExpresscom& LMGroupExpresscom::operator=(const LMGroupExpresscom& other37) {
+  _baseMessage = other37._baseMessage;
   return *this;
 }
 void LMGroupExpresscom::printTo(std::ostream& out) const {
@@ -4133,11 +4041,11 @@ void swap(LMGroupGolay &a, LMGroupGolay &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupGolay::LMGroupGolay(const LMGroupGolay& other40) {
-  _baseMessage = other40._baseMessage;
+LMGroupGolay::LMGroupGolay(const LMGroupGolay& other38) {
+  _baseMessage = other38._baseMessage;
 }
-LMGroupGolay& LMGroupGolay::operator=(const LMGroupGolay& other41) {
-  _baseMessage = other41._baseMessage;
+LMGroupGolay& LMGroupGolay::operator=(const LMGroupGolay& other39) {
+  _baseMessage = other39._baseMessage;
   return *this;
 }
 void LMGroupGolay::printTo(std::ostream& out) const {
@@ -4225,11 +4133,11 @@ void swap(LMGroupMacro &a, LMGroupMacro &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupMacro::LMGroupMacro(const LMGroupMacro& other42) {
-  _baseMessage = other42._baseMessage;
+LMGroupMacro::LMGroupMacro(const LMGroupMacro& other40) {
+  _baseMessage = other40._baseMessage;
 }
-LMGroupMacro& LMGroupMacro::operator=(const LMGroupMacro& other43) {
-  _baseMessage = other43._baseMessage;
+LMGroupMacro& LMGroupMacro::operator=(const LMGroupMacro& other41) {
+  _baseMessage = other41._baseMessage;
   return *this;
 }
 void LMGroupMacro::printTo(std::ostream& out) const {
@@ -4317,11 +4225,11 @@ void swap(LMGroupMCT &a, LMGroupMCT &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupMCT::LMGroupMCT(const LMGroupMCT& other44) {
-  _baseMessage = other44._baseMessage;
+LMGroupMCT::LMGroupMCT(const LMGroupMCT& other42) {
+  _baseMessage = other42._baseMessage;
 }
-LMGroupMCT& LMGroupMCT::operator=(const LMGroupMCT& other45) {
-  _baseMessage = other45._baseMessage;
+LMGroupMCT& LMGroupMCT::operator=(const LMGroupMCT& other43) {
+  _baseMessage = other43._baseMessage;
   return *this;
 }
 void LMGroupMCT::printTo(std::ostream& out) const {
@@ -4409,11 +4317,11 @@ void swap(LMGroupPoint &a, LMGroupPoint &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupPoint::LMGroupPoint(const LMGroupPoint& other46) {
-  _baseMessage = other46._baseMessage;
+LMGroupPoint::LMGroupPoint(const LMGroupPoint& other44) {
+  _baseMessage = other44._baseMessage;
 }
-LMGroupPoint& LMGroupPoint::operator=(const LMGroupPoint& other47) {
-  _baseMessage = other47._baseMessage;
+LMGroupPoint& LMGroupPoint::operator=(const LMGroupPoint& other45) {
+  _baseMessage = other45._baseMessage;
   return *this;
 }
 void LMGroupPoint::printTo(std::ostream& out) const {
@@ -4521,13 +4429,13 @@ void swap(LMGroupRipple &a, LMGroupRipple &b) {
   swap(a._shedTime, b._shedTime);
 }
 
-LMGroupRipple::LMGroupRipple(const LMGroupRipple& other48) {
-  _baseMessage = other48._baseMessage;
-  _shedTime = other48._shedTime;
+LMGroupRipple::LMGroupRipple(const LMGroupRipple& other46) {
+  _baseMessage = other46._baseMessage;
+  _shedTime = other46._shedTime;
 }
-LMGroupRipple& LMGroupRipple::operator=(const LMGroupRipple& other49) {
-  _baseMessage = other49._baseMessage;
-  _shedTime = other49._shedTime;
+LMGroupRipple& LMGroupRipple::operator=(const LMGroupRipple& other47) {
+  _baseMessage = other47._baseMessage;
+  _shedTime = other47._shedTime;
   return *this;
 }
 void LMGroupRipple::printTo(std::ostream& out) const {
@@ -4616,11 +4524,11 @@ void swap(LMGroupSA105 &a, LMGroupSA105 &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupSA105::LMGroupSA105(const LMGroupSA105& other50) {
-  _baseMessage = other50._baseMessage;
+LMGroupSA105::LMGroupSA105(const LMGroupSA105& other48) {
+  _baseMessage = other48._baseMessage;
 }
-LMGroupSA105& LMGroupSA105::operator=(const LMGroupSA105& other51) {
-  _baseMessage = other51._baseMessage;
+LMGroupSA105& LMGroupSA105::operator=(const LMGroupSA105& other49) {
+  _baseMessage = other49._baseMessage;
   return *this;
 }
 void LMGroupSA105::printTo(std::ostream& out) const {
@@ -4708,11 +4616,11 @@ void swap(LMGroupSA205 &a, LMGroupSA205 &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupSA205::LMGroupSA205(const LMGroupSA205& other52) {
-  _baseMessage = other52._baseMessage;
+LMGroupSA205::LMGroupSA205(const LMGroupSA205& other50) {
+  _baseMessage = other50._baseMessage;
 }
-LMGroupSA205& LMGroupSA205::operator=(const LMGroupSA205& other53) {
-  _baseMessage = other53._baseMessage;
+LMGroupSA205& LMGroupSA205::operator=(const LMGroupSA205& other51) {
+  _baseMessage = other51._baseMessage;
   return *this;
 }
 void LMGroupSA205::printTo(std::ostream& out) const {
@@ -4800,11 +4708,11 @@ void swap(LMGroupSA305 &a, LMGroupSA305 &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupSA305::LMGroupSA305(const LMGroupSA305& other54) {
-  _baseMessage = other54._baseMessage;
+LMGroupSA305::LMGroupSA305(const LMGroupSA305& other52) {
+  _baseMessage = other52._baseMessage;
 }
-LMGroupSA305& LMGroupSA305::operator=(const LMGroupSA305& other55) {
-  _baseMessage = other55._baseMessage;
+LMGroupSA305& LMGroupSA305::operator=(const LMGroupSA305& other53) {
+  _baseMessage = other53._baseMessage;
   return *this;
 }
 void LMGroupSA305::printTo(std::ostream& out) const {
@@ -4892,11 +4800,11 @@ void swap(LMGroupSADigital &a, LMGroupSADigital &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupSADigital::LMGroupSADigital(const LMGroupSADigital& other56) {
-  _baseMessage = other56._baseMessage;
+LMGroupSADigital::LMGroupSADigital(const LMGroupSADigital& other54) {
+  _baseMessage = other54._baseMessage;
 }
-LMGroupSADigital& LMGroupSADigital::operator=(const LMGroupSADigital& other57) {
-  _baseMessage = other57._baseMessage;
+LMGroupSADigital& LMGroupSADigital::operator=(const LMGroupSADigital& other55) {
+  _baseMessage = other55._baseMessage;
   return *this;
 }
 void LMGroupSADigital::printTo(std::ostream& out) const {
@@ -4984,11 +4892,11 @@ void swap(LMGroupVersacom &a, LMGroupVersacom &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
-LMGroupVersacom::LMGroupVersacom(const LMGroupVersacom& other58) {
-  _baseMessage = other58._baseMessage;
+LMGroupVersacom::LMGroupVersacom(const LMGroupVersacom& other56) {
+  _baseMessage = other56._baseMessage;
 }
-LMGroupVersacom& LMGroupVersacom::operator=(const LMGroupVersacom& other59) {
-  _baseMessage = other59._baseMessage;
+LMGroupVersacom& LMGroupVersacom::operator=(const LMGroupVersacom& other57) {
+  _baseMessage = other57._baseMessage;
   return *this;
 }
 void LMGroupVersacom::printTo(std::ostream& out) const {
@@ -5197,14 +5105,14 @@ uint32_t LMProgramDirect::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmProgramDirectGears.clear();
-            uint32_t _size60;
-            ::apache::thrift::protocol::TType _etype63;
-            xfer += iprot->readListBegin(_etype63, _size60);
-            this->_lmProgramDirectGears.resize(_size60);
-            uint32_t _i64;
-            for (_i64 = 0; _i64 < _size60; ++_i64)
+            uint32_t _size58;
+            ::apache::thrift::protocol::TType _etype61;
+            xfer += iprot->readListBegin(_etype61, _size58);
+            this->_lmProgramDirectGears.resize(_size58);
+            uint32_t _i62;
+            for (_i62 = 0; _i62 < _size58; ++_i62)
             {
-              xfer += this->_lmProgramDirectGears[_i64].read(iprot);
+              xfer += this->_lmProgramDirectGears[_i62].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5217,14 +5125,14 @@ uint32_t LMProgramDirect::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmProgramDirectGroups.clear();
-            uint32_t _size65;
-            ::apache::thrift::protocol::TType _etype68;
-            xfer += iprot->readListBegin(_etype68, _size65);
-            this->_lmProgramDirectGroups.resize(_size65);
-            uint32_t _i69;
-            for (_i69 = 0; _i69 < _size65; ++_i69)
+            uint32_t _size63;
+            ::apache::thrift::protocol::TType _etype66;
+            xfer += iprot->readListBegin(_etype66, _size63);
+            this->_lmProgramDirectGroups.resize(_size63);
+            uint32_t _i67;
+            for (_i67 = 0; _i67 < _size63; ++_i67)
             {
-              xfer += this->_lmProgramDirectGroups[_i69].read(iprot);
+              xfer += this->_lmProgramDirectGroups[_i67].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5237,14 +5145,14 @@ uint32_t LMProgramDirect::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_activeMasters.clear();
-            uint32_t _size70;
-            ::apache::thrift::protocol::TType _etype73;
-            xfer += iprot->readListBegin(_etype73, _size70);
-            this->_activeMasters.resize(_size70);
-            uint32_t _i74;
-            for (_i74 = 0; _i74 < _size70; ++_i74)
+            uint32_t _size68;
+            ::apache::thrift::protocol::TType _etype71;
+            xfer += iprot->readListBegin(_etype71, _size68);
+            this->_activeMasters.resize(_size68);
+            uint32_t _i72;
+            for (_i72 = 0; _i72 < _size68; ++_i72)
             {
-              xfer += this->_activeMasters[_i74].read(iprot);
+              xfer += this->_activeMasters[_i72].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5257,14 +5165,14 @@ uint32_t LMProgramDirect::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_activeSubordinates.clear();
-            uint32_t _size75;
-            ::apache::thrift::protocol::TType _etype78;
-            xfer += iprot->readListBegin(_etype78, _size75);
-            this->_activeSubordinates.resize(_size75);
-            uint32_t _i79;
-            for (_i79 = 0; _i79 < _size75; ++_i79)
+            uint32_t _size73;
+            ::apache::thrift::protocol::TType _etype76;
+            xfer += iprot->readListBegin(_etype76, _size73);
+            this->_activeSubordinates.resize(_size73);
+            uint32_t _i77;
+            for (_i77 = 0; _i77 < _size73; ++_i77)
             {
-              xfer += this->_activeSubordinates[_i79].read(iprot);
+              xfer += this->_activeSubordinates[_i77].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5367,10 +5275,10 @@ uint32_t LMProgramDirect::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeFieldBegin("_lmProgramDirectGears", ::apache::thrift::protocol::T_LIST, 12);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmProgramDirectGears.size()));
-    std::vector<LMProgramDirectGear> ::const_iterator _iter80;
-    for (_iter80 = this->_lmProgramDirectGears.begin(); _iter80 != this->_lmProgramDirectGears.end(); ++_iter80)
+    std::vector<LMProgramDirectGear> ::const_iterator _iter78;
+    for (_iter78 = this->_lmProgramDirectGears.begin(); _iter78 != this->_lmProgramDirectGears.end(); ++_iter78)
     {
-      xfer += (*_iter80).write(oprot);
+      xfer += (*_iter78).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5379,10 +5287,10 @@ uint32_t LMProgramDirect::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeFieldBegin("_lmProgramDirectGroups", ::apache::thrift::protocol::T_LIST, 13);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmProgramDirectGroups.size()));
-    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter81;
-    for (_iter81 = this->_lmProgramDirectGroups.begin(); _iter81 != this->_lmProgramDirectGroups.end(); ++_iter81)
+    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter79;
+    for (_iter79 = this->_lmProgramDirectGroups.begin(); _iter79 != this->_lmProgramDirectGroups.end(); ++_iter79)
     {
-      xfer += (*_iter81).write(oprot);
+      xfer += (*_iter79).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5391,10 +5299,10 @@ uint32_t LMProgramDirect::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeFieldBegin("_activeMasters", ::apache::thrift::protocol::T_LIST, 14);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_activeMasters.size()));
-    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter82;
-    for (_iter82 = this->_activeMasters.begin(); _iter82 != this->_activeMasters.end(); ++_iter82)
+    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter80;
+    for (_iter80 = this->_activeMasters.begin(); _iter80 != this->_activeMasters.end(); ++_iter80)
     {
-      xfer += (*_iter82).write(oprot);
+      xfer += (*_iter80).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5403,10 +5311,10 @@ uint32_t LMProgramDirect::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeFieldBegin("_activeSubordinates", ::apache::thrift::protocol::T_LIST, 15);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_activeSubordinates.size()));
-    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter83;
-    for (_iter83 = this->_activeSubordinates.begin(); _iter83 != this->_activeSubordinates.end(); ++_iter83)
+    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter81;
+    for (_iter81 = this->_activeSubordinates.begin(); _iter81 != this->_activeSubordinates.end(); ++_iter81)
     {
-      xfer += (*_iter83).write(oprot);
+      xfer += (*_iter81).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5436,39 +5344,39 @@ void swap(LMProgramDirect &a, LMProgramDirect &b) {
   swap(a._activeSubordinates, b._activeSubordinates);
 }
 
-LMProgramDirect::LMProgramDirect(const LMProgramDirect& other84) {
-  _baseMessage = other84._baseMessage;
-  _currentGearNumber = other84._currentGearNumber;
-  _lastGroupControlled = other84._lastGroupControlled;
-  _directStartTime = other84._directStartTime;
-  _directstopTime = other84._directstopTime;
-  _notifyActiveTime = other84._notifyActiveTime;
-  _notifyInactiveTime = other84._notifyInactiveTime;
-  _startedRampingOut = other84._startedRampingOut;
-  _triggerOffset = other84._triggerOffset;
-  _triggerRestoreOffset = other84._triggerRestoreOffset;
-  _constraintOverride = other84._constraintOverride;
-  _lmProgramDirectGears = other84._lmProgramDirectGears;
-  _lmProgramDirectGroups = other84._lmProgramDirectGroups;
-  _activeMasters = other84._activeMasters;
-  _activeSubordinates = other84._activeSubordinates;
+LMProgramDirect::LMProgramDirect(const LMProgramDirect& other82) {
+  _baseMessage = other82._baseMessage;
+  _currentGearNumber = other82._currentGearNumber;
+  _lastGroupControlled = other82._lastGroupControlled;
+  _directStartTime = other82._directStartTime;
+  _directstopTime = other82._directstopTime;
+  _notifyActiveTime = other82._notifyActiveTime;
+  _notifyInactiveTime = other82._notifyInactiveTime;
+  _startedRampingOut = other82._startedRampingOut;
+  _triggerOffset = other82._triggerOffset;
+  _triggerRestoreOffset = other82._triggerRestoreOffset;
+  _constraintOverride = other82._constraintOverride;
+  _lmProgramDirectGears = other82._lmProgramDirectGears;
+  _lmProgramDirectGroups = other82._lmProgramDirectGroups;
+  _activeMasters = other82._activeMasters;
+  _activeSubordinates = other82._activeSubordinates;
 }
-LMProgramDirect& LMProgramDirect::operator=(const LMProgramDirect& other85) {
-  _baseMessage = other85._baseMessage;
-  _currentGearNumber = other85._currentGearNumber;
-  _lastGroupControlled = other85._lastGroupControlled;
-  _directStartTime = other85._directStartTime;
-  _directstopTime = other85._directstopTime;
-  _notifyActiveTime = other85._notifyActiveTime;
-  _notifyInactiveTime = other85._notifyInactiveTime;
-  _startedRampingOut = other85._startedRampingOut;
-  _triggerOffset = other85._triggerOffset;
-  _triggerRestoreOffset = other85._triggerRestoreOffset;
-  _constraintOverride = other85._constraintOverride;
-  _lmProgramDirectGears = other85._lmProgramDirectGears;
-  _lmProgramDirectGroups = other85._lmProgramDirectGroups;
-  _activeMasters = other85._activeMasters;
-  _activeSubordinates = other85._activeSubordinates;
+LMProgramDirect& LMProgramDirect::operator=(const LMProgramDirect& other83) {
+  _baseMessage = other83._baseMessage;
+  _currentGearNumber = other83._currentGearNumber;
+  _lastGroupControlled = other83._lastGroupControlled;
+  _directStartTime = other83._directStartTime;
+  _directstopTime = other83._directstopTime;
+  _notifyActiveTime = other83._notifyActiveTime;
+  _notifyInactiveTime = other83._notifyInactiveTime;
+  _startedRampingOut = other83._startedRampingOut;
+  _triggerOffset = other83._triggerOffset;
+  _triggerRestoreOffset = other83._triggerRestoreOffset;
+  _constraintOverride = other83._constraintOverride;
+  _lmProgramDirectGears = other83._lmProgramDirectGears;
+  _lmProgramDirectGroups = other83._lmProgramDirectGroups;
+  _activeMasters = other83._activeMasters;
+  _activeSubordinates = other83._activeSubordinates;
   return *this;
 }
 void LMProgramDirect::printTo(std::ostream& out) const {
@@ -5650,19 +5558,19 @@ void swap(LMEnergyExchangeHourlyOffer &a, LMEnergyExchangeHourlyOffer &b) {
   swap(a._amountRequested, b._amountRequested);
 }
 
-LMEnergyExchangeHourlyOffer::LMEnergyExchangeHourlyOffer(const LMEnergyExchangeHourlyOffer& other86) {
-  _offerId = other86._offerId;
-  _revisionNumber = other86._revisionNumber;
-  _hour = other86._hour;
-  _price = other86._price;
-  _amountRequested = other86._amountRequested;
+LMEnergyExchangeHourlyOffer::LMEnergyExchangeHourlyOffer(const LMEnergyExchangeHourlyOffer& other84) {
+  _offerId = other84._offerId;
+  _revisionNumber = other84._revisionNumber;
+  _hour = other84._hour;
+  _price = other84._price;
+  _amountRequested = other84._amountRequested;
 }
-LMEnergyExchangeHourlyOffer& LMEnergyExchangeHourlyOffer::operator=(const LMEnergyExchangeHourlyOffer& other87) {
-  _offerId = other87._offerId;
-  _revisionNumber = other87._revisionNumber;
-  _hour = other87._hour;
-  _price = other87._price;
-  _amountRequested = other87._amountRequested;
+LMEnergyExchangeHourlyOffer& LMEnergyExchangeHourlyOffer::operator=(const LMEnergyExchangeHourlyOffer& other85) {
+  _offerId = other85._offerId;
+  _revisionNumber = other85._revisionNumber;
+  _hour = other85._hour;
+  _price = other85._price;
+  _amountRequested = other85._amountRequested;
   return *this;
 }
 void LMEnergyExchangeHourlyOffer::printTo(std::ostream& out) const {
@@ -5795,14 +5703,14 @@ uint32_t LMEnergyExchangeOfferRevision::read(::apache::thrift::protocol::TProtoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmEnergyExchangeHourlyOffers.clear();
-            uint32_t _size88;
-            ::apache::thrift::protocol::TType _etype91;
-            xfer += iprot->readListBegin(_etype91, _size88);
-            this->_lmEnergyExchangeHourlyOffers.resize(_size88);
-            uint32_t _i92;
-            for (_i92 = 0; _i92 < _size88; ++_i92)
+            uint32_t _size86;
+            ::apache::thrift::protocol::TType _etype89;
+            xfer += iprot->readListBegin(_etype89, _size86);
+            this->_lmEnergyExchangeHourlyOffers.resize(_size86);
+            uint32_t _i90;
+            for (_i90 = 0; _i90 < _size86; ++_i90)
             {
-              xfer += this->_lmEnergyExchangeHourlyOffers[_i92].read(iprot);
+              xfer += this->_lmEnergyExchangeHourlyOffers[_i90].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5869,10 +5777,10 @@ uint32_t LMEnergyExchangeOfferRevision::write(::apache::thrift::protocol::TProto
   xfer += oprot->writeFieldBegin("_lmEnergyExchangeHourlyOffers", ::apache::thrift::protocol::T_LIST, 7);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmEnergyExchangeHourlyOffers.size()));
-    std::vector<LMEnergyExchangeHourlyOffer> ::const_iterator _iter93;
-    for (_iter93 = this->_lmEnergyExchangeHourlyOffers.begin(); _iter93 != this->_lmEnergyExchangeHourlyOffers.end(); ++_iter93)
+    std::vector<LMEnergyExchangeHourlyOffer> ::const_iterator _iter91;
+    for (_iter91 = this->_lmEnergyExchangeHourlyOffers.begin(); _iter91 != this->_lmEnergyExchangeHourlyOffers.end(); ++_iter91)
     {
-      xfer += (*_iter93).write(oprot);
+      xfer += (*_iter91).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -5894,23 +5802,23 @@ void swap(LMEnergyExchangeOfferRevision &a, LMEnergyExchangeOfferRevision &b) {
   swap(a._lmEnergyExchangeHourlyOffers, b._lmEnergyExchangeHourlyOffers);
 }
 
-LMEnergyExchangeOfferRevision::LMEnergyExchangeOfferRevision(const LMEnergyExchangeOfferRevision& other94) {
-  _offerId = other94._offerId;
-  _revisionNumber = other94._revisionNumber;
-  _actionDatetime = other94._actionDatetime;
-  _notificationDatetime = other94._notificationDatetime;
-  _offerexpirationDatetime = other94._offerexpirationDatetime;
-  _additionalInfo = other94._additionalInfo;
-  _lmEnergyExchangeHourlyOffers = other94._lmEnergyExchangeHourlyOffers;
+LMEnergyExchangeOfferRevision::LMEnergyExchangeOfferRevision(const LMEnergyExchangeOfferRevision& other92) {
+  _offerId = other92._offerId;
+  _revisionNumber = other92._revisionNumber;
+  _actionDatetime = other92._actionDatetime;
+  _notificationDatetime = other92._notificationDatetime;
+  _offerexpirationDatetime = other92._offerexpirationDatetime;
+  _additionalInfo = other92._additionalInfo;
+  _lmEnergyExchangeHourlyOffers = other92._lmEnergyExchangeHourlyOffers;
 }
-LMEnergyExchangeOfferRevision& LMEnergyExchangeOfferRevision::operator=(const LMEnergyExchangeOfferRevision& other95) {
-  _offerId = other95._offerId;
-  _revisionNumber = other95._revisionNumber;
-  _actionDatetime = other95._actionDatetime;
-  _notificationDatetime = other95._notificationDatetime;
-  _offerexpirationDatetime = other95._offerexpirationDatetime;
-  _additionalInfo = other95._additionalInfo;
-  _lmEnergyExchangeHourlyOffers = other95._lmEnergyExchangeHourlyOffers;
+LMEnergyExchangeOfferRevision& LMEnergyExchangeOfferRevision::operator=(const LMEnergyExchangeOfferRevision& other93) {
+  _offerId = other93._offerId;
+  _revisionNumber = other93._revisionNumber;
+  _actionDatetime = other93._actionDatetime;
+  _notificationDatetime = other93._notificationDatetime;
+  _offerexpirationDatetime = other93._offerexpirationDatetime;
+  _additionalInfo = other93._additionalInfo;
+  _lmEnergyExchangeHourlyOffers = other93._lmEnergyExchangeHourlyOffers;
   return *this;
 }
 void LMEnergyExchangeOfferRevision::printTo(std::ostream& out) const {
@@ -6019,14 +5927,14 @@ uint32_t LMEnergyExchangeOffer::read(::apache::thrift::protocol::TProtocol* ipro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmEnergyExchangeOfferRevisions.clear();
-            uint32_t _size96;
-            ::apache::thrift::protocol::TType _etype99;
-            xfer += iprot->readListBegin(_etype99, _size96);
-            this->_lmEnergyExchangeOfferRevisions.resize(_size96);
-            uint32_t _i100;
-            for (_i100 = 0; _i100 < _size96; ++_i100)
+            uint32_t _size94;
+            ::apache::thrift::protocol::TType _etype97;
+            xfer += iprot->readListBegin(_etype97, _size94);
+            this->_lmEnergyExchangeOfferRevisions.resize(_size94);
+            uint32_t _i98;
+            for (_i98 = 0; _i98 < _size94; ++_i98)
             {
-              xfer += this->_lmEnergyExchangeOfferRevisions[_i100].read(iprot);
+              xfer += this->_lmEnergyExchangeOfferRevisions[_i98].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6081,10 +5989,10 @@ uint32_t LMEnergyExchangeOffer::write(::apache::thrift::protocol::TProtocol* opr
   xfer += oprot->writeFieldBegin("_lmEnergyExchangeOfferRevisions", ::apache::thrift::protocol::T_LIST, 5);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmEnergyExchangeOfferRevisions.size()));
-    std::vector<LMEnergyExchangeOfferRevision> ::const_iterator _iter101;
-    for (_iter101 = this->_lmEnergyExchangeOfferRevisions.begin(); _iter101 != this->_lmEnergyExchangeOfferRevisions.end(); ++_iter101)
+    std::vector<LMEnergyExchangeOfferRevision> ::const_iterator _iter99;
+    for (_iter99 = this->_lmEnergyExchangeOfferRevisions.begin(); _iter99 != this->_lmEnergyExchangeOfferRevisions.end(); ++_iter99)
     {
-      xfer += (*_iter101).write(oprot);
+      xfer += (*_iter99).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -6104,19 +6012,19 @@ void swap(LMEnergyExchangeOffer &a, LMEnergyExchangeOffer &b) {
   swap(a._lmEnergyExchangeOfferRevisions, b._lmEnergyExchangeOfferRevisions);
 }
 
-LMEnergyExchangeOffer::LMEnergyExchangeOffer(const LMEnergyExchangeOffer& other102) {
-  _paoId = other102._paoId;
-  _offerId = other102._offerId;
-  _runStatus = other102._runStatus;
-  _offerDate = other102._offerDate;
-  _lmEnergyExchangeOfferRevisions = other102._lmEnergyExchangeOfferRevisions;
+LMEnergyExchangeOffer::LMEnergyExchangeOffer(const LMEnergyExchangeOffer& other100) {
+  _paoId = other100._paoId;
+  _offerId = other100._offerId;
+  _runStatus = other100._runStatus;
+  _offerDate = other100._offerDate;
+  _lmEnergyExchangeOfferRevisions = other100._lmEnergyExchangeOfferRevisions;
 }
-LMEnergyExchangeOffer& LMEnergyExchangeOffer::operator=(const LMEnergyExchangeOffer& other103) {
-  _paoId = other103._paoId;
-  _offerId = other103._offerId;
-  _runStatus = other103._runStatus;
-  _offerDate = other103._offerDate;
-  _lmEnergyExchangeOfferRevisions = other103._lmEnergyExchangeOfferRevisions;
+LMEnergyExchangeOffer& LMEnergyExchangeOffer::operator=(const LMEnergyExchangeOffer& other101) {
+  _paoId = other101._paoId;
+  _offerId = other101._offerId;
+  _runStatus = other101._runStatus;
+  _offerDate = other101._offerDate;
+  _lmEnergyExchangeOfferRevisions = other101._lmEnergyExchangeOfferRevisions;
   return *this;
 }
 void LMEnergyExchangeOffer::printTo(std::ostream& out) const {
@@ -6288,19 +6196,19 @@ void swap(LMEnergyExchangeHourlyCustomer &a, LMEnergyExchangeHourlyCustomer &b) 
   swap(a._amountCommitted, b._amountCommitted);
 }
 
-LMEnergyExchangeHourlyCustomer::LMEnergyExchangeHourlyCustomer(const LMEnergyExchangeHourlyCustomer& other104) {
-  _customerId = other104._customerId;
-  _offerId = other104._offerId;
-  _revisionNumber = other104._revisionNumber;
-  _hour = other104._hour;
-  _amountCommitted = other104._amountCommitted;
+LMEnergyExchangeHourlyCustomer::LMEnergyExchangeHourlyCustomer(const LMEnergyExchangeHourlyCustomer& other102) {
+  _customerId = other102._customerId;
+  _offerId = other102._offerId;
+  _revisionNumber = other102._revisionNumber;
+  _hour = other102._hour;
+  _amountCommitted = other102._amountCommitted;
 }
-LMEnergyExchangeHourlyCustomer& LMEnergyExchangeHourlyCustomer::operator=(const LMEnergyExchangeHourlyCustomer& other105) {
-  _customerId = other105._customerId;
-  _offerId = other105._offerId;
-  _revisionNumber = other105._revisionNumber;
-  _hour = other105._hour;
-  _amountCommitted = other105._amountCommitted;
+LMEnergyExchangeHourlyCustomer& LMEnergyExchangeHourlyCustomer::operator=(const LMEnergyExchangeHourlyCustomer& other103) {
+  _customerId = other103._customerId;
+  _offerId = other103._offerId;
+  _revisionNumber = other103._revisionNumber;
+  _hour = other103._hour;
+  _amountCommitted = other103._amountCommitted;
   return *this;
 }
 void LMEnergyExchangeHourlyCustomer::printTo(std::ostream& out) const {
@@ -6472,14 +6380,14 @@ uint32_t LMEnergyExchangeCustomerReply::read(::apache::thrift::protocol::TProtoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmEnergyExchangeHourlyCustomers.clear();
-            uint32_t _size106;
-            ::apache::thrift::protocol::TType _etype109;
-            xfer += iprot->readListBegin(_etype109, _size106);
-            this->_lmEnergyExchangeHourlyCustomers.resize(_size106);
-            uint32_t _i110;
-            for (_i110 = 0; _i110 < _size106; ++_i110)
+            uint32_t _size104;
+            ::apache::thrift::protocol::TType _etype107;
+            xfer += iprot->readListBegin(_etype107, _size104);
+            this->_lmEnergyExchangeHourlyCustomers.resize(_size104);
+            uint32_t _i108;
+            for (_i108 = 0; _i108 < _size104; ++_i108)
             {
-              xfer += this->_lmEnergyExchangeHourlyCustomers[_i110].read(iprot);
+              xfer += this->_lmEnergyExchangeHourlyCustomers[_i108].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6564,10 +6472,10 @@ uint32_t LMEnergyExchangeCustomerReply::write(::apache::thrift::protocol::TProto
   xfer += oprot->writeFieldBegin("_lmEnergyExchangeHourlyCustomers", ::apache::thrift::protocol::T_LIST, 10);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmEnergyExchangeHourlyCustomers.size()));
-    std::vector<LMEnergyExchangeHourlyCustomer> ::const_iterator _iter111;
-    for (_iter111 = this->_lmEnergyExchangeHourlyCustomers.begin(); _iter111 != this->_lmEnergyExchangeHourlyCustomers.end(); ++_iter111)
+    std::vector<LMEnergyExchangeHourlyCustomer> ::const_iterator _iter109;
+    for (_iter109 = this->_lmEnergyExchangeHourlyCustomers.begin(); _iter109 != this->_lmEnergyExchangeHourlyCustomers.end(); ++_iter109)
     {
-      xfer += (*_iter111).write(oprot);
+      xfer += (*_iter109).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -6592,29 +6500,29 @@ void swap(LMEnergyExchangeCustomerReply &a, LMEnergyExchangeCustomerReply &b) {
   swap(a._lmEnergyExchangeHourlyCustomers, b._lmEnergyExchangeHourlyCustomers);
 }
 
-LMEnergyExchangeCustomerReply::LMEnergyExchangeCustomerReply(const LMEnergyExchangeCustomerReply& other112) {
-  _customerId = other112._customerId;
-  _offerId = other112._offerId;
-  _acceptStatus = other112._acceptStatus;
-  _acceptDatetime = other112._acceptDatetime;
-  _revisionNumber = other112._revisionNumber;
-  _ipAddressOfAcceptUser = other112._ipAddressOfAcceptUser;
-  _userIdName = other112._userIdName;
-  _nameOfAcceptPerson = other112._nameOfAcceptPerson;
-  _energyExchangeNotes = other112._energyExchangeNotes;
-  _lmEnergyExchangeHourlyCustomers = other112._lmEnergyExchangeHourlyCustomers;
+LMEnergyExchangeCustomerReply::LMEnergyExchangeCustomerReply(const LMEnergyExchangeCustomerReply& other110) {
+  _customerId = other110._customerId;
+  _offerId = other110._offerId;
+  _acceptStatus = other110._acceptStatus;
+  _acceptDatetime = other110._acceptDatetime;
+  _revisionNumber = other110._revisionNumber;
+  _ipAddressOfAcceptUser = other110._ipAddressOfAcceptUser;
+  _userIdName = other110._userIdName;
+  _nameOfAcceptPerson = other110._nameOfAcceptPerson;
+  _energyExchangeNotes = other110._energyExchangeNotes;
+  _lmEnergyExchangeHourlyCustomers = other110._lmEnergyExchangeHourlyCustomers;
 }
-LMEnergyExchangeCustomerReply& LMEnergyExchangeCustomerReply::operator=(const LMEnergyExchangeCustomerReply& other113) {
-  _customerId = other113._customerId;
-  _offerId = other113._offerId;
-  _acceptStatus = other113._acceptStatus;
-  _acceptDatetime = other113._acceptDatetime;
-  _revisionNumber = other113._revisionNumber;
-  _ipAddressOfAcceptUser = other113._ipAddressOfAcceptUser;
-  _userIdName = other113._userIdName;
-  _nameOfAcceptPerson = other113._nameOfAcceptPerson;
-  _energyExchangeNotes = other113._energyExchangeNotes;
-  _lmEnergyExchangeHourlyCustomers = other113._lmEnergyExchangeHourlyCustomers;
+LMEnergyExchangeCustomerReply& LMEnergyExchangeCustomerReply::operator=(const LMEnergyExchangeCustomerReply& other111) {
+  _customerId = other111._customerId;
+  _offerId = other111._offerId;
+  _acceptStatus = other111._acceptStatus;
+  _acceptDatetime = other111._acceptDatetime;
+  _revisionNumber = other111._revisionNumber;
+  _ipAddressOfAcceptUser = other111._ipAddressOfAcceptUser;
+  _userIdName = other111._userIdName;
+  _nameOfAcceptPerson = other111._nameOfAcceptPerson;
+  _energyExchangeNotes = other111._energyExchangeNotes;
+  _lmEnergyExchangeHourlyCustomers = other111._lmEnergyExchangeHourlyCustomers;
   return *this;
 }
 void LMEnergyExchangeCustomerReply::printTo(std::ostream& out) const {
@@ -6687,14 +6595,14 @@ uint32_t LMEnergyExchangeCustomer::read(::apache::thrift::protocol::TProtocol* i
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmEnergyExchangeCustomerReplies.clear();
-            uint32_t _size114;
-            ::apache::thrift::protocol::TType _etype117;
-            xfer += iprot->readListBegin(_etype117, _size114);
-            this->_lmEnergyExchangeCustomerReplies.resize(_size114);
-            uint32_t _i118;
-            for (_i118 = 0; _i118 < _size114; ++_i118)
+            uint32_t _size112;
+            ::apache::thrift::protocol::TType _etype115;
+            xfer += iprot->readListBegin(_etype115, _size112);
+            this->_lmEnergyExchangeCustomerReplies.resize(_size112);
+            uint32_t _i116;
+            for (_i116 = 0; _i116 < _size112; ++_i116)
             {
-              xfer += this->_lmEnergyExchangeCustomerReplies[_i118].read(iprot);
+              xfer += this->_lmEnergyExchangeCustomerReplies[_i116].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6731,10 +6639,10 @@ uint32_t LMEnergyExchangeCustomer::write(::apache::thrift::protocol::TProtocol* 
   xfer += oprot->writeFieldBegin("_lmEnergyExchangeCustomerReplies", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmEnergyExchangeCustomerReplies.size()));
-    std::vector<LMEnergyExchangeCustomerReply> ::const_iterator _iter119;
-    for (_iter119 = this->_lmEnergyExchangeCustomerReplies.begin(); _iter119 != this->_lmEnergyExchangeCustomerReplies.end(); ++_iter119)
+    std::vector<LMEnergyExchangeCustomerReply> ::const_iterator _iter117;
+    for (_iter117 = this->_lmEnergyExchangeCustomerReplies.begin(); _iter117 != this->_lmEnergyExchangeCustomerReplies.end(); ++_iter117)
     {
-      xfer += (*_iter119).write(oprot);
+      xfer += (*_iter117).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -6751,13 +6659,13 @@ void swap(LMEnergyExchangeCustomer &a, LMEnergyExchangeCustomer &b) {
   swap(a._lmEnergyExchangeCustomerReplies, b._lmEnergyExchangeCustomerReplies);
 }
 
-LMEnergyExchangeCustomer::LMEnergyExchangeCustomer(const LMEnergyExchangeCustomer& other120) {
-  _baseMessage = other120._baseMessage;
-  _lmEnergyExchangeCustomerReplies = other120._lmEnergyExchangeCustomerReplies;
+LMEnergyExchangeCustomer::LMEnergyExchangeCustomer(const LMEnergyExchangeCustomer& other118) {
+  _baseMessage = other118._baseMessage;
+  _lmEnergyExchangeCustomerReplies = other118._lmEnergyExchangeCustomerReplies;
 }
-LMEnergyExchangeCustomer& LMEnergyExchangeCustomer::operator=(const LMEnergyExchangeCustomer& other121) {
-  _baseMessage = other121._baseMessage;
-  _lmEnergyExchangeCustomerReplies = other121._lmEnergyExchangeCustomerReplies;
+LMEnergyExchangeCustomer& LMEnergyExchangeCustomer::operator=(const LMEnergyExchangeCustomer& other119) {
+  _baseMessage = other119._baseMessage;
+  _lmEnergyExchangeCustomerReplies = other119._lmEnergyExchangeCustomerReplies;
   return *this;
 }
 void LMEnergyExchangeCustomer::printTo(std::ostream& out) const {
@@ -6905,14 +6813,14 @@ uint32_t LMProgramEnergyExchange::read(::apache::thrift::protocol::TProtocol* ip
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmEnergyExchangeOffers.clear();
-            uint32_t _size122;
-            ::apache::thrift::protocol::TType _etype125;
-            xfer += iprot->readListBegin(_etype125, _size122);
-            this->_lmEnergyExchangeOffers.resize(_size122);
-            uint32_t _i126;
-            for (_i126 = 0; _i126 < _size122; ++_i126)
+            uint32_t _size120;
+            ::apache::thrift::protocol::TType _etype123;
+            xfer += iprot->readListBegin(_etype123, _size120);
+            this->_lmEnergyExchangeOffers.resize(_size120);
+            uint32_t _i124;
+            for (_i124 = 0; _i124 < _size120; ++_i124)
             {
-              xfer += this->_lmEnergyExchangeOffers[_i126].read(iprot);
+              xfer += this->_lmEnergyExchangeOffers[_i124].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6925,14 +6833,14 @@ uint32_t LMProgramEnergyExchange::read(::apache::thrift::protocol::TProtocol* ip
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmEnergyExchangeCustomers.clear();
-            uint32_t _size127;
-            ::apache::thrift::protocol::TType _etype130;
-            xfer += iprot->readListBegin(_etype130, _size127);
-            this->_lmEnergyExchangeCustomers.resize(_size127);
-            uint32_t _i131;
-            for (_i131 = 0; _i131 < _size127; ++_i131)
+            uint32_t _size125;
+            ::apache::thrift::protocol::TType _etype128;
+            xfer += iprot->readListBegin(_etype128, _size125);
+            this->_lmEnergyExchangeCustomers.resize(_size125);
+            uint32_t _i129;
+            for (_i129 = 0; _i129 < _size125; ++_i129)
             {
-              xfer += this->_lmEnergyExchangeCustomers[_i131].read(iprot);
+              xfer += this->_lmEnergyExchangeCustomers[_i129].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7007,10 +6915,10 @@ uint32_t LMProgramEnergyExchange::write(::apache::thrift::protocol::TProtocol* o
   xfer += oprot->writeFieldBegin("_lmEnergyExchangeOffers", ::apache::thrift::protocol::T_LIST, 8);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmEnergyExchangeOffers.size()));
-    std::vector<LMEnergyExchangeOffer> ::const_iterator _iter132;
-    for (_iter132 = this->_lmEnergyExchangeOffers.begin(); _iter132 != this->_lmEnergyExchangeOffers.end(); ++_iter132)
+    std::vector<LMEnergyExchangeOffer> ::const_iterator _iter130;
+    for (_iter130 = this->_lmEnergyExchangeOffers.begin(); _iter130 != this->_lmEnergyExchangeOffers.end(); ++_iter130)
     {
-      xfer += (*_iter132).write(oprot);
+      xfer += (*_iter130).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7019,10 +6927,10 @@ uint32_t LMProgramEnergyExchange::write(::apache::thrift::protocol::TProtocol* o
   xfer += oprot->writeFieldBegin("_lmEnergyExchangeCustomers", ::apache::thrift::protocol::T_LIST, 9);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmEnergyExchangeCustomers.size()));
-    std::vector<LMEnergyExchangeCustomer> ::const_iterator _iter133;
-    for (_iter133 = this->_lmEnergyExchangeCustomers.begin(); _iter133 != this->_lmEnergyExchangeCustomers.end(); ++_iter133)
+    std::vector<LMEnergyExchangeCustomer> ::const_iterator _iter131;
+    for (_iter131 = this->_lmEnergyExchangeCustomers.begin(); _iter131 != this->_lmEnergyExchangeCustomers.end(); ++_iter131)
     {
-      xfer += (*_iter133).write(oprot);
+      xfer += (*_iter131).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7046,27 +6954,27 @@ void swap(LMProgramEnergyExchange &a, LMProgramEnergyExchange &b) {
   swap(a._lmEnergyExchangeCustomers, b._lmEnergyExchangeCustomers);
 }
 
-LMProgramEnergyExchange::LMProgramEnergyExchange(const LMProgramEnergyExchange& other134) {
-  _baseMessage = other134._baseMessage;
-  _minNotifyTime = other134._minNotifyTime;
-  _heading = other134._heading;
-  _messageHeader = other134._messageHeader;
-  _messageFooter = other134._messageFooter;
-  _canceledMsg = other134._canceledMsg;
-  _stoppedEarlyMsg = other134._stoppedEarlyMsg;
-  _lmEnergyExchangeOffers = other134._lmEnergyExchangeOffers;
-  _lmEnergyExchangeCustomers = other134._lmEnergyExchangeCustomers;
+LMProgramEnergyExchange::LMProgramEnergyExchange(const LMProgramEnergyExchange& other132) {
+  _baseMessage = other132._baseMessage;
+  _minNotifyTime = other132._minNotifyTime;
+  _heading = other132._heading;
+  _messageHeader = other132._messageHeader;
+  _messageFooter = other132._messageFooter;
+  _canceledMsg = other132._canceledMsg;
+  _stoppedEarlyMsg = other132._stoppedEarlyMsg;
+  _lmEnergyExchangeOffers = other132._lmEnergyExchangeOffers;
+  _lmEnergyExchangeCustomers = other132._lmEnergyExchangeCustomers;
 }
-LMProgramEnergyExchange& LMProgramEnergyExchange::operator=(const LMProgramEnergyExchange& other135) {
-  _baseMessage = other135._baseMessage;
-  _minNotifyTime = other135._minNotifyTime;
-  _heading = other135._heading;
-  _messageHeader = other135._messageHeader;
-  _messageFooter = other135._messageFooter;
-  _canceledMsg = other135._canceledMsg;
-  _stoppedEarlyMsg = other135._stoppedEarlyMsg;
-  _lmEnergyExchangeOffers = other135._lmEnergyExchangeOffers;
-  _lmEnergyExchangeCustomers = other135._lmEnergyExchangeCustomers;
+LMProgramEnergyExchange& LMProgramEnergyExchange::operator=(const LMProgramEnergyExchange& other133) {
+  _baseMessage = other133._baseMessage;
+  _minNotifyTime = other133._minNotifyTime;
+  _heading = other133._heading;
+  _messageHeader = other133._messageHeader;
+  _messageFooter = other133._messageFooter;
+  _canceledMsg = other133._canceledMsg;
+  _stoppedEarlyMsg = other133._stoppedEarlyMsg;
+  _lmEnergyExchangeOffers = other133._lmEnergyExchangeOffers;
+  _lmEnergyExchangeCustomers = other133._lmEnergyExchangeCustomers;
   return *this;
 }
 void LMProgramEnergyExchange::printTo(std::ostream& out) const {
@@ -7403,14 +7311,14 @@ uint32_t LMControlAreaItem::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmControlAreaTriggers.clear();
-            uint32_t _size136;
-            ::apache::thrift::protocol::TType _etype139;
-            xfer += iprot->readListBegin(_etype139, _size136);
-            this->_lmControlAreaTriggers.resize(_size136);
-            uint32_t _i140;
-            for (_i140 = 0; _i140 < _size136; ++_i140)
+            uint32_t _size134;
+            ::apache::thrift::protocol::TType _etype137;
+            xfer += iprot->readListBegin(_etype137, _size134);
+            this->_lmControlAreaTriggers.resize(_size134);
+            uint32_t _i138;
+            for (_i138 = 0; _i138 < _size134; ++_i138)
             {
-              xfer += this->_lmControlAreaTriggers[_i140].read(iprot);
+              xfer += this->_lmControlAreaTriggers[_i138].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7423,14 +7331,14 @@ uint32_t LMControlAreaItem::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_lmPrograms.clear();
-            uint32_t _size141;
-            ::apache::thrift::protocol::TType _etype144;
-            xfer += iprot->readListBegin(_etype144, _size141);
-            this->_lmPrograms.resize(_size141);
-            uint32_t _i145;
-            for (_i145 = 0; _i145 < _size141; ++_i145)
+            uint32_t _size139;
+            ::apache::thrift::protocol::TType _etype142;
+            xfer += iprot->readListBegin(_etype142, _size139);
+            this->_lmPrograms.resize(_size139);
+            uint32_t _i143;
+            for (_i143 = 0; _i143 < _size139; ++_i143)
             {
-              xfer += this->_lmPrograms[_i145].read(iprot);
+              xfer += this->_lmPrograms[_i143].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7589,10 +7497,10 @@ uint32_t LMControlAreaItem::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += oprot->writeFieldBegin("_lmControlAreaTriggers", ::apache::thrift::protocol::T_LIST, 22);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmControlAreaTriggers.size()));
-    std::vector<LMControlAreaTrigger> ::const_iterator _iter146;
-    for (_iter146 = this->_lmControlAreaTriggers.begin(); _iter146 != this->_lmControlAreaTriggers.end(); ++_iter146)
+    std::vector<LMControlAreaTrigger> ::const_iterator _iter144;
+    for (_iter144 = this->_lmControlAreaTriggers.begin(); _iter144 != this->_lmControlAreaTriggers.end(); ++_iter144)
     {
-      xfer += (*_iter146).write(oprot);
+      xfer += (*_iter144).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7601,10 +7509,10 @@ uint32_t LMControlAreaItem::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += oprot->writeFieldBegin("_lmPrograms", ::apache::thrift::protocol::T_LIST, 23);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_lmPrograms.size()));
-    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter147;
-    for (_iter147 = this->_lmPrograms.begin(); _iter147 != this->_lmPrograms.end(); ++_iter147)
+    std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> ::const_iterator _iter145;
+    for (_iter145 = this->_lmPrograms.begin(); _iter145 != this->_lmPrograms.end(); ++_iter145)
     {
-      xfer += (*_iter147).write(oprot);
+      xfer += (*_iter145).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7642,55 +7550,55 @@ void swap(LMControlAreaItem &a, LMControlAreaItem &b) {
   swap(a._lmPrograms, b._lmPrograms);
 }
 
-LMControlAreaItem::LMControlAreaItem(const LMControlAreaItem& other148) {
-  _paoId = other148._paoId;
-  _paoCategory = other148._paoCategory;
-  _paoClass = other148._paoClass;
-  _paoName = other148._paoName;
-  _paoTypeString = other148._paoTypeString;
-  _paoDescription = other148._paoDescription;
-  _disableFlag = other148._disableFlag;
-  _defOperationalState = other148._defOperationalState;
-  _controlInterval = other148._controlInterval;
-  _minResponseTime = other148._minResponseTime;
-  _defDailyStartTime = other148._defDailyStartTime;
-  _defDailyStopTime = other148._defDailyStopTime;
-  _requireAllTriggersActiveFlag = other148._requireAllTriggersActiveFlag;
-  _nextCheckTime = other148._nextCheckTime;
-  _newPointDataReceivedFlag = other148._newPointDataReceivedFlag;
-  _updatedFlag = other148._updatedFlag;
-  _controlAreaStatusPointId = other148._controlAreaStatusPointId;
-  _controlAreaState = other148._controlAreaState;
-  _currentPriority = other148._currentPriority;
-  _currentDailyStartTime = other148._currentDailyStartTime;
-  _currentDailyStopTime = other148._currentDailyStopTime;
-  _lmControlAreaTriggers = other148._lmControlAreaTriggers;
-  _lmPrograms = other148._lmPrograms;
+LMControlAreaItem::LMControlAreaItem(const LMControlAreaItem& other146) {
+  _paoId = other146._paoId;
+  _paoCategory = other146._paoCategory;
+  _paoClass = other146._paoClass;
+  _paoName = other146._paoName;
+  _paoTypeString = other146._paoTypeString;
+  _paoDescription = other146._paoDescription;
+  _disableFlag = other146._disableFlag;
+  _defOperationalState = other146._defOperationalState;
+  _controlInterval = other146._controlInterval;
+  _minResponseTime = other146._minResponseTime;
+  _defDailyStartTime = other146._defDailyStartTime;
+  _defDailyStopTime = other146._defDailyStopTime;
+  _requireAllTriggersActiveFlag = other146._requireAllTriggersActiveFlag;
+  _nextCheckTime = other146._nextCheckTime;
+  _newPointDataReceivedFlag = other146._newPointDataReceivedFlag;
+  _updatedFlag = other146._updatedFlag;
+  _controlAreaStatusPointId = other146._controlAreaStatusPointId;
+  _controlAreaState = other146._controlAreaState;
+  _currentPriority = other146._currentPriority;
+  _currentDailyStartTime = other146._currentDailyStartTime;
+  _currentDailyStopTime = other146._currentDailyStopTime;
+  _lmControlAreaTriggers = other146._lmControlAreaTriggers;
+  _lmPrograms = other146._lmPrograms;
 }
-LMControlAreaItem& LMControlAreaItem::operator=(const LMControlAreaItem& other149) {
-  _paoId = other149._paoId;
-  _paoCategory = other149._paoCategory;
-  _paoClass = other149._paoClass;
-  _paoName = other149._paoName;
-  _paoTypeString = other149._paoTypeString;
-  _paoDescription = other149._paoDescription;
-  _disableFlag = other149._disableFlag;
-  _defOperationalState = other149._defOperationalState;
-  _controlInterval = other149._controlInterval;
-  _minResponseTime = other149._minResponseTime;
-  _defDailyStartTime = other149._defDailyStartTime;
-  _defDailyStopTime = other149._defDailyStopTime;
-  _requireAllTriggersActiveFlag = other149._requireAllTriggersActiveFlag;
-  _nextCheckTime = other149._nextCheckTime;
-  _newPointDataReceivedFlag = other149._newPointDataReceivedFlag;
-  _updatedFlag = other149._updatedFlag;
-  _controlAreaStatusPointId = other149._controlAreaStatusPointId;
-  _controlAreaState = other149._controlAreaState;
-  _currentPriority = other149._currentPriority;
-  _currentDailyStartTime = other149._currentDailyStartTime;
-  _currentDailyStopTime = other149._currentDailyStopTime;
-  _lmControlAreaTriggers = other149._lmControlAreaTriggers;
-  _lmPrograms = other149._lmPrograms;
+LMControlAreaItem& LMControlAreaItem::operator=(const LMControlAreaItem& other147) {
+  _paoId = other147._paoId;
+  _paoCategory = other147._paoCategory;
+  _paoClass = other147._paoClass;
+  _paoName = other147._paoName;
+  _paoTypeString = other147._paoTypeString;
+  _paoDescription = other147._paoDescription;
+  _disableFlag = other147._disableFlag;
+  _defOperationalState = other147._defOperationalState;
+  _controlInterval = other147._controlInterval;
+  _minResponseTime = other147._minResponseTime;
+  _defDailyStartTime = other147._defDailyStartTime;
+  _defDailyStopTime = other147._defDailyStopTime;
+  _requireAllTriggersActiveFlag = other147._requireAllTriggersActiveFlag;
+  _nextCheckTime = other147._nextCheckTime;
+  _newPointDataReceivedFlag = other147._newPointDataReceivedFlag;
+  _updatedFlag = other147._updatedFlag;
+  _controlAreaStatusPointId = other147._controlAreaStatusPointId;
+  _controlAreaState = other147._controlAreaState;
+  _currentPriority = other147._currentPriority;
+  _currentDailyStartTime = other147._currentDailyStartTime;
+  _currentDailyStopTime = other147._currentDailyStopTime;
+  _lmControlAreaTriggers = other147._lmControlAreaTriggers;
+  _lmPrograms = other147._lmPrograms;
   return *this;
 }
 void LMControlAreaItem::printTo(std::ostream& out) const {
@@ -7789,14 +7697,14 @@ uint32_t LMControlAreas::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_controlAreas.clear();
-            uint32_t _size150;
-            ::apache::thrift::protocol::TType _etype153;
-            xfer += iprot->readListBegin(_etype153, _size150);
-            this->_controlAreas.resize(_size150);
-            uint32_t _i154;
-            for (_i154 = 0; _i154 < _size150; ++_i154)
+            uint32_t _size148;
+            ::apache::thrift::protocol::TType _etype151;
+            xfer += iprot->readListBegin(_etype151, _size148);
+            this->_controlAreas.resize(_size148);
+            uint32_t _i152;
+            for (_i152 = 0; _i152 < _size148; ++_i152)
             {
-              xfer += this->_controlAreas[_i154].read(iprot);
+              xfer += this->_controlAreas[_i152].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7839,10 +7747,10 @@ uint32_t LMControlAreas::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeFieldBegin("_controlAreas", ::apache::thrift::protocol::T_LIST, 3);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_controlAreas.size()));
-    std::vector<LMControlAreaItem> ::const_iterator _iter155;
-    for (_iter155 = this->_controlAreas.begin(); _iter155 != this->_controlAreas.end(); ++_iter155)
+    std::vector<LMControlAreaItem> ::const_iterator _iter153;
+    for (_iter153 = this->_controlAreas.begin(); _iter153 != this->_controlAreas.end(); ++_iter153)
     {
-      xfer += (*_iter155).write(oprot);
+      xfer += (*_iter153).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -7860,15 +7768,15 @@ void swap(LMControlAreas &a, LMControlAreas &b) {
   swap(a._controlAreas, b._controlAreas);
 }
 
-LMControlAreas::LMControlAreas(const LMControlAreas& other156) {
-  _baseMessage = other156._baseMessage;
-  _msgInfoBitMask = other156._msgInfoBitMask;
-  _controlAreas = other156._controlAreas;
+LMControlAreas::LMControlAreas(const LMControlAreas& other154) {
+  _baseMessage = other154._baseMessage;
+  _msgInfoBitMask = other154._msgInfoBitMask;
+  _controlAreas = other154._controlAreas;
 }
-LMControlAreas& LMControlAreas::operator=(const LMControlAreas& other157) {
-  _baseMessage = other157._baseMessage;
-  _msgInfoBitMask = other157._msgInfoBitMask;
-  _controlAreas = other157._controlAreas;
+LMControlAreas& LMControlAreas::operator=(const LMControlAreas& other155) {
+  _baseMessage = other155._baseMessage;
+  _msgInfoBitMask = other155._msgInfoBitMask;
+  _controlAreas = other155._controlAreas;
   return *this;
 }
 void LMControlAreas::printTo(std::ostream& out) const {

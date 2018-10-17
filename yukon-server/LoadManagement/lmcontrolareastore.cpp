@@ -33,8 +33,6 @@
 #include "septempoffsetgear.h"
 #include "ecobeeCycleGear.h"
 #include "honeywellCycleGear.h"
-#include "NestCriticalCycleGear.h"
-#include "NestStandardCycleGear.h"
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
@@ -892,15 +890,12 @@ void CtiLMControlAreaStore::reset()
                                                "PDG.backrampoption, PDG.backramptime, TSG.settings, TSG.minvalue, "
                                                "TSG.maxvalue, TSG.valueb, TSG.valued, TSG.valuef, TSG.random, TSG.valueta, "
                                                "TSG.valuetb, TSG.valuetc, TSG.valuetd, TSG.valuete, TSG.valuetf, "
-                                               "TSG.ramprate, BTPG.AlertLevel, "
-                                               "NLSG.PreparationOption, NLSG.PeakOption, NLSG.PostPeakOption "
+                                               "TSG.ramprate, BTPG.AlertLevel "
                                            "FROM lmprogramdirectgear PDG "
                                            "LEFT OUTER JOIN lmthermostatgear TSG "
                                                "ON PDG.gearid = TSG.gearid "
                                            "LEFT OUTER JOIN lmbeatthepeakgear BTPG "
                                                "ON PDG.gearid = BTPG.gearid "
-                                           "LEFT OUTER JOIN LMNestLoadShapingGear NLSG "
-                                               "ON PDG.GearID = NLSG.GearId "
                                            "ORDER BY PDG.deviceid ASC, PDG.gearnumber ASC";
 
                 DatabaseReader rdr(connection);
@@ -950,17 +945,6 @@ void CtiLMControlAreaStore::reset()
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::HoneywellCycleMethod) )
                     {
                         newDirectGear = CTIDBG_new HoneywellCycleGear(rdr);
-                    }
-                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::NestCriticalCycleMethod) )
-                    {
-                        newDirectGear = CTIDBG_new NestCriticalCycleGear(rdr);
-                    }
-                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::NestStandardCycleMethod) )
-                    {
-                        if ( ! rdr[ "PreparationOption" ].isNull() )
-                        {
-                            newDirectGear = CTIDBG_new NestStandardCycleGear(rdr);
-                        }
                     }
                     else if (rdr["settings"].isNull())
                     {

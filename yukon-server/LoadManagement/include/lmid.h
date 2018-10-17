@@ -45,7 +45,6 @@
 #define LMGROUPDIGISEP_ID                       640
 #define LMGROUPECOBEE_ID                        641
 #define LMGROUPHONEYWELL_ID                     642
-#define LMGROUPNEST_ID                          643
 
 
 /* Various debug levels */

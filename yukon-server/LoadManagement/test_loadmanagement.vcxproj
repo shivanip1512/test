@@ -340,10 +340,6 @@
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\lmgroupnest.h" />
-    <ClInclude Include="include\NestControlinterface.h" />
-    <ClInclude Include="include\NestLoadShapingOptions.h" />
-    <ClInclude Include="include\SmartGroupBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON\boost_assert.cpp" />
@@ -363,7 +359,6 @@
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
-    <ClCompile Include="lmgroupnest.cpp" />
     <ClCompile Include="LMScheduledMessageHolder.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">
     </ClCompile>
@@ -451,14 +446,10 @@
     </ClCompile>
     <ClCompile Include="loadmanager.cpp">
     </ClCompile>
-    <ClCompile Include="NestCriticalCycleGear.cpp" />
-    <ClCompile Include="NestLoadShapingOptions.cpp" />
-    <ClCompile Include="NestStandardCycleGear.cpp" />
     <ClCompile Include="sepcyclegear.cpp">
     </ClCompile>
     <ClCompile Include="septempoffsetgear.cpp">
     </ClCompile>
-    <ClCompile Include="SmartGroupBase.cpp" />
     <ClCompile Include="test_lm_constraintviolations.cpp">
     </ClCompile>
     <ClCompile Include="test_lmobjects.cpp">

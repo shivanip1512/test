@@ -271,11 +271,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("lm sep program"),          TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("ecobee program"),          TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("honeywell program"),       TYPE_LMPROGRAM_DIRECT);
-    BOOST_CHECK_EQUAL(resolveDeviceType("nest program"),            TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("digi sep group"),          TYPE_LMGROUP_DIGI_SEP);
     BOOST_CHECK_EQUAL(resolveDeviceType("ecobee group"),            TYPE_LMGROUP_ECOBEE);
     BOOST_CHECK_EQUAL(resolveDeviceType("honeywell group"),         TYPE_LMGROUP_HONEYWELL);
-    BOOST_CHECK_EQUAL(resolveDeviceType("nest group"),              TYPE_LMGROUP_NEST);
     BOOST_CHECK_EQUAL(resolveDeviceType("emetcon group"),           TYPE_LMGROUP_EMETCON);
     BOOST_CHECK_EQUAL(resolveDeviceType("expresscom group"),        TYPE_LMGROUP_EXPRESSCOM);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn expresscom group"),    TYPE_LMGROUP_RFN_EXPRESSCOM);
