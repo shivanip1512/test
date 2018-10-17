@@ -23,9 +23,6 @@ public final class LMFactory {
         case LM_GROUP_HONEYWELL:
             retLm = new LMGroupHoneywell();
             break;
-        case LM_GROUP_NEST:
-            retLm = new LMGroupNest();
-            break;
         case LM_GROUP_VERSACOM:
             retLm = new LMGroupVersacom();
             break;
@@ -70,9 +67,6 @@ public final class LMFactory {
             break;
         case LM_HONEYWELL_PROGRAM:
             retLm = new LmProgramHoneywell();
-            break;
-        case LM_NEST_PROGRAM:
-            retLm = new LmProgramNest();
             break;
         case LM_CURTAIL_PROGRAM:
             retLm = new LMProgramCurtailment();

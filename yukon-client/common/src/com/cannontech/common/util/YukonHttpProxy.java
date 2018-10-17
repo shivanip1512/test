@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Optional;
 
-import org.apache.http.HttpHost;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -39,13 +38,6 @@ public class YukonHttpProxy {
      */
     public Proxy getJavaHttpProxy() {
         return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port));
-    }
-    
-    /**
-     * @return A Java http host based on this object's settings.
-     */
-    public HttpHost getJavaHttpHost() {
-        return new HttpHost(host, port);
     }
     
     public String getHost() {

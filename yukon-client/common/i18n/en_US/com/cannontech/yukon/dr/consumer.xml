@@ -341,7 +341,6 @@
     <entry key="yukon.dr.consumer.hardware.type.HONEYWELL_VISIONPRO_8000">Honeywell Wi-Fi VisionPRO 8000</entry>
     <entry key="yukon.dr.consumer.hardware.type.HONEYWELL_FOCUSPRO">Honeywell Wi-Fi FocusPRO</entry>
     <entry key="yukon.dr.consumer.hardware.type.HONEYWELL_THERMOSTAT">Honeywell Wi-Fi Thermostat</entry>
-    <entry key="yukon.dr.consumer.hardware.type.NEST_THERMOSTAT">Nest Thermostat</entry>
     
     <!-- HardwareConfig Types -->
 	<entry key="yukon.web.dr.consumer.hardwareConfigType.EXPRESSCOM">ExpressCom</entry>

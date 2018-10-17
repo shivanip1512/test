@@ -132,12 +132,7 @@ public enum YukonSimulatorSettingsKey {
     SMART_NOTIFICATION_SIM_EVENTS_PER_TYPE(250, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
     SMART_NOTIFICATION_SIM_EVENTS_PER_MESSAGE(5, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
     SMART_NOTIFICATION_SIM_WAIT_TIME_SEC(3, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
-    
-    // Nest Settings
-    NEST_FILE_NAME("", InputTypeFactory.stringType(), SimulatorType.NEST),
-    NEST_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.NEST)
     ;
-    
 
     private final Object defaultValue;
     private final InputType<?> inputType;

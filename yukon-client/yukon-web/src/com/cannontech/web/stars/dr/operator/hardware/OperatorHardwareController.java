@@ -917,9 +917,7 @@ public class OperatorHardwareController {
             DeviceTypeOption option = new DeviceTypeOption();
             option.setDisplayName(deviceTypeEntry.getEntryText());
             option.setHardwareTypeEntryId(deviceTypeEntry.getEntryID());
-            if (!type.isNest()) {
-                deviceTypeMap.put(type.getHardwareClass().name(), option);
-            }
+            deviceTypeMap.put(type.getHardwareClass().name(), option);
         }
         model.addAttribute("deviceTypeMap", deviceTypeMap.asMap());
 

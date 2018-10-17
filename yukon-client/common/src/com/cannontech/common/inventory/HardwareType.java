@@ -76,7 +76,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     HONEYWELL_VISIONPRO_8000(YUK_DEF_ID_DEV_TYPE_HONEYWELL_VISIONPRO_8000, TWO_WAY_RECEIVER, THERMOSTAT, HONEYWELL, false, true, false),
     HONEYWELL_FOCUSPRO(YUK_DEF_ID_DEV_TYPE_HONEYWELL_FOCUSPRO, TWO_WAY_RECEIVER, THERMOSTAT, HONEYWELL, false, true, false),
     HONEYWELL_THERMOSTAT(YUK_DEF_ID_DEV_TYPE_HONEYWELL_THERMOSTAT, TWO_WAY_RECEIVER, THERMOSTAT, HONEYWELL, false, true, false),
-    NEST_THERMOSTAT(YUK_DEF_ID_DEV_TYPE_NEST, TWO_WAY_RECEIVER, THERMOSTAT, NEST, false, false, false),
     
     /* Gateways*/
     DIGI_GATEWAY(YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, TWO_WAY_RECEIVER, GATEWAY, EXPRESSCOM, false, false, false);
@@ -97,7 +96,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final static ImmutableSet<HardwareType> autoModeEnableTypes;
     private final static ImmutableSet<HardwareType> ecobeeTypes;
     private final static ImmutableSet<HardwareType> honeywellTypes;
-    private final static ImmutableSet<HardwareType> nestTypes;
     
     private final static ImmutableSet<HardwareType> supportsChangeType;
     private final static ImmutableSet<HardwareType> supportsAddByRange;
@@ -196,7 +194,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         
         ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART, ECOBEE_3_LITE);
         honeywellTypes = ImmutableSet.of(HONEYWELL_9000, HONEYWELL_FOCUSPRO, HONEYWELL_VISIONPRO_8000, HONEYWELL_THERMOSTAT);
-        nestTypes = ImmutableSet.of(NEST_THERMOSTAT);
     }
     
     // this key prefix can be found in the following file:
@@ -359,13 +356,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /**
-     * Returns true if this hardware type is an Nest thermostat.
-     */
-    public boolean isNest() {
-        return nestTypes.contains(this);
-    }
-    
-    /**
      * Returns true if this hardware type supports the 'change device type' action.
      */
     public boolean isSupportsChangeType() {
@@ -516,7 +506,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
  
     public boolean isHideHardwareAddressing() {
-        if (this.isEcobee() || this.isHoneywell() || this.isNest()) {
+        if (this.isEcobee() || this.isHoneywell()) {
             return true;
         }
         return false;

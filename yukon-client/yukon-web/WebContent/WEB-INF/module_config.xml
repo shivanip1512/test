@@ -462,9 +462,6 @@
           <page name="ecobee.details" type="BASIC">
             <link>/dr/ecobee/details</link>
           </page>
-          <page name="nest.details" type="BASIC">
-            <link>/dr/nest/details</link>
-          </page>
           <page name="recentEventParticipation.details" type="BASIC">
             <link>/dr/recentEventParticipation/details</link>
           </page>
@@ -1654,14 +1651,6 @@
           <page name="paoDefinitionTesting" type="BASIC"/>
           <page name="smartNotificationsSimulator" type="BASIC"/>
           <page name="collectionActionsTesting" type="BASIC"/>
-          <page name="nest" type="BASIC">
-          <link>/dev/nest/home</link>
-            <pages>
-              <page name="nest.viewNestFileSetting" type="BASIC"/>
-              <page name="nest.viewNestSync" type="BASIC"/>
-              <page name="nest.viewControlEvents" type="BASIC"/>
-            </pages>            
-          </page>
           <page name="yukon-js-lib" type="BASIC"/>
           <page name="yukon-pages" type="BASIC"/>
           <page name="styleguide" type="BASIC">

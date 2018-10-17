@@ -569,10 +569,6 @@ public class AccountImportService {
                         if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,false)) {
                             continue;
                         }
-                        
-                        if (isNestDevice(deviceType, result, lineNoKey, hwFields, false)) {
-                            continue;
-                        }
 
                         if (HardwareType.valueOf(deviceType.getYukonDefID()).isHoneywell()) {
 
@@ -827,10 +823,6 @@ public class AccountImportService {
                     }
 
                     if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,true)) {
-                        continue;
-                    }
-                    
-                    if (isNestDevice(deviceType, result, lineNoKey, hwFields, true)) {
                         continue;
                     }
 
@@ -1224,42 +1216,7 @@ public class AccountImportService {
             log.warn("Hardware Device type is not valid", exception);
         }
         return isZigbee;
-    }
-    
-    /**
-     * Method to identify whether given YukonListEntry is a Nest device type or not.
-     * Nest devices cannot be imported. 
-     */
-    private boolean isNestDevice(YukonListEntry deviceType, AccountImportResult result, Integer lineNoKey,
-            String[] hwFields, boolean isHwFile) {
-
-        boolean isNest = false;
-        try {
-            if (HardwareType.valueOf(deviceType.getYukonDefID()).isNest()) {
-                String[] value;
-                if (!isHwFile) {
-                    result.custFileErrors++;
-                    value = result.getCustLines().get(lineNoKey);
-                    value[1] =
-                        "[line: " + lineNoKey.intValue() + " error: Cannot import Nest device type \""
-                            + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
-                    result.getCustLines().put(lineNoKey, value);
-                } else {
-                    result.hwFileErrors++;
-                    value = result.getHwLines().get(lineNoKey);
-                    value[1] =
-                        "[line: " + lineNoKey.intValue() + " error: Cannot import Nest device type \""
-                            + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
-                    result.getHwLines().put(lineNoKey, value);
-                }
-                addToLog(lineNoKey, value, importLog);
-                isNest = true;
-            }
-        } catch (IllegalArgumentException exception) {
-            log.warn("Hardware Device type is not valid", exception);
-        }
-        return isNest;
-    }
+    }  
 
     private void setCustomerFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {
         

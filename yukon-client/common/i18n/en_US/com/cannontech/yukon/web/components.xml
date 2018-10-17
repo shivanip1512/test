@@ -141,7 +141,6 @@
     <entry key="yukon.web.components.button.start.label">Start</entry>
     <entry key="yukon.web.components.button.stop.label">Stop</entry>
     <entry key="yukon.web.components.button.submit.label">Submit</entry>
-    <entry key="yukon.web.components.button.syncNow.label">Sync Now</entry>
     <entry key="yukon.web.components.button.unmute.hoverText">Unmute</entry>
     <entry key="yukon.web.components.button.unmute.label">Unmute</entry>
     <entry key="yukon.web.components.button.up.hoverText">Move Up</entry>

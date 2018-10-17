@@ -14,7 +14,6 @@ public enum PersistedSystemValueKey {
     DATA_COLLECTION_TIME(null, new InstantType()),
     DATA_COLLECTION_RECALC_TIME(null, new InstantType()),
     INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME(null, new InstantType()),
-    NEST_SYNC_TIME(null, new InstantType()),
     ;
     
     private final Object defaultValue;

@@ -55,11 +55,9 @@
 <entry key="yukon.web.modules.dr.paoType.LM_SEP_PROGRAM">SEP Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_ECOBEE_PROGRAM">ecobee Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_HONEYWELL_PROGRAM">Honeywell Program</entry>
-<entry key="yukon.web.modules.dr.paoType.LM_NEST_PROGRAM">Nest Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_HONEYWELL">Honeywell Group</entry>
-<entry key="yukon.web.modules.dr.paoType.LM_GROUP_NEST">Nest Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EMETCON">Emetcon Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
@@ -581,21 +579,6 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 ]]></entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.footer">This email was generated at {0}</entry>
 
-<entry key="yukon.web.modules.dr.nest.details.pageName">Nest Details</entry>
-<entry key="yukon.web.modules.dr.nest.details.nestSyncControls.title">Nest Sync Settings</entry>
-<entry key="yukon.web.modules.dr.nest.details.nestSyncDiscrepancies.title">Discrepancies</entry>
-<entry key="yukon.web.modules.dr.nest.forceSync">Force Sync</entry>
-<entry key="yukon.web.modules.dr.nest.lastSync">Last sync time</entry>
-<entry key="yukon.web.modules.dr.nest.syncSchedule">Scheduled Sync</entry>
-<entry key="yukon.web.modules.dr.nest.nestSyncInProgress">Sync is currently in progress</entry>
-<entry key="yukon.web.modules.dr.nest.nextSync">Next Sync Available: </entry>
-
-<entry key="yukon.web.modules.dr.nest.loadShapingType.STANDARD">Standard</entry>
-<entry key="yukon.web.modules.dr.nest.loadShapingType.RAMPING">Ramping</entry>
-<entry key="yukon.web.modules.dr.nest.loadShapingType.NONE">None</entry>
-<entry key="yukon.web.modules.dr.nest.loadShapingType.UNIFORM">Uniform</entry>
-<entry key="yukon.web.modules.dr.nest.loadShapingType.SYMMETRIC">Symmetric</entry>
-
 <entry key="yukon.web.modules.dr.rf.details.pageName">RF Broadcast Performance Details</entry>
 <entry key="yukon.web.modules.dr.rf.details.dateRange">Date Range</entry>
 <entry key="yukon.web.modules.dr.rf.details.numTests">Tests Found</entry>
@@ -855,8 +838,6 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.gearControlMethod.SepCycle">SEP Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.EcobeeCycle">ecobee Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellCycle">Honeywell Cycle</entry>
-<entry key="yukon.web.modules.dr.gearControlMethod.NestStandardCycle">Nest Standard Cycle</entry>
-<entry key="yukon.web.modules.dr.gearControlMethod.NestCriticalCycle">Nest Critical Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.MasterCycle">Master Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.Rotation">Rotation</entry>

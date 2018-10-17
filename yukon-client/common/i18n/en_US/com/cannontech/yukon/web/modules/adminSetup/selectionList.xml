@@ -173,7 +173,6 @@
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_HONEYWELL_VISIONPRO_8000">Honeywell Wi-Fi VisionPRO 8000</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_HONEYWELL_FOCUSPRO">Honeywell Wi-Fi FocusPRO</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_HONEYWELL_THERMOSTAT">Honeywell Wi-Fi Thermostat</entry>
-<entry key="yukon.dr.selectionList.definition.DEV_TYPE_NEST_THERMOSTAT">Nest Thermostat</entry>
 
 <entry key="yukon.dr.selectionList.definition.APP_CAT_DEFAULT">(Default)</entry>
 <entry key="yukon.dr.selectionList.definition.APP_CAT_AIR_CONDITIONER">Air Conditioner</entry>

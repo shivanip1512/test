@@ -275,11 +275,7 @@ public class LMGroupWizardPanel extends WizardPanel {
                 currentPanel == golayEditorPanel || 
                 currentPanel == lmGroupMCTEditorPanel || 
                 currentPanel == lmGroupDigiSepEditorPanel || 
-                (currentPanel == getLMGroupBasePanel()
-                && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_ECOBEE)
-                || (currentPanel == getLMGroupBasePanel()
-                && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_HONEYWELL)
-                || (currentPanel == getLMGroupBasePanel()
-                && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_NEST));
+                (currentPanel == getLMGroupBasePanel() && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_ECOBEE) ||
+                (currentPanel == getLMGroupBasePanel() && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_HONEYWELL));
     }
 }

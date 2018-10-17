@@ -81,8 +81,7 @@ public class LoginFilter implements Filter {
                          "/jws/sqlserver_jdbc.jnlp",
                          "/common/images/*",
                          "/resources/favicon.ico",
-                         "/dev/mockecobee/**",
-                         "/dev/nestApi/**");
+                		 "/dev/mockecobee/**");
 
     private final static ImmutableList<String> excludedRedirectedPaths =
         ImmutableList.of("/servlet/SOAPClient/**",

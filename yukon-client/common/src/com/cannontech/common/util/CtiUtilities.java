@@ -72,7 +72,6 @@ public final class CtiUtilities {
     public static final String EXPORT_ARCHIVE_DIR = "ExportArchive";
     
     public static final String COLLECTION_ACTION_DIR = "CollectionAction";
-    public static final String NEST_DIR = "Nest";
 
     public static final String STRING_NONE = "(none)";
     public static final String STRING_DEFAULT = "Default";
@@ -361,19 +360,6 @@ public final class CtiUtilities {
         }
         return path;
     }
-    
-    public final static String getNestDirPath() {
-        String path = getArchiveDirPath() + System.getProperty("file.separator") + NEST_DIR;
-        File dir = new File(path);
-        if (!dir.exists()) {
-            boolean success = dir.mkdirs();
-            if (!success) {
-                throw new FileCreationException("Error creating directory " + path);
-            }
-        }
-        return path;
-    }
-
 
     public final static Character getFalseCharacter() {
         return falseChar;

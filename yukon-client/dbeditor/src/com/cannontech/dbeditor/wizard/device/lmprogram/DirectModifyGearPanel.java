@@ -25,8 +25,6 @@ import com.cannontech.database.data.device.lm.EcobeeCycleGear;
 import com.cannontech.database.data.device.lm.HoneywellCycleGear;
 import com.cannontech.database.data.device.lm.LatchingGear;
 import com.cannontech.database.data.device.lm.MasterCycleGear;
-import com.cannontech.database.data.device.lm.NestCriticalCycleGear;
-import com.cannontech.database.data.device.lm.NestStandardCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SepCycleGear;
@@ -52,8 +50,6 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private SepCycleGearPanel sepCycleGearPanel;
     private SepTemperatureOffsetGearPanel sepTemperatureOffsetGearPanel;
     private EcobeeCycleGearPanel ecobeeCycleGearPanel;
-    private NestCriticalCycleGearPanel nestCriticalCycleGearPanel;
-    private NestStandardCycleGearPanel nestStandardCycleGearPanel;
     private HoneywellCycleGearPanel honeywellCycleGearPanel;
     private TimeRefreshGearPanel ivjTimeGearPanel1;
     private RotationGearPanel ivjRotationGearPanel1;
@@ -284,9 +280,6 @@ private JComboBox<GearControlMethod> getJComboBoxGearType() {
                 ivjJComboBoxGearType.addItem(GearControlMethod.EcobeeCycle);
             } else if(programType == PaoType.LM_HONEYWELL_PROGRAM) {
                 ivjJComboBoxGearType.addItem(GearControlMethod.HoneywellCycle);
-            } else if(programType == PaoType.LM_NEST_PROGRAM) {
-                ivjJComboBoxGearType.addItem(GearControlMethod.NestCriticalCycle);
-                ivjJComboBoxGearType.addItem(GearControlMethod.NestStandardCycle);
             } else {
                 for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
                     ivjJComboBoxGearType.addItem(gearControlMethod);
@@ -296,8 +289,6 @@ private JComboBox<GearControlMethod> getJComboBoxGearType() {
                 ivjJComboBoxGearType.removeItem(GearControlMethod.SepTemperatureOffset);
                 ivjJComboBoxGearType.removeItem(GearControlMethod.EcobeeCycle);
                 ivjJComboBoxGearType.removeItem(GearControlMethod.HoneywellCycle);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.NestCriticalCycle);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.NestStandardCycle);
             }
 	            
         } catch (java.lang.Throwable ivjExc) {
@@ -429,12 +420,6 @@ public Object getValue(Object o)
 	    case HoneywellCycle:
             obj = getHoneywellCycleGearPanel().getValue(gear);
             break;
-        case NestCriticalCycle:
-            obj = getNestCriticalCycleGearPanel().getValue(gear);
-            break;
-        case NestStandardCycle:
-            obj = getNestStandardCycleGearPanel().getValue(gear);
-            break;
 	    case SepCycle:
 	        obj = getSepCycleGearPanel().getValue(gear);
 	        break;
@@ -511,8 +496,6 @@ private void initConnections() throws java.lang.Exception {
     getIvjSmartGearPanel1().addDataInputPanelListener(this);
     getEcobeeCycleGearPanel().addDataInputPanelListener(this);
     getHoneywellCycleGearPanel().addDataInputPanelListener(this);
-    getNestCriticalCycleGearPanel().addDataInputPanelListener(this);
-    getNestStandardCycleGearPanel().addDataInputPanelListener(this);
     getSepCycleGearPanel().addDataInputPanelListener(this);
     getSepTemperatureOffsetGearPanel().addDataInputPanelListener(this);
     getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
@@ -595,13 +578,6 @@ public boolean isInputValid()
         return false;
     }
     
-    if (getJComboBoxGearType().getSelectedItem() == GearControlMethod.NestStandardCycle) {
-         if (!getNestStandardCycleGearPanel().isInputValid()) {
-             setErrorString("Peak as Uniform and Post as Ramping is not valid combination");
-             return false;
-          }
-     }
-    
     return true;
 }
 
@@ -666,12 +642,6 @@ private void setGearType(GearControlMethod method)
         break;
     case HoneywellCycle:
         getJScrollPane1().setViewportView(getHoneywellCycleGearPanel());
-        break;
-    case NestCriticalCycle:
-        getJScrollPane1().setViewportView(getNestCriticalCycleGearPanel());
-        break;
-    case NestStandardCycle:
-        getJScrollPane1().setViewportView(getNestStandardCycleGearPanel());
         break;
     case SepCycle:
         getJScrollPane1().setViewportView(getSepCycleGearPanel());
@@ -755,10 +725,6 @@ public void setValue(Object o) {
         getNoControlGearPanel().setValue(gear); 
     }  else if(gear instanceof HoneywellCycleGear) {
         getHoneywellCycleGearPanel().setValue(gear); 
-    } else if(gear instanceof NestCriticalCycleGear) {
-        getNestCriticalCycleGearPanel().setValue(gear); 
-    } else if(gear instanceof NestStandardCycleGear) {
-        getNestStandardCycleGearPanel().setValue(gear); 
     } else {
         return;
     }
@@ -841,20 +807,6 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
             honeywellCycleGearPanel = new HoneywellCycleGearPanel();
         }
         return honeywellCycleGearPanel;
-    }
-    
-    public NestCriticalCycleGearPanel getNestCriticalCycleGearPanel() {
-        if (nestCriticalCycleGearPanel == null) {
-            nestCriticalCycleGearPanel = new NestCriticalCycleGearPanel();
-        }
-        return nestCriticalCycleGearPanel;
-    }
-    
-    public NestStandardCycleGearPanel getNestStandardCycleGearPanel() {
-        if (nestStandardCycleGearPanel == null) {
-            nestStandardCycleGearPanel = new NestStandardCycleGearPanel();
-        }
-        return nestStandardCycleGearPanel;
     }
     
     public SepCycleGearPanel getSepCycleGearPanel() {

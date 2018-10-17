@@ -108,7 +108,6 @@ Class-Path: ./
  jackson-core-2.9.6.jar 
  jackson-core-asl-1.9.2.jar 
  jackson-databind-2.9.6.jar 
- jackson-dataformat-csv-2.9.6.jar
  snakeyaml-1.18.2.jar 
  jackson-jaxrs-1.9.2.jar 
  jackson-mapper-asl-1.9.2.jar 

@@ -504,21 +504,6 @@
         </property>
     </bean>
     
-    <bean id="nestSyncJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
-        <qualifier value="nestScheduledSync"/>
-        <property name="taskName">
-            <idref bean="nestSyncTask"/>
-        </property>
-        <property name="title" value="Nest Sync Job"/>
-        <property name="inputs">
-            <bean class="com.cannontech.web.input.InputRoot">
-                <property name="inputList">
-                    <list></list>
-                </property>
-            </bean>
-        </property>
-    </bean>
-    
    <bean id="deviceConfigVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="deviceConfigVerification"/>
         <property name="taskName">
@@ -604,7 +589,5 @@
     <bean id="ecobeePointUpdateTask" class="com.cannontech.web.dr.ecobee.EcobeePointUpdateTask" scope="prototype"/>
     
     <bean id="deviceConfigVerificationTask" class="com.cannontech.web.tools.device.config.DeviceConfigVerificationTask" scope="prototype"/>
-
-    <bean id="nestSyncTask" class="com.cannontech.web.dr.nest.NestSyncTask" scope="prototype"/>    
 </beans>
 

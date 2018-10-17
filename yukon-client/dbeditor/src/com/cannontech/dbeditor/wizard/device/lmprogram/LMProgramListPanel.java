@@ -159,7 +159,6 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     boolean isSepProgram = programType == PaoType.LM_SEP_PROGRAM;
                     boolean isEcobeeProgram = programType == PaoType.LM_ECOBEE_PROGRAM;
                     boolean isHoneywellProgram = programType == PaoType.LM_HONEYWELL_PROGRAM;
-                    boolean isNestProgram = programType == PaoType.LM_NEST_PROGRAM;
                     // SEP compatible groups are shown for SEP programs and
                     // hidden for all others
                     // ecobee compatible groups are shown for ecobee programs
@@ -170,14 +169,11 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                         newList.addElement(group);
                     } else if ((!isSepProgram && !isGroupSepCompatible(paoType))
                         && (!isEcobeeProgram && !isGroupEcobeeCompatible(paoType))
-                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType)
-                        && (!isNestProgram && !isGroupNestCompatible(paoType)))) {
+                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType))) {
                         newList.addElement(group);
                     } else if (isEcobeeProgram && isGroupEcobeeCompatible(paoType)) {
                         newList.addElement(group);
                     } else if (isHoneywellProgram && isGroupHoneywellCompatible(paoType)) {
-                        newList.addElement(group);
-                    } else if (isNestProgram && isGroupNestCompatible(paoType)) {
                         newList.addElement(group);
                     }
                 }
@@ -200,10 +196,6 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
     
     private boolean isGroupHoneywellCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_HONEYWELL;
-    }
-    
-    private boolean isGroupNestCompatible(PaoType groupType) {
-        return groupType == PaoType.LM_GROUP_NEST;
     }
 
     @Override

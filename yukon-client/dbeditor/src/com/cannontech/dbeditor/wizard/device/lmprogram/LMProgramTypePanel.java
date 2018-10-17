@@ -20,7 +20,6 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
     private JRadioButton ivjJRadioButtonSepControl = null;
     private JRadioButton ivjJRadioButtonEcobeeControl = null;
     private JRadioButton ivjJRadioButtonHoneywellControl = null;
-    private JRadioButton ivjJRadioButtonNestControl = null;
     /**
      * Constructor
      */
@@ -92,21 +91,6 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
         }
         return ivjJRadioButtonHoneywellControl;
     }
-    
-    // nest program
-    private JRadioButton getJRadioButtonNestControl() {
-        if (ivjJRadioButtonNestControl == null) {
-            try {
-                ivjJRadioButtonNestControl = new JRadioButton();
-                ivjJRadioButtonNestControl.setName("NestControlButton");
-                ivjJRadioButtonNestControl.setMnemonic('n');
-                ivjJRadioButtonNestControl.setText("Nest Control");
-            } catch (Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return ivjJRadioButtonNestControl;
-    }
     /**
      * Insert the method's description here.
      * Creation date: (2/5/2001 10:32:24 AM)
@@ -127,10 +111,6 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
          else if( getJRadioButtonHoneywellControl().isSelected() )
          {
              return PaoType.LM_HONEYWELL_PROGRAM;
-         }
-         else if( getJRadioButtonNestControl().isSelected() )
-         {
-             return PaoType.LM_NEST_PROGRAM;
          }
          else
              throw new Error(getClass() + "::getLMSelectedType() - No radio button is selected");
@@ -184,15 +164,6 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             constraintsJRadioButtonEcobeeProgram.insets = new Insets(9, 105, 8, 101);
             add(getJRadioButtonEcobeeControl(), constraintsJRadioButtonEcobeeProgram);
             
-            
-            GridBagConstraints constraintsJRadioButtonNestProgram = new GridBagConstraints();
-            constraintsJRadioButtonNestProgram.gridx = 1; 
-            constraintsJRadioButtonNestProgram.gridy = 4;
-            constraintsJRadioButtonNestProgram.anchor = GridBagConstraints.WEST;
-            constraintsJRadioButtonNestProgram.ipadx = 1;
-            constraintsJRadioButtonNestProgram.insets = new Insets(9, 105, 10, 101);
-            add(getJRadioButtonNestControl(), constraintsJRadioButtonNestProgram);
-            
             ConfigurationSource masterConfigSource =
                 YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
             boolean honeywellEnabled =
@@ -200,14 +171,12 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             if (honeywellEnabled) {
                 GridBagConstraints constraintsJRadioButtonHoneywellProgram = new GridBagConstraints();
                 constraintsJRadioButtonHoneywellProgram.gridx = 1;
-                constraintsJRadioButtonHoneywellProgram.gridy = 5;
+                constraintsJRadioButtonHoneywellProgram.gridy = 4;
                 constraintsJRadioButtonHoneywellProgram.anchor = GridBagConstraints.WEST;
                 constraintsJRadioButtonHoneywellProgram.ipadx = 1;
                 constraintsJRadioButtonHoneywellProgram.insets = new Insets(9, 105, 151, 101);
                 add(getJRadioButtonHoneywellControl(), constraintsJRadioButtonHoneywellProgram);
             }
-
-            
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -215,7 +184,6 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
         buttonGroup.add( getJRadioButtonSepControl() );
         buttonGroup.add( getJRadioButtonEcobeeControl() );
         buttonGroup.add( getJRadioButtonHoneywellControl() );
-        buttonGroup.add( getJRadioButtonNestControl() );
     
         // default selected button
         getJRadioButtonDirectControl().setSelected(true);

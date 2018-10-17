@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="NEST" displayGroup="Demand Response" displayName="Nest" xsi:noNamespaceSchemaLocation="../pao.xsd">
-    <tags>
-        <tag name="DB_EDITOR_INCOMPATIBLE"/>
-        <tag name="ASSET_DETAIL_DISPLAYABLE"/>
-    </tags>
-</pao>

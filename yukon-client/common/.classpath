@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="All Common Tests.launch" kind="src" path="test/unit"/>
 	<classpathentry kind="lib" path="/third-party/sqljdbc42.jar">
 		<attributes>
@@ -370,11 +370,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.9.6-sources.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.18.2.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.18.2-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/objenesis-1.2.jar"/>

@@ -420,11 +420,5 @@
       <sequence name="PaoNote">
         <table name="PaoNote" identitycolumn="NoteId" initsequence="true"/>
       </sequence>
-      <sequence name="NestSync">
-        <table name="NestSync" identitycolumn="SyncId" initsequence="true"/>
-      </sequence>
-      <sequence name="NestSyncDetail">
-        <table name="NestSyncDetail" identitycolumn="SyncDetailId" initsequence="true"/>
-      </sequence>
   </sequencetable>
 </sequencetables>

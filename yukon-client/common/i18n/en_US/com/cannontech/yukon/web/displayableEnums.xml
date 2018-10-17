@@ -184,7 +184,7 @@
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET">Dashboard Widgets</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET.description">System-wide dashboard widget settings</entry>
     
-    <!-- VisibilityEnum -->
+    <!-- VisiblityEnum -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>
     <entry key="yukon.web.modules.dashboard.visibility.PUBLIC">Public</entry>
     <entry key="yukon.web.modules.dashboard.visibility.PRIVATE">Private</entry>
@@ -411,12 +411,6 @@
     <entry key="yukon.common.setting.HONEYWELL_CLIENTID.description">ClientId to get access token from Honeywell service.</entry>
     <entry key="yukon.common.setting.HONEYWELL_SECRET">Honeywell secret</entry>
     <entry key="yukon.common.setting.HONEYWELL_SECRET.description">Secret to get access token from Honeywell service.</entry>
-    <entry key="yukon.common.setting.NEST_SERVER_URL">Nest API URL</entry>
-    <entry key="yukon.common.setting.NEST_SERVER_URL.description">URL to connect to the Nest service.</entry>
-    <entry key="yukon.common.setting.NEST_USERNAME">Nest Username</entry>
-    <entry key="yukon.common.setting.NEST_USERNAME.description">Username to authenticate with the Nest service.</entry>
-    <entry key="yukon.common.setting.NEST_PASSWORD">Nest Password</entry>
-    <entry key="yukon.common.setting.NEST_PASSWORD.description">Password to authenticate with the Nest service.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>

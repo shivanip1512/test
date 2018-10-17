@@ -1295,7 +1295,6 @@ public void setSwitchType(PaoType deviceType)
 	      deviceType == PaoType.LM_GROUP_DIGI_SEP ||
 	      deviceType == PaoType.LM_GROUP_ECOBEE ||
 	      deviceType == PaoType.LM_GROUP_HONEYWELL ||
-          deviceType == PaoType.LM_GROUP_NEST ||
 	      deviceType == PaoType.LM_GROUP_RFN_EXPRESSCOMM) );
 	
 

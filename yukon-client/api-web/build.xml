@@ -56,7 +56,6 @@
         <include name="jackson-annotations-2.9.6.jar"/>
         <include name="jackson-core-2.9.6.jar"/>
         <include name="jackson-databind-2.9.6.jar"/>
-    	<include name="jackson-dataformat-csv-2.9.6.jar"/>
         <include name="snakeyaml-1.18.2.jar"/>
         <include name="jasypt-1.9.2.jar"/>
         <include name="jaxm-api.jar"/>

@@ -32,8 +32,7 @@ public enum HardwareConfigType implements DisplayableEnum {
     SA_SIMPLE(5, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     SEP(6, PaoTag.SEP_PROGRAM_ENROLLMENT, false),
     ECOBEE(7, PaoTag.ECOBEE_PROGRAM_ENROLLMENT, false),
-    HONEYWELL(8, PaoTag.HONEYWELL_PROGRAM_ENROLLMENT, false),
-    NEST(9, PaoTag.NEST_PROGRAM_ENROLLMENT, false)
+    HONEYWELL(8, PaoTag.HONEYWELL_PROGRAM_ENROLLMENT, false)
     ;
     
     private int hardwareConfigTypeId;

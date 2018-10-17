@@ -116,10 +116,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     HONEYWELL_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://qtccna.honeywell.com/TrueHomeStage/"),
     HONEYWELL_CLIENTID(GlobalSettingSubCategory.DR, stringType(), ""),
     HONEYWELL_SECRET(GlobalSettingSubCategory.DR, stringType(), ""),
-    NEST_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://enterprise-api.nest.com/api"),
-    NEST_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
-    NEST_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
-
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
@@ -217,9 +213,7 @@ public enum GlobalSettingType implements DisplayableEnum {
             OADR_KEYSTORE_PASSWORD,
             OADR_TRUSTSTORE_PASSWORD,
             SMTP_USERNAME,
-            SMTP_PASSWORD,
-            NEST_USERNAME,
-            NEST_PASSWORD);
+            SMTP_PASSWORD);
 
     }
 

@@ -57,7 +57,6 @@ public enum PaoTag {
     RFN_POINT_CALCULATION("RFN Point Calculation"), // This may need to be split into one tag per point and/or used for plc devices later
     ECOBEE_PROGRAM_ENROLLMENT("ecobee Program Enrollment"),
     HONEYWELL_PROGRAM_ENROLLMENT("Honeywell Program Enrollment"),
-    NEST_PROGRAM_ENROLLMENT("Nest Program Enrollment"),
     ASSET_DETAIL_DISPLAYABLE("Asset Detail Displayable"),
     RELAY_DETAIL_DISPLAYABLE("Relay Detail Displayable"),
     RTU_DETAIL_DISPLAYABLE("RTU Detail Displayable"),

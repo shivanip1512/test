@@ -147,10 +147,4 @@
             factory-method="createInstance">
         <qualifier value="honeywell"/>
     </bean>
-    
-    <bean class="com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl"/>
-    <bean class="com.cannontech.dr.nest.service.impl.NestSyncServiceImpl"/>
-    <bean class="com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl"/>
-    <bean class="com.cannontech.dr.nest.service.impl.NestServiceImpl"/>
-    <bean class="com.cannontech.dr.nest.dao.impl.NestDaoImpl"/>
 </beans>

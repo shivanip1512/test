@@ -79,7 +79,6 @@ public enum JwsJnlp {
                 "jackson-annotations-2.9.6.jar",
                 "jackson-core-2.9.6.jar",
                 "jackson-databind-2.9.6.jar",
-                "jackson-dataformat-csv-2.9.6.jar",
                 "jasypt-1.9.2.jar",
                 "jaxb-api.jar",
                 "jaxb-impl.jar",
