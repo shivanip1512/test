@@ -190,9 +190,10 @@ Function Uninstall-Yukon() {
 
     Write-Host  "Uninstall EIM"
     Remove-Item -Path "C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina" -Recurse
-        
+
+    # Note that Start-Process is used here to ensure the script waits while the uninstall runs.
     Write-Host "Uninstall Yukon"
-    C:\Yukon\YukonInstall\setup.exe  -uninst -s -f1C:\uninstall.iss
+    $result = Start-Process C:\Yukon\YukonInstall\setup.exe -ArgumentList "-uninst -s -f1C:\uninstall.iss" -Wait -PassThru
 }
 
 Function Start-YukonServices() {
