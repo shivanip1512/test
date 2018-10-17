@@ -39,6 +39,8 @@ yukon.dr.nest = (function () {
                     //update the badge with the correct number of results
                     var count = $('#badgeCount').val();
                     $('.js-count').html(count);
+                    //hide the cog if no discrepancies
+                    $('.js-cog-menu').toggleClass('dn', count == 0);
                 });  
             });
             

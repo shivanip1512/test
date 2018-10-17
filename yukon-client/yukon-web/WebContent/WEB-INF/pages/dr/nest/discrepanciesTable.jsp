@@ -48,14 +48,14 @@
                     </tr>
                 </c:forEach>
             </table>
-            <tags:pagingResultsControls result="${discrepancies}" adjustPageCount="true" thousands="true"/>
+
         </c:when>
         <c:otherwise>
             <br/>
             <span class="empty-list"><i:inline key=".noDiscrepancies"/></span>
-            <%--This is needed otherwise we lose track of the page size that was selected--%>
-            <tags:pagingResultsControls result="${discrepancies}" adjustPageCount="true" thousands="true" classes="dn"/>
         </c:otherwise>
     </c:choose>
+    <c:set var="displayClass" value="${discrepancies.hitCount > 0 ? '' : 'dn'}"/>
+    <tags:pagingResultsControls result="${discrepancies}" adjustPageCount="true" thousands="true" classes="${displayClass}"/>
     
 </cti:msgScope>

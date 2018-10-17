@@ -182,7 +182,6 @@ public class NestController {
     @RequestMapping(value="/nest/download", method=RequestMethod.GET)
     public void download(NestSyncType[] types, int syncTime) throws IOException {
         //TODO: Create CSV of filtered discrepancies
-        String test = "TESTING";
     }
     
     @RequestMapping(value="/nest/settings", method=RequestMethod.POST)

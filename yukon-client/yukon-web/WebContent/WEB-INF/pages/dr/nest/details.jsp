@@ -23,7 +23,7 @@
                             <tags:timeSlider startName="scheduledSyncTime" startValue="${scheduledSyncTime}" timeFormat="HHMM" maxValue="1425" displayTimeToLeft="true"/>
                         </span>
                         <span class="fr">
-                            <cti:button nameKey="save" type="submit" style="margin-left:20px;"/>            
+                            <cti:button nameKey="save" type="submit" style="margin-left:20px;" classes="primary action"/>            
                             <cti:button nameKey="syncNow" href="nest/syncNow" title="${syncTitle}" disabled="${!syncNowEnabled}"/>
                         </span>
                     </span>
@@ -70,7 +70,8 @@
         
             <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
             <span class="badge js-count">${discrepancies.hitCount}</span>&nbsp;<i:inline key=".details.nestSyncDiscrepancies.title"/>
-            <span class="js-cog-menu">
+            <c:set var="displayCogClass" value="${disrepancies.hitCount > 0 ? '' : 'dn'}"/>
+            <span class="js-cog-menu ${displayCogClass}">
                 <cm:dropdown icon="icon-cog">
                     <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
                 </cm:dropdown>
