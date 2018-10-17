@@ -178,6 +178,9 @@ Function Install-Yukon() {
 Function RunSetupExe() {
     Write-Host "Running setup.exe"
     $result = Start-Process C:\Yukon\YukonInstall\setup.exe -ArgumentList "-s -f1C:\setup.iss -f2C:\Yukon\YukonInstall\installLog.log" -Wait -PassThru
+
+    # We seem to have issues with whatever runs after this, perhaps this sleep will fix it.
+    Start-Sleep -s 15
 }
 
 Function Uninstall-Yukon() {
