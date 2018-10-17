@@ -13,8 +13,8 @@
             <table class="compact-results-table row-highlighting">
                 <tr>
                     <tags:sort column="${type}" />
-                    <tags:sort column="${reason}" />
-                    <tags:sort column="${action}" />
+                    <th><i:inline key=".reason"/></th>
+                    <th><i:inline key=".action"/></th>
                 </tr>
                 <c:forEach var="discrepancy" items="${discrepancies.resultList}">
                     <tr>
