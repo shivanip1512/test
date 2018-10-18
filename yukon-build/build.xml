@@ -189,7 +189,7 @@
             </path>
             
             <sequential>
-                <signjar jar="@{file}" alias="cannon5" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore"/>
+                <signjar jar="@{file}" alias="cannon6" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore" tsaurl="http://timestamp.digicert.com"/>
             </sequential>
         </for>
 
