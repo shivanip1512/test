@@ -110,7 +110,15 @@ public class NestDaoImpl implements NestDao {
         sql.append("FROM NestSync");
         sql.append("ORDER BY SyncId Desc");
         return jdbcTemplate.query(sql, nestSyncRowMapper);
-
+    }
+    
+    @Override
+    public NestSync getNestSyncById(int syncId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SyncId, SyncStartTime, SyncStopTime");
+        sql.append("FROM NestSync");
+        sql.append("WHERE SyncId").eq(syncId);
+        return jdbcTemplate.queryForObject(sql, nestSyncRowMapper);
     }
     
     @Override

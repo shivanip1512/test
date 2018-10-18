@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
@@ -53,7 +54,9 @@ import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.dr.model.NestSyncSettings;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 @Controller
 public class NestController {
@@ -180,8 +183,37 @@ public class NestController {
     }
     
     @RequestMapping(value="/nest/download", method=RequestMethod.GET)
-    public void download(NestSyncType[] types, int syncTime) throws IOException {
-        //TODO: Create CSV of filtered discrepancies
+    public void download(NestSyncType[] types, int syncId, YukonUserContext userContext,
+                         @DefaultSort(dir=Direction.asc, sort="type") SortingParameters sorting, 
+                         @DefaultItemsPerPage(value=250) PagingParameters paging,
+                         HttpServletResponse response) throws IOException {
+        paging = PagingParameters.EVERYTHING;
+        SyncSortBy sortBy = SyncSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        List<NestSyncType> typeList = new ArrayList<NestSyncType>();
+        if (types != null) {
+            typeList = Arrays.asList(types);
+        }
+        SearchResults<NestSyncDetail> searchResult = nestDao.getNestSyncDetail(syncId, paging, sortBy.getValue(), dir, typeList);
+        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = new String[9];
+
+        headerRow[0] = accessor.getMessage(SyncSortBy.type);
+        headerRow[1] = accessor.getMessage(SyncSortBy.reason);
+        headerRow[2] = accessor.getMessage(SyncSortBy.action);
+
+        List<String[]> dataRows = Lists.newArrayList();
+        for (NestSyncDetail detail: searchResult.getResultList()) {
+            String[] dataRow = new String[3];
+            dataRow[0] = accessor.getMessage(baseKey + detail.getType().name());
+            dataRow[1] = accessor.getMessage(baseKey + detail.getReasonKey(), detail.getReasonValue());
+            dataRow[2] = accessor.getMessage(baseKey + detail.getActionKey(), detail.getActionValue());
+            dataRows.add(dataRow);
+        }
+        NestSync syncInfo = nestDao.getNestSyncById(syncId);
+        String syncTime = dateFormattingService.format(syncInfo.getStartTime(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "nestSync_" + syncTime + ".csv");
     }
     
     @RequestMapping(value="/nest/settings", method=RequestMethod.POST)

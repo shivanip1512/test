@@ -59,4 +59,9 @@ public interface NestDao {
      */
     SearchResults<NestSyncDetail> getNestSyncDetail(int syncId, PagingParameters paging, SortBy sortBy, Direction direction, List<NestSyncType> syncTypes);
 
+    /**
+     * returns the NestSync by Sync Id
+     */
+    NestSync getNestSyncById(int syncId);
+
 }
