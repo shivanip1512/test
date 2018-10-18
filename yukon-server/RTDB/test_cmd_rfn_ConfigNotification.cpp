@@ -241,8 +241,8 @@ BOOST_AUTO_TEST_CASE(test_request)
         const auto rcv = cmd.decodeCommand(execute_time, response);
 
         std::string exp = "Interval recording configuration:"
-            "\n    Recording interval : 7200 seconds"
-            "\n    Reporting interval : 86400 seconds"
+            "\n    Recording interval : 7,200 seconds"
+            "\n    Reporting interval : 86,400 seconds"
             "\n    Interval metrics   : 1, 2, 3, 4"
             "\n    Coincident metrics : 9, 10, 11"
             "\nChannel selection configuration:"
@@ -403,8 +403,8 @@ BOOST_AUTO_TEST_CASE(test_channel_configuration)
 
     std::string exp = "Device Configuration Request:"
         "\nInterval recording configuration:"
-        "\n    Recording interval : 7200 seconds"
-        "\n    Reporting interval : 86400 seconds"
+        "\n    Recording interval : 7,200 seconds"
+        "\n    Reporting interval : 86,400 seconds"
         "\n    Interval metrics   : 1, 2, 3, 4"
         "\n    Coincident metrics : 9, 10, 11"
         "\nChannel selection configuration:"
@@ -454,8 +454,8 @@ BOOST_AUTO_TEST_CASE(test_channel_configuration_no_coincidents)
 
     std::string exp = "Device Configuration Request:"
         "\nInterval recording configuration:"
-        "\n    Recording interval : 7200 seconds"
-        "\n    Reporting interval : 86400 seconds"
+        "\n    Recording interval : 7,200 seconds"
+        "\n    Reporting interval : 86,400 seconds"
         "\n    Interval metrics   : 1, 2, 3, 4"
         "\nChannel selection configuration:"
         "\n    Midnight metrics : 5, 6, 7, 8";
@@ -538,8 +538,8 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\nDemand freeze configuration:"
         "\n    Demand freeze day: 32"
         "\nInterval recording configuration:"
-        "\n    Recording interval : 7200 seconds"
-        "\n    Reporting interval : 86400 seconds"
+        "\n    Recording interval : 7,200 seconds"
+        "\n    Reporting interval : 86,400 seconds"
         "\n    Interval metrics   : 1, 2, 3, 4"
         "\n    Coincident metrics : 9, 10, 11"
         "\nChannel selection configuration:"
