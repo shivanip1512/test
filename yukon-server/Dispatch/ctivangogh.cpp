@@ -1510,7 +1510,7 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
         // See if I know about this point ID
         if(const CtiPointSPtr TempPoint = PointMgr.getCachedPoint(aPD.getId()))
         {
-            if ( CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*TempPoint) )
+            if ( auto pDyn = PointMgr.getDynamic(*TempPoint) )
             {
                 const bool hasChanged = hasPointDataChanged(aPD, *pDyn);
                 const bool isDuplicate = isDuplicatePointData(aPD, *pDyn);

@@ -691,7 +691,8 @@ std::vector<std::unique_ptr<CtiTableRawPointHistory>> CtiPointClientManager::sca
             {
                 if( CtiDynamicPointDispatchSPtr pDyn = getDynamic(*pPt) )
                 {
-                    // Make sure the point is not disabled.
+                    // Make sure the point is not disabled.  We kept the tag check here in order to minimize
+                    //  the effect on existing systems. See YUK-18824 for details.
                     if( !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE) )
                     {
                         if( pPt->getArchiveType() == ArchiveTypeOnTimer           ||
