@@ -222,9 +222,6 @@
     <ClCompile Include="verification_objects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win_helper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="words.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

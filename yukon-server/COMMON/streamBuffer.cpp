@@ -157,15 +157,25 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const CtiDate& date)     { swapOrAppend(date.asString());   return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const CtiTime& time)     { swapOrAppend(time.asString());   return static_cast<StreamBufferT&>(*this); }
 
-template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::seconds seconds) 
+template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::milliseconds milliseconds)
+{
+    swapOrAppend(commaFormatted(milliseconds.count()) + " ms");
+    return static_cast<StreamBufferT&>(*this);
+}
+
+template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::seconds seconds)
 { 
-    swapOrAppend(std::to_string(seconds.count()) + " seconds");   
+    const auto suffix = seconds.count() == 1 ? " second" : " seconds";
+
+    swapOrAppend(commaFormatted(seconds.count()) + suffix);
     return static_cast<StreamBufferT&>(*this); 
 }
 
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::minutes minutes)
 {
-    swapOrAppend(std::to_string(minutes.count()) + " minutes");
+    const auto suffix = minutes.count() == 1 ? " minute" : " minutes";
+
+    swapOrAppend(commaFormatted(minutes.count()) + suffix);
     return static_cast<StreamBufferT&>(*this);
 }
 

@@ -10,6 +10,7 @@
 #include "thread_monitor.h"
 #include "portglob.h"
 #include "GlobalSettings.h"
+#include "ServiceMetricReporter.h"
 
 #include "unsolicited_handler.h"
 #include "StatisticsManager.h"
@@ -40,13 +41,15 @@ void DispatchMsgHandlerThread()
     CtiTime         LastThreadMonitorTime, NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous;
     CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
-    CtiTime         nextCPULoadReportTime;
 
     MessageCounter mc("Dispatch->Porter");
 
     long pointID = ThreadMonitor.getProcessPointID();
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::PorterCPU );
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::PorterMemory );
+    ServiceMetrics::MetricReporter metricReporter {
+        Cti::ServiceMetrics::CpuPointOffsets::Porter,
+        Cti::ServiceMetrics::MemoryPointOffsets::Porter,
+        "Porter",
+        PORTER_APPLICATION_NAME };
 
     CTILOG_INFO(dout, "DispatchMsgHandlerThd started");
 
@@ -221,23 +224,7 @@ void DispatchMsgHandlerThread()
                 }
             }
 
-            if(TimeNow > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
-            {
-                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                    AnalogPointType, "Porter Usage");
-                data->setSource(PORTER_APPLICATION_NAME);
-                VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
-
-                data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                    NormalQuality, AnalogPointType, "" );
-                data->setSource(PORTER_APPLICATION_NAME);
-                VanGoghConnection.WriteConnQue( data.release(), CALLSITE );
-
-                Cti::reportSystemMetrics( CompileInfo );
-
-                nextCPULoadReportTime = TimeNow + 60;    // Wait another 60 seconds
-            }
-
+            metricReporter.reportCheck(CompileInfo, VanGoghConnection);
         }
         catch (boost::thread_interrupted &)
         {

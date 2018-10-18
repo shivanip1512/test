@@ -8,7 +8,7 @@
 #include "msg_reg.h"
 #include "amq_constants.h"
 #include "module_util.h"
-#include "win_helper.h"
+#include "ServiceMetricReporter.h"
 
 #include <time.h>
 #include <algorithm>
@@ -95,11 +95,13 @@ void CtiMCServer::run()
         if( init() )
         {
             const long threadMonitorPointId = ThreadMonitor.getProcessPointID();
-            long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::MacsCPU);
-            long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::MacsMemory);
+            Cti::ServiceMetrics::MetricReporter metricReporter {
+                Cti::ServiceMetrics::CpuPointOffsets::Macs,
+                Cti::ServiceMetrics::MemoryPointOffsets::Macs,
+                "MACS",
+                MACS_APPLICATION_NAME };
 
             CtiTime LastThreadMonitorTime, NextThreadMonitorReportTime;
-            CtiTime nextCPULoadReportTime;
 
             CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
 
@@ -107,8 +109,6 @@ void CtiMCServer::run()
             while(true)
             {
                 dout->poke();  //  called roughly each minute (see _main_queue.getQueue() below)
-
-                Cti::reportSystemMetrics( CompileInfo );
 
                 // Do thread monitor stuff
                 if( threadMonitorPointId != 0 )
@@ -129,22 +129,7 @@ void CtiMCServer::run()
                     }
                 }
 
-                if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
-                {
-                    auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(),
-                        NormalQuality, AnalogPointType, "");
-                    data->setSource(MACS_APPLICATION_NAME);
-                    _dispatchConnection.WriteConnQue(data.release(), CALLSITE);
-
-                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                        NormalQuality, AnalogPointType, "" );
-                    data->setSource(MACS_APPLICATION_NAME);
-                    _dispatchConnection.WriteConnQue( data.release(), CALLSITE );
-
-                    Cti::reportSystemMetrics( CompileInfo );
-
-                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
-                }
+                metricReporter.reportCheck(CompileInfo, _dispatchConnection);
 
                 // adjust the timeout if the next event time is imminent
                 adjustTimeout(timeout);

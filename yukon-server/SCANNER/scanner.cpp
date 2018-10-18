@@ -43,6 +43,7 @@
 #include "millisecond_timer.h"
 #include "GlobalSettings.h"
 #include "win_helper.h"
+#include "ServiceMetricReporter.h"
 #include "MessageCounter.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -399,11 +400,13 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         Cti::Messaging::ActiveMQ::Queues::InboundQueue::ScannerInMessages);
 
     long pointID = ThreadMonitor.getProcessPointID();
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::ScannerCPU);
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::ScannerMemory);
+    Cti::ServiceMetrics::MetricReporter metricReporter {
+        Cti::ServiceMetrics::CpuPointOffsets::Scanner,
+        Cti::ServiceMetrics::MemoryPointOffsets::Scanner,
+        "Scanner",
+        SCANNER_APPLICATION_NAME };
 
     CtiTime NextThreadMonitorReportTime;
-    CtiTime nextCPULoadReportTime;
 
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
 
@@ -462,22 +465,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 Sleep(1000);
             }
 
-            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)
-            {
-                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                    AnalogPointType, "Scanner Usage");
-                data->setSource(SCANNER_APPLICATION_NAME);
-                VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
-
-                data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                    NormalQuality, AnalogPointType, "" );
-                data->setSource(SCANNER_APPLICATION_NAME);
-                VanGoghConnection.WriteConnQue( data.release(), CALLSITE );
-
-                Cti::reportSystemMetrics( CompileInfo );
-
-                nextCPULoadReportTime = CtiTime::now() + 60;
-            }
+            metricReporter.reportCheck(CompileInfo, VanGoghConnection);
         }
     }
     while(NextScan[REMOTE_SCAN] == MAXTime && NextScan[DLC_LP_SCAN] == MAXTime && !ScannerQuit);
@@ -538,22 +526,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             }
         }
 
-        if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)
-        {
-            auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality, 
-                AnalogPointType, "Scanner Usage");
-            data->setSource(SCANNER_APPLICATION_NAME);
-            VanGoghConnection.WriteConnQue(data.release(), CALLSITE);
-
-            data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                NormalQuality, AnalogPointType, "" );
-            data->setSource(SCANNER_APPLICATION_NAME);
-            VanGoghConnection.WriteConnQue( data.release(), CALLSITE );
-
-            Cti::reportSystemMetrics( CompileInfo );
-
-            nextCPULoadReportTime = CtiTime::now() + 60;
-        }
+        metricReporter.reportCheck(CompileInfo, VanGoghConnection);
 
         // release the lock
         releaseMutex(__LINE__);

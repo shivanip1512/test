@@ -41,7 +41,7 @@
 #include "mgr_holiday.h"
 #include "mgr_paosched.h"
 #include "mgr_season.h"
-#include "win_helper.h"
+#include "ServiceMetricReporter.h"
 #include "MessageCounter.h"
 #include "database_reader.h"
 #include "CapControlPredicates.h"
@@ -460,8 +460,11 @@ void CtiCapController::controlLoop()
         CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( CtiTime(),  900);
 
         long pointID = ThreadMonitor.getProcessPointID();
-        long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CapControlCPU);
-        long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CapControlMemory);
+        Cti::ServiceMetrics::MetricReporter metricReporter {
+            Cti::ServiceMetrics::CpuPointOffsets::CapControl,
+            Cti::ServiceMetrics::MemoryPointOffsets::CapControl,
+            "CapControl",
+            CAPCONTROL_APPLICATION_NAME };
 
         CtiTime NextThreadMonitorReportTime;
         CtiTime nextCPULoadReportTime;
@@ -926,22 +929,7 @@ void CtiCapController::controlLoop()
                 }
             }
 
-            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
-            {
-                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                    AnalogPointType, "CapControl Usage");
-                data->setSource(CAPCONTROL_APPLICATION_NAME);
-                getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
-
-                data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                    NormalQuality, AnalogPointType, "" );
-                data->setSource(CAPCONTROL_APPLICATION_NAME);
-                getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
-
-                Cti::reportSystemMetrics( CompileInfo );
-
-                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
-            }
+            metricReporter.reportCheck(CompileInfo, *getDispatchConnection());
         }
     }
     catch ( boost::thread_interrupted & )

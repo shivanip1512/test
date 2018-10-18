@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;.;..\common\include;..\service\include;.\include;\include;$(BOOST)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;.;..\common\include;..\service\include;..\message\include;.\include;\include;$(BOOST)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_DLL_SERVICE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=service;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -151,7 +151,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;pdh.lib;psapi.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -181,7 +181,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;.;..\common\include;..\service\include;.\include;\include;$(BOOST)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;.;..\common\include;..\service\include;..\message\include;.\include;\include;$(BOOST)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DLL_SERVICE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=service;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -199,7 +199,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;pdh.lib;psapi.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -350,12 +350,15 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="boost_assert.cpp" />
     <ClCompile Include="cservice.cpp">
     </ClCompile>
     <ClCompile Include="cserviceconfig.cpp">
     </ClCompile>
     <ClCompile Include="eventlog.cpp">
     </ClCompile>
+    <ClCompile Include="ServiceMetricQuery.cpp" />
+    <ClCompile Include="ServiceMetricReporter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cservice.h" />
@@ -363,6 +366,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\EventLog.h" />
     <ClInclude Include="include\Monitor.h" />
     <ClInclude Include="include\precomp.h" />
+    <ClInclude Include="include\ServiceMetricQuery.h" />
+    <ClInclude Include="include\ServiceMetricReporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

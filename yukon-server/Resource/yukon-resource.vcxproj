@@ -351,6 +351,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\yukon-shared\src\main\resources\yukonPointMappingIcd.yaml" />
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\pao.xsd" />
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\deviceConfigurationCategory.xsd" />
     <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\override.xsd" />

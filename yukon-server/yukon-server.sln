@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctimsg", "Message\ctimsg.vcxproj", "{16F6AC9E-FECA-1BAD-FA55-8C214B245715}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -710,6 +710,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctisvr", "Server\ctisvr.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "Service\service.vcxproj", "{6591599C-FECA-1BAD-0F57-FF4675250F55}"
 	ProjectSection(ProjectDependencies) = postProject
+		{749B109C-FECA-1BAD-4657-EE4C0659BB9E} = {749B109C-FECA-1BAD-4657-EE4C0659BB9E}
+		{16F6AC9E-FECA-1BAD-FA55-8C214B245715} = {16F6AC9E-FECA-1BAD-FA55-8C214B245715}
 		{6362B0A7-FECA-1BAD-E66C-F9B50000002E} = {6362B0A7-FECA-1BAD-E66C-F9B50000002E}
 	EndProjectSection
 EndProject
@@ -1375,5 +1377,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B00A7AFC-944E-40C6-80E2-CC796A63CCE9}
 	EndGlobalSection
 EndGlobal

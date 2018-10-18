@@ -19,7 +19,7 @@
 #include "database_reader.h"
 #include "ThreadStatusKeeper.h"
 #include "GlobalSettings.h"
-#include "win_helper.h"
+#include "ServiceMetricReporter.h"
 
 #include "calclogicsvc.h"
 #include "calcthread.h"
@@ -187,13 +187,16 @@ void CtiCalcLogicService::Run( )
 
     ThreadMonitor.start(CtiThreadMonitor::Calc);
     CtiTime NextThreadMonitorReportTime;
-    CtiTime nextCPULoadReportTime;
+
+    Cti::ServiceMetrics::MetricReporter metricReporter {
+        Cti::ServiceMetrics::CpuPointOffsets::Calc,
+        Cti::ServiceMetrics::MemoryPointOffsets::Calc,
+        "Calc", 
+        CALCLOGIC_APPLICATION_NAME };
 
     CtiThreadMonitor::State previous;
 
     long pointID = ThreadMonitor.getProcessPointID();
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CalcCPU );
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::CalcMemory);
 
     if(_running_in_console)
     {
@@ -343,23 +346,7 @@ void CtiCalcLogicService::Run( )
 
                             tempCalcThread.reset();
 
-                            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
-                            {
-                                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                                    AnalogPointType, "Calc Usage");
-                                data->setSource(CALCLOGIC_APPLICATION_NAME);
-                                dispatchConnection->WriteConnQue(data.release(), CALLSITE);
-
-                                data = std::make_unique<CtiPointDataMsg>( memoryPointID,
-                                    static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                                    NormalQuality, AnalogPointType, "" );
-                                data->setSource(CALCLOGIC_APPLICATION_NAME);
-                                dispatchConnection->WriteConnQue( data.release(), CALLSITE );
-
-                                Cti::reportSystemMetrics( CompileInfo );
-
-                                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
-                            }
+                            metricReporter.reportCheck(CompileInfo, *dispatchConnection);
 
                             Sleep(15000);
                             continue;
@@ -446,23 +433,7 @@ void CtiCalcLogicService::Run( )
 
                     threadStatus.monitorCheck( CtiThreadMonitor::ExtendedMonitorTime );
 
-                    if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)     // Time to update CPU utilization Point?
-                    {
-                        auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                            AnalogPointType, "Calc Usage");
-                        data->setSource(CALCLOGIC_APPLICATION_NAME);
-                        dispatchConnection->WriteConnQue(data.release(), CALLSITE);
-
-                        data = std::make_unique<CtiPointDataMsg>( memoryPointID,
-                            static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                            NormalQuality, AnalogPointType, "" );
-                        data->setSource(CALCLOGIC_APPLICATION_NAME);
-                        dispatchConnection->WriteConnQue( data.release(), CALLSITE );
-
-                        Cti::reportSystemMetrics( CompileInfo );
-
-                        nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
-                    }
+                    metricReporter.reportCheck(CompileInfo, *dispatchConnection);
 
                     Sleep(1000);
                     ::std::time(&timeNow);

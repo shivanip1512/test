@@ -2,7 +2,6 @@
 
 #include <windows.h>
 #include <string>
-#include "pdh.h"
 
 #include "numstr.h"
 
@@ -33,19 +32,5 @@ inline std::string getSystemErrorMessage(const DWORD errorCode)
     ::LocalFree(errorMessage);
     return result;
 }
-
-IM_EX_CTIBASE long long getPrivateBytes();
-
-struct processTimes_t {
-    ULONGLONG creationTime;
-    ULONGLONG exitTime;
-    ULONGLONG kernelTime;
-    ULONGLONG userTime;
-    ULONGLONG currentTime;
-};
-
-IM_EX_CTIBASE processTimes_t getProcessTimes(void);
-
-IM_EX_CTIBASE double pdhGetCpuTotal(void);
 
 } // namespace Cti

@@ -238,32 +238,3 @@ enum PointQuality_t
    ConstantQuality,
    EstimatedQuality,
 };
-
-// SystemMetric Point IDs
-#define SYSTEM_DEVICE 0
-enum SystemDevicePointOffsets
-{
-    PorterCPU = 1007,
-    DispatchCPU = 1008,
-    ScannerCPU = 1009,
-    CalcCPU = 1010,
-    CapControlCPU = 1011,
-    FDRCPU = 1012,
-    MacsCPU = 1013,
-    //     NotificationServerCPU = 1014,        // Not used in the C++ code, only in Java
-    //     ServiceManagerCPU = 1015,            // Not used in the C++ code, only in Java
-    //     WebServerCPU = 1016,                 // Not used in the C++ code, only in Java
-    PorterMemory = 1017,
-    DispatchMemory = 1018,
-    ScannerMemory = 1019,
-    CalcMemory = 1020,
-    CapControlMemory = 1021,
-    FDRMemory = 1022,
-    MacsMemory = 1023,
-    //     NotificationServerMemory = 1024,     // Not used in the C++ code, only in Java
-    //     ServiceManagerMemory = 1025,         // Not used in the C++ code, only in Java
-    //     WebServerMemory = 1026,              // Not used in the C++ code, only in Java
-    LoadManager = 1027,
-    LoadManagerCPU = 1028,
-    LoadManagerMemory = 1029,
-} ;

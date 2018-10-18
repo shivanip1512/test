@@ -31,7 +31,7 @@
 #include "amq_constants.h"
 #include "thread_monitor.h"
 #include "GlobalSettings.h"
-#include "win_helper.h"
+#include "ServiceMetricReporter.h"
 #include "MessageCounter.h"
 #include "LMScheduledMessageHolder.h"
 
@@ -215,8 +215,11 @@ void CtiLoadManager::controlLoop()
         ThreadMonitor.start(CtiThreadMonitor::LoadManager);
 
         long pointID = ThreadMonitor.getProcessPointID();
-        long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::LoadManagerCPU );
-        long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::LoadManagerMemory );
+        Cti::ServiceMetrics::MetricReporter metricReporter {
+            Cti::ServiceMetrics::CpuPointOffsets::LoadManager,
+            Cti::ServiceMetrics::MemoryPointOffsets::LoadManager,
+            "LoadManagement",
+            LOAD_MANAGEMENT_APPLICATION_NAME };
 
         CtiTime NextThreadMonitorReportTime;
         CtiTime nextCPULoadReportTime;
@@ -279,22 +282,7 @@ void CtiLoadManager::controlLoop()
                     }
                 }
 
-                if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
-                {
-                    auto data = std::make_unique<CtiPointDataMsg>( cpuPointID, Cti::getCPULoad(),
-                        NormalQuality, AnalogPointType, "" );
-                    data->setSource( LOAD_MANAGEMENT_APPLICATION_NAME );
-                    getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
-
-                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                        NormalQuality, AnalogPointType, "" );
-                    data->setSource( LOAD_MANAGEMENT_APPLICATION_NAME );
-                    getDispatchConnection()->WriteConnQue( data.release(), CALLSITE );
-
-                    Cti::reportSystemMetrics( CompileInfo );
-
-                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
-                }
+                metricReporter.reportCheck(CompileInfo, *getDispatchConnection());
 
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {

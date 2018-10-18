@@ -38,6 +38,7 @@
 #include "counter.h"
 #include "ctidate.h"
 #include "MessageCounter.h"
+#include "ServiceMetricReporter.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -4433,8 +4434,11 @@ void CtiVanGogh::VGAppMonitorThread()
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     CtiPointDataMsg vgStatusPoint;
     long pointID = ThreadMonitor.getProcessPointID();
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchCPU );
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::DispatchMemory );
+    Cti::ServiceMetrics::MetricReporter metricReporter {
+        Cti::ServiceMetrics::CpuPointOffsets::Dispatch,
+        Cti::ServiceMetrics::MemoryPointOffsets::Dispatch,
+        "Dispatch",
+        DISPATCH_APPLICATION_NAME };
 
     CTILOG_INFO(dout, "Dispatch Application Monitor Thread starting");
 
@@ -4452,22 +4456,7 @@ void CtiVanGogh::VGAppMonitorThread()
             NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2);
         }
 
-        if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
-        {
-            auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                AnalogPointType, "Dispatch Usage");
-            data->setSource(DISPATCH_APPLICATION_NAME);
-            MainQueue_.putQueue(data.release());
-
-            data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                NormalQuality, AnalogPointType, "" );
-            data->setSource(DISPATCH_APPLICATION_NAME);
-            MainQueue_.putQueue(data.release());
-
-            Cti::reportSystemMetrics( CompileInfo );
-
-            nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
-        }
+        metricReporter.reportCheck(CompileInfo, MainQueue_);
     }
 
     if(!bGCtrlC)
@@ -4503,22 +4492,7 @@ void CtiVanGogh::VGAppMonitorThread()
             {
                 Sleep(5000);//5 second sleep
 
-                if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
-                {
-                    auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(), NormalQuality,
-                        AnalogPointType, "");
-                    data->setSource(DISPATCH_APPLICATION_NAME);
-                    MainQueue_.putQueue(data.release());
-
-                    data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                        NormalQuality, AnalogPointType, "" );
-                    data->setSource(DISPATCH_APPLICATION_NAME);
-                    MainQueue_.putQueue(data.release());
-
-                    Cti::reportSystemMetrics( CompileInfo );
-
-                    nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds
-                }
+                metricReporter.reportCheck(CompileInfo, MainQueue_);
 
                 //Check thread watcher status
                 if(pointID!=0)

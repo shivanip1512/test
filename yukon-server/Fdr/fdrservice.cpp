@@ -9,7 +9,7 @@
 #include "msg_cmd.h"
 #include "amq_constants.h"
 #include "module_util.h"
-#include "win_helper.h"
+#include "ServiceMetricReporter.h"
 
 #include <iostream>
 #include <crtdbg.h>
@@ -237,8 +237,11 @@ void CtiFDRService::Run( )
     }
 
     long pointID = ThreadMonitor.getProcessPointID();
-    long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::FDRCPU);
-    long memoryPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::FDRMemory);
+    Cti::ServiceMetrics::MetricReporter metricReporter {
+        Cti::ServiceMetrics::CpuPointOffsets::FDR,
+        Cti::ServiceMetrics::MemoryPointOffsets::FDR,
+        "FDR",
+        FDR_APPLICATION_NAME };
 
     CtiTime NextThreadMonitorReportTime;
     CtiTime nextCPULoadReportTime;
@@ -279,22 +282,7 @@ void CtiFDRService::Run( )
                 }
             }
 
-            if(CtiTime::now() > nextCPULoadReportTime && cpuPointID != 0)  // Only issue utilization every 60 seconds
-            {
-                auto data = std::make_unique<CtiPointDataMsg>(cpuPointID, Cti::getCPULoad(),
-                    NormalQuality, AnalogPointType, "");
-                data->setSource(FDR_APPLICATION_NAME);
-                FdrVanGoghConnection.WriteConnQue(data.release(), CALLSITE);
-
-                data = std::make_unique<CtiPointDataMsg>( memoryPointID, static_cast<double>(Cti::getPrivateBytes()) / 1024.0 / 1024.0,
-                    NormalQuality, AnalogPointType, "" );
-                data->setSource(FDR_APPLICATION_NAME);
-                FdrVanGoghConnection.WriteConnQue( data.release(), CALLSITE );
-
-                Cti::reportSystemMetrics( CompileInfo );
-
-                nextCPULoadReportTime = CtiTime::now() + 60;    // Wait another 60 seconds 
-            }
+            metricReporter.reportCheck(CompileInfo, FdrVanGoghConnection);
 
             while(CtiMessage *msg = FdrVanGoghConnection.ReadConnQue(0))
             {
