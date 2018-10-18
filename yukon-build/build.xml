@@ -176,7 +176,7 @@
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
             tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
 
-        <signjar alias="cannon5" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
+        <signjar jar="@{file}" alias="cannon6" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore" tsaurl="http://timestamp.digicert.com">
             <fileset dir="${client.bin}">
                 <include name="*.jar"/>
                 <exclude name="activation.jar"/>
