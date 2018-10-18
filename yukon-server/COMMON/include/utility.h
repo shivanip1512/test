@@ -11,6 +11,7 @@
 #include "module_util.h"
 
 #include <algorithm>
+#include <numeric>
 #include <vector>
 #include <set>
 
@@ -347,22 +348,9 @@ namespace Cti
         return [](Type test) { return std::greater<Type>()(test, Val); };
     };
 
-    //  Euclidean algorithm - https://en.wikipedia.org/wiki/Euclidean_algorithm
     inline unsigned find_gcd(unsigned x, unsigned y)
     {
-        if( y == 0 )
-        {
-            return x;
-        }
-
-        if( x > y )
-        {
-            return find_gcd(y, x % y);
-        }
-        else
-        {
-            return find_gcd(x, y % x);
-        }
+        return std::gcd(x, y);
     }
 }
 

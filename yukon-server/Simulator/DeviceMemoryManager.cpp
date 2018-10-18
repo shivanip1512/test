@@ -93,9 +93,9 @@ void DeviceMemoryManager::serializeMemoryMapToFile()
 void DeviceMemoryManager::initializeMemoryMapFromFile()
 {
     //filesystem::path dir_path( directoryName + "/" + CtiNumStr(_address) + ".bin" );
-    experimental::filesystem::path dir_path( memoryMapDirectory + "/" + CtiNumStr(_address) + ".bin" );
+    filesystem::path dir_path( memoryMapDirectory + "/" + CtiNumStr(_address) + ".bin" );
 
-    if( experimental::filesystem::exists(dir_path) )
+    if( filesystem::exists(dir_path) )
     {
         _memory_map.clear();
 

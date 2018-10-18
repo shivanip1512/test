@@ -170,7 +170,7 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     }
 
     /* get the Memory */
-    if((Entry = (QUEUEENT*)malloc (sizeof (QUEUEENT))) == NULL)
+    if((Entry = new QUEUEENT) == nullptr)
     {
         CTIReleaseMutexSem (QueueHandle->BlockSem);
         return(ERROR_QUE_NO_MEMORY);
@@ -477,7 +477,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
         {
             QueueElement = QueueHandle->First;
             QueueHandle->First = QueueElement->Next;
-            free (QueueElement);
+            delete QueueElement;
         }
 
         /* Clear out the Priority slots */
@@ -636,7 +636,7 @@ void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous
     }
     QueueHandle->NumElements[Entry->Priority]--;
 
-    free (Entry);
+    delete Entry;
 
     QueueHandle->Elements--;
 

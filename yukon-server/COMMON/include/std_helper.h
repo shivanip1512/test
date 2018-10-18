@@ -194,7 +194,7 @@ boost::iterator_range<T*> arrayToRange(T* arr, size_t len)
 template <typename T>
 T clamp(T min, T input, T max)
 {
-    return std::max(min, std::min(max, input));
+    return std::clamp(input, min, max);
 }
 
 template <int Min, int Max>
