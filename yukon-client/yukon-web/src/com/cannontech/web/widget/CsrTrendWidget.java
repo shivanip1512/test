@@ -30,6 +30,8 @@ import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -174,7 +176,15 @@ public class CsrTrendWidget extends WidgetControllerBase {
                                                         (int) TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS) - 1);
         }
         Integer primaryWeatherLocationId = weatherDataService.getPrimaryWeatherLocationPaoId();
-        mav.addObject("primaryWeatherLocationId", primaryWeatherLocationId);
+        Integer temperaturePointId = null;
+        if (primaryWeatherLocationId != null) {
+            LitePoint litePoint = attributeService.findPointForAttribute(
+                new PaoIdentifier(primaryWeatherLocationId, PaoType.WEATHER_LOCATION), BuiltInAttribute.TEMPERATURE);
+            if (litePoint != null) {
+                temperaturePointId = litePoint.getPointID();
+            }
+        }
+        mav.addObject("temperaturePointId", temperaturePointId);
         mav.addObject("isTemperatureChecked", isTemperatureChecked(request, userContext.getYukonUser()));
         mav.addObject("attributeGraphType", attributeGraphType);
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);

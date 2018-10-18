@@ -239,6 +239,7 @@
     <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
     <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.noTrendsAvailable">No trends available for device</entry>
     <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.meter">Meter</entry>
+    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.temperature">Temperature:</entry>
 
    <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>

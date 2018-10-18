@@ -19,10 +19,6 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -43,12 +39,11 @@ public class ChartController {
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private AttributeService attributeService;
 
     @RequestMapping(value="chart", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> chart(YukonUserContext userContext,
                         String pointIds,
-                        Integer primaryWeatherLocationId,
+                        Integer temperaturePointId,
                         boolean isTemperatureChecked,
                         ChartInterval interval,
                         long startDate,
@@ -68,13 +63,10 @@ public class ChartController {
         List<GraphDetail> graphDetails = new ArrayList<>();
         graphDetails.add(new GraphDetail(pointId, converterType, leftYLabelUnits, 1, "left"));
         
-        if (isTemperatureChecked) {
-            LitePoint litePoint = attributeService.findPointForAttribute(
-                new PaoIdentifier(primaryWeatherLocationId, PaoType.WEATHER_LOCATION), BuiltInAttribute.TEMPERATURE);
-            if (litePoint != null) {
-                String rightYLabelUnits = messageSourceAccessor.getMessage("yukon.common.chart.yLabel.temperature");
-                graphDetails.add(new GraphDetail(litePoint.getPointID(), ConverterType.RAW, rightYLabelUnits, 2, "right"));
-            }
+        if (isTemperatureChecked && temperaturePointId != null) {
+            String rightYLabelUnits = messageSourceAccessor.getMessage("yukon.common.chart.yLabel.temperature");
+            graphDetails.add(
+                new GraphDetail(temperaturePointId, ConverterType.RAW, rightYLabelUnits, 2, "right"));
         }
         Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
         Instant stop = new DateTime(endDate).withTimeAtStartOfDay().plusDays(1).toInstant();

@@ -171,7 +171,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     @Override
     public boolean updateTemperatureSelection(LiteYukonUser user, boolean isSelected) {
         String prefValue = YNBoolean.valueOf(isSelected).getDatabaseRepresentation().toString();
-        this.savePreference(user, UserPreferenceName.TREND_TEMPERATURE , prefValue);
+        this.savePreference(user, UserPreferenceName.TREND_TEMPERATURE, prefValue);
         return true;
     }
 }

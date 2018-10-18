@@ -2,7 +2,7 @@
 
 <%@ attribute name="title" required="true"%>
 <%@ attribute name="pointIds" required="true" description="Comma seperated list of pointIds"%>
-<%@ attribute name="primaryWeatherLocationId" description="Primary Weather Location Id"%>
+<%@ attribute name="temperaturePointId" description="pointId for Primary Weather Location temperature"%>
 <%@ attribute name="isTemperatureChecked" description="Checkbox selection (true or false) for temperature option"%>
 <%@ attribute name="startDate" required="true"%>
 <%@ attribute name="endDate" required="true"%>
@@ -23,7 +23,7 @@
 
 <c:url var="chartUrl" scope="page" value="/amr/chart/chart">
     <c:param name="pointIds" value="${pointIds}" />
-    <c:param name="primaryWeatherLocationId" value="${primaryWeatherLocationId}" />
+    <c:param name="temperaturePointId" value="${temperaturePointId}" />
     <c:if test="${empty isTemperatureChecked}">
         <c:set var="isTemperatureChecked" value="false"/>
     </c:if>

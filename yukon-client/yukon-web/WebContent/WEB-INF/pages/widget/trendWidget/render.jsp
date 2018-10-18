@@ -29,7 +29,7 @@ $(document).ready(function(){
 
         <%-- THE CHART --%>
         <flot:trend title="${title}" pointIds="${pointId}" 
-            primaryWeatherLocationId ="${primaryWeatherLocationId}" 
+            temperaturePointId ="${temperaturePointId}" 
             isTemperatureChecked = "${isTemperatureChecked}"
             startDate="${startDate.time}" endDate="${stopDateAdjusted.time}"
             interval="${interval}"
@@ -106,7 +106,7 @@ $(document).ready(function(){
             </c:choose>
 
             <%-- TEMPRATURE OPTION --%>
-            <c:if test="${primaryWeatherLocationId != null}">
+            <c:if test="${temperaturePointId != null}">
                 <tr>
                     <td class="wsnw"><i:inline key=".temperature"/></td>
                     <td>
