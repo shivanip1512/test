@@ -311,7 +311,10 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         Map<BuiltInAttribute, LitePoint> attributeToPoint = new HashMap<>();
         for (BuiltInAttribute attribute : monitor.getAttributes()) {
             if (attribute != attributeToExclude) {
-                attributeToPoint.put(attribute, attributeService.findPointForAttribute(device, attribute));
+                LitePoint point = attributeService.findPointForAttribute(device, attribute);
+                if(point != null) {
+                    attributeToPoint.put(attribute, point);
+                }
             }
         }
         Set<Integer> otherPoints = attributeToPoint.values().stream().map(p -> p.getLiteID()).collect(Collectors.toSet());
