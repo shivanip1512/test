@@ -9,14 +9,18 @@ Install programs for formatting the certificate.
 
 Extract private key file
 1. Open yukon-client/build/keys/jarKeystore with Keystore Explorer. Password should be specified in the readme file in the same directory.
-2. Right-click cannon4 entry. (This is the Key Pair entry, name may change in the future). 
+2. Right-click cannon6 entry. (This is the Key Pair entry, name may change in the future). 
 3. Select export -> export private key.
 4. Select PKCS #8
-5. Uncheck encrypt. Check PEM. Specify export file name.
+5. Uncheck encrypt. Check PEM. Specify export file name (Example: cannon6_PrivatKey.pkcs8).
 
-Create .pfx file. 
-1. Add the openssl.exe to the path, or navigate to the location it was installed in CMD.
-2. In CMD: "openssl pkcs12 -export -inkey privateKeyFileName -in fromverisign5.cer - out pfxFileName.pfx"
+Create .pfx file.
+1. translate .p7b to .cer 
+    Example: openssl pkcs7 -in C:\Yukon\fromverisign6.p7b -print_certs -out C:\Yukon\fromverisign6.cer
+     
+2. Add the openssl.exe to the path, or navigate to the location it was installed in CMD.
+    In CMD: "openssl pkcs12 -export -inkey privateKeyFileName -in fromverisign6.cer - out pfxFileName.pfx"
+    Example: openssl pkcs12 -export -inkey C:\Yukon\cannon6_PrivateKey.pkcs8 -in C:\Yukon\fromverisign6.cer -out C:\Yukon\com.cannontech.pfx
 
 Use the pfx file in InstallShield
 1. Move the pfx file to yukon-install/InstallshieldResources
