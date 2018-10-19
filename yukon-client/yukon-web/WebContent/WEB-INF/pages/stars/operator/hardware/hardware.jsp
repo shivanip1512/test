@@ -184,7 +184,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
             <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardware.displayName}"/>
             <br><br>
             <c:if test="${isEnrolled}">
-                <tags:alertBox type="info">To delete the device from inventory permanently, unenroll it from all programs.</tags:alertBox>
+                <tags:alertBox type="info" key=".unenrollToDelete"/>
             </c:if>
             <input type="radio" name="deleteOption" value="remove" checked="checked" id="removeRadio">
             <label for="removeRadio" class="radioLabel"><i:inline key=".deleteOption1"/></label>
