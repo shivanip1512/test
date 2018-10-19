@@ -107,35 +107,6 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-18870', '7.2.0', GETDATE());
 /* @end YUK-18870 */
 
-/* @start YUK-18868 */
-CREATE TABLE NestSync (
-    SyncId              NUMERIC         NOT NULL,
-    SyncStartTime       DATETIME        NOT NULL,
-    SyncStopTime        DATETIME        NULL,
-    CONSTRAINT PK_NestSync PRIMARY KEY (SyncId)
-);
-
-CREATE TABLE NestSyncDetail (
-    SyncDetailId        NUMERIC         NOT NULL,
-    SyncId              NUMERIC         NOT NULL,
-    SyncType            VARCHAR(60)     NOT NULL,
-    SyncReasonKey       VARCHAR(100)    NOT NULL,
-    SyncReasonValue     VARCHAR(100)    NULL,
-    SyncActionKey       VARCHAR(100)    NOT NULL,
-    SyncActionValue     VARCHAR(100)    NULL,
-    CONSTRAINT PK_NestSyncDetail PRIMARY KEY (SyncDetailId)
-);
-GO
-
-ALTER TABLE NestSyncDetail
-    ADD CONSTRAINT FK_NestSync_NestSyncDetail FOREIGN KEY (SyncId)
-        REFERENCES NestSync (SyncId)
-            ON DELETE CASCADE;
-GO
-
-INSERT INTO DBUpdates VALUES ('YUK-18868', '7.2.0', GETDATE());
-/* @end YUK-18868 */
-
 /* @start YUK-18897 */
 CREATE TABLE LMNestControlEvent (
     NestControlEventId      NUMERIC         NOT NULL,
@@ -150,6 +121,71 @@ CREATE TABLE LMNestControlEvent (
 
 INSERT INTO DBUpdates VALUES ('YUK-18897', '7.2.0', GETDATE());
 /* @end YUK-18897 */
+
+/* @start YUK-18960 if YUK-18868 */
+DELETE FROM NestSync;
+DELETE FROM NestSyncDetail;
+
+ALTER TABLE NestSyncDetail DROP COLUMN SyncReasonValue;
+ALTER TABLE NestSyncDetail DROP COLUMN SyncActionValue;
+GO
+
+CREATE TABLE NestSyncValue (
+    SyncValueId         NUMERIC             NOT NULL,
+    SyncDetailId        NUMERIC             NOT NULL,
+    SyncValue           VARCHAR(100)        NOT NULL,
+    SyncValueType       VARCHAR(60)         NOT NULL,
+    CONSTRAINT PK_NestSyncValue PRIMARY KEY (SyncValueId)
+);
+GO
+
+ALTER TABLE NestSyncValue
+    ADD CONSTRAINT FK_NestSDetail_NestSValue FOREIGN KEY (SyncDetailId)
+        REFERENCES NestSyncDetail (SyncDetailId)
+            ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-18960', '7.2.0', GETDATE());
+/* @end YUK-18960 */
+
+/* @start YUK-18960 */
+CREATE TABLE NestSync (
+    SyncId              NUMERIC             NOT NULL,
+    SyncStartTime       DATETIME            NOT NULL,
+    SyncStopTime        DATETIME            NULL,
+    CONSTRAINT PK_NestSync PRIMARY KEY (SyncId)
+);
+
+CREATE TABLE NestSyncDetail (
+    SyncDetailId        NUMERIC             NOT NULL,
+    SyncId              NUMERIC             NOT NULL,
+    SyncType            VARCHAR(60)         NOT NULL,
+    SyncReasonKey       VARCHAR(100)        NOT NULL,
+    SyncActionKey       VARCHAR(100)        NOT NULL,
+    CONSTRAINT PK_NestSyncDetail PRIMARY KEY (SyncDetailId)
+);
+
+CREATE TABLE NestSyncValue (
+    SyncValueId         NUMERIC             NOT NULL,
+    SyncDetailId        NUMERIC             NOT NULL,
+    SyncValue           VARCHAR(100)        NOT NULL,
+    SyncValueType       VARCHAR(60)         NOT NULL,
+    CONSTRAINT PK_NestSyncValue PRIMARY KEY (SyncValueId)
+);
+GO
+
+ALTER TABLE NestSyncDetail
+    ADD CONSTRAINT FK_NestSync_NestSyncDetail FOREIGN KEY (SyncId)
+        REFERENCES NestSync (SyncId)
+            ON DELETE CASCADE;
+
+ALTER TABLE NestSyncValue
+    ADD CONSTRAINT FK_NestSDetail_NestSValue FOREIGN KEY (SyncDetailId)
+        REFERENCES NestSyncDetail (SyncDetailId)
+            ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-18960', '7.2.0', GETDATE());
+/* @end YUK-18960 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

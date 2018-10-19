@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/10/2018 1:31:58 PM                        */
+/* Created on:     10/18/2018 12:33:00 PM                       */
 /*==============================================================*/
 
 
@@ -7583,10 +7583,20 @@ create table NestSyncDetail (
    SyncId               numeric              not null,
    SyncType             varchar(60)          not null,
    SyncReasonKey        varchar(100)         not null,
-   SyncReasonValue      varchar(100)         null,
    SyncActionKey        varchar(100)         not null,
-   SyncActionValue      varchar(100)         null,
    constraint PK_NestSyncDetail primary key (SyncDetailId)
+)
+go
+
+/*==============================================================*/
+/* Table: NestSyncValue                                         */
+/*==============================================================*/
+create table NestSyncValue (
+   SyncValueId          numeric              not null,
+   SyncDetailId         numeric              not null,
+   SyncValue            varchar(100)         not null,
+   SyncValueType        varchar(60)          not null,
+   constraint PK_NestSyncValue primary key (SyncValueId)
 )
 go
 
@@ -14260,6 +14270,12 @@ go
 alter table NestSyncDetail
    add constraint FK_NestSync_NestSyncDetail foreign key (SyncId)
       references NestSync (SyncId)
+         on delete cascade
+go
+
+alter table NestSyncValue
+   add constraint FK_NSDetail_NSValue foreign key (SyncDetailId)
+      references NestSyncDetail (SyncDetailId)
          on delete cascade
 go
 

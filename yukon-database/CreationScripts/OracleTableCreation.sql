@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/10/2018 1:30:53 PM                        */
+/* Created on:     10/18/2018 12:33:45 PM                       */
 /*==============================================================*/
 
 
@@ -7154,10 +7154,19 @@ create table NestSyncDetail  (
    SyncId               NUMBER                          not null,
    SyncType             VARCHAR2(60)                    not null,
    SyncReasonKey        VARCHAR2(100)                   not null,
-   SyncReasonValue      VARCHAR2(100),
    SyncActionKey        VARCHAR2(100)                   not null,
-   SyncActionValue      VARCHAR2(100),
    constraint PK_NestSyncDetail primary key (SyncDetailId)
+);
+
+/*==============================================================*/
+/* Table: NestSyncValue                                         */
+/*==============================================================*/
+create table NestSyncValue  (
+   SyncValueId          NUMBER                          not null,
+   SyncDetailId         NUMBER                          not null,
+   SyncValue            VARCHAR2(100)                   not null,
+   SyncValueType        VARCHAR2(60)                    not null,
+   constraint PK_NestSyncValue primary key (SyncValueId)
 );
 
 /*==============================================================*/
@@ -13130,6 +13139,11 @@ alter table MspLMInterfaceMapping
 alter table NestSyncDetail
    add constraint FK_NestSync_NestSyncDetail foreign key (SyncId)
       references NestSync (SyncId)
+      on delete cascade;
+
+alter table NestSyncValue
+   add constraint FK_NSDetail_NSValue foreign key (SyncDetailId)
+      references NestSyncDetail (SyncDetailId)
       on delete cascade;
 
 alter table NotificationDestination
