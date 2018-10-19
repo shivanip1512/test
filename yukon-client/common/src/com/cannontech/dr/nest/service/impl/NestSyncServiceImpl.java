@@ -2,15 +2,21 @@ package com.cannontech.dr.nest.service.impl;
 
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CREATED_GROUP_IN_YUKON;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CREATED_THERMOSTAT;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.ENROLLED_THERMOSTAT;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_GROUP_ONLY_IN_NEST;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_GROUP_ONLY_IN_YUKON;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.MANUALLY_DELETE_GROUP_FROM_YUKON;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.MODIFY_YUKON_GROUP_NOT_TO_CONFLICT_WITH_NEST_GROUP;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_ENROLLED_THERMOSTAT;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_FOUND_AREA_FOR_NEST_GROUP;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_FOUND_PROGRAM_FOR_NEST_GROUP;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_FOUND_THERMOSTAT;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP;
+import static com.cannontech.dr.nest.model.NestSyncI18nValue.ACCOUNT_NUMBER;
+import static com.cannontech.dr.nest.model.NestSyncI18nValue.GROUP;
+import static com.cannontech.dr.nest.model.NestSyncI18nValue.PROGRAM;
+import static com.cannontech.dr.nest.model.NestSyncI18nValue.SERIAL_NUMBER;
 import static com.cannontech.dr.nest.model.NestSyncType.AUTO;
 import static com.cannontech.dr.nest.model.NestSyncType.MANUAL;
 
@@ -19,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,15 +35,19 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.constants.YukonDefinition;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DemandResponseDao;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -57,6 +66,7 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
@@ -65,11 +75,8 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 
 public class NestSyncServiceImpl implements NestSyncService{
 
@@ -78,6 +85,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private DemandResponseDao demandResponseDao;
     @Autowired private StarsControllableDeviceHelper starsControllableDeviceHelper;
+    @Autowired private EnrollmentDao enrollmentDao;
     @Autowired DbChangeManager dbChangeManager;
     
     @Autowired private IDatabaseCache dbCache;
@@ -92,6 +100,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private YukonListDao yukonListDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
     private EnergyCompany HARDCODED_EC;
     private LiteYukonUser HARDCODED_OPERATOR;
        
@@ -134,32 +143,27 @@ public class NestSyncServiceImpl implements NestSyncService{
         List<String> invalidGroups = new ArrayList<>(validGroups);
         log.debug("Syncing {} accounts", existing.size());
         Set<String> thermostatsToCreate = getThermostatsToCreate(existing);
-        log.debug("New thremostats to create {}", thermostatsToCreate);
+        log.debug("New thermostats to create {}", thermostatsToCreate);
         Set<String> usersToCreate = getUsersToCreate(customerAccountDao.getAll(), existing);
         log.debug("New users to create {}", usersToCreate);
         List<LiteYukonPAObject> groups = getGroupPaos(validGroups);
         log.debug("Groups in Yukon {}", groups);
-        Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms = getGroupsToPrograms(groups);
-        Map<PaoIdentifier, String> programIdentToProgramName = dbCache.getAllLMPrograms().stream()
-                .filter(group -> group.getPaoType() == PaoType.LM_NEST_PROGRAM)
-                .collect(Collectors.toMap(program -> program.getPaoIdentifier(), program -> program.getPaoName()));
-        
+        Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms = demandResponseDao.getGroupsToPrograms(groups);
+       
         existing.removeIf(row -> !validGroups.contains(row.getGroup()));
        
         invalidGroups.removeAll(validGroups);
         if(!invalidGroups.isEmpty()) {
             log.debug("Program/Area is not setup for {} groups. Skipping any account creation/changes in Yukon", invalidGroups);
         }
-        existing.forEach(row -> syncAccount(syncId, thermostatsToCreate, usersToCreate, groups, groupsToPrograms,
-            programIdentToProgramName, row));
+        existing.forEach(row -> syncAccount(syncId, thermostatsToCreate, usersToCreate, groups, groupsToPrograms, row));
     }
 
     /**
      * Syncs individual account
      */
     private void syncAccount(int syncId, Set<String> thermostatsToCreate, Set<String> usersToCreate,
-            List<LiteYukonPAObject> groups, Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms,
-            Map<PaoIdentifier, String> programIdentToPaoName, NestExisting row) {
+            List<LiteYukonPAObject> groups, Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms, NestExisting row) {
         List<NestSyncDetail> details = new ArrayList<>();
         try {
             log.debug("Proccessing {}", row);
@@ -169,15 +173,14 @@ public class NestSyncServiceImpl implements NestSyncService{
             Set<String> newThermostats = getThermsotatsToCreateForAccount(row, thermostatsToCreate);
             if (!newThermostats.isEmpty()) {
                 log.debug("Adding new thermostats {} to account {}", newThermostats, row.getAccountNumber());
-                nestDao.saveSyncDetails(createThermostats(row.getAccountNumber(), newThermostats, syncId));
+                details.addAll(createThermostats(row.getAccountNumber(), newThermostats, syncId));
             }
             LiteYukonPAObject groupPao = groups.stream()
                     .filter(group -> group.getPaoName().equalsIgnoreCase(row.getGroup()))
                     .findFirst()
                     .get();
             PaoIdentifier program = groupsToPrograms.get(groupPao.getPaoIdentifier()).iterator().next();
-            String programName = programIdentToPaoName.get(program);
-            details.addAll(enrollThermostats(row, programName, syncId));
+            details.addAll(enrollThermostats(row, program, syncId));
         } catch (Exception e) {
             log.debug("Sync failed for row:" + row, e);
         } finally {
@@ -188,19 +191,27 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Enrolls thermostats in a program for account
      */
-    private List<NestSyncDetail> enrollThermostats(NestExisting row, String programName, int syncId) {
+    private List<NestSyncDetail> enrollThermostats(NestExisting row, PaoIdentifier programIdent, int syncId) {
+        List<NestSyncDetail> details = new ArrayList<>();
+        LiteYukonPAObject program = dbCache.getAllPaosMap().get(programIdent.getPaoId());
         Set<String> serialNumbers = getThemostatsForAccountInNest(row);
-        log.debug("Adding new thermostats {} to account {}", serialNumbers, row.getAccountNumber());
         serialNumbers.forEach(serialNumber -> {
-            EnrollmentHelper enrollmentHelper =
-                new EnrollmentHelper(row.getAccountNumber(), row.getGroup(), programName, serialNumber);
-            enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, HARDCODED_OPERATOR);
+        CustomerAccount account = customerAccountDao.getByAccountNumber(row.getAccountNumber(), HARDCODED_EC.getId());
+            if(enrollmentDao.findConflictingEnrollments(account.getAccountId(), program.getLiteID()).isEmpty()) {
+                log.debug("Adding new thermostat {} to account {}", serialNumber, row.getAccountNumber());
+                EnrollmentHelper enrollmentHelper =
+                    new EnrollmentHelper(row.getAccountNumber(), row.getGroup(), program.getPaoName(), serialNumber);
+                enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, HARDCODED_OPERATOR);
+                NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_ENROLLED_THERMOSTAT, ENROLLED_THERMOSTAT);
+                    detail.addValue(ACCOUNT_NUMBER, row.getAccountNumber());
+                    detail.addValue(SERIAL_NUMBER, serialNumber);
+                    detail.addValue(PROGRAM, program.getPaoName());
+                    detail.addValue(GROUP, row.getGroup());
+                    details.add(detail);
+            }
         });
-      
-        // todo table changes
-        return new ArrayList<>();
+        return details;
     }
-    
     
     /**
      * Creates thermostats
@@ -211,12 +222,18 @@ public class NestSyncServiceImpl implements NestSyncService{
             LmDeviceDto deviceInfo = new LmDeviceDto();
             deviceInfo.setAccountNumber(accountNumber);
             deviceInfo.setSerialNumber(thermostat);      
-            //DEV_TYPE_NEST_THERMOSTAT
-            deviceInfo.setDeviceType("Nest Thermostat");
+
+            List<YukonListEntry> yukonListEntry = yukonListDao.getYukonListEntry(
+                YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId(), HARDCODED_EC);
+            String typeStr = yukonListEntry.iterator().next().getEntryText();
+            deviceInfo.setDeviceType(typeStr);
             try {
                 starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, HARDCODED_OPERATOR);
-                details.add(new NestSyncDetail(0, syncId, AUTO, NOT_FOUND_THERMOSTAT, thermostat,
-                    AUTO_CREATED_THERMOSTAT, thermostat));
+                NestSyncDetail detail =
+                    new NestSyncDetail(0, syncId, AUTO, NOT_FOUND_THERMOSTAT, AUTO_CREATED_THERMOSTAT);
+                detail.addValue(ACCOUNT_NUMBER, accountNumber);
+                detail.addValue(SERIAL_NUMBER, thermostat);
+                details.add(detail);
             } catch (StarsDeviceAlreadyExistsException e) {
                 // thermostat already exists
             }
@@ -256,19 +273,27 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Returns the list of thermostats names is Nest but not in Yukon
      */
+    
     private Set<String> getThermostatsToCreate(List<NestExisting> existing) {
-        Set<String> thermostatsToCreate =  existing.stream().map(row -> getThemostatsForAccountInNest(row))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+        Set<String> thermostatsToCreate =  existing.stream()
+                                                   .map(this::getThemostatsForAccountInNest)
+                                                   .flatMap(Collection::stream)
+                                                   .collect(Collectors.toSet());
         
         List<LiteLmHardwareBase> hardware = inventoryBaseDao.getAllLMHardware(Lists.newArrayList(HARDCODED_EC));
  
         List<String> nestThermostatsExisting = hardware.stream()
-                .filter(thermostat -> 
-                HardwareType.valueOf(yukonListDao.getYukonListEntry(thermostat.getLmHardwareTypeID()).getYukonDefID()) == HardwareType.NEST_THERMOSTAT)
-                .map(thermostat -> thermostat.getManufacturerSerialNumber()).collect(Collectors.toList());
+                                                       .filter(this::isNestHardware)
+                                                       .map(LiteLmHardwareBase::getManufacturerSerialNumber)
+                                                       .collect(Collectors.toList());
         thermostatsToCreate.removeAll(nestThermostatsExisting);
         return thermostatsToCreate;
+    } 
+    
+    private boolean isNestHardware(LiteLmHardwareBase lmHardware) {
+        YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(lmHardware.getLmHardwareTypeID());
+        HardwareType hwType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
+        return hwType == HardwareType.NEST_THERMOSTAT;
     }
     
     ///////////////////Unit test
@@ -286,29 +311,6 @@ public class NestSyncServiceImpl implements NestSyncService{
         return usersToCreate;
     }
 
-    /**
-     * Returns a multimap of groups to programs
-     */
-    private Multimap<PaoIdentifier, PaoIdentifier> getGroupsToPrograms(List<LiteYukonPAObject> nestGroups){
-         SetMultimap<PaoIdentifier, PaoIdentifier> programToGroupMap = 
-                 demandResponseDao.getProgramToGroupMappingForGroups(nestGroups.stream()
-                     .map(LiteYukonPAObject::getPaoIdentifier)
-                     .collect(Collectors.toList()));
-         Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms =
-             Multimaps.invertFrom(programToGroupMap, ArrayListMultimap.<PaoIdentifier, PaoIdentifier> create());
-         return groupsToPrograms;
-    }
-     
-    /**
-     * Returns a multimap of programs to areas
-     */
-    private Multimap<PaoIdentifier, PaoIdentifier> getProgramsToAreas(Collection<PaoIdentifier> programs){
-        SetMultimap<PaoIdentifier, PaoIdentifier> areasToProgram =
-                demandResponseDao.getControlAreaToProgramMappingForPrograms(programs);
-        Multimap<PaoIdentifier, PaoIdentifier> programsToAreas = Multimaps.invertFrom(areasToProgram,
-                ArrayListMultimap.<PaoIdentifier, PaoIdentifier> create());   
-        return programsToAreas;
-   }
     
     ///////////////////Unit test
     /**
@@ -331,8 +333,8 @@ public class NestSyncServiceImpl implements NestSyncService{
         log.debug("Validating program and area setup");
         List<LiteYukonPAObject> nestGroups = getGroupPaos(groupsInNest);
 
-        Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms = getGroupsToPrograms(nestGroups);
-        Multimap<PaoIdentifier, PaoIdentifier> programsToAreas = getProgramsToAreas(groupsToPrograms.values().stream()
+        Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms = demandResponseDao.getGroupsToPrograms(nestGroups);
+        Multimap<PaoIdentifier, PaoIdentifier> programsToAreas = demandResponseDao.getProgramsToAreas(groupsToPrograms.values().stream()
             .distinct()
             .collect(Collectors.toList()));
         List<NestSyncDetail> details = validateProgramAndAreaSetup(syncId, nestGroups, groupsToPrograms, programsToAreas);
@@ -365,19 +367,21 @@ public class NestSyncServiceImpl implements NestSyncService{
      * Builds a NestSyncDetail, or returns an empty Optional if the setup is correct.
      */
     private Optional<NestSyncDetail> buildSyncDetail(int syncId, LiteYukonPAObject group,
-                                           Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms,
-                                           Multimap<PaoIdentifier, PaoIdentifier> programsToAreas) {
-        
+            Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms,
+            Multimap<PaoIdentifier, PaoIdentifier> programsToAreas) {
+
         Collection<PaoIdentifier> programs = groupsToPrograms.get(group.getPaoIdentifier());
         NestSyncDetail detail = null;
         if (programs.isEmpty()) {
             log.debug("Nest group {} doesn't have a program setup", group.getPaoName());
-            detail = new NestSyncDetail(0, syncId, MANUAL, NOT_FOUND_PROGRAM_FOR_NEST_GROUP, group.getPaoName(),
-                SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP, group.getPaoName());
+            detail = new NestSyncDetail(0, syncId, MANUAL, NOT_FOUND_PROGRAM_FOR_NEST_GROUP,
+                SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP);
+            detail.addValue(GROUP, group.getPaoName());
         } else if (!hasArea(programs, programsToAreas)) {
             log.debug("Nest group {} doesn't have an area setup", group.getPaoName());
-            detail = new NestSyncDetail(0, syncId, MANUAL, NOT_FOUND_AREA_FOR_NEST_GROUP, group.getPaoName(),
-                SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP, group.getPaoName());
+            detail = new NestSyncDetail(0, syncId, MANUAL, NOT_FOUND_AREA_FOR_NEST_GROUP,
+                SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP);
+            detail.addValue(GROUP, group.getPaoName());
         }
         return Optional.ofNullable(detail);
     }
@@ -412,8 +416,10 @@ public class NestSyncServiceImpl implements NestSyncService{
         log.debug("Groups in Yukon that is not Nest that have the same name as Group in Nest {}", nonNestGroupsWithNestGroupName);
         groupsInNest.removeAll(nonNestGroupsWithNestGroupName);
         List<NestSyncDetail> details = nonNestGroupsWithNestGroupName.stream().map(group -> {
-            return new NestSyncDetail(0, syncId, MANUAL, FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME, group,
-                MODIFY_YUKON_GROUP_NOT_TO_CONFLICT_WITH_NEST_GROUP, group);
+            NestSyncDetail detail = new NestSyncDetail(0, syncId, MANUAL, FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME,
+                    MODIFY_YUKON_GROUP_NOT_TO_CONFLICT_WITH_NEST_GROUP);
+            detail.addValue(GROUP, group);
+            return detail;
         }).collect(Collectors.toList());
         return details;
     }
@@ -427,8 +433,10 @@ public class NestSyncServiceImpl implements NestSyncService{
         List<String> groupsOnlyInYukon = new ArrayList<>(nestGroupsInYukon);
         groupsOnlyInYukon.removeAll(groupsInNest);
         List<NestSyncDetail> discrepancies = groupsOnlyInYukon.stream().map(group -> {
-            return new NestSyncDetail(0, syncId, MANUAL, FOUND_GROUP_ONLY_IN_YUKON, group, MANUALLY_DELETE_GROUP_FROM_YUKON, group);
-            }).collect(Collectors.toList());
+            NestSyncDetail detail = new NestSyncDetail(0, syncId, MANUAL, FOUND_GROUP_ONLY_IN_YUKON, MANUALLY_DELETE_GROUP_FROM_YUKON);
+            detail.addValue(GROUP, group);
+            return detail;
+        }).collect(Collectors.toList());
         if(!discrepancies.isEmpty()) {
             log.debug("Found Nest groups in Yukon that is not in Nest {}", groupsOnlyInYukon);
             nestDao.saveSyncDetails(discrepancies);  
@@ -466,9 +474,12 @@ public class NestSyncServiceImpl implements NestSyncService{
         List<NestSyncDetail> details = new ArrayList<>();
         groups.forEach(group -> {
             YukonPAObject pao = LMFactory.createLoadManagement(PaoType.LM_GROUP_NEST);
+            dbPersistentDao.performDBChange(pao, TransactionType.INSERT);
             pao.setPAOName(group);
-            details.add(new NestSyncDetail(0, syncId, AUTO, FOUND_GROUP_ONLY_IN_NEST, group,
-                AUTO_CREATED_GROUP_IN_YUKON, group));
+            NestSyncDetail detail =
+                new NestSyncDetail(0, syncId, AUTO, FOUND_GROUP_ONLY_IN_NEST, AUTO_CREATED_GROUP_IN_YUKON);
+            detail.addValue(GROUP, group);
+            details.add(detail);
         });
         return details;
     }

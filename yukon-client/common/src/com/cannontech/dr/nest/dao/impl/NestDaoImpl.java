@@ -1,7 +1,10 @@
 package com.cannontech.dr.nest.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.joda.time.Instant;
@@ -16,6 +19,7 @@ import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.nest.dao.NestDao;
@@ -23,6 +27,7 @@ import com.cannontech.dr.nest.model.NestControlHistory;
 import com.cannontech.dr.nest.model.NestSync;
 import com.cannontech.dr.nest.model.NestSyncDetail;
 import com.cannontech.dr.nest.model.NestSyncI18nKey;
+import com.cannontech.dr.nest.model.NestSyncI18nValue;
 import com.cannontech.dr.nest.model.NestSyncType;
 import com.google.common.collect.Lists;
 
@@ -38,9 +43,7 @@ public class NestDaoImpl implements NestDao {
             row.setSyncId(rs.getInt("SyncId"));
             row.setType(rs.getEnum("SyncType", NestSyncType.class));
             row.setReasonKey(rs.getEnum("SyncReasonKey", NestSyncI18nKey.class));
-            row.setReasonValue(rs.getString("SyncReasonValue"));
             row.setActionKey(rs.getEnum("SyncActionKey", NestSyncI18nKey.class));
-            row.setActionValue(rs.getString("SyncActionValue"));
             return row;
         }
     };
@@ -58,27 +61,45 @@ public class NestDaoImpl implements NestDao {
     
     @Override
     public void saveSyncDetails(List<NestSyncDetail> details) {
+        Map<Integer, Map<NestSyncI18nValue, String>> allValues = new HashMap<>();
         if(!details.isEmpty()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             List<List<Object>> values = details.stream().map(detail -> {
-                List<Object> row =
-                    Lists.newArrayList(nextValueHelper.getNextValue("NestSyncDetail"), detail.getSyncId(), detail.getType(),
-                        detail.getReasonKey(), detail.getReasonValue(), detail.getActionKey(), detail.getActionValue());
+                int pk = nextValueHelper.getNextValue("NestSyncDetail");
+                allValues.put(pk, detail.getValues());
+                List<Object> row = Lists.newArrayList(pk, detail.getSyncId(), detail.getType(), detail.getReasonKey(),
+                    detail.getActionKey());
                 return row;
             }).collect(Collectors.toList());
     
             sql.batchInsertInto("NestSyncDetail").columns("SyncDetailId", "SyncId", "SyncType", "SyncReasonKey",
-                "SyncReasonValue", "SyncActionKey", "SyncActionValue").values(values);
+                "SyncActionKey").values(values);
             jdbcTemplate.yukonBatchUpdate(sql);
+            saveSyncValues(allValues);
         }
     }
     
+    public void saveSyncValues(Map<Integer, Map<NestSyncI18nValue, String>> valueMap) {
+        if (!valueMap.isEmpty()) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            List<List<Object>> values = new ArrayList<>();
+            valueMap.forEach((detailPk, actionValues) -> {
+                valueMap.get(detailPk).forEach((valueKey, value) -> {
+                    values.add(Lists.newArrayList(nextValueHelper.getNextValue("NestSyncValue"), detailPk, valueKey, value));
+                });
+            });
+            sql.batchInsertInto("NestSyncValue").columns("SyncValueId", "SyncDetailId", "SyncValueType", "SyncValue").values(
+                values);
+            jdbcTemplate.yukonBatchUpdate(sql);
+        }
+    }
+
     @Override
     public SearchResults<NestSyncDetail> getNestSyncDetail(int syncId, PagingParameters paging, SortBy sortBy, Direction direction, List<NestSyncType> syncTypes) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
-        sql.append("SELECT SyncDetailId, SyncId, SyncType, SyncReasonKey, SyncReasonValue, SyncActionKey, SyncActionValue");
+        sql.append("SELECT SyncDetailId, SyncId, SyncType, SyncReasonKey, SyncActionKey");
         sql.append("FROM NestSyncDetail");
         sql.append("WHERE SyncId").eq(syncId);
         sql.append("AND SyncType").in(syncTypes);
@@ -87,11 +108,30 @@ public class NestDaoImpl implements NestDao {
         PagingResultSetExtractor<NestSyncDetail> rse = new PagingResultSetExtractor<>(start, count, nestSyncDetailRowMapper);
         jdbcTemplate.query(sql, rse);
         
+        Map<Integer, NestSyncDetail> details = rse.getResultList().stream()
+                .collect(Collectors.toMap(detail -> detail.getId(), detail -> detail));
+     
+        addSyncValues(details);
+
         SearchResults<NestSyncDetail> searchResults = new SearchResults<>();
         searchResults.setBounds(start, count, getNestSyncDetailCount(syncId, syncTypes));
         searchResults.setResultList(rse.getResultList());
         
         return searchResults;
+    }
+
+    private void addSyncValues(Map<Integer, NestSyncDetail> details) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SyncDetailId, SyncValueType, SyncValue");
+        sql.append("FROM NestSyncValue");
+        sql.append("WHERE SyncDetailId").in(details.keySet());
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                NestSyncDetail detail = details.get(rs.getInt("SyncDetailId"));
+                detail.addValue(rs.getEnum("SyncValueType", NestSyncI18nValue.class), rs.getString("SyncValue"));
+            }
+        });
     }
     
     private int getNestSyncDetailCount(int syncId, List<NestSyncType> syncTypes) {

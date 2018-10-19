@@ -802,8 +802,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allMcts = null;
                 allLoadManagement = null; // PAOGroups are here, oops!
                 allLMGroups = null;
-                allLMPrograms = null;
-                allLMControlAreas = null;
                 PaoType paoType = PaoType.getForDbString(dbChangeMsg.getObjectType());
                 
 				/*

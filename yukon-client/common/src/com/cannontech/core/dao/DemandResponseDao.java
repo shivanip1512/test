@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 public interface DemandResponseDao {
@@ -29,4 +31,14 @@ public interface DemandResponseDao {
 
     SetMultimap<PaoIdentifier, PaoIdentifier>
         getScenarioToProgramMappingForPrograms(Collection<PaoIdentifier> progarms);
+
+    /**
+     * Returns a multimap of groups to programs
+     */
+    Multimap<PaoIdentifier, PaoIdentifier> getGroupsToPrograms(List<LiteYukonPAObject> groups);
+
+    /**
+    * Returns a multimap of programs to areas
+    */
+    Multimap<PaoIdentifier, PaoIdentifier> getProgramsToAreas(Collection<PaoIdentifier> programs);
 }

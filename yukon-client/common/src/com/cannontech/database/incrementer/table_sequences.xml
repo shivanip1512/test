@@ -426,5 +426,8 @@
       <sequence name="NestSyncDetail">
         <table name="NestSyncDetail" identitycolumn="SyncDetailId" initsequence="true"/>
       </sequence>
+      <sequence name="NestSyncValue">
+        <table name="NestSyncValue" identitycolumn="SyncValueId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

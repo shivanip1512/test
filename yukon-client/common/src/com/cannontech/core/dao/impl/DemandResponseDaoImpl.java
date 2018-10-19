@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,8 +22,12 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
 public class DemandResponseDaoImpl implements DemandResponseDao {
@@ -92,6 +97,23 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
         return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(groups), rowMapper,
             PaoUtils.getPaoIdFunction());
+    }
+    
+    @Override
+    public Multimap<PaoIdentifier, PaoIdentifier> getGroupsToPrograms(List<LiteYukonPAObject> groups) {
+        SetMultimap<PaoIdentifier, PaoIdentifier> programToGroupMap = getProgramToGroupMappingForGroups(
+            groups.stream().map(LiteYukonPAObject::getPaoIdentifier).collect(Collectors.toList()));
+        Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms =
+            Multimaps.invertFrom(programToGroupMap, ArrayListMultimap.<PaoIdentifier, PaoIdentifier> create());
+        return groupsToPrograms;
+    }
+
+    @Override
+    public Multimap<PaoIdentifier, PaoIdentifier> getProgramsToAreas(Collection<PaoIdentifier> programs) {
+        SetMultimap<PaoIdentifier, PaoIdentifier> areasToProgram = getControlAreaToProgramMappingForPrograms(programs);
+        Multimap<PaoIdentifier, PaoIdentifier> programsToAreas =
+            Multimaps.invertFrom(areasToProgram, ArrayListMultimap.<PaoIdentifier, PaoIdentifier> create());
+        return programsToAreas;
     }
     
     @Override

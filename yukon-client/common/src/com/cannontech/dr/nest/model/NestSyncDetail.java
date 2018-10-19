@@ -1,29 +1,32 @@
 package com.cannontech.dr.nest.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class NestSyncDetail {
     private int id;
     private int syncId;
     private NestSyncType type;
     private NestSyncI18nKey reasonKey;
-    private String reasonValue;
     private NestSyncI18nKey actionKey;
-    private String actionValue;
+    private Map<NestSyncI18nValue, String> values = new HashMap<>();
     
-    public NestSyncDetail(int id, int syncId, NestSyncType type, NestSyncI18nKey reasonKey, String reasonValue,
-            NestSyncI18nKey actionKey, String actionValue) {
+    public NestSyncDetail(int id, int syncId, NestSyncType type, NestSyncI18nKey reasonKey, NestSyncI18nKey actionKey) {
         this.id = id;
         this.syncId = syncId;
         this.type = type;
         this.reasonKey = reasonKey;
-        this.reasonValue = reasonValue;
         this.actionKey = actionKey;
-        this.actionValue = actionValue;
     }
     
     public NestSyncDetail() {
  
     }
-
+    
+    public void setActionKey(NestSyncI18nKey actionKey) {
+        this.actionKey = actionKey;
+    }
+    
     public int getId() {
         return id;
     }
@@ -48,22 +51,15 @@ public class NestSyncDetail {
     public void setReasonKey(NestSyncI18nKey reasonKey) {
         this.reasonKey = reasonKey;
     }
-    public String getReasonValue() {
-        return reasonValue;
-    }
-    public void setReasonValue(String reasonValue) {
-        this.reasonValue = reasonValue;
-    }
     public NestSyncI18nKey getActionKey() {
         return actionKey;
     }
-    public void setActionKey(NestSyncI18nKey actionKey) {
-        this.actionKey = actionKey;
+
+    public Map<NestSyncI18nValue, String> getValues() {
+        return values;
     }
-    public String getActionValue() {
-        return actionValue;
-    }
-    public void setActionValue(String actionValue) {
-        this.actionValue = actionValue;
+
+    public void addValue(NestSyncI18nValue type, String value) {
+        values.put(type, value);
     }
 }
