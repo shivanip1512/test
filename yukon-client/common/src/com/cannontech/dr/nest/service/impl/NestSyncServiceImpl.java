@@ -474,8 +474,8 @@ public class NestSyncServiceImpl implements NestSyncService{
         List<NestSyncDetail> details = new ArrayList<>();
         groups.forEach(group -> {
             YukonPAObject pao = LMFactory.createLoadManagement(PaoType.LM_GROUP_NEST);
-            dbPersistentDao.performDBChange(pao, TransactionType.INSERT);
             pao.setPAOName(group);
+            dbPersistentDao.performDBChange(pao, TransactionType.INSERT);
             NestSyncDetail detail =
                 new NestSyncDetail(0, syncId, AUTO, FOUND_GROUP_ONLY_IN_NEST, AUTO_CREATED_GROUP_IN_YUKON);
             detail.addValue(GROUP, group);
