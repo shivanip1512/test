@@ -87,7 +87,7 @@
     <entry key="yukon.web.modules.operator.hardware.deleteMessageSerialNumber">Device with serial number {0} will be removed from the account.  What would you like to do with it?</entry>
     <entry key="yukon.web.modules.operator.hardware.deleteOption1">Move it to the warehouse.</entry>
     <entry key="yukon.web.modules.operator.hardware.deleteOption2">Delete it from inventory permanently.</entry>
-    <entry key="yukon.web.modules.operator.hardware.unenrollToDelete">To delete the device from inventory permanently, unenroll it from all programs.</entry>
+    <entry key="yukon.web.modules.operator.hardware.unenrollToDelete">To permanently remove the device from inventory, you must first unenroll it from all programs.</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceNotes">Notes</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.operator.hardware.displayName">Device Name</entry>
