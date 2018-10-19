@@ -1,6 +1,8 @@
 package com.cannontech.stars.dr.account.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +15,9 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.temperature.TemperatureUnit;
@@ -28,6 +32,7 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -44,6 +49,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -79,6 +85,7 @@ import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
@@ -123,6 +130,8 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private YukonUserContextService userContextService;
     @Autowired private YukonUserDao userDao;
     @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
+    @Autowired private NestService nestService;
+    @Autowired private HardwareService hardwareService;
     
     @Override
     @Transactional
@@ -431,10 +440,21 @@ public class AccountServiceImpl implements AccountService {
         // clearLMHardwareInfo clears the operator side enrollment and the unenrollHardware method
         // cleans up the consumer side enrollment
         List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
+        Set<InventoryIdentifier> inventory = inventoryDao.getYukonInventory(inventoryIds);
+        boolean deleteFromNest = inventory.stream().anyMatch(identifier -> identifier.getHardwareType().isNest());
+        
         for (Integer inventoryId : inventoryIds) {
             log.info("Clearing LMHardwareInfo and unenrolling hardware for inventory id# " + inventoryId);
             hardwareBaseDao.clearLMHardwareInfo(inventoryId);
             lmHardwareControlGroupDao.unenrollHardware(inventoryId);
+            InventoryIdentifier identifier = inventoryDao.getYukonInventory(inventoryId);
+            if (identifier.getHardwareType().isNest()) {
+                try {
+                    hardwareService.deleteHardware(user, true, inventoryId);
+                } catch (NotFoundException | PersistenceException | CommandCompletionException | SQLException e) {
+                    log.error("Error deleting nest device, when deleting account " + e);
+                }
+            }
         }
 
         // Delete Program info
@@ -504,6 +524,10 @@ public class AccountServiceImpl implements AccountService {
         log.info("Account: " + account.getAccountNumber() + " deleted successfully.");
 
         accountEventLogService.accountDeleted(user, account.getAccountNumber());
+        
+        if (deleteFromNest) {
+            nestService.dissolveAccountWithNest(account.getAccountNumber());
+        }
     }
     
     @Override
