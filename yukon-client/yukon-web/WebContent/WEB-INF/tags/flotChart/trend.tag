@@ -2,8 +2,8 @@
 
 <%@ attribute name="title" required="true"%>
 <%@ attribute name="pointIds" required="true" description="Comma seperated list of pointIds"%>
-<%@ attribute name="temperaturePointId" description="pointId for Primary Weather Location temperature"%>
-<%@ attribute name="isTemperatureChecked" description="Checkbox selection (true or false) for temperature option"%>
+<%@ attribute name="temperaturePointId" type="java.lang.Integer" description="pointId for Primary Weather Location temperature"%>
+<%@ attribute name="isTemperatureChecked" type="java.lang.Boolean" description="Checkbox selection (true or false) for temperature option"%>
 <%@ attribute name="startDate" required="true"%>
 <%@ attribute name="endDate" required="true"%>
 <%@ attribute name="interval" required="true" description="Either ChartInterval.java object or the String representation"%>

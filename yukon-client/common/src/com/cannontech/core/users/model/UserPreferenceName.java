@@ -45,7 +45,7 @@ public enum UserPreferenceName implements DisplayableEnum {
     COMMANDER_LAST_SERIAL_NUMBER(InputTypeFactory.stringType(), null, PreferenceType.TEMPORARY),
     COMMANDER_LAST_TARGET(InputTypeFactory.stringType(), null, PreferenceType.TEMPORARY),
     COMMANDER_LAST_PAO_ID(InputTypeFactory.integerType(), null, PreferenceType.TEMPORARY),
-    TREND_TEMPERATURE(InputTypeFactory.stringType(), YNBoolean.NO.getDatabaseRepresentation().toString(), PreferenceType.NONEDITABLE);
+    TREND_TEMPERATURE(InputTypeFactory.enumType(YNBoolean.class), YNBoolean.NO.getDatabaseRepresentation().toString(), PreferenceType.NONEDITABLE);
 
     final private InputType<?> valueType;
     final private String defaultValue;
