@@ -80,8 +80,9 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
      */
     public List<WatchdogWarnings> generateWarning(WatchdogWarningType type, ServiceStatus connectionStatus) {
         List<WatchdogWarnings> warnings = new ArrayList<>();
-
-        if (shouldSendWarning(connectionStatus)) {
+        YukonServices service = getServiceName();
+        
+        if (shouldSendWarning(service, connectionStatus)) {
             Map<String, Object> arguments = Maps.newLinkedHashMap();
             arguments.put(WARNING_TYPE, type.name());
             arguments.put(SERVICE_STATUS, ServiceStatus.STOPPED.name());
@@ -101,8 +102,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
      * status should be stopped.
      * Case 2: If a service is not optional service and it was running earlier and have stopped then send warning.
      */
-    private boolean shouldSendWarning(ServiceStatus connectionStatus) {
-        YukonServices service = getServiceName();
+    private boolean shouldSendWarning(YukonServices service, ServiceStatus connectionStatus) {
 
         if (connectionStatus == ServiceStatus.STOPPED) {
             if (stoppingServicesCount.count(service) < 2) {
