@@ -23,25 +23,25 @@
                         </td>
                         <td>
                             <!-- Leave this in for testing for now -->
-                            <cti:msg2 var="reasonValue" key=".${discrepancy.reasonKey}" argument="${discrepancy.reasonValue}" blankIfMissing="true"/>
+                            <cti:msg2 var="reasonValue" key=".${discrepancy.reasonKey}" arguments="${discrepancy.getI18nValuesForKey(discrepancy.reasonKey)}" blankIfMissing="true"/>
                             <c:choose>
                                 <c:when test="${empty reasonValue}">
                                     ****Key needed yukon.modules.dr.nest.${discrepancy.reasonKey}****
                                 </c:when>
                                 <c:otherwise>
-                                    <i:inline key=".${discrepancy.reasonKey}" arguments="${discrepancy.reasonValue}"/>
+                                    <i:inline key=".${discrepancy.reasonKey}" arguments="${discrepancy.getI18nValuesForKey(discrepancy.reasonKey)}"/>
                                 </c:otherwise>
                             </c:choose>
                         </td>
                         <td>
                             <!-- Leave this in for testing for now -->
-                            <cti:msg2 var="actionValue" key=".${discrepancy.actionKey}" argument="${discrepancy.actionValue}" blankIfMissing="true"/>
+                            <cti:msg2 var="actionValue" key=".${discrepancy.actionKey}" blankIfMissing="true" arguments="${discrepancy.getI18nValuesForKey(discrepancy.actionKey)}"/>
                             <c:choose>
                                 <c:when test="${empty actionValue}">
                                     ****Key needed yukon.modules.dr.nest.${discrepancy.actionKey}****
                                 </c:when>
                                 <c:otherwise>
-                                    <i:inline key=".${discrepancy.actionKey}" arguments="${discrepancy.actionValue}"/>
+                                    <i:inline key=".${discrepancy.actionKey}" arguments="${discrepancy.getI18nValuesForKey(discrepancy.actionKey)}"/>
                                 </c:otherwise>
                             </c:choose>
                         </td>

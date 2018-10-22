@@ -70,7 +70,7 @@
         
             <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
             <span class="badge js-count">${discrepancies.hitCount}</span>&nbsp;<i:inline key=".details.nestSyncDiscrepancies.title"/>
-            <c:set var="displayCogClass" value="${disrepancies.hitCount > 0 ? '' : 'dn'}"/>
+            <c:set var="displayCogClass" value="${discrepancies.hitCount > 0 ? '' : 'dn'}"/>
             <span class="js-cog-menu ${displayCogClass}">
                 <cm:dropdown icon="icon-cog">
                     <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  

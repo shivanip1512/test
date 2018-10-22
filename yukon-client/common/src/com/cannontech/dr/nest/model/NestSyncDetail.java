@@ -1,5 +1,6 @@
 package com.cannontech.dr.nest.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,5 +62,13 @@ public class NestSyncDetail {
 
     public void addValue(NestSyncI18nValue type, String value) {
         values.put(type, value);
+    }
+    
+    public Object[] getI18nValuesForKey(NestSyncI18nKey key) {
+        ArrayList<String> values = new ArrayList<String>();
+        for (NestSyncI18nValue value : key.getValueKeys()) {
+            values.add(getValues().get(value));
+        }
+        return values.toArray();
     }
 }

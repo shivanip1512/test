@@ -13,10 +13,7 @@ import com.cannontech.dr.nest.model.NestSyncType;
 public interface NestDao {
 
     public enum SortBy {
-        SYNCTYPE,
-        SYNCREASONKEY,
-        SYNCACTIONKEY,
-        ;
+        SYNCTYPE;
     }
     
     /**

@@ -188,6 +188,7 @@ public class NestController {
                          @DefaultItemsPerPage(value=250) PagingParameters paging,
                          HttpServletResponse response) throws IOException {
         paging = PagingParameters.EVERYTHING;
+        
         SyncSortBy sortBy = SyncSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         List<NestSyncType> typeList = new ArrayList<NestSyncType>();
@@ -200,15 +201,16 @@ public class NestController {
         String[] headerRow = new String[9];
 
         headerRow[0] = accessor.getMessage(SyncSortBy.type);
-        headerRow[1] = accessor.getMessage(SyncSortBy.reason);
-        headerRow[2] = accessor.getMessage(SyncSortBy.action);
+        headerRow[1] = accessor.getMessage(baseKey + "reason");
+        headerRow[2] = accessor.getMessage(baseKey + "action");
 
+        
         List<String[]> dataRows = Lists.newArrayList();
         for (NestSyncDetail detail: searchResult.getResultList()) {
             String[] dataRow = new String[3];
             dataRow[0] = accessor.getMessage(baseKey + detail.getType().name());
-            dataRow[1] = accessor.getMessage(baseKey + detail.getReasonKey(), detail.getReasonValue());
-            dataRow[2] = accessor.getMessage(baseKey + detail.getActionKey(), detail.getActionValue());
+            dataRow[1] = accessor.getMessage(baseKey + detail.getReasonKey(), detail.getI18nValuesForKey(detail.getReasonKey()));
+            dataRow[2] = accessor.getMessage(baseKey + detail.getActionKey(), detail.getI18nValuesForKey(detail.getActionKey()));
             dataRows.add(dataRow);
         }
         NestSync syncInfo = nestDao.getNestSyncById(syncId);
@@ -257,9 +259,7 @@ public class NestController {
     
     public enum SyncSortBy implements DisplayableEnum {
 
-        type(SortBy.SYNCTYPE),
-        reason(SortBy.SYNCREASONKEY),
-        action(SortBy.SYNCACTIONKEY);
+        type(SortBy.SYNCTYPE);
         
         private SyncSortBy(SortBy value) {
             this.value = value;
