@@ -801,20 +801,40 @@ YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
                 {
                     if( arePacketCRCsValid(_control_packet) &&
                         _control_packet.header.fmt.control.s.direction    == 0 &&
-                        _control_packet.header.fmt.control.s.primary      == 0 &&
-                        _control_packet.header.fmt.control.s.functionCode == Control_SecondaryLinkStatus )
+                        _control_packet.header.fmt.control.s.primary      == 0 )
                     {
-                        if( _control_packet.header.fmt.control.s.dfc == 0 )
+                        switch( _control_packet.header.fmt.control.s.functionCode )
                         {
-                            _in_recv       = 0;
-                            _control_state = State_Control_Ready;
-                        }
-                        else
-                        {
-                            _protocol_errors++;
+                            case Control_SecondaryLinkStatus:
+                            {
+                                if( _control_packet.header.fmt.control.s.dfc == 0 )
+                                {
+                                    _in_recv = 0;
+                                    _control_state = State_Control_Ready;
+                                }
+                                else
+                                {
+                                    _protocol_errors++;
 
-                            _control_state = State_Control_Request_LinkStatus_Out;
+                                    _control_state = State_Control_Request_LinkStatus_Out;
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                CTILOG_DEBUG(dout, "Received unexpected function code " << _control_packet.header.fmt.control.s.functionCode);
+                            }
+                            case Control_SecondaryNotSupported:
+                            {
+                                _control_state = State_Control_Ready;
+                            }
                         }
+                    }
+                    else
+                    {
+                        _protocol_errors++;
+
+                        _control_state = State_Control_Request_LinkStatus_Out;
                     }
                 }
                 break;

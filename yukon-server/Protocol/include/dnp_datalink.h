@@ -148,7 +148,8 @@ public:
     {
         Control_SecondaryACK               = 0x0,
         Control_SecondaryNACK              = 0x1,
-        Control_SecondaryLinkStatus        = 0xb
+        Control_SecondaryLinkStatus        = 0xb,
+        Control_SecondaryNotSupported      = 0xf,
     };
 
     packet_t constructSecondaryControlPacket( SecondaryControlFunction function, bool dfc );
