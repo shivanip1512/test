@@ -823,6 +823,7 @@ YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
                             default:
                             {
                                 CTILOG_DEBUG(dout, "Received unexpected function code " << _control_packet.header.fmt.control.s.functionCode);
+                                [[fallthrough]];
                             }
                             case Control_SecondaryNotSupported:
                             {
