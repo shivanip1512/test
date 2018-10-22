@@ -904,7 +904,7 @@ public class OperatorHardwareController {
 
         }
         
-            model.addAttribute("isEnrolled", enrollmentDao.getActiveEnrollmentsByInventory(hardware.getInventoryId()).size() > 0);
+        model.addAttribute("isEnrolled", enrollmentDao.getActiveEnrollmentsByInventory(hardware.getInventoryId()).size() > 0);
         
     }
 
