@@ -9,6 +9,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 public enum NestSyncI18nKey {
+    /**NestSyncI18nValues must be in the order in which they should display in the user message in demandResponse.xml**/
     FOUND_GROUP_ONLY_IN_NEST(GROUP), 
     FOUND_GROUP_ONLY_IN_YUKON(GROUP), 
     FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME(GROUP),
