@@ -183,16 +183,23 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
             </c:choose>
             <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardware.displayName}"/>
             <br><br>
-            <input type="radio" name="deleteOption" value="remove" checked="checked" id="removeRadio">
-            <label for="removeRadio" class="radioLabel"><i:inline key=".deleteOption1"/></label>
-            <br>
-            <input type="radio" name="deleteOption" value="delete" id="deleteRadio">
-            <label for="deleteRadio" class="radioLabel"><i:inline key=".deleteOption2"/></label>
-            
-            <div class="action-area">
-                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <cti:button nameKey="delete" type="submit" name="delete" classes="js-blocker action primary"/>
-                </cti:checkRolesAndProperties>
+            <c:if test="${isEnrolled}">
+                <tags:alertBox type="info" key=".unenrollToDelete"/>
+            </c:if>
+            <input type="radio" name="deleteOption" value="remove" checked="checked" id="removeRadio">
+            <label for="removeRadio" class="radioLabel"><i:inline key=".deleteOption1"/></label>
+            <br>
+            <input type="radio" name="deleteOption" value="delete" id="deleteRadio">
+            <label for="deleteRadio" class="radioLabel"><i:inline key=".deleteOption2"/></label>
+            <c:set var="disableValue" value="${isEnrolled ? 'disabled' : ''}"/>
+            <input type="radio" name="deleteOption" value="delete" id="deleteRadio" ${disableValue}>
+            <label for="deleteRadio" class="radioLabel ${disableValue}"><i:inline key=".deleteOption2"/></label>
+            
+            <div class="action-area">
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                    <cti:button nameKey="delete" type="submit" name="delete" classes="js-blocker action primary"/>
+                    <cti:button nameKey="ok" type="submit" name="delete" classes="js-blocker action primary"/>
+                </cti:checkRolesAndProperties>
                 <cti:button nameKey="cancel" onclick="hideDeletePopup()"/>
             </div>
         </form>
