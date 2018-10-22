@@ -96,6 +96,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     
     /**
      * Checks if a warning have to be send or not.
+     * If Service is stopped first time, not sending notification but showing service status in log file.
      * Case 1: If a service is optional service, then it should have been seen running atleast once and current
      * status should be stopped.
      * Case 2: If a service is not optional service and it was running earlier and have stopped then send warning.
