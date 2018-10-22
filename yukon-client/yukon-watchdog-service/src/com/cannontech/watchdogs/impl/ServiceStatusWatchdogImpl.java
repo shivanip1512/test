@@ -109,7 +109,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
                 stoppingServicesCount.add(service);
             }
             if (stoppingServicesCount.count(service) == 1) {
-                log.info("Retrying to get " + service + "service status , not sending notification at this time");
+                log.info("Retrying to get " + service + " service status , not sending notification at this time");
                 return false;
             }
         } else if (stoppingServicesCount.count(service) >= 1) {
