@@ -21,7 +21,9 @@ import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 import com.cannontech.watchdog.model.Watchdogs;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multiset;
 
 public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements ServiceStatusWatchdog {
     Logger log = YukonLogManager.getLogger(ServiceStatusWatchdogImpl.class);
@@ -31,6 +33,9 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     public static final String SERVICE_STATUS = "Status";
 
     private List<YukonServices> runningServices = new ArrayList<>();
+
+    Multiset<YukonServices> stoppingServicesCount = HashMultiset.create();
+
     private List<YukonServices> serviceNotificationSent = Collections.synchronizedList(new ArrayList<YukonServices>());
 
     private static final List<YukonServices> optionalServices = Arrays.asList(
@@ -97,6 +102,19 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
      */
     private boolean shouldSendWarning(ServiceStatus connectionStatus) {
         YukonServices service = getServiceName();
+
+        if (connectionStatus == ServiceStatus.STOPPED) {
+            if (stoppingServicesCount.count(service) < 2) {
+                stoppingServicesCount.add(service);
+            }
+            if (stoppingServicesCount.count(service) == 1) {
+                log.info("Retrying to get " + service + "service status , not sending notification at this time");
+                return false;
+            }
+        } else if (stoppingServicesCount.count(service) >= 1) {
+            stoppingServicesCount.setCount(service, 0);
+        }
+
         if (isServiceOptional(service)) {
             if (connectionStatus == ServiceStatus.RUNNING && !haveSeenRunning(service)) {
                 runningServices.add(service);
