@@ -107,7 +107,6 @@
         <pointInfo name="Phase C kW"/>
         <pointInfo name="Phase C Power Factor" attributes="POWER_FACTOR_PHASE_C"/>
         <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
-        <pointInfo name="Power Factor" attributes="POWER_FACTOR"/>
         <pointInfo name="Power Factor Degrees Phase A" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_A"/>
         <pointInfo name="Power Factor Degrees Phase B" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_B"/>
         <pointInfo name="Power Factor Degrees Phase C" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_C"/>
