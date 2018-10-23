@@ -37,11 +37,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.util.UrlPathHelper;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.SqlUtils;
@@ -54,6 +56,8 @@ import com.google.common.collect.Multimap;
  */
 
 public class ServletUtil {
+    
+    private static final Logger log = YukonLogManager.getLogger(ServletUtil.class);
 
     private static final PathMatcher pathMatcher = new AntPathMatcher();
     private static final UrlPathHelper urlPathHelper = new UrlPathHelper();
@@ -511,10 +515,14 @@ public class ServletUtil {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpSession session = httpRequest.getSession(false);
         if (session == null) {
+            //TODO: Remove this logging later. Added for YUK-18491.
+            log.trace("No session found for the user.");
             throw new NotLoggedInException();
         }
         LiteYukonUser yukonUser = getYukonUser(session);
         if (yukonUser == null) {
+          //TODO: Remove this logging later. Added for YUK-18491.
+            log.trace("Could not find yukonUser in the session. Session id:" + session.getId());
             throw new NotLoggedInException();
         }
         return yukonUser;

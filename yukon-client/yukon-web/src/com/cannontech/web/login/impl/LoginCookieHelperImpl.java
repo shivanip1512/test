@@ -68,7 +68,7 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
             String password = encrypter.decryptHexStr(encryptedCredentials[1]);
             return new UserPasswordHolder(username, password);
         } catch (CryptoException | DecoderException e) {
-            log.error("Invalid cookie value. Unable to login via remember me cookie");
+            log.error("Invalid cookie value. Unable to login via remember me cookie", e);
         }
         return null;
     }
@@ -94,6 +94,8 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
     private String getRememberMeCookieValue(HttpServletRequest request) {
         final Cookie[] cookieArray = request.getCookies();
         if (cookieArray == null) {
+            //TODO: Remove this logging later. Added for YUK-18491.
+            log.trace("No cookies found in the request.");
             return "";
         }
 
@@ -103,6 +105,8 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
                 return cookieValue != null ? cookieValue : "";
             }
         }
+        //TODO: Remove this logging later. Added for YUK-18491.
+        log.trace("No REMEMBER_ME_COOKIE cookie found in the request.");
         return "";
     }
 }

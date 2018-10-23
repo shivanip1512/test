@@ -4,18 +4,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 
 public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     private static final String INVALID_CSRF_TOKEN = "invalidCsrfToken";
+    private static final Logger log = YukonLogManager.getLogger(WebSecurityInterceptor.class);
 
     private WebSecurityAnnotationProcessor annotationProcessor;
 
@@ -42,6 +45,7 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
             try {
                 csrfTokenService.validateToken(request);
             } catch (SecurityException se) {
+                log.error("Invalid CSRF token :", se);
                 String redirect =
                     ServletUtil.createSafeRedirectUrl(request, "/login.jsp?" + INVALID_CSRF_TOKEN + "=true");
                 response.sendRedirect(redirect);

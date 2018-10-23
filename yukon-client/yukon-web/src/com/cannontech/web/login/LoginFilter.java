@@ -205,7 +205,8 @@ public class LoginFilter implements Filter {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Authenticated!");
         } else {
             String redirectFromUrl = request.getRequestURI().substring(request.getContextPath().length());
-
+            //TODO: Remove this logging later. Added for YUK-18491.
+            log.trace("Unexpexted logout? from url:" + redirectFromUrl);
             String urlParams = request.getQueryString();
             String unencodedNavUrl = redirectFromUrl + ((urlParams != null) ? "?" + urlParams : "");
             String encodedNavUrl = ServletUtil.urlEncode(unencodedNavUrl);
@@ -214,6 +215,8 @@ public class LoginFilter implements Filter {
             if (!"/".equals(redirectFromUrl) && !StringUtils.isBlank(encodedNavUrl)) {
                 loginUrl += "?" + LoginController.REDIRECTED_FROM + "=" + encodedNavUrl;
             }
+            //TODO: Remove this logging later. Added for YUK-18491.
+            log.trace("Redirecting to login url:" + loginUrl);
             response.sendRedirect(loginUrl);
         }
     }
@@ -237,7 +240,7 @@ public class LoginFilter implements Filter {
             if (isFailureAnError) {
                 log.info("Unable to attach YukonUserContext to request", e);
             } else {
-                log.debug("Unable to attach YukonUserContext to request");
+                log.debug("Unable to attach YukonUserContext to request", e);
             }
             return null;
         }
@@ -261,7 +264,7 @@ public class LoginFilter implements Filter {
             } catch (BadAuthenticationException e) {
                 log.info("Remember Me login failed");
             } catch (PasswordExpiredException e) {
-                log.error("The password for " + userPass.getUsername() + " is expired.");
+                log.error("The password for " + userPass.getUsername() + " is expired.", e);
             }
             // Cookie login failed, remove cookies.
             ServletUtil.deleteAllCookies(request, response);
@@ -273,6 +276,10 @@ public class LoginFilter implements Filter {
         String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
         String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
         if (username == null || password == null) {
+            //TODO: Remove this logging later. Added for YUK-18491.
+            log.trace("doDefaultParameterLogin returned false. Either username or password is null.");
+            log.trace("Username:" + username);
+            log.trace("Password:" + password);
             return false;
         }
 
@@ -284,9 +291,9 @@ public class LoginFilter implements Filter {
         } catch (AuthenticationThrottleException e) {
             log.error("AuthenticationThrottleException: " + e.getThrottleSeconds(), e);
         } catch (BadAuthenticationException e) {
-            log.error(e);
+            log.error("BadAuthenticationException:", e);
         } catch (PasswordExpiredException e) {
-            log.debug("The password for " + username + " is expired.");
+            log.debug("The password for " + username + " is expired.", e);
         }
         return false;
     }
