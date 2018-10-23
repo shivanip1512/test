@@ -10,6 +10,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.util.WebUtils;
 
@@ -29,7 +30,10 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         synchronized (WebUtils.getSessionMutex(session)) {
             token = (String) session.getAttribute(SESSION_CSRF_TOKEN);
             if (token == null) {
+                //TODO: Remove this logging later. Added for YUK-18491.
+                log.trace(SESSION_CSRF_TOKEN + " for session with id " + session.getId() + " is null");
                 token = UUID.randomUUID().toString();
+                log.trace("new " + SESSION_CSRF_TOKEN + " generate and set in session.");
                 session.setAttribute(SESSION_CSRF_TOKEN, token);
             }
         }
@@ -85,8 +89,22 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         }
         String actualToken = getTokenForSession(request.getSession());
         if (!actualToken.equals(requestToken)) {
+            //TODO: Remove this logging later. Added for YUK-18491.
+            if (ServletUtil.isAjaxRequest(request)) {
+                log.trace(request.getRequestURI() + " is an ajax request.");
+            } else {
+                log.trace(request.getRequestURI() + " is not an ajax request.");
+            }
+            log.trace(SESSION_CSRF_TOKEN + " and " + REQUEST_CSRF_TOKEN + " in " + request.getRequestURI() +" did not match.");
+            log.trace(request.getRequestURI() + SESSION_CSRF_TOKEN + ": " + actualToken);
+            log.trace(request.getRequestURI() + REQUEST_CSRF_TOKEN + ": " + requestToken);
             request.getSession().removeAttribute(SESSION_CSRF_TOKEN); // owasp recomendation
-            throw new SecurityException("Request token not found or invalid. " + request.getRequestURL());
+            
+            if (StringUtils.isEmpty(requestToken)) {
+                throw new SecurityException("Request token not found: " + request.getRequestURL());
+            } else {
+                throw new SecurityException("Request token is invalid: " + request.getRequestURL());
+            }
         }
     }
 }

@@ -240,7 +240,7 @@ public class LoginFilter implements Filter {
             if (isFailureAnError) {
                 log.info("Unable to attach YukonUserContext to request", e);
             } else {
-                log.debug("Unable to attach YukonUserContext to request", e);
+                log.debug("Unable to attach YukonUserContext to request");
             }
             return null;
         }
