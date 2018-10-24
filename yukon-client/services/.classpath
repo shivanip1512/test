@@ -20,8 +20,8 @@
 	<classpathentry kind="lib" path="/third-party/mx4j-rimpl.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-rjmx.jar"/>
 	<classpathentry kind="lib" path="/third-party/xbean-spring-4.5.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-integration-core-4.2.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-integration-jms-4.2.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/third-party/spring-integration-core-5.0.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/third-party/spring-integration-jms-5.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

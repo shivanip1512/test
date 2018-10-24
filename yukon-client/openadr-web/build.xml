@@ -81,7 +81,10 @@
         <include name="log4j-slf4j-impl-2.9.1.jar"/>
         <include name="spring-xml-2.3.0.RELEASE.jar"/>
         <include name="stax2-api-3.1.4.jar"/>
-        <include name="spring-*-4.3.5.RELEASE.jar"/>
+        <include name="spring-*-5.0.2.RELEASE.jar"/>
+        <include name="javax.jms-api-2.0.1.jar"/>
+        <include name=" micrometer-core-1.0.7.jar"/>
+        <include name=" reactive-streams-1.0.2.jar "/>
         <include name="sqljdbc42.jar"/>
         <include name="web-common.jar"/>
         <include name="xercesImpl-2.11.0.jar"/>

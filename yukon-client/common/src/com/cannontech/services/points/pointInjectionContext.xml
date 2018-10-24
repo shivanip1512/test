@@ -20,6 +20,6 @@
           
     <i:gateway id="_richPointDataGateway" service-interface="com.cannontech.services.points.RichPointDataGateway" />
     <i:channel id="yukonRichPointData"/>
-    <jms:outbound-channel-adapter id="jmsOut"  destination="yukonRichPointUpdateDestination" channel="yukonRichPointData"  />
+    <jms:outbound-channel-adapter id="jmsOut"  destination="yukonRichPointUpdateDestination" channel="yukonRichPointData"  connection-factory="connectionFactory"/>
     
 </beans>

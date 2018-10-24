@@ -4,23 +4,24 @@ Class-Path:
  lib/apache-activemq-4.1.0-incubator.jar 
  lib/log4j-api-2.9.1.jar 
  lib/log4j-core-2.9.1.jar 
- lib/log4j-jcl-2.9.1.jar  
- lib/spring-aop-4.3.5.RELEASE.jar 
- lib/spring-aspects-4.3.5.RELEASE.jar 
- lib/spring-beans-4.3.5.RELEASE.jar 
- lib/spring-context-4.3.5.RELEASE.jar 
- lib/spring-context-support-4.3.5.RELEASE.jar 
- lib/spring-core-4.3.5.RELEASE.jar 
- lib/spring-expression-4.3.5.RELEASE.jar 
- lib/spring-instrument-4.3.5.RELEASE.jar 
- lib/spring-instrument-tomcat-4.3.5.RELEASE.jar 
- lib/spring-jdbc-4.3.5.RELEASE.jar 
- lib/spring-jms-4.3.5.RELEASE.jar 
- lib/spring-messaging-4.3.5.RELEASE.jar 
- lib/spring-orm-4.3.5.RELEASE.jar 
- lib/spring-oxm-4.3.5.RELEASE.jar 
- lib/spring-test-4.3.5.RELEASE.jar 
- lib/spring-tx-4.3.5.RELEASE.jar 
- lib/spring-web-4.3.5.RELEASE.jar 
- lib/spring-webmvc-4.3.5.RELEASE.jar 
- lib/spring-webmvc-portlet-4.3.5.RELEASE.jar 
+ lib/log4j-jcl-2.9.1.jar 
+ javax.jms-api-2.0.1.jar 
+ lib/spring-aop-5.0.2.RELEASE.jar 
+ lib/spring-aspects-5.0.2.RELEASE.jar 
+ lib/spring-beans-5.0.2.RELEASE.jar 
+ lib/spring-context-5.0.2.RELEASE.jar 
+ lib/spring-context-support-5.0.2.RELEASE.jar 
+ lib/spring-core-5.0.2.RELEASE.jar 
+ lib/spring-expression-5.0.2.RELEASE.jar 
+ lib/spring-instrument-5.0.2.RELEASE.jar 
+ lib/spring-instrument-tomcat-5.0.2.RELEASE.jar 
+ lib/spring-jdbc-5.0.2.RELEASE.jar 
+ lib/spring-jms-5.0.2.RELEASE.jar 
+ lib/spring-messaging-5.0.2.RELEASE.jar 
+ lib/spring-orm-5.0.2.RELEASE.jar 
+ lib/spring-oxm-5.0.2.RELEASE.jar 
+ lib/spring-test-5.0.2.RELEASE.jar 
+ lib/spring-tx-5.0.2.RELEASE.jar 
+ lib/spring-web-5.0.2.RELEASE.jar 
+ lib/spring-webmvc-5.0.2.RELEASE.jar 
+ lib/spring-webmvc-portlet-5.0.2.RELEASE.jar 

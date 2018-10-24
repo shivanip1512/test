@@ -6,7 +6,7 @@ Class-Path:
  yukonappserver.jar 
  tools.jar 
  spring-ws-core-2.3.0.RELEASE.jar 
- spring-orm-4.3.5.RELEASE.jar 
+ spring-orm-5.0.2.RELEASE.jar 
  msp-beans-v3.jar
  msp-beans-v5.jar
  ../log/ 

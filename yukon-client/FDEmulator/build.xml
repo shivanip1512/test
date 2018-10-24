@@ -57,9 +57,9 @@
       <fileset file="${yukon.lib}/log4j-core-2.9.1.jar"/>
       <fileset file="${yukon.lib}/log4j-jcl-2.9.1.jar"/>
       <fileset file="${yukon.lib}/commons-lang3-3.3.1.jar"/>
-      <fileset file="${yukon.lib}/spring-jdbc-4.3.5.RELEASE.jar"/>
-      <fileset file="${yukon.lib}/spring-tx-4.3.5.RELEASE.jar"/>
-      <fileset file="${yukon.lib}/spring-core-4.3.5.RELEASE.jar"/>
+      <fileset file="${yukon.lib}/spring-jdbc-5.0.2.RELEASE.jar"/>
+      <fileset file="${yukon.lib}/spring-tx-5.0.2.RELEASE.jar"/>
+      <fileset file="${yukon.lib}/spring-core-5.0.2.RELEASE.jar"/>
       <fileset dir="." includes="src/main/resources/*.cfg"/>
     </copy>
   </target>
