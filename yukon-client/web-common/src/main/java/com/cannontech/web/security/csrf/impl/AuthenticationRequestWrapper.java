@@ -33,6 +33,7 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
         String body = null;
         
         try {
+            //TODO: Revert this later. Added for YUK-18491.
             body = CharStreams.toString(request.getReader());
         } catch (IOException e) {
             log.error("Error occurred in fetching the payload content for the request", e);
@@ -69,6 +70,7 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
         return inputStream;
     }
     
+    //TODO: Revert this later. Added for YUK-18491.//TODO: Revert this later. Added for YUK-18491.
     public String getPayload() {
         return payload;
     }
