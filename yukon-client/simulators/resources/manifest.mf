@@ -21,7 +21,6 @@ Class-Path: ./
  spring-core-5.0.2.RELEASE.jar 
  spring-expression-5.0.2.RELEASE.jar 
  spring-instrument-5.0.2.RELEASE.jar 
- spring-instrument-tomcat-5.0.2.RELEASE.jar 
  spring-jdbc-5.0.2.RELEASE.jar 
  spring-jms-5.0.2.RELEASE.jar 
  spring-messaging-5.0.2.RELEASE.jar 
@@ -31,7 +30,6 @@ Class-Path: ./
  spring-tx-5.0.2.RELEASE.jar 
  spring-web-5.0.2.RELEASE.jar 
  spring-webmvc-5.0.2.RELEASE.jar 
- spring-webmvc-portlet-5.0.2.RELEASE.jar 
  spring-websocket-5.0.2.RELEASE.jar 
  javax.jms-api-2.0.1.jar 
  servlet-api.jar 

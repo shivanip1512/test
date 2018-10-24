@@ -23,7 +23,6 @@ Class-Path: ./
  spring-core-5.0.2.RELEASE.jar 
  spring-expression-5.0.2.RELEASE.jar 
  spring-instrument-5.0.2.RELEASE.jar 
- spring-instrument-tomcat-5.0.2.RELEASE.jar 
  spring-jdbc-5.0.2.RELEASE.jar 
  spring-jms-5.0.2.RELEASE.jar 
  spring-messaging-5.0.2.RELEASE.jar 
@@ -33,8 +32,10 @@ Class-Path: ./
  spring-tx-5.0.2.RELEASE.jar 
  spring-web-5.0.2.RELEASE.jar 
  spring-webmvc-5.0.2.RELEASE.jar 
- spring-webmvc-portlet-5.0.2.RELEASE.jar 
  spring-websocket-5.0.2.RELEASE.jar 
+ javax.jms-api-2.0.1.jar 
+ micrometer-core-1.0.7.jar 
+ reactive-streams-1.0.2.jar 
  spring-xml-2.3.0.RELEASE.jar 
  stax2-api-3.1.4.jar 
  dom4j-1.6.1.jar 
@@ -122,6 +123,3 @@ Class-Path: ./
  jjwt-0.5.1.jar 
  jsr305-1.3.9.jar 
  mail-1.4.5.jar 
- javax.jms-api-2.0.1.jar 
- micrometer-core-1.0.7.jar 
- reactive-streams-1.0.2.jar 
