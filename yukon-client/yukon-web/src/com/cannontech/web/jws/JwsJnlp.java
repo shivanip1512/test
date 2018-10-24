@@ -81,6 +81,7 @@ public enum JwsJnlp {
                 "jackson-databind-2.9.6.jar",
                 "jackson-dataformat-csv-2.9.6.jar",
                 "jasypt-1.9.2.jar",
+                "javax.jms-api-2.0.1.jar",
                 "jaxb-api.jar",
                 "jaxb-impl.jar",
                 "jaxm-api.jar",
@@ -102,10 +103,12 @@ public enum JwsJnlp {
                 "lucene-core-6.0.0.jar",
                 "lucene-queryparser-6.0.0.jar",
                 "mailapi-1.5.1.jar",
+                "micrometer-core-1.0.7.jar",
                 "nagasena.jar",
                 "ojdbc6.jar",
                 "org.osgi.core-4.1.0.jar",
                 "quartz-2.2.1.jar",
+                "reactive-streams-1.0.2.jar",
                 "saaj.jar",
                 "servlet-api.jar",
                 "slf4j-api-1.7.25.jar",
@@ -119,7 +122,6 @@ public enum JwsJnlp {
                 "spring-core-5.0.2.RELEASE.jar",
                 "spring-expression-5.0.2.RELEASE.jar",
                 "spring-instrument-5.0.2.RELEASE.jar",
-                "spring-instrument-tomcat-5.0.2.RELEASE.jar",
                 "spring-integration-core-5.0.2.RELEASE.jar",
                 "spring-integration-jms-5.0.2.RELEASE.jar",
                 "spring-jdbc-5.0.2.RELEASE.jar",
@@ -131,7 +133,6 @@ public enum JwsJnlp {
                 "spring-tx-5.0.2.RELEASE.jar",
                 "spring-web-5.0.2.RELEASE.jar",
                 "spring-webmvc-5.0.2.RELEASE.jar",
-                "spring-webmvc-portlet-5.0.2.RELEASE.jar",
                 "spring-websocket-5.0.2.RELEASE.jar",
                 "spring-xml-2.3.0.RELEASE.jar",
                 "stax2-api-3.1.4.jar",
@@ -140,10 +141,7 @@ public enum JwsJnlp {
                 "xml-apis-1.4.01.jar",
                 "yukon-help.jar",
                 "yukon-shared.jar",
-                "yukonappserver.jar",
-                "reactive-streams-1.0.2.jar",
-                "micrometer-core-1.0.7.jar",
-                "javax.jms-api-2.0.1.jar"
+                "yukonappserver.jar"
                 ),
     ;
 
