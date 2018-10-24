@@ -109,6 +109,7 @@ public enum JwsJnlp {
                 "org.osgi.core-4.1.0.jar",
                 "quartz-2.2.1.jar",
                 "reactive-streams-1.0.2.jar",
+                "reactor-core-3.2.1.RELEASE",
                 "saaj.jar",
                 "servlet-api.jar",
                 "slf4j-api-1.7.25.jar",

@@ -48,7 +48,5 @@ Class-Path: ./
  spring-webmvc-5.0.2.RELEASE.jar 
  spring-websocket-5.0.2.RELEASE.jar 
  javax.jms-api-2.0.1.jar 
- reactive-streams-1.0.2.jar 
- reactive-streams-1.0.2.jar 
  ../log/ 
  ../export/ 
