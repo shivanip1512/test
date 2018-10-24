@@ -44,10 +44,7 @@ ActiveMQConnectionManager::MessageDescriptor::~MessageDescriptor() {
     delete replyTo;
 }
 
-ActiveMQConnectionManager::ActiveMQConnectionManager(const std::string &broker_uri) :
-    _broker_uri(broker_uri)
-{
-}
+ActiveMQConnectionManager::ActiveMQConnectionManager() = default;
 
 ActiveMQConnectionManager::~ActiveMQConnectionManager()
 {
@@ -204,11 +201,14 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
                 return false; // prevent starting a new connection while closing
             }
 
+            const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, ActiveMQ::Broker::defaultHost);
+            const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, ActiveMQ::Broker::defaultPort);
+
             // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
             const auto maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
-                std::to_string( GlobalSettings::getInteger( "MAX_INACTIVITY_DURATION", 30 ) * 1000 );
+                std::to_string( GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 ) * 1000 );
 
-            _connection = std::make_unique<ActiveMQ::ManagedConnection>( _broker_uri + "?" + maxInactivityDuration );
+            _connection = std::make_unique<ActiveMQ::ManagedConnection>( ActiveMQ::Broker::protocol + broker_host + ":" + broker_port + "?" + maxInactivityDuration );
         }
 
         _connection->start(); // start the connection outside the lock

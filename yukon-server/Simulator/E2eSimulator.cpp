@@ -59,7 +59,7 @@ E2eSimulator::~E2eSimulator() = default;
 
 E2eSimulator::E2eSimulator()
 {
-    conn = std::make_unique<ManagedConnection>(Broker::defaultURI);
+    conn = std::make_unique<ManagedConnection>(Broker::protocol + Broker::defaultHost + ":" + Broker::defaultPort);
 
     conn->start();
 

@@ -7,7 +7,29 @@
 
 class IM_EX_CTIBASE GlobalSettings 
 {
+public:
+
+    enum class Strings {
+        JmsBrokerHost,
+        JmsBrokerPort
+    };
+
+    enum class Integers {
+        ProducerWindowSize,
+        MaxInactivityDuration
+    };
+
+    enum class Booleans {
+    };
+
+    static std::string getString ( Strings  setting, std::string default );
+    static int         getInteger( Integers setting, int default );
+    static bool        getBoolean( Booleans setting, bool default );
+    
+    static void reload();
+
 private:
+
     typedef std::map<std::string, std::string> SettingMap;
     SettingMap _settingMap;
 
@@ -17,25 +39,13 @@ private:
     /** Private static singleton constructor.  Reads settings from database. */
     static GlobalSettings& GlobalSettings::getSingleton();
 
-    /** Private string accessor that initializes the singleton. */
-    std::string getStringImpl( const std::string &name, std::string default );
-    /** Private int accessor that initializes the singleton. */
-    int getIntegerImpl( const std::string &name, int default );
-    /** Private bool accessor that initializes the singleton. */
-    bool getBooleanImpl( const std::string &name, bool default );
+    /** Private accessors that initialize the singleton. */
+    auto getStringImpl (Strings  setting, std::string default) -> std::string;
+    auto getIntegerImpl(Integers setting, int default)         -> int;
+    auto getBooleanImpl(Booleans setting, bool default)        -> bool;
+
     /** Private GlobalSetting reload tool implementation. */
     void reloadImpl();
-
-public:
-
-    /** Public string accessor. */
-    static std::string getString( const std::string &name, std::string default );
-    /** Public string accessor. */
-    static int getInteger( const std::string &name, int default );
-    /** Public bool accessor. */
-    static bool getBoolean( const std::string &name, bool default );
-    /** Public GlobalSetting reload tool. */
-    static void reload();
 };
 
 extern IM_EX_CTIBASE std::unique_ptr<GlobalSettings> gGlobalSettings;

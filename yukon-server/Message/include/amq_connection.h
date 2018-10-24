@@ -111,7 +111,7 @@ public:
         bool operator<(const SessionCallback& rhs) const { return id < rhs.id; }
     };
 
-    ActiveMQConnectionManager(const std::string &broker_uri);
+    ActiveMQConnectionManager();
     virtual ~ActiveMQConnectionManager();
 
     static void start();
@@ -217,8 +217,6 @@ private:
     void run();
 
     CtiCriticalSection _closeConnectionMux;
-
-    const std::string _broker_uri;
 
     std::mutex _taskMux;
     std::condition_variable _newTask;

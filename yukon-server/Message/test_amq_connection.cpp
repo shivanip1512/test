@@ -17,10 +17,6 @@ using ActiveMQConnectionManager = Cti::Messaging::ActiveMQConnectionManager;
 
 struct test_AmqConnectionManmager : ActiveMQConnectionManager
 {
-    test_AmqConnectionManmager()
-        : ActiveMQConnectionManager("0.0.0.0")
-    {}
-
     using ActiveMQConnectionManager::getTasks;
     using ActiveMQConnectionManager::processTasks;
     using ActiveMQConnectionManager::emplaceNamedMessage;

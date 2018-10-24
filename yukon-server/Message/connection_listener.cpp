@@ -92,16 +92,19 @@ void CtiListenerConnection::start()
 
                 releaseResources();
 
+                const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, Broker::defaultHost);
+                const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, Broker::defaultPort);
+
                 // producerWindowSize sets the size in Bytes of messages that a producer can send before it is blocked
                 // to await a ProducerAck from the broker that frees enough memory to allow another message to be sent.
                 const string producerWindowSize = "connection.producerWindowSize=" +
-                    to_string( GlobalSettings::getInteger( "PRODUCER_WINDOW_SIZE", 1024 ) * 1024 );
+                    to_string( GlobalSettings::getInteger( GlobalSettings::Integers::ProducerWindowSize, 1024 ) * 1024 );
 
                 // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
                 const string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
-                    to_string( GlobalSettings::getInteger( "MAX_INACTIVITY_DURATION", 30 ) * 1000 );
+                    to_string( GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 ) * 1000 );
 
-                _connection.reset( new ManagedConnection( Broker::flowControlURI + "?" + producerWindowSize + "&" + maxInactivityDuration ) );
+                _connection.reset( new ManagedConnection( Broker::protocol + broker_host + ":" + broker_port + "?" + producerWindowSize + "&" + maxInactivityDuration ) );
             }
 
             if( getDebugLevel() & DEBUGLEVEL_CONNECTION )

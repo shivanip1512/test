@@ -11,12 +11,31 @@
 #include <boost/algorithm/string.hpp>
 #include "boost/optional/optional.hpp"
 
-using namespace std;
-
 /** Public string accessor. */
 static CtiMutex g_mux;
 
-/** 
+namespace Detail {
+
+template <typename T>
+using SettingNamesFor = std::map<T, std::string>;
+
+using Strings  = GlobalSettings::Strings;
+using Integers = GlobalSettings::Integers;
+using Booleans = GlobalSettings::Booleans;
+
+static const SettingNamesFor<Strings> StringNames {
+    { Strings::JmsBrokerHost, "JMS_BROKER_HOST" },
+    { Strings::JmsBrokerPort, "JMS_BROKER_PORT" } };
+
+static const SettingNamesFor<Integers> IntegerNames{
+    { Integers::MaxInactivityDuration, "MAX_INACTIVITY_DURATION" },
+    { Integers::ProducerWindowSize,    "PRODUCER_WINDOW_SIZE" } };
+
+static const SettingNamesFor<Booleans> BooleanNames{ /* empty */ };
+
+}
+
+/**
  * Global singleton.  This is initialized by the private accessors or could be 
  * initialized ahead of time by unit tests. 
  */
@@ -40,58 +59,68 @@ IM_EX_CTIBASE GlobalSettings& GlobalSettings::getSingleton()
 }
 
 /** Public string accessor. */
-IM_EX_CTIBASE string GlobalSettings::getString( const std::string &name, string default )
+IM_EX_CTIBASE std::string GlobalSettings::getString( const Strings setting, std::string default )
 {
-    return getSingleton().getStringImpl( name, default );
+    return getSingleton().getStringImpl(setting, default);
 }
 
 /** Private string accessor that initializes the singleton. */
-IM_EX_CTIBASE string GlobalSettings::getStringImpl( const std::string &name, string default )
+IM_EX_CTIBASE std::string GlobalSettings::getStringImpl( const Strings setting, std::string default )
 {
-    if( const auto value = Cti::mapFind( _settingMap, name ) )
+    if( const auto name = Cti::mapFind(Detail::StringNames, setting) )
     {
-        return *value;
+        if( const auto value = Cti::mapFind( _settingMap, *name ) )
+        {
+            return *value;
+        }
     }
+
     return default;
 }
 
 /** Public int accessor. */
-IM_EX_CTIBASE int GlobalSettings::getInteger( const std::string &name, int default )
+IM_EX_CTIBASE int GlobalSettings::getInteger( const Integers setting, int default )
 {
-    return getSingleton().getIntegerImpl( name, default );
+    return getSingleton().getIntegerImpl( setting, default );
 }
 
 /** Private int accessor that initializes the singleton. */
-IM_EX_CTIBASE int GlobalSettings::getIntegerImpl( const std::string &name, int default )
+IM_EX_CTIBASE int GlobalSettings::getIntegerImpl( const Integers setting, int default )
 {
-    if( const auto value = Cti::mapFind( _settingMap, name ) )
+    if( const auto name = Cti::mapFind(Detail::IntegerNames, setting) )
     {
-        return stoi( *value );
+        if( const auto value = Cti::mapFind(_settingMap, *name) )
+        {
+            return stoi(*value);
+        }
     }
+
     return default;
 }
 
 /** Public bool accessor. */
-IM_EX_CTIBASE bool GlobalSettings::getBoolean( const std::string &name, bool default )
+IM_EX_CTIBASE bool GlobalSettings::getBoolean( const Booleans setting, bool default )
 {
-    return getSingleton().getBooleanImpl( name, default );
+    return getSingleton().getBooleanImpl( setting, default );
 }
 
 /** Private bool accessor that initializes the singleton. */
-IM_EX_CTIBASE bool GlobalSettings::getBooleanImpl( const std::string &name, bool default )
+IM_EX_CTIBASE bool GlobalSettings::getBooleanImpl( const Booleans setting, bool default )
 {
-    const auto value = Cti::mapFind( _settingMap, name );
-    if( !value ) 
+    if( const auto name = Cti::mapFind(Detail::BooleanNames, setting) )
     {
-        return default;
+        if( const auto value = Cti::mapFind(_settingMap, *name) )
+        {
+            if( boost::iequals(*value, "false") || (*value).compare("0") )
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 
-    if( boost::iequals( *value, "false" ) || ( *value ).compare( "0" ) ) 
-    {
-        return false;
-    }
-
-    return true;
+    return default;
 }
 
 /** Public GlobalSetting table reload tool. */
@@ -107,7 +136,7 @@ IM_EX_CTIBASE void GlobalSettings::reloadImpl()
     SettingMap _tempMap;
 
     //  Load current settings
-    static const string sqlCore = "SELECT GS.NAME,GS.VALUE FROM GlobalSetting GS ";
+    static const std::string sqlCore = "SELECT GS.NAME,GS.VALUE FROM GlobalSetting GS ";
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sqlCore);
@@ -116,7 +145,7 @@ IM_EX_CTIBASE void GlobalSettings::reloadImpl()
 
     while (rdr())
     {
-        string name, value;
+        std::string name, value;
         rdr["NAME"] >> name;
         rdr["VALUE"] >> value;
 

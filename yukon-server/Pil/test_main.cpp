@@ -28,11 +28,6 @@ extern IM_EX_MSG std::unique_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
 struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManager
 {
-    test_ActiveMQConnectionManager(std::string uri) :
-        ActiveMQConnectionManager(uri)
-    {
-    }
-
     void enqueueOutgoingMessage(const std::string &queueName, Cti::Messaging::StreamableMessage::auto_type&& message, ReturnLabel returnLabel) override
     {
         //  ignore message, do not send
@@ -47,8 +42,7 @@ struct OverrideActiveMQConnectionManager
 {
     OverrideActiveMQConnectionManager()
     {
-        Cti::Messaging::gActiveMQConnection.reset(
-           new test_ActiveMQConnectionManager("0.0.0.0:0"));
+        Cti::Messaging::gActiveMQConnection = std::make_unique<test_ActiveMQConnectionManager>();
     }
 };
 

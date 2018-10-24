@@ -7,11 +7,9 @@ namespace Messaging {
 namespace ActiveMQ {
 
 namespace Broker {
-    // Listener URI
-    const std::string defaultURI = "tcp://localhost:61616";
-
-    // Client URI
-    const std::string flowControlURI = defaultURI;
+    const std::string protocol = "tcp://";
+    const std::string defaultHost = "localhost";
+    const std::string defaultPort = "61616";
 }
 
 namespace MessageType {
