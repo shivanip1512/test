@@ -422,6 +422,9 @@ protected:
     virtual YukonError_t decodeGetConfigMeterParameters( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual YukonError_t decodeGetConfigModel          ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
+    void decodeGetValueDailyRead_MultiDay (const INMESS& InMessage, std::string& resultString, const DSTRUCT* DSt, YukonError_t& status, bool& expectMore, CtiReturnMsg* ReturnMsg, std::string consumption_pointname, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    void decodeGetValueDailyRead_SingleDay(const INMESS& InMessage, std::string& resultString, const DSTRUCT* DSt, YukonError_t& status, bool& expectMore, CtiReturnMsg* ReturnMsg, std::string consumption_pointname, std::string demand_pointname);
+
     static bool isDailyReadVulnerableToAliasing(const CtiDate &date, const CtiTime &now);
     void tryVerifyDailyReadInterestDate(const unsigned interest_day, const unsigned interest_month, const CtiTime TimeNow);
 

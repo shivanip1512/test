@@ -2148,6 +2148,106 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         }
     }
 
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_daily_read_detail_daily_peak_point)
+    {
+        const CtiDate nowDate(17, 10, 2017);
+        const CtiTime nowTime(nowDate, 8, 24, 57);
+
+        Cti::Test::Override_CtiDate_Now overrideDate(nowDate);
+        Cti::Test::Override_CtiTime_Now overrideTime(nowTime);
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+        {
+            CtiCommandParser parse("getvalue daily read detail");  //  detail, includes daily peak
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.executeGetValue(&request, parse, om, vgList, retList, outList));
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 0x30);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 11);
+
+            BOOST_CHECK(outList.empty());
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            unsigned char buf[13] = { 0x01, 0xe2, 0x40, 0x16, 0xcc, 0x02, 0xf2, 0x03, 0x09, 0x10, 0x09 };
+
+            std::copy(buf, buf + 13, im.Buffer.DSt.Message);
+
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.decodeGetValueDailyRead(im, nowTime, vgList, retList, outList));
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+            
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_REQUIRE_EQUAL(points.size(), 3);
+
+                const CtiDate Midnight(nowTime);
+                const CtiTime DemandPeak(Midnight - 1, 12, 34);
+
+                auto point_itr = points.begin();
+
+                {
+                    const auto pdata = dynamic_cast<const CtiPointDataMsg *>(*point_itr++);
+
+                    BOOST_REQUIRE(pdata);
+
+                    BOOST_CHECK_EQUAL(1, pdata->getId());
+                    BOOST_CHECK_EQUAL(1, mct410.getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType)->getID());
+                    BOOST_CHECK_EQUAL(pdata->getValue(), 777);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getTime(), Midnight);
+                }
+                {
+                    const auto pdata = dynamic_cast<const CtiPointDataMsg *>(*point_itr++);
+
+                    BOOST_REQUIRE(pdata);
+
+                    BOOST_CHECK_EQUAL(2, pdata->getId());
+                    BOOST_CHECK_EQUAL(2, mct410.getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType)->getID());
+                    BOOST_CHECK_EQUAL(pdata->getValue(), 123456);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getTime(), Midnight);
+                }
+                {
+                    const auto pdata = dynamic_cast<const CtiPointDataMsg *>(*point_itr++);
+
+                    BOOST_REQUIRE(pdata);
+
+                    BOOST_CHECK_EQUAL(3, pdata->getId());
+                    BOOST_CHECK_EQUAL(3, mct410.getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)->getID());
+                    BOOST_CHECK_EQUAL(pdata->getValue(), 174);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getTime(), DemandPeak);
+                }
+            }
+        }
+    }
+
     BOOST_AUTO_TEST_CASE(test_executeGetConfigDisconnect)
     {
         test_Mct410IconDevice test_dev;
