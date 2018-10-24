@@ -32,6 +32,9 @@ Class-Path: ./
  spring-web-5.0.2.RELEASE.jar 
  spring-webmvc-5.0.2.RELEASE.jar 
  spring-websocket-5.0.2.RELEASE.jar 
+ spring-context-indexer-5.0.2.RELEASE.jar 
+ spring-jcl-5.0.2.RELEASE.jar 
+ spring-webflux-5.0.2.RELEASE.jar 
  javax.jms-api-2.0.1.jar 
  servlet-api.jar 
  ../log/ 

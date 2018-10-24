@@ -33,6 +33,9 @@ Class-Path: ./
  spring-web-5.0.2.RELEASE.jar 
  spring-webmvc-5.0.2.RELEASE.jar 
  spring-websocket-5.0.2.RELEASE.jar 
+ spring-context-indexer-5.0.2.RELEASE.jar 
+ spring-jcl-5.0.2.RELEASE.jar 
+ spring-webflux-5.0.2.RELEASE.jar 
  javax.jms-api-2.0.1.jar 
  reactor-core-3.2.1.RELEASE.jar 
  micrometer-core-1.0.7.jar 

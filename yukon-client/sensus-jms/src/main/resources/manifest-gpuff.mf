@@ -14,7 +14,6 @@ Class-Path:
  lib/spring-core-5.0.2.RELEASE.jar 
  lib/spring-expression-5.0.2.RELEASE.jar 
  lib/spring-instrument-5.0.2.RELEASE.jar 
- lib/spring-instrument-tomcat-5.0.2.RELEASE.jar 
  lib/spring-jdbc-5.0.2.RELEASE.jar 
  lib/spring-jms-5.0.2.RELEASE.jar 
  lib/spring-messaging-5.0.2.RELEASE.jar 
@@ -24,4 +23,6 @@ Class-Path:
  lib/spring-tx-5.0.2.RELEASE.jar 
  lib/spring-web-5.0.2.RELEASE.jar 
  lib/spring-webmvc-5.0.2.RELEASE.jar 
- lib/spring-webmvc-portlet-5.0.2.RELEASE.jar 
+ lib/spring-context-indexer-5.0.2.RELEASE.jar 
+ lib/spring-jcl-5.0.2.RELEASE.jar 
+ lib/spring-webflux-5.0.2.RELEASE.jar 
