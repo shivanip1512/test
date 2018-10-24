@@ -720,13 +720,8 @@ yukon.namespace = function (ns) {
 })(jQuery);
 
 $(function () {
-    var csrfToken = $('#ajax-csrf-token');
-    var csrfName = csrfToken.attr('name');
-    var csrfVal = csrfToken.val();
-    var csrfData = {};
-    csrfData[csrfName] = csrfVal;
-
     $(document).ajaxSend(function (ev, req, settings) {
+        var csrfName = $('#ajax-csrf-token').attr("name");
         if (!(settings.type === 'GET' || settings.type === 'get' ||
             settings.method === 'GET' || settings.method === 'get')) {
             var data = {};
@@ -749,9 +744,13 @@ $(function () {
                         }else{
                             joiner = '&';
                         }
+                        var csrfData = {},
+                            csrfVal = $('#ajax-csrf-token').val();
+                        csrfData[csrfName] = csrfVal;
                         data = data + joiner + $.param(csrfData);
+                        
                     }else{
-                        var mapData = {"com.cannontech.yukon.request.csrf.token" : csrfVal};
+                        var mapData = {"com.cannontech.yukon.request.csrf.token" : $('#ajax-csrf-token').val()};
                         data = JSON.stringify(mapData);
                     }
                     
@@ -763,10 +762,10 @@ $(function () {
             }
             
             if(settings.data == null || (typeof settings.data != 'string' && typeof settings.data != 'object' && typeof settings.data != 'json')){
-                var mapData = {"com.cannontech.yukon.request.csrf.token" : csrfVal};
+                var mapData = {"com.cannontech.yukon.request.csrf.token" : $('#ajax-csrf-token').val()};
                 data = JSON.stringify(mapData);
             }else{
-                data[csrfName] = csrfVal;	
+                data[csrfName] = $('#ajax-csrf-token').val();	
             }
             
             if (type === 'json') {
