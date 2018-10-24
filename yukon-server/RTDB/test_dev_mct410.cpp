@@ -2204,7 +2204,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             CtiMultiMsg_vec points = retMsg->PointData();
 
             {
-                BOOST_REQUIRE_EQUAL(points.size(), 3);
+                BOOST_REQUIRE_EQUAL(points.size(), 4);
 
                 const CtiDate Midnight(nowTime);
                 const CtiTime DemandPeak(Midnight - 1, 12, 34);
@@ -2240,6 +2240,17 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_CHECK_EQUAL(3, pdata->getId());
                     BOOST_CHECK_EQUAL(3, mct410.getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)->getID());
+                    BOOST_CHECK_EQUAL(pdata->getValue(), 174);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getTime(), DemandPeak);
+                }
+                {
+                    const auto pdata = dynamic_cast<const CtiPointDataMsg *>(*point_itr++);
+
+                    BOOST_REQUIRE(pdata);
+
+                    BOOST_CHECK_EQUAL(4, pdata->getId());
+                    BOOST_CHECK_EQUAL(4, mct410.getDevicePointOffsetTypeEqual(31, DemandAccumulatorPointType)->getID());
                     BOOST_CHECK_EQUAL(pdata->getValue(), 174);
                     BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
                     BOOST_CHECK_EQUAL(pdata->getTime(), DemandPeak);

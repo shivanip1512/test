@@ -346,6 +346,7 @@ protected:
         PointOffset_VoltageMin       = 15,
         PointOffset_VoltageMaxFrozen = 24,
         PointOffset_VoltageMinFrozen = 25,
+        PointOffset_PeakDemandDaily  = 31,
 
         PointOffset_Analog_Outage = 100,
         PointOffset_Status_PhaseDetect =  3000,

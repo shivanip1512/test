@@ -80,6 +80,12 @@
         <unitofmeasure value="VOLTS"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="31" type="DemandAccumulator">
+        <name>Peak Demand Daily</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>    
     <point offset="101" type="DemandAccumulator">
         <name>kW-LP</name>
         <multiplier value="0.1"/>

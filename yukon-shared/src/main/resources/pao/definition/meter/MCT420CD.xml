@@ -52,6 +52,7 @@
         <pointInfo name="Min Volts" init="true" attributes="MINIMUM_VOLTAGE"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Peak Demand Daily" init="true" attributes="PEAK_DEMAND_DAILY"/>
         <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Channel 2)" init="true" attributes="RECEIVED_PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Channel 3)" init="true"/>

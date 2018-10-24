@@ -3686,10 +3686,18 @@ void Mct410Device::decodeGetValueDailyRead_SingleDay(const INMESS& InMessage, st
         {
             insertPointDataReport(PulseAccumulatorPointType, channel, ReturnMsg,
                                     reading, consumption_pointname,  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
-                                    TAG_POINT_MUST_ARCHIVE);
+                                    0.1, TAG_POINT_MUST_ARCHIVE);
 
             insertPointDataReport(DemandAccumulatorPointType, channel, ReturnMsg,
                                     peak, demand_pointname,  CtiTime(_daily_read_info.request.begin) + (time_peak * 60));
+
+            if( channel == 1 && getDevicePointOffsetTypeEqual(PointOffset_PeakDemandDaily, DemandAccumulatorPointType) )
+            {
+                //  Insert the peak demand daily report for channel 1
+                insertPointDataReport(DemandAccumulatorPointType, PointOffset_PeakDemandDaily, ReturnMsg,
+                                        peak, demand_pointname, CtiTime(_daily_read_info.request.begin) + (time_peak * 60),
+                                        0.1, TAG_POINT_MUST_ARCHIVE);
+            }
         }
 
         _daily_read_info.request.in_progress = false;

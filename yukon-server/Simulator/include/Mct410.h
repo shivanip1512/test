@@ -113,8 +113,9 @@ private:
     bytes getLcdConfiguration1();
     bytes getLcdConfiguration2();
     bytes getDisconnectStatus();
+    bytes getSingleDayRead  (const unsigned offset, const unsigned channel);
     bytes getLongLoadProfile(const unsigned offset);
-    bytes getLoadProfile(const unsigned offset, const unsigned channel);
+    bytes getLoadProfile    (const unsigned offset, const unsigned channel);
 
     bytes getValueVectorFromMemory(unsigned pos, unsigned length);
 
@@ -154,6 +155,9 @@ private:
 
     enum FunctionReads
     {
+        FR_Channel1SingleDayReadMin = 0x30,
+        FR_Channel1SingleDayReadMax = 0x37,
+
         FR_LongLoadProfileTableMin = 0x40,
         FR_LongLoadProfileTableMax = 0x4f,
 
@@ -317,6 +321,9 @@ protected:
     static bytes formatAllCurrentMeterReadings(const unsigned address);
     static bytes formatAllRecentDemandReadings(const int dynamicDemand);
     static bytes formatAllCurrentPeakDemandReadings(const unsigned address, const bytes &peakDemand, const bytes &peakTimestamp);
+
+    static bytes formatSingleDayRead(const unsigned hectoWattHours, const peak_demand_t peakDemandDaily, const unsigned outages, 
+                                     const unsigned day, const unsigned month, const unsigned channel);
 
     static bytes formatLongLoadProfile(unsigned offset, const unsigned address, const CtiTime periodOfInterest,
                                        const unsigned channelOfInterest, const unsigned lpIntervalSeconds);

@@ -128,6 +128,12 @@ Mct410Sim::function_reads_t Mct410Sim::initFunctionReads()
     reads.emplace(FR_LcdConfiguration2,            [](Mct410Sim& mct) { return mct.getLcdConfiguration2();              });
     reads.emplace(FR_DisconnectStatus,             [](Mct410Sim& mct) { return mct.getDisconnectStatus();               });
 
+    read_range = makeFunctionReadRange(FR_Channel1SingleDayReadMin,
+                                       FR_Channel1SingleDayReadMax, 
+                                       [](Mct410Sim& mct, unsigned offset) { return mct.getSingleDayRead(offset, 1); } );
+
+    reads.insert(read_range.begin(), read_range.end());
+
     read_range = makeFunctionReadRange(FR_LongLoadProfileTableMin,
                                        FR_LongLoadProfileTableMax, 
                                        [](Mct410Sim& mct, unsigned offset) { return mct.getLongLoadProfile(offset); } );
@@ -964,14 +970,14 @@ Mct410Sim::peak_demand_t Mct410Sim::checkForNewPeakDemand(const unsigned address
         {
             maxIntervalConsumption = intervalConsumption;
 
-            // Timestamp for the peak is the end of the interval.
-            maxIntervalTimestamp = intervalBegin.seconds() + demandInterval;
+            maxIntervalTimestamp = intervalBegin.seconds();
         }
     }
 
     unsigned short peakDemand = getDynamicDemand(address, demandInterval, maxIntervalTimestamp);
 
-    peak_demand_t result = { peakDemand, maxIntervalTimestamp };
+    // Timestamp for the peak is the end of the interval.
+    peak_demand_t result = { peakDemand, maxIntervalTimestamp + demandInterval };
 
     return result;
 }
@@ -1142,7 +1148,7 @@ double Mct410Sim::getConsumptionMultiplier(const unsigned address)
     }
 }
 
-//  The consumption value is constructed using the current time and meter address.
+//  The consumption value is constructed using the specified time and meter address.
 double Mct410Sim::makeValueConsumption(const unsigned address, const CtiTime consumptionTime, const unsigned duration)
 {
     if( duration == 0 )  return 0;
@@ -1251,6 +1257,68 @@ bytes Mct410Sim::formatLongLoadProfile(const unsigned offset, const unsigned add
     fillLongLoadProfile(address, blockStart, lpIntervalSeconds, result_oitr);
 
     return result_bytes;
+}
+
+bytes Mct410Sim::getSingleDayRead(const unsigned offset, const unsigned channel)
+{
+    const unsigned demandInterval = _memory.getValueFromMemoryMapLocation(MM_DemandInterval) * SecondsPerMinute;
+
+    unsigned lpIntervalSeconds = getLpIntervalSeconds();
+
+    double maxIntervalConsumption = 0;
+    CtiTime maxIntervalTime;
+
+    CtiDate readDay = CtiDate::now() - 1 - offset;
+
+    const auto hectoWattHours = getHectoWattHours(_address, CtiDate::now() - offset);
+
+    const auto dayBegin = CtiTime(readDay) + demandInterval;
+    const auto dayEnd   = CtiTime(readDay + 1);
+
+    for( CtiTime intervalBegin = dayBegin; intervalBegin < dayEnd; intervalBegin.addSeconds(demandInterval) )
+    {
+        // Calculate the consumption from the start point of the interval.
+        double intervalConsumption = makeValueConsumption(_address, intervalBegin, demandInterval);
+
+        if( intervalConsumption > maxIntervalConsumption )
+        {
+            maxIntervalConsumption = intervalConsumption;
+
+            maxIntervalTime = intervalBegin;
+        }
+    }
+
+    unsigned short peakDemand = getDynamicDemand(_address, demandInterval, maxIntervalTime.seconds());
+    unsigned short peakTimestampMinutes = (maxIntervalTime.seconds() - dayBegin.seconds() + demandInterval) / SecondsPerMinute;
+
+    // Timestamp for the peak is the end of the interval.
+    peak_demand_t peakDemandDaily = { peakDemand, peakTimestampMinutes };
+
+    return formatSingleDayRead(hectoWattHours, peakDemandDaily, 17, readDay.dayOfMonth(), readDay.month(), channel);
+}
+
+bytes Mct410Sim::formatSingleDayRead(const unsigned hectoWattHours, const peak_demand_t peakDemandDaily, const unsigned outages, const unsigned day, const unsigned month, const unsigned channel)
+{
+    bytes singleDayRead;
+
+    singleDayRead.push_back(hectoWattHours >> 16);
+    singleDayRead.push_back(hectoWattHours >> 8);
+    singleDayRead.push_back(hectoWattHours);
+
+    singleDayRead.push_back(peakDemandDaily.peakDemand >> 8);
+    singleDayRead.push_back(peakDemandDaily.peakDemand);
+
+    singleDayRead.push_back(peakDemandDaily.peakTimestamp >> 8);
+    singleDayRead.push_back(peakDemandDaily.peakTimestamp);
+
+    singleDayRead.push_back(outages >> 8);
+    singleDayRead.push_back(outages);
+
+    singleDayRead.push_back(day);
+
+    singleDayRead.push_back(((channel - 1) << 4) | (month - 1));
+
+    return singleDayRead;
 }
 
 bytes Mct410Sim::getLoadProfile(const unsigned offset, const unsigned channel)
