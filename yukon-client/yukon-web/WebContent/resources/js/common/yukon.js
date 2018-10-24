@@ -719,60 +719,59 @@ yukon.namespace = function (ns) {
     
 })(jQuery);
 
-$(function () {
-    $(document).ajaxSend(function (ev, req, settings) {
-        var csrfName = $('#ajax-csrf-token').attr("name");
-        if (!(settings.type === 'GET' || settings.type === 'get' ||
-            settings.method === 'GET' || settings.method === 'get')) {
-            var data = {};
-            var type = 'object';
-            if (typeof settings.data === 'string') {
-                try {
-                    data = JSON.parse(settings.data);
-                    type = 'json';
-                } catch (e) {
-                    type = 'urlEncode';
-                    data = settings.data;
-                    var joiner = '';
-                    if(data!= ""){
-                    	if(data.indexOf('?') === -1){
-                            if(data.indexOf('=') === -1){
-                                joiner = '?';
-                            }else{
-                                joiner = '&';
-                            }
+
+$(document).ajaxSend(function (ev, req, settings) {
+    var csrfName = $('#ajax-csrf-token').attr("name");
+    if (!(settings.type === 'GET' || settings.type === 'get' ||
+        settings.method === 'GET' || settings.method === 'get')) {
+        var data = {};
+        var type = 'object';
+        if (typeof settings.data === 'string') {
+            try {
+                data = JSON.parse(settings.data);
+                type = 'json';
+            } catch (e) {
+                type = 'urlEncode';
+                data = settings.data;
+                var joiner = '';
+                if(data!= ""){
+                	if(data.indexOf('?') === -1){
+                        if(data.indexOf('=') === -1){
+                            joiner = '?';
                         }else{
                             joiner = '&';
                         }
-                        var csrfData = {},
-                            csrfVal = $('#ajax-csrf-token').val();
-                        csrfData[csrfName] = csrfVal;
-                        data = data + joiner + $.param(csrfData);
-                        
                     }else{
-                        var mapData = {"com.cannontech.yukon.request.csrf.token" : $('#ajax-csrf-token').val()};
-                        data = JSON.stringify(mapData);
+                        joiner = '&';
                     }
+                    var csrfData = {},
+                        csrfVal = $('#ajax-csrf-token').val();
+                    csrfData[csrfName] = csrfVal;
+                    data = data + joiner + $.param(csrfData);
                     
+                }else{
+                    var mapData = {"com.cannontech.yukon.request.csrf.token" : $('#ajax-csrf-token').val()};
+                    data = JSON.stringify(mapData);
                 }
+                
             }
-           
-            if (typeof settings.data === 'object') {
-                data = settings.data;
-            }
-            
-            if(settings.data == null || (typeof settings.data != 'string' && typeof settings.data != 'object' && typeof settings.data != 'json')){
-                var mapData = {"com.cannontech.yukon.request.csrf.token" : $('#ajax-csrf-token').val()};
-                data = JSON.stringify(mapData);
-            }else{
-                data[csrfName] = $('#ajax-csrf-token').val();	
-            }
-            
-            if (type === 'json') {
-                data = JSON.stringify(data);
-            }
-            
-            settings.data = data;
         }
-    });
+       
+        if (typeof settings.data === 'object') {
+            data = settings.data;
+        }
+        
+        if(settings.data == null || (typeof settings.data != 'string' && typeof settings.data != 'object' && typeof settings.data != 'json')){
+            var mapData = {"com.cannontech.yukon.request.csrf.token" : $('#ajax-csrf-token').val()};
+            data = JSON.stringify(mapData);
+        }else{
+            data[csrfName] = $('#ajax-csrf-token').val();	
+        }
+        
+        if (type === 'json') {
+            data = JSON.stringify(data);
+        }
+        
+        settings.data = data;
+    }
 });
