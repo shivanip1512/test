@@ -26,6 +26,7 @@ public enum RfnManufacturerModel {
     
     RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "1077"),
     RFN_LCR_6600(PaoType.LCR6600_RFN, "CPS", "1082"),
+    RFN_LCR_6601S(PaoType.LCR6601S_RFN, "CPS", "1085"),
     RFN_LCR_6700(PaoType.LCR6700_RFN, "CPS", "1086"),
     
 //    RFN_440_2131T(PaoType.RFN440_2131T, "ELO", "2131T"),

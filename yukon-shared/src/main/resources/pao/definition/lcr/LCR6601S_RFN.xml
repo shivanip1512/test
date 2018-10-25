@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LCR6601S_RFN" displayGroup="RFMESH" displayName="LCR-6601S RFN" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RFN_LCR.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="ASSET_DETAIL_DISPLAYABLE"/>
+        <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
+        <pointInfo name="Recording Interval" init="true" attributes="RECORDING_INTERVAL"/>
+        <pointInfo name="Relay 1 kW Load Size" init="true" attributes="RELAY_1_LOAD_SIZE"/>
+        <pointInfo name="Relay 1 Remaining Control Time" init="true" attributes="RELAY_1_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 1 Run Time Data Log" init="true" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 1 Shed Time Data Log" init="true" attributes="RELAY_1_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 2 kW Load Size" init="true" attributes="RELAY_2_LOAD_SIZE"/>
+        <pointInfo name="Relay 2 Remaining Control Time" init="true" attributes="RELAY_2_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 2 Run Time Data Log" init="true" attributes="RELAY_2_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 2 Shed Time Data Log" init="true" attributes="RELAY_2_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 3 kW Load Size" init="true" attributes="RELAY_3_LOAD_SIZE"/>
+        <pointInfo name="Relay 3 Remaining Control Time" init="true" attributes="RELAY_3_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 3 Run Time Data Log" init="true" attributes="RELAY_3_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 3 Shed Time Data Log" init="true" attributes="RELAY_3_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Reporting Interval" init="true" attributes="REPORTING_INTERVAL"/>
+        <pointInfo name="Service Status" init="true" attributes="SERVICE_STATUS"/>
+        <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
+        <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
+        <pointInfo name="Average Voltage" init="true" attributes="AVERAGE_VOLTAGE"/>
+        <pointInfo name="Minimum Voltage" init="true" attributes="MINIMUM_VOLTAGE"/>      
+        <pointInfo name="Maximum Voltage" init="true" attributes="MAXIMUM_VOLTAGE"/>
+    </pointInfos>
+</pao>

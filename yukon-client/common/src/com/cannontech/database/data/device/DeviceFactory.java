@@ -222,6 +222,9 @@ public final class DeviceFactory {
         case LCR6600_RFN:
             returnDevice = new RfnLcr6600();
             break;
+        case LCR6601S_RFN:
+            returnDevice = new RfnLcr6601S();
+            break;
         case LCR6700_RFN:
             returnDevice = new RfnLcr6700();
             break;

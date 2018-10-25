@@ -164,6 +164,7 @@
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6600_XCOM">LCR-6600 (ExpressCom)</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6600_ZIGBEE">LCR-6600 (ZigBee)</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6600_RFN">LCR-6600 (RFN)</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6601S_RFN">LCR-6601S (RFN)</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_6700_RFN">LCR-6700 (RFN)</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_ECOBEE_SMART_SI">ecobee Smart Si</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_ECOBEE_3">ecobee3</entry>
