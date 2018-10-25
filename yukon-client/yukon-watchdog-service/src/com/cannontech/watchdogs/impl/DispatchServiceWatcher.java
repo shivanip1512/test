@@ -28,14 +28,14 @@ import com.cannontech.watchdogs.util.WatchdogDispatchClientConnection;
  */
 
 @Service
-public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implements WatchdogMessageListener {
+public class DispatchServiceWatcher extends ServiceStatusWatchdogImpl implements WatchdogMessageListener {
 
-    private static final Logger log = YukonLogManager.getLogger(DispatcherServiceWatcher.class);
+    private static final Logger log = YukonLogManager.getLogger(DispatchServiceWatcher.class);
 
     @Autowired private ConnectionFactoryService connectionFactorySvc;
 
     private volatile Instant receivedLatestMessageTimeStamp;
-    private AtomicBoolean isDispatcherRunning = new AtomicBoolean(false);
+    private AtomicBoolean isDispatchRunning = new AtomicBoolean(false);
     private Instant sendMessageTimeStamp;
     private static WatchdogDispatchClientConnection dispatchConnection;
     
@@ -63,7 +63,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
             cmd.setTimeStamp(new Date());
             dispatchConnection.write(cmd);
         } else {
-            log.info("Invalid connection with Dispatcher Service");
+            log.info("Invalid connection with Dispatch Service");
         }
         watchAndNotify();
     }
@@ -101,12 +101,12 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
         } catch (InterruptedException e) {}
 
         if (receivedLatestMessageTimeStamp == null || !dispatchConnection.isValid()) {
-            log.info("Status of Dispatcher service " + ServiceStatus.STOPPED);
-            isDispatcherRunning.set(false);
+            log.info("Status of Dispatch service " + ServiceStatus.STOPPED);
+            isDispatchRunning.set(false);
             return generateWarning(WatchdogWarningType.YUKON_DISPATCH_SERVICE, ServiceStatus.STOPPED);
         } else {
-            log.info("Status of Dispatcher service " + ServiceStatus.RUNNING);
-            isDispatcherRunning.set(true);
+            log.info("Status of Dispatch service " + ServiceStatus.RUNNING);
+            isDispatchRunning.set(true);
             return generateWarning(WatchdogWarningType.YUKON_DISPATCH_SERVICE, ServiceStatus.RUNNING);
         }
     }
@@ -131,7 +131,7 @@ public class DispatcherServiceWatcher extends ServiceStatusWatchdogImpl implemen
 
     @Override
     public boolean isServiceRunning() {
-        return isDispatcherRunning.get();
+        return isDispatchRunning.get();
     }
 
 }

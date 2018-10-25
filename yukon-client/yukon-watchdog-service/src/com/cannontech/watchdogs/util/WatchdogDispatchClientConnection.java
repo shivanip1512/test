@@ -6,13 +6,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
-import com.cannontech.watchdogs.impl.DispatcherServiceWatcher;
+import com.cannontech.watchdogs.impl.DispatchServiceWatcher;
 
 public class WatchdogDispatchClientConnection extends DispatchClientConnection {
     private static final Logger log = YukonLogManager.getLogger(WatchdogDispatchClientConnection.class);
-    private DispatcherServiceWatcher watcher;
+    private DispatchServiceWatcher watcher;
 
-    public void addWatchdogMessageListener(DispatcherServiceWatcher watcher) {
+    public void addWatchdogMessageListener(DispatchServiceWatcher watcher) {
         this.watcher = watcher;
     }
 

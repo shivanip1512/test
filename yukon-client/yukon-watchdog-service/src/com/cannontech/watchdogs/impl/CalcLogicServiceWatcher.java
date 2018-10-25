@@ -36,7 +36,7 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl implement
 
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private DispatcherServiceWatcher dispatcherServiceWatcher;
+    @Autowired private DispatchServiceWatcher dispatchServiceWatcher;
 
     private volatile Instant startedListening;
     private Semaphore pointDataReceived = new Semaphore(0);
@@ -77,7 +77,7 @@ public class CalcLogicServiceWatcher extends ServiceStatusWatchdogImpl implement
 
         try {
             boolean checkServiceStatus = pointDataReceived.tryAcquire(120, TimeUnit.SECONDS);
-            if (checkServiceStatus || dispatcherServiceWatcher.isServiceRunning()) {
+            if (checkServiceStatus || dispatchServiceWatcher.isServiceRunning()) {
                 return checkServiceStatus ? ServiceStatus.RUNNING : ServiceStatus.STOPPED;
             }
 

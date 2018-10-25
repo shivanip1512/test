@@ -37,7 +37,7 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
 
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private DispatcherServiceWatcher dispatcherServiceWatcher;
+    @Autowired private DispatchServiceWatcher dispatchServiceWatcher;
     /** Point for process memory usage */
     private LitePoint memoryPoint;
     private Semaphore pointDataReceived = new Semaphore(0);
@@ -75,7 +75,7 @@ public class ScannerServiceWatcher extends ServiceStatusWatchdogImpl implements 
     private ServiceStatus getScannerServiceStatus() {
         try {
             boolean checkServiceStatus = pointDataReceived.tryAcquire(120, TimeUnit.SECONDS);
-            if (checkServiceStatus || dispatcherServiceWatcher.isServiceRunning()) {
+            if (checkServiceStatus || dispatchServiceWatcher.isServiceRunning()) {
                 return checkServiceStatus ? ServiceStatus.RUNNING : ServiceStatus.STOPPED;
             }
         } catch (InterruptedException e) {

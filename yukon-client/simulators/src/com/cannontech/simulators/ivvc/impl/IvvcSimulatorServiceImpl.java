@@ -476,7 +476,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
 
     // Initialize the list of regulator tap positions from the database or Dispatch
     private void loadRegulatorTapPositionsFromDatabase() {
-        // pre-load tap positions and set point values from Dispatcher.
+        // pre-load tap positions and set point values from Dispatch.
         if (!tapPositionsAndSetPointValuesPreloaded) {
             DateTime start = DateTime.now();
             Set<Integer> regulatorTapPositionPointIds = new HashSet<>();

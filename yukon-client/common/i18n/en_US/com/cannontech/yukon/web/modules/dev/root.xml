@@ -552,7 +552,7 @@
     </ul>
      ]]></entry>
     
-    <entry key="yukon.web.modules.dev.highSpeedBulkPointInjection.helpText"><![CDATA[This tool is designed to insert point data directly (not via dispatcher) to the database for selected device group. Tool can insert below point values for all devices in the selected device group.
+    <entry key="yukon.web.modules.dev.highSpeedBulkPointInjection.helpText"><![CDATA[This tool is designed to insert point data directly (not via Dispatch) to the database for selected device group. Tool can insert below point values for all devices in the selected device group.
     <ul>
     <li>Analog</li>
     <li>Status</li>

@@ -37,7 +37,7 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
 
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private DispatcherServiceWatcher dispatcherServiceWatcher;
+    @Autowired private DispatchServiceWatcher dispatchServiceWatcher;
     /** Point for process memory usage */
     private LitePoint memoryPoint;
     private Semaphore pointDataReceived = new Semaphore(0);
@@ -76,7 +76,7 @@ public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements Poin
     private ServiceStatus getFDRServiceStatus() {
         try {
             boolean checkServiceStatus = pointDataReceived.tryAcquire(120, TimeUnit.SECONDS);
-            if (checkServiceStatus || dispatcherServiceWatcher.isServiceRunning()) {
+            if (checkServiceStatus || dispatchServiceWatcher.isServiceRunning()) {
                 return checkServiceStatus ? ServiceStatus.RUNNING : ServiceStatus.STOPPED;
             }
 
