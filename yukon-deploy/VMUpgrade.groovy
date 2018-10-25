@@ -2,9 +2,11 @@
 
 pipeline {
     agent none
-    options {
-        preserveStashes()
+
+    triggers {
+        cron('H 7,19 * * *')
     }
+
     parameters {
         string(name: 'VM_GUEST_USERID', defaultValue: 'PSPL-SW-NIGHT+Administrator', description: 'The username. If unspecified the scripts will automatically try VM_GUEST_ADDRESS+VM_GUEST_USERID and VM_GUEST_USERID. In this case the capitalization of VM_GUEST_ADDRESS may matter')
         string(name: 'VM_GUEST_PASSWORD', defaultValue: 'cti123', description: 'Who should I say hello to?')
