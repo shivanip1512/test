@@ -27,6 +27,7 @@
         <pointInfo name="Amps Phase A" init="true" attributes="CURRENT_PHASE_A"/>
         <pointInfo name="Amps Phase B" init="true" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Amps Phase C" init="true" attributes="CURRENT_PHASE_C"/>
+        <pointInfo name="Average Power Factor (Quadrants 1 2 4)" attributes="AVERAGE_POWER_FACTOR_Q124"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
@@ -104,7 +105,6 @@
         <pointInfo name="Phase C kW"/>
         <pointInfo name="Phase C Power Factor" attributes="POWER_FACTOR_PHASE_C"/>
         <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
-        <pointInfo name="Power Factor" attributes="POWER_FACTOR"/>
         <pointInfo name="Power Factor Degrees Phase A" init="true"/>
         <pointInfo name="Power Factor Degrees Phase B" init="true"/>
         <pointInfo name="Power Factor Degrees Phase C" init="true"/>
