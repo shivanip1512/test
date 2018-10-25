@@ -2436,7 +2436,7 @@
   }, {
     "Current Phase B" : {
       "unit" : "A",
-      "Unit Modifiers" : [ "Phase C", "milli" ],
+      "Unit Modifiers" : [ "Phase B", "milli" ],
       "Models" : [ "EE A3D", "EE A3T", "EE A3K", "EE A3R" ],
       "Other names" : [ "Phase B current" ]
     }
@@ -7591,37 +7591,37 @@
     },
     "25" : {
       "name" : "Var hour Q1",
-      "unit" : "Var",
+      "unit" : "Varh",
       "Unit Modifiers" : [ "Quadrant 1" ]
     },
     "26" : {
       "name" : "Var hour Q2",
-      "unit" : "Var",
+      "unit" : "Varh",
       "Unit Modifiers" : [ "Quadrant 2" ]
     },
     "27" : {
       "name" : "Var hour Q3",
-      "unit" : "Var",
+      "unit" : "Varh",
       "Unit Modifiers" : [ "Quadrant 3" ]
     },
     "28" : {
       "name" : "Var hour Q4",
-      "unit" : "Var",
+      "unit" : "Varh",
       "Unit Modifiers" : [ "Quadrant 4" ]
     },
     "29" : {
       "name" : "Var hour Q1 + Q4",
-      "unit" : "Var",
+      "unit" : "Varh",
       "Unit Modifiers" : [ "Quadrant 1", "Quadrant 4" ]
     },
     "30" : {
       "name" : "Var hour Q2 + Q3",
-      "unit" : "Var",
+      "unit" : "Varh",
       "Unit Modifiers" : [ "Quadrant 2", "Quadrant 3" ]
     },
     "31" : {
       "name" : "Var hour Q1 - Q4",
-      "unit" : "Var",
+      "unit" : "Varh",
       "Unit Modifiers" : [ "Quadrant 1", "Quadrant 4", "Net Flow" ]
     },
     "32" : {

@@ -599,7 +599,7 @@ Elster A3:
     - Voltage Phase B:                                                 { unit: *V,      Unit Modifiers: [ *PhB, *milli                          ], Models: *DTKR, Other names: [ "Phase B voltage" ] }
     - Voltage Phase C:                                                 { unit: *V,      Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase C voltage" ] }
     - Current Phase A:                                                 { unit: *A,      Unit Modifiers: [ *PhA, *milli                          ], Models: *DTKR, Other names: [ "Phase A current" ] }
-    - Current Phase B:                                                 { unit: *A,      Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase B current" ] }
+    - Current Phase B:                                                 { unit: *A,      Unit Modifiers: [ *PhB, *milli                          ], Models: *DTKR, Other names: [ "Phase B current" ] }
     - Current Phase C:                                                 { unit: *A,      Unit Modifiers: [ *PhC, *milli                          ], Models: *DTKR, Other names: [ "Phase C current" ] }
     - Power Factor Phase A:                                            { unit: *PF,     Unit Modifiers: [ *PhA                                  ], Models: *__KR, Other names: [ "Phase A power factor" ] }
     - Power Factor Phase B:                                            { unit: *PF,     Unit Modifiers: [ *PhB                                  ], Models: *__KR, Other names: [ "Phase B power factor" ] }
@@ -1450,13 +1450,13 @@ Metric IDs:
     22:  { name: Var hour received,                    unit: *Varh,   Unit Modifiers: [ *Q3, *Q4                              ] }
     23:  { name: Var hour total,                       unit: *Varh,   Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4                    ] }
     24:  { name: Var hour net,                         unit: *Varh,   Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net              ] }
-    25:  { name: Var hour Q1,                          unit: *Var,    Unit Modifiers: [ *Q1                                   ] }
-    26:  { name: Var hour Q2,                          unit: *Var,    Unit Modifiers: [ *Q2                                   ] }
-    27:  { name: Var hour Q3,                          unit: *Var,    Unit Modifiers: [ *Q3                                   ] }
-    28:  { name: Var hour Q4,                          unit: *Var,    Unit Modifiers: [ *Q4                                   ] }
-    29:  { name: Var hour Q1 + Q4,                     unit: *Var,    Unit Modifiers: [ *Q1, *Q4                              ] }
-    30:  { name: Var hour Q2 + Q3,                     unit: *Var,    Unit Modifiers: [ *Q2, *Q3                              ] }
-    31:  { name: Var hour Q1 - Q4,                     unit: *Var,    Unit Modifiers: [ *Q1, *Q4, *Net                        ] }
+    25:  { name: Var hour Q1,                          unit: *Varh,   Unit Modifiers: [ *Q1                                   ] }
+    26:  { name: Var hour Q2,                          unit: *Varh,   Unit Modifiers: [ *Q2                                   ] }
+    27:  { name: Var hour Q3,                          unit: *Varh,   Unit Modifiers: [ *Q3                                   ] }
+    28:  { name: Var hour Q4,                          unit: *Varh,   Unit Modifiers: [ *Q4                                   ] }
+    29:  { name: Var hour Q1 + Q4,                     unit: *Varh,   Unit Modifiers: [ *Q1, *Q4                              ] }
+    30:  { name: Var hour Q2 + Q3,                     unit: *Varh,   Unit Modifiers: [ *Q2, *Q3                              ] }
+    31:  { name: Var hour Q1 - Q4,                     unit: *Varh,   Unit Modifiers: [ *Q1, *Q4, *Net                        ] }
     32:  { name: Var delivered, current demand,        unit: *Var,    Unit Modifiers: [ *Q1, *Q2                              ] }
     33:  { name: Var received, current demand,         unit: *Var,    Unit Modifiers: [ *Q3, *Q4                              ] }
     34:  { name: Var delivered, peak demand,           unit: *Var,    Unit Modifiers: [ *Q1, *Q2, *Max                        ] }
