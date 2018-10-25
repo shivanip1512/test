@@ -51,21 +51,27 @@ public enum Modifiers {
     TOU_RATE_F           ("TOU Rate F"),
     TOU_RATE_G           ("TOU Rate G"),
 
-    GIGA                 ("Giga"),
-    MEGA                 ("Mega"),
-    KILO                 ("Kilo"),
-    MILLI                ("milli"),
-    MICRO                ("Micro"),
-    DECI                 ("Tenths"),
+    GIGA                 ("Giga",   Type.SI_PREFIX),
+    MEGA                 ("Mega",   Type.SI_PREFIX),
+    KILO                 ("Kilo",   Type.SI_PREFIX),
+    MILLI                ("milli",  Type.SI_PREFIX),
+    MICRO                ("Micro",  Type.SI_PREFIX),
+    DECI                 ("Tenths", Type.SI_PREFIX),
     OVERFLOW             ("Overflow"),
 
-    COINCIDENT_VALUE_1   ("Coincident Value 1", true),
-    COINCIDENT_VALUE_2   ("Coincident Value 2", true),
-    COINCIDENT_VALUE_3   ("Coincident Value 3", true),
-    COINCIDENT_VALUE_4   ("Coincident Value 4", true),
-    COINCIDENT_VALUE_5   ("Coincident Value 5", true),
-    COINCIDENT_VALUE_6   ("Coincident Value 6", true),
-    COINCIDENT_VALUE_7   ("Coincident Value 7", true);
+    COINCIDENT_VALUE_1   ("Coincident Value 1", Type.COINCIDENT),
+    COINCIDENT_VALUE_2   ("Coincident Value 2", Type.COINCIDENT),
+    COINCIDENT_VALUE_3   ("Coincident Value 3", Type.COINCIDENT),
+    COINCIDENT_VALUE_4   ("Coincident Value 4", Type.COINCIDENT),
+    COINCIDENT_VALUE_5   ("Coincident Value 5", Type.COINCIDENT),
+    COINCIDENT_VALUE_6   ("Coincident Value 6", Type.COINCIDENT),
+    COINCIDENT_VALUE_7   ("Coincident Value 7", Type.COINCIDENT);
+    
+    enum Type {
+        PLAIN,
+        COINCIDENT,
+        SI_PREFIX
+    };
     
     private static final Map<String, Modifiers> nameLookup;
     
@@ -75,15 +81,15 @@ public enum Modifiers {
     }
     
     String commonName;
-    boolean coincident;
+    Type modifierType = Type.PLAIN;
     
     Modifiers(String commonName) {
         this.commonName = commonName;
     }
     
-    Modifiers(String commonName, boolean coincident) {
+    Modifiers(String commonName, Type modifierType) {
         this(commonName);
-        this.coincident = coincident;
+        this.modifierType = modifierType;
     }
     
     public String getCommonName() {
@@ -91,7 +97,11 @@ public enum Modifiers {
     }
 
     public boolean isCoincident() {
-        return coincident;
+        return modifierType == Type.COINCIDENT;
+    }
+
+    public boolean isSiPrefix() {
+        return modifierType == Type.SI_PREFIX;
     }
 
     @JsonCreator

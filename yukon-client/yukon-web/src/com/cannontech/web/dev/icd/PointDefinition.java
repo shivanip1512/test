@@ -20,6 +20,12 @@ public class PointDefinition {
     public List<Modifiers> getModifiers() {
         return modifiers.stream().sorted().collect(Collectors.toList());
     }
+    public PointDefinition() {
+    }
+    public PointDefinition(Units unit, Set<Modifiers> modifiers) {
+        this.unit = unit;
+        this.modifiers = modifiers;
+    }
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -34,11 +40,12 @@ public class PointDefinition {
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
-            return false;
-        PointDefinition other = (PointDefinition) obj;
-        return Objects.equals(unit, other.unit) 
-                && Objects.equals(modifiers, other.modifiers);
+        if (obj instanceof PointDefinition) {
+            PointDefinition other = (PointDefinition) obj;
+            return Objects.equals(unit, other.unit) 
+                    && Objects.equals(modifiers, other.modifiers);
+        }
+        return false;
     }
     @Override
     public String toString() {
