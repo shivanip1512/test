@@ -1,6 +1,9 @@
 package com.cannontech.web.tools.mapping.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -277,31 +280,45 @@ public class MapController {
     
     private String[] getHeaderRows(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String[] headerRow = new String[6];
+        String[] headerRow = new String[7];
         headerRow[0] = accessor.getMessage("yukon.common.deviceName");
         headerRow[1] = accessor.getMessage(baseKey + "meterNumber");
         headerRow[2] = accessor.getMessage(baseKey + "latitude");
         headerRow[3] = accessor.getMessage(baseKey + "longitude");
         headerRow[4] = accessor.getMessage(baseKey + "lastChangedDate");
-        headerRow[5] = accessor.getMessage(baseKey + "origin");
+        headerRow[5] = accessor.getMessage(baseKey + "lastChangedTime");
+        headerRow[6] = accessor.getMessage(baseKey + "origin");
         return headerRow;
     }
     
     private List<String[]> getDataRows(List<PaoLocationDetails> paoLocationDetails, YukonUserContext userContext) {
         List<String[]> dataRows = Lists.newArrayList();
         for (PaoLocationDetails paoLocation : paoLocationDetails) {
-            String[] dataRow = new String[6];
+            String[] dataRow = new String[7];
             dataRow[0] = paoLocation.getPaoName();
             dataRow[1] = paoLocation.getMeterNumber();
             dataRow[2] = paoLocation.getLatitude();
             dataRow[3] = paoLocation.getLongitude();
-            dataRow[4] = paoLocation.getLastChangedDate();
-            dataRow[5] = paoLocation.getOrigin() != null ? paoLocation.getOrigin().toString() : "";
+            String dateTime = paoLocation.getLastChangedDate();
+            if (dateTime != null) {
+                try {
+                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+                    LocalDateTime parsedDateTime = LocalDateTime.parse(dateTime, dateTimeFormatter);
+                    // add date in yyyy-MM-dd format
+                    dataRow[4] = parsedDateTime.toLocalDate().toString();
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                    // add time in HH:mm:ss format
+                    dataRow[5] = timeFormatter.format(parsedDateTime.toLocalTime());
+                } catch (DateTimeParseException e) {
+                    log.debug("Unable to parse the date string", e);
+                }
+            }
+            dataRow[6] = paoLocation.getOrigin() != null ? paoLocation.getOrigin().toString() : "";
             dataRows.add(dataRow);
         }
         return dataRows;
     }
-
+    
     @RequestMapping("/map/filter")
     public @ResponseBody Map<Integer, Boolean> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
         
