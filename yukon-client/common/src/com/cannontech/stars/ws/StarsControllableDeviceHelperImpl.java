@@ -452,6 +452,21 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         // Remove device from the account
         starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
     }
+
+    @Override
+    public boolean isOperationAllowedForDevice(LmDeviceDto dto, LiteYukonUser user) {
+        EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+        HardwareType hardwareType = getHardwareType(dto, energyCompany);
+        return isOperationAllowedForHardware(hardwareType);
+    }
+
+    private boolean isOperationAllowedForHardware(HardwareType hardwareType) {
+        if (hardwareType.isNest()) {
+            return false;
+        }
+        return true;
+    }
+
     // Get the hardware type for the device and energy company.
     private HardwareType getHardwareType(LmDeviceDto device, EnergyCompany energyCompany ) {
         YukonListEntry deviceType = getDeviceType(device, energyCompany);

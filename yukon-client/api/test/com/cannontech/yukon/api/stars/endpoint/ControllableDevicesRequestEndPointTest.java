@@ -139,6 +139,11 @@ public class ControllableDevicesRequestEndPointTest {
                 // valid case, no exceptions
             }
         }
+
+        @Override
+        public boolean isOperationAllowedForDevice(LmDeviceDto dto, LiteYukonUser user) {
+            return true;
+        }
     }
 
     @Test

@@ -26,4 +26,9 @@ public interface StarsControllableDeviceHelper {
      * devices for now, will need to support other device types later.
      */
     public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser ecOperator);
+    
+    /**
+     * Checks if the operation is allowed for the device type.
+     */
+    boolean isOperationAllowedForDevice(LmDeviceDto dto, LiteYukonUser user);
 }

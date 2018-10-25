@@ -65,7 +65,7 @@ public class AccountImportServiceTest {
         boolean isNest =
             ReflectionTestUtils.invokeMethod(accountService, "isNestDevice", entry, results, 1, hwFile, false);
         assertFalse("Is nest thermostat ", isNest);
-        assertFalse("Customer Error count ", results.custFileErrors == 1);
+        assertFalse("Hardware Error count ", results.custFileErrors == 1);
         assertFalse("Nest Error ", (results.getCustLines().get(1)[1].contains("Cannot import Nest device type")));
     }
 
@@ -79,7 +79,7 @@ public class AccountImportServiceTest {
         boolean isNest =
             ReflectionTestUtils.invokeMethod(accountService, "isNestDevice", entry, results, 1, hwFile, true);
         assertFalse("Is nest thermostat ", isNest);
-        assertFalse("Customer Error count ", results.hwFileErrors == 1);
+        assertFalse("Hardware Error count ", results.hwFileErrors == 1);
         assertFalse("Nest Error ", (results.getHwLines().get(1)[1].contains("Cannot import Nest device type")));
     }
 
