@@ -78,7 +78,6 @@ import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
-import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
@@ -160,7 +159,6 @@ public class OperatorHardwareController {
     @Autowired private ZigbeeDeviceService zigbeeDeviceService;
     @Autowired private HardwareConfigService hardwareConfigService;
     @Autowired private PaoNotesService paoNotesService;
-    @Autowired private EnrollmentDao enrollmentDao;
 
     private static final int THERMOSTAT_DETAIL_NUM_ITEMS = 5;
 
@@ -907,8 +905,6 @@ public class OperatorHardwareController {
 
         }
         
-        model.addAttribute("isEnrolled", enrollmentDao.getActiveEnrollmentsByInventory(hardware.getInventoryId()).size() > 0);
-
     }
 
     private void setupListModel(AccountInfoFragment accountInfoFragment, ModelMap model, EnergyCompany ec,
