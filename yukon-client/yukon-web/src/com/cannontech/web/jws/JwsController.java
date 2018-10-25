@@ -184,7 +184,7 @@ public class JwsController {
         jnlpElem.addContent(infoElem);
         infoElem.addContent(new Element("title").setText("Yukon\u00AE " + requestedJnlp.getTitle()));
         infoElem.addContent(new Element("vendor").setText("Eaton Corporation plc."));
-        infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
+        infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cooperindustries.com/content/public/en/power_systems/brands/yukon.html"));
         infoElem.addContent(new Element("description").setText(requestedJnlp.getDescription()));
         String safeIconUrl = ServletUtil.createSafeUrl(request, requestedJnlp.getAppIcon());
         infoElem.addContent(new Element("icon").setAttribute("href", safeIconUrl));
