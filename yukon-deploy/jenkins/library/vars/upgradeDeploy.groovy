@@ -11,10 +11,10 @@ def call(Map pipelineParams) {
         }
 
         environment {
-            VM_GUEST_USERID = pipelineParams.vmUser
-            VM_GUEST_PASSWORD = pipelineParams.vmPassword
-            VM_GUEST_ADDRESS = pipelineParams.vmAddress
-            DATABASE_TYPE = pipelineParams.databaseType
+            VM_GUEST_USERID = $(pipelineParams.vmUser)
+            VM_GUEST_PASSWORD =$(pipelineParams.vmPassword)
+            VM_GUEST_ADDRESS = $(pipelineParams.vmAddress)
+            DATABASE_TYPE = $(pipelineParams.databaseType)
         }
 
         stages {
