@@ -102,6 +102,7 @@
         <multiplier value="1"/>
         <unitofmeasure value="SECONDS"/>
         <decimalplaces value="0"/>
+    </point>
     <point offset="342" type="Analog">
         <name>Average Voltage</name>
         <multiplier value="1"/>
