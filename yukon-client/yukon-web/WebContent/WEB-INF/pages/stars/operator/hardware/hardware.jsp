@@ -91,6 +91,10 @@ $(function(){
         openSimpleDialog('textMsgDialog', 'zb/showTextMessage', null, params);
     });
     </cti:displayForPageEditModes>
+    
+    $(document).on('click', 'input[name=deleteOption]:radio', function(event) {
+        $('.fullDeleteWarning').toggleClass('dn', event.target.value != 'delete');
+    });
 });
 
 function showDeletePopup() {
@@ -183,15 +187,12 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
             </c:choose>
             <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardware.displayName}"/>
             <br><br>
-            <c:if test="${isEnrolled}">
-                <tags:alertBox type="info" key=".unenrollToDelete"/>
-            </c:if>
+            <tags:alertBox classes="fullDeleteWarning dn" type="warning" key=".fullDeleteWarning"/>
             <input type="radio" name="deleteOption" value="remove" checked="checked" id="removeRadio">
             <label for="removeRadio" class="radioLabel"><i:inline key=".deleteOption1"/></label>
             <br>
-            <c:set var="disableValue" value="${isEnrolled ? 'disabled' : ''}"/>
-            <input type="radio" name="deleteOption" value="delete" id="deleteRadio" ${disableValue}>
-            <label for="deleteRadio" class="radioLabel ${disableValue}"><i:inline key=".deleteOption2"/></label>
+            <input type="radio" name="deleteOption" value="delete" id="deleteRadio">
+            <label for="deleteRadio" class="radioLabel"><i:inline key=".deleteOption2"/></label>
             
             <div class="action-area">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
