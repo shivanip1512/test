@@ -11,11 +11,37 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PointDefinition {
+    @JsonProperty("Unit")
     public Units unit;
-    @JsonProperty("Unit Modifiers")
-    public Set<Modifiers> modifiers = new HashSet<>();
+    private Set<Modifiers> modifiers = new HashSet<>();
     public Units getUnit() {
         return unit;
+    }
+    @JsonProperty("Modifiers")
+    public void setModifiers(List<Object> modifiers) {
+        for (Object element : modifiers) {
+            if (element instanceof String) {
+                addModifier((String)element);
+            } else if (element instanceof List) {
+                addModifiers((List)element);
+            } else {
+                throw new IllegalArgumentException("Can only add modifiers with type String and List<String> - " + element.getClass());
+            }
+        }
+    }
+    
+    private void addModifier(String modifierName) {
+        modifiers.add(Modifiers.getByCommonName(modifierName));
+    }
+    
+    private void addModifiers(List modifiers) {
+        for (Object element : modifiers) {
+            if (element instanceof String) {
+                addModifier((String)element);
+            } else {
+                throw new IllegalArgumentException("Can only add String modifiers - " + element.getClass());
+            }
+        }
     }
     public List<Modifiers> getModifiers() {
         return modifiers.stream().sorted().collect(Collectors.toList());

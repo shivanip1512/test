@@ -10,8 +10,14 @@ public class PointMappingIcd {
     @JsonProperty("Meter models")
     public Map<String, List<Model>> meterModels;
     
+    @JsonProperty("Meter combinations")
+    public List<List<Model>> meterCombinations;
+    
     @JsonProperty("Units of measure")
     public Map<Units, String> unitsOfMeasure;
+    
+    @JsonProperty("Modifiers")
+    public Map<String, List<Modifiers>> modifiers;
     
     @JsonProperty("Centron C1SX and C2SX with Advanced Metrology")
     public List<Named<ModelPointDefinition>> centronWithAdvancedMetrology;

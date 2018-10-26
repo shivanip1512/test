@@ -153,7 +153,7 @@ public class PointMappingIcdController {
 
         Function<PointDefinition, String> pointDescriber = e -> 
                 NEWLINE_TAB + e.unit.toString() + 
-                NEWLINE_TAB + e.modifiers.toString();
+                NEWLINE_TAB + e.getModifiers().toString();
 
         Function<ModelPointDefinition, String> modelPointDescriber = e -> 
                 pointDescriber.apply(e) + 
@@ -201,7 +201,7 @@ public class PointMappingIcdController {
         for (Named<ElsterA3PointDefinition> mpd : parsedIcd.elsterA3) {
             if (mpd.value.models.stream().anyMatch(m -> m.getManufacturerModel() == RfnManufacturerModel.RFN_430A3K)) {
                 Units u = mpd.value.unit;
-                Set<Modifiers> modifiers = new HashSet<>(mpd.value.modifiers);
+                Set<Modifiers> modifiers = new HashSet<>(mpd.value.getModifiers());
                 
                 modifiers.removeIf(Modifiers::isSiPrefix);
                 

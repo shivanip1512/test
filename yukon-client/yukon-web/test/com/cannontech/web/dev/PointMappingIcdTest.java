@@ -32,20 +32,14 @@ public class PointMappingIcdTest {
         assertEquals(icdExpected, icd);
     }
 
-//    @Test
-//    public void compareToRfnPointMappingXml() throws IOException, JDOMException {
-//
-//        ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
-//        ClassPathResource rfnPointMappingXml = new ClassPathResource("com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml");
-//        
-//        PointMappingIcd icd = YukonPointMappingIcdParser.parse(yukonPointMappingIcdYaml.getInputStream());
-//
-//        Map<PaoType, Map<PointDefinition, PointInfo>> rfnPointMapping = RfnPointMappingParser.parseRfnPointMappingXml(rfnPointMappingXml.getInputStream());
-//
-//        InputStream icdStream = this.getClass().getResource("icd.json").openStream();
-//
-//        String icdExpected = IOUtils.toString(icdStream);
-//
-//        assertEquals(icdExpected, icd);
-//    }
+    @Test
+    public void compareToRfnPointMappingXml() throws IOException, JDOMException {
+
+        ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
+        //ClassPathResource rfnPointMappingXml = new ClassPathResource("com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml");
+        
+        PointMappingIcd icd = YukonPointMappingIcdParser.parse(yukonPointMappingIcdYaml.getInputStream());
+
+        //Map<PaoType, Map<PointDefinition, PointInfo>> rfnPointMapping = RfnPointMappingParser.parseRfnPointMappingXml(rfnPointMappingXml.getInputStream());
+    }
 }
