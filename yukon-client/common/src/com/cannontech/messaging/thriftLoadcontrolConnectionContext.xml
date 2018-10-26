@@ -171,6 +171,12 @@
 		<constructor-arg value="LMGroupHoneywell"/>
 		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
 	</bean>
+	
+    <bean id="messaging.thrift.load.GroupNestSerializer" parent="messaging.thrift.ISerializer"
+        class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupNestSerializer">
+        <constructor-arg value="LMGroupNest"/>
+        <constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+    </bean>
 
 	<bean id="messaging.thrift.load.GroupMCTSerializer" parent="messaging.thrift.ISerializer"
 		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupMCTSerializer">
@@ -314,6 +320,7 @@
 				<ref bean="messaging.thrift.load.GroupEmetconSerializer"/>
 				<ref bean="messaging.thrift.load.GroupExpresscomSerializer"/>
                 <ref bean="messaging.thrift.load.GroupHoneywellSerializer"/>
+                <ref bean="messaging.thrift.load.GroupNestSerializer"/>
 				<ref bean="messaging.thrift.load.GroupGolaySerializer"/>
 				<ref bean="messaging.thrift.load.GroupMCTSerializer"/>
 				<ref bean="messaging.thrift.load.GroupPointSerializer"/>
