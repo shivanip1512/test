@@ -293,7 +293,7 @@ public class RawPointHistoryValidationService {
         long startTime = System.currentTimeMillis();
         
         VendorSpecificSqlBuilder builder1 = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sql1a = builder1.buildFor(DatabaseVendor.MS2000);
+        SqlBuilder sql1a = builder1.buildForAllMsDatabases();
         sql1a.append("select top 2 rph.ChangeId, rph.Timestamp, rph.value")
              .append("from RAWPOINTHISTORY rph")
              .append("where rph.POINTID").eq(workUnit.pointId)
@@ -314,7 +314,7 @@ public class RawPointHistoryValidationService {
              .append("order by Timestamp desc, ChangeId desc");
         
         VendorSpecificSqlBuilder builder2 = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sql2a = builder2.buildFor(DatabaseVendor.MS2000);
+        SqlBuilder sql2a = builder2.buildForAllMsDatabases();
         sql2a.append("select top 2 rph.ChangeId, rph.Timestamp, rph.value")
              .append("from RAWPOINTHISTORY rph")
              .append("where rph.POINTID").eq(workUnit.pointId)

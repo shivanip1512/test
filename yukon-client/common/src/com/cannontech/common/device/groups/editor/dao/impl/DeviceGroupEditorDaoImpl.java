@@ -306,9 +306,16 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public List<StoredDeviceGroup> getAllGroups(StoredDeviceGroup group) {
         // no reason to mess with all of this fancy SQL if we just want everything
         if (group.equals(getRootGroup())) return getAllGroupsrUnderRoot();
-        
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder msSql = builder.buildFor(DatabaseVendor.MS2005, DatabaseVendor.MS2008);
+        
+        // This query uses Oracle's proprietary syntax for recursive queries
+        SqlBuilder oracleSql = builder.buildForAllOracleDatabases();
+        oracleSql.append("SELECT *");
+        oracleSql.append("FROM DeviceGroup");
+        oracleSql.append("START WITH ParentDeviceGroupId").eq(group.getId()); // starting point
+        oracleSql.append("CONNECT BY PRIOR DeviceGroupId = ParentDeviceGroupId"); //recursive join
+        
+        SqlBuilder msSql = builder.buildOther(); //MSSQL
         // This query use a Common Table Expression to achieve a recursive query
         // http://msdn.microsoft.com/en-us/library/ms190766.aspx
         msSql.append("WITH DeviceGroup_CTE AS (");
@@ -323,32 +330,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         msSql.append("SELECT dg_real.*");
         msSql.append("FROM DeviceGroup_CTE"); // bring it all together
         msSql.append("  JOIN DeviceGroup AS dg_real ON DeviceGroup_CTE.DeviceGroupId = dg_real.DeviceGroupId");
-        
-        // This query uses Oracle's proprietary syntax for recursive queries; Oracle 9i specifically left out.
-        SqlBuilder oracleSql = builder.buildFor(DatabaseVendor.ORACLE12C,
-                                                DatabaseVendor.ORACLE11G,
-                                                DatabaseVendor.ORACLE10G);
-        oracleSql.append("SELECT *");
-        oracleSql.append("FROM DeviceGroup");
-        oracleSql.append("START WITH ParentDeviceGroupId").eq(group.getId()); // starting point
-        oracleSql.append("CONNECT BY PRIOR DeviceGroupId = ParentDeviceGroupId"); //recursive join
-        
-        // This query will return all (but the base) groups, but because we
-        // do a quick filter bellow, it ends up working the same as the
-        // above queries
-        SqlBuilder otherSql =  builder.buildOther();
-        otherSql.append("SELECT *");
-        otherSql.append("FROM DeviceGroup");
-        otherSql.append("WHERE DeviceGroupId").neq(group.getId());
 
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
         List<PartialDeviceGroup> groups = jdbcTemplate.query(builder, mapper);
         
         PartialGroupResolver resolver = new PartialGroupResolver(this, group);
-        List<StoredDeviceGroup> resolvedPartials = resolver.resolvePartials(groups);
-        
-        // quick filter in case we executed the "other" SQL
-        List<StoredDeviceGroup> result = filterGroupsForBase(group, resolvedPartials);
+        List<StoredDeviceGroup> result = resolver.resolvePartials(groups);
         
         return result;
     }

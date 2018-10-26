@@ -317,9 +317,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
 
     private SqlFragmentSource getTable() {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder oracleSql =
-            builder.buildFor(DatabaseVendor.ORACLE9I, DatabaseVendor.ORACLE10G, DatabaseVendor.ORACLE11G,
-                DatabaseVendor.ORACLE12C);
+        SqlBuilder oracleSql = builder.buildForAllOracleDatabases();
         oracleSql.append("FROM Dual");
 
         SqlBuilder otherSql = builder.buildOther();

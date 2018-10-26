@@ -81,6 +81,16 @@ public class VendorSpecificSqlBuilderFactory {
                     return new NullSqlBuilder();
                 }
             }
+
+            @Override
+            public SqlBuilder buildForAllOracleDatabases() {
+                return this.buildFor(DatabaseVendor.getOracleDatabases());
+            }
+
+            @Override
+            public SqlBuilder buildForAllMsDatabases() {
+                return this.buildFor(DatabaseVendor.getMsDatabases());
+            }
             
             /* (non-Javadoc)
              * @see com.cannontech.database.vendor.VendorSpecificSqlBuilder#buildOther()

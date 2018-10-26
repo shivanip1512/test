@@ -47,7 +47,7 @@ public class CapControlCBCOrphanRowMapperTest {
         
     @Test
     public void test_getOracleSql() throws Exception {
-        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.ORACLE10G);
+        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.ORACLE12C);
         
         SqlFragmentSource oracleSql = mapper.getBaseQuery();
 
@@ -64,7 +64,7 @@ public class CapControlCBCOrphanRowMapperTest {
 
     @Test
     public void test_getMicrosoftSql() throws Exception {
-        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.MS2000);
+        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.MS2017);
         
         SqlFragmentSource microsoftSql = mapper.getBaseQuery();
 
