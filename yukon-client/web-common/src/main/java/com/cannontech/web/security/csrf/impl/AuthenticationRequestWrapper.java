@@ -5,6 +5,7 @@ package com.cannontech.web.security.csrf.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Scanner;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -14,7 +15,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.google.common.io.CharStreams;
 
 /**
  * AuthenticationRequestWrapper is used to Wrap our request object to another class before forwarding it to
@@ -31,10 +31,8 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
         super(request);
         // read the original payload into the payload variable
         String body = null;
-        
-        try {
-            //TODO: Revert this later. Added for YUK-18491.
-            body = CharStreams.toString(request.getReader());
+        try (Scanner scanner = new Scanner(request.getInputStream(), "ISO-8859-1").useDelimiter("\\A")) {
+            body = scanner.hasNext() ? scanner.next() : "";
         } catch (IOException e) {
             log.error("Error occurred in fetching the payload content for the request", e);
         }
@@ -68,10 +66,5 @@ public class AuthenticationRequestWrapper extends HttpServletRequestWrapper {
             }
         };
         return inputStream;
-    }
-    
-    //TODO: Revert this later. Added for YUK-18491.//TODO: Revert this later. Added for YUK-18491.
-    public String getPayload() {
-        return payload;
     }
 }

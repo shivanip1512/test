@@ -36,27 +36,28 @@ public class YukonHttpSessionListener implements HttpSessionListener, HttpSessio
     }
 
     public void attributeAdded(HttpSessionBindingEvent event) {
-        log.debug("Session attirbute added.");
+        log.debug("Session attribute added.");
         log.debug("Attribute name: " + event.getName() + " Attribute Value: " + event.getValue());
     }
 
     public void attributeReplaced(HttpSessionBindingEvent event) {
-        log.debug("Session attirbute replaced.");
+        log.debug("Session attribute replaced.");
         log.debug("Attribute name: " + event.getName() + " Attribute Value: " + event.getValue());
     }
 
     private void logSessionDetails(HttpSession session) {
-        Date sessionCreationTime = new Date(session.getCreationTime());
-        Date sessionLastAccessedTime = new Date(session.getLastAccessedTime());
-        log.debug("Session id: " + session.getId());
-        log.debug("Create time: " + sessionCreationTime);
-        log.debug("Last access: " + sessionLastAccessedTime);
-        log.debug("Max inactive interval: " + session.getMaxInactiveInterval());
-        if (session.getAttribute("YUKON_USER") != null) {
-            LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
-            log.debug("User Name: " + user.getUsername());
-            log.debug("User Id: " + user.getUserID());
+        if (log.isDebugEnabled()) {
+            Date sessionCreationTime = new Date(session.getCreationTime());
+            Date sessionLastAccessedTime = new Date(session.getLastAccessedTime());
+            log.debug("Session id: " + session.getId());
+            log.debug("Create time: " + sessionCreationTime);
+            log.debug("Last access: " + sessionLastAccessedTime);
+            log.debug("Max inactive interval: " + session.getMaxInactiveInterval());
+            if (session.getAttribute("YUKON_USER") != null) {
+                LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
+                log.debug("User Name: " + user.getUsername());
+                log.debug("User Id: " + user.getUserID());
+            }
         }
     }
-
 }

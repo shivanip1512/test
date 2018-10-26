@@ -98,7 +98,6 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
             log.trace(SESSION_CSRF_TOKEN + " and " + REQUEST_CSRF_TOKEN + " in " + request.getRequestURI() +" did not match.");
             log.trace(request.getRequestURI() + SESSION_CSRF_TOKEN + ": " + actualToken);
             log.trace(request.getRequestURI() + REQUEST_CSRF_TOKEN + ": " + requestToken);
-            log.trace("Payload for " + request.getRequestURI() + ": " + ((AuthenticationRequestWrapper)request).getPayload());
             request.getSession().removeAttribute(SESSION_CSRF_TOKEN); // owasp recomendation
             
             if (StringUtils.isEmpty(requestToken)) {
