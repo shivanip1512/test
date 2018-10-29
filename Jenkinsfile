@@ -18,6 +18,11 @@ pipeline {
                     }
                 
                     steps {
+						script {
+		                    if (params.RELEASE_MODE) {
+		                         cleanWs()
+		                    }
+						}
                         bat 'java -version'
                         checkout([$class: 'SubversionSCM',
                         additionalCredentials: [],
@@ -33,25 +38,25 @@ pipeline {
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-help',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-help'],
-							[cancelProcessOnExternalsFail: true,
+                            remote: "${env.SVN_URL}" + '/yukon-help'],
+                            [cancelProcessOnExternalsFail: true,
                             credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-client',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-client'],
+                            remote: "${env.SVN_URL}" + '/yukon-client'],
                             [cancelProcessOnExternalsFail: true,
                             credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-build',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-build'],
+                            remote: "${env.SVN_URL}" + '/yukon-build'],
                             [cancelProcessOnExternalsFail: true,
                             credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-shared',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-shared']],
+                            remote: "${env.SVN_URL}" + '/yukon-shared']],
                         quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
                         
                         bat './yukon-build/go.bat build-client'
@@ -67,6 +72,11 @@ pipeline {
                     }
                     
                     steps {
+						script {
+		                    if (params.RELEASE_MODE) {
+		                         cleanWs()
+		                    }
+						}
                         checkout([$class: 'SubversionSCM',
                         additionalCredentials: [],
                         excludedCommitMessages: '',
@@ -81,30 +91,30 @@ pipeline {
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-server',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-server'],
+                            remote: "${env.SVN_URL}" + '/yukon-server'],
                             [cancelProcessOnExternalsFail: true,
                             credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-build',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-build'],
+                            remote: "${env.SVN_URL}" + '/yukon-build'],
                             [cancelProcessOnExternalsFail: true,
                             credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-client/build/ant/bin',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-client/build/ant/bin'],
+                            remote: "${env.SVN_URL}" + '/yukon-client/build/ant/bin'],
                             [cancelProcessOnExternalsFail: true,
                             credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
                             depthOption: 'infinity',
                             ignoreExternalsOption: true,
                             local: 'yukon-shared',
-                            remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-shared']],
+                            remote: "${env.SVN_URL}" + '/yukon-shared']],
                         quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
 
                         bat './yukon-build/go.bat build-server'
 
-                        stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*'
+                        stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*, yukon-server/Message/Static_Release/ctithriftmsg/I386/*'
                     }
                 }
                 
@@ -115,6 +125,11 @@ pipeline {
                 label "install"
             }
             steps {
+				script {
+			        if (params.RELEASE_MODE) {
+			              cleanWs()
+			        }
+				}
                 // The stashed folders are modified during the build, which means a simple
                 // unstash leaves data behind. Here we manually wipe these folders before unstashing.
                 dir('yukon-client') {
@@ -142,13 +157,13 @@ pipeline {
                         depthOption: 'infinity',
                         ignoreExternalsOption: true,
                         local: 'yukon-install',
-                        remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-install'],
+                        remote: "${env.SVN_URL}" + '/yukon-install'],
                         [cancelProcessOnExternalsFail: true,
                         credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
                         depthOption: 'infinity',
                         ignoreExternalsOption: true,
                         local: 'yukon-build',
-                        remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-build']],
+                        remote: "${env.SVN_URL}" + '/yukon-build']],
                     quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
                         
                 bat './yukon-build/go.bat build-install'
@@ -167,10 +182,16 @@ pipeline {
                         depthOption: 'infinity',
                         ignoreExternalsOption: true,
                         local: 'yukon-database',
-                        remote: 'https://svn.cooperpowereas.net/software/yukon/branches/release/7.1/yukon-database']],
+                        remote: "${env.SVN_URL}" + '/yukon-database']],
                     quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
                     
-                bat './yukon-build/go.bat clean build-dist-pdb'
+                script {
+                    if (params.RELEASE_MODE) {
+                         bat './yukon-build/go.bat init clean svn-info-build symstore build-dist'
+                    } else {
+                         bat './yukon-build/go.bat clean build-dist-pdb'
+                    }
+				}
 
                 archiveArtifacts artifacts: 'yukon-build/dist/*'
             }
