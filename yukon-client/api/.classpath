@@ -14,17 +14,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/axiom-api-1.2.14.jar" sourcepath="/third-party/linked-sources/axiom-api-1.2.14-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/axiom-api-1.2.15.jar" sourcepath="/third-party/linked-sources/axiom-api-1.2.15-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/axiom-impl-1.2.14.jar" sourcepath="/third-party/linked-sources/axiom-impl-1.2.14-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/axiom-impl-1.2.15.jar" sourcepath="/third-party/linked-sources/axiom-impl-1.2.15-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-2.3.0.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-ws-core-2.3.0.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-3.0.4.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-ws-core-3.0.4.RELEASE-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

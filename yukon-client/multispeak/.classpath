@@ -10,7 +10,7 @@
             <attribute name="owner.project.facets" value="jst.utility"/>
         </attributes>
     </classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-2.3.0.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-ws-core-2.3.0.RELEASE-sources.jar"/>
+    <classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-3.0.4.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-ws-core-3.0.4.RELEASE-sources.jar"/>
     <classpathentry kind="lib" path="/third-party/spring-oxm-5.0.2.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-oxm-5.0.2.RELEASE-sources.jar"/>
     <classpathentry exported="true" kind="lib" path="lib/msp-beans-v3.jar">
         <attributes>
