@@ -209,8 +209,4 @@
 <!-- DNP RTU Picker -->
 <entry key="yukon.web.picker.deviceActionsRoleUserPicker.dialogTitle">Select User</entry>
 
-<entry key="yukon.web.picker.lMObjectPicker.dialogTitle">Select LM Object</entry>
-<entry key="yukon.web.picker.lMObjectPicker.paoName">Name</entry>
-<entry key="yukon.web.picker.lMObjectPicker.paObjectId">Object Id</entry>
-
 </properties>
