@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -100,4 +101,9 @@ public interface CustomerAccountDao {
      * @throws NotAuthorizedException if user is not associated with any accounts.
      */
     CustomerAccount getCustomerAccount(LiteYukonUser user) throws NotAuthorizedException;
+
+    /**
+     * Returns list of customer accounts for account numbers
+     */
+    List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers);
 }

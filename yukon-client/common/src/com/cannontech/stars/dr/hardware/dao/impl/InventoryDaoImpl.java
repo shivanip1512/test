@@ -263,6 +263,26 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
+    public List<Thermostat> getThermostatsBySerialNumbers(EnergyCompany ec, Set<String> serialNumbers) {
+        SqlFragmentGenerator<String> sqlGenerator = new SqlFragmentGenerator<String>() {
+            @Override
+            public SqlFragmentSource generate(List<String> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.categoryId, ib.currentStateId, lmhb.manufacturerSerialNumber, lmhb.lmHardwareTypeId, lmhb.RouteId");
+                sql.append("FROM InventoryBase ib, LMHardwareBase lmhb");
+                sql.append("WHERE lmhb.manufacturerSerialNumber").in(subList);
+                sql.append("AND lmhb.inventoryid = ib.inventoryid");
+                sql.append("AND lmhb.LMHardwareTypeID IN ");
+                sql.append("(SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(THERMOSTAT_TYPES).append(")");
+                return sql;
+                
+            }
+        };
+        
+        return chunkingSqlTemplate.query(sqlGenerator, serialNumbers, new ThermostatRowMapper(ec));
+    }
+    
+    @Override
     public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();

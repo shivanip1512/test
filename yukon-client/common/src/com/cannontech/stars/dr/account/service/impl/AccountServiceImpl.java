@@ -1087,7 +1087,7 @@ public class AccountServiceImpl implements AccountService {
         liteAddress.setZipCode("");
     }
 
-    private void setAddressFieldsFromDTO(LiteAddress lite, Address address) {
+    public static void setAddressFieldsFromDTO(LiteAddress lite, Address address) {
         lite.setLocationAddress1(StringUtils.defaultString(address.getLocationAddress1()));
         lite.setLocationAddress2(StringUtils.defaultString(address.getLocationAddress2()));
         lite.setCityName(StringUtils.defaultString(address.getCityName()));

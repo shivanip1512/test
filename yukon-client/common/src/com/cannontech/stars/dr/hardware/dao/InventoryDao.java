@@ -17,6 +17,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.model.DeviceAndPointValue;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.model.LiteLmHardware;
@@ -184,4 +185,9 @@ public interface InventoryDao {
     List<InventoryIdentifier> getYukonInventoryForDeviceIds(List<Integer> deviceIds);
 
     DisplayableLmHardware getDisplayableLMHardware(int inventoryId);
+    
+    /**
+     * Returns all thermostats for the Energy Company with the listed serial numbers.
+     */
+    List<Thermostat> getThermostatsBySerialNumbers(EnergyCompany ec, Set<String> serialNumbers);
 }

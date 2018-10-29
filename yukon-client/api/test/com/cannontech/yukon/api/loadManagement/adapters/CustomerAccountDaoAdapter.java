@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -124,6 +125,11 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao {
 
     @Override
     public Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

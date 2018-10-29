@@ -162,6 +162,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     boolean toConfig = HardwareAction.isToConfig(liteHw, liteAccount);
                     YukonListEntry typeEntry = listDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
                     HardwareType hardwareType = HardwareType.valueOf(typeEntry.getYukonDefID());
+                    
+                    if(hardwareType.isNest()) {
+                        //we do not send any messages to Nest on enrollment
+                        continue;
+                    }
 
                     if (toConfig) {
                         // Send the re-enable command if hardware status is unavailable.
@@ -341,7 +346,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         Validate.notNull(programs, "programs parameter cannot be null");
         Validate.notNull(controlHistoryMap, "controlHistoryMap parameter cannot be null");
 
-        final List<Program> removeList = new ArrayList<Program>(0);
+        final List<Program> removeList = new ArrayList<>(0);
 
         for (final Program program : programs) {
             List<ControlHistory> controlHistoryList = controlHistoryMap.get(program.getProgramId());

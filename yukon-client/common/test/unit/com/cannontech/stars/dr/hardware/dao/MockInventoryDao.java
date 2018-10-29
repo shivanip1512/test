@@ -18,6 +18,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.model.DeviceAndPointValue;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.model.LiteLmHardware;
@@ -207,6 +208,11 @@ public class MockInventoryDao implements InventoryDao {
 
     @Override
     public DisplayableLmHardware getDisplayableLMHardware(int inventoryId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<Thermostat> getThermostatsBySerialNumbers(EnergyCompany ec, Set<String> serialNumbers) {
         throw new MethodNotImplementedException();
     }
 }

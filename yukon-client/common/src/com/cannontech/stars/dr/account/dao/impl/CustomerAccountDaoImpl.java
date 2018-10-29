@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -115,7 +116,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
     @PostConstruct
     public void init() throws Exception {
-        customerAccountTemplate = new SimpleTableAccessTemplate<CustomerAccount>(jdbcTemplate, nextValueHelper);
+        customerAccountTemplate = new SimpleTableAccessTemplate<>(jdbcTemplate, nextValueHelper);
         customerAccountTemplate.setTableName("CustomerAccount");
         customerAccountTemplate.setPrimaryKeyField("AccountId");
         customerAccountTemplate.setAdvancedFieldMapper(customerAccountFieldMapper);
@@ -169,6 +170,21 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         customerAccountTemplate.update(account);
     }
 
+    @Override
+    public List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers) {
+        SqlFragmentGenerator<String> sqlGenerator = new SqlFragmentGenerator<String>() {
+            @Override
+            public SqlFragmentSource generate(List<String> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(selectSql);
+                sql.append("WHERE AccountNumber").in(accountNumbers);
+                return sql;
+                
+            }
+        };
+        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+        return chunkingSqlTemplate.query(sqlGenerator, accountNumbers, rowMapper);
+    }
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getById(final int accountId) {

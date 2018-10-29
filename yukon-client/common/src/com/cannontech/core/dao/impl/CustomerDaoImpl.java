@@ -468,13 +468,13 @@ public final class CustomerDaoImpl implements CustomerDao {
     
     @PostConstruct
     public void init() throws Exception {
-        liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(yukonJdbcTemplate, nextValueHelper);
+        liteCustomerTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         liteCustomerTemplate.setTableName(CUSTOMER_TABLE_NAME);
         liteCustomerTemplate.setPrimaryKeyField("CustomerId");
         liteCustomerTemplate.setFieldMapper(customerFieldMapper);
         liteCustomerTemplate.setPrimaryKeyValidOver(-1);
         
-        liteCICustomerTemplate = new SimpleTableAccessTemplate<LiteCICustomer>(yukonJdbcTemplate, nextValueHelper);
+        liteCICustomerTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         liteCICustomerTemplate.setTableName(CI_CUSTOMER_TABLE_NAME);
         liteCICustomerTemplate.setPrimaryKeyField("CustomerId");
         liteCICustomerTemplate.setFieldMapper(ciCustomerFieldMapper); 
