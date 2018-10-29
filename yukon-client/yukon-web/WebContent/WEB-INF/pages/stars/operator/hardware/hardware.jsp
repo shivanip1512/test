@@ -185,15 +185,22 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                     <c:set var="deleteMsgKeySuffix" value="SerialNumber"/>
                 </c:otherwise>
             </c:choose>
-            <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardware.displayName}"/>
-            <br><br>
-            <tags:alertBox classes="fullDeleteWarning dn" type="warning" key=".fullDeleteWarning"/>
-            <input type="radio" name="deleteOption" value="remove" checked="checked" id="removeRadio">
-            <label for="removeRadio" class="radioLabel"><i:inline key=".deleteOption1"/></label>
-            <br>
-            <input type="radio" name="deleteOption" value="delete" id="deleteRadio">
-            <label for="deleteRadio" class="radioLabel"><i:inline key=".deleteOption2"/></label>
-            
+            <c:choose>
+                <c:when test="${hardware.hardwareType.isNest()}">
+                    <cti:msg2 key=".deleteMessageNest" argument="${hardware.displayName}"/>
+                </c:when>
+                <c:otherwise>
+                    <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardware.displayName}"/>
+                    <br><br>
+                    <tags:alertBox classes="fullDeleteWarning dn" type="warning" key=".fullDeleteWarning"/>
+                    <input type="radio" name="deleteOption" value="remove" checked="checked" id="removeRadio">
+                    <label for="removeRadio" class="radioLabel"><i:inline key=".deleteOption1"/></label>
+                    <br>
+                    <input type="radio" name="deleteOption" value="delete" id="deleteRadio">
+                    <label for="deleteRadio" class="radioLabel"><i:inline key=".deleteOption2"/></label>
+                </c:otherwise>
+            </c:choose>
+
             <div class="action-area">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <cti:button nameKey="ok" type="submit" name="delete" classes="js-blocker action primary"/>
@@ -227,7 +234,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 </li>
             </c:if>
             <%-- TSTAT ACTIONS --%>
-            <c:if test="${showTstatChangeoutAction}">
+            <c:if test="${showTstatChangeoutAction && !hardware.hardwareType.isNest()}">
                 <li class="dropdown-option">
                     <tags:pickerDialog extraArgs="${energyCompanyId}"
                         id="availableThermostatPicker" type="availableThermostatPicker"

@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.operator.hardware;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -47,6 +48,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.dr.dao.SepReportedAddressDao;
+import com.cannontech.dr.nest.model.NestUploadInfo;
+import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -60,8 +63,10 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
+import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
+import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentInService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -127,6 +132,8 @@ public class OperatorHardwareConfigController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private NestService nestService;
+    @Autowired private DisplayableEnrollmentDao displayableEnrollmentDao;
     
     private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private final TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
@@ -180,7 +187,7 @@ public class OperatorHardwareConfigController {
         
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("hardware", hardware);
-        
+                
         List<DisplayableInventoryEnrollment> enrollments =
             displayableInventoryEnrollmentDao.find(accountInfo.getAccountId(), inventoryId);
         Collections.sort(enrollments, new Comparator<DisplayableInventoryEnrollment>() {
@@ -352,6 +359,33 @@ public class OperatorHardwareConfigController {
             LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());
             HardwareAction.updateLMHardwareConfig(hardwareConfig, liteHw, userContext.getYukonUser().getUserID(), energyCompany);
+            
+            //if nest send update command
+            if (hardware.getHardwareType().equals(HardwareType.NEST_THERMOSTAT)) {
+                //get any other nest thermostats and update group
+                DisplayableEnrollmentProgram displayable = 
+                        displayableEnrollmentDao.getProgram(accountInfo.getAccountId(), hardwareConfig.getStarsLMHardwareConfig(0).getProgramID());
+                
+                for (String invId : displayable.getEnrolledInventoryIds()) {
+                    int enrInventoryId = Integer.valueOf(invId);
+                    if (enrInventoryId != inventoryId) {
+                        hardwareConfig.setInventoryID(enrInventoryId);
+                        liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(enrInventoryId);
+                        HardwareAction.updateLMHardwareConfig(hardwareConfig, liteHw, userContext.getYukonUser().getUserID(), energyCompany);
+                    }
+                }
+                
+                NestUploadInfo uploadInfo = nestService.updateGroup(accountInfo.getAccountNumber(), Integer.toString(hardwareConfig.getStarsLMHardwareConfig(0).getGroupID()));
+                if (!uploadInfo.isGroupChangeSuccessful()) {
+                    ArrayList<MessageSourceResolvable> errors= new ArrayList<MessageSourceResolvable>();
+                    for (String errorMsg: uploadInfo.getNestErrors()) {
+                        errors.add(YukonMessageSourceResolvable.createDefaultWithoutCode(errorMsg));
+                    }
+                    flashScope.setError(errors);
+                    return "redirect:/stars/operator/hardware/config/edit?accountId=" + accountInfo.getAccountId() + "&inventoryId=" + inventoryId;
+                }
+            }
+
             
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig." +

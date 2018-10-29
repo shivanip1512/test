@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
+import com.cannontech.dr.nest.model.NestUploadInfo;
+import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -40,9 +41,7 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
@@ -81,10 +80,8 @@ public class OperatorEnrollmentController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
-    @Autowired private HoneywellCommunicationService honeywellCommunicationService;
-    @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
+    @Autowired private NestService nestService;
 
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
@@ -159,6 +156,8 @@ public class OperatorEnrollmentController {
 
         DisplayableEnrollmentProgram displayable = 
             displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);
+        
+        model.addAttribute("isNest", displayable.getProgram().getPaoType().equals(PaoType.LM_NEST_PROGRAM));
 
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayable);
         model.addAttribute("programEnrollment", programEnrollment);
@@ -270,6 +269,22 @@ public class OperatorEnrollmentController {
                                                             accountInfoFragment.getEnergyCompanyId(), programEnrollment));
         try {
             enrollmentHelper.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
+            
+            //if nest send update command
+            DisplayableEnrollmentProgram displayable = 
+                    displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
+                
+            if (displayable.getProgram().getPaoType().equals(PaoType.LM_NEST_PROGRAM)) {
+                NestUploadInfo uploadInfo = nestService.updateGroup(accountInfoFragment.getAccountNumber(), Integer.toString(programEnrollments.get(0).getLmGroupId()));
+                if (!uploadInfo.isGroupChangeSuccessful()) {
+                    ArrayList<MessageSourceResolvable> errors= new ArrayList<MessageSourceResolvable>();
+                    for (String errorMsg: uploadInfo.getNestErrors()) {
+                        errors.add(YukonMessageSourceResolvable.createDefaultWithoutCode(errorMsg));
+                    }
+                    flashScope.setError(errors);
+                    return;
+                }
+            }
             
             String msgKey = "yukon.web.modules.operator.enrollmentList." + saveTypeKey;
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName());

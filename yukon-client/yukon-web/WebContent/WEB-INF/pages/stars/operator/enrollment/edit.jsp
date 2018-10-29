@@ -7,6 +7,10 @@
 
 <cti:msgScope paths="modules.operator.enrollmentEdit, modules.operator.enrollmentList">
 
+<c:if test="${isNest}">
+    <tags:alertBox key="yukon.web.modules.dr.nest.changeGroupMessage" type="info"/>
+</c:if>
+
 <div><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></div>
 
 <cti:url var="submitUrl" value="/stars/operator/enrollment/confirmSave">
@@ -62,14 +66,15 @@
                             
                                 <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                                 <td>
+                                    <c:set var="nestClass" value="${isNest ? 'js-nest-group' : ''}"/>
         							<tags:nameValueContainer2 tableClass="stacked">
                 							<c:if test="${empty loadGroups}">
                     							<i:inline key=".groupNotApplicable"/>
                 							</c:if>
                 							<c:if test="${!empty loadGroups}">
                     							<c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
-                    							<form:select class="js-enroll-relay" path="inventoryEnrollments[${status.index}].loadGroupId" items="${loadGroups}" 
-                        						itemLabel="name" itemValue="paoIdentifier.paoId" disabled="${!enrolled}"/>
+                    							<form:select path="inventoryEnrollments[${status.index}].loadGroupId" items="${loadGroups}"
+                        						itemLabel="name" itemValue="paoIdentifier.paoId" cssClass="js-enroll-relay ${nestClass}" disabled="${!enrolled}"/>
                 							</c:if>
        								 </tags:nameValueContainer2>
        								 </td>

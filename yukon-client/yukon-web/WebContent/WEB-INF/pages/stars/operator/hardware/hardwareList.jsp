@@ -479,7 +479,7 @@
                                             <cm:dropdownOption key=".history.label" icon="icon-time" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
                                         </c:if>
                                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                            <c:if test="${inventoryChecking}">
+                                            <c:if test="${inventoryChecking && !thermostat.hardwareType.isNest()}">
                                                 <li>
                                                     <tags:pickerDialog extraArgs="${energyCompanyId}" 
                                                             id="availableThermostatPicker${thermostat.inventoryId}" 
