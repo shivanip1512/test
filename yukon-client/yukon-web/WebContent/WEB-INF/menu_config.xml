@@ -119,6 +119,12 @@
         </permissions>
         <link>/bulk/update/upload</link>
       </option>
+      <option name="nestSync">
+        <permissions>
+          <role name="DEMAND_RESPONSE" />
+        </permissions>
+        <link>/dr/nest</link>
+      </option>
       <option name="reports">
         <permissions>
           <roleProperty name="LOAD_MANAGEMENT_REPORTS_GROUP" />

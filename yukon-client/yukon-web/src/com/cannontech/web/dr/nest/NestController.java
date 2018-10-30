@@ -35,6 +35,7 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.dao.NestDao.SortBy;
@@ -170,7 +171,7 @@ public class NestController {
         
         List<NestSync> syncTimes = nestDao.getNestSyncs();
         model.addAttribute("syncTimes", syncTimes);
-        if (syncId == 0) {
+        if (syncId == 0 && !syncTimes.isEmpty()) {
             syncId = syncTimes.get(0).getId();
         }
         model.addAttribute("selectedSyncId", syncId);
@@ -199,11 +200,11 @@ public class NestController {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[9];
-
+        
         headerRow[0] = accessor.getMessage(SyncSortBy.type);
         headerRow[1] = accessor.getMessage(baseKey + "reason");
         headerRow[2] = accessor.getMessage(baseKey + "action");
-
+        
         
         List<String[]> dataRows = Lists.newArrayList();
         for (NestSyncDetail detail: searchResult.getResultList()) {
@@ -250,6 +251,17 @@ public class NestController {
     public String syncNow() {
         nestSyncService.sync(true);
         return "redirect:/dr/nest";
+    }
+    
+    @RequestMapping(value="/nest/statistics", method=RequestMethod.GET)
+    public String statistics(ModelMap model, LiteYukonUser user) {
+        List<NestSync> syncTimes = nestDao.getNestSyncs();
+        model.addAttribute("syncTimes", syncTimes);
+        int syncId = syncTimes.get(0).getId();
+        
+        SearchResults<NestSyncDetail> searchResult = nestDao.getNestSyncDetail(syncId, PagingParameters.EVERYTHING, SortBy.SYNCTYPE, Direction.desc, Arrays.asList(NestSyncType.values()));
+        model.addAttribute("discrepancies", searchResult.getHitCount());
+        return "dr/nest/statistics.jsp";
     }
     
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {

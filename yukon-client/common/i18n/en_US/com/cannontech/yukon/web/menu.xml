@@ -36,6 +36,7 @@
 <entry key="yukon.web.menu.dr.loadGroups">Load Groups</entry>
 <entry key="yukon.web.menu.dr.estimatedLoad">Estimated Load</entry>
 <entry key="yukon.web.menu.dr.ci">C&amp;I Curtailment</entry>
+<entry key="yukon.web.menu.dr.nestSync">Nest Sync</entry>
 
 <!-- Volt/Var (IVVC and Cap Control) -->
 <entry key="yukon.web.menu.vv">Volt/Var</entry>
