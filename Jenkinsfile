@@ -18,11 +18,11 @@ pipeline {
                     }
                 
                     steps {
-						script {
-		                    if (params.RELEASE_MODE) {
-		                         cleanWs()
-		                    }
-						}
+                       script {
+                          if (params.RELEASE_MODE) {
+                                 cleanWs()
+                            }
+                          }
                         bat 'java -version'
                         checkout([$class: 'SubversionSCM',
                         additionalCredentials: [],
@@ -72,11 +72,11 @@ pipeline {
                     }
                     
                     steps {
-						script {
-		                    if (params.RELEASE_MODE) {
-		                         cleanWs()
-		                    }
-						}
+                       script {
+                          if (params.RELEASE_MODE) {
+                                 cleanWs()
+                            }
+                          }
                         checkout([$class: 'SubversionSCM',
                         additionalCredentials: [],
                         excludedCommitMessages: '',
@@ -125,11 +125,11 @@ pipeline {
                 label "install"
             }
             steps {
-				script {
-			        if (params.RELEASE_MODE) {
-			              cleanWs()
-			        }
-				}
+                script {
+                   if (params.RELEASE_MODE) {
+                           cleanWs()
+                       }
+                     }
                 // The stashed folders are modified during the build, which means a simple
                 // unstash leaves data behind. Here we manually wipe these folders before unstashing.
                 dir('yukon-client') {
