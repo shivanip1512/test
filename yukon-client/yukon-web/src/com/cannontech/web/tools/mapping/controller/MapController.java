@@ -306,9 +306,8 @@ public class MapController {
                     LocalDateTime parsedDateTime = LocalDateTime.parse(dateTime, dateTimeFormatter);
                     // add date in yyyy-MM-dd format
                     dataRow[4] = parsedDateTime.toLocalDate().toString();
-                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                     // add time in HH:mm:ss format
-                    dataRow[5] = timeFormatter.format(parsedDateTime.toLocalTime());
+                    dataRow[5] = parsedDateTime.toLocalTime().toString().split("\\.")[0];
                 } catch (DateTimeParseException e) {
                     log.debug("Unable to parse the date string", e);
                 }
