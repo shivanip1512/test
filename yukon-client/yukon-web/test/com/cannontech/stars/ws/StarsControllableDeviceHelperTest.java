@@ -15,7 +15,7 @@ public class StarsControllableDeviceHelperTest {
     public void testIsOperationAllowedForDeviceNest() {
         boolean isOperationAllowed =
             ReflectionTestUtils.invokeMethod(deviceHelper, "isOperationAllowedForHardware", HardwareType.NEST_THERMOSTAT);
-        assertTrue("Is operation allowed", !isOperationAllowed);
+        assertFalse("Is operation allowed", isOperationAllowed);
     }
 
     @Test
