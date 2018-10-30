@@ -367,7 +367,6 @@ public class NestSyncServiceImpl implements NestSyncService{
         account.setBillingAddress(address);
         account.setIsCommercial(false);
         account.setIsCustAtHome(true);
-        account.setAccountNotes("Account created by Nest sync");
         UpdatableAccount updatableAccount = new UpdatableAccount();
         updatableAccount.setAccountDto(account);
         updatableAccount.setAccountNumber(row.getAccountNumber());
@@ -694,8 +693,8 @@ public class NestSyncServiceImpl implements NestSyncService{
         NestSyncTimeInfo info = new NestSyncTimeInfo();
         info.setSyncTime(persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.NEST_SYNC_TIME));
         info.setSyncInProgress(syncInProgress);
-        if(info.getNextSyncTime() != null) {
-            info.setNextSyncTime(info.getNextSyncTime().plus(MINUTES_TO_WAIT_BEFORE_NEXT_SYNC));
+        if(info.getSyncTime() != null) {
+            info.setNextSyncTime(info.getSyncTime().plus(MINUTES_TO_WAIT_BEFORE_NEXT_SYNC));
         }
         return info;
     }
