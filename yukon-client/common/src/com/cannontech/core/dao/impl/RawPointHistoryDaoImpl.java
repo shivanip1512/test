@@ -100,7 +100,13 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     private SqlFragmentSource buildLimitedSql(Range<Instant> instantRange, int pointId, boolean excludeDisabledPaos, int maxRows, Order order, OrderBy orderBy) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         
-        SqlBuilder sqlb = builder.buildForAllOracleDatabases();
+        SqlBuilder sqla = builder.buildForAllMsDatabases();
+        sqla.append("SELECT DISTINCT TOP " + maxRows);
+        sqla.append(  "rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
+        appendFromAndWhereClause(sqla, Collections.singleton(pointId), instantRange, excludeDisabledPaos);
+        appendOrderByClause(sqla, order);
+        
+        SqlBuilder sqlb = builder.buildOther();
         sqlb.append("select * from (");
         sqlb.append(  "SELECT DISTINCT rph.pointid, rph.timestamp,");
         sqlb.append(    "rph.value, rph.quality, p.pointtype,");
@@ -111,13 +117,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sqlb.append(") numberedRows");
         sqlb.append("where numberedRows.rn").lte(maxRows);
         sqlb.append("ORDER BY numberedRows.rn");
-        
-        SqlBuilder sqla = builder.buildOther();
-        sqla.append("SELECT DISTINCT TOP " + maxRows);
-        sqla.append(  "rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        appendFromAndWhereClause(sqla, Collections.singleton(pointId), instantRange, excludeDisabledPaos);
-        appendOrderByClause(sqla, order);
-
+       
         return builder;
     }
 

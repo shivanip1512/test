@@ -371,11 +371,12 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     
     private SqlFragmentSource getTable() {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
-        sqla.append("");
 
+        SqlBuilder sqla = builder.buildForAllOracleDatabases();
+        sqla.append("FROM Dual");
+        
         SqlBuilder sqlb = builder.buildOther();
-        sqlb.append("FROM Dual");
+        sqlb.append("");
 
         return builder;
     }

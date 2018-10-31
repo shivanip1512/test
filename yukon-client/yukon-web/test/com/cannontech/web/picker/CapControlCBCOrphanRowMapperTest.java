@@ -7,6 +7,7 @@ import com.cannontech.capcontrol.service.impl.CbcHelperServiceImpl;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.google.common.collect.Iterables;
 
 public class CapControlCBCOrphanRowMapperTest {
 
@@ -47,7 +48,7 @@ public class CapControlCBCOrphanRowMapperTest {
         
     @Test
     public void test_getOracleSql() throws Exception {
-        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.ORACLE12C);
+        CapControlCBCOrphanRowMapper mapper = createMapper(Iterables.getFirst(DatabaseVendor.getOracleDatabases(), null));
         
         SqlFragmentSource oracleSql = mapper.getBaseQuery();
 
@@ -64,7 +65,7 @@ public class CapControlCBCOrphanRowMapperTest {
 
     @Test
     public void test_getMicrosoftSql() throws Exception {
-        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.MS2017);
+        CapControlCBCOrphanRowMapper mapper = createMapper(Iterables.getFirst(DatabaseVendor.getMsDatabases(), null));
         
         SqlFragmentSource microsoftSql = mapper.getBaseQuery();
 

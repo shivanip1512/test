@@ -315,21 +315,21 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         oracleSql.append("START WITH ParentDeviceGroupId").eq(group.getId()); // starting point
         oracleSql.append("CONNECT BY PRIOR DeviceGroupId = ParentDeviceGroupId"); //recursive join
         
-        SqlBuilder msSql = builder.buildOther(); //MSSQL
+        SqlBuilder otherSql = builder.buildOther(); //MSSQL
         // This query use a Common Table Expression to achieve a recursive query
         // http://msdn.microsoft.com/en-us/library/ms190766.aspx
-        msSql.append("WITH DeviceGroup_CTE AS (");
-        msSql.append("  SELECT dg.ParentDeviceGroupId, dg.DeviceGroupId");
-        msSql.append("  FROM DeviceGroup AS dg");
-        msSql.append("  WHERE dg.ParentDeviceGroupId").eq(group.getId()); // starting point
-        msSql.append("  UNION ALL");
-        msSql.append("  SELECT dg.ParentDeviceGroupId, dg.DeviceGroupId");
-        msSql.append("  FROM DeviceGroup AS dg");
-        msSql.append("    JOIN DeviceGroup_CTE AS dgcte ON dg.ParentDeviceGroupId = dgcte.DeviceGroupId"); // recursive join
-        msSql.append(")");
-        msSql.append("SELECT dg_real.*");
-        msSql.append("FROM DeviceGroup_CTE"); // bring it all together
-        msSql.append("  JOIN DeviceGroup AS dg_real ON DeviceGroup_CTE.DeviceGroupId = dg_real.DeviceGroupId");
+        otherSql.append("WITH DeviceGroup_CTE AS (");
+        otherSql.append("  SELECT dg.ParentDeviceGroupId, dg.DeviceGroupId");
+        otherSql.append("  FROM DeviceGroup AS dg");
+        otherSql.append("  WHERE dg.ParentDeviceGroupId").eq(group.getId()); // starting point
+        otherSql.append("  UNION ALL");
+        otherSql.append("  SELECT dg.ParentDeviceGroupId, dg.DeviceGroupId");
+        otherSql.append("  FROM DeviceGroup AS dg");
+        otherSql.append("    JOIN DeviceGroup_CTE AS dgcte ON dg.ParentDeviceGroupId = dgcte.DeviceGroupId"); // recursive join
+        otherSql.append(")");
+        otherSql.append("SELECT dg_real.*");
+        otherSql.append("FROM DeviceGroup_CTE"); // bring it all together
+        otherSql.append("  JOIN DeviceGroup AS dg_real ON DeviceGroup_CTE.DeviceGroupId = dg_real.DeviceGroupId");
 
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
         List<PartialDeviceGroup> groups = jdbcTemplate.query(builder, mapper);
