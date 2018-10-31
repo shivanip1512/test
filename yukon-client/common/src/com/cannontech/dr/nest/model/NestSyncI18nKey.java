@@ -32,6 +32,8 @@ public enum NestSyncI18nKey {
     AUTO_CHANGE_GROUP(SERIAL_NUMBER, ACCOUNT_NUMBER, GROUP, PROGRAM, GROUP_FROM),
     THERMOSTAT_IN_WRONG_ACCOUNT(SERIAL_NUMBER, ACCOUNT_NUMBER),
     DELETE_THERMOSTAT(SERIAL_NUMBER, ACCOUNT_NUMBER),
+    //account is not in nest file, delete nest thermostats
+    THERMOSTAT_IN_ACCOUNT_WHICH_IS_NOT_IN_NEST(SERIAL_NUMBER, ACCOUNT_NUMBER),
     ;
     
     private List<NestSyncI18nValue> valueKeys = new ArrayList<>();
