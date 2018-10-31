@@ -11,6 +11,9 @@ public class Graph<T> {
     private NumberFormat format = null;
     private ChartColorsEnum color = null;
     private int axisIndex;
+    private FlotLineOptions lines;
+    private FlotBarOptions bars;
+    private FlotPointOptions points;
 
     public int getAxisIndex() {
         return axisIndex;
@@ -59,5 +62,29 @@ public class Graph<T> {
 	public void setColor(ChartColorsEnum color) {
 		this.color = color;
 	}
+
+    public FlotLineOptions getLines() {
+        return lines;
+    }
+
+    public void setLines(FlotLineOptions lines) {
+        this.lines = lines;
+    }
+
+    public FlotBarOptions getBars() {
+        return bars;
+    }
+
+    public void setBars(FlotBarOptions bars) {
+        this.bars = bars;
+    }
+
+    public FlotPointOptions getPoints() {
+        return points;
+    }
+
+    public void setPoints(FlotPointOptions points) {
+        this.points = points;
+    }
 
 }

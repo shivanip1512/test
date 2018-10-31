@@ -10,10 +10,10 @@ import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
+import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.chart.service.ChartDataConverter;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -43,14 +43,11 @@ public class ChartServiceImpl implements ChartService {
 
     @Override
     public List<Graph<ChartValue<Double>>> getGraphs(List<GraphDetail> graphDetails, Date startDate, Date stopDate,
-            ChartInterval interval, YukonUserContext userContext) {
+            ChartInterval interval, YukonUserContext userContext, GraphType graphType) {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         List<Graph<ChartValue<Double>>> graphs = new ArrayList<>();
-
-        int colorIdx = 0;
-        ChartColorsEnum[] colors = ChartColorsEnum.values();
 
         for (GraphDetail graphDetail : graphDetails) {
             int pointId = graphDetail.getPointId();
@@ -91,30 +88,35 @@ public class ChartServiceImpl implements ChartService {
             // Assign each chart value to an x-axis spot
             List<ChartValue<Double>> axisChartData = new ArrayList<>();
             LiteYukonPAObject pao = cache.getAllPaosMap().get(lPoint.getPaobjectID());
+            
+            Graph<ChartValue<Double>> graph = new Graph<>();
             if (pao.getPaoType() == PaoType.WEATHER_LOCATION) {
                 if (interval.getMillis() >= ChartInterval.DAY.getMillis()) {
-                    axisChartData = getXAxisMinMaxValues(interval, chartData, true);
+                    axisChartData = getXAxisMinMaxValues(interval, chartData, graphDetail.isMin());
                 } else {
                     axisChartData = chartData;
                 }
+                graph.setLines(graphDetail.getLines());
+                graph.setPoints(graphDetail.getPoints());
             } else {
-                axisChartData = getXAxisMinMaxValues(interval, chartData, false);
+                axisChartData = getXAxisMinMaxValues(interval, chartData, graphDetail.isMin());
                 // Convert data to specified graph type
                 ChartDataConverter converter = graphDetail.getConverterType().getDataConverter();
                 axisChartData = converter.convertValues(axisChartData, interval);
+                if (graphType == GraphType.COLUMN) {
+                    graph.setBars(graphDetail.getBars());
+                } else if (graphType == GraphType.LINE) {
+                    graph.setLines(graphDetail.getLines());
+                    graph.setPoints(graphDetail.getPoints());
+                }
             }
-           
+
             // graph
-            Graph<ChartValue<Double>> graph = new Graph<>();
+            graph.setColor(graphDetail.getChartColors());
             graph.setChartData(axisChartData);
             graph.setSeriesTitle(lPoint.getPointName());
             graph.setFormat(pointValueFormat);
             graph.setAxisIndex(graphDetail.getAxisIndex());
-            graph.setColor(colors[colorIdx]);
-            colorIdx++;
-            if (colorIdx == colors.length) {
-                colorIdx = 0;
-            }
 
             // don't include zero-data graphs if there are more than one graph - amCharts chokes.
             if (graphDetails.size() == 1 || chartData.size() > 0) {
@@ -147,6 +149,7 @@ public class ChartServiceImpl implements ChartService {
      *
      * @param interval - Time interval for the x-axis
      * @param chartData - List of chart data values
+     * @param isMinRequired - type of values needs to be filtered(min or max) from chartData
      * @return The original chart data list with x-axis ids set
      */
     private List<ChartValue<Double>> getXAxisMinMaxValues(ChartInterval interval, List<ChartValue<Double>> chartData,
@@ -157,56 +160,33 @@ public class ChartServiceImpl implements ChartService {
             return minMaxChartValues;
         }
         long currentInterval = interval.roundDownToIntervalUnit(new Date(chartData.get(0).getId())).getTime();
-        ChartValue<Double> currentMax = chartData.get(0);
-        ChartValue<Double> currentMin = currentMax;
+        ChartValue<Double> currentMinMax = chartData.get(0);
         for (ChartValue<Double> thisValue : chartData) {
             long thisInterval = interval.roundDownToIntervalUnit(new Date(thisValue.getId())).getTime();
             if (thisInterval != currentInterval) {
                 // New interval, add last intervals min(if isMinRequired is true) , max
-                addMinMaxValuesinOrder(minMaxChartValues, currentMin, currentMax, isMinRequired);
-                currentMax = thisValue;
-                if (isMinRequired) {
-                    currentMin = thisValue;
-                }
+                ChartValue<Double> adjustedValue = adjustForFlotTimezone(currentMinMax);
+                minMaxChartValues.add(adjustedValue);
+                currentMinMax = thisValue;
                 currentInterval = thisInterval;
-            } else if (thisValue.getValue() > currentMax.getValue() || isValueRepeated(currentMax, thisValue)) {
+            } else if (!isMinRequired && (thisValue.getValue() > currentMinMax.getValue() || isValueRepeated(currentMinMax, thisValue))) {
                 /*
                  * Need to modify thisValue (which will eventually be added to maxChartValues)
                  * to have a time that is also normalized/modified down to interval, instead of it's actual
                  * time.
                  * This should only affect the graph'd data and not any raw data exports
                  */
-                currentMax = thisValue;
-            } else if (isMinRequired && (thisValue.getValue() < currentMin.getValue() || isValueRepeated(currentMin, thisValue))) {
+                currentMinMax = thisValue;
+            } else if (isMinRequired && (thisValue.getValue() < currentMinMax.getValue() || isValueRepeated(currentMinMax, thisValue))) {
                 // Update minimum ChartValue with latest interval.
-                currentMin = thisValue;
+                currentMinMax = thisValue;
             }
         }
         // Don't forget the last one
-        addMinMaxValuesinOrder(minMaxChartValues, currentMin, currentMax, isMinRequired);
+        minMaxChartValues.add(adjustForFlotTimezone(currentMinMax));
         return minMaxChartValues;
     }
-    
-    /**
-     * Place minimum and maximum chart value in order (whichever comes first add first in the list)
-     * @return list of ChartValues.
-     */
-    private List<ChartValue<Double>> addMinMaxValuesinOrder(List<ChartValue<Double>> minMaxChartValues, ChartValue<Double> min, ChartValue<Double> max, boolean isMinRequired) {
-        ChartValue<Double> adjustedMax = adjustForFlotTimezone(max);
-        if (isMinRequired) {
-            ChartValue<Double> adjustedMin = adjustForFlotTimezone(min);
-            if (adjustedMin.getTime() > adjustedMax.getTime()) {
-                minMaxChartValues.add(adjustedMax);
-                minMaxChartValues.add(adjustedMin);
-            } else {
-                minMaxChartValues.add(adjustedMin);
-                minMaxChartValues.add(adjustedMax);
-            }
-        } else {
-            minMaxChartValues.add(adjustedMax);
-        }
-        return minMaxChartValues;
-    }
+
     /**
      * 
      * @return true if current ChartValue value is same as old ChartValue.

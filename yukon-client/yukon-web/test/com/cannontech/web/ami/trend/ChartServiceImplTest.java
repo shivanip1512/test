@@ -40,39 +40,6 @@ public class ChartServiceImplTest {
         boolean result = ReflectionTestUtils.invokeMethod(chartServiceImpl, "isValueRepeated", oldValue, currentValue);
         assertTrue(!result);
     }
-    
-    @Test
-    public void test_addMinMaxValuesinOrder_minRequied_1() {
-        List<ChartValue<Double>> list = new ArrayList<>();
-        DateTime dt = new DateTime(2018, 8, 5, 7, 10, 5, 0);
-        ChartValue<Double> minValue = buildChartValue(dt.getMillis(), 32.32, dt.getMillis());
-        ChartValue<Double> maxValue= buildChartValue(dt.plusHours(1).getMillis(), 82.32, dt.plusHours(1).getMillis());
-        List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"addMinMaxValuesinOrder",list, minValue, maxValue, true);
-        // min value is coming first.
-        assertTrue(result.get(0).getValue() == 32.32 && result.get(1).getValue() == 82.32);
-    }
-    
-    @Test
-    public void test_addMinMaxValuesinOrder_minRequied_2() {
-        List<ChartValue<Double>> list = new ArrayList<>();
-        DateTime dt = new DateTime(2018, 8, 5, 7, 10, 5, 0);
-        ChartValue<Double> minValue = buildChartValue(dt.plusHours(2).getMillis(), 32.32, dt.plusHours(2).getMillis());
-        ChartValue<Double> maxValue= buildChartValue(dt.plusHours(1).getMillis(), 82.32, dt.plusHours(1).getMillis());
-        List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"addMinMaxValuesinOrder",list, minValue, maxValue, true);
-        // min value is required and max value is coming first hence it will be added first.
-        assertTrue(result.get(0).getValue() == 82.32 && result.get(1).getValue() == 32.32);
-    }
-    
-    @Test
-    public void test_addMinMaxValuesinOrder_minNotRequied() {
-        List<ChartValue<Double>> list = new ArrayList<>();
-        DateTime dt = new DateTime(2018, 8, 5, 7, 10, 5, 0);
-        ChartValue<Double> minValue = buildChartValue(dt.getMillis(), 32.32, dt.getMillis());
-        ChartValue<Double> maxValue= buildChartValue(dt.plusHours(1).getMillis(), 82.32, dt.plusHours(1).getMillis());
-        List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"addMinMaxValuesinOrder",list, minValue, maxValue, false);
-        // min value is not required hence only max value will be returned
-        assertTrue(result.get(0).getValue() == 82.32);
-    }
 
     @Test
     public void test_getXAxisMinMaxValues_FIVEMINUTE_max() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -104,12 +71,9 @@ public class ChartServiceImplTest {
         list.add(buildChartValue(dt.plusMinutes(5).getMillis(),123.32,dt.plusMinutes(6).getMillis()));
         list.add(buildChartValue(dt.plusMinutes(6).getMillis(),362.32,dt.plusMinutes(6).getMillis()));
         list.add(buildChartValue(dt.plusMinutes(7).getMillis(),265.32,dt.plusMinutes(6).getMillis()));
-        // This will get min-max values for each five minute
         List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"getXAxisMinMaxValues",ChartInterval.FIVEMINUTE, list, true);
-        // 1st 5 minutes [min-max]
-        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 162.32);
-        // 2nd 5 minutes [min-max]
-        assertTrue(result.get(2).getValue() == 123.32 && result.get(3).getValue() == 362.32);
+        // This will get min values for each five minute
+        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 123.32);
     }
 
     @Test
@@ -145,9 +109,7 @@ public class ChartServiceImplTest {
         // This will get min-max values for each fifteen minute
         List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"getXAxisMinMaxValues",ChartInterval.FIFTEENMINUTE, list, true);
         // 1st 15 minutes [min-max]
-        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 162.32);
-        // 2nd 15 minutes [min-max]
-        assertTrue(result.get(2).getValue() == 123.32 && result.get(3).getValue() == 362.32);
+        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 123.32);
     }
 
     @Test
@@ -170,7 +132,7 @@ public class ChartServiceImplTest {
     }
 
     @Test
-    public void test_getXAxisMinMaxValues_HOUR_min_max() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public void test_getXAxisMinMaxValues_HOUR_min() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<ChartValue<Double>> list = new ArrayList<>();
         DateTime dt = new DateTime(2018, 8, 5, 7, 10, 5, 0);
         // Hour-1
@@ -183,12 +145,9 @@ public class ChartServiceImplTest {
         list.add(buildChartValue(dt.plusHours(2).plusMinutes(6).getMillis(),362.32,dt.plusHours(2).plusMinutes(6).getMillis()));
         list.add(buildChartValue(dt.plusHours(2).plusMinutes(7).getMillis(),265.32,dt.plusHours(2).plusMinutes(7).getMillis()));
         list.add(buildChartValue(dt.plusHours(2).plusMinutes(14).getMillis(),82.32,dt.plusHours(2).plusMinutes(14).getMillis()));
-        // This will get max values for each hour
         List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"getXAxisMinMaxValues",ChartInterval.HOUR, list, true);
-        // Hour-1 [min -max]
-        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 162.32);
-        // Hour-1 [max- min]
-        assertTrue(result.get(2).getValue() == 362.32 && result.get(3).getValue() == 82.32);
+        // This will get min values for each hour
+        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 82.32);
     }
 
     @Test
@@ -212,7 +171,7 @@ public class ChartServiceImplTest {
     }
 
     @Test
-    public void test_getXAxisMinMaxValues_DAY_min_max() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public void test_getXAxisMinMaxValues_DAY_min() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<ChartValue<Double>> list = new ArrayList<>();
         DateTime dt = new DateTime(2018, 8, 5, 7, 10, 5, 0);
         // Day-1
@@ -227,10 +186,8 @@ public class ChartServiceImplTest {
         list.add(buildChartValue(dt.plusDays(1).plusMinutes(5).getMillis(),2.32,dt.plusDays(1).plusMinutes(5).getMillis()));
         list.add(buildChartValue(dt.plusDays(1).getMillis(),52.32,dt.plusDays(1).getMillis()));
         List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"getXAxisMinMaxValues",ChartInterval.DAY, list, true);
-        //Day-1 [min max]
-        assertTrue(result.get(0).getValue() == 12.32 && result.get(1).getValue() == 128.32);
-        // Day-2  [max-min]
-        assertTrue(result.get(2).getValue() == 92.32 && result.get(3).getValue() == 2.32);
+        // This will get min values for each day
+        assertTrue(result.get(0).getValue() == 12.32 && result.get(1).getValue() == 2.32);
     }
 
     @Test
@@ -252,7 +209,7 @@ public class ChartServiceImplTest {
     }
 
     @Test
-    public void test_getXAxisMinMaxValues_WEEK_min_max() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public void test_getXAxisMinMaxValues_WEEK_min() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<ChartValue<Double>> list = new ArrayList<>();
         DateTime dt = new DateTime(2018, 8, 5, 7, 11, 0, 0);
         // 1st Week
@@ -263,12 +220,9 @@ public class ChartServiceImplTest {
         list.add(buildChartValue(dt.plusWeeks(1).getMillis(),123.32,dt.plusWeeks(1).getMillis()));
         list.add(buildChartValue(dt.plusWeeks(1).getMillis(),362.32,dt.plusWeeks(1).getMillis()));
         list.add(buildChartValue(dt.plusWeeks(1).getMillis(),265.32,dt.plusWeeks(1).getMillis()));
-        // This will get min-max values for each week
         List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"getXAxisMinMaxValues",ChartInterval.WEEK, list, true);
-        //  1st Week [min-max]
-        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 162.32);
-        // 2nd Week [min-max]
-        assertTrue(result.get(2).getValue() == 123.32 && result.get(3).getValue() == 362.32);
+        //This will get min values for each week
+        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 123.32);
     }
 
     @Test
@@ -290,7 +244,7 @@ public class ChartServiceImplTest {
     }
 
     @Test
-    public void test_getXAxisMinMaxValues_MONTH_min_max() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public void test_getXAxisMinMaxValues_MONTH_min() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<ChartValue<Double>> list = new ArrayList<>();
         DateTime dt = new DateTime(2018, 8, 5, 7, 11, 0, 0);
         // 1st month
@@ -301,12 +255,9 @@ public class ChartServiceImplTest {
         list.add(buildChartValue(dt.plusMonths(1).getMillis(),123.32,dt.plusMonths(1).getMillis()));
         list.add(buildChartValue(dt.plusMonths(1).getMillis(),362.32,dt.plusMonths(1).getMillis()));
         list.add(buildChartValue(dt.plusMonths(1).getMillis(),265.32,dt.plusMonths(1).getMillis()));
-        // This will get min-max values for each month
         List<ChartValue<Double>> result = ReflectionTestUtils.invokeMethod(chartServiceImpl,"getXAxisMinMaxValues",ChartInterval.MONTH, list, true);
-        // 1st month [min-max]
-        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 162.32);
-        // 2nd month [min-max]
-        assertTrue(result.get(2).getValue() == 123.32 && result.get(3).getValue() == 362.32);
+        // This will get min values for each month
+        assertTrue(result.get(0).getValue() == 42.32 && result.get(1).getValue() == 123.32);
     }
 
     private ChartValue<Double> buildChartValue(long id, Double value, long time){

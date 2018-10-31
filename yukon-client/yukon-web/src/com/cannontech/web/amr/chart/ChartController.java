@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
+import com.cannontech.common.chart.model.FlotBarOptions;
+import com.cannontech.common.chart.model.FlotLineOptions;
+import com.cannontech.common.chart.model.FlotPointOptions;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
@@ -61,12 +65,43 @@ public class ChartController {
         String leftYLabelUnits = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
         
         List<GraphDetail> graphDetails = new ArrayList<>();
-        graphDetails.add(new GraphDetail(pointId, converterType, leftYLabelUnits, 1, "left"));
+        GraphDetail graphDetail = new GraphDetail(pointId, leftYLabelUnits, 1, "left", false, ChartColorsEnum.GREEN);
+        // Set minimum value for Y-axis
+        graphDetail.setyMin(yMin);
+        graphDetail.setConverterType(converterType);
+        
+        // Set details for line type chart style
+        FlotLineOptions flotLineOptions = new FlotLineOptions();
+        flotLineOptions.setFill(true);
+        flotLineOptions.setShow(true);
+        graphDetail.setLines(flotLineOptions);
+        
+        FlotPointOptions flotPointOptions = new FlotPointOptions();
+        flotPointOptions.setShow(true);
+        graphDetail.setPoints(flotPointOptions);
+        // Set details for bar type chart style
+        FlotBarOptions flotBarOptions = new FlotBarOptions(true, "center", true, ChartColorsEnum.GREEN_FILL.getRgb());
+        graphDetail.setBars(flotBarOptions);
+        
+        graphDetails.add(graphDetail);
         
         if (isTemperatureChecked && temperaturePointId != null) {
             String rightYLabelUnits = messageSourceAccessor.getMessage("yukon.common.chart.yLabel.temperature");
-            graphDetails.add(
-                new GraphDetail(temperaturePointId, ConverterType.RAW, rightYLabelUnits, 2, "right"));
+            // Set details for line type chart style
+            FlotLineOptions flotLineOptionsforTemp = new FlotLineOptions();
+            flotLineOptionsforTemp.setShow(true);
+            
+            // Add graph detail for min temperature trend
+            GraphDetail minTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", true, ChartColorsEnum.LIGHT_BLUE);
+            minTemperatureGraphDetail.setLines(flotLineOptionsforTemp);
+            graphDetails.add(minTemperatureGraphDetail);
+
+            if (interval.getMillis() >= ChartInterval.DAY.getMillis()) {
+                // Add graph detail for max temperature trend
+                GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", false, ChartColorsEnum.LIGHT_RED);
+                maxTemperatureGraphDetail.setLines(flotLineOptionsforTemp);
+                graphDetails.add(maxTemperatureGraphDetail);
+            }
         }
         Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
         Instant stop = new DateTime(endDate).withTimeAtStartOfDay().plusDays(1).toInstant();

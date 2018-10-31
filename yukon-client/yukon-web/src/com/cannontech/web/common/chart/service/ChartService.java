@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
+import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.impl.GraphDetail;
 
@@ -24,7 +25,7 @@ public interface ChartService {
      * @return A list containing one graph per point
      */
     public List<Graph<ChartValue<Double>>> getGraphs(List<GraphDetail> graphDetails, Date startDate, Date stopDate, ChartInterval unit,
-                                  YukonUserContext userContext);
+                                  YukonUserContext userContext, GraphType graphType);
 
     /**
      * Method to get the number of x-axis values only. Does not create list of actual CharValues.

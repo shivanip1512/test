@@ -36,12 +36,13 @@ public class FlotChartServiceImpl implements FlotChartService {
     public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
                                                  Double yMax, GraphType graphType, ChartInterval interval, YukonUserContext userContext) {
          List <Graph<ChartValue<Double>>> graphs = 
-                chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), interval, userContext);
+                chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), interval, userContext, graphType);
 
         // datas
         List<Object> jsonDataContainer = new ArrayList<>();
         graphs.forEach(graph -> {
-            jsonDataContainer.add(new TrendData (getDataArray(graph.getChartData()), graph.getAxisIndex()));
+            jsonDataContainer.add(new TrendData (getDataArray(graph.getChartData()), graph.getAxisIndex(), graph.getColor().getRgb()
+                , graph.getBars(), graph.getLines(), graph.getPoints()));
         });
         // if we have no data, then add an empty array to jsonData so a blank graph is displayed properly
         if (graphs.isEmpty()) {
@@ -64,7 +65,7 @@ public class FlotChartServiceImpl implements FlotChartService {
             yAxes.put(FlotOptionKey.YAXIS_POSITION.getKey(), graphDetail.getyAxisPosition());
             yAxes.put(FlotOptionKey.YAXIS_AXISLABEL.getKey(), graphDetail.getyLabelUnits());
             if (yMin != null) {
-                yAxes.put(FlotOptionKey.YAXIS_MIN.getKey(), yMin);
+                yAxes.put(FlotOptionKey.YAXIS_MIN.getKey(), graphDetail.getyMin());
             }
             if (yMax != null) {
                 yAxes.put(FlotOptionKey.YAXIS_MAX.getKey(), yMax);
