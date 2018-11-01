@@ -88,7 +88,11 @@
                                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                         <td class="tar" rowspan="${rows}">
                                             <cti:icon icon="icon-pencil" classes="fn M0 js-edit-enrollment cp"/>
-                                            <cti:icon icon="icon-cross" classes="fn M0 js-unenroll cp"/>
+                                            <c:set var="enrollmentClass" value="${enrollmentProgram.isNest() ? 'disabled' : 'js-unenroll cp'}"/>
+                                            <c:if test="${enrollmentProgram.isNest()}">
+                                                <cti:msg2 var="titleMessage" key="yukon.web.modules.dr.nest.enrollmentDisabled"/>
+                                            </c:if>
+                                            <cti:icon icon="icon-cross" classes="fn M0 ${enrollmentClass}" title="${titleMessage}"/>
                                         </td>
                                     </cti:checkRolesAndProperties>
                                 </c:if>

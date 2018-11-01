@@ -48,8 +48,12 @@
                         <tr data-inventory-id="${inventoryId}">
                             <td>
                                 <form:hidden path="inventoryEnrollments[${status.index}].inventoryId"/>
-                                <form:checkbox id="enroll-cb-${inventoryId}" cssClass="js-enroll-cb"
-                                    path="inventoryEnrollments[${status.index}].enrolled"/>
+                                <c:set var="enrollClass" value="${isNest ? 'disabled-look' : 'js-enroll-cb'}"/>
+                                <c:if test="${isNest}">
+                                    <cti:msg2 var="titleMessage" key="yukon.web.modules.dr.nest.enrollmentDisabled"/>
+                                </c:if>
+                                <form:checkbox id="enroll-cb-${inventoryId}" cssClass="${enrollClass}"
+                                    path="inventoryEnrollments[${status.index}].enrolled" title="${titleMessage}"/>
                             </td>
                             <td class="deviceLabel">
                                 <label for="enroll-cb-${inventoryId}">${fn:escapeXml(inventory.displayName)}</label>

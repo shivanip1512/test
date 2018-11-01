@@ -188,6 +188,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
             <c:choose>
                 <c:when test="${hardware.hardwareType.isNest()}">
                     <cti:msg2 key=".deleteMessageNest" argument="${hardware.displayName}"/>
+                    <input type="hidden" name="deleteOption" value="delete"/>
                 </c:when>
                 <c:otherwise>
                     <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardware.displayName}"/>

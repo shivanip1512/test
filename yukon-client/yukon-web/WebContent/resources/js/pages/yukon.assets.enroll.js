@@ -128,14 +128,7 @@ yukon.assets.enroll = (function () {
                     checked = cb.is(':checked'),
                     checkedCount = $('#enroll-popup .js-enroll-cb:checked').length,
                     row = cb.closest('tr'),
-                    relay = row.find('.js-enroll-relay'),
-                    nestGroup = row.find('.js-nest-group'),
-                    enabledNestValues = $('.js-nest-group:enabled');
-                //if nest, prepopulate group dropdown
-                if (enabledNestValues.length > 0) {
-                    var groupValue = enabledNestValues.val();
-                    nestGroup.val(groupValue);
-                }
+                    relay = row.find('.js-enroll-relay');
                 
                 relay.prop('disabled', !checked);
                 $('.ui-dialog-buttonset .primary').prop('disabled', checkedCount == 0);

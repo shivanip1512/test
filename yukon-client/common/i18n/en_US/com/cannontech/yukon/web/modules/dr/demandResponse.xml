@@ -624,6 +624,7 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.nest.action">Action</entry>
 <entry key="yukon.web.modules.dr.nest.syncTime">Sync Time</entry>
 <entry key="yukon.web.modules.dr.nest.changeGroupMessage">Changing the group will affect all Nest Thermostats for this account.</entry>
+<entry key="yukon.web.modules.dr.nest.enrollmentDisabled">Enrollment/Unenrollment is disabled for Nest devices.</entry>
 
 <!-- Nest Type, Reason and Action Keys -->
 <entry key="yukon.web.modules.dr.nest.MANUAL">Manual</entry>

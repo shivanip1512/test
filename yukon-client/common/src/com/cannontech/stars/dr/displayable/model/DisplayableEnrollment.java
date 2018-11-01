@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentInService;
@@ -248,6 +249,10 @@ public final class DisplayableEnrollment {
                 this.enrolled = enrolled;
             }
             return enrolled;
+        }
+        
+        public boolean isNest() {
+            return program.getPaoType().equals(PaoType.LM_NEST_PROGRAM);
         }
 
         public String getDescriptionUrl() {

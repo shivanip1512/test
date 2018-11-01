@@ -157,7 +157,7 @@ public class OperatorEnrollmentController {
         DisplayableEnrollmentProgram displayable = 
             displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);
         
-        model.addAttribute("isNest", displayable.getProgram().getPaoType().equals(PaoType.LM_NEST_PROGRAM));
+        model.addAttribute("isNest", displayable.isNest());
 
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayable);
         model.addAttribute("programEnrollment", programEnrollment);
