@@ -38,20 +38,20 @@
                     <tags:input path="name" maxlength="100"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".dataArchivingInterval">
-                    <tags:input path="dataArchivingInterval" size="3" maxlength="3"/>
-                    <i:inline key="yukon.common.units.SECONDS"/>                                                        
+                    <cti:msg2 var="seconds" key="yukon.common.units.SECONDS"/>
+                    <tags:input path="dataArchivingInterval" size="3" maxlength="3" units="${seconds}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".intervalDataGatheringDuration">
-                    <tags:input path="intervalDataGatheringDuration" size="2" maxlength="2"/>
-                    <i:inline key="yukon.common.units.MINUTES"/>                                                        
+                    <cti:msg2 var="minutes" key="yukon.common.units.MINUTES"/>
+                    <tags:input path="intervalDataGatheringDuration" size="2" maxlength="2" units="${minutes}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".stepSize">
-                    <tags:input path="stepSize" size="5"/>
-                    <i:inline key="yukon.common.units.VOLTS"/>                                                        
+                    <cti:msg2 var="volts" key="yukon.common.units.VOLTS"/>
+                    <tags:input path="stepSize" size="5" units="${volts}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".commSuccPercentage">
-                    <tags:input path="commSuccPercentage" size="3" maxlength="3"/>
-                    <i:inline key="yukon.common.units.PERCENT"/>                            
+                    <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                    <tags:input path="commSuccPercentage" size="3" maxlength="3" units="${percent}"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>

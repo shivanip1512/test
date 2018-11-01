@@ -2,11 +2,8 @@ package com.cannontech.web.capcontrol;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -90,17 +87,13 @@ public class DmvTestController {
     
     @RequestMapping(value={"dmvTest"}, method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String save(
-            HttpServletResponse resp,
-            @ModelAttribute("dmvTest") DmvTest dmvTest,
-            BindingResult result,
-            FlashScope flash,
+    public String save(@ModelAttribute("dmvTest") DmvTest dmvTest,
+            BindingResult result, FlashScope flash,
             RedirectAttributes redirectAttributes) {
           
         validator.validate(dmvTest, result);
         
         if (result.hasErrors()) {
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
             return bindAndForward(dmvTest, result, redirectAttributes);
         }
         int id = 0;
