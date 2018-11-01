@@ -219,99 +219,101 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     </cti:displayForPageEditModes>
     
     <cti:displayForPageEditModes modes="VIEW"> 
-        <div id="page-actions" class="dn">
-           <%-- SWITCH ACTIONS --%>
-            <c:if test="${showSwitchChangeoutAction}">
-                <li class="dropdown-option">
-                    <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                        id="availableSwitchPicker" 
-                        type="availableSwitchPicker" 
-                        destinationFieldId="newInventoryId" 
-                        immediateSelectMode="true"
-                        endAction="function(items) { return changeOut(${inventoryId}, false); }">
-                       <cti:icon icon="icon-arrow-swap"/>                                
-                       <cti:msg2 key=".changeOut.label" />
-                    </tags:pickerDialog>
-                </li>
-            </c:if>
-            <%-- TSTAT ACTIONS --%>
-            <c:if test="${showTstatChangeoutAction && !hardware.hardwareType.isNest()}">
-                <li class="dropdown-option">
-                    <tags:pickerDialog extraArgs="${energyCompanyId}"
-                        id="availableThermostatPicker" type="availableThermostatPicker"
-                        destinationFieldId="newInventoryId" immediateSelectMode="true"
-                        endAction="function(items) { return changeOut(${inventoryId}, false); }">
-                        <cti:icon icon="icon-arrow-swap" />
-                        <cti:msg2 key=".changeOut.label" />
-                    </tags:pickerDialog>
-                </li>
-            </c:if>
-            <%-- COMMON ACTIONS --%>
-            <c:if test="${showSwitchAndTstatConfigAction}">
-                <cti:url var="configUrl" value="/stars/operator/hardware/config/edit">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="inventoryId" value="${inventoryId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".editConfig.label" href="${configUrl}" icon="icon-cog-edit"/>
-            </c:if>
-            <c:if test="${showManualAction}">
-                <cti:url var="editManualUrl" value="/stars/operator/thermostatManual/view">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="thermostatIds" value="${inventoryId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".manual.label" href="${editManualUrl}" icon="icon-wrench"/>
-            </c:if>
-            <c:if test="${showScheduleActions}">
-                <cti:url var="savedSchedulesUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="thermostatIds" value="${inventoryId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".savedSchedules.label" href="${savedSchedulesUrl}" icon="icon-clipboard"/>
-            </c:if>
-            <%-- METER ACTIONS --%>
-            <c:if test="${showMeterChangeoutAction}">
-                <li class="dropdown-option">
-                    <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                        id="availableMeterPicker" 
-                        type="availableMctPicker" 
-                        destinationFieldId="newInventoryId" 
-                        immediateSelectMode="true" 
-                        endAction="function(items) { return changeOut(${inventoryId}, true); }" >
-                        <cti:icon icon="icon-arrow-swap" />
-                        <cti:msg2 key=".changeOut.label" />
-                    </tags:pickerDialog>
-                </li>
-            </c:if>
-            <c:if test="${showMeterConfigAction}">
-                <cti:url var="configUrl" value="/stars/operator/hardware/config/meterConfig">
-                    <cti:param name="accountId" value="${accountId}"/>
-                    <cti:param name="meterId" value="${hardware.deviceId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".editConfig.label" href="${configUrl}" icon="icon-cog-edit"/>
-            </c:if>
-            <c:if test="${showMeterDetailAction}">
-                <cti:paoDetailUrl yukonPao="${hardware.yukonPao}" var="meterDetailUrl"/>
-                <cm:dropdownOption key="yukon.web.components.button.meterDetail.label" href="${meterDetailUrl}" icon="icon-control-equalizer-blue"/>
-            </c:if>
-            <%-- GATEWAY ACTIONS --%>
-            <c:if test="${showGatewayChangeOutAction}">
-                <li class="dropdown-option">
-                    <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                        id="availableGatewayPicker" 
-                        type="availableGatewayPicker" 
-                        destinationFieldId="newInventoryId" 
-                        immediateSelectMode="true" 
-                        endAction="function(items) { return changeOut(${inventoryId}, false); }" >
-                        <cti:icon icon="icon-arrow-swap" />
-                        <cti:msg2 key=".changeOut.label" />
-                    </tags:pickerDialog>
-                </li>
-            </c:if>
-            <%@ include file="../hardware/hardwareDeviceActions.jspf" %>
-            <c:if test="${showTextMessageAction}">
-                <cm:dropdownOption key=".textMessage.label" id="sendTextMsg" icon="icon-phone-sound"/>
-            </c:if>
-        </div>
+        <c:if test="${!hardware.hardwareType.isNest()}">
+            <div id="page-actions" class="dn">
+               <%-- SWITCH ACTIONS --%>
+                <c:if test="${showSwitchChangeoutAction}">
+                    <li class="dropdown-option">
+                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                            id="availableSwitchPicker" 
+                            type="availableSwitchPicker" 
+                            destinationFieldId="newInventoryId" 
+                            immediateSelectMode="true"
+                            endAction="function(items) { return changeOut(${inventoryId}, false); }">
+                           <cti:icon icon="icon-arrow-swap"/>                                
+                           <cti:msg2 key=".changeOut.label" />
+                        </tags:pickerDialog>
+                    </li>
+                </c:if>
+                <%-- TSTAT ACTIONS --%>
+                <c:if test="${showTstatChangeoutAction}">
+                    <li class="dropdown-option">
+                        <tags:pickerDialog extraArgs="${energyCompanyId}"
+                            id="availableThermostatPicker" type="availableThermostatPicker"
+                            destinationFieldId="newInventoryId" immediateSelectMode="true"
+                            endAction="function(items) { return changeOut(${inventoryId}, false); }">
+                            <cti:icon icon="icon-arrow-swap" />
+                            <cti:msg2 key=".changeOut.label" />
+                        </tags:pickerDialog>
+                    </li>
+                </c:if>
+                <%-- COMMON ACTIONS --%>
+                <c:if test="${showSwitchAndTstatConfigAction}">
+                    <cti:url var="configUrl" value="/stars/operator/hardware/config/edit">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="inventoryId" value="${inventoryId}"/>
+                    </cti:url>
+                    <cm:dropdownOption key=".editConfig.label" href="${configUrl}" icon="icon-cog-edit"/>
+                </c:if>
+                <c:if test="${showManualAction}">
+                    <cti:url var="editManualUrl" value="/stars/operator/thermostatManual/view">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="thermostatIds" value="${inventoryId}"/>
+                    </cti:url>
+                    <cm:dropdownOption key=".manual.label" href="${editManualUrl}" icon="icon-wrench"/>
+                </c:if>
+                <c:if test="${showScheduleActions}">
+                    <cti:url var="savedSchedulesUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="thermostatIds" value="${inventoryId}"/>
+                    </cti:url>
+                    <cm:dropdownOption key=".savedSchedules.label" href="${savedSchedulesUrl}" icon="icon-clipboard"/>
+                </c:if>
+                <%-- METER ACTIONS --%>
+                <c:if test="${showMeterChangeoutAction}">
+                    <li class="dropdown-option">
+                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                            id="availableMeterPicker" 
+                            type="availableMctPicker" 
+                            destinationFieldId="newInventoryId" 
+                            immediateSelectMode="true" 
+                            endAction="function(items) { return changeOut(${inventoryId}, true); }" >
+                            <cti:icon icon="icon-arrow-swap" />
+                            <cti:msg2 key=".changeOut.label" />
+                        </tags:pickerDialog>
+                    </li>
+                </c:if>
+                <c:if test="${showMeterConfigAction}">
+                    <cti:url var="configUrl" value="/stars/operator/hardware/config/meterConfig">
+                        <cti:param name="accountId" value="${accountId}"/>
+                        <cti:param name="meterId" value="${hardware.deviceId}"/>
+                    </cti:url>
+                    <cm:dropdownOption key=".editConfig.label" href="${configUrl}" icon="icon-cog-edit"/>
+                </c:if>
+                <c:if test="${showMeterDetailAction}">
+                    <cti:paoDetailUrl yukonPao="${hardware.yukonPao}" var="meterDetailUrl"/>
+                    <cm:dropdownOption key="yukon.web.components.button.meterDetail.label" href="${meterDetailUrl}" icon="icon-control-equalizer-blue"/>
+                </c:if>
+                <%-- GATEWAY ACTIONS --%>
+                <c:if test="${showGatewayChangeOutAction}">
+                    <li class="dropdown-option">
+                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                            id="availableGatewayPicker" 
+                            type="availableGatewayPicker" 
+                            destinationFieldId="newInventoryId" 
+                            immediateSelectMode="true" 
+                            endAction="function(items) { return changeOut(${inventoryId}, false); }" >
+                            <cti:icon icon="icon-arrow-swap" />
+                            <cti:msg2 key=".changeOut.label" />
+                        </tags:pickerDialog>
+                    </li>
+                </c:if>
+                <%@ include file="../hardware/hardwareDeviceActions.jspf" %>
+                <c:if test="${showTextMessageAction}">
+                    <cm:dropdownOption key=".textMessage.label" id="sendTextMsg" icon="icon-phone-sound"/>
+                </c:if>
+            </div>
+        </c:if>
     </cti:displayForPageEditModes>
     
     <div class="column-12-12 clearfix">

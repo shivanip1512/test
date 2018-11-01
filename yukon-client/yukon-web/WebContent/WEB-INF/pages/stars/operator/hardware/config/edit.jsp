@@ -54,10 +54,6 @@ updateSub = function (data) {
 
 <cti:url var="submitUrl" value="/stars/operator/hardware/config/commit"/>
 
-<c:if test="${hardware.hardwareType.isNest()}">
-    <tags:alertBox key="yukon.web.modules.dr.nest.changeGroupMessage" type="info"/>
-</c:if>
-
 <form:form id="editForm" name="editForm" action="${submitUrl}" modelAttribute="configuration">
     
     <div class="column-16-8 clearfix stacked">
@@ -171,15 +167,11 @@ updateSub = function (data) {
                     <c:if test="${configurable}">
                         <cti:msg2 key=".config.description" var="configTitle"/>
                         <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
-                        <c:if test="${!hardware.hardwareType.isNest()}">
-                            <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>
-                            <cti:button type="submit" nameKey="saveToBatch" onclick="$('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
-                        </c:if>
+                        <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>
+                        <cti:button type="submit" nameKey="saveToBatch" onclick="$('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
                     </c:if>
-                    <c:if test="${!hardware.hardwareType.isNest()}">
-                        <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
-                        <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
-                    </c:if>
+                    <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
+                    <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
                 </c:when>
                 <c:otherwise>
                     <c:if test="${showSaveOnly}">

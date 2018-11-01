@@ -465,34 +465,36 @@
                                     ${fn:escapeXml(thermostat.displayLabel)}
                                 </td>
                                 <td>
-                                    <cm:dropdown>
-                                        <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${thermostat.inventoryId}" />
-                                        <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
+                                    <c:if test="${!thermostat.hardwareType.isNest()}">
+                                        <cm:dropdown>
+                                            <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${thermostat.inventoryId}" />
+                                            <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
+                                                <c:if test="${thermostat.hardwareType.supportsSchedules}">
+                                                    <cm:dropdownOption key=".savedSchedules.label" icon="icon-clipboard" href="${savedSchedulesUrl}${thermostat.inventoryId}" />
+                                                </c:if>
+                                                <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">
+                                                    <cm:dropdownOption key=".manual.label" icon="icon-wrench" href="${editManualUrl}${thermostat.inventoryId}" />
+                                                </c:if>
+                                            </cti:checkRolesAndProperties>
                                             <c:if test="${thermostat.hardwareType.supportsSchedules}">
-                                                <cm:dropdownOption key=".savedSchedules.label" icon="icon-clipboard" href="${savedSchedulesUrl}${thermostat.inventoryId}" />
+                                                <cm:dropdownOption key=".history.label" icon="icon-time" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
                                             </c:if>
-                                            <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">
-                                                <cm:dropdownOption key=".manual.label" icon="icon-wrench" href="${editManualUrl}${thermostat.inventoryId}" />
-                                            </c:if>
-                                        </cti:checkRolesAndProperties>
-                                        <c:if test="${thermostat.hardwareType.supportsSchedules}">
-                                            <cm:dropdownOption key=".history.label" icon="icon-time" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
-                                        </c:if>
-                                        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                            <c:if test="${inventoryChecking && !thermostat.hardwareType.isNest()}">
-                                                <li>
-                                                    <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                            id="availableThermostatPicker${thermostat.inventoryId}" 
-                                                            type="availableThermostatPicker" 
-                                                            destinationFieldId="newInventoryId" 
-                                                            immediateSelectMode="true"
-                                                            endAction="function(items) { return changeOut(${thermostat.inventoryId}, false); }" >
-                                                            <cti:icon icon="icon-arrow-swap"/>
-                                                            <cti:msg2 key=".changeOut.label"/> </tags:pickerDialog>
-                                                    </li>
-                                            </c:if>
-                                        </cti:checkRolesAndProperties>
-                                    </cm:dropdown>
+                                            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                                <c:if test="${inventoryChecking}">
+                                                    <li>
+                                                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                                                id="availableThermostatPicker${thermostat.inventoryId}" 
+                                                                type="availableThermostatPicker" 
+                                                                destinationFieldId="newInventoryId" 
+                                                                immediateSelectMode="true"
+                                                                endAction="function(items) { return changeOut(${thermostat.inventoryId}, false); }" >
+                                                                <cti:icon icon="icon-arrow-swap"/>
+                                                                <cti:msg2 key=".changeOut.label"/> </tags:pickerDialog>
+                                                        </li>
+                                                </c:if>
+                                            </cti:checkRolesAndProperties>
+                                        </cm:dropdown>
+                                    </c:if>
                                 </td>
                             </tr>
                         </c:forEach>
