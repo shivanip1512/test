@@ -91,11 +91,21 @@
     </target>
 
     <target name="callall_with_populate" depends="revert_to_snapshot, copy_to_vm, install_in_vm, create_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
+    <target name="upgrade_with_clean_db" depends="upgrade_installer_only, create_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
 	<target name="callall_with_populate_oracle" depends="revert_to_snapshot, copy_to_vm, install_in_vm, create_oracle_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
     <target name="callall_with_dbclone" depends="revert_to_snapshot, copy_to_vm, clone_db, install_in_vm, db_updater, start_dispatch, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator"/>
 	<target name="upgrade_in_vm" depends="copy_support_files, remote_upgrade, verify_webserver, verify_eim"/>
 
 
+    <target name="upgrade_installer_only">
+        <sshexec host="${guest_address}"
+                            trust="true"
+                            username="${guest_userid}"
+                            password="${guest_password}"
+                            command="ant -f C:/install.xml upgrade_installer_only"/>
+    </target>
+        
+    
     <target name="revert_to_snapshot">
     <!-- NOTE this is much simpler than the previous version, however the VM MAY NOT have more than one snapsnot or this command fails -->
     	<echo message= "Running Revert Snapshot Command: /c C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -PSConsoleFile &quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot; -command &quot;connect-viserver -server ${physical_address}; $snapshot = Get-Snapshot -VM ${guest_name}; Set-VM -VM ${guest_name} -Snapshot $snapshot -confirm:$false&quot;"/>

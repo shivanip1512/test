@@ -48,6 +48,7 @@
 			dest="C:\${zip.filename}"/>
 	</target>
 	
+    <target name="upgrade_installer_only" depends="uninstall, cleanup_old_install, unzip, install"/>
 	<target name="upgrade_yukon" depends="uninstall, cleanup_old_install, backup_database, unzip, install, db_update, start_broker, start_dispatch, start_all_services, start_eim, start_simulator">
 	</target>
 	
