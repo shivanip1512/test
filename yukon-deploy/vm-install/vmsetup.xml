@@ -91,7 +91,7 @@
     </target>
 
     <target name="callall_with_populate" depends="revert_to_snapshot, copy_to_vm, install_in_vm, create_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
-    <target name="upgrade_with_clean_db" depends="upgrade_installer_only, create_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
+    <target name="upgrade_with_clean_db" depends="copy_support_files, upgrade_installer_only, create_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
 	<target name="callall_with_populate_oracle" depends="revert_to_snapshot, copy_to_vm, install_in_vm, create_oracle_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
     <target name="callall_with_dbclone" depends="revert_to_snapshot, copy_to_vm, clone_db, install_in_vm, db_updater, start_dispatch, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator"/>
 	<target name="upgrade_in_vm" depends="copy_support_files, remote_upgrade, verify_webserver, verify_eim"/>
