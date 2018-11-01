@@ -452,11 +452,11 @@
             	<echo message="rewrite sql db server in master.cfg to: ${db.sqlserver}"/>
                 
                 <!-- rewrite the master.cfg file in preparation to place it on the guest -->
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbtype&gt;" value="${db.type}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbsqlserver&gt;" value="${db.sqlserver}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbusername&gt;" value="${db.name}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbpassword&gt;" value="${db.name}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="#DB_SQLSERVER_HOST : &lt;dbsqlserverhost&gt;" value="DB_SQLSERVER_HOST : ${db.sqlserver_host}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbtype&gt;" value="${db.type}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbsqlserver&gt;" value="${db.sqlserver}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbusername&gt;" value="${db.name}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbpassword&gt;" value="${db.name}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="#DB_SQLSERVER_HOST : &lt;dbsqlserverhost&gt;" value="DB_SQLSERVER_HOST : ${db.sqlserver_host}"/>
 
             </then>
             <elseif>
@@ -477,14 +477,14 @@
             <else>
                 <!-- rewrite master.cfg with updated db values -->
                 <echo message="Using ${db.type} database on ${db.sqlserver}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbtype&gt;" value="${db.type}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbsqlserver&gt;" value="${db.sqlserver}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbusername&gt;" value="${db.username}"/>
-                <replace file=".\copy-to-vm\master.cfg" token="&lt;dbpassword&gt;" value="${db.password}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbtype&gt;" value="${db.type}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbsqlserver&gt;" value="${db.sqlserver}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbusername&gt;" value="${db.username}"/>
+                <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbpassword&gt;" value="${db.password}"/>
                 <if>
                     <equals arg1="${db.type}" arg2="mssql"/>
                     <then>
-                        <replace file=".\copy-to-vm\master.cfg" token="#DB_JAVA_URL" value="DB_JAVA_URL : jdbc:jtds:sqlserver://${db.sqlserver};APPNAME=yukon-client;TDS=8.0"/>
+                        <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="#DB_JAVA_URL" value="DB_JAVA_URL : jdbc:jtds:sqlserver://${db.sqlserver};APPNAME=yukon-client;TDS=8.0"/>
                     </then>
                     <elseif>
                     	<or>
@@ -492,7 +492,7 @@
                             <equals arg1="${db.type}" arg2="oracle"/>
                         </or>
                         <then>
-                            <replace file=".\copy-to-vm\master.cfg" token="#DB_SQLSERVER_HOST : &lt;dbsqlserverhost&gt;" value="DB_SQLSERVER_HOST : ${db.sqlserver_host}"/>
+                            <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="#DB_SQLSERVER_HOST : &lt;dbsqlserverhost&gt;" value="DB_SQLSERVER_HOST : ${db.sqlserver_host}"/>
                         </then>
                     </elseif>
                 </if>
