@@ -678,7 +678,7 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
 
         case State_Control_Request_LinkStatus_Out:
         {
-            _control_packet = constructPrimaryControlPacket(Control_PrimaryLinkStatus, true, _fcb_out);
+            _control_packet = constructPrimaryControlPacket(Control_PrimaryLinkStatus, false, false);
 
             sendPacket(_control_packet, xfer);
 
@@ -822,12 +822,11 @@ YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
                             }
                             default:
                             {
-                                CTILOG_DEBUG(dout, "Received unexpected function code " << _control_packet.header.fmt.control.s.functionCode);
-                                [[fallthrough]];
-                            }
-                            case Control_SecondaryNotSupported:
-                            {
-                                _control_state = State_Control_Ready;
+                                CTILOG_WARN(dout, "Received unexpected function code " << _control_packet.header.fmt.control.s.functionCode);
+
+                                _protocol_errors++;
+
+                                _control_state = State_Control_Request_LinkStatus_Out;
                             }
                         }
                     }

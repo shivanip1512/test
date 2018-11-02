@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback)
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
         const byte_str expected(
-            "05 64 05 D9 04 00 03 00 24 8A");
+            "05 64 05 C9 04 00 03 00 B6 20");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
@@ -101,65 +101,69 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback_unsupported)
 
     dnp.setConfigData(2, DNP::TimeOffset::Utc, false, false, false, false, false, false);
 
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-            "05 64 05 D9 04 00 03 00 24 8A");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-
+    for( int i = 0; i < 12; ++i )
     {
         {
-            const byte_str response(
-                "05 64 05 0F 03 00 04 00 67 EA");
+            BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(),
-                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+            BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
 
-            xfer.setInCountActual(response.size());
+            BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+            const byte_str expected(
+                "05 64 05 C9 04 00 03 00 B6 20");
+
+            //  copy them into int vectors so they display nicely
+            const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+            BOOST_CHECK_EQUAL_RANGES(expected, output);
         }
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
+        {
+            BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
 
-        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+            BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        }
+
+        {
+            BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
+
+            BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+            BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+        }
+
+        {
+            {
+                const byte_str response(
+                    "05 64 05 0F 03 00 04 00 67 EA");
+
+                //  make sure we don't copy more than they expect
+                std::copy(response.begin(), response.end(),
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+                xfer.setInCountActual(response.size());
+            }
+
+            if( (i + 1) % 4 )
+            {
+                BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
+            }
+            else  //  every 4rd loop is an error
+            {
+                BOOST_CHECK_EQUAL(ClientErrors::Abnormal, dnp.decode(xfer, ClientErrors::None));
+            }
+
+            if( i < 11 )
+            {
+                BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+            }
+            else  //  final iteration
+            {
+                BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+            }
+        }
     }
-
-    pointlist_t point_list;
-
-    dnp.getInboundPoints(point_list);
-
-    BOOST_CHECK(point_list.empty());
-
-    auto string_list = dnp.getInboundStrings();
-
-    BOOST_REQUIRE_EQUAL(1, string_list.size());
-
-    BOOST_CHECK_EQUAL(string_list[0],
-        "Loopback successful");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback_timeout_retry)
@@ -184,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback_timeout_retry)
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
         const byte_str expected(
-            "05 64 05 D9 04 00 03 00 24 8A");
+            "05 64 05 C9 04 00 03 00 B6 20");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
@@ -222,7 +226,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback_timeout_retry)
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
         const byte_str expected(
-            "05 64 05 D9 04 00 03 00 24 8A");
+            "05 64 05 C9 04 00 03 00 B6 20");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
