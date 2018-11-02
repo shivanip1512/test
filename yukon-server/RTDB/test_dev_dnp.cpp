@@ -824,7 +824,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_ping)
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
         const byte_str expected(
-            "05 64 05 D9 D2 04 01 00 36 4E");
+            "05 64 05 C9 D2 04 01 00 A4 E4");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
