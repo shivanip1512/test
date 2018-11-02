@@ -464,9 +464,12 @@
                                 <td>
                                     ${fn:escapeXml(thermostat.displayLabel)}
                                 </td>
-                                <td>
-                                    <c:if test="${!thermostat.hardwareType.isNest()}">
-                                        <cm:dropdown>
+                                <cti:msg2 var="cogKey" key="yukon.web.modules.dr.nest.actionsNotAvailable"/>
+                                <c:set var="cogTitle" value="${thermostat.hardwareType.isNest() ? cogKey : ''}"/>
+                                <td title="${cogTitle}">
+                                    <c:set var="cogClass" value="${thermostat.hardwareType.isNest() ? 'very-disabled-look' : ''}"/>
+                                    <cm:dropdown triggerClasses="${cogClass}">
+                                        <c:if test="${!thermostat.hardwareType.isNest()}">
                                             <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${thermostat.inventoryId}" />
                                             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
                                                 <c:if test="${thermostat.hardwareType.supportsSchedules}">
@@ -489,12 +492,13 @@
                                                                 immediateSelectMode="true"
                                                                 endAction="function(items) { return changeOut(${thermostat.inventoryId}, false); }" >
                                                                 <cti:icon icon="icon-arrow-swap"/>
-                                                                <cti:msg2 key=".changeOut.label"/> </tags:pickerDialog>
-                                                        </li>
+                                                                <cti:msg2 key=".changeOut.label"/> 
+                                                        </tags:pickerDialog>
+                                                    </li>
                                                 </c:if>
                                             </cti:checkRolesAndProperties>
-                                        </cm:dropdown>
-                                    </c:if>
+                                        </c:if>
+                                    </cm:dropdown>
                                 </td>
                             </tr>
                         </c:forEach>
