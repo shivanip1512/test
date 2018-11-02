@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -62,7 +61,6 @@ import com.google.common.collect.Lists;
 @Controller
 public class NestController {
     
-    private static DateTimeFormatter dateTimeFormatter;
     private static String baseKey = "yukon.web.modules.dr.nest.";
     
     @Autowired private DateFormattingService dateFormattingService;
@@ -98,9 +96,7 @@ public class NestController {
         } catch (JobManagerException e) {
             
         }
-
-        dateTimeFormatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATEHM, YukonUserContext.system);
-
+        
     }
     
     @RequestMapping(value="/nest", method=RequestMethod.GET)
@@ -256,9 +252,10 @@ public class NestController {
     @RequestMapping(value="/nest/statistics", method=RequestMethod.GET)
     public String statistics(ModelMap model, LiteYukonUser user) {
         List<NestSync> syncTimes = nestDao.getNestSyncs();
-        model.addAttribute("syncTimes", syncTimes);
-        int syncId = syncTimes.get(0).getId();
-        
+        int syncId = 0;
+        if (!syncTimes.isEmpty()) {
+            syncId = syncTimes.get(0).getId();
+        }
         SearchResults<NestSyncDetail> searchResult = nestDao.getNestSyncDetail(syncId, PagingParameters.EVERYTHING, SortBy.SYNCTYPE, Direction.desc, Arrays.asList(NestSyncType.values()));
         model.addAttribute("discrepancies", searchResult.getHitCount());
         return "dr/nest/statistics.jsp";
