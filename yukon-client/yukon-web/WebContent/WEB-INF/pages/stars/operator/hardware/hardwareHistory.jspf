@@ -5,37 +5,39 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:tabs>
-    <cti:msg2 key=".deviceStatusHistory.tab" var="statusTitle"/>
-    <cti:tab title="${statusTitle}">
-        <c:choose>
-            <c:when test="${empty deviceStatusHistory}">
-                <span class="empty-list"><i:inline key=".deviceStatusHistory.none"/></span>
-            </c:when>
-            <c:otherwise>
-                <div class="scroll-sm">
-                    <table class="compact-results-table dashed">
-                        <thead>
-                            <tr>
-                                <th><i:inline key=".deviceStatusHistory.event"/></th>
-                                <th><i:inline key=".deviceStatusHistory.userName"/></th>
-                                <th><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
-                            </tr>
-                        </thead>
-                        <tfoot></tfoot>
-                        <tbody>
-                            <c:forEach var="event" items="${deviceStatusHistory}">
+    <c:if test="${!hardware.hardwareType.isNest()}">
+        <cti:msg2 key=".deviceStatusHistory.tab" var="statusTitle"/>
+        <cti:tab title="${statusTitle}">
+            <c:choose>
+                <c:when test="${empty deviceStatusHistory}">
+                    <span class="empty-list"><i:inline key=".deviceStatusHistory.none"/></span>
+                </c:when>
+                <c:otherwise>
+                    <div class="scroll-sm">
+                        <table class="compact-results-table dashed">
+                            <thead>
                                 <tr>
-                                    <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
-                                    <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
-                                    <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                                    <th><i:inline key=".deviceStatusHistory.event"/></th>
+                                    <th><i:inline key=".deviceStatusHistory.userName"/></th>
+                                    <th><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
                                 </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
-            </c:otherwise>
-        </c:choose>
-    </cti:tab>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                                <c:forEach var="event" items="${deviceStatusHistory}">
+                                    <tr>
+                                        <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                        <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
+                                        <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </cti:tab>
+    </c:if>
     
     <cti:msg2 key=".hardwareHistory.tab" var="hardwareTitle"/>
     <cti:tab title="${hardwareTitle}">

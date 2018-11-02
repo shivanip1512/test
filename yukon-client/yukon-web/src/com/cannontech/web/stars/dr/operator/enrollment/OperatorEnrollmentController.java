@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -24,6 +26,7 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.nest.model.NestUploadInfo;
 import com.cannontech.dr.nest.service.NestService;
@@ -57,6 +60,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.enrollment.ProgramEnrollment.InventoryEnrollment;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -82,6 +86,9 @@ public class OperatorEnrollmentController {
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private NestService nestService;
+    @Autowired private IDatabaseCache dbCache;
+    
+    private static final Logger log = YukonLogManager.getLogger(OperatorEnrollmentController.class);
 
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
@@ -274,8 +281,19 @@ public class OperatorEnrollmentController {
             DisplayableEnrollmentProgram displayable = 
                     displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
                 
-            if (displayable.getProgram().getPaoType().equals(PaoType.LM_NEST_PROGRAM)) {
-                NestUploadInfo uploadInfo = nestService.updateGroup(accountInfoFragment.getAccountNumber(), Integer.toString(programEnrollments.get(0).getLmGroupId()));
+            if (displayable.isNest()) {
+                int selectedGroup = programEnrollments.get(0).getLmGroupId();
+                String groupName = dbCache.getAllLMGroups().stream()
+                        .filter(group -> group.getPaoType() == PaoType.LM_GROUP_NEST && selectedGroup == group.getLiteID())
+                        .findFirst()
+                        .map(LiteYukonPAObject::getPaoName)
+                        .orElse(null);
+                if (groupName == null) {
+                    log.error("Could not find Nest group with ID: " + selectedGroup);
+                    flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.nest.changeGroupNoNestGroupFound"));
+                    return;
+                }
+                NestUploadInfo uploadInfo = nestService.updateGroup(accountInfoFragment.getAccountNumber(), groupName);
                 if (!uploadInfo.isGroupChangeSuccessful()) {
                     ArrayList<MessageSourceResolvable> errors= new ArrayList<MessageSourceResolvable>();
                     for (String errorMsg: uploadInfo.getNestErrors()) {
