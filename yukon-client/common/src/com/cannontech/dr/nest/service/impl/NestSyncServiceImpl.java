@@ -285,11 +285,16 @@ public class NestSyncServiceImpl implements NestSyncService{
         Map<Integer, LiteAddress> emptyAddresses = addressDao.getEmptyAddresses(siteIds);
         
         //add address in Yukon if the account in Nest has an address and Yukon doesn't
-        nestDao.saveSyncDetails(nestAccounts.keySet().stream().filter(accountNumber ->{
-            CustomerAccount accountInYukon = yukonAccounts.get(accountNumber);
-            return emptyAddresses.containsKey(accountInYukon.getAccountSiteId());
-        }).map(accountNumber -> createAddress(nestAccounts.get(accountNumber), syncId, emptyAddresses.get(yukonAccounts.get(accountNumber).getAccountSiteId())))
-        .collect(Collectors.toList()));
+        yukonAccounts.values().stream().filter(account -> emptyAddresses.containsKey(account.getAccountSiteId()))
+        .map(account ->{
+            NestExisting row = nestAccounts.get(account.getAccountNumber());
+            LiteAddress emptyAddress = emptyAddresses.get(account.getAccountSiteId());
+            //in database if a customer has no address
+            //there is an entry with all fields empty or send to (none), we found that row and will update if with data from Nest
+            return updateAddress(row , syncId, emptyAddress);
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
     }
 
     /**
@@ -398,12 +403,13 @@ public class NestSyncServiceImpl implements NestSyncService{
     }
 
     /**
-     * If address in Yukon is missing creates the address
+     * If address in Yukon is missing creates the address, Missing = all fields set to empty
      */
-    private NestSyncDetail createAddress(NestExisting row, int syncId, LiteAddress address) {
+    private NestSyncDetail updateAddress(NestExisting row, int syncId, LiteAddress address) {
         AccountServiceImpl.setAddressFieldsFromDTO(address,
             new Address(row.getAddress(), "", row.getCity(), row.getState(), row.getZipCode(), ""));
         try {
+            log.debug("Adding address {} to account {}", address, row.getAccountNumber());
             addressDao.update(address);
             NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_FOUND_ADDRESS, AUTO_CREATED_ADDRESS);
             detail.addValue(ACCOUNT_NUMBER, row.getAccountNumber());
