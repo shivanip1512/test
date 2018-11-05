@@ -115,12 +115,12 @@
 
     <target name="uninstall" depends="stop_all_services">
     	<echo message="Uninstall Java Simulator"/>
-        <exec dir="${client_bin}" executable="cmd" failonerror="false">
+        <exec dir="${client_bin}" executable="cmd" failonerror="false" failifexecutionfails="false">
             <arg line="/c ..\..\Runtime\bin\java -jar wrapper.jar -removeWait simulators.conf"/>
         </exec>
     	
     	<echo message="Uninstall Field Simulator"/>
-    	<exec dir="" executable="cmd" failonerror="false">
+    	<exec dir="" executable="cmd" failonerror="false" failifexecutionfails="false">
                  <arg value="/c"/>
                  <arg value="sc"/>
                  <arg value="delete"/> <arg value="${field_simulator_service_name}"/>
@@ -130,7 +130,7 @@
     	<delete dir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina"/>
     	
     	<echo message="Uninstall Yukon"/>
-        <exec dir="" executable="cmd">
+        <exec dir="" executable="cmd" failifexecutionfails="false">
             <arg line="/c ${installer.dir}/setup.exe -uninst -s -f1C:\uninstall.iss"/>
         </exec>
     </target>
