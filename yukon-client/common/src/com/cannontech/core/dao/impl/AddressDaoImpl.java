@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,13 +16,19 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class AddressDaoImpl implements AddressDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -130,7 +139,7 @@ public class AddressDaoImpl implements AddressDao {
             }
         }, addressIdList, rowMapper);
 
-        final Map<Integer, LiteAddress> resultMap = new HashMap<Integer, LiteAddress>(addressIdList.size());
+        final Map<Integer, LiteAddress> resultMap = new HashMap<>(addressIdList.size());
         for (final LiteAddress address : addressList) {
             Integer key = address.getAddressID();
             resultMap.put(key, address);
@@ -162,5 +171,41 @@ public class AddressDaoImpl implements AddressDao {
             }
         };
         return rowMapper;
+    }
+    
+    @Override
+    public Map<Integer, LiteAddress> getEmptyAddresses(Set<Integer> siteIds) {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT AccountSiteId, AddressID, LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County");
+                sql.append("FROM Address a");
+                sql.append("JOIN AccountSite site ON a.AddressId = site.StreetAddressId ");
+                sql.append("WHERE LocationAddress1  =  '(none)' OR LocationAddress1  = ''  OR LocationAddress1  = ' '");
+                sql.append("AND site.AccountSiteId").in(subList);
+                return sql;           
+            }
+        };
+        
+        YukonRowMapper<LiteAddress> addressMapper = (YukonResultSet rs) -> {
+                LiteAddress address = new LiteAddress();
+                address.setAddressID(rs.getInt("AddressID"));
+                address.setCityName(rs.getStringSafe("CityName"));
+                address.setCounty(rs.getStringSafe("County"));
+                address.setLocationAddress1(rs.getStringSafe("LocationAddress1"));
+                address.setLocationAddress2(rs.getStringSafe("LocationAddress2"));
+                address.setStateCode(rs.getStringSafe("StateCode"));
+                address.setZipCode(rs.getStringSafe("ZipCode"));
+                return address;
+        };
+        
+        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+        List<Entry<Integer, LiteAddress>> emptyAddresses = chunkingSqlTemplate.query(sqlGenerator,  Lists.newArrayList(siteIds), (YukonResultSet rs) -> {
+            return Maps.immutableEntry(rs.getInt("AccountSiteId"), addressMapper.mapRow(rs));
+        });
+        
+        return emptyAddresses.stream()
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 }

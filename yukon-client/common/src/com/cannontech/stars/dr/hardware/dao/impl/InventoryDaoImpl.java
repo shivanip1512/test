@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -269,9 +270,12 @@ public class InventoryDaoImpl implements InventoryDao {
             public SqlFragmentSource generate(List<String> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.categoryId, ib.currentStateId, lmhb.manufacturerSerialNumber, lmhb.lmHardwareTypeId, lmhb.RouteId");
-                sql.append("FROM InventoryBase ib, LMHardwareBase lmhb");
+                sql.append("FROM InventoryBase ib");
+                sql.append("JOIN LmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId");
+                sql.append("JOIN ECToInventoryMapping ec ON ec.InventoryId = lmhb.InventoryId");
                 sql.append("WHERE lmhb.manufacturerSerialNumber").in(subList);
                 sql.append("AND lmhb.inventoryid = ib.inventoryid");
+                sql.append("AND ec.EnergyCompanyId").eq_k(ec.getId());
                 sql.append("AND lmhb.LMHardwareTypeID IN ");
                 sql.append("(SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(THERMOSTAT_TYPES).append(")");
                 return sql;
@@ -280,6 +284,30 @@ public class InventoryDaoImpl implements InventoryDao {
         };
         
         return chunkingSqlTemplate.query(sqlGenerator, serialNumbers, new ThermostatRowMapper(ec));
+    }
+    
+    @Override
+    public List<Thermostat> getNestThermostatsToDelete(EnergyCompany ec, Set<String> accountNumbers) {
+        SqlFragmentGenerator<String> sqlGenerator = new SqlFragmentGenerator<String>() {
+            @Override
+            public SqlFragmentSource generate(List<String> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.categoryId, ib.currentStateId, lmhb.manufacturerSerialNumber, lmhb.lmHardwareTypeId, lmhb.RouteId");
+                sql.append("FROM InventoryBase ib");
+                sql.append("JOIN LmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId");
+                sql.append("JOIN ECToInventoryMapping ec ON ec.InventoryId = lmhb.InventoryId");
+                sql.append("JOIN CustomerAccount ca ON ca.accountID = ib.accountID");
+                sql.append("WHERE ca.accountNumber").notIn(subList);
+                sql.append("AND lmhb.inventoryid = ib.inventoryid");
+                sql.append("AND ec.EnergyCompanyId").eq_k(ec.getId());
+                sql.append("AND lmhb.LMHardwareTypeID IN ");
+                sql.append("(SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").eq(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId()).append(")");
+                return sql;
+                
+            }
+        };
+        
+        return chunkingSqlTemplate.query(sqlGenerator, accountNumbers, new ThermostatRowMapper(ec));
     }
     
     @Override

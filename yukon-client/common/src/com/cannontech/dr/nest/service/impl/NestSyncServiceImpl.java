@@ -4,7 +4,9 @@ import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CREATED_ACCOUNT;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CREATED_ADDRESS;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CREATED_GROUP_IN_YUKON;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CREATED_THERMOSTAT;
-import static com.cannontech.dr.nest.model.NestSyncI18nKey.ENROLLED_THERMOSTAT;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_DELETED_THERMOSTAT;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_ENROLLED_THERMOSTAT;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.CHANGE_GROUP;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_GROUP_ONLY_IN_NEST;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_GROUP_ONLY_IN_YUKON;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.FOUND_NON_NEST_GROUP_IN_YUKON_WITH_THE_NEST_GROUP_NAME;
@@ -18,13 +20,14 @@ import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_FOUND_AREA_FOR_NE
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_FOUND_PROGRAM_FOR_NEST_GROUP;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_FOUND_THERMOSTAT;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.NOT_NEST_THERMOSTAT;
-import static com.cannontech.dr.nest.model.NestSyncI18nKey.AUTO_CHANGE_GROUP;
 import static com.cannontech.dr.nest.model.NestSyncI18nKey.SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.THERMOSTAT_IN_ACCOUNT_WHICH_IS_NOT_IN_NEST;
+import static com.cannontech.dr.nest.model.NestSyncI18nKey.THERMOSTAT_IN_WRONG_ACCOUNT;
 import static com.cannontech.dr.nest.model.NestSyncI18nValue.ACCOUNT_NUMBER;
 import static com.cannontech.dr.nest.model.NestSyncI18nValue.GROUP;
+import static com.cannontech.dr.nest.model.NestSyncI18nValue.GROUP_FROM;
 import static com.cannontech.dr.nest.model.NestSyncI18nValue.PROGRAM;
 import static com.cannontech.dr.nest.model.NestSyncI18nValue.SERIAL_NUMBER;
-import static com.cannontech.dr.nest.model.NestSyncI18nValue.GROUP_FROM;
 import static com.cannontech.dr.nest.model.NestSyncType.AUTO;
 import static com.cannontech.dr.nest.model.NestSyncType.MANUAL;
 
@@ -91,6 +94,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.ws.LmDeviceDto;
@@ -123,6 +127,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private InventoryDao inventoryDao;
     @Autowired private AccountService accountService;
     @Autowired private AddressDao addressDao;
+    @Autowired private HardwareService hardwareService;
     private EnergyCompany HARDCODED_EC;
     private LiteYukonUser HARDCODED_OPERATOR;
        
@@ -136,7 +141,7 @@ public class NestSyncServiceImpl implements NestSyncService{
      * 
      * For all the blacklisted data user will see a discrepancy he will need to fix.
      */
-    private class Blacklist {
+    private static class Blacklist {
         Map<String, NestSyncI18nKey> groups = new HashMap<>();
         Map<String, NestSyncI18nKey> thermostats = new HashMap<>();
         
@@ -202,29 +207,58 @@ public class NestSyncServiceImpl implements NestSyncService{
                 .map(this::getThemostatsForAccountInNest)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        Map<String, Thermostat> thermostatsInYukon = inventoryDao.getThermostatsBySerialNumbers(HARDCODED_EC, thermostatsInNest)
-                .stream()
-                .filter(thermostat -> thermostat.getType().isNest())
-                .collect(Collectors.toMap(Thermostat::getSerialNumber, thermostat -> thermostat));
+        Map<String, Thermostat> thermostatsInYukon = getThermostatsInYukon(thermostatsInNest);
         
         nestDao.saveSyncDetails(validateThermostats(thermostatsInNest, thermostatsInYukon, syncId, ignore));
-       
-        Set<String> thermostatsToCreate = thermostatsInNest.stream()
-                .filter(thermostat -> !thermostatsInYukon.containsKey(thermostat))
-                .collect(Collectors.toSet());
-        if(!thermostatsToCreate.isEmpty()) {
-            log.debug("New thermostats to create {}", thermostatsToCreate);
-        }
         
         Map<String, NestExisting> nestAccounts = existing.stream()
                 .collect(Collectors.toMap(NestExisting::getAccountNumber, row -> row));
-        Map<String, CustomerAccount> yukonAccounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet())
+        List<NestSyncDetail> details = deleteThermostatsAssociatedWithAccountNotInNest(syncId, nestAccounts.keySet());
+        if(!details.isEmpty()) {
+            nestDao.saveSyncDetails(details);
+            //we deleted some thermostats refresh the list
+            thermostatsInYukon = getThermostatsInYukon(thermostatsInNest);
+        }
+        
+        Map<String, CustomerAccount> yukonAccounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), HARDCODED_EC.getId())
                 .stream()
                 .collect(Collectors.toMap(CustomerAccount::getAccountNumber, account -> account));
         
         syncUserAccounts(syncId, nestAccounts, yukonAccounts);
         syncAddresses(syncId, nestAccounts, yukonAccounts);
-        syncThermostatsAndEnrollments(existing, groups, syncId, ignore, thermostatsToCreate, nestAccounts, thermostatsInYukon);        
+        syncThermostatsAndEnrollments(existing, groups, syncId, ignore, nestAccounts, thermostatsInYukon);        
+    }
+
+    /**
+     * Returns the list of thermostats that are in Nest and Yukon
+     */
+    private Map<String, Thermostat> getThermostatsInYukon(Set<String> thermostatsInNest) {
+        Map<String, Thermostat> thermostatsInYukon = inventoryDao.getThermostatsBySerialNumbers(HARDCODED_EC, thermostatsInNest)
+                .stream()
+                .filter(thermostat -> thermostat.getType().isNest())
+                .collect(Collectors.toMap(Thermostat::getSerialNumber, thermostat -> thermostat));
+        return thermostatsInYukon;
+    }
+
+    /**
+     * If there is an account in Yukon that has Nest thermostats and this account is in not in Nest file, the
+     * thermostats will be deleted.
+     */
+    private List<NestSyncDetail> deleteThermostatsAssociatedWithAccountNotInNest(int syncId, Set<String> accountsInNest) {
+        return inventoryDao.getNestThermostatsToDelete(HARDCODED_EC, accountsInNest)
+        .stream().map(thermostat -> {
+            CustomerAccount accountForThermostat = customerAccountDao.getAccountByInventoryId(thermostat.getId());
+            String accountNumber = "(none)";
+            if(accountForThermostat.getAccountId() > 0) {
+                accountNumber = accountForThermostat.getAccountNumber();
+            }
+            log.debug("Attempting to delete thermostat {} from account {} as the account is not in nest file",
+                    thermostat.getSerialNumber(), accountNumber);
+            return deleteThermostat(syncId, accountNumber, thermostat.getId(), thermostat.getSerialNumber(),
+                    THERMOSTAT_IN_ACCOUNT_WHICH_IS_NOT_IN_NEST);
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
     }
 
     /**
@@ -245,18 +279,24 @@ public class NestSyncServiceImpl implements NestSyncService{
      */
     private void syncAddresses(int syncId, Map<String, NestExisting> nestAccounts,
             Map<String, CustomerAccount> yukonAccounts) {
+        Set<Integer> siteIds = yukonAccounts.values().stream()
+                .map(CustomerAccount::getAccountSiteId)
+                .collect(Collectors.toSet());
+        Map<Integer, LiteAddress> emptyAddresses = addressDao.getEmptyAddresses(siteIds);
+        
         //add address in Yukon if the account in Nest has an address and Yukon doesn't
-        nestDao.saveSyncDetails(yukonAccounts.values().stream().filter(account-> account.getAccountSiteId() == 0)
-            .map(account -> createAddress(nestAccounts.get(account.getAccountNumber()), syncId))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList()));
+        nestDao.saveSyncDetails(nestAccounts.keySet().stream().filter(accountNumber ->{
+            CustomerAccount accountInYukon = yukonAccounts.get(accountNumber);
+            return emptyAddresses.containsKey(accountInYukon.getAccountSiteId());
+        }).map(accountNumber -> createAddress(nestAccounts.get(accountNumber), syncId, emptyAddresses.get(yukonAccounts.get(accountNumber).getAccountSiteId())))
+        .collect(Collectors.toList()));
     }
 
     /**
      * Syncs thermostats and enrollment for all accounts in Nest
      */
     private void syncThermostatsAndEnrollments(List<NestExisting> existing, List<String> groups, int syncId,
-            Blacklist ignore, Set<String> thermostatsToCreate, Map<String, NestExisting> nestAccounts, Map<String, Thermostat> thermostatsInYukon) {
+            Blacklist ignore, Map<String, NestExisting> nestAccounts, Map<String, Thermostat> thermostatsInYukon) {
         Map<String, LiteYukonPAObject> yukonGroups = getGroupPaos(groups);
         log.debug("Groups in Yukon {}", yukonGroups.keySet());
         Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms =
@@ -265,7 +305,7 @@ public class NestSyncServiceImpl implements NestSyncService{
         if(!ignore.isEmpty()) {
             log.debug("Data to ignore when syncing {}", ignore);
         }
-        Map<String, CustomerAccount> accounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet())
+        Map<String, CustomerAccount> accounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), HARDCODED_EC.getId())
                 .stream()
                 .collect(Collectors.toMap(CustomerAccount::getAccountNumber, account -> account));
         existing.forEach(row -> {
@@ -279,7 +319,7 @@ public class NestSyncServiceImpl implements NestSyncService{
                             .filter(program -> program.getPaoIdentifier().getPaoId() == programIdent.getPaoId())
                             .findFirst().get();
                     
-                    syncThermostatAndEnrollment(syncId, ignore, thermostatsToCreate, row, account, group, programPao, thermostatsInYukon);
+                    syncThermostatAndEnrollment(syncId, ignore, row, account, group, programPao, thermostatsInYukon);
                 }
             } else { 
               //this group is in the black list
@@ -291,8 +331,9 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Syncs thermostats and enrollment for user account
      */
-    private void syncThermostatAndEnrollment(int syncId, Blacklist ignore, Set<String> thermostatsToCreate,
+    private void syncThermostatAndEnrollment(int syncId, Blacklist ignore,
             NestExisting row, CustomerAccount account, LiteYukonPAObject group, LiteYukonPAObject programPao, Map<String, Thermostat> thermostatsInYukon) {
+       
         List<NestSyncDetail> details = getThemostatsForAccountInNest(row).stream()
             .filter(thermostat -> {
                 boolean isBlacklisted = ignore.thermostats.containsKey(thermostat);
@@ -304,23 +345,32 @@ public class NestSyncServiceImpl implements NestSyncService{
                 return !isBlacklisted;
             })
             .map(thermostat -> {
+                List<NestSyncDetail> thermostatDetails = new ArrayList<>();
+                Thermostat thermostatInYukon = thermostatsInYukon.get(thermostat);               
                 try {
-                    List<NestSyncDetail> thermostatDetails = new ArrayList<>();
-                    int invenoryId;
-                    //create thermostat
-                    if(thermostatsToCreate.contains(thermostat)) {
-                        invenoryId = createThermostat(row.getAccountNumber(), thermostat, syncId, thermostatDetails);                    
+                    int inventoryId = thermostatInYukon != null? thermostatInYukon.getId() : 0;
+                    if(thermostatInYukon == null) {
+                        //add thermostat to the account
+                        inventoryId = createThermostat(row.getAccountNumber(), thermostat, syncId, thermostatDetails);                    
                     } else {
-                        //get inventory id for the existing thermostat
-                        invenoryId = thermostatsInYukon.get(thermostat).getId();
+                        CustomerAccount accountForThermostat = customerAccountDao.getAccountByInventoryId(thermostatInYukon.getId());
+                        //this thermostat belongs to another account
+                        if(accountForThermostat.getAccountId() != account.getAccountId()) {
+                            //remove thermostat from the account
+                            thermostatDetails.add(deleteThermostat(syncId, accountForThermostat.getAccountNumber(),
+                                thermostatInYukon.getId(), thermostat, THERMOSTAT_IN_WRONG_ACCOUNT));
+                            //add thermostat to the account
+                            inventoryId = createThermostat(row.getAccountNumber(), thermostat, syncId, thermostatDetails);
+                        }
                     }
-                    //enroll thermostat
-                    thermostatDetails.add(enrollThermostat(syncId, group.getPaoName(), programPao.getPaoName(), account, thermostat, invenoryId));   
+                    // enroll thermostat
+                    thermostatDetails.add(enrollThermostat(syncId, group.getPaoName(), programPao.getPaoName(), account,
+                        thermostat, inventoryId));
                     return thermostatDetails;      
                 } catch (Exception e) {
                     //continue processing the next row if enrollment failed.
                     log.error("Failed to create or enroll thermostat:" + thermostat + "data:" + row, e);
-                    return null;
+                    return thermostatDetails;
                 }
           
             })
@@ -331,19 +381,38 @@ public class NestSyncServiceImpl implements NestSyncService{
     }
 
     /**
+     * Unenrolls thermostat from the account
+     */
+    private NestSyncDetail deleteThermostat(int syncId, String accountNumber, int inventoryId,
+            String serialNumber, NestSyncI18nKey reason) {
+        try {
+            if(true) {
+               // throw new Exception();
+            }
+            hardwareService.deleteHardware(HARDCODED_OPERATOR, true, inventoryId);
+            NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, reason, AUTO_DELETED_THERMOSTAT);
+            detail.addValue(ACCOUNT_NUMBER, accountNumber);
+            detail.addValue(SERIAL_NUMBER, serialNumber);
+            return detail;
+        } catch (Exception e) {
+            log.error("Unable to delete thermostat " + serialNumber + " from account " + accountNumber, e);
+            return null;
+        }
+    }
+
+    /**
      * If address in Yukon is missing creates the address
      */
-    private NestSyncDetail createAddress(NestExisting row, int syncId) {
-        LiteAddress liteAddress = new LiteAddress();
-        AccountServiceImpl.setAddressFieldsFromDTO(new LiteAddress(),
+    private NestSyncDetail createAddress(NestExisting row, int syncId, LiteAddress address) {
+        AccountServiceImpl.setAddressFieldsFromDTO(address,
             new Address(row.getAddress(), "", row.getCity(), row.getState(), row.getZipCode(), ""));
         try {
-            addressDao.add(liteAddress);
+            addressDao.update(address);
             NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_FOUND_ADDRESS, AUTO_CREATED_ADDRESS);
             detail.addValue(ACCOUNT_NUMBER, row.getAccountNumber());
             return detail;
         } catch (Exception e) {
-            log.error("Unable to ");
+            log.error("Unable to create addess for account {} row {}", row.getAccountNumber(), row);
             return null;
         }
     }
@@ -413,7 +482,7 @@ public class NestSyncServiceImpl implements NestSyncService{
             String serialNumber) {
         EnrollmentHelper enrollmentHelper = new EnrollmentHelper(accountNumber, group, program, serialNumber);
         enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, HARDCODED_OPERATOR);
-        NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_ENROLLED_THERMOSTAT, ENROLLED_THERMOSTAT);
+        NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_ENROLLED_THERMOSTAT, AUTO_ENROLLED_THERMOSTAT);
             detail.addValue(ACCOUNT_NUMBER, accountNumber);
             detail.addValue(SERIAL_NUMBER, serialNumber);
             detail.addValue(PROGRAM, program);
@@ -425,7 +494,7 @@ public class NestSyncServiceImpl implements NestSyncService{
             String serialNumber, String groupEnrolledIn) {
         EnrollmentHelper enrollmentHelper = new EnrollmentHelper(accountNumber, group, program, serialNumber);
         enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, HARDCODED_OPERATOR);
-        NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, AUTO_CHANGE_GROUP, ENROLLED_THERMOSTAT);
+        NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, CHANGE_GROUP, AUTO_ENROLLED_THERMOSTAT);
             detail.addValue(ACCOUNT_NUMBER, accountNumber);
             detail.addValue(SERIAL_NUMBER, serialNumber);
             detail.addValue(PROGRAM, program);
@@ -693,8 +762,8 @@ public class NestSyncServiceImpl implements NestSyncService{
         NestSyncTimeInfo info = new NestSyncTimeInfo();
         info.setSyncTime(persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.NEST_SYNC_TIME));
         info.setSyncInProgress(syncInProgress);
-        if(info.getSyncTime() != null) {
-            info.setNextSyncTime(info.getSyncTime().plus(MINUTES_TO_WAIT_BEFORE_NEXT_SYNC));
+        if(info.getNextSyncTime() != null) {
+            info.setNextSyncTime(info.getNextSyncTime().plus(MINUTES_TO_WAIT_BEFORE_NEXT_SYNC));
         }
         return info;
     }

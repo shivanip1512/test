@@ -190,4 +190,11 @@ public interface InventoryDao {
      * Returns all thermostats for the Energy Company with the listed serial numbers.
      */
     List<Thermostat> getThermostatsBySerialNumbers(EnergyCompany ec, Set<String> serialNumbers);
+
+    /**
+     * Returns all Nest thermostats for the Energy Company that should be deleted.
+     * 
+     * @param accountNumbers - valid Nest account numbers to exclude
+     */
+    List<Thermostat> getNestThermostatsToDelete(EnergyCompany ec, Set<String> accountNumbers);
 }

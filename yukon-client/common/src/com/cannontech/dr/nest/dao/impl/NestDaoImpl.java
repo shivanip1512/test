@@ -19,7 +19,6 @@ import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.nest.dao.NestDao;
@@ -79,7 +78,7 @@ public class NestDaoImpl implements NestDao {
         }
     }
     
-    public void saveSyncValues(Map<Integer, Map<NestSyncI18nValue, String>> valueMap) {
+    private void saveSyncValues(Map<Integer, Map<NestSyncI18nValue, String>> valueMap) {
         if (!valueMap.isEmpty()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             List<List<Object>> values = new ArrayList<>();
@@ -125,12 +124,9 @@ public class NestDaoImpl implements NestDao {
         sql.append("SELECT SyncDetailId, SyncValueType, SyncValue");
         sql.append("FROM NestSyncValue");
         sql.append("WHERE SyncDetailId").in(details.keySet());
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                NestSyncDetail detail = details.get(rs.getInt("SyncDetailId"));
-                detail.addValue(rs.getEnum("SyncValueType", NestSyncI18nValue.class), rs.getString("SyncValue"));
-            }
+        jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            NestSyncDetail detail = details.get(rs.getInt("SyncDetailId"));
+            detail.addValue(rs.getEnum("SyncValueType", NestSyncI18nValue.class), rs.getString("SyncValue"));
         });
     }
     

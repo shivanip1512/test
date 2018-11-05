@@ -103,7 +103,7 @@ public interface CustomerAccountDao {
     CustomerAccount getCustomerAccount(LiteYukonUser user) throws NotAuthorizedException;
 
     /**
-     * Returns list of customer accounts for account numbers
+     * Returns list of customer accounts for account numbers and Energy Company
      */
-    List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers);
+    List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers, int energyCompanyId);
 }

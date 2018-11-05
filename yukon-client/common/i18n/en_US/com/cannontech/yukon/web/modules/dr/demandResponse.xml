@@ -643,16 +643,16 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.nest.NOT_FOUND_THERMOSTAT">Thermostat with serial number {0} and account {1} was not found in Yukon.</entry>
 <entry key="yukon.web.modules.dr.nest.AUTO_CREATED_THERMOSTAT">Yukon has created thermostat with serial number {0} and account {1}.</entry>
 <entry key="yukon.web.modules.dr.nest.NOT_ENROLLED_THERMOSTAT">Thermostat {0} and account {1} is not enrolled in a program in Yukon.</entry>
-<entry key="yukon.web.modules.dr.nest.ENROLLED_THERMOSTAT">Yukon has enrolled thermostat with serial number {0} and account {1} in group {2} and program {3}.</entry>
+<entry key="yukon.web.modules.dr.nest.AUTO_ENROLLED_THERMOSTAT">Yukon has enrolled thermostat with serial number {0} and account {1} in group {2} and program {3}.</entry>
 <entry key="yukon.web.modules.dr.nest.NOT_NEST_THERMOSTAT">Thermostat with serial number {0} is not a Nest thermostat.</entry>
 <entry key="yukon.web.modules.dr.nest.MANUALLY_DELETE_THERMOSTAT_FROM_YUKON">Please delete thermostat with serial number {0} from Yukon.</entry>
 <entry key="yukon.web.modules.dr.nest.NOT_FOUND_ACCOUNT">Account {0} was not found in Yukon.</entry>
 <entry key="yukon.web.modules.dr.nest.AUTO_CREATED_ACCOUNT">Yukon has created account {0}.</entry>
 <entry key="yukon.web.modules.dr.nest.NOT_FOUND_ADDRESS">Address for account {0} was not found in Yukon.</entry>
 <entry key="yukon.web.modules.dr.nest.AUTO_CREATED_ADDRESS">Yukon has added address for account {0}.</entry>
-<entry key="yukon.web.modules.dr.nest.AUTO_CHANGE_GROUP">Yukon has changed the group for thermostat with serial number {0} and account {1}. It is now assigned to group {2} and program {3}, instead of group {4}.</entry>
+<entry key="yukon.web.modules.dr.nest.CHANGE_GROUP">Yukon has changed the group for thermostat with serial number {0} and account {1}. It is now assigned to group {2} and program {3}, instead of group {4}.</entry>
 <entry key="yukon.web.modules.dr.nest.THERMOSTAT_IN_WRONG_ACCOUNT">Thermostat with serial number {0} was found in the wrong account {1} in Yukon.</entry>
-<entry key="yukon.web.modules.dr.nest.DELETE_THERMOSTAT">Yukon has deleted thermostat with serial number {0} from account {1}.</entry>
+<entry key="yukon.web.modules.dr.nest.AUTO_DELETED_THERMOSTAT">Yukon has deleted thermostat with serial number {0} from account {1}.</entry>
 <entry key="yukon.web.modules.dr.nest.THERMOSTAT_IN_ACCOUNT_WHICH_IS_NOT_IN_NEST">Thermostat with serial number {0} is in account {1} in Yukon, but this account has been removed from Nest.</entry>
 
 

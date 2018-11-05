@@ -129,7 +129,7 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao {
     }
 
     @Override
-    public List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers) {
+    public List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers, int energyCompanyId) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

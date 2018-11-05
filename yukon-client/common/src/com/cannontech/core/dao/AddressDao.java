@@ -2,6 +2,8 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 
@@ -22,5 +24,10 @@ public interface AddressDao {
     List<LiteAddress> getAll();
 
     void remove(int addressId);
+
+    /**
+     * Returns a map of address site ids to addresses where the first address line is empty
+     */
+    Map<Integer, LiteAddress> getEmptyAddresses(Set<Integer> siteIds);
 
 }

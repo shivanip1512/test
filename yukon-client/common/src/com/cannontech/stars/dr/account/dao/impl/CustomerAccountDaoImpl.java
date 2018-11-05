@@ -59,7 +59,6 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Autowired private ContactDao contactDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private YukonUserDao userDao;
 
@@ -171,13 +170,15 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
 
     @Override
-    public List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers) {
+    public List<CustomerAccount> getCustomerAccountsByAccountNumbers(Set<String> accountNumbers, int energyCompanyId) {
         SqlFragmentGenerator<String> sqlGenerator = new SqlFragmentGenerator<String>() {
             @Override
             public SqlFragmentSource generate(List<String> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(selectSql);
-                sql.append("WHERE AccountNumber").in(accountNumbers);
+                sql.append("JOIN ECToAccountMapping ec ON ec.AccountId = ca.AccountId");
+                sql.append("WHERE ec.EnergyCompanyId").eq_k(energyCompanyId);
+                sql.append("AND AccountNumber").in(accountNumbers);
                 return sql;
                 
             }
