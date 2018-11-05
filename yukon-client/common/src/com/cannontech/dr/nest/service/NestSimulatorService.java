@@ -38,5 +38,16 @@ public interface NestSimulatorService {
 
 
     NestUploadInfo upload(InputStream inputStream);
+    
+    /**
+     * Save nest version to use in database.
+     */
+    void saveNestVersion(Integer versionNumber);
+
+    /**
+     * Gets the saved value from database for the passed key.
+     */
+    Integer getNestVersion(YukonSimulatorSettingsKey key);
+
 
 }

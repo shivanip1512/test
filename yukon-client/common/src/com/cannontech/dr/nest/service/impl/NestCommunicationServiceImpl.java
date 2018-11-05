@@ -43,6 +43,7 @@ import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestFileType;
+import com.cannontech.dr.nest.model.NestURLTypes;
 import com.cannontech.dr.nest.model.NestUploadInfo;
 import com.cannontech.dr.nest.model.SchemaViolationResponse;
 import com.cannontech.dr.nest.model.StandardEvent;
@@ -81,9 +82,8 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
         restTemplate.setRequestFactory(factory);
     }
-    private static final String control = "/energy/v2/rush_hour_rewards/events/";
-    public static final String critical = control + "critical";
-    public static final String standard = control + "standard";
+    public static final String critical = NestURLTypes.CONTROL_CRITICAL.getUrl();
+    public static final String standard = NestURLTypes.CONTROL_STANDARD.getUrl();
 
     /**
      * curl https://enterprise-api.nest.com/api/energy/v2/rush_hour_rewards/events/standard -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA==" -H "Content-Type: application/json" -d "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Test\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}"
@@ -110,7 +110,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     @Override
     public boolean cancelEvent(NestControlHistory history) {
         log.debug("Canceling event {}", history);
-        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + control + history.getKey();
+        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestURLTypes.CONTROL + history.getKey();
         log.debug("Request url {}", requestUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

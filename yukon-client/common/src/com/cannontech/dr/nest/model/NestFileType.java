@@ -4,7 +4,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public enum NestFileType {
 
-    PENDING("/v1/users/pending", "latest.csv", CsvSchema.builder()
+    PENDING(NestURLTypes.PENDING.getUrl(), "latest.csv", CsvSchema.builder()
         .addColumn("REF")
         .addColumn("YEAR")
         .addColumn("MONTH")
@@ -25,7 +25,7 @@ public enum NestFileType {
         .addColumn("REJECTION_REASON")
         .addColumn("REJECTION_NOTES")
         .build()),
-    EXISTING("/v1/users/current", "latest.csv", CsvSchema.builder()
+    EXISTING(NestURLTypes.EXISTING.getUrl(), "latest.csv", CsvSchema.builder()
         .addColumn("REF")
         .addColumn("YEAR")
         .addColumn("MONTH")

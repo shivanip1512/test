@@ -1657,6 +1657,7 @@
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>
             <pages>
+              <page name="nest.viewNestVersion" type="BASIC"/>
               <page name="nest.viewNestFileSetting" type="BASIC"/>
               <page name="nest.viewNestSync" type="BASIC"/>
               <page name="nest.viewControlEvents" type="BASIC"/>

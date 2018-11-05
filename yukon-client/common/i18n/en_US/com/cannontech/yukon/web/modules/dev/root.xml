@@ -370,9 +370,16 @@
     
     <!-- Nest Test -->
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>
+    <entry key="yukon.web.modules.dev.nest.viewNestVersion.pageName">Nest Version</entry>
     <entry key="yukon.web.modules.dev.nest.viewNestFileSetting.pageName">File Settings</entry>
     <entry key="yukon.web.modules.dev.nest.viewNestSync.pageName">Nest Sync</entry>
     <entry key="yukon.web.modules.dev.nest.viewControlEvents.pageName">Control Events</entry>
+    
+    <!-- Nest Version -->
+    <entry key="yukon.web.modules.dev.nest.currentNestVersion.label">Current Nest Version is set to {0}. All URL will be picked for this version</entry>
+    <entry key="yukon.web.modules.dev.nest.nestVersion.label">Set Nest Version</entry>
+    <entry key="yukon.web.modules.dev.nest.nestVersion.version">Nest Version to use</entry>
+    <entry key="yukon.web.modules.dev.nest.nestVersion.savedSuccessfully">Nest Version saved successfully</entry>
 
     
     <!--  File settings -->

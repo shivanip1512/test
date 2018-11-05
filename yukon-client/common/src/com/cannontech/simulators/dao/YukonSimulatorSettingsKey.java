@@ -135,6 +135,7 @@ public enum YukonSimulatorSettingsKey {
     
     // Nest Settings
     NEST_FILE_NAME("", InputTypeFactory.stringType(), SimulatorType.NEST),
+    NEST_VERSION(1, InputTypeFactory.integerType(), SimulatorType.NEST),
     NEST_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.NEST)
     ;
     

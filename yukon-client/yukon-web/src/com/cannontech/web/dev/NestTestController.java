@@ -3,6 +3,7 @@ package com.cannontech.web.dev;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -34,12 +36,12 @@ import com.cannontech.dr.nest.model.LoadShapingPeak;
 import com.cannontech.dr.nest.model.LoadShapingPost;
 import com.cannontech.dr.nest.model.LoadShapingPreparation;
 import com.cannontech.dr.nest.model.NestExisting;
+import com.cannontech.dr.nest.model.NestURLTypes;
 import com.cannontech.dr.nest.model.StandardEvent;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.NestSyncService;
-import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -74,7 +76,26 @@ public class NestTestController {
 
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, YukonUserContext userContext) {
+        model.addAttribute("currentNestVersion", getNestVersion());
         return "nest/home.jsp";
+    }
+    
+    @RequestMapping(value = "viewNestVersion", method = RequestMethod.GET)
+    public String nestVersion(ModelMap model, YukonUserContext userContext) {
+        Integer savedNestVersion = nestService.getNestVersion(YukonSimulatorSettingsKey.NEST_VERSION);
+        model.addAttribute("savedNestVersion", savedNestVersion);
+        
+        Set<Integer> allAvailableVersions = NestURLTypes.getAllVersions();
+        model.addAttribute("allAvailableVersions", allAvailableVersions);
+        return "nest/nestVersion.jsp";
+    }
+    
+    @RequestMapping(value = "saveNestVersion", method = RequestMethod.POST)
+    public String saveNestVersion(ModelMap model, YukonUserContext userContext,@RequestParam("version") Integer version, FlashScope flash) {
+        nestService.saveNestVersion(version);
+        flash.setConfirm(
+            new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.nestVersion.savedSuccessfully"));
+        return "redirect:viewNestVersion";
     }
     
     @RequestMapping(value = "viewNestFileSetting", method = RequestMethod.GET)
@@ -209,7 +230,7 @@ public class NestTestController {
             CriticalEvent criticalEvent =
                 new CriticalEvent(nestParameters.getStartTime().toString(), period, groupNames);
             String requestUrl =
-                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestCommunicationServiceImpl.critical;
+                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestURLTypes.CONTROL_CRITICAL.getUrl(getNestVersion());
             return nestComm.getNestResponse(requestUrl, criticalEvent);
 
         } else if (nestParameters.getControlMethod() == GearControlMethod.NestStandardCycle) {
@@ -218,9 +239,19 @@ public class NestTestController {
             StandardEvent standardEvent =
                 new StandardEvent(nestParameters.getStartTime().toString(), period, groupNames, loadShaping);
             String requestUrl =
-                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestCommunicationServiceImpl.standard;
+                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestURLTypes.CONTROL_STANDARD.getUrl(getNestVersion());
             return nestComm.getNestResponse(requestUrl, standardEvent);
         }
         return "";
+    }
+    
+    // Get current nest version to use. If its not set gets latest version.
+    private Integer getNestVersion() {
+        Integer savedNestVersion = nestService.getNestVersion(YukonSimulatorSettingsKey.NEST_VERSION);
+        if (savedNestVersion == null) {
+            return NestURLTypes.getLatestVersion();
+        } else {
+            return savedNestVersion;
+        }
     }
 }
