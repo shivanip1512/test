@@ -213,7 +213,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                             CTILOG_INFO(dout, "Not sending DNP3 response for " << requestMsg.rfnIdentifier);
                         }
                     }
-                }, delay, *requestMsg };
+                }, delay, *requestMsg }.detach();
         }
     }
 }
