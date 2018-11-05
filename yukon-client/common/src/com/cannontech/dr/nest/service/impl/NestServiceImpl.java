@@ -90,9 +90,6 @@ public class NestServiceImpl implements NestService {
     @Override
     public NestUploadInfo dissolveAccountWithNest(String accountNumber) {
         //NEST - add event log
-        if(true) {
-            return null;
-        }
         log.info("Dissolving account with Nest {}", accountNumber);
         List<NestExisting> existing = nestCommunicationService.downloadExisting();
         NestExisting row = getRowToModifyAndRemoveAllOtherAccounts(existing, accountNumber);

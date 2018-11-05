@@ -386,9 +386,6 @@ public class NestSyncServiceImpl implements NestSyncService{
     private NestSyncDetail deleteThermostat(int syncId, String accountNumber, int inventoryId,
             String serialNumber, NestSyncI18nKey reason) {
         try {
-            if(true) {
-               // throw new Exception();
-            }
             hardwareService.deleteHardware(HARDCODED_OPERATOR, true, inventoryId);
             NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, reason, AUTO_DELETED_THERMOSTAT);
             detail.addValue(ACCOUNT_NUMBER, accountNumber);
