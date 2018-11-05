@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
+import com.cannontech.web.common.dashboard.widget.validator.LMAreaScenarioPrgmPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
@@ -34,6 +35,7 @@ public enum WidgetType implements DisplayableEnum {
     SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI, "scheduledGroupRequestExecutionWidget", "image-scheduled-requests"),
     GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming"),
     DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-data-collection"),
+    ASSET_AVAILABILITY(DashboardScope.GENERAL, WidgetCategory.AMI, "assetAvailabilityWidget", "image-asset-availability");
     
     /*
     //Meter Detail
@@ -62,6 +64,8 @@ public enum WidgetType implements DisplayableEnum {
             .put(SYSTEM_MESSAGING, "/resources/js/pages/yukon.support.systemHealth.js")
             .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
                                      "HIGH_STOCK")
+            .putAll(ASSET_AVAILABILITY, baseJSPath + "yukon.widget.assetAvailability.js",
+                    "HIGH_STOCK")
             .put(INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js")
             .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js",
                                          "HIGH_STOCK",
@@ -74,6 +78,10 @@ public enum WidgetType implements DisplayableEnum {
 
         Builder<WidgetType, WidgetParameter> builder = new ImmutableListMultimap.Builder<WidgetType, WidgetParameter>()
             .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()))
+            .put(WidgetType.ASSET_AVAILABILITY,
+                new WidgetParameter("controlAreaOrLMProgramOrScenarioId",
+                    WidgetInputType.CONTROL_AREA_OR_SCENARIO_OR_PROGRAM_PICKER,
+                    LMAreaScenarioPrgmPickerValidator.get()))
             .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, DeviceGroupPickerValidator.get()), 
                                      new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null, "false"))
             .putAll(SYSTEM_MESSAGING, new WidgetParameter("showRfnMeter", WidgetInputType.CHECKBOX, null, "false"),

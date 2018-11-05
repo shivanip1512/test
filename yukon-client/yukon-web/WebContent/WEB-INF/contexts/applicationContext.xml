@@ -143,6 +143,13 @@
         <property name="description" value="value to search for"/>
         <property name="required" value="false"/>
     </bean>
+    
+    <bean id="widgetInput.controlAreaOrLMProgramOrScenarioId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <qualifier value="widgetInput.controlAreaOrLMProgramOrScenarioId"/>
+        <property name="name" value="searchValue"/>
+        <property name="description" value="Control area, control scenario or program id."/>
+        <property name="required" value="true"/>
+    </bean>
 
     <bean id="widgetInput.accountId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="accountId"/>
