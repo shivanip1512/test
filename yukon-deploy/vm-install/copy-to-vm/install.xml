@@ -115,9 +115,19 @@
 
     <target name="uninstall" depends="stop_all_services">
     	<echo message="Uninstall Java Simulator"/>
-        <exec dir="${client_bin}" executable="cmd" failonerror="false" failifexecutionfails="false">
-            <arg line="/c ..\..\Runtime\bin\java -jar wrapper.jar -removeWait simulators.conf"/>
-        </exec>
+        
+        <if>
+            <available file="${client_bin}" type="dir" />
+            <then>
+                <exec dir="${client_bin}" executable="cmd" failonerror="false" failifexecutionfails="false">
+                    <arg line="/c ..\..\Runtime\bin\java -jar wrapper.jar -removeWait simulators.conf"/>
+                </exec>
+            </then>
+            <else>
+                <echo message="client_bin not found, this may mean Yukon is not installed so skipping."/>
+            </else>
+        </if>
+        
     	
     	<echo message="Uninstall Field Simulator"/>
     	<exec dir="" executable="cmd" failonerror="false" failifexecutionfails="false">
