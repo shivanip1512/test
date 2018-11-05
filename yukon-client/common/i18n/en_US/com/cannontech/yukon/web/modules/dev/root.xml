@@ -278,8 +278,8 @@
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopSuccess">Simulator stopped</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6200">RFN LCR 6200 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600">RFN LCR 6600 Serial Number Range</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6601S">RFN LCR 6601S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6700">RFN LCR 6700 Serial Number Range</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6601S">LCR 6601S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.duplicates">Duplicates</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.tlvVersion">TLV Version</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterDataSimulator.reportingInterval">Reporting Interval</entry>

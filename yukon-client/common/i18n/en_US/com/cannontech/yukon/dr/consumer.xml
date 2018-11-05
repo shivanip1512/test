@@ -332,8 +332,8 @@
     <entry key="yukon.dr.consumer.hardware.type.LCR_6600_EXPRESSCOM">LCR 6600 ExpressCom</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_6200_RFN">LCR 6200 RFN</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_6600_RFN">LCR 6600 RFN</entry>
-    <entry key="yukon.dr.consumer.hardware.type.LCR_6601S_RFN">LCR 6601S RFN</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_6700_RFN">LCR 6700 RFN</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_6601S">LCR 6601S</entry>
     <entry key="yukon.dr.consumer.hardware.type.ECOBEE_SMART_SI">ecobee Smart Si</entry>
     <entry key="yukon.dr.consumer.hardware.type.ECOBEE_3">ecobee3</entry>
     <entry key="yukon.dr.consumer.hardware.type.ECOBEE_3_LITE">ecobee3 Lite</entry>

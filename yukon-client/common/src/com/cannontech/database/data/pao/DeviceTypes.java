@@ -267,7 +267,7 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_GROUP_NEST = DEVICE_OFFSET + 202;
     public final static int LM_NEST_PROGRAM = DEVICE_OFFSET + 203;
     
-    public final static int LCR6601S_RFN = DEVICE_OFFSET + 204;
+    public final static int LCR6601S = DEVICE_OFFSET + 204;
     
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -325,8 +325,9 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_LCR_3102 = {"LCR-3102"};
     public static final String[] STRING_LCR_6200_RFN = {"LCR-6200 RFN"};
     public static final String[] STRING_LCR_6600_RFN = {"LCR-6600 RFN"};
-    public static final String[] STRING_LCR_6601S_RFN = {"LCR-6601S RFN"};
     public static final String[] STRING_LCR_6700_RFN = {"LCR-6700 RFN"};
+    
+    public static final String[] STRING_LCR_6601S = {"LCR-6601S"};
 
     public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};
     public static final String[] STRING_REPEATER_902 = {"REPEATER 902"};

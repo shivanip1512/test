@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LCR6601S_RFN" displayGroup="RFMESH" displayName="LCR-6601S RFN" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LCR6601S" displayGroup="ITRON" displayName="LCR-6601S" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN_LCR.xml</pointFile>
     </pointFiles>

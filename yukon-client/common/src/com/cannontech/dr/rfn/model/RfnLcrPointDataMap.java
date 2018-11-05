@@ -28,10 +28,8 @@ public enum RfnLcrPointDataMap {
     REPORTING_INTERVAL(BuiltInAttribute.REPORTING_INTERVAL, "/DRReport/Info/ReportingInterval"),
     SERVICE_STATUS(BuiltInAttribute.SERVICE_STATUS, "/DRReport/Info/Flags", 0xC, 2, null),
     TOTAL_LUF_EVENT(BuiltInAttribute.TOTAL_LUF_COUNT, "/DRReport/Info/TotalLUFEvents"),
-    TOTAL_LUV_EVENT(BuiltInAttribute.TOTAL_LUV_COUNT, "/DRReport/Info/TotalLUVEvents"),
-    AVERAGE_VOLTAGE(BuiltInAttribute.AVERAGE_VOLTAGE, ""),
-    MINIMUM_VOLTAGE(BuiltInAttribute.MINIMUM_VOLTAGE, ""),
-    MAXIMUM_VOLTAGE(BuiltInAttribute.MAXIMUM_VOLTAGE, "");
+    TOTAL_LUV_EVENT(BuiltInAttribute.TOTAL_LUV_COUNT, "/DRReport/Info/TotalLUVEvents")
+    ;
 
     private final BuiltInAttribute attribute;
     private final String xPathQuery;
@@ -42,7 +40,6 @@ public enum RfnLcrPointDataMap {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrPointDataMap.class);
     private static final Set<RfnLcrPointDataMap> lcr6200PointDataMap;
     private static final Set<RfnLcrPointDataMap> lcr6600PointDataMap;
-    private static final Set<RfnLcrPointDataMap> lcr6601SPointDataMap;
     
     RfnLcrPointDataMap(BuiltInAttribute attribute, String xPathQuery) {
         this(attribute, xPathQuery, null, null, null);
@@ -74,11 +71,6 @@ public enum RfnLcrPointDataMap {
         builder.add(RELAY_3_LOAD_SIZE);
         builder.add(RELAY_3_REMAINING_CONTROL);
         lcr6600PointDataMap = builder.build();
-
-        builder.add(AVERAGE_VOLTAGE);
-        builder.add(MINIMUM_VOLTAGE);
-        builder.add(MAXIMUM_VOLTAGE);
-        lcr6601SPointDataMap = builder.build();
     }
     
     public static Set<RfnLcrPointDataMap> getRelayMapByPaoType(PaoType paoType) {
@@ -86,8 +78,6 @@ public enum RfnLcrPointDataMap {
             return getLcr6200PointDataMap();
         } else if (paoType == PaoType.LCR6600_RFN) {
             return getLcr6600PointDataMap();
-        } else if (paoType == PaoType.LCR6601S_RFN) {
-            return getLcr6601sPointDataMap();
         } else {
             log.error("No RFN LCR point mapping data found for pao type: " + paoType.getPaoTypeName());
             throw new IllegalArgumentException();
@@ -111,10 +101,6 @@ public enum RfnLcrPointDataMap {
     }
     public static Set<RfnLcrPointDataMap> getLcr6600PointDataMap() {
         return lcr6600PointDataMap;
-    }
-    
-    private static Set<RfnLcrPointDataMap> getLcr6601sPointDataMap() {
-        return lcr6601SPointDataMap;
     }
 
     public Double getMultiplier() {

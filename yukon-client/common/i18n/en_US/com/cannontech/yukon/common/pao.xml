@@ -136,8 +136,9 @@
     
     <entry key="yukon.common.pao.LCR6200_RFN">LCR-6200 RFN</entry>
     <entry key="yukon.common.pao.LCR6600_RFN">LCR-6600 RFN</entry>
-    <entry key="yukon.common.pao.LCR6601S_RFN">LCR-6601S RFN</entry>
     <entry key="yukon.common.pao.LCR6700_RFN">LCR-6700 RFN</entry>
+
+    <entry key="yukon.common.pao.LCR6601S">LCR-6601S</entry>
 
     <entry key="yukon.common.pao.GWY800">GWY-800</entry>
     <entry key="yukon.common.pao.RFN_GATEWAY">RF Gateway</entry>

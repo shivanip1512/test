@@ -14,8 +14,8 @@ import com.cannontech.database.data.capcontrol.CapBankController7024;
 import com.cannontech.database.data.capcontrol.CapBankController8020;
 import com.cannontech.database.data.capcontrol.CapBankController8024;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
-import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.capcontrol.CapBankControllerExpresscom;
+import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.capcontrol.CapBankControllerVersacom;
 import com.cannontech.database.data.capcontrol.CapBankController_FP_2800;
 import com.cannontech.database.data.device.lm.LMGroupDigiSep;
@@ -222,13 +222,15 @@ public final class DeviceFactory {
         case LCR6600_RFN:
             returnDevice = new RfnLcr6600();
             break;
-        case LCR6601S_RFN:
-            returnDevice = new RfnLcr6601S();
-            break;
         case LCR6700_RFN:
             returnDevice = new RfnLcr6700();
             break;
 
+        //ITRON (SilverSpring) type devices
+        case LCR6601S:
+            returnDevice = new Lcr6601S();
+            break;
+        
         //Carrier type devices
         case MCT213:
             returnDevice = new MCT213();

@@ -25,7 +25,9 @@ public enum PaoClass implements DatabaseRepresentationSource {
     // Schedule doesn't seem have a constant already defined anywhere.
     SCHEDULE(0, "Schedule"),
     RFMESH(1012, "RFMESH"),
-    THERMOSTAT(1013, "THERMOSTAT");
+    THERMOSTAT(1013, "THERMOSTAT"),
+    ITRON(1014, "ITRON"), //A.K.A. SilverSpring or INSI
+    ;
 
     // legacy class id
     private final int paoClassId;

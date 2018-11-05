@@ -1,15 +1,7 @@
 package com.cannontech.common.pao.definition.dao;
 
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -161,7 +153,7 @@ public class PaoDefinitionDaoImplTest {
         Multimap<String, PaoDefinition> deviceDisplayGroupMap = dao.getPaoDisplayGroupMap();
 
         // Make sure there are the correct number of device type groups
-        assertEquals("There should be 14 device type groups", 14, deviceDisplayGroupMap.keySet().size());
+        assertEquals("There should be 15 device type groups", 15, deviceDisplayGroupMap.keySet().size());
 
         // Make sure there are the correct number of IPC device types
         try {
