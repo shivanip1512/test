@@ -4,10 +4,10 @@
 
 <cti:uniqueIdentifier var="id" />
 
-<cti:msgScope paths="modules.dashboard,widgets.dataCollectionWidget">
+<cti:msgScope paths="modules.dashboard,widgets.dataCollectionWidget,modules.dr">
     <div class="js-asset-availability-widget">
         <c:forEach var="status" items="${statuses}">
-            <input type="hidden" class="js-asset-${status}" value="<cti:msg2 key="yukon.web.modules.dr.assetDetails.status.${status}"/>"/>
+            <input type="hidden" class="js-asset-${status}" value="<cti:msg2 key=".assetDetails.status.${status}"/>"/>
         </c:forEach>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".widgetParameter.controlAreaOrLMProgramOrScenarioId">

@@ -10,15 +10,15 @@ import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationEx
 import com.cannontech.web.common.dashboard.model.WidgetInputType;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class LMAreaScenarioPrgmPickerValidator implements WidgetInputValidator {
+public class ControlAreaOrProgramOrScenarioPickerValidator implements WidgetInputValidator {
 
-    private static final LMAreaScenarioPrgmPickerValidator singleton = new LMAreaScenarioPrgmPickerValidator();
+    private static final ControlAreaOrProgramOrScenarioPickerValidator singleton = new ControlAreaOrProgramOrScenarioPickerValidator();
     private IDatabaseCache cache = YukonSpringHook.getBean("databaseCache", IDatabaseCache.class);
 
-    private LMAreaScenarioPrgmPickerValidator() {
+    private ControlAreaOrProgramOrScenarioPickerValidator() {
     }
 
-    public static LMAreaScenarioPrgmPickerValidator get() {
+    public static ControlAreaOrProgramOrScenarioPickerValidator get() {
         return singleton;
     }
 
@@ -27,12 +27,12 @@ public class LMAreaScenarioPrgmPickerValidator implements WidgetInputValidator {
             throws WidgetParameterValidationException, WidgetMissingParameterException {
         String message = "Valid Control area, control program or secnario selection is required.";
         if (!StringUtils.isNumeric((String)inputValue)) {
-            throw new WidgetParameterValidationException(message, inputName, "lmSelection.required", inputName);
+            throw new WidgetParameterValidationException(message, inputName, "controlAreaOrLMProgramOrScenarioId.required", inputName);
         }
         Integer paoId = Integer.parseInt((String)inputValue);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         if (pao.getPaoType().getPaoClass() != PaoClass.LOADMANAGEMENT) {
-            throw new WidgetParameterValidationException(message, inputName, "lmSelection.required", inputName);
+            throw new WidgetParameterValidationException(message, inputName, "controlAreaOrLMProgramOrScenarioId.required", inputName);
         }
     }
 

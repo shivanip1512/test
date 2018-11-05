@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
-import com.cannontech.web.common.dashboard.widget.validator.LMAreaScenarioPrgmPickerValidator;
+import com.cannontech.web.common.dashboard.widget.validator.ControlAreaOrProgramOrScenarioPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
@@ -81,7 +81,7 @@ public enum WidgetType implements DisplayableEnum {
             .put(WidgetType.ASSET_AVAILABILITY,
                 new WidgetParameter("controlAreaOrLMProgramOrScenarioId",
                     WidgetInputType.CONTROL_AREA_OR_SCENARIO_OR_PROGRAM_PICKER,
-                    LMAreaScenarioPrgmPickerValidator.get()))
+                    ControlAreaOrProgramOrScenarioPickerValidator.get()))
             .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, DeviceGroupPickerValidator.get()), 
                                      new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null, "false"))
             .putAll(SYSTEM_MESSAGING, new WidgetParameter("showRfnMeter", WidgetInputType.CHECKBOX, null, "false"),

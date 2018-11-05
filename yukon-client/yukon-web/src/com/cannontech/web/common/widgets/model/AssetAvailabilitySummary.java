@@ -80,10 +80,10 @@ public class AssetAvailabilitySummary {
             String time = collectionTime.toString(df.withZone(DateTimeZone.getDefault()));
             tsb.append("collection time=" + time);
         }
-        tsb.append("available="+ active);
-        tsb.append("expected="+ unavailabile);
-        tsb.append("outdated="+ inactive);
-        tsb.append("unavailable="+ optedOut);
+        tsb.append("active="+ active);
+        tsb.append("unavailabile="+ unavailabile);
+        tsb.append("inactive="+ inactive);
+        tsb.append("optedOut="+ optedOut);
 
         return tsb.toString();
     }
