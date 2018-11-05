@@ -39,7 +39,7 @@ public class AssetAvailabilityController {
         //TODO: replace the call to mockAssetAvailabilitySummary() with service call.
         AssetAvailabilitySummary summary = mockAssetAvailabilitySummary();
         if (summary.getTotalDeviceCount() == 0) {
-            String errorMsg = accessor.getMessage(widgetKey + "assetAvailability.noDevicesFound");
+            String errorMsg = accessor.getMessage(widgetKey + "assetAvailabilityWidget.noDevicesFound");
             json.put("errorMessage", errorMsg);
         } else {
             json.put("summary",  summary);

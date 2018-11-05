@@ -56,9 +56,11 @@ yukon.widget.assetAvailability = (function () {
     _update = function (selectionChanged) {
         $('.js-asset-availability-widget').each (function (index, item) {
             var areaOrLMProgramOrScenarioId = $(item).find('input[name=areaOrLMProgramOrScenarioId]').val(),
-                chart = $(item).find('.js-pie-chart');
+                chart = $(item).find('.js-pie-chart'),
+                errorMessage = $(item).find('.user-message'),
+                errorMessageFound = errorMessage.is(":visible");
             
-            if (areaOrLMProgramOrScenarioId && selectionChanged) {
+            if (areaOrLMProgramOrScenarioId && (!errorMessageFound ||selectionChanged)) {
                 $.ajax({
                     url: yukon.url('/dr/assetAvailability/updateChart'),
                     data: {
@@ -81,7 +83,16 @@ yukon.widget.assetAvailability = (function () {
                     } else {
                         chart.addClass('dn');
                     }
+                    errorMessage.addClass('dn');
+                    if (data.errorMessage != null) {
+                        errorMessage.html(data.errorMessage);
+                        errorMessage.removeClass('dn');
+                    }
                 });
+            } else {
+                if (!chart.is('.js-initialize')) {
+                    _updateChart(chart, null);
+                }
             }
         });
         

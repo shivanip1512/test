@@ -188,9 +188,9 @@
         Provides operational information for two-way Demand Response devices. It provides color-coded status for Scenarios, Control Areas and Programs.
         <ul>
             <li><b>Active (Green):</b> Active devices.</li>
+            <li><b>Unavailable (Red):</b> Unavailable devices.</li>
             <li><b>Inactive (Orange):</b> Inactie devices.</li>
             <li><b>Opted Out (Blue):</b> Opted out devices.</li>
-            <li><b>Unavailable (Gray):</b> Unavailable devices.</li>
         </ul>
 ]]></entry>
 

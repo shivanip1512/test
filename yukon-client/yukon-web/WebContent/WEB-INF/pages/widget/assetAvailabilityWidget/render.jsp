@@ -23,6 +23,8 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         
+        <div id="asset-availability-error-msg" class="user-message error dn"></div>
+        
         <div style="max-height: 200px;" class="js-pie-chart js-initialize"></div>
         
         <span class="fr">
