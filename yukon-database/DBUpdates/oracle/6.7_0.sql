@@ -610,7 +610,7 @@ BEGIN
         AND (
             VALUE > 2147483647 /* This is the max value of a signed int */
             OR VALUE < 0
-            OR TIMESTAMP < '1970-01-01' );
+            OR TIMESTAMP < '01-JAN-1970' );
 
         UPDATE RAWPOINTHISTORY 
         SET TIMESTAMP = TIMESTAMP - numtodsinterval(VALUE, 'SECOND') 
