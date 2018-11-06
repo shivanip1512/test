@@ -61,6 +61,10 @@
     <entry key="yukon.web.modules.tools.map.filter.label">Filter Devices</entry>
     <entry key="yukon.web.modules.tools.map.filtered">Filter:</entry>
     <entry key="yukon.web.modules.tools.map.filter.title">Filter Devices</entry>
+    <entry key="yukon.web.modules.tools.map.filter.allDevices">All Devices</entry>
+    <entry key="yukon.web.modules.tools.map.filter.violationsOnly">Violations Only</entry>
+    <entry key="yukon.web.modules.tools.map.monitorDevices">Monitored Devices</entry>
+    <entry key="yukon.web.modules.tools.map.violationDevices">Violations</entry>
     <entry key="yukon.web.modules.tools.map.attribute">Attribute</entry>
     <entry key="yukon.web.modules.tools.map.states">Attribute State(s)</entry>
     <entry key="yukon.web.modules.tools.map.chooseAttribute">Choose an attribute...</entry>

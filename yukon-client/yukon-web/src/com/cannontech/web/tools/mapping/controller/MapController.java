@@ -27,10 +27,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
+import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.meter.model.DisplayableMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -105,6 +109,8 @@ public class MapController {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -119,11 +125,22 @@ public class MapController {
      * the violations device group of a status point or outage monitor.
      */
     @RequestMapping("/map/dynamic")
-    public String dynamcic(ModelMap model, DeviceCollection deviceCollection) {
+    public String dynamic(ModelMap model, DeviceCollection deviceCollection, Integer monitorId, Boolean violationsOnly) {
         
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("description", deviceCollection.getDescription());
         model.addAttribute("dynamic", true);
+        model.addAttribute("monitorId", monitorId);
+        model.addAttribute("violationsOnly", violationsOnly);
+        if (monitorId != null) {
+            DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
+            DeviceGroup all = monitor.getGroup();
+            DeviceCollection allCollection = deviceGroupCollectionHelper.buildDeviceCollection(all);
+            model.addAttribute("deviceCollection", allCollection);
+            DeviceGroup violations = monitor.getViolationGroup();
+            DeviceCollection violationsCollection = deviceGroupCollectionHelper.buildDeviceCollection(violations);
+            model.addAttribute("violationsCollection", violationsCollection);
+        }
         
         return "map/map.jsp";
     }
@@ -245,6 +262,27 @@ public class MapController {
             
             return json;
         }
+    }
+    
+    @RequestMapping("/map/locations/{monitorId}")
+    public @ResponseBody Map<String, Object> monitorLocations(@PathVariable int monitorId, Boolean violationsOnly) {
+        
+        Map<String, Object> json = new HashMap<String, Object>();
+        DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
+        DeviceGroup violations = monitor.getViolationGroup();
+        DeviceCollection violationsCollection = deviceGroupCollectionHelper.buildDeviceCollection(violations);
+        if (violationsOnly != null && violationsOnly == true) {
+            FeatureCollection violationLocations = paoLocationService.getLocationsAsGeoJson(violationsCollection);
+            json.put("locations",  violationLocations);
+        } else {
+            DeviceGroup all = monitor.getGroup();
+            DeviceCollection allCollection = deviceGroupCollectionHelper.buildDeviceCollection(all);
+            FeatureCollection allLocations = paoLocationService.getLocationsAsGeoJson(allCollection);
+            json.put("locations",  allLocations);
+        }
+        List<SimpleDevice> violationDevices = violationsCollection.getDeviceList();
+        json.put("violationDevices", violationDevices);        
+        return json;
     }
     
     @RequestMapping("/map/locations")

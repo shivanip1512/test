@@ -73,9 +73,11 @@
             </div>
         </c:if>
     
-        <div class="column-19-5 clearfix stacked">
+        <div class="column-16-8 clearfix stacked">
             <div class="column one">
-                <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" />
+                
+                <c:set var="deviceCollectionKey" value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}"/>
+                <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" labelKey="${deviceCollectionKey}"/>
                 <cti:url var="downloadUrl" value="/tools/map/locations/download">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
@@ -88,6 +90,22 @@
                    <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>
                    <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
                 </cm:dropdown>
+                <c:if test="${!empty monitorId}">
+                    <tags:selectedDevices deviceCollection="${violationsCollection}" id="violation-collection" 
+                        labelKey="yukon.web.modules.tools.map.violationDevices" badgeClasses="badge-warning js-violations"/>
+                    <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                        <cti:mapParam value="${violationsCollection.collectionParameters}"/>
+                    </cti:url>
+                    <cti:url var="violationActionsUrl" value="/bulk/collectionActions">
+                        <c:forEach items="${violationsCollection.collectionParameters}" var="cp">
+                            <cti:param name="${cp.key}" value="${cp.value}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <cm:dropdown icon="icon-cog">
+                       <cm:dropdownOption key=".collectionActions" href="${violationActionsUrl}" icon="icon-cog-go" newTab="true"/>
+                       <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
+                    </cm:dropdown>
+                </c:if>
             </div>
             <div id="status-info" class="column two nogutter">
                 <div class="dn js-status-retrieving">
@@ -102,7 +120,22 @@
                     <cti:icon icon="icon-spinner"/>
                     <i:inline key=".status.loading"/>
                 </div>
+                <c:if test="${!empty monitorId}">
+                    <input type="hidden" id="monitorId" value="${monitorId}"/>
+                    <input type="hidden" id="violationsOnly" value="${violationsOnly}"/>
+                    <cti:url value="/tools/map/locations/${monitorId}" var="monitorLocationsUrl"/>
+                    <input id="monitorLocations" type="hidden" value="${fn:escapeXml(monitorLocationsUrl)}">
+                    <span class="fr">
+                        <i:inline key=".filter.label"/>:
+                        <c:set var="violationsSelected" value="${violationsOnly ? 'selected=selected' : ''}"/>
+                        <select id="violationsSelect" name="violationsSelect">
+                            <option value="false"><i:inline key=".filter.allDevices"/></option>
+                            <option value="true" ${violationsSelected}><i:inline key=".filter.violationsOnly"/></option>
+                        </select>
+                    </span>
+                </c:if>
             </div>
+
         </div>
         <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
         <div class="buffered">

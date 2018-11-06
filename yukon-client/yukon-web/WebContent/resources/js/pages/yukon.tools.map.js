@@ -21,6 +21,7 @@ yukon.tools.map = (function() {
     _deviceFocusLines = [],
     _deviceFocusIconLayer,
     _largerScale = 1.3,
+    _violationColor = '#ec971f',
     
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,
@@ -92,32 +93,63 @@ yukon.tools.map = (function() {
         return icon;
     },
     
+    _getLocationUrl = function() {
+        var monitorId = $('#monitorId').val(),
+            violationsOnly = $('#violationsSelect').val(),
+            locationsUrl = $('#locations').val();
+        if (monitorId) {
+            locationsUrl = $('#monitorLocations').val() + "?violationsOnly=" + violationsOnly;
+        }
+        return locationsUrl;
+    },
+    
+    _updateStyleIfInViolation = function(data, pao, icon) {
+        //check if it's in violation
+        var monitorId = $('#monitorId').val();
+        if (monitorId) {
+            var currentStyle = icon.getStyle().clone(),
+                image = currentStyle.getImage(),
+                src = image.getSrc();   
+            var inViolation = data.violationDevices.filter(function (device) {
+                return device.deviceId === pao.paoId;
+            });
+            if (inViolation.length > 0) {                       
+                currentStyle.setImage(new ol.style.Icon({ src: src, color: _violationColor, anchor:  [0.5, 1.0] }));
+                icon.setStyle(currentStyle);
+            } else {                      
+                currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
+                icon.setStyle(currentStyle);
+            }
+        }
+    },
+    
     /** 
      * Gets pao locations for the device collection in geojson format and adds
      * an icon feature for each to a new vector layer for the map.
      */
     _loadIcons = function() {
         $('.js-status-loading').show();
-        $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
+        var monitorId = $('#monitorId').val();
+        $.getJSON(decodeURI(_getLocationUrl())).done(function(data) {
             
             var 
             icon, icons = [],
-            source = _getLayer('icons').getSource();
+            source = _getLayer('icons').getSource(),
+            fc = monitorId ? data.locations : data;
             
             debug.time('Loading Icons');
             
             for (var i in fc.features) {
+                var feature = fc.features[i],
+                    pao = feature.properties.paoIdentifier;
                 icon = _createFeature(fc.features[i], fc.crs.properties.name);
+                _updateStyleIfInViolation(data, pao, icon);
                 icons.push(icon);
             }
             source.addFeatures(icons);
             
-            if (icons.length > 1) {
-                _map.getView().fit(source.getExtent(), _map.getSize());
-            } else if (icons.length === 1) {
-                _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-                _map.getView().setZoom(9);
-            }
+            _updateZoom();
+
             $('.js-status-loading').hide();
             debug.timeEnd('Loading Icons');
             
@@ -129,11 +161,13 @@ yukon.tools.map = (function() {
     
     /** Method to update device list with recursive setTimeout. */
     _update = function(once) {
-        $.getJSON(decodeURI($('#locations').val())).done(function(fc) {
+        var monitorId = $('#monitorId').val();
+        $.getJSON(decodeURI(_getLocationUrl())).done(function(data) {
             
             var toAdd = [], toRemove = [], icons = {},
                 i, pao, feature, diff,
-                source = _getLayer('icons').getSource();
+                source = _getLayer('icons').getSource(),
+                fc = monitorId ? data.locations : data;
             
             // add any features we don't have
             for (i = 0; i < fc.features.length; i++) {
@@ -145,7 +179,11 @@ yukon.tools.map = (function() {
                 if (typeof _icons[pao.paoId] === 'undefined') {
                     var
                     icon = _createFeature(feature, fc.crs.properties.name);
+                    _updateStyleIfInViolation(data, pao, icon);
                     toAdd.push(icon);
+                } else {
+                    var icon = _icons[pao.paoId];
+                    _updateStyleIfInViolation(data, pao, icon);
                 }
             }
             source.addFeatures(toAdd);
@@ -167,7 +205,16 @@ yukon.tools.map = (function() {
             debug.log('removed ' + toRemove.length + ' features');
             
             diff = toAdd.length - toRemove.length;
-            if (diff !== 0) {
+            if (monitorId) {
+                //update violations
+                var violationsBadge = $('#violation-collection .js-violations');
+                var currentViolations = parseInt(violationsBadge.text(), 10);
+                if (currentViolations !== data.violationDevices.length) {
+                    violationsBadge.text(data.violationDevices.length);
+                    violationsBadge.addClass('animated flash');
+                }
+            }
+            else if (diff !== 0) {
                 var count = parseInt($('#device-collection .js-count').text(), 10);
                 $('#device-collection .js-count').text(count + diff);
                 $('#device-collection .js-count').addClass('animated flash');
@@ -676,6 +723,10 @@ yukon.tools.map = (function() {
                 .on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(ev) {
                 $('#device-collection .js-count').removeClass('animated flash'); 
             });
+            $('#violation-collection .js-violations')
+                .on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(ev) {
+                    $('#violation-collection .js-violations').removeClass('animated flash'); 
+        });
             
             /** Pause/Resume updating on updater button clicks. */
             $('#map-updater .button').on('click', function(ev) {

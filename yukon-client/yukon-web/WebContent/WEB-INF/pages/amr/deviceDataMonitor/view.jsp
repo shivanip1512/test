@@ -66,6 +66,7 @@
                     <cti:url var="mapUrl" value="/tools/map/dynamic">
                         <cti:param name="collectionType" value="group"/>
                         <cti:param name="group.name" value="${monitor.groupName}"/>
+                        <cti:param name="monitorId" value="${monitor.id}"/>
                     </cti:url>
                     <cm:dropdownOption icon="icon-map-sat" key=".map.label" href="${mapUrl}"/>
                     <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
@@ -85,6 +86,8 @@
                     <cti:url var="mapUrl" value="/tools/map/dynamic">
                         <cti:param name="collectionType" value="group"/>
                         <cti:param name="group.name" value="${violationsDeviceGroupPath}"/>
+                        <cti:param name="monitorId" value="${monitor.id}"/>
+                        <cti:param name="violationsOnly" value="true"/>
                     </cti:url>
                     <cm:dropdownOption icon="icon-map-sat" key=".map.label" href="${mapUrl}"/>
                     <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
