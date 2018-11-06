@@ -232,14 +232,16 @@ yukon.tools.map = (function() {
     _updateZoom = function() {
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
         var features = source.getFeatures();
-        if (features != null && features.length > 1) {
-            _map.getView().fit(source.getExtent(), _map.getSize());
-            if (_map.getView().getZoom() > 16){
-                _map.getView().setZoom(16);
+        if (features != null) {
+            if (features.length > 1) {
+                _map.getView().fit(source.getExtent(), _map.getSize());
+                if (_map.getView().getZoom() > 16){
+                    _map.getView().setZoom(16);
+                }
+            } else if (features.length == 1){
+                _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+                _map.getView().setZoom(9);
             }
-        } else {
-            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-            _map.getView().setZoom(9);
         }
     },
     
