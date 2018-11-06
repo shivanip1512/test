@@ -517,6 +517,10 @@ yukon.tools.map = (function() {
                 }
             });
             
+            $('#violationsSelect').on('change', function(ev) {
+                _update(true);
+            });
+            
             /** Initilize the attribute select and handle change events. */
             $('#attribute-select').chosen({width: '100%'}).on('change', function(ev) {
                 $('#filter-states').empty();
