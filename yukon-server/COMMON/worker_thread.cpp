@@ -81,6 +81,8 @@ void WorkerThread::start()
  */
 void WorkerThread::interrupt()
 {
+    CTILOG_INFO(dout, "Interrupting thread " << _function._name);
+
     _thread.interrupt();
 }
 
@@ -109,6 +111,8 @@ void WorkerThread::terminateThread()
  */
 void WorkerThread::join()
 {
+    CTILOG_INFO(dout, "Joining thread " << _function._name);
+
     _thread.join();
 }
 
@@ -127,6 +131,9 @@ bool WorkerThread::tryJoinFor( const Timing::Chrono &duration )
         CTILOG_INFO(dout, "Thread " << _function._name << " no longer exists.");
         return true;
     }
+
+    CTILOG_INFO(dout, "Trying to join thread " << _function._name);
+
     return _thread.try_join_for( boost::chrono::milliseconds( duration.milliseconds() ));
 }
 
