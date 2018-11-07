@@ -274,8 +274,7 @@ public class InventoryDaoImpl implements InventoryDao {
                 sql.append("JOIN LmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId");
                 sql.append("JOIN ECToInventoryMapping ec ON ec.InventoryId = lmhb.InventoryId");
                 sql.append("WHERE lmhb.manufacturerSerialNumber").in(subList);
-                sql.append("AND lmhb.inventoryid = ib.inventoryid");
-                sql.append("AND ec.EnergyCompanyId").eq_k(ec.getId());
+                sql.append("AND ec.EnergyCompanyId").eq(ec.getId());
                 sql.append("AND lmhb.LMHardwareTypeID IN ");
                 sql.append("(SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").in(THERMOSTAT_TYPES).append(")");
                 return sql;
