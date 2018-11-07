@@ -245,20 +245,20 @@ public class NestSyncServiceImpl implements NestSyncService{
      * thermostats will be deleted.
      */
     private List<NestSyncDetail> deleteThermostatsAssociatedWithAccountNotInNest(int syncId, Set<String> accountsInNest) {
-        return inventoryDao.getNestThermostatsToDelete(HARDCODED_EC, accountsInNest)
-        .stream().map(thermostat -> {
-            CustomerAccount accountForThermostat = customerAccountDao.getAccountByInventoryId(thermostat.getId());
-            String accountNumber = "(none)";
-            if(accountForThermostat.getAccountId() > 0) {
-                accountNumber = accountForThermostat.getAccountNumber();
-            }
-            log.debug("Attempting to delete thermostat {} from account {} as the account is not in nest file",
-                    thermostat.getSerialNumber(), accountNumber);
-            return deleteThermostat(syncId, accountNumber, thermostat.getId(), thermostat.getSerialNumber(),
-                    THERMOSTAT_IN_ACCOUNT_WHICH_IS_NOT_IN_NEST);
-        })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        return inventoryDao.getNestThermostatsNotInListedAccounts(HARDCODED_EC, accountsInNest).stream()
+                .map(thermostat -> {
+                    CustomerAccount accountForThermostat = customerAccountDao.getAccountByInventoryId(thermostat.getId());
+                    String accountNumber = "(none)";
+                    if(accountForThermostat.getAccountId() > 0) {
+                        accountNumber = accountForThermostat.getAccountNumber();
+                    }
+                    log.debug("Attempting to delete thermostat {} from account {} as the account is not in nest file",
+                            thermostat.getSerialNumber(), accountNumber);
+                    return deleteThermostat(syncId, accountNumber, thermostat.getId(), thermostat.getSerialNumber(),
+                            THERMOSTAT_IN_ACCOUNT_WHICH_IS_NOT_IN_NEST);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**

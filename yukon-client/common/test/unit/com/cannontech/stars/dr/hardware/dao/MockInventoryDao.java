@@ -217,7 +217,7 @@ public class MockInventoryDao implements InventoryDao {
     }
 
     @Override
-    public List<Thermostat> getNestThermostatsToDelete(EnergyCompany ec, Set<String> serialNumbers) {
+    public List<Thermostat> getNestThermostatsNotInListedAccounts(EnergyCompany ec, Set<String> serialNumbers) {
         throw new MethodNotImplementedException();
     }
 }

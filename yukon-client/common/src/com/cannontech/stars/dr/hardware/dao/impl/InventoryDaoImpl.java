@@ -287,7 +287,7 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
-    public List<Thermostat> getNestThermostatsToDelete(EnergyCompany ec, Set<String> accountNumbers) {
+    public List<Thermostat> getNestThermostatsNotInListedAccounts(EnergyCompany ec, Set<String> accountNumbers) {
         SqlFragmentGenerator<String> sqlGenerator = new SqlFragmentGenerator<String>() {
             @Override
             public SqlFragmentSource generate(List<String> subList) {
@@ -298,8 +298,7 @@ public class InventoryDaoImpl implements InventoryDao {
                 sql.append("JOIN ECToInventoryMapping ec ON ec.InventoryId = lmhb.InventoryId");
                 sql.append("JOIN CustomerAccount ca ON ca.accountID = ib.accountID");
                 sql.append("WHERE ca.accountNumber").notIn(subList);
-                sql.append("AND lmhb.inventoryid = ib.inventoryid");
-                sql.append("AND ec.EnergyCompanyId").eq_k(ec.getId());
+                sql.append("AND ec.EnergyCompanyId").eq(ec.getId());
                 sql.append("AND lmhb.LMHardwareTypeID IN ");
                 sql.append("(SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID").eq(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId()).append(")");
                 return sql;
