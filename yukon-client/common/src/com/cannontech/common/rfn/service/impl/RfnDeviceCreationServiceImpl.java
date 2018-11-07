@@ -36,6 +36,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
@@ -167,7 +168,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                         log.warn("Unable to create device with template for " + rfnIdentifier, e);
                     }
                     throw e;
-                } catch (DeviceCreationException e) {
+                } catch (DeviceCreationException | EnergyCompanyNotFoundException e) {
                     int oldCount = uncreatableDevices.add(rfnIdentifier, 1);
                     if (oldCount == 0) {
                         // we may log this multiple times if the server is restarted, but this if statement
@@ -200,17 +201,13 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
         if (hardware == null) {
             /** Attempt to stub out a stars devices for lcr archive messages */ 
-            String ecName = configurationSource.getString(MasterConfigString.RFN_ENERGY_COMPANY_NAME);
-            if (StringUtils.isEmpty(ecName)) {
-                throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg","configurationProperty");
-            }
-            EnergyCompany ec = ecDao.getEnergyCompany(ecName);
+            EnergyCompany ec = ecDao.getDefaultEnergyCompanyForThirdPartyApiOrSystemUsage();
             LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getId());
             
             List<YukonListEntry> typeEntries = yukonListDao.getYukonListEntry(type.getDefinitionId(), lsec);
             
             if (typeEntries.isEmpty()) {
-                throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + device.getPaoIdentifier().getPaoType(),"invalidDevice",ecName,device.getPaoIdentifier().getPaoType());
+                throw new DeviceCreationException("Energy company " + ec.getName() + " has no device for type: " + device.getPaoIdentifier().getPaoType(),"invalidDevice", ec.getName() ,device.getPaoIdentifier().getPaoType());
             }
             
             hardware = new Hardware();

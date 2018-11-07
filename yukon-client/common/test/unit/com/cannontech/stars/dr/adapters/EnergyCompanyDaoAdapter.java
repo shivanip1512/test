@@ -124,4 +124,9 @@ public class EnergyCompanyDaoAdapter implements EnergyCompanyDao {
     public List<Integer> getOperatorUserIds(EnergyCompany energyCompany) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public EnergyCompany getDefaultEnergyCompanyForThirdPartyApiOrSystemUsage() {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

@@ -63,7 +63,6 @@ import com.cannontech.core.dao.DemandResponseDao;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -119,7 +118,6 @@ public class NestSyncServiceImpl implements NestSyncService{
     private static final Logger log = YukonLogManager.getLogger(NestSyncServiceImpl.class);
     @Autowired private NestDao nestDao;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private YukonUserDao yukonUserDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private YukonListDao yukonListDao;
@@ -128,8 +126,8 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private AccountService accountService;
     @Autowired private AddressDao addressDao;
     @Autowired private HardwareService hardwareService;
-    private EnergyCompany HARDCODED_EC;
-    private LiteYukonUser HARDCODED_OPERATOR;
+    private EnergyCompany defaultEnergyCompanyForThirdPartyService;
+    private LiteYukonUser defaultOperatorForThirdPartyService;
        
     /**
      * Collection of data from the Nest file that is deemed unacceptable by Yukon and should be ignored when
@@ -159,18 +157,15 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Override
     public void sync(boolean forceSync) {
         
-        List<EnergyCompany> energyCompanies = Lists.newArrayList(energyCompanyDao.getAllEnergyCompanies());
-        energyCompanies.removeIf(e -> e.getId() == -1);
-        HARDCODED_EC = energyCompanies.get(0);
-        List<Integer> ids = energyCompanyDao.getOperatorUserIds(HARDCODED_EC);
-        HARDCODED_OPERATOR = yukonUserDao.getLiteYukonUser(ids.get(0));
+        defaultEnergyCompanyForThirdPartyService = energyCompanyDao.getDefaultEnergyCompanyForThirdPartyApiOrSystemUsage();
+        defaultOperatorForThirdPartyService = defaultEnergyCompanyForThirdPartyService.getUser();
         
         if(!runSync(forceSync)) {
             return;
         }
         
         List<YukonListEntry> yukonListEntry = yukonListDao.getYukonListEntry(
-            YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId(), HARDCODED_EC);
+            YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId(), defaultEnergyCompanyForThirdPartyService);
         if(yukonListEntry.isEmpty()) {
             throw new NestException("Device type 'Nest thermostat' has not been created.");
         }
@@ -220,7 +215,7 @@ public class NestSyncServiceImpl implements NestSyncService{
             thermostatsInYukon = getThermostatsInYukon(thermostatsInNest);
         }
         
-        Map<String, CustomerAccount> yukonAccounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), HARDCODED_EC.getId())
+        Map<String, CustomerAccount> yukonAccounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), defaultEnergyCompanyForThirdPartyService.getId())
                 .stream()
                 .collect(Collectors.toMap(CustomerAccount::getAccountNumber, account -> account));
         
@@ -233,7 +228,7 @@ public class NestSyncServiceImpl implements NestSyncService{
      * Returns the list of thermostats that are in Nest and Yukon
      */
     private Map<String, Thermostat> getThermostatsInYukon(Set<String> thermostatsInNest) {
-        Map<String, Thermostat> thermostatsInYukon = inventoryDao.getThermostatsBySerialNumbers(HARDCODED_EC, thermostatsInNest)
+        Map<String, Thermostat> thermostatsInYukon = inventoryDao.getThermostatsBySerialNumbers(defaultEnergyCompanyForThirdPartyService, thermostatsInNest)
                 .stream()
                 .filter(thermostat -> thermostat.getType().isNest())
                 .collect(Collectors.toMap(Thermostat::getSerialNumber, thermostat -> thermostat));
@@ -245,7 +240,7 @@ public class NestSyncServiceImpl implements NestSyncService{
      * thermostats will be deleted.
      */
     private List<NestSyncDetail> deleteThermostatsAssociatedWithAccountNotInNest(int syncId, Set<String> accountsInNest) {
-        return inventoryDao.getNestThermostatsNotInListedAccounts(HARDCODED_EC, accountsInNest).stream()
+        return inventoryDao.getNestThermostatsNotInListedAccounts(defaultEnergyCompanyForThirdPartyService, accountsInNest).stream()
                 .map(thermostat -> {
                     CustomerAccount accountForThermostat = customerAccountDao.getAccountByInventoryId(thermostat.getId());
                     String accountNumber = "(none)";
@@ -310,7 +305,7 @@ public class NestSyncServiceImpl implements NestSyncService{
         if(!ignore.isEmpty()) {
             log.debug("Data to ignore when syncing {}", ignore);
         }
-        Map<String, CustomerAccount> accounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), HARDCODED_EC.getId())
+        Map<String, CustomerAccount> accounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), defaultEnergyCompanyForThirdPartyService.getId())
                 .stream()
                 .collect(Collectors.toMap(CustomerAccount::getAccountNumber, account -> account));
         existing.forEach(row -> {
@@ -391,7 +386,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     private NestSyncDetail deleteThermostat(int syncId, String accountNumber, int inventoryId,
             String serialNumber, NestSyncI18nKey reason) {
         try {
-            hardwareService.deleteHardware(HARDCODED_OPERATOR, true, inventoryId);
+            hardwareService.deleteHardware(defaultOperatorForThirdPartyService, true, inventoryId);
             NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, reason, AUTO_DELETED_THERMOSTAT);
             detail.addValue(ACCOUNT_NUMBER, accountNumber);
             detail.addValue(SERIAL_NUMBER, serialNumber);
@@ -443,7 +438,7 @@ public class NestSyncServiceImpl implements NestSyncService{
         updatableAccount.setAccountDto(account);
         updatableAccount.setAccountNumber(row.getAccountNumber());
         try {
-            int accountId = accountService.addAccount(updatableAccount, HARDCODED_OPERATOR);
+            int accountId = accountService.addAccount(updatableAccount, defaultOperatorForThirdPartyService);
             log.debug("Created account for account number {} account id {}", row.getAccountNumber(), accountId);
         } catch (Exception e) {
            log.error("Unable to create a new account for account number " + row.getAccountNumber() + " row:" + row, e);
@@ -484,7 +479,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     private NestSyncDetail enrollThermostat(int syncId, String group, String program, String accountNumber,
             String serialNumber) {
         EnrollmentHelper enrollmentHelper = new EnrollmentHelper(accountNumber, group, program, serialNumber);
-        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, HARDCODED_OPERATOR);
+        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, defaultOperatorForThirdPartyService);
         NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_ENROLLED_THERMOSTAT, AUTO_ENROLLED_THERMOSTAT);
             detail.addValue(ACCOUNT_NUMBER, accountNumber);
             detail.addValue(SERIAL_NUMBER, serialNumber);
@@ -496,7 +491,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     private NestSyncDetail changeGroup(int syncId, String group, String program, String accountNumber,
             String serialNumber, String groupEnrolledIn) {
         EnrollmentHelper enrollmentHelper = new EnrollmentHelper(accountNumber, group, program, serialNumber);
-        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, HARDCODED_OPERATOR);
+        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, defaultOperatorForThirdPartyService);
         NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, CHANGE_GROUP, AUTO_ENROLLED_THERMOSTAT);
             detail.addValue(ACCOUNT_NUMBER, accountNumber);
             detail.addValue(SERIAL_NUMBER, serialNumber);
@@ -537,10 +532,10 @@ public class NestSyncServiceImpl implements NestSyncService{
         deviceInfo.setSerialNumber(thermostat);
 
         List<YukonListEntry> yukonListEntry =
-            yukonListDao.getYukonListEntry(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId(), HARDCODED_EC);
+            yukonListDao.getYukonListEntry(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId(), defaultEnergyCompanyForThirdPartyService);
         String typeStr = yukonListEntry.iterator().next().getEntryText();
         deviceInfo.setDeviceType(typeStr);
-        LiteInventoryBase inventory = starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, HARDCODED_OPERATOR);
+        LiteInventoryBase inventory = starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, defaultOperatorForThirdPartyService);
         NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_FOUND_THERMOSTAT, AUTO_CREATED_THERMOSTAT);
         detail.addValue(ACCOUNT_NUMBER, accountNumber);
         detail.addValue(SERIAL_NUMBER, thermostat);

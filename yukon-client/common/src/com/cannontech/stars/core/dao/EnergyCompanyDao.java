@@ -127,4 +127,16 @@ public interface EnergyCompanyDao {
      */
     @Deprecated
     Integer findParentEnergyCompany(int energyCompanyId);
+    
+    /**
+     * 
+     *Attempts to find an energy company that should be used for third party integrations or automatic/system usage. 
+     *If the master.cfg entry for RFN_ENERGY_COMPANY_NAME exists, then this will be the energy company returned. 
+     *Note: RFN_ENERGY_COMPANY_NAME is poorly named and not just limiting us to "RFN". 
+     *If no master.cfg entry for RFN_ENERGY_COMPANY_NAME exists, then attempt to find a reasonable default to use. 
+     *A reasonable default would be if there exists exactly one energy company that is not the Default Energy Company (ie ecId > -1). 
+     *If a reasonable default cannot be found, throws EnergyCompanyNotFoundException.     
+     */
+    
+    EnergyCompany getDefaultEnergyCompanyForThirdPartyApiOrSystemUsage();
 }

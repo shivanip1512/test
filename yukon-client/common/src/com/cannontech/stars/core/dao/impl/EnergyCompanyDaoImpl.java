@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.Logger;
@@ -15,6 +16,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
@@ -23,8 +26,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -56,7 +59,8 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     @Autowired private PaoDao paoDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
-
+    @Autowired private ConfigurationSource configSource;
+    
     private Map<Integer, List<Integer>> cachedRouteIds = new ConcurrentHashMap<>();
     private Map<Integer, EnergyCompany> energyCompanies;
     private Map<Integer, Integer> operatorIdToEcId = new HashMap<Integer, Integer>(); //<UserId, EcId>
@@ -430,5 +434,25 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         public Map<Integer, EnergyCompany> getEnergyCompanies() {
             return builder.build();
         }
+    }
+    
+    @Override
+    public EnergyCompany getDefaultEnergyCompanyForThirdPartyApiOrSystemUsage() {
+        Optional<String> energyCompanyName = configSource.getOptionalString(MasterConfigString.RFN_ENERGY_COMPANY_NAME);
+        EnergyCompany energyCompany = null;
+        if (energyCompanyName.isPresent()) {
+            energyCompany = findEnergyCompany(energyCompanyName.get());
+        }
+        if (energyCompany == null) {
+            List<EnergyCompany> energyCompanies = (List<EnergyCompany>) getAllEnergyCompanies();
+            energyCompanies.removeIf(e -> e.getId() == -1);
+            if (energyCompanies.size() == 1) {
+                return energyCompanies.get(0);
+            } else {
+                throw new EnergyCompanyNotFoundException("No value is specified for the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
+            }
+        }
+        return energyCompany;
+        
     }
 }

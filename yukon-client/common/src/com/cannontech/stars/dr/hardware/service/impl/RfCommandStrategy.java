@@ -13,7 +13,6 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.CommandRequestExecutionDefaults;
@@ -22,6 +21,7 @@ import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnMessageClass;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -44,6 +44,7 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
@@ -55,6 +56,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private RawExpressComCommandBuilder commandBuilder;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private IDatabaseCache databaseCache;
 
     @Override
     public void sendCommand(final LmHardwareCommand parameters) throws CommandCompletionException {
@@ -203,10 +205,8 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
     @Override
     public void sendBroadcastCommand(LmCommand command) {
-        // On a Network Manager enabled system utilizing LCR devices for load control,
-        // the following CPARM will be set; if not it will return null.
-        String rfnEcName = configurationSource.getString(MasterConfigString.RFN_ENERGY_COMPANY_NAME);
-        if (rfnEcName != null) {
+        //Checks to see if an rfn LCR device exist
+        if (databaseCache.getAllPaoTypes().stream().anyMatch(PaoType.getRfLcrTypes()::contains)) {
             log.debug("Sending RFN ExpressCom broadcast command: " + command.getType().toString());
 
             if (canBroadcast(command)) {
