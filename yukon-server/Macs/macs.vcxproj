@@ -344,6 +344,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="tcl\init.tcl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON\boost_assert.cpp" />
