@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     //  Fill the range with values 0-19
     boost::range::iota(range, 0);
 
-    auto make_chunks = [](auto& generator) {
+    auto make_chunk_vector = [](auto& generator) {
         std::vector<std::vector<int>> chunks;
 
         for( const auto& chunk : generator )
@@ -36,7 +36,23 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     };
 
     {
-        const auto chunked = make_chunks(Cti::Coroutines::chunked(range, 1000));
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(std::vector<int>{}, 1000));
+
+        const std::vector<std::vector<int>> expected;
+
+        BOOST_CHECK_EQUAL_RANGES(chunked, expected);
+    }
+
+    {
+        const auto chunked = make_chunk_vector(Cti::Coroutines::make_chunks(std::vector<int>{}, 1000));
+
+        const std::vector<std::vector<int>> expected;
+
+        BOOST_CHECK_EQUAL_RANGES(chunked, expected);
+    }
+
+    {
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 1000));
 
         const std::vector<std::vector<int>> expected{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
@@ -46,7 +62,7 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     }
 
     {
-        const auto chunked = make_chunks(Cti::Coroutines::chunked(range, 20));
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 20));
 
         const std::vector<std::vector<int>> expected{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
@@ -56,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     }
 
     {
-        const auto chunked = make_chunks(Cti::Coroutines::chunked(range, 19));
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 19));
 
         const std::vector<std::vector<int>> expected{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 },
@@ -67,7 +83,7 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     }
 
     {
-        const auto chunked = make_chunks(Cti::Coroutines::chunked(range, 10));
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 10));
 
         const std::vector<std::vector<int>> expected{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }
@@ -77,7 +93,7 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     }
 
     {
-        const auto chunked = make_chunks(Cti::Coroutines::chunked(range, 5));
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 5));
 
         const std::vector<std::vector<int>> expected{
             { 0, 1, 2, 3, 4 }, { 5, 6, 7, 8, 9 }, { 10, 11, 12, 13, 14 }, { 15, 16, 17, 18, 19 }
@@ -87,7 +103,7 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     }
 
     {
-        const auto chunked = make_chunks(Cti::Coroutines::chunked(range, 1));
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 1));
 
         const std::vector<std::vector<int>> expected{
             //  Force the first element to be a vector, otherwise they collapse to elements in a single vector
@@ -98,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     }
 
     {
-        const auto chunked = make_chunks(Cti::Coroutines::chunked(range, 0));
+        const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 0));
 
         const std::vector<std::vector<int>> expected{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 }

@@ -664,7 +664,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
 
     int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
 
-    for( const auto& id_chunk : Cti::Coroutines::chunked(paoids, max_ids_per_select) )
+    for( const auto& id_chunk : Cti::Coroutines::make_chunks(paoids, max_ids_per_select) )
     {
         std::set<long> paoid_subset { id_chunk.begin(), id_chunk.end() };
 
@@ -809,7 +809,7 @@ void CtiDeviceManager::refreshPaoIds(const Cti::Database::id_set &ids)
     DatabaseConnection connection;
     DatabaseReader rdr(connection, sql);
 
-    if( !ids.empty() )
+    if( ! ids.empty() )
     {
         rdr << ids;
     }

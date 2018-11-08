@@ -4,13 +4,20 @@
 
 #include "cparms.h"
 #include "logger.h"
-
-#include <boost/assign/ptr_map_inserter.hpp>
+#include "std_helper.h"
+#include "coroutine_util.h"
 
 using namespace std;
 
 namespace Cti    {
 namespace Porter {
+
+
+template<class T, class U>
+auto TcpConnectionManager::emplace_unique_ptr(id_map<T>& idMap, long id, U arg)
+{
+    return idMap.emplace(id, std::make_unique<TcpConnectionManager::id_map<T>::mapped_type::element_type>(arg));
+}
 
 
 void TcpConnectionManager::connect( const long id, const Connections::SocketAddress new_address )
@@ -25,21 +32,7 @@ void TcpConnectionManager::connect( const long id, const Connections::SocketAddr
         disconnect(id);
     }
 
-    boost::assign::ptr_map_insert(_inactive)(id, new_address);
-}
-
-
-template<class Map>
-typename Map::const_pointer::second_type const_find_in_map(const long id, Map &m)
-{
-    Map::const_iterator itr = m.find(id);
-
-    if( itr == m.end() )
-    {
-        return 0;
-    }
-
-    return itr->second;
+    emplace_unique_ptr(_inactive, id, new_address);
 }
 
 
@@ -47,25 +40,11 @@ const TcpConnectionManager::address *TcpConnectionManager::findAddress(const lon
 {
     const socket_stream *s;
 
-    if( s = const_find_in_map(id, _established) )  return &(s->address);
-    if( s = const_find_in_map(id, _pending) )      return &(s->address);
-    if( s = const_find_in_map(id, _inactive) )     return &(s->address);
+    if( s = mapFindPtr(_established, id) )  return &(s->address);
+    if( s = mapFindPtr(_pending,     id) )  return &(s->address);
+    if( s = mapFindPtr(_inactive,    id) )  return &(s->address);
 
     return 0;
-}
-
-
-template<class Map>
-typename Map::value_type::second_type find_in_map(const long id, Map &m)
-{
-    Map::iterator itr = m.find(id);
-
-    if( itr == m.end() )
-    {
-        return 0;
-    }
-
-    return itr->second;
 }
 
 
@@ -73,9 +52,9 @@ TcpConnectionManager::bytes *TcpConnectionManager::findStream(const long id)
 {
     socket_stream *s;
 
-    if( s = find_in_map(id, _established) )  return &(s->stream);
-    if( s = find_in_map(id, _pending) )      return &(s->stream);
-    if( s = find_in_map(id, _inactive) )     return &(s->stream);
+    if( s = mapFindPtr(_established, id) )  return &(s->stream);
+    if( s = mapFindPtr(_pending,     id) )  return &(s->stream);
+    if( s = mapFindPtr(_inactive,    id) )  return &(s->stream);
 
     return 0;
 }
@@ -93,16 +72,8 @@ void TcpConnectionManager::updateConnections(id_set &connected, id_set &errors)
 {
     tryConnectInactive();
 
-    for( pending_map::iterator itr = _pending.begin(); itr != _pending.end(); )
+    for( auto pending_block : Coroutines::chunked(_pending, FD_SETSIZE) )
     {
-        vector<pending_map::iterator> pending_block;
-
-        //  check in blocks of up to FD_SETSIZE
-        for( int socket_count = 0; itr != _pending.end() && socket_count < FD_SETSIZE; ++socket_count )
-        {
-            pending_block.push_back(itr++);
-        }
-
         checkPendingConnectionBlock(pending_block, connected, errors);
     }
 }
@@ -113,11 +84,9 @@ void Cti::Porter::TcpConnectionManager::tryConnectInactive()
     const CtiTime now;
     const CtiTime next_attempt = now + gConfigParms.getValueAsULong("PORTER_TCP_CONNECT_TIMEOUT", 15);
 
-    inactive_map::iterator itr = _inactive.begin();
-
-    while( itr != _inactive.end() )
+    for( auto itr = _inactive.begin(); itr != _inactive.end(); )
     {
-        inactive_map::iterator current_pos = itr++;
+        const auto current_pos = itr++;
 
         const long id = current_pos->first;
         inactive_stream &inactive_stream = *(current_pos->second);
@@ -126,7 +95,7 @@ void Cti::Porter::TcpConnectionManager::tryConnectInactive()
         {
             try
             {
-                boost::assign::ptr_map_insert(_pending)(id, inactive_stream);
+                emplace_unique_ptr(_pending, id, inactive_stream);
 
                 _inactive.erase(current_pos);
             }
@@ -140,16 +109,16 @@ void Cti::Porter::TcpConnectionManager::tryConnectInactive()
 }
 
 
-void TcpConnectionManager::checkPendingConnectionBlock(vector<pending_map::iterator> &pending_block, id_set &connected, id_set &errors)
+void TcpConnectionManager::checkPendingConnectionBlock(slice<pending_map> &pending_block, id_set &connected, id_set &errors)
 {
     timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
     fd_set new_connections;
 
     FD_ZERO(&new_connections);
 
-    for each( pending_map::const_iterator itr in pending_block )
+    for( auto& [id, pendingConnection] : pending_block )
     {
-        itr->second->add_to(&new_connections);
+        pendingConnection->add_to(&new_connections);
     }
 
     //  check to see if any of the sockets are writable - a writable socket means the connection has completed
@@ -164,26 +133,23 @@ void TcpConnectionManager::checkPendingConnectionBlock(vector<pending_map::itera
 
     const CtiTime Now;
 
-    for each( pending_map::iterator itr in pending_block )
+    for( auto& [id, p] : pending_block )
     {
         try
         {
-            const long &id = itr->first;
-            pending_connection &p = *(itr->second);
-
-            if( ready_count && p.is_in(&new_connections) )
+            if( ready_count && p->is_in(&new_connections) )
             {
-                _established.insert(id, new established_connection(p));
+                emplace_unique_ptr(_established, id, *p);
 
-                _pending.erase(itr);
+                _pending.erase(id);
 
                 connected.insert(id);
             }
-            else if( p.timeout < Now )
+            else if( p->timeout < Now )
             {
-                boost::assign::ptr_map_insert(_inactive)(id, p);
+                emplace_unique_ptr(_inactive, id, *p);
 
-                _pending.erase(itr);
+                _pending.erase(id);
 
                 errors.insert(id);
             }
@@ -213,7 +179,7 @@ int TcpConnectionManager::send(const long id, const bytes &data)
     }
     catch( write_error &ex )
     {
-        boost::assign::ptr_map_insert(_inactive)(id, e);
+        emplace_unique_ptr(_inactive, id, e);
 
         _established.erase(itr);
 
@@ -225,18 +191,9 @@ int TcpConnectionManager::send(const long id, const bytes &data)
 
 bool TcpConnectionManager::recv(id_set &ready, id_set &errors)
 {
-    established_map::iterator itr = _established.begin();
-
-    while( itr != _established.end() )
+    //  check in blocks of up to FD_SETSIZE
+    for( auto candidate_sockets : Coroutines::chunked(_established, FD_SETSIZE) )
     {
-        vector<established_map::iterator> candidate_sockets;
-
-        //  check in blocks of up to FD_SETSIZE
-        for( int sockets = 0; itr != _established.end() && sockets < FD_SETSIZE; ++itr, ++sockets )
-        {
-            candidate_sockets.push_back(itr);
-        }
-
         readCandidateSockets(ready, errors, candidate_sockets);
     }
 
@@ -244,41 +201,40 @@ bool TcpConnectionManager::recv(id_set &ready, id_set &errors)
 }
 
 
-void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, vector<established_map::iterator> &candidate_sockets)
+void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, slice<established_map> &candidate_sockets)
 {
     fd_set readable_sockets;
 
     FD_ZERO(&readable_sockets);
 
-    for each( established_map::iterator e_itr in candidate_sockets )
+    for( auto& [id, connection] : candidate_sockets )
     {
-        e_itr->second->add_to(&readable_sockets);
+        connection->add_to(&readable_sockets);
     }
 
-    timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
+    timeval tv { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
 
-    int ready_count = select(0, &readable_sockets, NULL, NULL, &tv);
-
-    if( ready_count <= 0 )
+    if( int ready_count = select(0, &readable_sockets, NULL, NULL, &tv); ready_count <= 0 )
     {
         if( ready_count == SOCKET_ERROR )
         {
             CTILOG_ERROR(dout, Connections::TcpSocketStream::formatSocketError("select", WSAGetLastError()));
         }
+        else if( ready_count < 0 )
+        {
+            CTILOG_ERROR(dout, "Unknown socket error, ready_count = " << ready_count);
+        }
 
         return;
     }
 
-    for each( established_map::iterator e_itr in candidate_sockets )
+    for( auto& [id, e] : candidate_sockets )
     {
-        const long &id = e_itr->first;
-        established_connection &e = *(e_itr->second);
-
-        if( e.is_in(&readable_sockets) )
+        if( e->is_in(&readable_sockets) )
         {
             try
             {
-                e.recv();
+                e->recv();
 
                 ready.insert(id);
             }
@@ -286,9 +242,9 @@ void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, v
             {
                 errors.insert(id);
 
-                boost::assign::ptr_map_insert(_inactive)(id, e);
+                emplace_unique_ptr(_inactive, id, *e);
 
-                _established.erase(e_itr);
+                _established.erase(id);
             }
         }
     }
@@ -316,9 +272,7 @@ bool TcpConnectionManager::searchStream( const long id, Protocols::PacketFinder 
 {
     if( bytes *stream = findStream(id) )
     {
-        bytes::iterator itr = stream->begin();
-
-        while( itr != stream->end() )
+        for( auto itr = stream->begin();  itr != stream->end(); )
         {
             if( pf(*itr++) )
             {
@@ -347,16 +301,16 @@ void TcpConnectionManager::disable( void )
 {
     _disabled = true;
 
-    for each( established_map::reference e in _established )
+    for( auto& [id, connection] : _established )
     {
-        boost::assign::ptr_map_insert(_inactive)(e.first, *e.second);
+        emplace_unique_ptr(_inactive, id, *connection);
     }
 
     _established.clear();
 
-    for each( pending_map::reference p in _pending )
+    for( auto& [id, connection] : _pending )
     {
-        boost::assign::ptr_map_insert(_inactive)(p.first, *p.second);
+        emplace_unique_ptr(_inactive, id, *connection);
     }
 
     _pending.clear();

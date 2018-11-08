@@ -3,8 +3,6 @@
 #include "tcp_connection.h"
 #include "packet_finder.h"
 
-#include "boost/ptr_container/ptr_map.hpp"
-
 #include <set>
 
 namespace Cti    {
@@ -40,9 +38,18 @@ private:
 
     typedef Connections::SocketStream::bytes      bytes;
 
-    typedef boost::ptr_map<const long, inactive_stream>    inactive_map;
-    typedef boost::ptr_map<const long, pending_connection>     pending_map;
-    typedef boost::ptr_map<const long, established_connection> established_map;
+    template <class T>
+    using id_map = std::map<long, std::unique_ptr<T>>;
+
+    template<class T, class U>
+    auto emplace_unique_ptr(id_map<T>& idMap, long id, U arg);
+        
+    using inactive_map    = id_map<inactive_stream>;
+    using pending_map     = id_map<pending_connection>;
+    using established_map = id_map<established_connection>;
+
+    template <class T>
+    using slice = boost::iterator_range<typename T::const_iterator>;
 
     inactive_map    _inactive;
     pending_map     _pending;
@@ -55,9 +62,9 @@ private:
 
     void tryConnectInactive();
 
-    void checkPendingConnectionBlock(std::vector<pending_map::iterator> &pending_block, id_set &connected, id_set &errors);
+    void checkPendingConnectionBlock(slice<pending_map> &pending_block, id_set &connected, id_set &errors);
 
-    void readCandidateSockets(id_set &ready, id_set &errors, std::vector<established_map::iterator> &candidate_sockets);
+    void readCandidateSockets(id_set &ready, id_set &errors, slice<established_map> &candidate_sockets);
 
 public:
 

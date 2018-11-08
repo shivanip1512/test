@@ -4,18 +4,31 @@
 
 #include <experimental/generator>
 
-namespace Cti {
-namespace Coroutines {
+namespace Cti::Coroutines {
 
 template <class Container>
-std::experimental::generator<boost::iterator_range<typename Container::const_iterator>> chunked(Container& c, const size_t chunkSize)
-{
-    auto itr = c.cbegin();
-    auto end = c.cend();
+using slice = boost::iterator_range<typename Container::const_iterator>;
 
-    if( ! c.empty() && chunkSize )
+template <class Container>
+using slice_generator = std::experimental::generator<slice<Container>>;
+
+namespace impl {
+
+template <class Container>
+slice_generator<Container> chunked_impl(Container& c, const size_t chunkSize, bool generateEmptyChunk)
+{
+    auto itr = std::cbegin(c);
+
+    if( std::empty(c) )
     {
-        auto chunks = (c.size() - 1) / chunkSize;  //  Make sure we round down if we have an even multiple of chunkSize
+        if( ! generateEmptyChunk )
+        {
+            return;
+        }
+    }
+    else if( chunkSize )
+    {
+        auto chunks = (std::size(c) - 1) / chunkSize;  //  Make sure we round down if we have an even multiple of chunkSize
 
         while( chunks-- )
         {
@@ -27,8 +40,21 @@ std::experimental::generator<boost::iterator_range<typename Container::const_ite
         }
     }
 
-    co_yield boost::make_iterator_range(itr, end);
+    co_yield boost::make_iterator_range(itr, std::cend(c));
 }
 
 }
+
+template <class Container>
+auto make_chunks(Container& c, const size_t chunkSize)
+{
+    return impl::chunked_impl(c, chunkSize, true);
+}
+
+template <class Container>
+auto chunked(Container& c, const size_t chunkSize)
+{
+    return impl::chunked_impl(c, chunkSize, false);
+}
+
 }
