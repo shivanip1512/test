@@ -38,7 +38,7 @@
 <cti:msg var="maxTotalRunTimeHoursText" key="yukon.common.device.schedules.home.retry.maxTotalRunTimeHours"/>
 <cti:msg var="notApplicable" key="yukon.common.na"/>
 
-<cti:msg var="take20" argument="20px" />
+<c:set var="take20" value="20px" />
 
 <script type="text/javascript">
     function toggleLastRunLink() {

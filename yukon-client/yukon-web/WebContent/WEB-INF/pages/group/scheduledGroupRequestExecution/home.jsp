@@ -26,8 +26,8 @@
 <style type="text/css">
     .scheduleButtonDiv {border-top:solid 1px #cccccc;padding-top:6px;}
 </style>
-<cti:msg var="take10" argument="10px"/>
-<cti:msg var="take12" argument="12px"/>
+<c:set var="take10" value="10px"/>
+<c:set var="take12" value="12px"/>
 
 <cti:standardPage module="tools" page="schedules.${mode}">
         
