@@ -152,9 +152,9 @@
         <cti:checkRolesAndProperties value="SHOW_ECOBEE">
             <jsp:include page="/dr/ecobee/statistics"/>
         </cti:checkRolesAndProperties>
-        <cti:checkRolesAndProperties value="SHOW_ECOBEE">
+        <c:if test="${nestAvailable}">
             <jsp:include page="/dr/nest/statistics"/>
-        </cti:checkRolesAndProperties>
+        </c:if>
         <cti:checkRolesAndProperties value="HONEYWELL_SUPPORT_ENABLED">
             <jsp:include page="/dr/recenteventparticipation/auditReport"/>
         </cti:checkRolesAndProperties>

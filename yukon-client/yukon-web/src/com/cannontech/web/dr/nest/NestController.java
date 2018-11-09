@@ -51,13 +51,16 @@ import com.cannontech.jobs.support.JobManagerException;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.dr.model.NestSyncSettings;
+import com.cannontech.web.security.annotation.CheckGlobalSettingStringExist;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+@CheckGlobalSettingStringExist(GlobalSettingType.NEST_USERNAME)
 @Controller
 public class NestController {
     
@@ -124,9 +127,10 @@ public class NestController {
         model.addAttribute("nestSyncSettings", nestSyncSettings);
         
         NestSyncTimeInfo nestSyncTimeInfo = nestSyncService.getSyncTimeInfo();
-        String lastSyncTime = dateFormattingService.format(nestSyncTimeInfo.getSyncTime(), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-        model.addAttribute("lastSyncTime", lastSyncTime);
-
+        if (nestSyncService.getSyncTimeInfo() != null) {
+            String lastSyncTime = dateFormattingService.format(nestSyncTimeInfo.getSyncTime(), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("lastSyncTime", lastSyncTime);
+        }
         Instant nestSyncTime = nestSyncTimeInfo.getNextSyncTime();
         if (nestSyncTime != null) {
             String nextSyncTime = dateFormattingService.format(nestSyncTime, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);

@@ -18,6 +18,7 @@ import com.cannontech.web.security.annotation.CheckCparmString;
 import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
+import com.cannontech.web.security.annotation.CheckGlobalSettingStringExist;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -32,6 +33,7 @@ public class WebSecurityAnnotationProcessor {
         check(AnnotationUtils.findAnnotation(method, CheckCparmString.class));
         check(AnnotationUtils.findAnnotation(method, CheckRole.class));
         check(AnnotationUtils.findAnnotation(method, CheckGlobalSetting.class));
+        check(AnnotationUtils.findAnnotation(method, CheckGlobalSettingStringExist.class));
         check(AnnotationUtils.findAnnotation(method, CheckEnergyCompanySetting.class));
         check(AnnotationUtils.findAnnotation(method, CheckRoleProperty.class));
         check(AnnotationUtils.findAnnotation(method, CheckFalseRoleProperty.class));
@@ -44,6 +46,7 @@ public class WebSecurityAnnotationProcessor {
         check(AnnotationUtils.findAnnotation(clazz, CheckCparmString.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckRole.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckGlobalSettingStringExist.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckRoleProperty.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class));
@@ -81,6 +84,13 @@ public class WebSecurityAnnotationProcessor {
         }
     }
 
+    private void check(CheckGlobalSettingStringExist annotation) {
+        if (annotation != null) {
+            GlobalSettingType setting = annotation.value();
+            webSecurityChecker.checkGlobalSettingStringExist(setting);
+        }
+    }
+    
     private void check(CheckEnergyCompanySetting annotation) {
         if (annotation != null) {
             EnergyCompanySettingType setting = annotation.value();

@@ -81,6 +81,14 @@ public class WebSecurityChecker {
         
     }
 
+    public void checkGlobalSettingStringExist(GlobalSettingType setting) {
+        
+        if (globalSettingDao.getString(setting).isEmpty()) {
+            throw new NotAuthorizedException("User is not authorized to access this page.");
+        }
+        
+    }
+    
     public void checkFalseRoleProperty(YukonRoleProperty... rolePropertyIds) {
         final LiteYukonUser user = getYukonUser();
         
