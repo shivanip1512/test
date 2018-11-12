@@ -80,12 +80,17 @@ public:
     //  throws: no_record
     Connections::SocketAddress getAddress(const long id) const;
 
-    void updateConnections(id_set &connected, id_set &errors);
+    struct result_ids {
+        id_set success;
+        id_set errors;
+    };
+    
+    result_ids updateConnections();
 
     //  throws: not_connected, write_error
     int  send(const long id, const bytes &data);
 
-    bool recv(id_set &ready, id_set &errors);
+    result_ids recv();
 
     bool searchStream(const long id, Protocols::PacketFinder &pf);
 

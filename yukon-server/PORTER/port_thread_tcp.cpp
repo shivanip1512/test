@@ -83,16 +83,14 @@ bool TcpPortHandler::manageConnections( void )
         return false;
     }
 
-    TcpConnectionManager::id_set connected, failed;
+    auto [connected, failed] = _connectionManager.updateConnections();
 
-    _connectionManager.updateConnections(connected, failed);
-
-    for each( const long device_id in connected )
+    for( const long device_id : connected )
     {
         updateDeviceCommStatus(device_id, ClientErrors::None);
     }
 
-    for each( const long device_id in failed )
+    for( const long device_id : failed )
     {
         updateDeviceCommStatus(device_id, ClientErrors::DeviceNotConnected);
     }
@@ -116,7 +114,7 @@ void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> 
 {
     set<long> device_ids;
 
-    for each( const CtiDeviceSingle *dev in devices )
+    for( const CtiDeviceSingle *dev : devices )
     {
         if( dev && !dev->isInhibited() )
         {
@@ -337,26 +335,20 @@ string TcpPortHandler::describePort( void ) const
 
 bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsigned long until)
 {
-    bool data_received = false;
-
-    TcpConnectionManager::id_set ready_devices, error_devices;
-
     //  This code, as currently written, assumes that it will read from all ready_devices
     //    and does not allow for breaking out when its timer is expired.
     //  Even though the time to read from "ready" sockets should be negligible, this
     //    behavior will need to change to fully adhere to the cooperative multitasking design of UnsolicitedHandler.
 
-    _connectionManager.recv(ready_devices, error_devices);
+    auto[ready_devices, error_devices] = _connectionManager.recv();
 
-    for each( long device_id in ready_devices )
+    for( long device_id : ready_devices )
     {
         if( device_record *dr = getDeviceRecordById(device_id) )
         {
-            packet *p = 0;
-
             if( isDnpDeviceType(dr->device->getType()) )
             {
-                while( p = findPacket(device_id, Protocols::DNP::DnpPacketFinder()) )
+                while( auto p = findPacket(device_id, Protocols::DNP::DnpPacketFinder()) )
                 {
                     p->protocol = packet::ProtocolTypeDnp;
 
@@ -365,7 +357,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
             }
             else if( isGpuffDevice(*dr->device) )
             {
-                while( p = findPacket(device_id, GpuffProtocol::GpuffPacketFinder()) )
+                while( auto p = findPacket(device_id, GpuffProtocol::GpuffPacketFinder()) )
                 {
                     p->protocol = packet::ProtocolTypeGpuff;
 
@@ -375,7 +367,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
         }
     }
 
-    for each( long device_id in error_devices )
+    for( long device_id : error_devices )
     {
         updateDeviceCommStatus(device_id, ClientErrors::TcpRead);
     }
