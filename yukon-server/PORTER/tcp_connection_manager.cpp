@@ -7,6 +7,8 @@
 #include "std_helper.h"
 #include "coroutine_util.h"
 
+#include <boost/range/join.hpp>
+
 using namespace std;
 
 namespace Cti    {
@@ -68,14 +70,23 @@ void TcpConnectionManager::disconnect(long id)
 }
 
 
-void TcpConnectionManager::updateConnections(id_set &connected, id_set &errors)
+auto TcpConnectionManager::updateConnections() -> result_ids
 {
     tryConnectInactive();
 
+    result_ids results;
+
     for( auto pending_block : Coroutines::chunked(_pending, FD_SETSIZE) )
     {
-        checkPendingConnectionBlock(pending_block, connected, errors);
+        checkPendingConnectionBlock(pending_block, results.success, results.errors);
     }
+
+    for( long id : boost::range::join(results.success, results.errors) )
+    {
+        _pending.erase(id);
+    }
+
+    return results;
 }
 
 
@@ -141,15 +152,11 @@ void TcpConnectionManager::checkPendingConnectionBlock(slice<pending_map> &pendi
             {
                 emplace_unique_ptr(_established, id, *p);
 
-                _pending.erase(id);
-
                 connected.insert(id);
             }
             else if( p->timeout < Now )
             {
                 emplace_unique_ptr(_inactive, id, *p);
-
-                _pending.erase(id);
 
                 errors.insert(id);
             }
@@ -189,15 +196,22 @@ int TcpConnectionManager::send(const long id, const bytes &data)
 
 
 
-bool TcpConnectionManager::recv(id_set &ready, id_set &errors)
+auto TcpConnectionManager::recv() -> result_ids
 {
+    result_ids results;
+
     //  check in blocks of up to FD_SETSIZE
     for( auto candidate_sockets : Coroutines::chunked(_established, FD_SETSIZE) )
     {
-        readCandidateSockets(ready, errors, candidate_sockets);
+        readCandidateSockets(results.success, results.errors, candidate_sockets);
     }
 
-    return !ready.empty() && !errors.empty();
+    for( long id : results.errors )
+    {
+        _established.erase(id);
+    }
+
+    return results;
 }
 
 
@@ -243,8 +257,6 @@ void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, s
                 errors.insert(id);
 
                 emplace_unique_ptr(_inactive, id, *e);
-
-                _established.erase(id);
             }
         }
     }
