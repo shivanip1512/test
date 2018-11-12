@@ -187,6 +187,20 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-18960', '7.2.0', GETDATE());
 /* @end YUK-18960 */
 
+/* @start YUK-19048 */
+ALTER TABLE LMNestControlEvent
+ADD CancelOrStop CHAR(1);
+GO
+
+UPDATE LMNestControlEvent
+SET CancelOrStop = 'S';
+
+ALTER TABLE LMNestControlEvent
+ALTER COLUMN CancelOrStop CHAR(1) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-19048', '7.2.0', GETDATE());
+/* @end YUK-19048 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
