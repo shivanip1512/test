@@ -30,11 +30,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.meter.model.DisplayableMeter;
+import com.cannontech.amr.outageProcessing.OutageMonitor;
+import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
+import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -110,7 +114,10 @@ public class MapController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
+    @Autowired private OutageMonitorDao outageMonitorDao;
+    @Autowired private OutageMonitorService outageMonitorService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DeviceGroupService deviceGroupService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -125,21 +132,33 @@ public class MapController {
      * the violations device group of a status point or outage monitor.
      */
     @RequestMapping("/map/dynamic")
-    public String dynamic(ModelMap model, DeviceCollection deviceCollection, Integer monitorId, Boolean violationsOnly) {
+    public String dynamic(ModelMap model, DeviceCollection deviceCollection, String monitorType, Integer monitorId, Boolean violationsOnly) {
         
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("description", deviceCollection.getDescription());
         model.addAttribute("dynamic", true);
+        model.addAttribute("monitorType", monitorType);
         model.addAttribute("monitorId", monitorId);
         model.addAttribute("violationsOnly", violationsOnly);
         if (monitorId != null) {
-            DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-            DeviceGroup all = monitor.getGroup();
-            DeviceCollection allCollection = deviceGroupCollectionHelper.buildDeviceCollection(all);
-            model.addAttribute("deviceCollection", allCollection);
-            DeviceGroup violations = monitor.getViolationGroup();
-            DeviceCollection violationsCollection = deviceGroupCollectionHelper.buildDeviceCollection(violations);
-            model.addAttribute("violationsCollection", violationsCollection);
+            if (monitorType.equalsIgnoreCase("Device Data")) {
+                DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
+                DeviceGroup all = monitor.getGroup();
+                DeviceCollection allCollection = deviceGroupCollectionHelper.buildDeviceCollection(all);
+                model.addAttribute("deviceCollection", allCollection);
+                DeviceGroup violations = monitor.getViolationGroup();
+                DeviceCollection violationsCollection = deviceGroupCollectionHelper.buildDeviceCollection(violations);
+                model.addAttribute("violationsCollection", violationsCollection);
+            } else if (monitorType.equalsIgnoreCase("Outage")) {
+                OutageMonitor monitor = outageMonitorDao.getById(monitorId);
+                DeviceGroup all = deviceGroupService.findGroupName(monitor.getGroupName());
+                DeviceCollection allCollection = deviceGroupCollectionHelper.buildDeviceCollection(all);
+                model.addAttribute("deviceCollection", allCollection);
+                DeviceGroup violations = outageMonitorService.getOutageGroup(monitor.getName());
+                DeviceCollection violationsCollection = deviceGroupCollectionHelper.buildDeviceCollection(violations);
+                model.addAttribute("violationsCollection", violationsCollection);
+            }
+
         }
         
         return "map/map.jsp";
@@ -264,24 +283,37 @@ public class MapController {
         }
     }
     
-    @RequestMapping("/map/locations/{monitorId}")
-    public @ResponseBody Map<String, Object> monitorLocations(@PathVariable int monitorId, Boolean violationsOnly) {
+    @RequestMapping("/map/locations/{monitorType}/{monitorId}")
+    public @ResponseBody Map<String, Object> monitorLocations(@PathVariable String monitorType, 
+                                                              @PathVariable int monitorId, Boolean violationsOnly) {
         
         Map<String, Object> json = new HashMap<String, Object>();
-        DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-        DeviceGroup violations = monitor.getViolationGroup();
-        DeviceCollection violationsCollection = deviceGroupCollectionHelper.buildDeviceCollection(violations);
-        if (violationsOnly != null && violationsOnly == true) {
-            FeatureCollection violationLocations = paoLocationService.getLocationsAsGeoJson(violationsCollection);
-            json.put("locations",  violationLocations);
-        } else {
-            DeviceGroup all = monitor.getGroup();
-            DeviceCollection allCollection = deviceGroupCollectionHelper.buildDeviceCollection(all);
-            FeatureCollection allLocations = paoLocationService.getLocationsAsGeoJson(allCollection);
-            json.put("locations",  allLocations);
+        DeviceGroup violations = null;
+        DeviceGroup all = null;
+        if (monitorType.equalsIgnoreCase("Device Data")) {
+            DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
+            violations = monitor.getViolationGroup();
+            all = monitor.getGroup();
+        } else if (monitorType.equalsIgnoreCase("Outage")) {
+            OutageMonitor monitor = outageMonitorDao.getById(monitorId);
+            violations = outageMonitorService.getOutageGroup(monitor.getName());
+            all = deviceGroupService.findGroupName(monitor.getGroupName());
         }
-        List<SimpleDevice> violationDevices = violationsCollection.getDeviceList();
-        json.put("violationDevices", violationDevices);        
+        
+        if (violations != null && all != null) {
+            DeviceCollection violationsCollection = deviceGroupCollectionHelper.buildDeviceCollection(violations);
+            if (violationsOnly != null && violationsOnly == true) {
+                FeatureCollection violationLocations = paoLocationService.getLocationsAsGeoJson(violationsCollection);
+                json.put("locations",  violationLocations);
+            } else {
+                DeviceCollection allCollection = deviceGroupCollectionHelper.buildDeviceCollection(all);
+                FeatureCollection allLocations = paoLocationService.getLocationsAsGeoJson(allCollection);
+                json.put("locations",  allLocations);
+            }
+            List<SimpleDevice> violationDevices = violationsCollection.getDeviceList();
+            json.put("violationDevices", violationDevices);  
+        }
+      
         return json;
     }
     

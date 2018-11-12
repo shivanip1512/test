@@ -122,13 +122,12 @@
                 </div>
                 <c:if test="${!empty monitorId}">
                     <input type="hidden" id="monitorId" value="${monitorId}"/>
-                    <input type="hidden" id="violationsOnly" value="${violationsOnly}"/>
-                    <cti:url value="/tools/map/locations/${monitorId}" var="monitorLocationsUrl"/>
+                    <cti:url value="/tools/map/locations/${monitorType}/${monitorId}" var="monitorLocationsUrl"/>
                     <input id="monitorLocations" type="hidden" value="${fn:escapeXml(monitorLocationsUrl)}">
                     <span class="fr">
                         <i:inline key=".filter.label"/>:
                         <c:set var="violationsSelected" value="${violationsOnly ? 'selected=selected' : ''}"/>
-                        <select id="violationsSelect" name="violationsSelect">
+                        <select id="violationsSelect">
                             <option value="false"><i:inline key=".filter.allDevices"/></option>
                             <option value="true" ${violationsSelected}><i:inline key=".filter.violationsOnly"/></option>
                         </select>
