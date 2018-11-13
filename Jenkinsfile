@@ -197,4 +197,54 @@ pipeline {
             }
         }
     }
+	post {
+        failure{
+            echo 'Triggering Emails'
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n "+ getChangeStringAndLogs(),
+                to: ' $DEFAULT_RECIPIENTS',
+                recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
+                subject: "Build  ${currentBuild.currentResult} in Jenkins :  ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        }
+        always{
+            verifyLastBuild()
+        }
+    }
+}
+@NonCPS
+def verifyLastBuild(){
+    if(currentBuild.currentResult == 'SUCCESS'){
+        if(currentBuild?.getPreviousBuild()?.result == 'FAILURE') {
+            emailext body: " See<${env.BUILD_URL}display/redirect> \n ",
+            to: '$DEFAULT_RECIPIENTS',
+            recipientProviders: [culprits(), requestor(), brokenTestsSuspects(), brokenBuildSuspects()],
+            subject: "Jenkins build is back to normal : ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        }
+    }
+}
+
+@NonCPS
+def getChangeStringAndLogs() {
+ MAX_MSG_LEN = 100
+ def changeString = ""
+ def changeLogSets = currentBuild.changeSets
+ if(changeLogSets.size()>0){
+     changeString += "\n Changes : "
+    for (int i = 0; i < changeLogSets.size(); i++) {
+        def entries = changeLogSets[i].items
+        for (int j = 0; j < entries.length; j++) {
+            def entry = entries[j]
+            truncated_msg = entry.msg.take(MAX_MSG_LEN)
+            changeString += " [${entry.author}] - ${truncated_msg} \n"
+        }
+    }
+ }
+changeString += "Logs: \n"
+ def logs = currentBuild.rawBuild.getLog(100)
+    for(String line : logs){
+        changeString += line +"\n"
+    }
+ if (!changeString) {
+ changeString = " - No new changes"
+ }
+ return changeString
 }
