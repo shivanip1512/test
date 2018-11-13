@@ -1329,7 +1329,9 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="infrastructureWarningsWidgetListener" />
     </bean>
-    
+
+    <bean class="com.cannontech.web.common.widgets.service.impl.AssetAvailabilityWidgetServiceImpl"/>
+
      <bean class="com.cannontech.web.stars.rtu.service.impl.RtuServiceImpl"/>
      
      <bean class="com.cannontech.web.capcontrol.IvvcHelper"/>
