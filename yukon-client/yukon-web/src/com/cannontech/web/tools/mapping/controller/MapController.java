@@ -37,6 +37,8 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -118,6 +120,8 @@ public class MapController {
     @Autowired private OutageMonitorService outageMonitorService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -174,6 +178,13 @@ public class MapController {
         model.addAttribute("attributes", objectFormattingService.sortDisplayableValues(groups, userContext));
         
         Filter filter = new Filter();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String message = accessor.getMessage(baseKey + "filter.selectedDevices");
+        DeviceCollection filteredCollection = deviceGroupCollectionHelper.createDeviceGroupCollection(deviceCollection.iterator(), message);
+        Map<String, String> params = filteredCollection.getCollectionParameters();
+        String groupName = params.get("group.name");
+        model.addAttribute("filteredCollection", filteredCollection);
+        filter.setTempDeviceGroupName(groupName);
         model.addAttribute("filter", filter);
         
         return "map/map.jsp";
@@ -389,10 +400,13 @@ public class MapController {
     }
     
     @RequestMapping("/map/filter")
-    public @ResponseBody Map<Integer, Boolean> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
+    public @ResponseBody Map<String, Object> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
         
+        Map<String, Object> json = new HashMap<String, Object>();
         Map<Integer, Boolean> results = new HashMap<>();
         Map<Integer, Group> groups = Maps.uniqueIndex(filter.getGroups(), Group.ID_FUNCTION);
+        List<Integer> filteredDeviceIds = new ArrayList<Integer>();
+        List<SimpleDevice> filteredDevices = new ArrayList<SimpleDevice>();
         
         Set<SimpleDevice> devices = Sets.newHashSet(deviceCollection.getDeviceList());
         BiMap<LitePoint, PaoIdentifier> points = 
@@ -418,6 +432,7 @@ public class MapController {
             LiteState state = stateGroupDao.findLiteState(lp.getStateGroupID(), (int) pvqh.getValue());
             if (state.getStateRawState() == group.getState()) {
                 results.put(points.get(lp).getPaoId(), true);
+                filteredDeviceIds.add(points.get(lp).getPaoId());
             } else {
                 results.put(points.get(lp).getPaoId(), false);
             }
@@ -432,6 +447,7 @@ public class MapController {
             LiteState state = pointService.getCurrentStateForNonStatusPoint(lp, signals.get(pointId));
             if (state.getStateRawState() == group.getState()) {
                 results.put(points.get(lp).getPaoId(), true);
+                filteredDeviceIds.add(points.get(lp).getPaoId());
             } else {
                 results.put(points.get(lp).getPaoId(), false);
             }
@@ -442,7 +458,15 @@ public class MapController {
         for (SimpleDevice device : unsupported) {
             results.put(device.getDeviceId(), false);
         }
+        List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>(devices);
+        filteredDevices = deviceList.stream().filter(device -> filteredDeviceIds.contains(device.getDeviceId())).collect(Collectors.toList());
+        StoredDeviceGroup group = (StoredDeviceGroup) deviceGroupService.resolveGroupName(filter.getTempDeviceGroupName());
+        deviceGroupMemberEditorDao.removeAllChildDevices(group);
+        deviceGroupMemberEditorDao.addDevices(group, filteredDevices);
         
-        return results;
+        json.put("results", results);
+        json.put("filteredDeviceCount", filteredDevices.size());
+        
+        return json;
     }
 }

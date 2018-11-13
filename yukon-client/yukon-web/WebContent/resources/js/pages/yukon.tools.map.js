@@ -521,6 +521,10 @@ yukon.tools.map = (function() {
                 _update(true);
             });
             
+            $('#devicesFilter').on('change', function(ev) {
+                $(this).trigger('yukon.map.filter');
+            });
+            
             /** Initilize the attribute select and handle change events. */
             $('#attribute-select').chosen({width: '100%'}).on('change', function(ev) {
                 $('#filter-states').empty();
@@ -565,7 +569,10 @@ yukon.tools.map = (function() {
                 
                 $('#filter-form').ajaxSubmit({
                     dataType: 'json',
-                    success: function(results) {
+                    success: function(json) {
+                        var results = json.results,
+                            filteredCount = json.filteredDeviceCount,
+                            filteredDevicesOnly = $('#devicesFilter').val();
                         
                         $('.js-status-retrieving').hide();
                         $('.js-status-filtering').show();
@@ -583,15 +590,37 @@ yukon.tools.map = (function() {
                             if (icon) { // Ignore any paos we aren't tracking. i.e. They don't have a location.
                                 show = results[paoId];
                                 visible = _visibility[paoId];
-                                if (show && !visible) {
+                                var currentStyle = icon.getStyle().clone(),
+                                    image = currentStyle.getImage(),
+                                    src = image.getSrc();  
+                                if (show) {
+                                    currentStyle.setImage(new ol.style.Icon({ src: src, color: _violationColor, anchor:  [0.5, 1.0] }));
+                                    icon.setStyle(currentStyle);
+                                } else {
+                                    currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
+                                    icon.setStyle(currentStyle);
+                                }
+                                if (show && !visible || (filteredDevicesOnly == "false" && !visible)) {
                                     toAdd.push(icon);
                                     _visibility[paoId] = true;
                                 } else if (!show && visible) {
-                                    toRemove.push(icon);
-                                    _visibility[paoId] = false;
+                                    if (filteredDevicesOnly == "true") {
+                                        toRemove.push(icon);
+                                        _visibility[paoId] = false;
+                                    }
                                 }
                             }
                         }
+                        
+                        //update filtered count
+                        var filteredBadge = $('#filtered-collection .js-filtered');
+                        var currentFiltered = parseInt(filteredBadge.text(), 10);
+                        if (currentFiltered !== filteredCount) {
+                            filteredBadge.text(filteredCount);
+                            filteredBadge.addClass('animated flash');
+                        }
+                        
+                        $('.js-filtered-devices').removeClass('dn');
                         
                         debug.log('building add/remove arrays: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
@@ -636,12 +665,24 @@ yukon.tools.map = (function() {
                 
                 var toAdd = [], start = new Date().getTime();
                 for (var paoId in _visibility) {
+                    var icon = _icons[paoId],
+                        currentStyle = icon.getStyle().clone(),
+                        image = currentStyle.getImage(),
+                        src = image.getSrc();
+                    currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
+                    icon.setStyle(currentStyle);
                     if (!_visibility[paoId]) {
-                        toAdd.push(_icons[paoId]);
+                        toAdd.push(icon);
                         _visibility[paoId] = true;
                     }
                 }
                 _getLayer('icons').getSource().addFeatures(toAdd);
+                
+                //update filtered count
+                var filteredBadge = $('#filtered-collection .js-filtered');
+                filteredBadge.text(0);
+                filteredBadge.addClass('animated flash');
+                $('.js-filtered-devices').addClass('dn');
                 
                 debug.log('removing icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                 start = new Date().getTime();
@@ -732,7 +773,7 @@ yukon.tools.map = (function() {
             $('#violation-collection .js-violations')
                 .on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(ev) {
                     $('#violation-collection .js-violations').removeClass('animated flash'); 
-        });
+            });
             
             /** Pause/Resume updating on updater button clicks. */
             $('#map-updater .button').on('click', function(ev) {

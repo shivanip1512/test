@@ -9,6 +9,7 @@ public class Filter {
 
     private BuiltInAttribute attribute;
     private List<Group> groups = LazyList.ofInstance(Group.class);
+    private String tempDeviceGroupName;
 
     public BuiltInAttribute getAttribute() {
         return attribute;
@@ -24,5 +25,13 @@ public class Filter {
     
     public void setGroups(List<Group> groups) {
         this.groups = groups;
+    }
+
+    public String getTempDeviceGroupName() {
+        return tempDeviceGroupName;
+    }
+
+    public void setTempDeviceGroupName(String tempDeviceGroupName) {
+        this.tempDeviceGroupName = tempDeviceGroupName;
     }
 }

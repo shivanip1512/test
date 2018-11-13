@@ -49,6 +49,7 @@
                 <form:form modelAttribute="filter" id="filter-form" action="${filterUrl}">
                     <cti:csrfToken/>
                     <cti:deviceCollection deviceCollection="${deviceCollection}"/>
+                    <form:hidden path="tempDeviceGroupName"/>
                     <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                         <cti:msg2 key=".chooseAttribute" var="chooseAttribute"/>
                         <tags:selectNameValue nameKey=".attribute" path="attribute" items="${attributes}" itemLabel="message"
@@ -90,7 +91,7 @@
                    <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>
                    <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
                 </cm:dropdown>
-                <c:if test="${!empty monitorId}">
+                <c:if test="${!empty violationsCollection}">
                     <tags:selectedDevices deviceCollection="${violationsCollection}" id="violation-collection" 
                         labelKey="yukon.web.modules.tools.map.violationDevices" badgeClasses="badge-warning js-violations"/>
                     <cti:url var="downloadUrl" value="/tools/map/locations/download">
@@ -105,6 +106,24 @@
                        <cm:dropdownOption key=".collectionActions" href="${violationActionsUrl}" icon="icon-cog-go" newTab="true"/>
                        <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
                     </cm:dropdown>
+                </c:if>
+                <c:if test="${!empty filteredCollection}">
+                    <div class="js-filtered-devices PT10 dn">
+                        <tags:selectedDevices deviceCollection="${filteredCollection}" id="filtered-collection" 
+                            labelKey="yukon.web.modules.tools.map.filter.filteredOnly" badgeClasses="badge-warning js-filtered"/>
+                        <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                            <cti:mapParam value="${filteredCollection.collectionParameters}"/>
+                        </cti:url>
+                        <cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
+                            <c:forEach items="${filteredCollection.collectionParameters}" var="cp">
+                                <cti:param name="${cp.key}" value="${cp.value}"/>
+                            </c:forEach>
+                        </cti:url>
+                        <cm:dropdown icon="icon-cog">
+                           <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true"/>
+                           <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
+                        </cm:dropdown>
+                    </div>
                 </c:if>
             </div>
             <div id="status-info" class="column two nogutter">
@@ -130,6 +149,15 @@
                         <select id="violationsSelect">
                             <option value="false"><i:inline key=".filter.allDevices"/></option>
                             <option value="true" ${violationsSelected}><i:inline key=".filter.violationsOnly"/></option>
+                        </select>
+                    </span>
+                </c:if>
+                <c:if test="${!empty filter}">
+                    <span class="fr js-filtered-devices PT10 dn">
+                        <i:inline key=".filter.display.label"/>:
+                        <select id="devicesFilter">
+                            <option value="false"><i:inline key=".filter.allDevices"/></option>
+                            <option value="true" selected="selected"><i:inline key=".filter.filteredOnly"/></option>
                         </select>
                     </span>
                 </c:if>
