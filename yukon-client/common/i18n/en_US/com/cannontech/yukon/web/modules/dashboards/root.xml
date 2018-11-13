@@ -62,7 +62,7 @@
     <entry key="yukon.web.modules.dashboard.edit.exception.system">Unable to edit dashboard {0}. System dashboards cannot be edited.</entry>
     <entry key="yukon.web.modules.dashboard.view.exception.notOwner">Unable to view dashboard {0}. You do not have access to this dashboard.</entry>
     <entry key="yukon.web.modules.dashboard.exception.deviceGroup.required">Valid Device group selection is required.</entry>
-    <entry key="yukon.web.modules.dashboard.exception.controlAreaOrLMProgramOrScenarioId.required">Valid Control area, control program or secnario selection is required.</entry>
+    <entry key="yukon.web.modules.dashboard.exception.controlAreaOrProgramOrScenarioId.required">Valid Control area, control program or scenario selection is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.meter.required">Meter is required.</entry>
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>
@@ -74,7 +74,7 @@
     <!-- Widget Types -->
     <entry key="yukon.web.modules.dashboard.widgetType.ASSET_AVAILABILITY.name">Asset Availability</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.ASSET_AVAILABILITY.description">
-        Provides operational information for two-way Demand Response devices. It provides color-coded status for Scenarios, Control Areas and Programs.
+        Provides operational information for two-way Demand Response devices.
     </entry>
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.name">Favorites</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.description">Displays links to any pages that you mark as your favorite.</entry>
@@ -104,7 +104,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description">Displays an interactive trend data graph of the queue counts for each of the communication channels selected (not inclusive of RF Meters).</entry>
 
     <!-- Widget Parameters -->
-    <entry key="yukon.web.modules.dashboard.widgetParameter.controlAreaOrLMProgramOrScenarioId">Selection</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.controlAreaOrProgramOrScenarioId">Target Level</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Meter</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.includeDisabled">Include Disabled</entry>

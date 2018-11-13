@@ -10,7 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 public class AssetAvailabilityWidgetSummary {
     
     private AssetAvailabilityDetail active;
-    private AssetAvailabilityDetail unavailabile;
+    private AssetAvailabilityDetail unavailable;
     private AssetAvailabilityDetail inactive;
     private AssetAvailabilityDetail optedOut;
     private Instant collectionTime;
@@ -27,12 +27,12 @@ public class AssetAvailabilityWidgetSummary {
         this.active = new AssetAvailabilityDetail(deviceCount);
     }
 
-    public AssetAvailabilityDetail getUnavailabile() {
-        return unavailabile;
+    public AssetAvailabilityDetail getUnavailable() {
+        return unavailable;
     }
 
-    public void setUnavailabile(int deviceCount) {
-        this.unavailabile = new AssetAvailabilityDetail(deviceCount);
+    public void setUnavailable(int deviceCount) {
+        this.unavailable = new AssetAvailabilityDetail(deviceCount);
     }
 
     public AssetAvailabilityDetail getInactive() {
@@ -62,13 +62,13 @@ public class AssetAvailabilityWidgetSummary {
     public void calculatePrecentages() {
         int total = getTotalDeviceCount();
         active.calculatePrecentage(total);
-        unavailabile.calculatePrecentage(total);
+        unavailable.calculatePrecentage(total);
         inactive.calculatePrecentage(total);
         optedOut.calculatePrecentage(total);
     }
     
     public int getTotalDeviceCount(){
-        return active.getDeviceCount() + unavailabile.getDeviceCount() + inactive.getDeviceCount()
+        return active.getDeviceCount() + unavailable.getDeviceCount() + inactive.getDeviceCount()
         + optedOut.getDeviceCount();
     }
     
@@ -81,7 +81,7 @@ public class AssetAvailabilityWidgetSummary {
             tsb.append("collection time=" + time);
         }
         tsb.append("active="+ active);
-        tsb.append("unavailabile="+ unavailabile);
+        tsb.append("unavailabile="+ unavailable);
         tsb.append("inactive="+ inactive);
         tsb.append("optedOut="+ optedOut);
 

@@ -35,7 +35,7 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
         AssetAvailabilitySummary assetAvailabilitySummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPao.getPaoIdentifier());
         summary.setActive(assetAvailabilitySummary.getActiveSize());
         summary.setInactive(assetAvailabilitySummary.getInactiveSize());
-        summary.setUnavailabile(assetAvailabilitySummary.getUnavailableSize());
+        summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize());
         summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize());
         summary.calculatePrecentages();
         log.debug(summary);

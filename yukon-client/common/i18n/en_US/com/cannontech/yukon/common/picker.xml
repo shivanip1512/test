@@ -33,7 +33,7 @@
 <entry key="yukon.web.picker.cbcPicker.dialogTitle">Select Controller</entry>
 <entry key="yukon.web.picker.lmDevicePicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.lmProgramOrScenarioPicker.dialogTitle">Select Program or Scenario</entry>
-<entry key="yukon.web.picker.controlAreaOrLMProgramOrScenarioPicker.dialogTitle">Select Control Area or Program or Scenario</entry>
+<entry key="yukon.web.picker.controlAreaOrProgramOrScenarioPicker.dialogTitle">Select Control Area or Program or Scenario</entry>
 <entry key="yukon.web.picker.devicePicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.meterPicker.dialogTitle">Select Meter</entry>
 <entry key="yukon.web.picker.meterAndRelayPicker.dialogTitle">Select Meter</entry>

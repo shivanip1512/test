@@ -26,14 +26,6 @@ yukon.widget.assetAvailability = (function () {
                 color: '#009933'
             },
             {
-                name: $('.js-asset-UNAVAILABLE').val(),
-                filter: 'UNAVAILABLE',
-                displayPercentage: data.unavailabile.percentage < 1 && data.unavailabile.percentage != 0 ? '&lt;1%' : yukon.percent(data.unavailabile.percentage, 100, 1),
-                y: (data.unavailabile.percentage < 1 && data.unavailabile.percentage != 0 ? 1 : data.unavailabile.percentage),
-                x: data.unavailabile.deviceCount,
-                color: '#E50000'
-            },
-            {
                 name: $('.js-asset-INACTIVE').val(),
                 filter: 'INACTIVE',
                 displayPercentage: data.inactive.percentage < 1 && data.inactive.percentage != 0 ? '&lt;1%' : yukon.percent(data.inactive.percentage, 100, 1),
@@ -48,6 +40,14 @@ yukon.widget.assetAvailability = (function () {
                 displayPercentage: data.optedOut.percentage < 1 && data.optedOut.percentage != 0 ? '&lt;1%' : yukon.percent(data.optedOut.percentage, 100, 1),
                 y: (data.optedOut.percentage < 1 && data.optedOut.percentage != 0 ? 1 : data.optedOut.percentage),
                 x: data.optedOut.deviceCount,
+                color: '#4d90fe'
+            },
+            {
+                name: $('.js-asset-UNAVAILABLE').val(),
+                filter: 'UNAVAILABLE',
+                displayPercentage: data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%' : yukon.percent(data.unavailable.percentage, 100, 1),
+                y: (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
+                x: data.unavailable.deviceCount,
                 color: '#888'
             }
         ]
@@ -55,16 +55,16 @@ yukon.widget.assetAvailability = (function () {
     
     _update = function (selectionChanged) {
         $('.js-asset-availability-widget').each (function (index, item) {
-            var areaOrLMProgramOrScenarioId = $(item).find('input[name=areaOrLMProgramOrScenarioId]').val(),
-                chart = $(item).find('.js-pie-chart'),
+            var controlAreaOrProgramOrScenarioId = $(item).find('input[name=controlAreaOrProgramOrScenarioId]').val(),
+                chart = $(item).find('.js-asset-availability-pie-chart'),
                 errorMessage = $(item).find('.user-message'),
                 errorMessageFound = errorMessage.is(":visible");
             
-            if (areaOrLMProgramOrScenarioId && (!errorMessageFound ||selectionChanged)) {
+            if (controlAreaOrProgramOrScenarioId && (!errorMessageFound || selectionChanged)) {
                 $.ajax({
                     url: yukon.url('/dr/assetAvailability/updateChart'),
                     data: {
-                        areaOrLMProgramOrScenarioId: areaOrLMProgramOrScenarioId
+                        controlAreaOrProgramOrScenarioId: controlAreaOrProgramOrScenarioId
                     }
                 }).done(function (data) {
                     var refreshButton = $(item).find('.js-update-asset-availability');

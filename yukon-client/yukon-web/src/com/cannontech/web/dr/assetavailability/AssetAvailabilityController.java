@@ -3,7 +3,6 @@ package com.cannontech.web.dr.assetavailability;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
@@ -26,7 +24,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY)
 public class AssetAvailabilityController {
 
-    private Logger log = YukonLogManager.getLogger(AssetAvailabilityController.class);
     private final static String widgetKey = "yukon.web.widgets.";
     
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -34,12 +31,12 @@ public class AssetAvailabilityController {
     @Autowired private AssetAvailabilityWidgetService assetAvailabilityWidgetService;
 
     @GetMapping(value = "updateChart")
-    public @ResponseBody Map<String, Object> updateChart(Integer areaOrLMProgramOrScenarioId, YukonUserContext userContext) throws Exception {
+    public @ResponseBody Map<String, Object> updateChart(Integer controlAreaOrProgramOrScenarioId, YukonUserContext userContext) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
 
         Instant lastUpdateTime = new Instant();
-        AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(areaOrLMProgramOrScenarioId, lastUpdateTime);
+        AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(controlAreaOrProgramOrScenarioId, lastUpdateTime);
 
         if (summary.getTotalDeviceCount() == 0) {
             String errorMsg = accessor.getMessage(widgetKey + "assetAvailabilityWidget.noDevicesFound");

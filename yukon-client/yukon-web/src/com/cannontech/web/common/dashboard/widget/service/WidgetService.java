@@ -3,7 +3,6 @@ package com.cannontech.web.common.dashboard.widget.service;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.Widget;
@@ -21,7 +20,7 @@ public interface WidgetService {
      * @param yukonUser 
      * @return All widget types sorted by category.
      */
-    public Map<WidgetCategory, List<WidgetType>> getTypesByCategory(LiteYukonUser yukonUser);
+    public Map<WidgetCategory, List<WidgetType>> getTypesByCategory();
     
     /**
      * Create a Widget object of the specified type, according to the parameters. This does not save the object - it

@@ -144,9 +144,9 @@
         <property name="required" value="false"/>
     </bean>
     
-    <bean id="widgetInput.controlAreaOrLMProgramOrScenarioId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
-        <qualifier value="widgetInput.controlAreaOrLMProgramOrScenarioId"/>
-        <property name="name" value="searchValue"/>
+    <bean id="widgetInput.controlAreaOrProgramOrScenarioId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <qualifier value="widgetInput.controlAreaOrProgramOrScenarioId"/>
+        <property name="name" value="widgetInput.controlAreaOrProgramOrScenarioId"/>
         <property name="description" value="Control area, control scenario or program id."/>
         <property name="required" value="true"/>
     </bean>

@@ -9,11 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.Widget;
@@ -26,10 +22,8 @@ import com.google.common.collect.Sets;
 
 public class WidgetServiceImpl implements WidgetService {
     
-    @Autowired private RolePropertyDao rolePropertyDao;
-    
     @Override
-    public Map<WidgetCategory, List<WidgetType>> getTypesByCategory(LiteYukonUser yukonUser) {
+    public Map<WidgetCategory, List<WidgetType>> getTypesByCategory() {
         LinkedHashMap<WidgetCategory, List<WidgetType>> map = new LinkedHashMap<>();
         List<WidgetCategory> widgetCategories = Lists.newArrayList(WidgetCategory.values());
         Collections.sort(widgetCategories);
@@ -37,10 +31,6 @@ public class WidgetServiceImpl implements WidgetService {
             map.put(category, new ArrayList<>());
         }
         List<WidgetType> widgetTypes = Lists.newArrayList(WidgetType.values());
-        boolean showAssetAvailability = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, yukonUser);
-        if (!showAssetAvailability) {
-            widgetTypes.remove(WidgetType.ASSET_AVAILABILITY);
-        }
         Collections.sort(widgetTypes, (type1, type2) -> type1.name().compareTo(type2.name()));
         for (WidgetType type : widgetTypes) {
             map.get(type.getCategory()).add(type);

@@ -12,7 +12,8 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlAreaOrProgramOrScenarioPickerValidator implements WidgetInputValidator {
 
-    private static final ControlAreaOrProgramOrScenarioPickerValidator singleton = new ControlAreaOrProgramOrScenarioPickerValidator();
+    private static final ControlAreaOrProgramOrScenarioPickerValidator singleton =
+        new ControlAreaOrProgramOrScenarioPickerValidator();
     private IDatabaseCache cache = YukonSpringHook.getBean("databaseCache", IDatabaseCache.class);
 
     private ControlAreaOrProgramOrScenarioPickerValidator() {
@@ -26,13 +27,15 @@ public class ControlAreaOrProgramOrScenarioPickerValidator implements WidgetInpu
     public void validate(String inputName, Object inputValue, WidgetInputType type)
             throws WidgetParameterValidationException, WidgetMissingParameterException {
         String message = "Valid Control area, control program or secnario selection is required.";
-        if (!StringUtils.isNumeric((String)inputValue)) {
-            throw new WidgetParameterValidationException(message, inputName, "controlAreaOrLMProgramOrScenarioId.required", inputName);
+        if (!StringUtils.isNumeric((String) inputValue)) {
+            throw new WidgetParameterValidationException(message, inputName,
+                "controlAreaOrProgramOrScenarioId.required", inputName);
         }
-        Integer paoId = Integer.parseInt((String)inputValue);
+        Integer paoId = Integer.parseInt((String) inputValue);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         if (pao.getPaoType().getPaoClass() != PaoClass.LOADMANAGEMENT) {
-            throw new WidgetParameterValidationException(message, inputName, "controlAreaOrLMProgramOrScenarioId.required", inputName);
+            throw new WidgetParameterValidationException(message, inputName,
+                "controlAreaOrProgramOrScenarioId.required", inputName);
         }
     }
 

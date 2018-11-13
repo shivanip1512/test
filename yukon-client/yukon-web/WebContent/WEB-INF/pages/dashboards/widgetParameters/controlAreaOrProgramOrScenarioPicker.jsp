@@ -12,8 +12,8 @@
         <form:hidden id="param_${id}"
             path="${param.path}.parameters['${param.parameterName}']" />
         <tags:pickerDialog
-            id="lmDevicePicker${id}"
-            type="controlAreaOrLMProgramOrScenarioPicker"
+            id="controlAreaOrProgramOrScenarioPicker_${id}"
+            type="controlAreaOrProgramOrScenarioPicker"
             linkType="selection"
             multiSelectMode="false"
             selectionProperty="paoName"
