@@ -185,7 +185,7 @@ yukon.widget.assetAvailability = (function () {
                 _update(true);
             });
             
-            _update(true);
+            _update(false);
             
             _initialized = true;
         }
