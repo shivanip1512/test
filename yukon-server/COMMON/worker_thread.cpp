@@ -132,7 +132,10 @@ bool WorkerThread::tryJoinFor( const Timing::Chrono &duration )
         return true;
     }
 
-    CTILOG_INFO(dout, "Trying to join thread " << _function._name);
+    if ( duration.milliseconds() != 0 )     // don't log this when we are checking for isRunning()
+    {
+        CTILOG_INFO(dout, "Trying to join thread " << _function._name);
+    }
 
     return _thread.try_join_for( boost::chrono::milliseconds( duration.milliseconds() ));
 }
