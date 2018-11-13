@@ -3,7 +3,7 @@ package com.cannontech.web.dr.assetavailability;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.widgets.model.AssetAvailabilitySummary;
+import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
+import com.cannontech.web.common.widgets.service.AssetAvailabilityWidgetService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -30,54 +31,31 @@ public class AssetAvailabilityController {
     
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private AssetAvailabilityWidgetService assetAvailabilityWidgetService;
 
     @GetMapping(value = "updateChart")
-    public @ResponseBody Map<String, Object> updateChart(Integer areaOrLMProgramOrScenarioId,
-            YukonUserContext userContext) throws Exception {
+    public @ResponseBody Map<String, Object> updateChart(Integer areaOrLMProgramOrScenarioId, YukonUserContext userContext) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
-        //TODO: replace the call to mockAssetAvailabilitySummary() with service call.
-        AssetAvailabilitySummary summary = mockAssetAvailabilitySummary();
+
+        Instant lastUpdateTime = new Instant();
+        AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(areaOrLMProgramOrScenarioId, lastUpdateTime);
+
         if (summary.getTotalDeviceCount() == 0) {
             String errorMsg = accessor.getMessage(widgetKey + "assetAvailabilityWidget.noDevicesFound");
             json.put("errorMessage", errorMsg);
         } else {
             json.put("summary",  summary);
         }
-        
-        //TODO: Add a service call here.
-        Instant nextRun = Instant.now().plus(1000000l);
-        json.put("lastAttemptedRefresh", nextRun);
-        if (nextRun.isAfterNow()) {
-            json.put("nextRefresh", nextRun);
-            json.put("isRefreshPossible", false);
-            String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            json.put("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
-        } else {
-            json.put("isRefreshPossible", true);
-            json.put("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
-        }
-        
-        return json;
-    }
-    
-    @GetMapping("forceUpdate")
-    public @ResponseBody Map<String, Object> forceUpdate() {
-        Map<String, Object> json = new HashMap<>();
-        //TODO: Need to add a service call here.
-        //dataCollectionWidgetService.collectData();
-        json.put("success", true);
+
+        json.put("lastAttemptedRefresh", lastUpdateTime);
+        Instant nextRun = assetAvailabilityWidgetService.getNextRefreshTime(lastUpdateTime);
+        json.put("refreshMillis", assetAvailabilityWidgetService.getRefreshMilliseconds());
+        String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+        json.put("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
+        json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+
         return json;
     }
 
-    // TODO: Delete this once the service call is added.
-    private AssetAvailabilitySummary mockAssetAvailabilitySummary() {
-        AssetAvailabilitySummary summary = new AssetAvailabilitySummary(Instant.now());
-        summary.setActive(10);
-        summary.setInactive(5);
-        summary.setOptedOut(3);
-        summary.setUnavailabile(2);
-        summary.calculatePrecentages();
-        return summary;
-    }
 }

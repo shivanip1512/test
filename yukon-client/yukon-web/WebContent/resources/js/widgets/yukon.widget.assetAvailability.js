@@ -12,7 +12,7 @@ yukon.widget.assetAvailability = (function () {
     
     var
     _initialized = false,
-    _updateInterval = yg.rp.updater_delay,
+    _updateInterval = 1800000,
     _updateTimeout = null,
     
     _getData = function (data) {
@@ -67,12 +67,17 @@ yukon.widget.assetAvailability = (function () {
                         areaOrLMProgramOrScenarioId: areaOrLMProgramOrScenarioId
                     }
                 }).done(function (data) {
-                    var refreshButton = $(item).find('.js-update-data-collection');
+                    var refreshButton = $(item).find('.js-update-asset-availability');
                     refreshButton.prop('title', data.refreshTooltip);
-                    refreshButton.attr('disabled', !data.isRefreshPossible);
+                    refreshButton.attr('disabled', true);
                     var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                     $(item).find('.js-last-updated').text(dateTime);
-                    
+
+                    setTimeout(function() { 
+                        refreshButton.attr('disabled', false);
+                        refreshButton.prop('title', data.updateTooltip);
+                        }, data.refreshMillis);
+
                     if (data.summary != null) {
                         if (chart.is('.js-initialize')) {
                             _buildChart(chart, data.summary);
@@ -177,8 +182,7 @@ yukon.widget.assetAvailability = (function () {
             });
             
             $(document).on('click', '.js-update-asset-availability', function (event) {
-                $(this).attr('disabled', true);
-                $.ajax(yukon.url('/dr/assetAvailability/forceUpdate'));
+                _update(true);
             });
             
             _update(true);
