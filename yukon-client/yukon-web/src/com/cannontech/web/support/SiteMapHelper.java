@@ -6,8 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -36,6 +38,9 @@ public class SiteMapHelper {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ObjectFormattingService objectFormattingService;
+    
+    private static final Logger log = YukonLogManager.getLogger(SiteMapHelper.class);
+
     
     public Map<SiteMapCategory, List<SiteMapWrapper>> getSiteMap(YukonUserContext context) {
         Multimap<SiteMapCategory, SiteMapWrapper> map = ArrayListMultimap.create();
@@ -123,7 +128,15 @@ public class SiteMapHelper {
             } else if (permission instanceof YukonRoleProperty) {
                 hasPermission = rolePropertyDao.checkProperty((YukonRoleProperty) permission, user);
             } else if (permission instanceof GlobalSettingType) {
-                hasPermission = globalSettingDao.getBoolean((GlobalSettingType) permission);
+                String globalSettingValue = globalSettingDao.getString((GlobalSettingType) permission);
+                if (!globalSettingValue.isEmpty()) {
+                    hasPermission = true;
+                    try {
+                        hasPermission = globalSettingDao.getBoolean((GlobalSettingType) permission);
+                    } catch (Exception e) {
+                        log.info("Cascade to bottom and allow permission for String Value GlobalSettingType to have permission if not empty");
+                    }
+                }
             } else if (permission instanceof MasterConfigBoolean) {
                 hasPermission = configurationSource.getBoolean((MasterConfigBoolean) permission);
             } else if (permission instanceof OtherPermission) {

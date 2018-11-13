@@ -32,6 +32,7 @@
 <entry key="yukon.web.menu.dr.dashboard">Dashboard</entry>
 <entry key="yukon.web.menu.dr.scenarios">Scenarios</entry>
 <entry key="yukon.web.menu.dr.controlAreas">Control Areas</entry>
+<entry key="yukon.web.menu.dr.nestSync">Nest Sync</entry>
 <entry key="yukon.web.menu.dr.programs">Programs</entry>
 <entry key="yukon.web.menu.dr.loadGroups">Load Groups</entry>
 <entry key="yukon.web.menu.dr.estimatedLoad">Estimated Load</entry>
