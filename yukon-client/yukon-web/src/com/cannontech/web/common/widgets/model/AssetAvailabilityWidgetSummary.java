@@ -7,7 +7,7 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class AssetAvailabilitySummary {
+public class AssetAvailabilityWidgetSummary {
     
     private AssetAvailabilityDetail active;
     private AssetAvailabilityDetail unavailabile;
@@ -15,7 +15,7 @@ public class AssetAvailabilitySummary {
     private AssetAvailabilityDetail optedOut;
     private Instant collectionTime;
     
-    public AssetAvailabilitySummary (Instant collectionTime) {
+    public AssetAvailabilityWidgetSummary (Instant collectionTime) {
         this.collectionTime = collectionTime;
     }
 
