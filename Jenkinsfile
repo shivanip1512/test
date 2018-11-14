@@ -151,60 +151,60 @@ pipeline {
                 unstash 'yukon-server'
                 
                 // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
-				try{
-					checkout([$class: 'SubversionSCM',
-						additionalCredentials: [],
-						excludedCommitMessages: '',
-						excludedRegions: '',
-						excludedRevprop: '',
-						excludedUsers: '',
-						filterChangelog: false,
-						ignoreDirPropChanges: false,
-						includedRegions: '',
-						locations: [[cancelProcessOnExternalsFail: true,
-							credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-							depthOption: 'infinity',
-							ignoreExternalsOption: true,
-							local: 'yukon-install',
-							remote: "${env.SVN_URL}" + '/yukon-install'],
-							[cancelProcessOnExternalsFail: true,
-							credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-							depthOption: 'infinity',
-							ignoreExternalsOption: true,
-							local: 'yukon-build',
-							remote: "${env.SVN_URL}" + '/yukon-build']],
-						quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
-							
-					bat './yukon-build/go.bat build-install'
-					
-					checkout([$class: 'SubversionSCM',
-						additionalCredentials: [],
-						excludedCommitMessages: '',
-						excludedRegions: '',
-						excludedRevprop: '',
-						excludedUsers: '',
-						filterChangelog: false,
-						ignoreDirPropChanges: false,
-						includedRegions: '',
-						locations: [[cancelProcessOnExternalsFail: true,
-							credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-							depthOption: 'infinity',
-							ignoreExternalsOption: true,
-							local: 'yukon-database',
-							remote: "${env.SVN_URL}" + '/yukon-database']],
-						quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+				script{
+					try{
+						checkout([$class: 'SubversionSCM',
+							additionalCredentials: [],
+							excludedCommitMessages: '',
+							excludedRegions: '',
+							excludedRevprop: '',
+							excludedUsers: '',
+							filterChangelog: false,
+							ignoreDirPropChanges: false,
+							includedRegions: '',
+							locations: [[cancelProcessOnExternalsFail: true,
+								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+								depthOption: 'infinity',
+								ignoreExternalsOption: true,
+								local: 'yukon-install',
+								remote: "${env.SVN_URL}" + '/yukon-install'],
+								[cancelProcessOnExternalsFail: true,
+								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+								depthOption: 'infinity',
+								ignoreExternalsOption: true,
+								local: 'yukon-build',
+								remote: "${env.SVN_URL}" + '/yukon-build']],
+							quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
+								
+						bat './yukon-build/go.bat build-install'
 						
-					script {
-						if (params.RELEASE_MODE) {
-							 bat './yukon-build/go.bat init clean svn-info-build symstore build-dist'
-						} else {
-							 bat './yukon-build/go.bat clean build-dist-pdb'
-						}
-					}
+						checkout([$class: 'SubversionSCM',
+							additionalCredentials: [],
+							excludedCommitMessages: '',
+							excludedRegions: '',
+							excludedRevprop: '',
+							excludedUsers: '',
+							filterChangelog: false,
+							ignoreDirPropChanges: false,
+							includedRegions: '',
+							locations: [[cancelProcessOnExternalsFail: true,
+								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+								depthOption: 'infinity',
+								ignoreExternalsOption: true,
+								local: 'yukon-database',
+								remote: "${env.SVN_URL}" + '/yukon-database']],
+							quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+							
+							if (params.RELEASE_MODE) {
+								 bat './yukon-build/go.bat init clean svn-info-build symstore build-dist'
+							} else {
+								 bat './yukon-build/go.bat clean build-dist-pdb'
+							}
 
-					archiveArtifacts artifacts: 'yukon-build/dist/*'
-				}catch(Exception){
-					sendEmailNotification("${env.STAGE_NAME}")
+						archiveArtifacts artifacts: 'yukon-build/dist/*'
+					}catch(Exception){
+						sendEmailNotification("${env.STAGE_NAME}")
+					}
 				}
             }
         }
