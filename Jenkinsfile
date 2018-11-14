@@ -253,7 +253,7 @@ def sendEmailNotification(String stageName){
 	    }
 	}
 	emailext body: "${stageName} Failed : Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n ${changeString}     ${logString}",
-                to: 'samirksatpathy@eaton.com',
+                to: '$DEFAULT_RECIPIENTS',
                 recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
                 subject: "${stageName} Build Failed In Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
 
