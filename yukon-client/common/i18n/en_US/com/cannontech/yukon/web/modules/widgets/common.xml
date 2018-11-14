@@ -190,8 +190,8 @@
         The date/time displays the date/time when operational status was last updated.
         <ul>
             <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous configurable number of days (default is 7).</li>
-            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous configurable number of days (default is 7).</li>
             <li><b>Opted Out (Blue):</b> Devices have been taken out of service and are no longer responding to events.</li>
+            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous configurable number of days (default is 7).</li>
             <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous configurable number of hours (default is 60).</li>
         </ul>
 ]]></entry>

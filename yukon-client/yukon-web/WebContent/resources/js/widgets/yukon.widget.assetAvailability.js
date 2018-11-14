@@ -26,6 +26,14 @@ yukon.widget.assetAvailability = (function () {
                 color: '#009933'
             },
             {
+                name: $('.js-asset-OPTED_OUT').val(),
+                filter: 'OPTED_OUT',
+                displayPercentage: data.optedOut.percentage < 1 && data.optedOut.percentage != 0 ? '&lt;1%' : yukon.percent(data.optedOut.percentage, 100, 1),
+                y: (data.optedOut.percentage < 1 && data.optedOut.percentage != 0 ? 1 : data.optedOut.percentage),
+                x: data.optedOut.deviceCount,
+                color: '#4d90fe'
+            },
+            {
                 name: $('.js-asset-INACTIVE').val(),
                 filter: 'INACTIVE',
                 displayPercentage: data.inactive.percentage < 1 && data.inactive.percentage != 0 ? '&lt;1%' : yukon.percent(data.inactive.percentage, 100, 1),
@@ -33,14 +41,6 @@ yukon.widget.assetAvailability = (function () {
                 x: data.inactive.deviceCount,
                 color: '#ec971f'
                 
-            },
-            {
-                name: $('.js-asset-OPTED_OUT').val(),
-                filter: 'OPTED_OUT',
-                displayPercentage: data.optedOut.percentage < 1 && data.optedOut.percentage != 0 ? '&lt;1%' : yukon.percent(data.optedOut.percentage, 100, 1),
-                y: (data.optedOut.percentage < 1 && data.optedOut.percentage != 0 ? 1 : data.optedOut.percentage),
-                x: data.optedOut.deviceCount,
-                color: '#4d90fe'
             },
             {
                 name: $('.js-asset-UNAVAILABLE').val(),

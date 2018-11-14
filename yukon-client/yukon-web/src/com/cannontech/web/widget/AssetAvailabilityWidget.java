@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -32,7 +31,7 @@ public class AssetAvailabilityWidget extends AdvancedWidgetControllerBase {
 
     @GetMapping("render")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY)
-    public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws Exception {
+    public String render(ModelMap model, HttpServletRequest request) throws Exception {
                 Integer paoId = WidgetParameterHelper.getIntParameter(request, "controlAreaOrProgramOrScenarioId");
         model.addAttribute("controlAreaOrProgramOrScenarioId", paoId);
         model.addAttribute("statuses", AssetAvailabilityCombinedStatus.values());
