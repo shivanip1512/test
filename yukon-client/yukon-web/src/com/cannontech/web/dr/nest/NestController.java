@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -127,27 +130,34 @@ public class NestController {
         model.addAttribute("nestSyncSettings", nestSyncSettings);
         
         NestSyncTimeInfo nestSyncTimeInfo = nestSyncService.getSyncTimeInfo();
-        if (nestSyncService.getSyncTimeInfo() != null) {
-            String lastSyncTime = dateFormattingService.format(nestSyncTimeInfo.getSyncTime(), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            model.addAttribute("lastSyncTime", lastSyncTime);
+        Instant lastSyncTime = nestSyncTimeInfo.getSyncTime();
+        if (lastSyncTime != null) {
+            String lastSyncTimeString = dateFormattingService.format(nestSyncTimeInfo.getSyncTime(), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("lastSyncTime", lastSyncTimeString);
         }
-        Instant nestSyncTime = nestSyncTimeInfo.getNextSyncTime();
-        if (nestSyncTime != null) {
-            String nextSyncTime = dateFormattingService.format(nestSyncTime, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nextSync") + nextSyncTime);
+        Instant nextSyncTime = nestSyncTimeInfo.getNextSyncTime();
+        if (nextSyncTime != null) {
+            String nextSyncTimeString = dateFormattingService.format(nextSyncTime, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nextSync") + nextSyncTimeString);
         } 
-        if (nestSyncTime == null && !nestSyncTimeInfo.enableSyncButton()) {
+        if (nextSyncTime == null && !nestSyncTimeInfo.enableSyncButton()) {
             model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nestSyncInProgress"));
         } else {
             model.addAttribute("syncTitle", accessor.getMessage(baseKey + "forceSync"));
         }
-        model.addAttribute("syncNowEnabled", nestSyncTimeInfo.enableSyncButton());
+
+        model.addAttribute("syncNowEnabled", nestSyncTimeInfo.enableSyncButton() && syncAvailable(nestSyncTimeInfo));
         
         getDiscrepancies(model, userContext, paging, sorting, NestSyncType.values(), 0);
 
         return "dr/nest/details.jsp";
     }
     
+    private boolean syncAvailable(NestSyncTimeInfo nestSyncTimeInfo) {
+        Instant lastSyncTime = nestSyncTimeInfo.getSyncTime();
+        return Instant.now().isAfter(lastSyncTime.getMillis() + 900000);
+    }
+
     @RequestMapping(value="/nest/discrepancies", method=RequestMethod.GET)
     public String discrepancies(@DefaultItemsPerPage(value = 250) PagingParameters paging, @DefaultSort(dir=Direction.desc, sort="type") SortingParameters sorting,
                                 ModelMap model, YukonUserContext userContext, NestSyncType[] types, int syncId) throws ServletException {
@@ -288,5 +298,14 @@ public class NestController {
         public String getFormatKey() {
             return baseKey + name();
         }
+    }
+    
+    @RequestMapping(value="/nest/updateButton", method=RequestMethod.GET)
+    public @ResponseBody Map<String, Object> updateButton() {
+        Map<String, Object> json = new HashMap<>();
+        NestSyncTimeInfo nestSyncTimeInfo = nestSyncService.getSyncTimeInfo();
+        boolean syncAvailable = syncAvailable(nestSyncTimeInfo);
+        json.put("syncButtonEnabled", syncAvailable);
+        return json;
     }
 }

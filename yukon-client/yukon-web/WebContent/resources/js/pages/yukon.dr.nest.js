@@ -10,10 +10,34 @@ yukon.namespace('yukon.dr.nest');
 yukon.dr.nest = (function () {
 
     mod = null;
+    _updateInterval = 6000,
+    _updateTimeout = null;
+    
+    _update = function () {
+
+            $.ajax({
+                url: yukon.url('/dr/nest/updateButton'),
+                async: false
+            }).done(function (data) {
+                var syncButton = $('#syncButton');
+                syncButton.attr('disabled', !data.syncButtonEnabled);
+            });
+        
+
+    
+        if (_updateTimeout) {
+            clearTimeout(_updateTimeout);
+        }
+        _updateTimeout = setTimeout(_update, _updateInterval);
+        
+    };
     
     mod = {
 
         init: function () {
+            
+            _update();
+            
             $(document).on('click', '.nest-sync-button-group-toggle .button', function () {
                 var scheduledSyncOn = $('.nest-sync-button-group-toggle .button.yes').hasClass('on');
                 if (scheduledSyncOn) {

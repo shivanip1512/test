@@ -24,7 +24,7 @@
                         </span>
                         <span class="fr">
                             <cti:button nameKey="save" type="submit" style="margin-left:20px;" classes="primary action"/>            
-                            <cti:button nameKey="syncNow" href="nest/syncNow" title="${syncTitle}" disabled="${!syncNowEnabled}"/>
+                            <cti:button id="syncButton" nameKey="syncNow" href="nest/syncNow" title="${syncTitle}" disabled="${!syncNowEnabled}"/>
                         </span>
                     </span>
                 </form:form>
