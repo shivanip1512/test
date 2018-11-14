@@ -116,7 +116,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     HONEYWELL_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://qtccna.honeywell.com/TrueHomeStage/"),
     HONEYWELL_CLIENTID(GlobalSettingSubCategory.DR, stringType(), ""),
     HONEYWELL_SECRET(GlobalSettingSubCategory.DR, stringType(), ""),
-    NEST_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://enterprise-api.nest.com/api"),
+    NEST_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://energy.api.nest.com"),
     NEST_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
     NEST_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
 
