@@ -22,48 +22,52 @@ pipeline {
                           if (params.RELEASE_MODE) {
                                  cleanWs()
                            }
-                         }
-                        bat 'java -version'
-                        checkout([$class: 'SubversionSCM',
-                        additionalCredentials: [],
-                        excludedCommitMessages: '',
-                        excludedRegions: '',
-                        excludedRevprop: '',
-                        excludedUsers: '',
-                        filterChangelog: false,
-                        ignoreDirPropChanges: false,
-                        includedRegions: '',
-                        locations: [[cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-help',
-                            remote: "${env.SVN_URL}" + '/yukon-help'],
-                            [cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-client',
-                            remote: "${env.SVN_URL}" + '/yukon-client'],
-                            [cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-build',
-                            remote: "${env.SVN_URL}" + '/yukon-build'],
-                            [cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-shared',
-                            remote: "${env.SVN_URL}" + '/yukon-shared']],
-                        quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
-                        
-                        bat './yukon-build/go.bat build-client'
+						   try{
+								bat 'java -version'
+								checkout([$class: 'SubversionSCM',
+								additionalCredentials: [],
+								excludedCommitMessages: '',
+								excludedRegions: '',
+								excludedRevprop: '',
+								excludedUsers: '',
+								filterChangelog: false,
+								ignoreDirPropChanges: false,
+								includedRegions: '',
+								locations: [[cancelProcessOnExternalsFail: true,
+									credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+									depthOption: 'infinity',
+									ignoreExternalsOption: true,
+									local: 'yukon-help',
+									remote: "${env.SVN_URL}" + '/yukon-help'],
+									[cancelProcessOnExternalsFail: true,
+									credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+									depthOption: 'infinity',
+									ignoreExternalsOption: true,
+									local: 'yukon-client',
+									remote: "${env.SVN_URL}" + '/yukon-client'],
+									[cancelProcessOnExternalsFail: true,
+									credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+									depthOption: 'infinity',
+									ignoreExternalsOption: true,
+									local: 'yukon-build',
+									remote: "${env.SVN_URL}" + '/yukon-build'],
+									[cancelProcessOnExternalsFail: true,
+									credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+									depthOption: 'infinity',
+									ignoreExternalsOption: true,
+									local: 'yukon-shared',
+									remote: "${env.SVN_URL}" + '/yukon-shared']],
+								quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+								
+								bat './yukon-build/go.bat build-client'
 
-                        stash name: 'yukon-client', excludes: '**/*.java, **/*.class' 
-                        
-                        //junit './yukon-client/*/test/testResults/*.xml'
+								stash name: 'yukon-client', excludes: '**/*.java, **/*.class' 
+								
+								//junit './yukon-client/*/test/testResults/*.xml'
+							}catch(Exception){
+								sendEmailNotification("${env.STAGE_NAME}")
+							}
+						}
                     }
                 }
                 stage('cpp-build') {
@@ -76,45 +80,49 @@ pipeline {
                           if (params.RELEASE_MODE) {
                                  cleanWs()
                            }
-                         }
-                        checkout([$class: 'SubversionSCM',
-                        additionalCredentials: [],
-                        excludedCommitMessages: '',
-                        excludedRegions: '',
-                        excludedRevprop: '',
-                        excludedUsers: '',
-                        filterChangelog: false,
-                        ignoreDirPropChanges: false,
-                        includedRegions: '',
-                        locations: [[cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-server',
-                            remote: "${env.SVN_URL}" + '/yukon-server'],
-                            [cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-build',
-                            remote: "${env.SVN_URL}" + '/yukon-build'],
-                            [cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-client/build/ant/bin',
-                            remote: "${env.SVN_URL}" + '/yukon-client/build/ant/bin'],
-                            [cancelProcessOnExternalsFail: true,
-                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                            depthOption: 'infinity',
-                            ignoreExternalsOption: true,
-                            local: 'yukon-shared',
-                            remote: "${env.SVN_URL}" + '/yukon-shared']],
-                        quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                         try{
+							checkout([$class: 'SubversionSCM',
+							additionalCredentials: [],
+							excludedCommitMessages: '',
+							excludedRegions: '',
+							excludedRevprop: '',
+							excludedUsers: '',
+							filterChangelog: false,
+							ignoreDirPropChanges: false,
+							includedRegions: '',
+							locations: [[cancelProcessOnExternalsFail: true,
+								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+								depthOption: 'infinity',
+								ignoreExternalsOption: true,
+								local: 'yukon-server',
+								remote: "${env.SVN_URL}" + '/yukon-server'],
+								[cancelProcessOnExternalsFail: true,
+								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+								depthOption: 'infinity',
+								ignoreExternalsOption: true,
+								local: 'yukon-build',
+								remote: "${env.SVN_URL}" + '/yukon-build'],
+								[cancelProcessOnExternalsFail: true,
+								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+								depthOption: 'infinity',
+								ignoreExternalsOption: true,
+								local: 'yukon-client/build/ant/bin',
+								remote: "${env.SVN_URL}" + '/yukon-client/build/ant/bin'],
+								[cancelProcessOnExternalsFail: true,
+								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+								depthOption: 'infinity',
+								ignoreExternalsOption: true,
+								local: 'yukon-shared',
+								remote: "${env.SVN_URL}" + '/yukon-shared']],
+							quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
 
-                        bat './yukon-build/go.bat build-server'
+							bat './yukon-build/go.bat build-server'
 
-                        stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*, yukon-server/Message/Static_Release/ctithriftmsg/I386/*'
+							stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*, yukon-server/Message/Static_Release/ctithriftmsg/I386/*'
+							}catch(Exception){
+								sendEmailNotification("${env.STAGE_NAME}")
+							}
+						}
                     }
                 }
                 
@@ -127,9 +135,9 @@ pipeline {
             steps {
                script {
                   if (params.RELEASE_MODE) {
-                          cleanWs()
-                       }
-                     }
+                        cleanWs()
+                    }
+                }
                 // The stashed folders are modified during the build, which means a simple
                 // unstash leaves data behind. Here we manually wipe these folders before unstashing.
                 dir('yukon-client') {
@@ -143,68 +151,65 @@ pipeline {
                 unstash 'yukon-server'
                 
                 // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
-                checkout([$class: 'SubversionSCM',
-                    additionalCredentials: [],
-                    excludedCommitMessages: '',
-                    excludedRegions: '',
-                    excludedRevprop: '',
-                    excludedUsers: '',
-                    filterChangelog: false,
-                    ignoreDirPropChanges: false,
-                    includedRegions: '',
-                    locations: [[cancelProcessOnExternalsFail: true,
-                        credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                        depthOption: 'infinity',
-                        ignoreExternalsOption: true,
-                        local: 'yukon-install',
-                        remote: "${env.SVN_URL}" + '/yukon-install'],
-                        [cancelProcessOnExternalsFail: true,
-                        credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                        depthOption: 'infinity',
-                        ignoreExternalsOption: true,
-                        local: 'yukon-build',
-                        remote: "${env.SVN_URL}" + '/yukon-build']],
-                    quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
-                        
-                bat './yukon-build/go.bat build-install'
-                
-                checkout([$class: 'SubversionSCM',
-                    additionalCredentials: [],
-                    excludedCommitMessages: '',
-                    excludedRegions: '',
-                    excludedRevprop: '',
-                    excludedUsers: '',
-                    filterChangelog: false,
-                    ignoreDirPropChanges: false,
-                    includedRegions: '',
-                    locations: [[cancelProcessOnExternalsFail: true,
-                        credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                        depthOption: 'infinity',
-                        ignoreExternalsOption: true,
-                        local: 'yukon-database',
-                        remote: "${env.SVN_URL}" + '/yukon-database']],
-                    quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
-                    
-                script {
-                    if (params.RELEASE_MODE) {
-                         bat './yukon-build/go.bat init clean svn-info-build symstore build-dist'
-                    } else {
-                         bat './yukon-build/go.bat clean build-dist-pdb'
-                    }
-				}
+				try{
+					checkout([$class: 'SubversionSCM',
+						additionalCredentials: [],
+						excludedCommitMessages: '',
+						excludedRegions: '',
+						excludedRevprop: '',
+						excludedUsers: '',
+						filterChangelog: false,
+						ignoreDirPropChanges: false,
+						includedRegions: '',
+						locations: [[cancelProcessOnExternalsFail: true,
+							credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+							depthOption: 'infinity',
+							ignoreExternalsOption: true,
+							local: 'yukon-install',
+							remote: "${env.SVN_URL}" + '/yukon-install'],
+							[cancelProcessOnExternalsFail: true,
+							credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+							depthOption: 'infinity',
+							ignoreExternalsOption: true,
+							local: 'yukon-build',
+							remote: "${env.SVN_URL}" + '/yukon-build']],
+						quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
+							
+					bat './yukon-build/go.bat build-install'
+					
+					checkout([$class: 'SubversionSCM',
+						additionalCredentials: [],
+						excludedCommitMessages: '',
+						excludedRegions: '',
+						excludedRevprop: '',
+						excludedUsers: '',
+						filterChangelog: false,
+						ignoreDirPropChanges: false,
+						includedRegions: '',
+						locations: [[cancelProcessOnExternalsFail: true,
+							credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
+							depthOption: 'infinity',
+							ignoreExternalsOption: true,
+							local: 'yukon-database',
+							remote: "${env.SVN_URL}" + '/yukon-database']],
+						quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+						
+					script {
+						if (params.RELEASE_MODE) {
+							 bat './yukon-build/go.bat init clean svn-info-build symstore build-dist'
+						} else {
+							 bat './yukon-build/go.bat clean build-dist-pdb'
+						}
+					}
 
-                archiveArtifacts artifacts: 'yukon-build/dist/*'
+					archiveArtifacts artifacts: 'yukon-build/dist/*'
+				}catch(Exception){
+					sendEmailNotification("${env.STAGE_NAME}")
+				}
             }
         }
     }
 	post {
-        failure{
-            echo 'Triggering Emails'
-            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL} \n "+ getChangeStringAndLogs(),
-                to: ' $DEFAULT_RECIPIENTS',
-                recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
-                subject: "Build  ${currentBuild.currentResult} in Jenkins :  ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-        }
         always{
             verifyLastBuild()
         }
@@ -215,36 +220,41 @@ def verifyLastBuild(){
     if(currentBuild.currentResult == 'SUCCESS'){
         if(currentBuild?.getPreviousBuild()?.result == 'FAILURE') {
             emailext body: " See<${env.BUILD_URL}display/redirect> \n ",
-            to: '$DEFAULT_RECIPIENTS',
+            to: 'samirksatpathy@eaton.com',
             recipientProviders: [culprits(), requestor(), brokenTestsSuspects(), brokenBuildSuspects()],
             subject: "Jenkins build is back to normal : ${env.JOB_NAME} #${env.BUILD_NUMBER}"
         }
     }
 }
-
 @NonCPS
-def getChangeStringAndLogs() {
- MAX_MSG_LEN = 100
- def changeString = ""
- def changeLogSets = currentBuild.changeSets
- if(changeLogSets.size()>0){
-     changeString += "\n Changes : "
-    for (int i = 0; i < changeLogSets.size(); i++) {
-        def entries = changeLogSets[i].items
-        for (int j = 0; j < entries.length; j++) {
-            def entry = entries[j]
-            truncated_msg = entry.msg.take(MAX_MSG_LEN)
-            changeString += " [${entry.author}] - ${truncated_msg} \n"
-        }
-    }
- }
-changeString += "Logs: \n"
- def logs = currentBuild.rawBuild.getLog(100)
-    for(String line : logs){
-        changeString += line +"\n"
-    }
- if (!changeString) {
- changeString = " - No new changes"
- }
- return changeString
+def sendEmailNotification(String stageName){
+	// Code for getting change sets from last build.
+	MAX_MSG_LEN = 100
+	def changeString = ""
+	def changeLogSets = currentBuild.changeSets
+	if(changeLogSets.size()>0){
+		changeString += "\n Changes : "
+		for (int i = 0; i < changeLogSets.size(); i++) {
+			def entries = changeLogSets[i].items
+			for (int j = 0; j < entries.length; j++) {
+				def entry = entries[j]
+				truncated_msg = entry.msg.take(MAX_MSG_LEN)
+				changeString += " [${entry.author}] - ${truncated_msg} \n"
+			}
+		}
+	}
+	//Code for getting logs 
+	def logString = "Logs : \n"
+	for(String line : currentBuild.rawBuild.getLog(500)){
+	    if(line?.trim()){
+	        if(line.startsWith(stageName)){
+		        logString += "\n"+ line
+	        }
+	    }
+	}
+	emailext body: "${stageName} Failed : Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n ${changeString}     ${logString}",
+                to: 'samirksatpathy@eaton.com',
+                recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
+                subject: "${stageName} Build Failed In Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
+
 }
