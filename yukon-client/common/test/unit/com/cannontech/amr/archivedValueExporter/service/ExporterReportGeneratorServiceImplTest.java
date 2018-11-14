@@ -227,7 +227,7 @@ public class ExporterReportGeneratorServiceImplTest {
         
         ExportField meterExportFieldDeviceName = getExportField(0, DEVICE_NAME);
         String deviceNameValue = exporterReportGeneratorService.getValue(meterExportFieldDeviceName, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null);
-        deviceNameValue = "MCT410FL 2";
+
         Assert.assertEquals(deviceNameValue, "MCT410FL 1");
         
         ExportField meterExportFieldAddress = getExportField(0, ADDRESS);
