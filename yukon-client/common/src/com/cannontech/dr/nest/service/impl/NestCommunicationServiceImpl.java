@@ -1,26 +1,14 @@
 package com.cannontech.dr.nest.service.impl;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -32,47 +20,42 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.nest.dao.NestDao;
-import com.cannontech.dr.nest.model.CriticalEvent;
 import com.cannontech.dr.nest.model.NestControlHistory;
-import com.cannontech.dr.nest.model.NestError;
-import com.cannontech.dr.nest.model.NestEventId;
 import com.cannontech.dr.nest.model.NestException;
-import com.cannontech.dr.nest.model.NestExisting;
-import com.cannontech.dr.nest.model.NestFileType;
-import com.cannontech.dr.nest.model.NestURLTypes;
-import com.cannontech.dr.nest.model.NestUploadInfo;
-import com.cannontech.dr.nest.model.SchemaViolationResponse;
-import com.cannontech.dr.nest.model.StandardEvent;
+import com.cannontech.dr.nest.model.NestURL;
+import com.cannontech.dr.nest.model.v3.ControlEvent;
+import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
+import com.cannontech.dr.nest.model.v3.CustomerEnrollments;
+import com.cannontech.dr.nest.model.v3.CustomerInfo;
+import com.cannontech.dr.nest.model.v3.Customers;
+import com.cannontech.dr.nest.model.v3.EnrollmentState;
+import com.cannontech.dr.nest.model.v3.EventId;
+import com.cannontech.dr.nest.model.v3.RetrieveCustomers;
+import com.cannontech.dr.nest.model.v3.RushHourEventType;
+import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class NestCommunicationServiceImpl implements NestCommunicationService{
     
     private final RestTemplate restTemplate;
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class); 
     private Proxy proxy;
-    private HttpHost host;
     private GlobalSettingDao settingDao;
     private NestDao nestDao;
+    //this id probably will be in global settings, I am assuming EC will get it from Nest
+    private String partnerId = "simulator";
          
     @Autowired
     public NestCommunicationServiceImpl(GlobalSettingDao settingDao) {
         this.settingDao = settingDao;
         proxy = YukonHttpProxy.fromGlobalSetting(settingDao)
                 .map(YukonHttpProxy::getJavaHttpProxy)
-                .orElse(null);
-        host = YukonHttpProxy.fromGlobalSetting(settingDao)
-                .map(YukonHttpProxy::getJavaHttpHost)
                 .orElse(null);
         restTemplate = new RestTemplate();
         
@@ -82,35 +65,41 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
         restTemplate.setRequestFactory(factory);
     }
-    public static final String critical = NestURLTypes.CONTROL_CRITICAL.getUrl();
-    public static final String standard = NestURLTypes.CONTROL_STANDARD.getUrl();
 
     /**
      * curl https://enterprise-api.nest.com/api/energy/v2/rush_hour_rewards/events/standard -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA==" -H "Content-Type: application/json" -d "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Test\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}"
      */
     @Override
-    public Optional<NestError> sendStandardEvent(StandardEvent event) {
+    public Optional<SchedulabilityError> sendEvent(ControlEvent event, RushHourEventType type) {
         log.debug("Sending request to create standard event");
-        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + standard;
+        String requestUrl = constructNestUrl(NestURL.CANCEL_EVENT);
         log.debug("Request url {}", requestUrl);
-        String response = getNestResponse(requestUrl, event);
-        
-        return processNestReply(response, event);
+        String response = getNestResponse(requestUrl, event, type);
+        try {
+            EventId nestId = JsonUtils.fromJson(response, EventId.class);
+            NestControlHistory history = new NestControlHistory();
+            history.setStartTime(event.getStart());
+            history.setStopTime(event.getStop());
+            history.setKey(nestId.getId());
+            //create entry only if response is success
+            nestDao.createControlHistory(history);
+            return Optional.empty();
+        } catch (IOException e) {
+            try {
+                SchedulabilityError error = JsonUtils.fromJson(response, SchedulabilityError.class);
+                log.error("Reply from Nest contains an error="+ error);
+                return Optional.of(error);
+            } catch (IOException e1) {
+                throw new NestException("Error getting valid reponse from Nest.", e);
+            }
+        }
     }
     
     @Override
-    public Optional<NestError> sendCriticalEvent(CriticalEvent event) {
-        log.debug("Sending request to create critical event");
-        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + critical;
-        String response = getNestResponse(requestUrl, event);
-        
-        return processNestReply(response, event);
-    }
-    
-    @Override
-    public boolean cancelEvent(NestControlHistory history) {
+    public Optional<String> cancelEvent(NestControlHistory history) {
+        //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel
         log.debug("Canceling event {}", history);
-        String requestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestURLTypes.CONTROL + history.getKey();
+        String requestUrl = constructNestUrl(NestURL.STOP_EVENT);
         log.debug("Request url {}", requestUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -118,48 +107,109 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         
         HttpEntity<?> entity = new HttpEntity<>(headers);
         try {
+            //add type cancel
             nestDao.updateCancelRequestTime(history.getId());
-            HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.DELETE, entity, String.class);
-            //204 = On success
-            //Can't test yet as I can't start event yet
-            //I am not sure what to store as a response yet
+            HttpEntity<String> response =
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, history.getKey());
             nestDao.updateNestResponse(history.getId(), response.getBody());
-            return true;
+            return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
-            log.error("Error canceling Nest event", e);
+            throw new NestException("Error getting valid reponse from Nest.", e);
         }
-        
-        return true;
-    }
-    
-    private Optional<NestError> processNestReply(String response, CriticalEvent event) {
-        NestError nestError = null;
-        try {
-            NestEventId nestId = JsonUtils.fromJson(response, NestEventId.class);
-            //This table will only have an entry if response is success
-            NestControlHistory history = new NestControlHistory();
-            history.setStartTime(event.getStart());
-            history.setStopTime(event.getStop());
-            history.setKey(nestId.getId());
-            nestDao.createControlHistory(history);
-        } catch (IOException e) {
-            try {
-                SchemaViolationResponse error = JsonUtils.fromJson(response, SchemaViolationResponse.class);
-                log.error("Reply from Nest contains an error="+ error);
-                if (error.getViolations() != null && !error.getViolations().isEmpty()) {
-                    //schema violation
-                    throw new NestException("Reply from Nest contains an error. Error:" + error);
-                }
-                nestError = error.getError();
-            } catch (IOException e1) {
-                throw new NestException("Error getting valid reponse from Nest. Reponse:" + response);
-            }
-        }
-        return Optional.of(nestError);
     }
     
     @Override
-    public String getNestResponse(String url, CriticalEvent event) {
+    public Optional<String> stopEvent(NestControlHistory history) {
+        //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop
+        log.debug("Stopping event {}", history);    
+        String requestUrl = constructNestUrl(NestURL.STOP_EVENT);
+        log.debug("Request url {}", requestUrl);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", encodeAuthorization());
+        
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        try {
+           //add type stop
+            nestDao.updateCancelRequestTime(history.getId());
+            HttpEntity<String> response =
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, history.getKey());
+            nestDao.updateNestResponse(history.getId(), response.getBody());
+            return Optional.ofNullable(response.getBody());
+        } catch (HttpClientErrorException e) {
+            throw new NestException("Error getting valid reponse from Nest.", e);
+        }
+    }
+    
+    @Override 
+    public String constructNestUrl(NestURL url) {
+        return constructNestUrl(NestURL.CURRENT_VERSION, url);        
+    }
+    
+    @Override 
+    public String constructNestUrl(int version, NestURL url) {
+        String globalUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
+        return url.buildUrl(version, globalUrl);        
+    }
+    
+    @Override
+    public Optional<String> updateEnrollment(CustomerEnrollment enrollment) {
+        //PUT https://energy.api.nest.com/v3/partners/{partnerId}/customers:batchUpdateEnrollments
+        log.debug("Updating group to {}", enrollment);
+        String requestUrl = constructNestUrl(NestURL.ENROLLMENT);
+        log.debug("Request url {}", requestUrl);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", encodeAuthorization());
+        
+        CustomerEnrollments enrollments = new CustomerEnrollments();
+        enrollments.addEnrollment(enrollment);
+        try {
+            String body = JsonUtils.toJson(enrollments);
+            log.debug("json {}", body);
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+            try {
+                HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, entity, String.class, partnerId);
+                return Optional.ofNullable(response.getBody());
+            } catch (HttpClientErrorException e) {
+                throw new NestException("Error getting valid reponse from Nest.", e);
+            }
+        } catch (JsonProcessingException e1) {
+            throw new NestException("Unable create json from:" + enrollment, e1);
+        }
+    }
+    
+
+    @Override
+    public List<CustomerInfo> retrieveCustomers(EnrollmentState state) {
+        //GET https://energy.api.nest.com/v3/partners/{partnerId}/customers
+        log.debug("Retrieving {} customers from Nest", state);
+        String requestUrl = constructNestUrl(NestURL.GET_CUSTOMER_LIST);
+        log.debug("Request url {}", requestUrl);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", encodeAuthorization());
+        
+        RetrieveCustomers retrieve = new  RetrieveCustomers();
+        retrieve.setEnrollmentStateFilter(state);
+        try {
+            String body = JsonUtils.toJson(retrieve);
+            HttpEntity<?> entity = new HttpEntity<>(body, headers);
+            try {
+                HttpEntity<Customers> response = restTemplate.exchange(requestUrl, HttpMethod.GET, entity, Customers.class);
+                return response.getBody().getCustomers();
+            } catch (HttpClientErrorException e) {
+                throw new NestException("Error getting valid reponse from Nest.", e);
+            }
+        } catch (JsonProcessingException e1) {
+            throw new NestException("Unable create json from:" + retrieve, e1);
+        }
+    }
+    
+    @Override
+    public String getNestResponse(String url, ControlEvent event, RushHourEventType type) {
+        //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventType}
         log.debug("Request url {}", url);
         try {
             log.debug(JsonUtils.toJson(event));
@@ -170,45 +220,25 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", encodeAuthorization());
  
-        HttpEntity<CriticalEvent> entity = new HttpEntity<>(event, headers);
-        String response;
         try {
-            response = restTemplate.postForObject(url, entity, String.class);
-        } catch (HttpClientErrorException e) {
-            response = e.getResponseBodyAsString();
+            String body = JsonUtils.toJson(event);
+            HttpEntity<?> entity = new HttpEntity<>(body, headers);
+            try {
+                HttpEntity<String> response =
+                    restTemplate.exchange(url, HttpMethod.POST, entity, String.class, partnerId, type.name());
+                log.debug("response:" + response.getBody());
+                return response.getBody();
+            } catch (HttpClientErrorException e) {
+                log.error("Error getting response from Nest:" + e.getResponseBodyAsString(), e);
+                return e.getResponseBodyAsString();
+            }
+        } catch (JsonProcessingException e1) {
+            throw new NestException("Unable create json from:" + event, e1);
         }
-        log.debug("response:" + response);
-        return response;
     }
         
     @Override
-    public List<NestExisting> downloadExisting() {
-        log.debug("Downloading Nest existing file");
-        InputStream inputStream = getFileInputStream(NestFileType.EXISTING);
-        List<NestExisting> existing = parseExistingCsvFile(inputStream);
-        log.debug("Download of the Nest file complete");
-        return existing; 
-    }
-        
-    private InputStream getFileInputStream(NestFileType type) {
-        InputStream inputStream = null;
-        String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
-        String stringUrl = nestUrl + type.getUrl() + "/" + type.getFile();
-        log.debug("Nest Url:"+stringUrl);
-        // curl https://enterprise-api.nest.com/api/v1/users/pending/latest.csv -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA=="
-        try {
-            URLConnection connection =
-                useProxy(stringUrl) ? new URL(stringUrl).openConnection(proxy) : new URL(stringUrl).openConnection();
-            connection.setRequestProperty("Authorization", encodeAuthorization());
-            inputStream = connection.getInputStream();
-        } catch (NestException | IOException e) {
-            log.error("Error connecting to "+stringUrl, e);
-            throw new NestException("Error connecting to ", e);
-        }
-        return inputStream;
-    }
-    
-    private boolean useProxy(String stringUrl) {
+    public boolean useProxy(String stringUrl) {
         if (proxy == null) {
             return false;
         } else if ((stringUrl.contains("localhost") || stringUrl.contains("127.0.0.1"))) {
@@ -216,9 +246,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         }
         return true;
     }
-    
-    private String encodeAuthorization() {
-        
+     
+    @Override
+    public String encodeAuthorization() {
         String key = settingDao.getString(GlobalSettingType.NEST_USERNAME) + ":" + settingDao.getString(GlobalSettingType.NEST_PASSWORD);
         try {
             return "Basic " + DatatypeConverter.printBase64Binary(key.getBytes("UTF-8"));
@@ -226,70 +256,5 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             throw new NestException("Error encoding Nest key", e);
         }
     }
-    
-    @Override
-    public List<NestExisting> parseExistingCsvFile(InputStream inputStream) {
-        List<NestExisting> existing = new ArrayList<>();
-        if (inputStream != null) {
-            CsvSchema schema = CsvSchema.emptySchema().withHeader().withNullValue("");
-            try {
-                MappingIterator<NestExisting> it =
-                    new CsvMapper().readerFor(NestExisting.class).with(schema).readValues(inputStream);
-                existing.addAll(it.readAll());
-            } catch (IOException e) {
-                throw new NestException("Unable to parse exising file ", e);
-            }
-        }
-        log.debug(existing);
-        return existing;
-    }
-    
-    /**
-     * Example of error response from Nest if group doesn't exist.
-     * {"num_group_changes":0,"num_dissolved":0,"errors":[{"row_number":2,"header":["REF","YEAR","MONTH","DAY","NAME","EMAIL","SERVICE_ADDRESS","SERVICE_CITY","SERVICE_STATE","SERVICE_POSTAL_CODE","ACCOUNT_NUMBER","CONTRACT_APPROVED","PROGRAMS","WINTER_RHR","SUMMER_RHR","ASSIGN_GROUP","GROUP","DISSOLVE","DISSOLVE_REASON","DISSOLVE_NOTES"],"fields":["a5a1305e-79d2-4a98-9fc9-f6112a39f9b2","2018","8","21","Marina Feldman","******","ATRIA Corporate Center1","Plymouth","MN","55441","1","2018-08-20 11:32:06","SUMMER_RHR","","09AA01AC35170N2N","Y","A","","",""],"errors":["invalid value for GROUP: 'A'"]}]}
-     * @return 
-     */
-    @Override
-    public NestUploadInfo uploadExisting(List<NestExisting> existing) {
-        log.debug("Uploading file {}", existing);
-        File uploadFile = null;
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            String requestUrl =
-                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestFileType.EXISTING.getUrl();
-            HttpPost httppost = new HttpPost(requestUrl);
-            httppost.addHeader("content-type", "text/csv");
-            httppost.addHeader("Accept", "application/json");
-            httppost.setHeader("Authorization", encodeAuthorization());
-            if (host != null && useProxy(requestUrl)) {
-                RequestConfig requestConfig = RequestConfig.custom().setProxy(host).build();
-                httppost.setConfig(requestConfig);
-            }
 
-            uploadFile = NestCommunicationService.createFile(CtiUtilities.getNestDirPath(), "upload");
-            ObjectWriter writer =
-                new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
-            writer.writeValues(uploadFile).writeAll(existing).close();
-            httppost.setEntity(new FileEntity(uploadFile));
-
-            log.debug(EntityUtils.toString(httppost.getEntity()));
-            log.debug("executing request {} {}", httppost.getRequestLine(), httppost.getConfig());
-            HttpResponse response = httpclient.execute(httppost);
-            org.apache.http.HttpEntity resEntity = response.getEntity();
-            log.debug(response.getStatusLine());
-            if (resEntity != null) {
-                String str = EntityUtils.toString(resEntity);
-                log.debug(str);
-                NestUploadInfo info = JsonUtils.fromJson(str, NestUploadInfo.class);
-                log.debug(info);
-                return info;
-            }
-        } catch (IOException e) {
-            throw new NestException("Error uploading existing file to Nest", e);
-        } finally {
-            if (uploadFile != null) {
-                uploadFile.delete();
-            }
-        }
-        return null;
-    }
 }

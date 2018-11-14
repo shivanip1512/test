@@ -3,6 +3,7 @@ package com.cannontech.web.stars.dr.operator.enrollment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +29,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.nest.model.NestUploadInfo;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -293,12 +293,10 @@ public class OperatorEnrollmentController {
                     flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.nest.changeGroupNoNestGroupFound"));
                     return;
                 }
-                NestUploadInfo uploadInfo = nestService.updateGroup(accountInfoFragment.getAccountNumber(), groupName);
-                if (!uploadInfo.isGroupChangeSuccessful()) {
-                    ArrayList<MessageSourceResolvable> errors= new ArrayList<MessageSourceResolvable>();
-                    for (String errorMsg: uploadInfo.getNestErrors()) {
-                        errors.add(YukonMessageSourceResolvable.createDefaultWithoutCode(errorMsg));
-                    }
+                Optional<String> uploadInfo = nestService.updateGroup(accountInfoFragment.getAccountId(), accountInfoFragment.getAccountNumber(), groupName);
+                if (uploadInfo.isPresent()) {
+                    ArrayList<MessageSourceResolvable> errors= new ArrayList<>();
+                    errors.add(YukonMessageSourceResolvable.createDefaultWithoutCode(uploadInfo.get()));
                     flashScope.setError(errors);
                     return;
                 }

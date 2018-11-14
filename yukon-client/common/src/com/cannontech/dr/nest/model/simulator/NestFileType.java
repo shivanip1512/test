@@ -1,31 +1,10 @@
-package com.cannontech.dr.nest.model;
+package com.cannontech.dr.nest.model.simulator;
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public enum NestFileType {
 
-    PENDING(NestURLTypes.PENDING.getUrl(), "latest.csv", CsvSchema.builder()
-        .addColumn("REF")
-        .addColumn("YEAR")
-        .addColumn("MONTH")
-        .addColumn("DAY")
-        .addColumn("NAME")
-        .addColumn("EMAIL")
-        .addColumn("SERVICE_ADDRESS")
-        .addColumn("SERVICE_CITY")
-        .addColumn("SERVICE_STATE")
-        .addColumn("SERVICE_POSTAL_CODE")
-        .addColumn("ACCOUNT_NUMBER")
-        .addColumn("CONTRACT_APPROVED")
-        .addColumn("PROGRAMS")
-        .addColumn("NEST_SERIALS")
-        .addColumn("APPROVED")
-        .addColumn("ASSIGN_GROUP")
-        .addColumn("GROUP")
-        .addColumn("REJECTION_REASON")
-        .addColumn("REJECTION_NOTES")
-        .build()),
-    EXISTING(NestURLTypes.EXISTING.getUrl(), "latest.csv", CsvSchema.builder()
+    EXISTING("latest.csv", CsvSchema.builder()
         .addColumn("REF")
         .addColumn("YEAR")
         .addColumn("MONTH")
@@ -48,8 +27,7 @@ public enum NestFileType {
         .addColumn("DISSOLVE_NOTES")
         .build());
     
-    private NestFileType(String url, String file, CsvSchema schema) {
-        this.url = url;
+    private NestFileType(String file, CsvSchema schema) {
         this.file = file;
         this.schema = schema;
     }

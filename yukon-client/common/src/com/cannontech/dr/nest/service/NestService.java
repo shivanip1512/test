@@ -4,39 +4,28 @@ import java.util.Optional;
 
 import org.joda.time.Instant;
 
-import com.cannontech.dr.nest.model.NestError;
-import com.cannontech.dr.nest.model.NestUploadInfo;
+import com.cannontech.dr.nest.model.v3.SchedulabilityError;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 
 public interface NestService {
 
     /**
-     * 1. Downloads Nest existing file
-     * 2. Finds the account number
-     * 3. Replaces the group with a new group
-     * 4. Uploads file
-     * @return information about successes and errors
+     * Sends message to Nest to update group
      */
-    NestUploadInfo updateGroup(String accountNumber, String newGroup);
+    Optional<String> updateGroup(int accountId, String accountNumber, String newGroup);
 
     /**
-     * 1. Downloads Nest existing file
-     * 2. Finds the account number
-     * 3. Marks the account as "Dissolved" (account will be removed from the Nest file after it is uploaded)
-     * 4. Uploads file
-     * @return information about successes and errors
+     * Sends message to Nest to remove account
      */
-    NestUploadInfo dissolveAccountWithNest(String accountNumber);
+    Optional<String> dissolveAccountWithNest(CustomerAccount account);
 
     /**
-     * 1. Finds all Nest groups for the program
-     * 2. Sends control request
-     * @return optional error we got from Nest
+     * Sends control message to Nest
      */
-    Optional<NestError> control(int programId, int gearId, Instant startTime, Instant stopTime);
+    Optional<SchedulabilityError> control(int programId, int gearId, Instant startTime, Instant stopTime);
 
     /**
-     * 1. Finds all Nest groups for the program
-     * 2. Sends stop control request for each group
+     * Sends message to Nest to stop or cancel control
      */
-    void stopControl(int programId);
+    String stopControl(int programId);
 }

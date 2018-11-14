@@ -32,10 +32,8 @@ import static com.cannontech.dr.nest.model.NestSyncType.AUTO;
 import static com.cannontech.dr.nest.model.NestSyncType.MANUAL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +44,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.util.Strings;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -71,11 +68,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.NestException;
-import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestSync;
 import com.cannontech.dr.nest.model.NestSyncDetail;
 import com.cannontech.dr.nest.model.NestSyncI18nKey;
 import com.cannontech.dr.nest.model.NestSyncTimeInfo;
+import com.cannontech.dr.nest.model.v3.CustomerInfo;
+import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSyncService;
 import com.cannontech.message.DbChangeManager;
@@ -173,11 +171,10 @@ public class NestSyncServiceImpl implements NestSyncService{
         persistedSystemValueDao.setValue(PersistedSystemValueKey.NEST_SYNC_TIME, new Instant());
         NestSync sync = new NestSync();
         nestDao.saveSyncInfo(sync);
-        List<NestExisting> existing = nestCommunicationService.downloadExisting();
-        existing.removeIf(row -> Strings.isEmpty(row.getAccountNumber()) || row.getAccountNumber().equals(EMPTY_ROW));
+        List<CustomerInfo> existing = nestCommunicationService.retrieveCustomers(EnrollmentState.ACCEPTED);
         
         if (!existing.isEmpty()) {
-           List<String> groupsInNest = parseGroupsFromTheNestFile(existing); 
+           List<String> groupsInNest = parseGroups(existing); 
            log.debug("Poccessing {} rows", existing.size());
            Blacklist ignore = new Blacklist();
            syncGroups(groupsInNest, sync.getId(), ignore);
@@ -207,18 +204,18 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Attempts to make sure the Nest account are in sync with Yukon by creating accounts, thermostats, groups.
      */
-    private void syncAccounts(List<NestExisting> existing, List<String> groups, int syncId, Blacklist ignore) {
+    private void syncAccounts(List<CustomerInfo> existing, List<String> groups, int syncId, Blacklist ignore) {
         log.debug("Syncing {} accounts", existing.size());
         Set<String> thermostatsInNest = existing.stream()
-                .map(this::getThemostatsForAccountInNest)
+                .map(CustomerInfo::getDeviceIds)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
         Map<String, Thermostat> thermostatsInYukon = getThermostatsInYukon(thermostatsInNest);
         
         nestDao.saveSyncDetails(validateThermostats(thermostatsInNest, thermostatsInYukon, syncId, ignore));
         
-        Map<String, NestExisting> nestAccounts = existing.stream()
-                .collect(Collectors.toMap(NestExisting::getAccountNumber, row -> row));
+        Map<String, CustomerInfo> nestAccounts = existing.stream()
+                .collect(Collectors.toMap(CustomerInfo::getAccountNumber, row -> row));
         List<NestSyncDetail> details = deleteThermostatsAssociatedWithAccountNotInNest(syncId, nestAccounts.keySet());
         if(!details.isEmpty()) {
             nestDao.saveSyncDetails(details);
@@ -270,7 +267,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Creates user account in Yukon if account from Nest doesn't exist
      */
-    private void syncUserAccounts(int syncId, Map<String, NestExisting> nestAccounts,
+    private void syncUserAccounts(int syncId, Map<String, CustomerInfo> nestAccounts,
             Map<String, CustomerAccount> yukonAccounts) {
         nestDao.saveSyncDetails(nestAccounts.keySet().stream()
                 .filter(account -> !yukonAccounts.containsKey(account))
@@ -283,7 +280,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * For all users in Nest checks if the address in Yukon is Empty if it is copies it from Nest
      */
-    private void syncAddresses(int syncId, Map<String, NestExisting> nestAccounts,
+    private void syncAddresses(int syncId, Map<String, CustomerInfo> nestAccounts,
             Map<String, CustomerAccount> yukonAccounts) {
         Set<Integer> siteIds = yukonAccounts.values().stream()
                 .map(CustomerAccount::getAccountSiteId)
@@ -291,23 +288,23 @@ public class NestSyncServiceImpl implements NestSyncService{
         Map<Integer, LiteAddress> emptyAddresses = addressDao.getEmptyAddresses(siteIds);
         
         //add address in Yukon if the account in Nest has an address and Yukon doesn't
-        yukonAccounts.values().stream().filter(account -> emptyAddresses.containsKey(account.getAccountSiteId()))
+        nestDao.saveSyncDetails(yukonAccounts.values().stream().filter(account -> emptyAddresses.containsKey(account.getAccountSiteId()))
         .map(account ->{
-            NestExisting row = nestAccounts.get(account.getAccountNumber());
+            CustomerInfo row = nestAccounts.get(account.getAccountNumber());
             LiteAddress emptyAddress = emptyAddresses.get(account.getAccountSiteId());
             //in database if a customer has no address
             //there is an entry with all fields empty or send to (none), we found that row and will update if with data from Nest
             return updateAddress(row , syncId, emptyAddress);
         })
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .collect(Collectors.toList()));
     }
 
     /**
      * Syncs thermostats and enrollment for all accounts in Nest
      */
-    private void syncThermostatsAndEnrollments(List<NestExisting> existing, List<String> groups, int syncId,
-            Blacklist ignore, Map<String, NestExisting> nestAccounts, Map<String, Thermostat> thermostatsInYukon) {
+    private void syncThermostatsAndEnrollments(List<CustomerInfo> existing, List<String> groups, int syncId,
+            Blacklist ignore, Map<String, CustomerInfo> nestAccounts, Map<String, Thermostat> thermostatsInYukon) {
         Map<String, LiteYukonPAObject> yukonGroups = getGroupPaos(groups);
         log.debug("Groups in Yukon {}", yukonGroups.keySet());
         Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms =
@@ -320,9 +317,9 @@ public class NestSyncServiceImpl implements NestSyncService{
                 .stream()
                 .collect(Collectors.toMap(CustomerAccount::getAccountNumber, account -> account));
         existing.forEach(row -> {
-            if (!ignore.groups.containsKey(row.getGroup())) {
+            if (!ignore.groups.containsKey(row.getGroupId())) {
                 CustomerAccount account = accounts.get(row.getAccountNumber());
-                LiteYukonPAObject group = yukonGroups.get(row.getGroup());
+                LiteYukonPAObject group = yukonGroups.get(row.getGroupId());
                 //account or group might be null only if exception happened during creation of account or group, the exception is logged in WS log
                 if(account != null && group != null) {
                     PaoIdentifier programIdent = groupsToPrograms.get(group.getPaoIdentifier()).iterator().next();
@@ -334,7 +331,7 @@ public class NestSyncServiceImpl implements NestSyncService{
                 }
             } else { 
               //this group is in the black list
-              log.debug("Ignoring group {} reason {}", row.getGroup(), ignore.groups.get(row.getGroup()));
+              log.debug("Ignoring group {} reason {}", row.getGroupId(), ignore.groups.get(row.getGroupId()));
             }
         });
     }
@@ -343,9 +340,9 @@ public class NestSyncServiceImpl implements NestSyncService{
      * Syncs thermostats and enrollment for user account
      */
     private void syncThermostatAndEnrollment(int syncId, Blacklist ignore,
-            NestExisting row, CustomerAccount account, LiteYukonPAObject group, LiteYukonPAObject programPao, Map<String, Thermostat> thermostatsInYukon) {
+            CustomerInfo row, CustomerAccount account, LiteYukonPAObject group, LiteYukonPAObject programPao, Map<String, Thermostat> thermostatsInYukon) {
        
-        List<NestSyncDetail> details = getThemostatsForAccountInNest(row).stream()
+        List<NestSyncDetail> details = row.getDeviceIds().stream()
             .filter(thermostat -> {
                 boolean isBlacklisted = ignore.thermostats.containsKey(thermostat);
                 if(isBlacklisted) {
@@ -411,9 +408,10 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * If address in Yukon is missing creates the address, Missing = all fields set to empty
      */
-    private NestSyncDetail updateAddress(NestExisting row, int syncId, LiteAddress address) {
+    private NestSyncDetail updateAddress(CustomerInfo row, int syncId, LiteAddress address) {
         AccountServiceImpl.setAddressFieldsFromDTO(address,
-            new Address(row.getAddress(), "", row.getCity(), row.getState(), row.getZipCode(), ""));
+            new Address(row.getServiceAddress().getStreetAddress(), "", row.getServiceAddress().getCity(),
+                row.getServiceAddress().getState(), row.getServiceAddress().getPostalCode(), ""));
         try {
             log.debug("Adding address {} to account {}", address, row.getAccountNumber());
             addressDao.update(address);
@@ -429,7 +427,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Creates account
      */
-    private NestSyncDetail createAccount(NestExisting row, int syncId) {
+    private NestSyncDetail createAccount(CustomerInfo row, int syncId) {
         AccountDto account = new AccountDto();
         account.setAccountNumber(row.getAccountNumber());
         try {
@@ -440,7 +438,8 @@ public class NestSyncServiceImpl implements NestSyncService{
             log.error("Unable to split name {} into first and last name", row.getName());
         }
         account.setEmailAddress(row.getEmail());
-        Address address = new Address(row.getAddress(), "", row.getCity(), row.getState(), row.getZipCode(), "");
+        Address address = new Address(row.getServiceAddress().getStreetAddress(), "", row.getServiceAddress().getCity(),
+            row.getServiceAddress().getState(), row.getServiceAddress().getPostalCode(), "");
         account.setStreetAddress(address);
         account.setBillingAddress(address);
         account.setIsCommercial(false);
@@ -574,23 +573,6 @@ public class NestSyncServiceImpl implements NestSyncService{
                 .collect(Collectors.toMap(LiteYukonPAObject::getPaoName, group -> group));
     }
     
-    
-    ///////////////////Unit test
-    /**
-     * Returns set of thermostats to for an account in Nest
-     */
-    private Set<String> getThemostatsForAccountInNest(NestExisting row){
-        Set<String> newThermostats = new HashSet<>();
-        if(!Strings.isEmpty(row.getSummerRhr())){
-            newThermostats.addAll(Arrays.asList(row.getSummerRhr().split(",")));
-        }
-        if(!Strings.isEmpty(row.getWinterRhr())){
-            newThermostats.addAll(Arrays.asList(row.getWinterRhr().split(",")));
-        }
-        return newThermostats.stream()
-                .map(String::trim)
-                .collect(Collectors.toSet());
-    }
     
     ///////////////////Unit test
     /**
@@ -739,10 +721,9 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Returns groups in the Nest file.
      */
-    private List<String> parseGroupsFromTheNestFile(List<NestExisting> existing) {
+    private List<String> parseGroups(List<CustomerInfo> existing) {
         List<String> groupsInNest = existing.stream()
-                .filter(row -> Strings.isNotEmpty(row.getGroup()) && !row.getGroup().equals(EMPTY_ROW))
-                .map(row -> row.getGroup())
+                .map(row -> row.getGroupId())
                 .distinct()
                 .collect(Collectors.toList());
         return groupsInNest;

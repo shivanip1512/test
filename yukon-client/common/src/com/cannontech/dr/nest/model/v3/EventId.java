@@ -1,4 +1,4 @@
-package com.cannontech.dr.nest.model;
+package com.cannontech.dr.nest.model.v3;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -6,11 +6,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class NestEventId {
+public class EventId {
     private String id;
 
     @JsonCreator
-    public NestEventId(@JsonProperty String id) {
+    public EventId(@JsonProperty String id) {
         this.id = id;
     }
 

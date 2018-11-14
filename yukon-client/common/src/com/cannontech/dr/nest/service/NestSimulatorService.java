@@ -1,10 +1,10 @@
 package com.cannontech.dr.nest.service;
 
-import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.nest.model.NestUploadInfo;
+import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
 public interface NestSimulatorService {
@@ -36,9 +36,6 @@ public interface NestSimulatorService {
      */
     String getFileName(YukonSimulatorSettingsKey key);
 
-
-    NestUploadInfo upload(InputStream inputStream);
-    
     /**
      * Save nest version to use in database.
      */
@@ -49,5 +46,35 @@ public interface NestSimulatorService {
      */
     Integer getNestVersion(YukonSimulatorSettingsKey key);
 
+    /**
+     * Uploads nest simulated file file.
+     * 
+     * @param existing - file rows
+     */
+    void uploadExisting(List<NestExisting> existing);
+    
+    /**
+     * Downloads Nest simulated file.
+     * 
+     * @return file data
+     */
+    List<NestExisting> downloadExisting();
+    
+    /**
+     * 1. Downloads Nest simulated file
+     * 2. Finds the account number
+     * 3. Replaces the group with a new group
+     * 4. Uploads file
+     * @return information about successes and errors
+     */
+    Optional<String> updateGroup(String accountNumber, String newGroup);
 
+    /**
+     * 1. Downloads Nest simulated file
+     * 2. Finds the account number
+     * 3. Marks the account as "Dissolved" (account will be removed from the Nest file after it is uploaded)
+     * 4. Uploads file
+     * @return information about successes and errors
+     */
+    Optional<String> dissolveAccountWithNest(String accountNumber);
 }

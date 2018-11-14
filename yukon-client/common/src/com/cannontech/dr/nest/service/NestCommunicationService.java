@@ -1,99 +1,62 @@
 package com.cannontech.dr.nest.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import com.cannontech.dr.nest.model.CriticalEvent;
 import com.cannontech.dr.nest.model.NestControlHistory;
-import com.cannontech.dr.nest.model.NestError;
-import com.cannontech.dr.nest.model.NestException;
-import com.cannontech.dr.nest.model.NestExisting;
-import com.cannontech.dr.nest.model.NestUploadInfo;
-import com.cannontech.dr.nest.model.StandardEvent;
+import com.cannontech.dr.nest.model.NestURL;
+import com.cannontech.dr.nest.model.v3.ControlEvent;
+import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
+import com.cannontech.dr.nest.model.v3.CustomerInfo;
+import com.cannontech.dr.nest.model.v3.EnrollmentState;
+import com.cannontech.dr.nest.model.v3.RushHourEventType;
+import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 
 public interface NestCommunicationService{
 
     /**
-     * Uploads existing file
-     * 
-     * @param existing - file rows
+     * Sends message to Nest to cancel event
      */
-    NestUploadInfo uploadExisting(List<NestExisting> existing);
+    Optional<String> cancelEvent(NestControlHistory history);
 
     /**
-     * Sends standard event to Nest
-     * 
-     * @param event to send to Nest
-     * @return optional error we got from Nest
+     * Sends message to Nest to stop event
      */
-    Optional<NestError> sendStandardEvent(StandardEvent event);
-
-    /**
-     * Sends critical event to Nest
-     * 
-     * @param event to send to Nest
-     * @return optional error we got from Nest
-     */
-    Optional<NestError> sendCriticalEvent(CriticalEvent event);
-
-    /**
-     * Attempts to cancel event with Nest
-     * 
-     * @param history contains the information needed to cancel event
-     * @return true if success
-     */
-    boolean cancelEvent(NestControlHistory history);
-
-    /**
-     * Downloads Nest existing file
-     * 
-     * @return file data
-     */
-    List<NestExisting> downloadExisting();
+    Optional<String> stopEvent(NestControlHistory history);
     
     /**
-     * Parses file. Used by simulator.
-     * 
-     * @return file data
+     * Sends message to Nest to start event, used by simulator to show result on the screen without starting control 
      */
-    List<NestExisting> parseExistingCsvFile(InputStream inputStream);
-      
-    public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
+    String getNestResponse(String url, ControlEvent event, RushHourEventType type);
 
-    static File createFile(String path, String name) {
-        String fileName = FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + name + ".csv";
-        File directory = new File(path);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        File file = new File(path, fileName);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                throw new NestException("Failed to create file:" + fileName, e);
-            }
-        }
-        return file;
-    }
-    
-    static Date parseDateFromFileName(String date) {
-        try {
-            return FILE_NAME_DATE_FORMATTER.parse(date);
-        } catch (ParseException e) {
-            throw new NestException("Unable to parse date:" + date, e);
-        }
-    }
+    // this method will be removed from interface 
+    boolean useProxy(String stringUrl);
+
+    // this method will be removed from interface 
+    String encodeAuthorization();
 
     /**
-     * Sends event to Nest and gets a response. This methods is used by simulator as we want to display the
-     * not formated response we get from Nest.
+     * Retrieves all customers from Nest for the state provided
      */
-    String getNestResponse(String url, CriticalEvent event);
+    List<CustomerInfo> retrieveCustomers(EnrollmentState state);
+
+    /**
+     * Updates enrollment: dissolves account of changes group 
+     */
+    Optional<String> updateEnrollment(CustomerEnrollment enrollment);
+
+    /**
+     * Contracts Nest url for a specific version
+     */
+    String constructNestUrl(int version, NestURL url);
+
+    /**
+     * Contracts Nest url for a specific version
+     */
+    String constructNestUrl(NestURL url);
+
+    /**
+     * Sends message to Nest to start control
+     */
+    Optional<SchedulabilityError> sendEvent(ControlEvent event, RushHourEventType type);
 }

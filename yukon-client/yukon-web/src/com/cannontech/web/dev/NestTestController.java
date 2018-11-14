@@ -30,14 +30,17 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.development.model.NestControlEventSimulatorParameters;
-import com.cannontech.dr.nest.model.CriticalEvent;
-import com.cannontech.dr.nest.model.LoadShaping;
 import com.cannontech.dr.nest.model.LoadShapingPeak;
 import com.cannontech.dr.nest.model.LoadShapingPost;
 import com.cannontech.dr.nest.model.LoadShapingPreparation;
 import com.cannontech.dr.nest.model.NestExisting;
-import com.cannontech.dr.nest.model.NestURLTypes;
-import com.cannontech.dr.nest.model.StandardEvent;
+import com.cannontech.dr.nest.model.NestURL;
+import com.cannontech.dr.nest.model.v3.ControlEvent;
+import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
+import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
@@ -46,8 +49,6 @@ import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.model.NestFileGenerationSetting;
@@ -67,7 +68,6 @@ public class NestTestController {
     @Autowired NestService nestS; 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private GlobalSettingDao settingDao;
     
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
@@ -85,7 +85,7 @@ public class NestTestController {
         Integer savedNestVersion = nestService.getNestVersion(YukonSimulatorSettingsKey.NEST_VERSION);
         model.addAttribute("savedNestVersion", savedNestVersion);
         
-        Set<Integer> allAvailableVersions = NestURLTypes.getAllVersions();
+        Set<Integer> allAvailableVersions = NestURL.getAllVersions();
         model.addAttribute("allAvailableVersions", allAvailableVersions);
         return "nest/nestVersion.jsp";
     }
@@ -180,7 +180,7 @@ public class NestTestController {
     @RequestMapping(value = "/downloadExisting", method = RequestMethod.GET)
     public String downloadExisting(FlashScope flash) {
         log.info("Downloding existing file");
-        List<NestExisting> nestExisting = nestComm.downloadExisting();
+        List<NestExisting> nestExisting = nestService.downloadExisting();
         log.info("Nest Existing " + nestExisting);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.downloadExisting.success"));
         return "redirect:viewNestSync";
@@ -227,20 +227,16 @@ public class NestTestController {
         String period = new Period(nestParameters.getStartTime(), nestParameters.getStopTime()).toString();
 
         if (nestParameters.getControlMethod() == GearControlMethod.NestCriticalCycle) {
-            CriticalEvent criticalEvent =
-                new CriticalEvent(nestParameters.getStartTime().toString(), period, groupNames);
-            String requestUrl =
-                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestURLTypes.CONTROL_CRITICAL.getUrl(getNestVersion());
-            return nestComm.getNestResponse(requestUrl, criticalEvent);
+            ControlEvent event = new ControlEvent(nestParameters.getStartTime().toString(), period, groupNames);
+            String requestUrl = nestComm.constructNestUrl(getNestVersion(), NestURL.CREATE_EVENT);
+            return nestComm.getNestResponse(requestUrl, event, RushHourEventType.CRITICAL);
 
         } else if (nestParameters.getControlMethod() == GearControlMethod.NestStandardCycle) {
-            LoadShaping loadShaping = new LoadShaping(nestParameters.getLoadShapingPreparation(),
-                nestParameters.getLoadShapingPeak(), nestParameters.getLoadShapingPost());
-            StandardEvent standardEvent =
-                new StandardEvent(nestParameters.getStartTime().toString(), period, groupNames, loadShaping);
-            String requestUrl =
-                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestURLTypes.CONTROL_STANDARD.getUrl(getNestVersion());
-            return nestComm.getNestResponse(requestUrl, standardEvent);
+            LoadShapingOptions loadShaping =
+                    new LoadShapingOptions(PrepLoadShape.PREP_STANDARD, PeakLoadShape.PEAK_STANDARD, PostLoadShape.POST_STANDARD);
+            ControlEvent event = new ControlEvent(nestParameters.getStartTime().toString(), period, groupNames, loadShaping);
+            String requestUrl = nestComm.constructNestUrl(getNestVersion(), NestURL.CREATE_EVENT);
+            return nestComm.getNestResponse(requestUrl, event, RushHourEventType.STANDARD);
         }
         return "";
     }
@@ -249,7 +245,7 @@ public class NestTestController {
     private Integer getNestVersion() {
         Integer savedNestVersion = nestService.getNestVersion(YukonSimulatorSettingsKey.NEST_VERSION);
         if (savedNestVersion == null) {
-            return NestURLTypes.getLatestVersion();
+            return NestURL.CURRENT_VERSION;
         } else {
             return savedNestVersion;
         }
