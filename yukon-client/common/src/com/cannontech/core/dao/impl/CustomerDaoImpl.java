@@ -4,6 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -15,8 +18,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
@@ -42,6 +48,8 @@ import com.cannontech.spring.SeparableRowMapper;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public final class CustomerDaoImpl implements CustomerDao {
     
@@ -466,6 +474,42 @@ public final class CustomerDaoImpl implements CustomerDao {
         liteCICustomerTemplate.update(customer);
     }
     
+    @Override
+    public Map<Integer, LiteCustomer> getCustomersWithEmptyAltTrackNum(List<Integer> customerIds) {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT CustomerId, PrimaryContactId, CustomerTypeId, Timezone, CustomerNumber, RateScheduleId, AltTrackNum, TemperatureUnit");
+                sql.append("FROM Customer");
+                sql.append("WHERE AltTrackNum IN('(none)', '', ' '");
+                sql.append("AND CustomerId").in(subList);
+                return sql;           
+            }
+        };
+        
+        YukonRowMapper<LiteCustomer> mapper = (YukonResultSet rs) -> {
+            LiteCustomer customer = new LiteCustomer();
+            customer.setCustomerID(rs.getInt("CustomerId"));
+            customer.setCustomerNumber("CustomerNumber");
+            customer.setPrimaryContactID(rs.getInt("PrimaryContactId"));
+            customer.setCustomerTypeID(rs.getInt("CustomerTypeId"));
+            customer.setTimeZone(rs.getStringSafe("Timezone"));
+            customer.setRateScheduleID(rs.getInt("RateScheduleId"));
+            customer.setAltTrackingNumber(rs.getStringSafe("AltTrackNum"));
+            customer.setTemperatureUnit(rs.getStringSafe("TemperatureUnit"));
+            return customer;
+        };
+        
+        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        List<Entry<Integer, LiteCustomer>> customers = chunkingSqlTemplate.query(sqlGenerator,  Lists.newArrayList(customerIds), (YukonResultSet rs) -> {
+            return Maps.immutableEntry(rs.getInt("CustomerId"), mapper.mapRow(rs));
+        });
+        
+        return customers.stream()
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    }
+    
     @PostConstruct
     public void init() throws Exception {
         liteCustomerTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
@@ -479,5 +523,4 @@ public final class CustomerDaoImpl implements CustomerDao {
         liteCICustomerTemplate.setPrimaryKeyField("CustomerId");
         liteCICustomerTemplate.setFieldMapper(ciCustomerFieldMapper); 
     }
-    
 }

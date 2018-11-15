@@ -24,6 +24,7 @@ import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -35,6 +36,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
@@ -87,6 +90,8 @@ public class OperatorEnrollmentController {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private NestService nestService;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
     
     private static final Logger log = YukonLogManager.getLogger(OperatorEnrollmentController.class);
 
@@ -293,7 +298,9 @@ public class OperatorEnrollmentController {
                     flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.nest.changeGroupNoNestGroupFound"));
                     return;
                 }
-                Optional<String> uploadInfo = nestService.updateGroup(accountInfoFragment.getAccountId(), accountInfoFragment.getAccountNumber(), groupName);
+                CustomerAccount account = customerAccountDao.getById(accountInfoFragment.getAccountId());
+                Optional<String> uploadInfo =
+                    nestService.updateGroup(account.getCustomerId(), accountInfoFragment.getAccountNumber(), groupName);
                 if (uploadInfo.isPresent()) {
                     ArrayList<MessageSourceResolvable> errors= new ArrayList<>();
                     errors.add(YukonMessageSourceResolvable.createDefaultWithoutCode(uploadInfo.get()));

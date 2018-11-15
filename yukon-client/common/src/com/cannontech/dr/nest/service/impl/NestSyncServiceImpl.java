@@ -55,6 +55,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.AddressDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DemandResponseDao;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
@@ -64,6 +65,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.lite.LiteAddress;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.dr.nest.dao.NestDao;
@@ -124,6 +126,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private AccountService accountService;
     @Autowired private AddressDao addressDao;
     @Autowired private HardwareService hardwareService;
+    @Autowired private CustomerDao customerDao;
     private EnergyCompany energyCompany;
        
     /**
@@ -223,13 +226,43 @@ public class NestSyncServiceImpl implements NestSyncService{
             thermostatsInYukon = getThermostatsInYukon(thermostatsInNest);
         }
         
-        Map<String, CustomerAccount> yukonAccounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), energyCompany.getId())
+        Map<String, CustomerAccount> yukonAccounts = getCustomerAccounts(nestAccounts);
+        syncUserAccounts(syncId, nestAccounts, yukonAccounts);
+        //refresh all accounts as we might have created new accounts in the method above
+        yukonAccounts = getCustomerAccounts(nestAccounts);
+        updateAltTrackingNumberWithNestCustomerId(nestAccounts, yukonAccounts);
+        syncAddresses(syncId, nestAccounts, yukonAccounts);
+        syncThermostatsAndEnrollments(existing, groups, syncId, ignore, nestAccounts, thermostatsInYukon, yukonAccounts);        
+    }
+
+    private void updateAltTrackingNumberWithNestCustomerId(Map<String, CustomerInfo> nestAccounts,
+            Map<String, CustomerAccount> yukonAccounts) {
+        List<Integer> customerIds = yukonAccounts.values().stream()
+            .map(CustomerAccount::getCustomerId)
+            .collect(Collectors.toList());
+        Map<Integer, LiteCustomer> customers = customerDao.getCustomersWithEmptyAltTrackNum(customerIds);
+        for (String accountNumber : yukonAccounts.keySet()) {
+            CustomerAccount account = yukonAccounts.get(accountNumber);
+            LiteCustomer customer = customers.get(account.getCustomerId());
+            //customer has empty alt tracking number
+            if (customer != null) {
+                CustomerInfo nestAccount = nestAccounts.get(accountNumber);
+                // updating alt tracking number with Nest account number
+                customer.setAltTrackingNumber(nestAccount.getCustomerId());
+                log.debug("Updating AltTrackingNumber to {} for account {} customer id {}",
+                    nestAccount.getCustomerId(), nestAccount.getCustomerId(), customer.getCustomerID());
+                customerDao.updateCustomer(customer);
+            }
+        }
+    }
+
+    /**
+     * Returns customer accounts in Yukon that match the accounts in Nest
+     */
+    private Map<String, CustomerAccount> getCustomerAccounts(Map<String, CustomerInfo> nestAccounts) {
+        return customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), energyCompany.getId())
                 .stream()
                 .collect(Collectors.toMap(CustomerAccount::getAccountNumber, account -> account));
-        
-        syncUserAccounts(syncId, nestAccounts, yukonAccounts);
-        syncAddresses(syncId, nestAccounts, yukonAccounts);
-        syncThermostatsAndEnrollments(existing, groups, syncId, ignore, nestAccounts, thermostatsInYukon);        
     }
 
     /**
@@ -304,7 +337,8 @@ public class NestSyncServiceImpl implements NestSyncService{
      * Syncs thermostats and enrollment for all accounts in Nest
      */
     private void syncThermostatsAndEnrollments(List<CustomerInfo> existing, List<String> groups, int syncId,
-            Blacklist ignore, Map<String, CustomerInfo> nestAccounts, Map<String, Thermostat> thermostatsInYukon) {
+            Blacklist ignore, Map<String, CustomerInfo> nestAccounts, Map<String, Thermostat> thermostatsInYukon,
+            Map<String, CustomerAccount> accounts) {
         Map<String, LiteYukonPAObject> yukonGroups = getGroupPaos(groups);
         log.debug("Groups in Yukon {}", yukonGroups.keySet());
         Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms =
@@ -313,9 +347,6 @@ public class NestSyncServiceImpl implements NestSyncService{
         if(!ignore.isEmpty()) {
             log.debug("Data to ignore when syncing {}", ignore);
         }
-        Map<String, CustomerAccount> accounts = customerAccountDao.getCustomerAccountsByAccountNumbers(nestAccounts.keySet(), energyCompany.getId())
-                .stream()
-                .collect(Collectors.toMap(CustomerAccount::getAccountNumber, account -> account));
         existing.forEach(row -> {
             if (!ignore.groups.containsKey(row.getGroupId())) {
                 CustomerAccount account = accounts.get(row.getAccountNumber());

@@ -12,7 +12,7 @@ public interface NestService {
     /**
      * Sends message to Nest to update group
      */
-    Optional<String> updateGroup(int accountId, String accountNumber, String newGroup);
+    Optional<String> updateGroup(int customerId, String accountNumber, String newGroup);
 
     /**
      * Sends message to Nest to remove account

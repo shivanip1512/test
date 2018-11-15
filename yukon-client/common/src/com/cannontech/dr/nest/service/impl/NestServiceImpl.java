@@ -5,13 +5,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.NestControlHistory;
+import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.v3.ControlEvent;
 import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
@@ -38,6 +42,8 @@ public class NestServiceImpl implements NestService {
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private ProgramDao programDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private CustomerDao customerDao;
+    
     
     private static final Logger log = YukonLogManager.getLogger(NestServiceImpl.class);
 
@@ -89,22 +95,32 @@ public class NestServiceImpl implements NestService {
      
     @Override
     public Optional<String> dissolveAccountWithNest(CustomerAccount account) {
-        log.info("Removeing accountNumber {} from Nest", account.getAccountNumber());
-        CustomerEnrollment enrollment = new CustomerEnrollment();
-        //Nest id, get from table
-        enrollment.setCustomerId(account.getAccountNumber());
+        log.info("Removing accountNumber {} from Nest", account.getAccountNumber());
+        CustomerEnrollment enrollment = createEnrollement(account.getCustomerId(), account.getAccountNumber());
         enrollment.setEnrollmentState(EnrollmentState.DISSOLVED);
         return nestCommunicationService.updateEnrollment(enrollment);
     }
     
     @Override
-    public Optional<String> updateGroup(int accountId, String accountNumber, String newGroup) {
+    public Optional<String> updateGroup(int customerId, String accountNumber, String newGroup) {
         log.info("Changing group for accountNumber {} to new group {}", accountNumber, newGroup);
-        CustomerEnrollment enrollment = new CustomerEnrollment();
-        //Nest id, get from table
-        enrollment.setCustomerId(accountNumber);
+        CustomerEnrollment enrollment = createEnrollement(customerId, accountNumber);
         enrollment.setGroupId(newGroup);
         enrollment.setEnrollmentState(EnrollmentState.ACCEPTED);
         return nestCommunicationService.updateEnrollment(enrollment);
+    }
+    
+    /**
+     * Creates Nest enrollment object from yukon account
+     */
+    private CustomerEnrollment createEnrollement(int customerId, String accountNumber) {
+        CustomerEnrollment enrollment = new CustomerEnrollment();
+        LiteCustomer customer = customerDao.getLiteCustomer(customerId);
+        if (Strings.isEmpty(customer.getAltTrackingNumber()) || customer.getAltTrackingNumber().equals("(none)")) {
+            throw new NestException(
+                "Alt tracking number is required for this operation, it is missing from the account " + accountNumber);
+        }
+        enrollment.setCustomerId(customer.getAltTrackingNumber());
+        return enrollment;
     }
 }

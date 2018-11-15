@@ -1,6 +1,7 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.management.InvalidAttributeValueException;
 
@@ -137,5 +138,10 @@ public interface CustomerDao {
      * or null if none exist with that primary contact. 
      */
     LiteCustomer getLiteCustomerByPrimaryContact(int primaryContactId);
+
+    /**
+     * Returns a map of customers with empty altTrackNum for list of customerIds
+     */
+    Map<Integer, LiteCustomer> getCustomersWithEmptyAltTrackNum(List<Integer> customerIds);
 
 }
