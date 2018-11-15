@@ -346,7 +346,7 @@
     </target>
 
 	<!-- When we are doing an upgrade, we do not want to overwrite master.cfg -->
-	<target name="copy_support_files" depends="find_guestid, copy_installer_to_vm">
+	<target name="copy_support_files" depends="find_guestid">
 		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
 	        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
 	            <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
@@ -361,6 +361,8 @@
 	                <include name="*"/>
 	            </fileset>
 	        </scp>
+	    
+	    <antcall target="copy_installer_to_vm"/>
 	</target>
 	
 	<target name="copy_master_cfg" depends="setup_master_cfg">
