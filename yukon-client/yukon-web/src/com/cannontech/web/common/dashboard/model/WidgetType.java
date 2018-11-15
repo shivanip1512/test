@@ -116,6 +116,7 @@ public enum WidgetType implements DisplayableEnum {
         this.category = category;
         this.beanName = beanName;
         this.imageName = imageName;
+        this.widgetAvailablityCondition = null;
     }
     
     private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName, String widgetAvailablityCondition) {
