@@ -335,8 +335,9 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         Instant startTime = Instant.now().plus(utcOffset);
         Instant endTime = startTime.plus(Duration.standardMinutes(5));
         
+        // if isOptional = true: enables ecobee opt-out event message to be voluntary otherwise mandatory.
         DutyCycleDr dr = new DutyCycleDr(YUKON_OVERRIDE_EVENT_NAME, displayMessage, 100, startTime, false, endTime, 
-                                         false, false, settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
+                                         false, true, settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
         DutyCycleDrRequest request = new DutyCycleDrRequest(selection, dr);
         
         HttpEntity<DutyCycleDrRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
