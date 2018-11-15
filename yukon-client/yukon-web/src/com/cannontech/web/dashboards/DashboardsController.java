@@ -350,7 +350,7 @@ public class DashboardsController {
     public String addWidgets(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         if (canUserEditDashboard(yukonUser, dashboard, flash)) {
-            model.addAttribute("widgetMap", widgetService.getTypesByCategory());
+            model.addAttribute("widgetMap", widgetService.getTypesByCategory(yukonUser));
             model.addAttribute("totalWidgets", WidgetType.values().length);
             return "addWidgets.jsp";
         } else {

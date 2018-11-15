@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.web.common.dashboard.widget.validator.ControlAreaOrProgramOrScenarioPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
@@ -33,7 +34,7 @@ public enum WidgetType implements DisplayableEnum {
     METER_SEARCH(DashboardScope.GENERAL, WidgetCategory.AMI, "meterSearchWidget", "image-meter-search"),
     AMI_ACTIONS(DashboardScope.GENERAL, WidgetCategory.AMI, "systemActionsMenuWidget", "image-ami-actions"),
     SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI, "scheduledGroupRequestExecutionWidget", "image-scheduled-requests"),
-    GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming"),
+    GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming", MasterConfigBoolean.RF_DATA_STREAMING_ENABLED.name()),
     DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-data-collection"),
     ASSET_AVAILABILITY(DashboardScope.GENERAL, WidgetCategory.DR, "assetAvailabilityWidget", "image-asset-availability");
     
@@ -103,6 +104,11 @@ public enum WidgetType implements DisplayableEnum {
     private WidgetCategory category;
     private String beanName;
     private String imageName;
+    /*
+     * This is a comma-separated list of enum names for Role Category, Role, Role Property, Global Setting, EC
+     * Setting or Master Config.
+     */
+    private String widgetAvailablityCondition;
     
     //TODO: do we need to allow multiple scopes or categories?
     private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName) {
@@ -110,6 +116,14 @@ public enum WidgetType implements DisplayableEnum {
         this.category = category;
         this.beanName = beanName;
         this.imageName = imageName;
+    }
+    
+    private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName, String widgetAvailablityCondition) {
+        this.scope = scope;
+        this.category = category;
+        this.beanName = beanName;
+        this.imageName = imageName;
+        this.widgetAvailablityCondition = widgetAvailablityCondition;
     }
     
     @Override
@@ -143,7 +157,11 @@ public enum WidgetType implements DisplayableEnum {
     public String getImageName() {
         return imageName;
     }
-    
+
+    public String getWidgetAvailablityCondition() {
+        return widgetAvailablityCondition;
+    }
+
     /**
      * @return The names of javscript libraries required by this widget.
      */

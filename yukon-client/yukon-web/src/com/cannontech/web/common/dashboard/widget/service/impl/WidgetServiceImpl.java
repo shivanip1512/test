@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.Widget;
@@ -22,15 +26,20 @@ import com.google.common.collect.Sets;
 
 public class WidgetServiceImpl implements WidgetService {
     
+    @Autowired RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
+    
     @Override
-    public Map<WidgetCategory, List<WidgetType>> getTypesByCategory() {
+    public Map<WidgetCategory, List<WidgetType>> getTypesByCategory(LiteYukonUser user) {
         LinkedHashMap<WidgetCategory, List<WidgetType>> map = new LinkedHashMap<>();
         List<WidgetCategory> widgetCategories = Lists.newArrayList(WidgetCategory.values());
         Collections.sort(widgetCategories);
         for (WidgetCategory category : widgetCategories) {
             map.put(category, new ArrayList<>());
         }
-        List<WidgetType> widgetTypes = Lists.newArrayList(WidgetType.values());
+        List <WidgetType> widgetTypes =  Stream.of(WidgetType.values())
+                .filter(widgetType -> ((StringUtils.isBlank(widgetType.getWidgetAvailablityCondition()))) || (StringUtils.isNotBlank(widgetType.getWidgetAvailablityCondition())) 
+                                                && roleAndPropertyDescriptionService.checkIfAtLeastOneExists(widgetType.getWidgetAvailablityCondition(), user))
+                .collect(Collectors.toList());
         Collections.sort(widgetTypes, (type1, type2) -> type1.name().compareTo(type2.name()));
         for (WidgetType type : widgetTypes) {
             map.get(type.getCategory()).add(type);
