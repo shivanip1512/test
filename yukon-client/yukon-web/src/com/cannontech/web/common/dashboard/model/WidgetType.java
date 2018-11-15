@@ -108,7 +108,7 @@ public enum WidgetType implements DisplayableEnum {
      * This is a comma-separated list of enum names for Role Category, Role, Role Property, Global Setting, EC
      * Setting or Master Config.
      */
-    private String widgetAvailablityCondition;
+    private String widgetAvailabilityCondition;
     
     //TODO: do we need to allow multiple scopes or categories?
     private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName) {
@@ -118,12 +118,12 @@ public enum WidgetType implements DisplayableEnum {
         this.imageName = imageName;
     }
     
-    private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName, String widgetAvailablityCondition) {
+    private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName, String widgetAvailabilityCondition) {
         this.scope = scope;
         this.category = category;
         this.beanName = beanName;
         this.imageName = imageName;
-        this.widgetAvailablityCondition = widgetAvailablityCondition;
+        this.widgetAvailabilityCondition = widgetAvailabilityCondition;
     }
     
     @Override
@@ -158,8 +158,8 @@ public enum WidgetType implements DisplayableEnum {
         return imageName;
     }
 
-    public String getWidgetAvailablityCondition() {
-        return widgetAvailablityCondition;
+    public String getWidgetAvailabilityCondition() {
+        return widgetAvailabilityCondition;
     }
 
     /**
