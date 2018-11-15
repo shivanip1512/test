@@ -16,7 +16,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidgetService {
     
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityWidgetServiceImpl.class);
-    public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(15);
+    private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(15);
 
     @Autowired private AssetAvailabilityServiceImpl assetAvailabilityService;
     @Autowired private IDatabaseCache cache;
