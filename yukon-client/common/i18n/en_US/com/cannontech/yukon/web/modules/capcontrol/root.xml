@@ -1213,13 +1213,13 @@
     <entry key="yukon.web.modules.capcontrol.dmvTest.noDmvTest">No Demand measurement and Verification Test</entry>
     <entry key="yukon.web.modules.capcontrol.dmvTest.helpText"><![CDATA[
         <ul>
-            <li><b>Name</b>:  Enter a Description for the DMV Test, e.g. "3V Bump Weekday "; "Substation Eaton 5V"</li>
-            <li><b>Data Archiving Interval</b> [  1 - 300 seconds ]: The frequency with which data is archived during.  Note that the DMV test does not initiate any DNP3 polling.  The DMV test only archives presently available measurements.</li>
-            <li><b>Duration of Data Gathering Intervals</b> [ 1 - 30 minutes  ]:  There are three data gathering intervals in each DMV test:  the Pre-Test Interval, The DMV Bump Test Interval, and the DMV Return to Normal Interval.  
-                    There will be two voltage changes, a bump up or down followed by a return to normal, during a DMV test.</li>
-            <li><b>Step Size</b> [ 0.75 to 5.0 volts ]:   the target voltage change magnitude during the DMV test.</li>
-            <li><b>Communication Success Percentage</b> [ percent from 0 to 100 ]:  In the three data gathering intervals in each DMV test, the DMV test requires the percent of voltage points with an updated value in each data gathering interval must exceed the DMV test Communication Success Percentage.  
-                    If the percent of voltage points with an updated value is less than the DMV test Communications Success Percentage in any data gathering interval, that DMV test is marked as failed.   If the percent of voltage points with an updated value is greater than the DMV test Communications Success Percentage in all three data gathering intervals, that DMV test is marked as successful.</li> 
+            <li><b>Name</b>: Enter a Description for the DMV Test, e.g. "3V Bump Weekday"; "Ely Substation 5V".</li>
+            <li><b>Data Archiving Interval</b> [  1 - 300 seconds ]: The frequency with which data is archived during the DMV test.  Note that the DMV test does not initiate any DNP3 polling.  The DMV test only archives presently available measurements.</li>
+            <li><b>Duration of Data Gathering Intervals</b> [ 1 - 30 minutes  ]: There are three data gathering intervals in each DMV test: the Pre-Test Interval, the DMV Bump Test Interval, and the DMV Return to Normal Interval.  
+                There will be two voltage changes, a bump up or down followed by a return to normal, during a DMV test.</li>
+            <li><b>Step Size</b> [ 0.75 to 5.0 volts ]: The target voltage change magnitude during the DMV test.</li>
+            <li><b>Communication Success Percentage</b> [ percent from 0 to 100 ]:  The DMV test requires a minimum amount of field data to proceed.  
+                If the percentage of voltage points with an updated value is less than the DMV test Communications Success Percentage, the DMV test will automatically be cancelled and marked as failed.</li> 
         </ul>
     ]]></entry>
     
