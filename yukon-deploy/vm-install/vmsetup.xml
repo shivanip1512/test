@@ -914,11 +914,20 @@
     </target>
 
 	<target name="copy_installer_to_vm">
-		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
-        <echo message="fileset dir= ${basedir}/yukon-build/dist" />
-        <!--- Using parallel to add a timeout to this task which keeps hanging -->
+		<!--- Using parallel to add a timeout to this task which keeps hanging -->
         <parallel threadCount="1" timeout="300000">
             <sequential>
+                <echo message="Calling delete_old_installers to delete old yukon zips." />
+                
+                <sshexec host="${guest_address}"
+                            trust="true"
+                            username="${guest_userid}"
+                            password="${guest_password}"
+                            command="ant -f C:/install.xml delete_old_installers"/>
+                
+                <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
+                <echo message="fileset dir= ${basedir}/yukon-build/dist" />
+                        
                 <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
                     <fileset dir="${basedir}/yukon-build/dist">
                         <include name="*"/>

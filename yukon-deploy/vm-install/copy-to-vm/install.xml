@@ -78,7 +78,7 @@
 	<target name="unzip">
 		<unzip dest="Yukon" >
 			<fileset dir="C:\">
-				<include name="*.zip"/>
+				<include name="yukon*.zip"/>
 			</fileset>
 		</unzip>
 		
@@ -88,6 +88,14 @@
             <fileset file="C:\*.zip" />
         </move>
 	</target>
+    
+    <target name="delete_old_installers">
+        <delete>
+            <fileset dir="C:\">
+                <include name="yukon*.zip"/>
+            </fileset>
+        </delete>
+    </target>
 	
 	<target name="cleanup_old_install">
 	    <delete dir="C:\Yukon\YukonInstall"/>
