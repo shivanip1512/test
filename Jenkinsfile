@@ -65,6 +65,8 @@ pipeline {
 								
 								//junit './yukon-client/*/test/testResults/*.xml'
 							}catch(Exception){
+								//Added sleep so that it capture full log for current stage
+								sleep(5)
 								sendEmailNotification("${env.STAGE_NAME}")
 							}
 						}
@@ -120,6 +122,8 @@ pipeline {
 
 							stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*, yukon-server/Message/Static_Release/ctithriftmsg/I386/*'
 							}catch(Exception){
+								//Added sleep so that it capture full log for current stage
+								sleep(5)
 								sendEmailNotification("${env.STAGE_NAME}")
 							}
 						}
@@ -203,6 +207,8 @@ pipeline {
 
 						archiveArtifacts artifacts: 'yukon-build/dist/*'
 					}catch(Exception){
+						//Added sleep so that it capture full log for current stage
+						sleep(5)
 						sendEmailNotification("${env.STAGE_NAME}")
 					}
 				}
@@ -220,7 +226,7 @@ def verifyLastBuild(){
     if(currentBuild.currentResult == 'SUCCESS'){
         if(currentBuild?.getPreviousBuild()?.result == 'FAILURE') {
             emailext body: " See<${env.BUILD_URL}display/redirect> \n ",
-            to: 'samirksatpathy@eaton.com',
+            to: '$DEFAULT_RECIPIENTS',
             recipientProviders: [culprits(), requestor(), brokenTestsSuspects(), brokenBuildSuspects()],
             subject: "Jenkins build is back to normal : ${env.JOB_NAME} #${env.BUILD_NUMBER}"
         }
@@ -244,10 +250,10 @@ def sendEmailNotification(String stageName){
 		}
 	}
 	//Code for getting logs 
-	def logString = "Logs : \n"
+	def logString = "\nLogs : "
 	for(String line : currentBuild.rawBuild.getLog(500)){
 	    if(line?.trim()){
-	        if(line.startsWith(stageName)){
+	        if(line.startsWith("["+stageName+"]") || line.startsWith("[Pipeline] ["+stageName+"]")){
 		        logString += "\n"+ line
 	        }
 	    }
@@ -255,6 +261,6 @@ def sendEmailNotification(String stageName){
 	emailext body: "${stageName} Failed : Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n ${changeString}     ${logString}",
                 to: '$DEFAULT_RECIPIENTS',
                 recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
-                subject: "${stageName} Build Failed In Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
+                subject: "${stageName} failed in Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
 
 }
