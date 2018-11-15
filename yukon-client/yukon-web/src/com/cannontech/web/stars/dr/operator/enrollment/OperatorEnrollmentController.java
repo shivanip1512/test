@@ -90,7 +90,6 @@ public class OperatorEnrollmentController {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private NestService nestService;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private CustomerDao customerDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     
     private static final Logger log = YukonLogManager.getLogger(OperatorEnrollmentController.class);
