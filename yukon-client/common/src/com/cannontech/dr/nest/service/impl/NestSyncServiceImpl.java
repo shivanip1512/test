@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -784,10 +783,8 @@ public class NestSyncServiceImpl implements NestSyncService{
         NestSyncTimeInfo info = new NestSyncTimeInfo();
         info.setSyncTime(persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.NEST_SYNC_TIME));
         info.setSyncInProgress(syncInProgress);
-        if(info.getSyncTime() != null) {
-            DateTime time = new DateTime(info.getSyncTime());
-            time.plusMinutes(MINUTES_TO_WAIT_BEFORE_NEXT_SYNC);
-            info.setNextSyncTime(time.toInstant());
+        if(info.getNextSyncTime() != null) {
+            info.setNextSyncTime(info.getNextSyncTime().plus(MINUTES_TO_WAIT_BEFORE_NEXT_SYNC));
         }
         return info;
     }

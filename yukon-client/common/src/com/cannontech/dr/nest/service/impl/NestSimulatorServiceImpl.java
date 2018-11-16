@@ -65,6 +65,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     public static final String SIMULATED_FILE_PATH = CtiUtilities.getNestDirPath() + System.getProperty("file.separator") + "Simulator";
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm";
     public String fileGenerated = "Generated";
+
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class); 
 
     public NestSimulatorServiceImpl(GlobalSettingDao settingDao) {
@@ -99,9 +100,6 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
                 .map(account -> getExistingRow(account, maxSerialNumbers, isWinterProgram, groupNames, user))
                 .sorted((f1, f2) -> compareDates(f1.getContractApproved(), f2.getContractApproved()))
                 .collect(Collectors.toList());
-            
-        addStaticNestInfo(existing, groupNames);
-
         File file = createFile(SIMULATED_FILE_PATH, fileGenerated);
         return writeToAFile(file, existing);
     }
@@ -124,31 +122,6 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
             new NestException("Error writing to a file", e);
         }
         return file.getName();
-    }
-
-    /**
-     * Nest file has a static info that needs to be appended to the end of the file.
-     */
-    private void addStaticNestInfo(List<NestExisting> existing, List<String> groupNames) {
-        existing.add(new NestExisting("***", "***", "***", "***", "***", "***", "***", "***", "***", "***", "***",
-            "***", "***", "***", "***", "***", "***", "***", "***", "***"));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Y",
-            getGroupName(groupNames, 0), "Y", "CUSTOMER_UNENROLLED", ""));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "N",
-            getGroupName(groupNames, 1), "N", "CUSTOMER_MOVED", ""));
-        existing.add(new NestExisting("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-            getGroupName(groupNames, 2), "", "OTHER", ""));
-    }
-
-    /**
-     * Returns the group name or an empty string
-     */
-    private String getGroupName(List<String> groupNames, int index) {
-        try {
-            return groupNames.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            return "";
-        }
     }
 
     /**
@@ -269,6 +242,8 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
                 MappingIterator<NestExisting> it =
                     new CsvMapper().readerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema()).readValues(inputStream);
                 existing.addAll(it.readAll());
+                //remove header
+                existing.remove(0);
             } catch (IOException e) {
                 throw new NestException("Unable to parse exising file ", e);
             }

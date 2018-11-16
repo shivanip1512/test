@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,9 +55,19 @@ import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class NestTestAPIController {
 
+    //Nest timestamp in RFC3339 UTC "Zulu" format
+    private DateTimeFormatter formatter = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            .withZone(ZoneId.of("UTC"));
+    
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class);
     @Autowired NestSimulatorService nestSimService;
 
+    @RequestMapping(value = "test")
+    public void test(HttpServletResponse response) {
+        
+    }
+    
     @RequestMapping(value = "/v1/users/current/latest.csv")
     public void existing(HttpServletResponse response) {
         log.info("Reading existing file");
@@ -118,10 +130,14 @@ public class NestTestAPIController {
     @RequestMapping(value = "/v3/partners/{partnerId}/customers", method = RequestMethod.GET)
     @ResponseBody
     public Customers getAllCustomers(@PathVariable("partnerId") String partnerId) {
+        return getCustomerInfos();
+    }
+
+    private Customers getCustomerInfos() {
         List<NestExisting> simulated = nestSimService.downloadExisting();
         List<CustomerInfo> infos = simulated.stream().map(sim -> {
-            DateTime date = new DateTime(Integer.parseInt(sim.getYear()), Integer.parseInt(sim.getMonth()),
-                Integer.parseInt(sim.getDay()), 0, 0, 0, 0);
+            String date = formatter.format(new DateTime(Integer.parseInt(sim.getYear()),
+                Integer.parseInt(sim.getMonth()), Integer.parseInt(sim.getDay()), 0, 0, 0, 0).toDate().toInstant());
             CustomerInfo info = new CustomerInfo();
             info.setAccountNumber(sim.getAccountNumber());
             info.setApproveTime(date.toString());
@@ -134,10 +150,10 @@ public class NestTestAPIController {
             info.setGroupId(sim.getGroup());
             info.setName(sim.getName());
             List<ProgramType> programTypes = new ArrayList<>();
-            if(!Strings.isEmpty(sim.getSummerRhr())){
+            if (!Strings.isEmpty(sim.getSummerRhr())) {
                 programTypes.add(ProgramType.SUMMER_RUSH_HOUR_REWARDS);
-            }  
-            if(!Strings.isEmpty(sim.getWinterRhr())){
+            }
+            if (!Strings.isEmpty(sim.getWinterRhr())) {
                 programTypes.add(ProgramType.WINTER_RUSH_HOUR_REWARDS);
             }
             info.setProgramType(programTypes);
@@ -146,7 +162,7 @@ public class NestTestAPIController {
             return info;
         }).collect(Collectors.toList());
         return new Customers(infos, "");
-    }   
+    }
     
     private List<String> getThemostatsForAccountInNest(NestExisting row){
         Set<String> newThermostats = new HashSet<>();
