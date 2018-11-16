@@ -21,6 +21,7 @@ yukon.dr.nest = (function () {
             }).done(function (data) {
                 var syncButton = $('#syncButton');
                 syncButton.attr('disabled', !data.syncButtonEnabled);
+                syncButton.prop('title', data.syncTitle);
             });
         
 

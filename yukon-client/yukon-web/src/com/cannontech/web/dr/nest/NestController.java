@@ -135,18 +135,20 @@ public class NestController {
             String lastSyncTimeString = dateFormattingService.format(nestSyncTimeInfo.getSyncTime(), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
             model.addAttribute("lastSyncTime", lastSyncTimeString);
         }
-        Instant nextSyncTime = nestSyncTimeInfo.getNextSyncTime();
-        if (nextSyncTime != null) {
-            String nextSyncTimeString = dateFormattingService.format(nextSyncTime, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nextSync") + nextSyncTimeString);
-        } 
-        if (nextSyncTime == null && !nestSyncTimeInfo.enableSyncButton()) {
+        if (nestSyncTimeInfo.enableSyncButton()) {
+            //button enabled 
+            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "forceSync"));
+        } else if (nestSyncTimeInfo.isSyncInProgress()) {
+            //button disabled because sync is in progress
             model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nestSyncInProgress"));
         } else {
-            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "forceSync"));
+          //button disabled because to early for the next sync
+            String nextSyncTimeString = dateFormattingService.format(nestSyncTimeInfo.getNextSyncTime(),
+                DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nextSync") + nextSyncTimeString);
         }
 
-        model.addAttribute("syncNowEnabled", nestSyncTimeInfo.enableSyncButton() && syncAvailable(nestSyncTimeInfo));
+        model.addAttribute("syncNowEnabled", nestSyncTimeInfo.enableSyncButton());
         
         getDiscrepancies(model, userContext, paging, sorting, NestSyncType.values(), 0);
 
@@ -301,11 +303,24 @@ public class NestController {
     }
     
     @RequestMapping(value="/nest/updateButton", method=RequestMethod.GET)
-    public @ResponseBody Map<String, Object> updateButton() {
+    public @ResponseBody Map<String, Object> updateButton(YukonUserContext userContext) {
         Map<String, Object> json = new HashMap<>();
         NestSyncTimeInfo nestSyncTimeInfo = nestSyncService.getSyncTimeInfo();
-        boolean syncAvailable = syncAvailable(nestSyncTimeInfo);
-        json.put("syncButtonEnabled", syncAvailable);
+        json.put("syncButtonEnabled", nestSyncTimeInfo.enableSyncButton());
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        if (nestSyncTimeInfo.enableSyncButton()) {
+            //button enabled 
+            json.put("syncTitle", accessor.getMessage(baseKey + "forceSync"));
+        } else if (nestSyncTimeInfo.isSyncInProgress()) {
+            //button disabled because sync is in progress
+            json.put("syncTitle", accessor.getMessage(baseKey + "nestSyncInProgress"));
+        } else {
+          //button disabled because to early for the next sync
+            String nextSyncTimeString = dateFormattingService.format(nestSyncTimeInfo.getNextSyncTime(),
+                DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            json.put("syncTitle", accessor.getMessage(baseKey + "nextSync") + nextSyncTimeString);
+        }
         return json;
     }
 }
