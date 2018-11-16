@@ -154,7 +154,7 @@ $(function() { updateServiceCompanyInfo();});
             
             <tags:inputNameValue nameKey=".label" path="displayLabel"/>
             
-            <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber"/>
+            <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber" readonly="${hardware.hardwareType.isNest()}" />
             
             <c:if test="${showVoltage}">
                 <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_VOLTAGE"/>

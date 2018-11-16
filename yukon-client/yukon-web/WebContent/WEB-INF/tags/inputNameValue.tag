@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="disabled" type="java.lang.Boolean" %>
+<%@ attribute name="readonly" type="java.lang.Boolean" description="Sets the readonly attribute on the input field. This will disable the field, but still submit the value."%>
 <%@ attribute name="inputClass" %>
 <%@ attribute name="maxlength" %>
 <%@ attribute name="nameClass" %>
@@ -30,5 +31,5 @@
     </c:if>
 
     <tags:input path="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" disabled="${disable}" 
-            inputClass="${pageScope.inputClass}"/>
+            inputClass="${pageScope.inputClass}" readonly="${readonly}"/>
 </tags:nameValue2>
