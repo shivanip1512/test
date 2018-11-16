@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -153,11 +154,6 @@ public class NestController {
         getDiscrepancies(model, userContext, paging, sorting, NestSyncType.values(), 0);
 
         return "dr/nest/details.jsp";
-    }
-    
-    private boolean syncAvailable(NestSyncTimeInfo nestSyncTimeInfo) {
-        Instant lastSyncTime = nestSyncTimeInfo.getSyncTime();
-        return Instant.now().isAfter(lastSyncTime.getMillis() + 900000);
     }
 
     @RequestMapping(value="/nest/discrepancies", method=RequestMethod.GET)
@@ -302,7 +298,7 @@ public class NestController {
         }
     }
     
-    @RequestMapping(value="/nest/updateButton", method=RequestMethod.GET)
+    @GetMapping(value="/nest/isSyncAvailable")
     public @ResponseBody Map<String, Object> updateButton(YukonUserContext userContext) {
         Map<String, Object> json = new HashMap<>();
         NestSyncTimeInfo nestSyncTimeInfo = nestSyncService.getSyncTimeInfo();

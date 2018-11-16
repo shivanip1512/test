@@ -16,7 +16,7 @@ yukon.dr.nest = (function () {
     _update = function () {
 
             $.ajax({
-                url: yukon.url('/dr/nest/updateButton'),
+                url: yukon.url('/dr/nest/isSyncAvailable'),
                 async: false
             }).done(function (data) {
                 var syncButton = $('#syncButton');
