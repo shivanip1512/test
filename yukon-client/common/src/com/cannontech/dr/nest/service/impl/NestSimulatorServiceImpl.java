@@ -51,7 +51,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class NestSimulatorServiceImpl implements NestSimulatorService {
 
@@ -247,7 +246,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     private InputStream getFileInputStream(NestFileType type) {
         InputStream inputStream = null;
         String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
-        String stringUrl = nestUrl + type.getUrl() + "/" + type.getFile();
+        String stringUrl = nestUrl + "/v1/users/current/latest.csv";
         log.debug("Nest Url:"+stringUrl);
         // curl https://enterprise-api.nest.com/api/v1/users/pending/latest.csv -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA=="
         try {
@@ -266,10 +265,9 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     private List<NestExisting> parseExistingCsvFile(InputStream inputStream) {
         List<NestExisting> existing = new ArrayList<>();
         if (inputStream != null) {
-            CsvSchema schema = CsvSchema.emptySchema().withHeader().withNullValue("");
             try {
                 MappingIterator<NestExisting> it =
-                    new CsvMapper().readerFor(NestExisting.class).with(schema).readValues(inputStream);
+                    new CsvMapper().readerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema()).readValues(inputStream);
                 existing.addAll(it.readAll());
             } catch (IOException e) {
                 throw new NestException("Unable to parse exising file ", e);

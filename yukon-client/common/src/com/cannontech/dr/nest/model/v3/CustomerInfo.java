@@ -33,7 +33,6 @@ public class CustomerInfo {
             String email, int deviceCount, List<String> deviceIds, String enrollTime, String approveTime,
             String groupId, EnrollmentSource enrollmentSource, EnrollmentState enrollmentState,
             List<ProgramType> programType, String rejectionReason, String rejectionNotes) {
-        super();
         this.customerId = customerId;
         this.accountNumber = accountNumber;
         this.name = name;

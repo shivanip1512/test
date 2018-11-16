@@ -67,6 +67,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     }
 
     /**
+     * v2 example
      * curl https://enterprise-api.nest.com/api/energy/v2/rush_hour_rewards/events/standard -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA==" -H "Content-Type: application/json" -d "{\"start_time\":\"2018-09-14T00:00:00.000Z\",\"duration\":\"PT30M\",\"groups\":[\"Test\"],\"load_shaping_options\":{\"preparation_load_shaping\":\"STANDARD\",\"peak_load_shaping\":\"STANDARD\",\"post_peak_load_shaping\":\"STANDARD\"}}"
      */
     @Override
@@ -197,7 +198,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             String body = JsonUtils.toJson(retrieve);
             HttpEntity<?> entity = new HttpEntity<>(body, headers);
             try {
-                HttpEntity<Customers> response = restTemplate.exchange(requestUrl, HttpMethod.GET, entity, Customers.class);
+                HttpEntity<Customers> response = restTemplate.exchange(requestUrl, HttpMethod.GET, entity, Customers.class, partnerId);
                 return response.getBody().getCustomers();
             } catch (HttpClientErrorException e) {
                 throw new NestException("Error getting valid reponse from Nest.", e);
