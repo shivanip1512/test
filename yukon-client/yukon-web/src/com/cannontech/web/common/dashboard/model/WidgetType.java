@@ -104,10 +104,6 @@ public enum WidgetType implements DisplayableEnum {
     private WidgetCategory category;
     private String beanName;
     private String imageName;
-    /*
-     * This is a comma-separated list of enum names for Role Category, Role, Role Property, Global Setting, EC
-     * Setting or Master Config.
-     */
     private String widgetAvailabilityCondition;
     
     //TODO: do we need to allow multiple scopes or categories?
