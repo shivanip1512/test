@@ -28,6 +28,7 @@
         <c:set var="displaySeparator" value="${empty deviceCollection ? 'dn' : ''}"/>
         <h3><i:inline key=".deviceSelectionHeader"/><span class="js-device-separator ${displaySeparator}">:</span>
             <span class="badge js-count"></span>&nbsp;<span class="js-device-description"></span>
+            <span class="js-view-selected-devices"></span>
         </h3>
         <div>
             <tags:sectionContainer2 nameKey="deviceSelection">

@@ -5,6 +5,12 @@
 
 <cti:msgScope paths="yukon.web.modules.tools.collectionActions">
 
+    <c:if test="${not empty deviceCollection}">
+            <div class="js-device-collection-template dn">
+                <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
+            </div>
+    </c:if>
+
     <cti:flashScopeMessages/>
 
     <c:if test="${!empty deviceCollection}">

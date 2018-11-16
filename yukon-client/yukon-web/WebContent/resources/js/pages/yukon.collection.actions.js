@@ -12,6 +12,19 @@ yukon.collection.actions = (function () {
     
     var
     _initialized = false,
+
+    _appendViewAllDevices =  function () {
+        var numDevices = $('#deviceCollectionCount').val();
+        var isNumDevicesEmpty = $.isEmptyObject(numDevices);
+        if ($("#collectionActionsAccordion").find(".js-device-collection-template").exists() && isNumDevicesEmpty === false) {
+            var clone = $("#collectionActionsAccordion").find(".js-device-collection-template").clone();
+            clone.removeClass("js-device-collection-template");
+            $("#collectionActionsAccordion").find(".js-view-selected-devices").empty();
+            $("#collectionActionsAccordion").find(".js-view-selected-devices").append(clone.html());
+        }else if(isNumDevicesEmpty === true){
+            $("#collectionActionsAccordion").find(".js-view-selected-devices").empty();
+        }
+    },
     
     mod = {
             
@@ -113,6 +126,15 @@ yukon.collection.actions = (function () {
                 $('#commandFromDropdown').val($('#commandSelectId option:selected').text());
                 mod.submitAction($(this));
             });
+
+            $("#collectionActionsAccordion").on("accordionactivate", function(event, ui) {
+                    _appendViewAllDevices();
+            });
+
+            var activeAccordion = $("#collectionActionsAccordion").accordion("option","active");
+            if (activeAccordion > 0){
+                    _appendViewAllDevices();
+            }
 
             _initialized = true;
         },
