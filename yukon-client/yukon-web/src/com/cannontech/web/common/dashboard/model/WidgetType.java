@@ -118,6 +118,12 @@ public enum WidgetType implements DisplayableEnum {
         this.imageName = imageName;
     }
     
+    /**
+     * @param widgetAvailabilityCondition A list of list of enum names for Role Category, Role, Role Property,
+     *        Global Setting, EC Setting or Master Config to determine if the widget is selectable for a given
+     *        user.
+     *        See {@link WidgetService.getTypesByCategory} for details.
+     */
     private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName, String widgetAvailabilityCondition) {
         this.scope = scope;
         this.category = category;

@@ -28,6 +28,11 @@ public class WidgetServiceImpl implements WidgetService {
     
     @Autowired RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
     
+    /**
+     * If any WidgetType has widgetAvailabilityCondition specified, that WidgetType will be included in the map 
+     * returned only if at-least one of the enum values in widgetAvailabilityCondition is true (OR condition is checked 
+     * between enum values in widgetAvailabilityCondition). 
+     */
     @Override
     public Map<WidgetCategory, List<WidgetType>> getTypesByCategory(LiteYukonUser user) {
         LinkedHashMap<WidgetCategory, List<WidgetType>> map = new LinkedHashMap<>();
