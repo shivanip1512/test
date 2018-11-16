@@ -115,7 +115,7 @@ public enum WidgetType implements DisplayableEnum {
     }
     
     /**
-     * @param widgetAvailabilityCondition A list of list of enum names for Role Category, Role, Role Property,
+     * @param widgetAvailabilityCondition A list of enum names for Role Category, Role, Role Property,
      *        Global Setting, EC Setting or Master Config to determine if the widget is selectable for a given
      *        user.
      *        See {@link WidgetService.getTypesByCategory} for details.
