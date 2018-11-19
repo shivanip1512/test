@@ -15,8 +15,7 @@
 #include <map>
 #include <queue>
 
-namespace Cti    {
-namespace Porter {
+namespace Cti::Porter {
 
 class UnsolicitedHandler : boost::noncopyable
 {
@@ -134,7 +133,7 @@ private:
     bool generateOutbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
     void generateKeepalives( CtiPortSPtr &port );
     static bool isDnpKeepaliveNeeded( const device_record &dr, const CtiTime &TimeNow );
-    static void generateDnpKeepalive( CtiPortSPtr &port, const device_record &dr, const CtiTime &TimeNow );
+    static void generateDnpKeepalive( CtiPortSPtr &port, const device_record &dr );
     void readPortQueue( CtiPortSPtr &port, om_list &local_queue );
     virtual bool isPortRateLimited() const;
     void tryGenerate(device_record *dr);
@@ -259,5 +258,3 @@ public:
 extern UnsolicitedMessenger UnsolicitedPortsQueue;
 
 }
-}
-

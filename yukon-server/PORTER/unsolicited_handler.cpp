@@ -30,8 +30,7 @@ extern bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool
 
 
 
-namespace Cti {
-namespace Porter {
+namespace Cti::Porter {
 
 namespace
 {
@@ -565,7 +564,7 @@ void UnsolicitedHandler::generateKeepalives(CtiPortSPtr &port)
         if( isDnpDeviceType(dr->device->getType()) &&
             isDnpKeepaliveNeeded(*dr, TimeNow) )
         {
-            generateDnpKeepalive(port, *dr, TimeNow);
+            generateDnpKeepalive(port, *dr);
             dr->last_keepalive = TimeNow;
         }
     }
@@ -609,7 +608,7 @@ bool UnsolicitedHandler::isDnpKeepaliveNeeded(const device_record &dr, const Cti
     return (last_communication + keepalive_period) < TimeNow;
 }
 
-void UnsolicitedHandler::generateDnpKeepalive(CtiPortSPtr &port, const device_record &dr, const CtiTime &TimeNow)
+void UnsolicitedHandler::generateDnpKeepalive(CtiPortSPtr &port, const device_record &dr)
 {
     CtiRequestMsg msg(dr.device->getID(), "ping");
     CtiCommandParser parse(msg.CommandString());
@@ -1378,5 +1377,3 @@ void UnsolicitedMessenger::sendMessageToClients(const CtiDBChangeMsg &msg)
 
 
 }
-}
-
