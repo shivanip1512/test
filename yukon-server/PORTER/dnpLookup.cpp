@@ -26,7 +26,7 @@ auto DnpLookup::getDnpAddresses(const CtiDeviceSingle & device) -> dnp_addresses
 }
 
 
-boost::optional<const long> DnpLookup::getDeviceIdForAddress(dnp_addresses address)
+boost::optional<const long> DnpLookup::getDeviceIdForAddress(dnp_addresses address) const
 {
     return mapFind(_dnpAddress_to_id.left, address);
 }

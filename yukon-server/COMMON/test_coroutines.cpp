@@ -44,14 +44,6 @@ BOOST_AUTO_TEST_CASE(test_chunked)
     }
 
     {
-        const auto chunked = make_chunk_vector(Cti::Coroutines::make_chunks(std::vector<int>{}, 1000));
-
-        const std::vector<std::vector<int>> expected{ {} };
-
-        BOOST_CHECK_EQUAL_RANGES(chunked, expected);
-    }
-
-    {
         const auto chunked = make_chunk_vector(Cti::Coroutines::chunked(range, 1000));
 
         const std::vector<std::vector<int>> expected{

@@ -24,7 +24,7 @@ public:
 
     static dnp_addresses getDnpAddresses(const CtiDeviceSingle &device);
 
-    boost::optional<const long> getDeviceIdForAddress(dnp_addresses address);
+    boost::optional<const long> getDeviceIdForAddress(dnp_addresses address) const;
 
     bool addDevice   (const CtiDeviceSingle& device);
     void updateDevice(const CtiDeviceSingle& device);

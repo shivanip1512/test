@@ -662,11 +662,9 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
         deviceTemplate = createDeviceType(deviceType);
     }
 
-    int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
-
-    for( const auto& id_chunk : Cti::Coroutines::make_chunks(paoids, max_ids_per_select) )
+    auto refreshDeviceTypes = [this, deviceTemplate, deviceType](std::set<long> paoid_subset) -> bool
     {
-        std::set<long> paoid_subset { id_chunk.begin(), id_chunk.end() };
+        bool rowFound = false;
 
         if( deviceTemplate )
         {
@@ -740,6 +738,22 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
         refreshDeviceProperties(paoid_subset, deviceType);
 
         refreshPaoIds(paoid_subset);
+
+        return rowFound;
+    };
+
+    if( paoids.empty() )
+    {
+        rowFound |= refreshDeviceTypes({});
+    }
+    else
+    {
+        int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
+
+        for( auto& chunk : Cti::Coroutines::chunked(paoids, max_ids_per_select) )
+        {
+            rowFound |= refreshDeviceTypes({chunk.begin(), chunk.end()});
+        }
     }
 
     if( deviceTemplate )
