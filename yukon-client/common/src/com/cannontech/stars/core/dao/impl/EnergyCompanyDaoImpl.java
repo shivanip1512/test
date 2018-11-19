@@ -444,7 +444,7 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             energyCompany = findEnergyCompany(energyCompanyName.get());
         }
         if (energyCompany == null) {
-            List<EnergyCompany> energyCompanies = (List<EnergyCompany>) getAllEnergyCompanies();
+            List<EnergyCompany> energyCompanies = Lists.newArrayList(getAllEnergyCompanies());
             energyCompanies.removeIf(e -> e.getId() == -1);
             if (energyCompanies.size() == 1) {
                 return energyCompanies.get(0);
