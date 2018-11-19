@@ -160,7 +160,7 @@ public class SurveyController {
         return "survey/listTable.jsp";
     }
 
-    @RequestMapping(" sampleXml")
+    @RequestMapping("sampleXml")
     public void sampleXml(HttpServletResponse response, Integer surveyId, YukonUserContext userContext)
             throws IOException {
         List<Survey> surveys = Lists.newArrayList();
