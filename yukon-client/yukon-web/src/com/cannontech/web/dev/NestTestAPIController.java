@@ -87,13 +87,17 @@ public class NestTestAPIController {
     @RequestMapping(value = "/v3/partners/{partnerId}/customers:batchUpdateEnrollments", method = RequestMethod.PUT)
     public void updateEnrollment(@PathVariable("partnerId") String partnerId, @RequestBody CustomerEnrollments enrollments) {
         log.debug("partnerId {}", partnerId);
+        processEnrollment(enrollments);
+      //simulate errors
+    }
+
+    private void processEnrollment(CustomerEnrollments enrollments) {
         CustomerEnrollment enrollment = enrollments.getCustomerEnrollments().get(0);
-        if(enrollment.getEnrollmentState() == EnrollmentState.DISSOLVED) {
+        if (enrollment.getEnrollmentState() == EnrollmentState.DISSOLVED) {
             nestSimService.dissolveAccountWithNest(enrollment.getCustomerId());
-        }else if(enrollment.getEnrollmentState() == EnrollmentState.ACCEPTED) {
+        } else if (enrollment.getEnrollmentState() == EnrollmentState.ACCEPTED) {
             nestSimService.updateGroup(enrollment.getCustomerId(), enrollment.getGroupId());
         }
-      //simulate errors
     }
     
     @IgnoreCsrfCheck
@@ -123,7 +127,7 @@ public class NestTestAPIController {
         String generatedString = new String(array, Charset.forName("UTF-8"));
         return new EventId(generatedString);
         // simulate errors
-        //if error return SchedulabilityError? We do not know if it one error or a map
+        //if error return SchedulabilityError? We do not know if it is one error or a map
     }
     
     @IgnoreCsrfCheck
