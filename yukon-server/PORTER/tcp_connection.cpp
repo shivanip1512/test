@@ -8,12 +8,25 @@
 
 #include <boost/scoped_array.hpp>
 
-namespace Cti    {
-namespace Porter {
-namespace Connections {
+namespace Cti::Porter::Connections {
 
 using std::string;
 using std::endl;
+
+bool operator<(const SocketAddress &lhs, const SocketAddress &rhs)
+{
+    if( const auto ip_compare = lhs.ip.compare(rhs.ip);
+        ip_compare < 0 )
+    {
+        return true;
+    }
+    else if( ip_compare == 0 )
+    {
+        return lhs.port < rhs.port;
+    }
+
+    return false;
+}
 
 TcpSocketStream::TcpSocketStream(const SocketStream &other) :
     SocketStream(other),
@@ -203,6 +216,3 @@ void EstablishedTcpConnection::recv()
 
 
 }
-}
-}
-

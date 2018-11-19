@@ -11,79 +11,61 @@
 
 using namespace std;
 
-namespace Cti    {
-namespace Porter {
+namespace Cti::Porter {
 
 
 template<class T, class U>
-auto TcpConnectionManager::emplace_unique_ptr(id_map<T>& idMap, long id, U arg)
+auto TcpConnectionManager::emplace_unique_ptr(address_map<T>& addrMap, address addr, U arg)
 {
-    return idMap.emplace(id, std::make_unique<TcpConnectionManager::id_map<T>::mapped_type::element_type>(arg));
+    return addrMap.emplace(addr, std::make_unique<TcpConnectionManager::address_map<T>::mapped_type::element_type>(arg));
 }
 
 
-void TcpConnectionManager::connect( const long id, const Connections::SocketAddress new_address )
+void TcpConnectionManager::connect(const address new_address )
 {
-    if( const address *old_address = findAddress(id) )
+    if( ! findStream(new_address) )
     {
-        if( *old_address == new_address )
-        {
-            return;
-        }
+        CTILOG_INFO(dout, "Connecting to " << new_address);
 
-        disconnect(id);
+        emplace_unique_ptr(_inactive, new_address, new_address);
     }
-
-    emplace_unique_ptr(_inactive, id, new_address);
 }
 
 
-const TcpConnectionManager::address *TcpConnectionManager::findAddress(const long id) const
-{
-    const socket_stream *s;
-
-    if( s = mapFindPtr(_established, id) )  return &(s->address);
-    if( s = mapFindPtr(_pending,     id) )  return &(s->address);
-    if( s = mapFindPtr(_inactive,    id) )  return &(s->address);
-
-    return 0;
-}
-
-
-TcpConnectionManager::bytes *TcpConnectionManager::findStream(const long id)
+TcpConnectionManager::bytes *TcpConnectionManager::findStream(const address addr)
 {
     socket_stream *s;
 
-    if( s = mapFindPtr(_established, id) )  return &(s->stream);
-    if( s = mapFindPtr(_pending,     id) )  return &(s->stream);
-    if( s = mapFindPtr(_inactive,    id) )  return &(s->stream);
+    if( s = mapFindPtr(_established, addr) )  return &(s->stream);
+    if( s = mapFindPtr(_pending,     addr) )  return &(s->stream);
+    if( s = mapFindPtr(_inactive,    addr) )  return &(s->stream);
 
-    return 0;
+    return nullptr;
 }
 
 
-void TcpConnectionManager::disconnect(long id)
+void TcpConnectionManager::disconnect(const address addr)
 {
-    _established.erase(id);
-    _pending    .erase(id);
-    _inactive   .erase(id);
+    _established.erase(addr);
+    _pending    .erase(addr);
+    _inactive   .erase(addr);
 }
 
 
-auto TcpConnectionManager::updateConnections() -> result_ids
+auto TcpConnectionManager::updateConnections() -> address_results
 {
     tryConnectInactive();
 
-    result_ids results;
+    address_results results;
 
     for( auto pending_block : Coroutines::chunked(_pending, FD_SETSIZE) )
     {
-        checkPendingConnectionBlock(pending_block, results.success, results.errors);
+        checkPendingConnectionBlock(pending_block, results);
     }
 
-    for( long id : boost::range::join(results.success, results.errors) )
+    for( auto addr : boost::range::join(results.success, results.errors) )
     {
-        _pending.erase(id);
+        _pending.erase(addr);
     }
 
     return results;
@@ -99,14 +81,14 @@ void Cti::Porter::TcpConnectionManager::tryConnectInactive()
     {
         const auto current_pos = itr++;
 
-        const long id = current_pos->first;
+        const address addr = current_pos->first;
         inactive_stream &inactive_stream = *(current_pos->second);
 
         if( inactive_stream.next_attempt < now )
         {
             try
             {
-                emplace_unique_ptr(_pending, id, inactive_stream);
+                emplace_unique_ptr(_pending, addr, inactive_stream);
 
                 _inactive.erase(current_pos);
             }
@@ -120,7 +102,7 @@ void Cti::Porter::TcpConnectionManager::tryConnectInactive()
 }
 
 
-void TcpConnectionManager::checkPendingConnectionBlock(slice<pending_map> &pending_block, id_set &connected, id_set &errors)
+void TcpConnectionManager::checkPendingConnectionBlock(slice<pending_map> &pending_block, address_results& results)
 {
     timeval tv = { 0, 1000 };  //  0 seconds + 1000 microseconds = 1 millisecond
     fd_set new_connections;
@@ -152,13 +134,13 @@ void TcpConnectionManager::checkPendingConnectionBlock(slice<pending_map> &pendi
             {
                 emplace_unique_ptr(_established, id, *p);
 
-                connected.insert(id);
+                results.success.insert(id);
             }
             else if( p->timeout < Now )
             {
                 emplace_unique_ptr(_inactive, id, *p);
 
-                errors.insert(id);
+                results.errors.insert(id);
             }
         }
         catch( ... )
@@ -169,16 +151,16 @@ void TcpConnectionManager::checkPendingConnectionBlock(slice<pending_map> &pendi
 }
 
 
-int TcpConnectionManager::send(const long id, const bytes &data)
+int TcpConnectionManager::send(const address addr, const bytes &data)
 {
-    established_map::iterator itr = _established.find(id);
+    auto itr = _established.find(addr);
 
     if( itr == _established.end() )
     {
         throw not_connected();
     }
 
-    established_connection &e = *(itr->second);
+    established_connection& e = *(itr->second);
 
     try
     {
@@ -186,7 +168,7 @@ int TcpConnectionManager::send(const long id, const bytes &data)
     }
     catch( write_error &ex )
     {
-        emplace_unique_ptr(_inactive, id, e);
+        emplace_unique_ptr(_inactive, addr, e);
 
         _established.erase(itr);
 
@@ -196,26 +178,26 @@ int TcpConnectionManager::send(const long id, const bytes &data)
 
 
 
-auto TcpConnectionManager::recv() -> result_ids
+auto TcpConnectionManager::recv() -> address_results
 {
-    result_ids results;
+    address_results results;
 
     //  check in blocks of up to FD_SETSIZE
     for( auto candidate_sockets : Coroutines::chunked(_established, FD_SETSIZE) )
     {
-        readCandidateSockets(results.success, results.errors, candidate_sockets);
+        readCandidateSockets(results, candidate_sockets);
     }
 
-    for( long id : results.errors )
+    for( const address addr : results.errors )
     {
-        _established.erase(id);
+        _established.erase(addr);
     }
 
     return results;
 }
 
 
-void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, slice<established_map> &candidate_sockets)
+void TcpConnectionManager::readCandidateSockets(address_results& results, slice<established_map> &candidate_sockets)
 {
     fd_set readable_sockets;
 
@@ -250,11 +232,11 @@ void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, s
             {
                 e->recv();
 
-                ready.insert(id);
+                results.success.insert(id);
             }
             catch( Connections::TcpSocketStream::tcp_socket_error &ex )
             {
-                errors.insert(id);
+                results.errors.insert(id);
 
                 emplace_unique_ptr(_inactive, id, *e);
             }
@@ -263,26 +245,15 @@ void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, s
 }
 
 
-bool TcpConnectionManager::isConnected( const long id ) const
+bool TcpConnectionManager::isConnected( const address addr ) const
 {
-    return _established.find(id) != _established.end();
+    return _established.count(addr);
 }
 
 
-Connections::SocketAddress TcpConnectionManager::getAddress(const long id) const
+bool TcpConnectionManager::searchStream( const address addr, Protocols::PacketFinder &pf )
 {
-    if( const address *a = findAddress(id) )
-    {
-        return *a;
-    }
-
-    throw no_record();
-}
-
-
-bool TcpConnectionManager::searchStream( const long id, Protocols::PacketFinder &pf )
-{
-    if( bytes *stream = findStream(id) )
+    if( bytes *stream = findStream(addr) )
     {
         for( auto itr = stream->begin();  itr != stream->end(); )
         {
@@ -330,5 +301,3 @@ void TcpConnectionManager::disable( void )
 
 
 }
-}
-

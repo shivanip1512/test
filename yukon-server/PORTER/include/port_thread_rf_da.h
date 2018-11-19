@@ -6,8 +6,7 @@
 #include "rfn_e2e_messenger.h"
 #include "dnpLookup.h"
 
-namespace Cti    {
-namespace Porter {
+namespace Cti::Porter {
 
 void PortRfDaThread(void *pid);
 
@@ -61,10 +60,6 @@ protected:
     bool isDeviceDisconnected( const long device_id ) const override { return false; }
 
     std::string describeDeviceAddress( const long device_id ) const override;
-
-    RfnIdentifier getRfnIdentifier() const { return RfnIdentifier(); }
 };
 
 }
-}
-

@@ -2,12 +2,11 @@
 
 #include "ctitime.h"
 #include "socket_helper.h"
+
 #include <vector>
 #include <string>
 
-namespace Cti    {
-namespace Porter {
-namespace Connections {
+namespace Cti::Porter::Connections {
 
 struct SocketAddress : Loggable
 {
@@ -30,6 +29,7 @@ struct SocketAddress : Loggable
     }
 };
 
+bool operator<(const SocketAddress &lhs, const SocketAddress &rhs);
 
 struct SocketStream
 {
@@ -153,8 +153,4 @@ struct EstablishedTcpConnection : TcpSocketStream
     };
 };
 
-
 }
-}
-}
-

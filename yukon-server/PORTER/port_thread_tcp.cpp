@@ -21,6 +21,11 @@
 #include "database_util.h"
 #include "std_helper.h"
 #include "coroutine_util.h"
+#include "desolvers.h"
+
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/algorithm/cxx11/all_of.hpp>
 
 using namespace std;
 
@@ -30,8 +35,7 @@ using Cti::Protocols::GpuffProtocol;
 using Cti::Timing::MillisecondTimer;
 using Cti::Logging::Vector::Hex::operator<<;
 
-namespace Cti    {
-namespace Porter {
+namespace Cti::Porter {
 
 /* Threads that handle each port for communications */
 void PortTcpThread(void *pid)
@@ -85,19 +89,28 @@ bool TcpPortHandler::manageConnections( void )
 
     auto [connected, failed] = _connectionManager.updateConnections();
 
-    for( const long device_id : connected )
-    {
-        updateDeviceCommStatus(device_id, ClientErrors::None);
-    }
+    updateCommStatuses(connected, ClientErrors::None);
+    updateCommStatuses(failed,    ClientErrors::DeviceNotConnected);
 
-    for( const long device_id : failed )
-    {
-        updateDeviceCommStatus(device_id, ClientErrors::DeviceNotConnected);
-    }
-
-    return !connected.empty() && !failed.empty();
+    return ! connected.empty() && ! failed.empty();
 }
 
+
+void TcpPortHandler::updateCommStatuses(std::set<Connections::SocketAddress> addresses, YukonError_t status)
+{
+    for( const auto addr : addresses )
+    {
+        updateCommStatus(addr, status);
+    }
+}
+
+void TcpPortHandler::updateCommStatus(Connections::SocketAddress addr, YukonError_t status)
+{
+    for( const auto device_id : _address_devices.left.equal_range(addr) | boost::adaptors::map_values )
+    {
+        updateDeviceCommStatus(device_id, status);
+    }
+}
 
 void TcpPortHandler::updateDeviceCommStatus(const long device_id, YukonError_t status)
 {
@@ -112,42 +125,57 @@ void TcpPortHandler::updateDeviceCommStatus(const long device_id, YukonError_t s
 
 void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> &devices)
 {
-    set<long> device_ids;
+    auto enabled = [](const CtiDeviceSingle* dev) {
+        return dev && ! dev->isInhibited();
+    };
 
-    for( const CtiDeviceSingle *dev : devices )
+    auto enabledDevices = devices | boost::adaptors::filtered(enabled);
+
+    // chunk collection so as not to break the reader
+    unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_SELECT", 950);
+
+    for( const auto& device_chunk : Cti::Coroutines::chunked(enabledDevices, max_size) )
     {
-        if( dev && !dev->isInhibited() )
-        {
-            device_ids.insert(dev->getID());
-        }
-    }
-
-    {   // chunk collection so as not to break the reader
-        unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_SELECT", 950);
-
-        for( const auto& id_chunk : Cti::Coroutines::chunked(device_ids, max_size) )
-        {
-            std::set<long> idSubset{ id_chunk.begin(), id_chunk.end() };
-
-            loadDeviceTcpProperties(idSubset);
-        }
+        loadDeviceTcpProperties(device_chunk);
     }
 }
 
 
-void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
+template<class T>
+void TcpPortHandler::loadDeviceTcpProperties(const T& devices)
 {
+    auto device_ids = devices | boost::adaptors::transformed([](const CtiDeviceSingle* dev) { return dev->getID(); });
+
+    std::map<long, const CtiDeviceSingle*> deviceLookup;
+    
+    for( auto dev : devices )
+    {
+        deviceLookup.emplace(dev->getID(), dev);
+    }
+
     if(DebugLevel & 0x00020000)
     {
        CTILOG_DEBUG(dout, "Looking for TCP port-related Pao Properties");
     }
 
-    string sql = Database::Tables::PaoPropertyTable::getSQLCoreStatement() +
-                 " WHERE (PPR.propertyname = 'TcpPort' OR PPR.propertyname = 'TcpIpAddress')";
-
+    std::string sql = 
+        "SELECT"
+            " pp1.PAObjectId"
+            ", pp1.PropertyValue"
+            ", pp2.PropertyValue"
+        " FROM"
+            " PAOProperty pp1"
+                " JOIN PAOProperty pp2"
+                    " ON pp1.PAObjectId = pp2.PAObjectId"
+        " WHERE"
+            " pp1.PropertyName = 'TcpIpAddress'"
+            " AND pp2.PropertyName = 'TcpPort'"
+            " AND pp1.PropertyValue <> '(none)'"
+            " AND pp2.PropertyValue <> '(none)'";
+        
     if ( ! device_ids.empty() )
     {
-        sql += " AND " + Cti::Database::createIdInClause( "PPR", "paobjectid", device_ids.size() );
+        sql += " AND " + Cti::Database::createIdInClause( "pp1", "PAObjectId", size(device_ids) );
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
@@ -165,56 +193,27 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
             CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
-        if(rdr.isValid())
+        if( rdr.isValid() )
         {
-            map<long, unsigned short> tmp_ports;
-            map<long, string>         tmp_ip_addresses;
-
             while( rdr() )
             {
-                Database::Tables::PaoPropertyTable paoProperty(rdr);
+                const auto device_id  = rdr[0].as<long>();
+                const auto ip_address = rdr[1].as<std::string>();
+                const auto port       = rdr[2].as<unsigned short>();
 
-                if( paoProperty.getPropertyName() == "TcpPort" )
+                Connections::SocketAddress addr { ip_address, port };
+
+                if( auto dev = mapFind(deviceLookup, device_id) )
                 {
-                    auto port = paoProperty.getPropertyValue();
+                    _connectionManager.connect(addr);
 
-                    if( ! ciStringEqual(port, "(none)") )
-                    {
-                        tmp_ports[paoProperty.getPaoId()] = atoi(port.c_str());
-                    }
-                }
-                else if( paoProperty.getPropertyName() == "TcpIpAddress" )
-                {
-                    auto address = paoProperty.getPropertyValue();
+                    _address_devices.insert({ addr, device_id });
 
-                    if( ! ciStringEqual(address, "(none)") )
-                    {
-                        tmp_ip_addresses[paoProperty.getPaoId()] = address;
-                    }
-                }
-            }
-
-            map<long, unsigned short>::iterator port_itr = tmp_ports.begin();
-            map<long, string>::iterator         ip_itr   = tmp_ip_addresses.begin();
-
-            while( port_itr != tmp_ports.end() &&
-                   ip_itr   != tmp_ip_addresses.end() )
-            {
-                if( port_itr->first == ip_itr->first )
-                {
-                    _connectionManager.connect(port_itr->first, Connections::SocketAddress(ip_itr->second, port_itr->second));
-                    ++port_itr;
-                    ++ip_itr;
-                }
-                else if( port_itr->first < ip_itr->first )
-                {
-                    CTILOG_WARN(dout, "orphan port record ("<< port_itr->first <<","<< port_itr->second <<") found");
-                    ++port_itr;
+                    _socketAddresses[addr].addDevice(**dev);
                 }
                 else
                 {
-                    CTILOG_WARN(dout, "orphan IP record ("<< port_itr->first <<","<< port_itr->second <<") found");
-                    ++ip_itr;
+                    CTILOG_WARN(dout, "No device found for device ID " << device_id << ", " << ip_address << " port " << port);
                 }
             }
         }
@@ -224,7 +223,7 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
         CTILOG_WARN(dout, "No devices on port ID " << _tcp_port->getPortID());
     }
 
-    if(DebugLevel & 0x00020000)
+    if( DebugLevel & 0x00020000 )
     {
         CTILOG_DEBUG(dout, "Done looking for PAO Properties");
     }
@@ -232,18 +231,25 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
 
 void TcpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 {
-    vector<const CtiDeviceSingle *> devices;
-
-    devices.push_back(&device);
-
-    loadDeviceProperties(devices);
+    loadDeviceProperties({ &device });
 }
 
 void TcpPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
 {
-    const long device_id = device.getID();
+    if( auto itr = _address_devices.right.find(device.getID()); 
+        itr != _address_devices.right.end() )
+    {
+        const auto addr = itr->second;
 
-    _connectionManager.disconnect(device_id);
+        _socketAddresses[addr].deleteDevice(device.getID());
+
+        _address_devices.right.erase(itr);
+
+        if( ! _address_devices.left.count(addr) )
+        {
+            _connectionManager.disconnect(addr);
+        }
+    }
 }
 
 void TcpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
@@ -281,17 +287,17 @@ YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
     TcpConnectionManager::bytes buf(dr.xfer.getOutBuffer(),
                                     dr.xfer.getOutBuffer() + dr.xfer.getOutCount());
 
-    Connections::SocketAddress sa = getDeviceSocketAddress(dr.device->getID());
+    auto addr = getDeviceSocketAddress(dr.device->getID());
 
     if( gConfigParms.getValueAsULong("PORTER_TCP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CTILOG_DEBUG(dout, "sending packet to "<< sa <<
+        CTILOG_DEBUG(dout, "sending packet to "<< addr <<
                 endl << buf);
     }
 
     try
     {
-        int bytes_sent = _connectionManager.send(dr.device->getID(), buf);
+        int bytes_sent = _connectionManager.send(addr, buf);
 
         dr.xfer.setOutCount(bytes_sent);
 
@@ -299,7 +305,7 @@ YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
     }
     catch( TcpConnectionManager::not_connected &ex )
     {
-        updateDeviceCommStatus(dr.device->getID(), ClientErrors::DeviceNotConnected);
+        updateCommStatus(addr, ClientErrors::DeviceNotConnected);
 
         return ClientErrors::DeviceNotConnected;
     }
@@ -340,45 +346,98 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
     //  Even though the time to read from "ready" sockets should be negligible, this
     //    behavior will need to change to fully adhere to the cooperative multitasking design of UnsolicitedHandler.
 
-    auto[ready_devices, error_devices] = _connectionManager.recv();
+    auto [ready_addresses, error_addresses] = _connectionManager.recv();
 
-    for( long device_id : ready_devices )
+    using boost::adaptors::transformed;
+    using boost::adaptors::filtered;
+
+    for( auto addr : ready_addresses )
     {
-        if( device_record *dr = getDeviceRecordById(device_id) )
+        auto device_ids = _address_devices.left.equal_range(addr) | boost::adaptors::map_values;
+
+        auto device_records = 
+            device_ids 
+                | transformed([this](long device_id)      { return getDeviceRecordById(device_id); }) 
+                | filtered   ([](const device_record* dr) { return dr && dr->device; });
+
+        auto device_types =
+            device_records 
+                | transformed([this](const device_record* dr) { return dr->device->getDeviceType(); });
+
+        if( boost::algorithm::all_of(device_types, isDnpDeviceType) )
         {
-            if( isDnpDeviceType(dr->device->getType()) )
+            if( const auto addressLookup = mapFind(_socketAddresses, addr) )
             {
-                while( auto p = findPacket(device_id, Protocols::DNP::DnpPacketFinder()) )
+                while( auto p = findPacket(addr, Protocols::DNP::DnpPacketFinder()) )
                 {
                     p->protocol = packet::ProtocolTypeDnp;
 
-                    addInboundWork(*dr, p);
-                }
-            }
-            else if( isGpuffDevice(*dr->device) )
-            {
-                while( auto p = findPacket(device_id, GpuffProtocol::GpuffPacketFinder()) )
-                {
-                    p->protocol = packet::ProtocolTypeGpuff;
+                    auto header = reinterpret_cast<const Protocols::DNP::DatalinkPacket::dlp_header_formatted&>(*p->data);
 
-                    addInboundWork(*dr, p);
+                    const auto outstation = header.source;
+                    const auto master = header.destination;
+
+                    DnpLookup::dnp_addresses incoming_address { master, outstation };
+
+                    if( auto device_id = addressLookup->getDeviceIdForAddress(incoming_address) )
+                    {
+                        if( auto dr = getDeviceRecordById(*device_id) )
+                        {
+                            addInboundWork(*dr, p);
+                        }
+                        else
+                        {
+                            CTILOG_WARN(dout, "No device record found for device ID " << *device_id);
+                        }
+                    }
+                    else
+                    {
+                        CTILOG_WARN(dout, "No device ID found for DNP address (M:" << master << ",O:" << outstation << ")");
+                    }
                 }
             }
+            else
+            {
+                CTILOG_WARN(dout, "No DNP device lookup found for TCP port " << addr);
+
+                //  clear socket stream?
+            }
+        }
+        else if( boost::size(device_records) == 1 && isGpuffDevice(*device_records.front()->device) )
+        {
+            while( auto p = findPacket(addr, GpuffProtocol::GpuffPacketFinder()) )
+            {
+                p->protocol = packet::ProtocolTypeGpuff;
+
+                addInboundWork(*(device_records.front()), p);
+            }
+        }
+        else
+        {
+            FormattedList l;
+
+            l.add("Device ID") << "Device type";
+
+            for( const auto& dr : device_records )
+            {
+                l.add(std::to_string(dr->device->getID())) << desolveDeviceType(dr->device->getType());
+            }
+
+            CTILOG_WARN(dout, "Unsupported combination of device types found on port:" << l);
+
+            //  clear socket stream?
         }
     }
 
-    for( long device_id : error_devices )
-    {
-        updateDeviceCommStatus(device_id, ClientErrors::TcpRead);
-    }
+    updateCommStatuses(error_addresses, ClientErrors::TcpRead);
 
-    return !ready_devices.empty() || !error_devices.empty();
+    return ! (ready_addresses.empty() && error_addresses.empty());
 }
 
 
-UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Protocols::PacketFinder &pf )
+UnsolicitedHandler::packet *TcpPortHandler::findPacket( const Connections::SocketAddress addr, Protocols::PacketFinder &pf )
 {
-    if( !_connectionManager.searchStream(device_id, pf) )
+    if( !_connectionManager.searchStream(addr, pf) )
     {
         return 0;
     }
@@ -387,10 +446,8 @@ UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Pr
 
     p->protocol = packet::ProtocolTypeInvalid;  // should be set by whoever calls findPacket()
 
-    Connections::SocketAddress sa = getDeviceSocketAddress(device_id);
-
-    p->ip   = sa.ip;
-    p->port = sa.port;
+    p->ip   = addr.ip;
+    p->port = addr.port;
 
     p->data = new unsigned char[pf.size()];
     p->len  = pf.size();
@@ -405,30 +462,26 @@ UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Pr
 
 Connections::SocketAddress TcpPortHandler::getDeviceSocketAddress( const long device_id ) const
 {
-    try
-    {
-        return _connectionManager.getAddress(device_id);
-    }
-    catch( TcpConnectionManager::no_record &ex )
-    {
-        return Connections::SocketAddress(string(), numeric_limits<u_short>::max());
-    }
+    static const Connections::SocketAddress invalidAddress { string(), numeric_limits<u_short>::max() };
+
+    return mapFindOrDefault(_address_devices.right, device_id, invalidAddress);
 }
 
 std::string TcpPortHandler::describeDeviceAddress( const long device_id ) const
 {
-    Connections::SocketAddress address = getDeviceSocketAddress(device_id);
-
-    return address.toString();
+    return getDeviceSocketAddress(device_id).toString();
 }
 
 
 bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
 {
-    return !_connectionManager.isConnected(device_id);
+    if( auto address = mapFind(_address_devices.right, device_id) )
+    {
+        return ! _connectionManager.isConnected(*address);
+    }
+
+    return true;
 }
 
 
 }
-}
-

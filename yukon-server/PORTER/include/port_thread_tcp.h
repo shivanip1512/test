@@ -8,8 +8,9 @@
 
 #include "tcp_connection_manager.h"
 
-namespace Cti    {
-namespace Porter {
+#include "dnpLookup.h"
+
+namespace Cti::Porter {
 
 void PortTcpThread(void *pid);
 
@@ -21,13 +22,22 @@ private:
 
     TcpConnectionManager _connectionManager;
 
-    void loadDeviceTcpProperties(const std::set<long> &device_ids);
+    template<class T>
+    void loadDeviceTcpProperties(const T& devices);
 
     Connections::SocketAddress getDeviceSocketAddress( const long device_id ) const;
 
-    void updateDeviceCommStatus(const long device_id, YukonError_t status);
+    void updateCommStatuses(std::set<Connections::SocketAddress> addresses, YukonError_t status);
+    void updateCommStatus(Connections::SocketAddress addr, YukonError_t status);
+    void updateDeviceCommStatus(long device_id, YukonError_t status);
 
-    packet *findPacket( const long device_id, Protocols::PacketFinder &pf );
+    using address_ids = boost::bimap<boost::bimaps::multiset_of<Connections::SocketAddress>, long>;
+
+    address_ids _address_devices;
+
+    std::map<Connections::SocketAddress, DnpLookup> _socketAddresses;
+
+    packet *findPacket( const Connections::SocketAddress addr, Protocols::PacketFinder &pf );
 
 protected:
 
@@ -57,5 +67,3 @@ public:
 };
 
 }
-}
-

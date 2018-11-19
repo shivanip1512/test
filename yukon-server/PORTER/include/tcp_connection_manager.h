@@ -3,17 +3,27 @@
 #include "tcp_connection.h"
 #include "packet_finder.h"
 
+#include <boost/bimap.hpp>
+#include <boost/bimap/set_of.hpp>
+#include <boost/bimap/multiset_of.hpp>
+
 #include <set>
 
-namespace Cti    {
-namespace Porter {
+namespace Cti::Porter {
 
 class TcpConnectionManager
 {
 public:
 
-    typedef std::set<long> id_set;
-    typedef Connections::SocketStream::bytes bytes;
+    using address     = Connections::SocketAddress;
+    using address_set = std::set<address>;
+    struct address_results 
+    {
+        address_set success;
+        address_set errors;
+    };
+
+    using bytes       = Connections::TcpSocketStream::bytes;
 
     struct not_connected : std::runtime_error
     {
@@ -25,28 +35,25 @@ public:
         no_record() : std::runtime_error("") {}
     };
 
-    typedef Connections::EstablishedTcpConnection::write_error write_error;
+    using write_error = Connections::EstablishedTcpConnection::write_error;
 
 private:
 
-    typedef Connections::SocketStream             socket_stream;
-    typedef Connections::SocketAddress            address;
+    using socket_stream          = Connections::SocketStream;
 
-    typedef Connections::InactiveSocketStream     inactive_stream;
-    typedef Connections::PendingTcpConnection     pending_connection;
-    typedef Connections::EstablishedTcpConnection established_connection;
-
-    typedef Connections::SocketStream::bytes      bytes;
+    using inactive_stream        = Connections::InactiveSocketStream;
+    using pending_connection     = Connections::PendingTcpConnection;
+    using established_connection = Connections::EstablishedTcpConnection;
 
     template <class T>
-    using id_map = std::map<long, std::unique_ptr<T>>;
+    using address_map = std::map<address, std::unique_ptr<T>>;
 
     template<class T, class U>
-    auto emplace_unique_ptr(id_map<T>& idMap, long id, U arg);
+    auto emplace_unique_ptr(address_map<T>& addrMap, address addr, U arg);
         
-    using inactive_map    = id_map<inactive_stream>;
-    using pending_map     = id_map<pending_connection>;
-    using established_map = id_map<established_connection>;
+    using inactive_map    = address_map<inactive_stream>;
+    using pending_map     = address_map<pending_connection>;
+    using established_map = address_map<established_connection>;
 
     template <class T>
     using slice = boost::iterator_range<typename T::const_iterator>;
@@ -57,14 +64,13 @@ private:
 
     bool _disabled;
 
-    const address *findAddress(const long id) const;
-    bytes *findStream(const long id);
+    bytes *findStream(const address addr);
 
     void tryConnectInactive();
 
-    void checkPendingConnectionBlock(slice<pending_map> &pending_block, id_set &connected, id_set &errors);
+    void checkPendingConnectionBlock(slice<pending_map> &pending_block, address_results& results);
 
-    void readCandidateSockets(id_set &ready, id_set &errors, slice<established_map> &candidate_sockets);
+    void readCandidateSockets(address_results& results, slice<established_map> &candidate_sockets);
 
 public:
 
@@ -72,32 +78,22 @@ public:
         _disabled(false)
     { }
 
-    void connect   (const long id, const Connections::SocketAddress address);
-    void disconnect(const long id);
+    void connect   (const address addr);
+    void disconnect(const address addr);
 
-    bool isConnected(const long id) const;
+    bool isConnected(const address addr) const;
 
-    //  throws: no_record
-    Connections::SocketAddress getAddress(const long id) const;
-
-    struct result_ids {
-        id_set success;
-        id_set errors;
-    };
-    
-    result_ids updateConnections();
+    address_results updateConnections();
 
     //  throws: not_connected, write_error
-    int  send(const long id, const bytes &data);
+    int  send(const address addr, const bytes &data);
 
-    result_ids recv();
+    address_results recv();
 
-    bool searchStream(const long id, Protocols::PacketFinder &pf);
+    bool searchStream(const address addr, Protocols::PacketFinder &pf);
 
     void enable (void);
     void disable(void);
 };
 
 }
-}
-
