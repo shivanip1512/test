@@ -104,7 +104,7 @@ public enum WidgetType implements DisplayableEnum {
     private WidgetCategory category;
     private String beanName;
     private String imageName;
-    private String widgetAvailabilityCondition;
+    private String accessControl;
     
     //TODO: do we need to allow multiple scopes or categories?
     private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName) {
@@ -115,17 +115,17 @@ public enum WidgetType implements DisplayableEnum {
     }
     
     /**
-     * @param widgetAvailabilityCondition A list of enum names for Role Category, Role, Role Property,
+     * @param accessControl A list of enum names for Role Category, Role, Role Property,
      *        Global Setting, EC Setting or Master Config to determine if the widget is selectable for a given
      *        user.
      *        See {@link WidgetService.getTypesByCategory} for details.
      */
-    private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName, String widgetAvailabilityCondition) {
+    private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName, String accessControl) {
         this.scope = scope;
         this.category = category;
         this.beanName = beanName;
         this.imageName = imageName;
-        this.widgetAvailabilityCondition = widgetAvailabilityCondition;
+        this.accessControl = accessControl;
     }
     
     @Override
@@ -160,8 +160,8 @@ public enum WidgetType implements DisplayableEnum {
         return imageName;
     }
 
-    public String getWidgetAvailabilityCondition() {
-        return widgetAvailabilityCondition;
+    public String getAccessControl() {
+        return accessControl;
     }
 
     /**

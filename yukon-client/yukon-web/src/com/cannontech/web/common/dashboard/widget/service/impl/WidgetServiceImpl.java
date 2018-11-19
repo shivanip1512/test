@@ -42,8 +42,8 @@ public class WidgetServiceImpl implements WidgetService {
             map.put(category, new ArrayList<>());
         }
         List<WidgetType> widgetTypes =  Stream.of(WidgetType.values())
-                .filter(widgetType -> ((StringUtils.isBlank(widgetType.getWidgetAvailabilityCondition()))) || (StringUtils.isNotBlank(widgetType.getWidgetAvailabilityCondition())) 
-                                                && roleAndPropertyDescriptionService.checkIfAtLeastOneExists(widgetType.getWidgetAvailabilityCondition(), user))
+                .filter(widgetType -> StringUtils.isBlank(widgetType.getAccessControl()) || (StringUtils.isNotBlank(widgetType.getAccessControl()) 
+                                                && roleAndPropertyDescriptionService.checkIfAtLeastOneExists(widgetType.getAccessControl(), user)))
                 .collect(Collectors.toList());
         Collections.sort(widgetTypes, (type1, type2) -> type1.name().compareTo(type2.name()));
         for (WidgetType type : widgetTypes) {
