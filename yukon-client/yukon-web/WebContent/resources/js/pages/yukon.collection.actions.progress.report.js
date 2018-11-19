@@ -14,7 +14,6 @@ yukon.collection.actions.progress.report = (function () {
     _initialized = false,
     _key,
     /** @type {number} - The setTimeout reference for periodic updating of the pie chart. */
-    _updateInterval = 6000,
     _updateTimeout = null,
     
     _getData = function (data) {
@@ -136,7 +135,7 @@ yukon.collection.actions.progress.report = (function () {
         if (_updateTimeout) {
             clearTimeout(_updateTimeout);
         }
-        _updateTimeout = setTimeout(_update, _updateInterval);
+        _updateTimeout = setTimeout(_update, yg._updateInterval);
         
     },
     

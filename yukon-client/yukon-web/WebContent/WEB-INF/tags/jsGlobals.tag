@@ -91,7 +91,10 @@ var yg = {
     // Role properties
     rp: {
         updater_delay: +'<cti:getProperty property="DATA_UPDATER_DELAY_MS"/>'
-    }
+    },
+    
+    _updateInterval: 6000,
+
     
 };
 

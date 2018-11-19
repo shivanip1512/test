@@ -10,7 +10,6 @@ yukon.namespace('yukon.dr.nest');
 yukon.dr.nest = (function () {
 
     mod = null;
-    _updateInterval = 6000,
     _updateTimeout = null;
     
     _update = function () {
@@ -29,7 +28,7 @@ yukon.dr.nest = (function () {
         if (_updateTimeout) {
             clearTimeout(_updateTimeout);
         }
-        _updateTimeout = setTimeout(_update, _updateInterval);
+        _updateTimeout = setTimeout(_update, yg._updateInterval);
         
     };
     

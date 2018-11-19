@@ -110,8 +110,6 @@ public class NestController {
     public String details(ModelMap model, YukonUserContext userContext, @DefaultItemsPerPage(value=250) PagingParameters paging, 
                           @DefaultSort(dir=Direction.desc, sort="type") SortingParameters sorting) {
         
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
         ScheduledRepeatingJob nestSyncJob = getJob(nestSyncJobDef);
         
         NestSyncSettings nestSyncSettings = new NestSyncSettings();
@@ -136,18 +134,8 @@ public class NestController {
             String lastSyncTimeString = dateFormattingService.format(nestSyncTimeInfo.getSyncTime(), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
             model.addAttribute("lastSyncTime", lastSyncTimeString);
         }
-        if (nestSyncTimeInfo.enableSyncButton()) {
-            //button enabled 
-            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "forceSync"));
-        } else if (nestSyncTimeInfo.isSyncInProgress()) {
-            //button disabled because sync is in progress
-            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nestSyncInProgress"));
-        } else {
-          //button disabled because to early for the next sync
-            String nextSyncTimeString = dateFormattingService.format(nestSyncTimeInfo.getNextSyncTime(),
-                DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            model.addAttribute("syncTitle", accessor.getMessage(baseKey + "nextSync") + nextSyncTimeString);
-        }
+        
+        model.addAttribute("syncTitle", getSyncTitle(nestSyncTimeInfo, userContext));
 
         model.addAttribute("syncNowEnabled", nestSyncTimeInfo.enableSyncButton());
         
@@ -303,20 +291,24 @@ public class NestController {
         Map<String, Object> json = new HashMap<>();
         NestSyncTimeInfo nestSyncTimeInfo = nestSyncService.getSyncTimeInfo();
         json.put("syncButtonEnabled", nestSyncTimeInfo.enableSyncButton());
+        json.put("syncTitle", getSyncTitle(nestSyncTimeInfo, userContext));
+        
+        return json;
+    }
+    
+    private String getSyncTitle(NestSyncTimeInfo nestSyncTimeInfo, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
         if (nestSyncTimeInfo.enableSyncButton()) {
             //button enabled 
-            json.put("syncTitle", accessor.getMessage(baseKey + "forceSync"));
+            return accessor.getMessage(baseKey + "forceSync");
         } else if (nestSyncTimeInfo.isSyncInProgress()) {
             //button disabled because sync is in progress
-            json.put("syncTitle", accessor.getMessage(baseKey + "nestSyncInProgress"));
+            return accessor.getMessage(baseKey + "nestSyncInProgress");
         } else {
           //button disabled because to early for the next sync
             String nextSyncTimeString = dateFormattingService.format(nestSyncTimeInfo.getNextSyncTime(),
                 DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            json.put("syncTitle", accessor.getMessage(baseKey + "nextSync") + nextSyncTimeString);
+            return accessor.getMessage(baseKey + "nextSync") + nextSyncTimeString;
         }
-        return json;
     }
 }
