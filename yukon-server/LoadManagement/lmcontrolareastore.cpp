@@ -840,7 +840,7 @@ void CtiLMControlAreaStore::reset()
 
                 Cti::Database::DatabaseReader rdr(connection, sql);
 
-                rdr << CtiTablePaoExclusion::ExFunctionLMSubordination;
+                rdr << static_cast<int>(CtiTablePaoExclusion::ExFunctionLMSubordination);
 
                 rdr.execute();
 

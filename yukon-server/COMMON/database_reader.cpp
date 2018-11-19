@@ -281,13 +281,6 @@ RowReader &DatabaseReader::extractChars(char *destination, unsigned count)
 }
 
 
-
-RowReader &DatabaseReader::operator<<(const bool operand)
-{
-    _command << operand;
-    return *this;
-}
-
 RowReader &DatabaseReader::operator<<(const short operand)
 {
     _command << operand;

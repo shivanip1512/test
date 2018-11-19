@@ -9038,7 +9038,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
 
-            rdr << oneMonthAgo;
+            rdr << CtiTime { oneMonthAgo };
 
             rdr.execute();
 
@@ -9131,7 +9131,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
 
-            rdr << oneMonthAgo;
+            rdr << CtiTime { oneMonthAgo };
 
             rdr.execute();
 
@@ -9211,7 +9211,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
 
-            rdr << oneMonthAgo;
+            rdr << CtiTime { oneMonthAgo };
 
             rdr.executeWithRetries();
 

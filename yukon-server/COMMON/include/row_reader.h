@@ -103,8 +103,10 @@ public:
         return ! isNull(); 
     }
 
+    //  prevent implicit bool casts
+    RowReader &operator<<(const bool operand) = delete;
+
     // inputs for variable binding
-    virtual RowReader &operator<<(const bool operand) = 0;
     virtual RowReader &operator<<(const short operand) = 0;
     virtual RowReader &operator<<(const unsigned short operand) = 0;
     virtual RowReader &operator<<(const long operand) = 0;

@@ -62,35 +62,22 @@ private:
 
 public:
     // inputs for variable binding
-    RowReader &operator<<(const bool operand);
-    RowReader &operator<<(const short operand);
-    RowReader &operator<<(const unsigned short operand);
-    RowReader &operator<<(const long operand);
-    RowReader &operator<<(const INT operand);
-    RowReader &operator<<(const UINT operand);
-    RowReader &operator<<(const unsigned long operand);
-    RowReader &operator<<(const long long operand);
-    RowReader &operator<<(const double operand);
-    RowReader &operator<<(const float operand);
-    RowReader &operator<<(const CtiTime &operand);
-    RowReader &operator<<(const boost::posix_time::ptime &operand);
-    RowReader &operator<<(const std::string &operand);
-    RowReader &operator<<(const char *operand);
+    RowReader &operator<<(const short operand) override;
+    RowReader &operator<<(const unsigned short operand) override;
+    RowReader &operator<<(const long operand) override;
+    RowReader &operator<<(const INT operand) override;
+    RowReader &operator<<(const UINT operand) override;
+    RowReader &operator<<(const unsigned long operand) override;
+    RowReader &operator<<(const long long operand) override;
+    RowReader &operator<<(const double operand) override;
+    RowReader &operator<<(const float operand) override;
+    RowReader &operator<<(const CtiTime &operand) override;
+    RowReader &operator<<(const boost::posix_time::ptime &operand) override;
+    RowReader &operator<<(const std::string &operand) override;
+    RowReader &operator<<(const char *operand) override;
     
     template <class T>
-    RowReader &operator<<(const std::vector<T>& container)
-    {
-        for( const auto& element : container )
-        {
-            *this << element;
-        }
-        //  If we're feeding in a bunch of IDs, we'll probably be reading back a bunch of rows, so prefetch at least 100 at a time.
-        setPrefetch();
-        return *this;
-    }
-
-    template <class T>
-    RowReader &operator<<(const std::set<T>& container)
+    RowReader &operator<<(const T& container)
     {
         for( const auto& element : container )
         {
