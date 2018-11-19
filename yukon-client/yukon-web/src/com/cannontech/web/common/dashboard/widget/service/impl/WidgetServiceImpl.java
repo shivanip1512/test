@@ -29,9 +29,9 @@ public class WidgetServiceImpl implements WidgetService {
     @Autowired RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
     
     /**
-     * If any WidgetType has widgetAvailabilityCondition specified, that WidgetType will be included in the map 
-     * returned only if at-least one of the enum values in widgetAvailabilityCondition is true (OR condition is checked 
-     * between enum values in widgetAvailabilityCondition). 
+     * If any WidgetType has accessControl specified, that WidgetType will be included in the map 
+     * returned only if at-least one of the enum values in accessControl is true (OR condition is checked 
+     * between enum values in accessControl). 
      */
     @Override
     public Map<WidgetCategory, List<WidgetType>> getTypesByCategory(LiteYukonUser user) {
@@ -42,8 +42,8 @@ public class WidgetServiceImpl implements WidgetService {
             map.put(category, new ArrayList<>());
         }
         List<WidgetType> widgetTypes =  Stream.of(WidgetType.values())
-                .filter(widgetType -> StringUtils.isBlank(widgetType.getAccessControl()) || (StringUtils.isNotBlank(widgetType.getAccessControl()) 
-                                                && roleAndPropertyDescriptionService.checkIfAtLeastOneExists(widgetType.getAccessControl(), user)))
+                .filter(widgetType -> StringUtils.isBlank(widgetType.getAccessControl()) ||
+                                        roleAndPropertyDescriptionService.checkIfAtLeastOneExists(widgetType.getAccessControl(), user))
                 .collect(Collectors.toList());
         Collections.sort(widgetTypes, (type1, type2) -> type1.name().compareTo(type2.name()));
         for (WidgetType type : widgetTypes) {
