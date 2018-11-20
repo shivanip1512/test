@@ -207,6 +207,12 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WH
 INSERT INTO DBUpdates VALUES ('YUK-19102', '7.2.0', GETDATE());
 /* @end YUK-19102 */
 
+/* @start YUK-19042 */
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-6601S', 1339);
+
+INSERT INTO DBUpdates VALUES ('YUK-19042', '7.2.0', GETDATE());
+/* @end YUK-19042 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
