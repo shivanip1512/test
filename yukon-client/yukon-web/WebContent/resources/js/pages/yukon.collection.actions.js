@@ -21,7 +21,7 @@ yukon.collection.actions = (function () {
             clone.removeClass("js-device-collection-template");
             $("#collectionActionsAccordion").find(".js-view-selected-devices").empty();
             $("#collectionActionsAccordion").find(".js-view-selected-devices").append(clone.html());
-        }else if(isNumDevicesEmpty === true){
+        } else if(isNumDevicesEmpty === true){
             $("#collectionActionsAccordion").find(".js-view-selected-devices").empty();
         }
     },
@@ -127,13 +127,30 @@ yukon.collection.actions = (function () {
                 mod.submitAction($(this));
             });
 
-            $("#collectionActionsAccordion").on("accordionactivate", function(event, ui) {
-                    _appendViewAllDevices();
+            $("#collectionActionsAccordion").on("accordionbeforeactivate", function(event, ui) {
+                var clickedOnHeader = ui.newHeader;
+                if (event.originalEvent) {
+                    var element = event.originalEvent.target;
+                    if (element.classList.contains('icon-magnifier')) {
+                        event.preventDefault();
+                    }
+                }
             });
 
-            var activeAccordion = $("#collectionActionsAccordion").accordion("option","active");
+            $("#collectionActionsAccordion").on("accordionactivate", function(event, ui) {
+                _appendViewAllDevices();
+            });
+
+            $(document).on('click', '.js-view-selected-devices .icon-magnifier', function () {
+                var activeAccordion = $("#collectionActionsAccordion").accordion("option", "active");
+                if (activeAccordion === 2){
+                    $('#collectionActionsContainer').removeClass('dn');
+                }
+            });
+
+            var activeAccordion = $("#collectionActionsAccordion").accordion("option", "active");
             if (activeAccordion > 0){
-                    _appendViewAllDevices();
+                _appendViewAllDevices();
             }
 
             _initialized = true;
