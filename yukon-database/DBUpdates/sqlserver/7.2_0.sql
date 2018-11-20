@@ -201,6 +201,12 @@ ALTER COLUMN CancelOrStop CHAR(1) NOT NULL;
 INSERT INTO DBUpdates VALUES ('YUK-19048', '7.2.0', GETDATE());
 /* @end YUK-19048 */
 
+/* @start YUK-19102 */
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Nest', 1338);
+
+INSERT INTO DBUpdates VALUES ('YUK-19102', '7.2.0', GETDATE());
+/* @end YUK-19102 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
