@@ -18,13 +18,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
@@ -38,6 +31,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.simulator.NestFileType;
+import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
@@ -219,7 +213,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     private InputStream getFileInputStream(NestFileType type) {
         InputStream inputStream = null;
         String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
-        String stringUrl = nestUrl + "/v1/users/current/latest.csv";
+        String stringUrl = nestUrl + "/download";
         log.debug("Nest Url:"+stringUrl);
         // curl https://enterprise-api.nest.com/api/v1/users/pending/latest.csv -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA=="
         try {
@@ -259,76 +253,46 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
      */
     @Override
     public void uploadExisting(List<NestExisting> existing) {
-        log.debug("Uploading file {}", existing);
-        File uploadFile = null;
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            String requestUrl =
-                settingDao.getString(GlobalSettingType.NEST_SERVER_URL) + NestFileType.EXISTING.getUrl();
-            HttpPost httppost = new HttpPost(requestUrl);
-            httppost.addHeader("content-type", "text/csv");
-            httppost.addHeader("Accept", "application/json");
-            httppost.setHeader("Authorization", nestCommunicationService.encodeAuthorization());
-            if (host != null && nestCommunicationService.useProxy(requestUrl)) {
-                RequestConfig requestConfig = RequestConfig.custom().setProxy(host).build();
-                httppost.setConfig(requestConfig);
-            }
-
-            uploadFile = createFile(CtiUtilities.getNestDirPath(), "upload");
-            ObjectWriter writer =
-                new CsvMapper().writerFor(NestExisting.class).with(NestFileType.EXISTING.getSchema().withHeader());
-            writer.writeValues(uploadFile).writeAll(existing).close();
-            httppost.setEntity(new FileEntity(uploadFile));
-
-            log.debug(EntityUtils.toString(httppost.getEntity()));
-            log.debug("executing request {} {}", httppost.getRequestLine(), httppost.getConfig());
-            HttpResponse response = httpclient.execute(httppost);
-            org.apache.http.HttpEntity resEntity = response.getEntity();
-            log.debug(response.getStatusLine());
-            if (resEntity != null) {
-                String str = EntityUtils.toString(resEntity);
-                log.debug(str);
-            }
-        } catch (IOException e) {
-            throw new NestException("Error uploading existing file to Nest", e);
-        } finally {
-            if (uploadFile != null) {
-                uploadFile.delete();
-            }
-        }
+        String filePath = NestSimulatorServiceImpl.SIMULATED_FILE_PATH;
+        String defaultFileName = getFileName(YukonSimulatorSettingsKey.NEST_FILE_NAME);
+        File existingFile = new File(filePath+System.getProperty("file.separator")+defaultFileName);
+        String path = existingFile.getAbsolutePath();
+        boolean isDeleted = existingFile.delete();
+        log.debug("idDeleled {} file {}", isDeleted, existingFile);
+        File file = new File(path);
+        writeToAFile(file, existing);
     }
     
     /**
      * Returns the row of the account found
-     * 
-     * @throws NestException if account is not found
      */
     
-    private NestExisting getRowToModifyAndRemoveAllOtherAccounts(List<NestExisting> existing, String accountNumber) {
+    private NestExisting getRowToModifyAndRemoveAllOtherAccounts(List<NestExisting> existing, String refNumber) {
         return existing.stream()
-                .filter(row -> Strings.isNotBlank(row.getAccountNumber()) && row.getAccountNumber().equals(accountNumber))
+                .filter(row -> row.getRef().equals(refNumber))
                 .findFirst()
-                .orElseThrow(() -> new NestException("Account " + accountNumber + " is not found in the Nest file"));
+                .orElseThrow(() -> new NestException("Nest id " +  refNumber + " is not found in the Nest file"));
     }
     
     @Override
-    public Optional<String> updateGroup(String accountNumber, String newGroup) {
-        log.info("Changing group for accountNumber {} to new group {}", accountNumber, newGroup);
+    public Optional<String> updateGroup(CustomerEnrollment enrollment) {
+        log.info("Changing group for nest id {} to new group {}", enrollment.getCustomerId(), enrollment.getGroupId());
         List<NestExisting> existing = downloadExisting();
-        NestExisting row = getRowToModifyAndRemoveAllOtherAccounts(existing, accountNumber);
+        NestExisting row = getRowToModifyAndRemoveAllOtherAccounts(existing, enrollment.getCustomerId());
         log.debug("Existing group {}", row.getGroup());
         row.setAssignGroup("Y");
-        row.setGroup(newGroup);
+        row.setGroup(enrollment.getGroupId());
         uploadExisting(existing);
         //modify simulator to return error after we get Nest error description
         return Optional.empty();
     }
     
     @Override
-    public Optional<String> dissolveAccountWithNest(String accountNumber) {
-        log.info("Dissolving account with Nest {}", accountNumber);
+    public Optional<String> dissolveAccountWithNest(CustomerEnrollment enrollment) {
+        log.info("Dissolving account with Nest id {}", enrollment.getCustomerId());
         List<NestExisting> existing = downloadExisting();
-        NestExisting row = getRowToModifyAndRemoveAllOtherAccounts(existing, accountNumber);
-        row.setDissolve("Y");
+        existing.removeIf(row -> row.getRef().equals(enrollment.getCustomerId()));
+        uploadExisting(existing);
         //modify simulator to return error after we get Nest error description
         return Optional.empty();
     }

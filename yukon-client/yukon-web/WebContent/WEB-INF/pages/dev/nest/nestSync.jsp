@@ -18,7 +18,7 @@
     <form id="downloadExistingForm" action="${downloadExisting}" method="GET">
        <div class="column nogutter">
            <div class="action-area">
-                <button id="download" type="submit" classes="js-blocker">Download Existing File</button>
+                <button id="download" type="submit" classes="js-blocker">Test generated file download</button>
             </div>
        </div>
     </form>

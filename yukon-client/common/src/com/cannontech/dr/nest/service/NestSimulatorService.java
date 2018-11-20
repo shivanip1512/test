@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.nest.model.NestExisting;
+import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
 public interface NestSimulatorService {
@@ -67,7 +68,7 @@ public interface NestSimulatorService {
      * 4. Uploads file
      * @return information about successes and errors
      */
-    Optional<String> updateGroup(String accountNumber, String newGroup);
+    Optional<String> updateGroup(CustomerEnrollment enrollment);
 
     /**
      * 1. Downloads Nest simulated file
@@ -76,5 +77,5 @@ public interface NestSimulatorService {
      * 4. Uploads file
      * @return information about successes and errors
      */
-    Optional<String> dissolveAccountWithNest(String accountNumber);
+    Optional<String> dissolveAccountWithNest(CustomerEnrollment enrollment);
 }

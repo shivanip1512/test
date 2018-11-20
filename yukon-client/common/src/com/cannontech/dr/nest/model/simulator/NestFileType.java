@@ -4,7 +4,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public enum NestFileType {
 
-    EXISTING("latest.csv", CsvSchema.builder()
+    EXISTING(CsvSchema.builder()
         .addColumn("REF")
         .addColumn("YEAR")
         .addColumn("MONTH")
@@ -27,23 +27,12 @@ public enum NestFileType {
         .addColumn("DISSOLVE_NOTES")
         .build());
     
-    private NestFileType(String file, CsvSchema schema) {
-        this.file = file;
+    private NestFileType(CsvSchema schema) {
         this.schema = schema;
     }
     
-    private String url;
-    private String file;
     private CsvSchema schema;
     
-    public String getUrl() {
-        return url;
-    }
-    
-    public String getFile() {
-        return file;
-    }
-
     public CsvSchema getSchema() {
         return schema;
     }

@@ -62,14 +62,9 @@ public class NestTestAPIController {
     
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class);
     @Autowired NestSimulatorService nestSimService;
-
-    @RequestMapping(value = "test")
-    public void test(HttpServletResponse response) {
-        
-    }
-    
-    @RequestMapping(value = "/v1/users/current/latest.csv")
-    public void existing(HttpServletResponse response) {
+ 
+    @RequestMapping(value = "/download")
+    public void download(HttpServletResponse response) {
         log.info("Reading existing file");
         String filePath = NestSimulatorServiceImpl.SIMULATED_FILE_PATH;
         String defaultFileName = nestSimService.getFileName(YukonSimulatorSettingsKey.NEST_FILE_NAME);
@@ -94,9 +89,9 @@ public class NestTestAPIController {
     private void processEnrollment(CustomerEnrollments enrollments) {
         CustomerEnrollment enrollment = enrollments.getCustomerEnrollments().get(0);
         if (enrollment.getEnrollmentState() == EnrollmentState.DISSOLVED) {
-            nestSimService.dissolveAccountWithNest(enrollment.getCustomerId());
+            nestSimService.dissolveAccountWithNest(enrollment);
         } else if (enrollment.getEnrollmentState() == EnrollmentState.ACCEPTED) {
-            nestSimService.updateGroup(enrollment.getCustomerId(), enrollment.getGroupId());
+            nestSimService.updateGroup(enrollment);
         }
     }
     
