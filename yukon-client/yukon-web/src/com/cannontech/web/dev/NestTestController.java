@@ -30,16 +30,13 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.development.model.NestControlEventSimulatorParameters;
-import com.cannontech.dr.nest.model.LoadShapingPeak;
-import com.cannontech.dr.nest.model.LoadShapingPost;
-import com.cannontech.dr.nest.model.LoadShapingPreparation;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestURL;
 import com.cannontech.dr.nest.model.v3.ControlEvent;
 import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
-import com.cannontech.dr.nest.model.v3.PeakLoadShape;
-import com.cannontech.dr.nest.model.v3.PostLoadShape;
-import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestService;
@@ -211,9 +208,9 @@ public class NestTestController {
     private void setupModelMap(ModelMap model) {
         model.addAttribute("startTime", Instant.now());
         model.addAttribute("stopTime", Instant.now().plus(Duration.standardHours(4)));
-        model.addAttribute("loadShapingPreparations", LoadShapingPreparation.values());
-        model.addAttribute("loadShapingPeaks", LoadShapingPeak.values());
-        model.addAttribute("loadShapingPosts", LoadShapingPost.values());
+        model.addAttribute("loadShapingPreparations", PrepLoadShape.values());
+        model.addAttribute("loadShapingPeaks", PeakLoadShape.values());
+        model.addAttribute("loadShapingPosts", PostLoadShape.values());
         
         List<GearControlMethod> controlMethods = new ArrayList<>();
         controlMethods.add(GearControlMethod.NestCriticalCycle);

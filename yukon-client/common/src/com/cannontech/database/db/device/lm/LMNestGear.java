@@ -2,16 +2,16 @@ package com.cannontech.database.db.device.lm;
 
 import java.sql.SQLException;
 
-import com.cannontech.dr.nest.model.LoadShapingPeak;
-import com.cannontech.dr.nest.model.LoadShapingPost;
-import com.cannontech.dr.nest.model.LoadShapingPreparation;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 
 public abstract class LMNestGear extends LMProgramDirectGear {
 
     private static final long serialVersionUID = 1L;
-    private LoadShapingPreparation loadShapingPreparation = null;
-    private LoadShapingPeak loadShapingPeak = null;
-    private LoadShapingPost loadShapingPost = null;
+    private PrepLoadShape loadShapingPreparation = null;
+    private PeakLoadShape loadShapingPeak = null;
+    private PostLoadShape loadShapingPost = null;
 
     public static final String SETTER_COLUMNS[] = { "PreparationOption", "PeakOption", "PostPeakOption" };
 
@@ -27,16 +27,16 @@ public abstract class LMNestGear extends LMProgramDirectGear {
     public void add() throws SQLException {
         super.add();
 
-        Object addValues[] = { getGearID(), getLoadShapingPreparation().getDatabaseRepresentation(),
-            getLoadShapingPeak().getDatabaseRepresentation(), getLoadShapingPost().getDatabaseRepresentation() };
+        Object addValues[] = { getGearID(), getPrepLoadShape().getDatabaseRepresentation(),
+            getPeakLoadShape().getDatabaseRepresentation(), getPostLoadShape().getDatabaseRepresentation() };
 
         add(TABLE_NAME, addValues);
     }
 
     @Override
     public void addPartial() throws java.sql.SQLException {
-        Object addValues[] = { getGearID(), getLoadShapingPreparation().getDatabaseRepresentation(),
-            getLoadShapingPeak().getDatabaseRepresentation(), getLoadShapingPost().getDatabaseRepresentation() };
+        Object addValues[] = { getGearID(), getPrepLoadShape().getDatabaseRepresentation(),
+            getPeakLoadShape().getDatabaseRepresentation(), getPostLoadShape().getDatabaseRepresentation() };
 
         add(TABLE_NAME, addValues);
     }
@@ -55,9 +55,9 @@ public abstract class LMNestGear extends LMProgramDirectGear {
         Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
         if (results.length == SETTER_COLUMNS.length) {
-            setLoadShapingPreparation(LoadShapingPreparation.getLoadShapingPreparation(results[0]));
-            setLoadShapingPeak(LoadShapingPeak.getLoadShapingPeak(results[1]));
-            setLoadShapingPost(LoadShapingPost.getLoadShapingPost(results[2]));
+            setPrepLoadShape(PrepLoadShape.getPrepLoadShape(results[0]));
+            setPeakLoadShape(PeakLoadShape.getPeakLoadShape(results[1]));
+            setPostLoadShape(PostLoadShape.getPostLoadShape(results[2]));
         } else
             throw new Error(getClass() + " - Incorrect Number of results retrieved");
 
@@ -70,8 +70,8 @@ public abstract class LMNestGear extends LMProgramDirectGear {
             addPartial();
         } catch (SQLException e) {
             // add fail try to update
-            Object setValues[] = { getLoadShapingPreparation().getDatabaseRepresentation(),
-                getLoadShapingPeak().getDatabaseRepresentation(), getLoadShapingPost().getDatabaseRepresentation() };
+            Object setValues[] = { getPrepLoadShape().getDatabaseRepresentation(),
+                getPeakLoadShape().getDatabaseRepresentation(), getPostLoadShape().getDatabaseRepresentation() };
 
             Object constraintValues[] = { getGearID() };
 
@@ -79,27 +79,27 @@ public abstract class LMNestGear extends LMProgramDirectGear {
         }
     }
 
-    public LoadShapingPreparation getLoadShapingPreparation() {
+    public PrepLoadShape getPrepLoadShape() {
         return loadShapingPreparation;
     }
 
-    public void setLoadShapingPreparation(LoadShapingPreparation loadShapingPreparation) {
+    public void setPrepLoadShape(PrepLoadShape loadShapingPreparation) {
         this.loadShapingPreparation = loadShapingPreparation;
     }
 
-    public LoadShapingPeak getLoadShapingPeak() {
+    public PeakLoadShape getPeakLoadShape() {
         return loadShapingPeak;
     }
 
-    public void setLoadShapingPeak(LoadShapingPeak loadShapingPeak) {
+    public void setPeakLoadShape(PeakLoadShape loadShapingPeak) {
         this.loadShapingPeak = loadShapingPeak;
     }
 
-    public LoadShapingPost getLoadShapingPost() {
+    public PostLoadShape getPostLoadShape() {
         return loadShapingPost;
     }
 
-    public void setLoadShapingPost(LoadShapingPost loadShapingPost) {
+    public void setPostLoadShape(PostLoadShape loadShapingPost) {
         this.loadShapingPost = loadShapingPost;
     }
 }

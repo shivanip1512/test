@@ -13,18 +13,18 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import com.cannontech.database.data.device.lm.NestStandardCycleGear;
-import com.cannontech.dr.nest.model.LoadShapingPeak;
-import com.cannontech.dr.nest.model.LoadShapingPost;
-import com.cannontech.dr.nest.model.LoadShapingPreparation;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.klg.jclass.util.value.JCValueEvent;
 
 public class NestStandardCycleGearPanel extends GenericGearPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private JComboBox<LoadShapingPreparation> ivjJComboBoxLoadShapingPreparation = null;
-    private JComboBox<LoadShapingPeak> ivjJComboBoxLoadShapingPeak = null;
-    private JComboBox<LoadShapingPost> ivjJComboBoxLoadShapingPost = null;
+    private JComboBox<String> ivjJComboBoxPrepLoadShape = null;
+    private JComboBox<String> ivjJComboBoxPeakLoadShape = null;
+    private JComboBox<String> ivjJComboBoxPostLoadShape = null;
     private JLabel loadShapingPreparationLabel;
     private JLabel loadShapingPeakLabel;
     private JLabel loadShapingPostLabel;
@@ -94,11 +94,11 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
         return helpPostButton;
     }
 
-    private JLabel getJLabelLoadShapingPreparation() {
+    private JLabel getJLabelPrepLoadShape() {
         if (loadShapingPreparationLabel == null) {
             try {
                 loadShapingPreparationLabel = new JLabel();
-                loadShapingPreparationLabel.setName("JLabelLoadShapingPreparation");
+                loadShapingPreparationLabel.setName("JLabelPrepLoadShape");
                 loadShapingPreparationLabel.setAlignmentY(TOP_ALIGNMENT);
                 loadShapingPreparationLabel.setText("Preparation Load Shaping:");
                 loadShapingPreparationLabel.setMaximumSize(new Dimension(150, 18));
@@ -113,11 +113,11 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
         return loadShapingPreparationLabel;
     }
 
-    private JLabel getJLabelLoadShapingPeak() {
+    private JLabel getJLabelPeakLoadShape() {
         if (loadShapingPeakLabel == null) {
             try {
                 loadShapingPeakLabel = new JLabel();
-                loadShapingPeakLabel.setName("JLabelLoadShapingPeak");
+                loadShapingPeakLabel.setName("JLabelPeakLoadShape");
                 loadShapingPeakLabel.setAlignmentY(TOP_ALIGNMENT);
                 loadShapingPeakLabel.setText("Peak Load Shaping:");
                 loadShapingPeakLabel.setMaximumSize(new Dimension(150, 18));
@@ -132,11 +132,11 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
         return loadShapingPeakLabel;
     }
 
-    private JLabel getJLabelLoadShapingPost() {
+    private JLabel getJLabelPostLoadShape() {
         if (loadShapingPostLabel == null) {
             try {
                 loadShapingPostLabel = new JLabel();
-                loadShapingPostLabel.setName("JLabelLoadShapingPost");
+                loadShapingPostLabel.setName("JLabelPostLoadShape");
                 loadShapingPostLabel.setAlignmentY(TOP_ALIGNMENT);
                 loadShapingPostLabel.setText("Post Peak Load Shaping:");
                 loadShapingPostLabel.setMaximumSize(new Dimension(150, 18));
@@ -151,64 +151,67 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
         return loadShapingPostLabel;
     }
 
-    private JComboBox<LoadShapingPreparation> getJComboBoxLoadShapingPreparation() {
-        if (ivjJComboBoxLoadShapingPreparation == null) {
+    private JComboBox<String> getJComboBoxPrepLoadShape() {
+        if (ivjJComboBoxPrepLoadShape == null) {
             try {
-                ivjJComboBoxLoadShapingPreparation = new JComboBox<LoadShapingPreparation>();
-                ivjJComboBoxLoadShapingPreparation.setName("JComboBoxLoadShapingPreparation");
-                ivjJComboBoxLoadShapingPreparation.setPreferredSize(new java.awt.Dimension(50, 23));
-                ivjJComboBoxLoadShapingPreparation.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-                ivjJComboBoxLoadShapingPreparation.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-                ivjJComboBoxLoadShapingPreparation.addItem(LoadShapingPreparation.STANDARD);
-                ivjJComboBoxLoadShapingPreparation.addItem(LoadShapingPreparation.RAMPING);
-                ivjJComboBoxLoadShapingPreparation.addItem(LoadShapingPreparation.NONE);
+                ivjJComboBoxPrepLoadShape = new JComboBox<String>();
+                ivjJComboBoxPrepLoadShape.setName("JComboBoxPrepLoadShape");
+                ivjJComboBoxPrepLoadShape.setPreferredSize(new java.awt.Dimension(50, 23));
+                ivjJComboBoxPrepLoadShape.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                ivjJComboBoxPrepLoadShape.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_STANDARD.getName());
+                ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_RAMPING.getName());
+                ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_NONE.getName());
+                ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_UNSPECIFIED.getName());
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJComboBoxLoadShapingPreparation;
+        return ivjJComboBoxPrepLoadShape;
     }
 
-    private JComboBox<LoadShapingPeak> getJComboBoxLoadShapingPeak() {
-        if (ivjJComboBoxLoadShapingPeak == null) {
+    private JComboBox<String> getJComboBoxPeakLoadShape() {
+        if (ivjJComboBoxPeakLoadShape == null) {
             try {
-                ivjJComboBoxLoadShapingPeak = new JComboBox<LoadShapingPeak>();
-                ivjJComboBoxLoadShapingPeak.setName("JComboBoxLoadShapingPeak");
-                ivjJComboBoxLoadShapingPeak.setPreferredSize(new java.awt.Dimension(50, 23));
-                ivjJComboBoxLoadShapingPeak.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-                ivjJComboBoxLoadShapingPeak.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-                ivjJComboBoxLoadShapingPeak.addItem(LoadShapingPeak.UNIFORM);
-                ivjJComboBoxLoadShapingPeak.addItem(LoadShapingPeak.STANDARD);
-                ivjJComboBoxLoadShapingPeak.addItem(LoadShapingPeak.SYMMETRIC);
+                ivjJComboBoxPeakLoadShape = new JComboBox<String>();
+                ivjJComboBoxPeakLoadShape.setName("JComboBoxPeakLoadShape");
+                ivjJComboBoxPeakLoadShape.setPreferredSize(new java.awt.Dimension(50, 23));
+                ivjJComboBoxPeakLoadShape.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                ivjJComboBoxPeakLoadShape.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_UNIFORM.getName());
+                ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_STANDARD.getName());
+                ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_SYMMETRIC.getName());
+                ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_UNSPECIFIED.getName());
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJComboBoxLoadShapingPeak;
+        return ivjJComboBoxPeakLoadShape;
     }
 
-    private JComboBox<LoadShapingPost> getJComboBoxLoadShapingPost() {
-        if (ivjJComboBoxLoadShapingPost == null) {
+    private JComboBox<String> getJComboBoxPostLoadShape() {
+        if (ivjJComboBoxPostLoadShape == null) {
             try {
-                ivjJComboBoxLoadShapingPost = new JComboBox<LoadShapingPost>();
-                ivjJComboBoxLoadShapingPost.setName("JComboBoxLoadShapingPost");
-                ivjJComboBoxLoadShapingPost.setPreferredSize(new java.awt.Dimension(50, 23));
-                ivjJComboBoxLoadShapingPost.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-                ivjJComboBoxLoadShapingPost.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-                ivjJComboBoxLoadShapingPost.addItem(LoadShapingPost.STANDARD);
-                ivjJComboBoxLoadShapingPost.addItem(LoadShapingPost.RAMPING);
+                ivjJComboBoxPostLoadShape = new JComboBox<String>();
+                ivjJComboBoxPostLoadShape.setName("JComboBoxPostLoadShape");
+                ivjJComboBoxPostLoadShape.setPreferredSize(new java.awt.Dimension(50, 23));
+                ivjJComboBoxPostLoadShape.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                ivjJComboBoxPostLoadShape.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                ivjJComboBoxPostLoadShape.addItem(PostLoadShape.POST_STANDARD.getName());
+                ivjJComboBoxPostLoadShape.addItem(PostLoadShape.POST_RAMPING.getName());
+                ivjJComboBoxPostLoadShape.addItem(PostLoadShape.POST_UNSPECIFIED.getName());
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjJComboBoxLoadShapingPost;
+        return ivjJComboBoxPostLoadShape;
     }
 
     private JLabel getJLabelLoadShapingDesc() {
         if (loadShapingDescLabel == null) {
             try {
                 loadShapingDescLabel = new JLabel();
-                loadShapingDescLabel.setName("JLabelLoadShapingPreparationDesc");
+                loadShapingDescLabel.setName("JLabelPrepLoadShapeDesc");
                 loadShapingDescLabel.setAlignmentY(TOP_ALIGNMENT);
                 loadShapingDescLabel.setMaximumSize(new Dimension(1000, 190));
                 loadShapingDescLabel.setPreferredSize(new Dimension(1000, 190));
@@ -226,10 +229,12 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
     public Object getValue(Object gearObj) {
         NestStandardCycleGear gear = (NestStandardCycleGear) gearObj;
         NestStandardCycleGear sGear = (NestStandardCycleGear) gear;
-        sGear.setLoadShapingPreparation(
-            (LoadShapingPreparation) getJComboBoxLoadShapingPreparation().getSelectedItem());
-        sGear.setLoadShapingPeak((LoadShapingPeak) getJComboBoxLoadShapingPeak().getSelectedItem());
-        sGear.setLoadShapingPost((LoadShapingPost) getJComboBoxLoadShapingPost().getSelectedItem());
+        String prepString = (String) getJComboBoxPrepLoadShape().getSelectedItem();
+        String peakString = (String) getJComboBoxPeakLoadShape().getSelectedItem();
+        String postString = (String) getJComboBoxPostLoadShape().getSelectedItem();
+        sGear.setPrepLoadShape(PrepLoadShape.getFromNameMap(prepString));
+        sGear.setPeakLoadShape(PeakLoadShape.getFromNameMap(peakString));
+        sGear.setPostLoadShape(PostLoadShape.getFromNameMap(postString));
         return sGear;
     }
 
@@ -240,9 +245,9 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
     }
 
     private void initConnections() {
-        getJComboBoxLoadShapingPreparation().addActionListener(this);
-        getJComboBoxLoadShapingPeak().addActionListener(this);
-        getJComboBoxLoadShapingPost().addActionListener(this);
+        getJComboBoxPrepLoadShape().addActionListener(this);
+        getJComboBoxPeakLoadShape().addActionListener(this);
+        getJComboBoxPostLoadShape().addActionListener(this);
         getJButtonHelpPreparation().addActionListener(this);
         getJButtonHelpPeak().addActionListener(this);
         getJButtonHelpPost().addActionListener(this);
@@ -252,14 +257,14 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
         try {
             setName("NestStandardCycleGearPanel");
 
-            GridBagConstraints constraintJLabelLoadShapingPreparation = new GridBagConstraints();
-            GridBagConstraints constraintJComboBoxLoadShapingPreparation = new java.awt.GridBagConstraints();
+            GridBagConstraints constraintJLabelPrepLoadShape = new GridBagConstraints();
+            GridBagConstraints constraintJComboBoxPrepLoadShape = new java.awt.GridBagConstraints();
 
-            GridBagConstraints constraintJLabelLoadShapingPeakLabel = new GridBagConstraints();
-            GridBagConstraints constraintJComboBoxLoadShapingPeak = new java.awt.GridBagConstraints();
+            GridBagConstraints constraintJLabelPeakLoadShapeLabel = new GridBagConstraints();
+            GridBagConstraints constraintJComboBoxPeakLoadShape = new java.awt.GridBagConstraints();
 
-            GridBagConstraints constraintJLabelLoadShapingPostLabel = new GridBagConstraints();
-            GridBagConstraints constraintJComboBoxLoadShapingPost = new GridBagConstraints();
+            GridBagConstraints constraintJLabelPostLoadShapeLabel = new GridBagConstraints();
+            GridBagConstraints constraintJComboBoxPostLoadShape = new GridBagConstraints();
 
             GridBagConstraints constraintJLabelLoadShapingDesc = new GridBagConstraints();
             
@@ -267,22 +272,22 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
             GridBagConstraints constraintJButtonHelpPeak = new GridBagConstraints();
             GridBagConstraints constraintJButtonHelpPost = new GridBagConstraints();
 
-            constraintJLabelLoadShapingPreparation.insets = new Insets(20, 20, 5, 5);
-            constraintJLabelLoadShapingPreparation.ipady = -3;
-            constraintJLabelLoadShapingPreparation.ipadx = 200;
-            constraintJLabelLoadShapingPreparation.gridwidth = 3;
-            constraintJLabelLoadShapingPreparation.weightx = 5.0;
-            constraintJLabelLoadShapingPreparation.anchor = GridBagConstraints.WEST;
-            constraintJLabelLoadShapingPreparation.gridy = 1;
-            constraintJLabelLoadShapingPreparation.gridx = 1;
+            constraintJLabelPrepLoadShape.insets = new Insets(20, 20, 5, 5);
+            constraintJLabelPrepLoadShape.ipady = -3;
+            constraintJLabelPrepLoadShape.ipadx = 200;
+            constraintJLabelPrepLoadShape.gridwidth = 3;
+            constraintJLabelPrepLoadShape.weightx = 5.0;
+            constraintJLabelPrepLoadShape.anchor = GridBagConstraints.WEST;
+            constraintJLabelPrepLoadShape.gridy = 1;
+            constraintJLabelPrepLoadShape.gridx = 1;
 
-            constraintJComboBoxLoadShapingPreparation.insets = new Insets(20, 20, 5, 5);
-            constraintJComboBoxLoadShapingPreparation.ipady = -3;
-            constraintJComboBoxLoadShapingPreparation.ipadx = 50;
-            constraintJComboBoxLoadShapingPreparation.gridwidth = 3;
-            constraintJComboBoxLoadShapingPreparation.anchor = GridBagConstraints.WEST;
-            constraintJComboBoxLoadShapingPreparation.gridy = 1;
-            constraintJComboBoxLoadShapingPreparation.gridx = 2;
+            constraintJComboBoxPrepLoadShape.insets = new Insets(20, 20, 5, 5);
+            constraintJComboBoxPrepLoadShape.ipady = -3;
+            constraintJComboBoxPrepLoadShape.ipadx = 50;
+            constraintJComboBoxPrepLoadShape.gridwidth = 3;
+            constraintJComboBoxPrepLoadShape.anchor = GridBagConstraints.WEST;
+            constraintJComboBoxPrepLoadShape.gridy = 1;
+            constraintJComboBoxPrepLoadShape.gridx = 2;
             
             constraintJButtonHelpPreparation.insets = new Insets(20, 20, 5, 5);
             constraintJButtonHelpPreparation.ipady = -2;
@@ -292,19 +297,19 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
             constraintJButtonHelpPreparation.gridy = 1;
             constraintJButtonHelpPreparation.gridx = 3;
 
-            constraintJLabelLoadShapingPeakLabel.insets = new Insets(0, 20, 5, 5);
-            constraintJLabelLoadShapingPreparation.gridwidth = 3;
-            constraintJLabelLoadShapingPeakLabel.anchor = GridBagConstraints.WEST;
-            constraintJLabelLoadShapingPeakLabel.gridy = 2;
-            constraintJLabelLoadShapingPeakLabel.gridx = 1;
+            constraintJLabelPeakLoadShapeLabel.insets = new Insets(0, 20, 5, 5);
+            constraintJLabelPrepLoadShape.gridwidth = 3;
+            constraintJLabelPeakLoadShapeLabel.anchor = GridBagConstraints.WEST;
+            constraintJLabelPeakLoadShapeLabel.gridy = 2;
+            constraintJLabelPeakLoadShapeLabel.gridx = 1;
 
-            constraintJComboBoxLoadShapingPeak.insets = new Insets(0, 20, 5, 5);
-            constraintJComboBoxLoadShapingPeak.ipady = -3;
-            constraintJComboBoxLoadShapingPeak.ipadx = 50;
-            constraintJLabelLoadShapingPreparation.gridwidth = 3;
-            constraintJComboBoxLoadShapingPeak.anchor = GridBagConstraints.WEST;
-            constraintJComboBoxLoadShapingPeak.gridy = 2;
-            constraintJComboBoxLoadShapingPeak.gridx = 2;
+            constraintJComboBoxPeakLoadShape.insets = new Insets(0, 20, 5, 5);
+            constraintJComboBoxPeakLoadShape.ipady = -3;
+            constraintJComboBoxPeakLoadShape.ipadx = 50;
+            constraintJLabelPrepLoadShape.gridwidth = 3;
+            constraintJComboBoxPeakLoadShape.anchor = GridBagConstraints.WEST;
+            constraintJComboBoxPeakLoadShape.gridy = 2;
+            constraintJComboBoxPeakLoadShape.gridx = 2;
             
             constraintJButtonHelpPeak.insets = new Insets(0, 20, 5, 5);
             constraintJButtonHelpPeak.ipady = -2;
@@ -314,19 +319,19 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
             constraintJButtonHelpPeak.gridy = 2;
             constraintJButtonHelpPeak.gridx = 3;
 
-            constraintJLabelLoadShapingPostLabel.insets = new Insets(0, 20, 5, 5);
-            constraintJLabelLoadShapingPreparation.gridwidth = 3;
-            constraintJLabelLoadShapingPostLabel.anchor = GridBagConstraints.WEST;
-            constraintJLabelLoadShapingPostLabel.gridy = 3;
-            constraintJLabelLoadShapingPostLabel.gridx = 1;
+            constraintJLabelPostLoadShapeLabel.insets = new Insets(0, 20, 5, 5);
+            constraintJLabelPrepLoadShape.gridwidth = 3;
+            constraintJLabelPostLoadShapeLabel.anchor = GridBagConstraints.WEST;
+            constraintJLabelPostLoadShapeLabel.gridy = 3;
+            constraintJLabelPostLoadShapeLabel.gridx = 1;
 
-            constraintJComboBoxLoadShapingPost.insets = new Insets(0, 20, 5, 5);
-            constraintJComboBoxLoadShapingPost.ipady = -3;
-            constraintJComboBoxLoadShapingPost.ipadx = 50;
-            constraintJComboBoxLoadShapingPost.gridwidth = 3;
-            constraintJComboBoxLoadShapingPost.anchor = GridBagConstraints.WEST;
-            constraintJComboBoxLoadShapingPost.gridy = 3;
-            constraintJComboBoxLoadShapingPost.gridx = 2;
+            constraintJComboBoxPostLoadShape.insets = new Insets(0, 20, 5, 5);
+            constraintJComboBoxPostLoadShape.ipady = -3;
+            constraintJComboBoxPostLoadShape.ipadx = 50;
+            constraintJComboBoxPostLoadShape.gridwidth = 3;
+            constraintJComboBoxPostLoadShape.anchor = GridBagConstraints.WEST;
+            constraintJComboBoxPostLoadShape.gridy = 3;
+            constraintJComboBoxPostLoadShape.gridx = 2;
             
             
             constraintJButtonHelpPost.insets = new Insets(0, 20, 5, 5);
@@ -346,14 +351,14 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
             constraintJLabelLoadShapingDesc.gridx = 1;
 
             setLayout(new GridBagLayout());
-            this.add(getJLabelLoadShapingPreparation(), constraintJLabelLoadShapingPreparation);
-            this.add(getJComboBoxLoadShapingPreparation(), constraintJComboBoxLoadShapingPreparation);
+            this.add(getJLabelPrepLoadShape(), constraintJLabelPrepLoadShape);
+            this.add(getJComboBoxPrepLoadShape(), constraintJComboBoxPrepLoadShape);
 
-            this.add(getJLabelLoadShapingPeak(), constraintJLabelLoadShapingPeakLabel);
-            this.add(getJComboBoxLoadShapingPeak(), constraintJComboBoxLoadShapingPeak);
+            this.add(getJLabelPeakLoadShape(), constraintJLabelPeakLoadShapeLabel);
+            this.add(getJComboBoxPeakLoadShape(), constraintJComboBoxPeakLoadShape);
 
-            this.add(getJLabelLoadShapingPost(), constraintJLabelLoadShapingPostLabel);
-            this.add(getJComboBoxLoadShapingPost(), constraintJComboBoxLoadShapingPost);
+            this.add(getJLabelPostLoadShape(), constraintJLabelPostLoadShapeLabel);
+            this.add(getJComboBoxPostLoadShape(), constraintJComboBoxPostLoadShape);
 
             this.add(getJLabelLoadShapingDesc(), constraintJLabelLoadShapingDesc);
             this.add(getJButtonHelpPreparation(), constraintJButtonHelpPreparation);
@@ -373,9 +378,9 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
         NestStandardCycleGear gear = (NestStandardCycleGear) gearObj;
 
         NestStandardCycleGear hGear = (NestStandardCycleGear) gear;
-        getJComboBoxLoadShapingPreparation().setSelectedItem(hGear.getLoadShapingPreparation());
-        getJComboBoxLoadShapingPeak().setSelectedItem(hGear.getLoadShapingPeak());
-        getJComboBoxLoadShapingPost().setSelectedItem(hGear.getLoadShapingPost());
+        getJComboBoxPrepLoadShape().setSelectedItem(hGear.getPrepLoadShape());
+        getJComboBoxPeakLoadShape().setSelectedItem(hGear.getPeakLoadShape());
+        getJComboBoxPostLoadShape().setSelectedItem(hGear.getPostLoadShape());
     }
 
     @Override
@@ -408,9 +413,9 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 + "per the occupant schedules and comfort needs, reducing AC snapback<br>"
                 + "Do not choose after event ramping if you selected Uniform load shaping for the event</p></html>";
             getJLabelLoadShapingDesc().setText(desc);
-        } else if (e.getSource() == getJComboBoxLoadShapingPeak()) {
+        } else if (e.getSource() == getJComboBoxPeakLoadShape()) {
             jComboBoxWhenChange_ActionPerformed(e);
-        } else if (e.getSource() == getJComboBoxLoadShapingPost()) {
+        } else if (e.getSource() == getJComboBoxPostLoadShape()) {
             jComboBoxWhenChange_ActionPerformed(e);
         }
 
@@ -420,8 +425,8 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
 
     @Override
     public void jComboBoxWhenChange_ActionPerformed(ActionEvent actionEvent) {
-        if (getJComboBoxLoadShapingPeak().getSelectedItem() == LoadShapingPeak.UNIFORM
-            && getJComboBoxLoadShapingPost().getSelectedItem() == LoadShapingPost.RAMPING) {
+        if (getJComboBoxPeakLoadShape().getSelectedItem() == PeakLoadShape.PEAK_UNIFORM
+            && getJComboBoxPostLoadShape().getSelectedItem() == PostLoadShape.POST_RAMPING) {
             JOptionPane.showMessageDialog(this, "Peak as Uniform and Post as Ramping is not valid combination",
                 "Incorrect Settings", JOptionPane.ERROR_MESSAGE);
         }
@@ -430,8 +435,8 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
 
     @Override
     public boolean isInputValid() {
-        if (getJComboBoxLoadShapingPeak().getSelectedItem() == LoadShapingPeak.UNIFORM
-            && getJComboBoxLoadShapingPost().getSelectedItem() == LoadShapingPost.RAMPING) {
+        if (getJComboBoxPeakLoadShape().getSelectedItem() == PeakLoadShape.PEAK_UNIFORM
+            && getJComboBoxPostLoadShape().getSelectedItem() == PostLoadShape.POST_RAMPING) {
             return false;
         }
         return true;

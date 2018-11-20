@@ -3,18 +3,18 @@ package com.cannontech.development.model;
 import org.joda.time.DateTime;
 
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.dr.nest.model.LoadShapingPeak;
-import com.cannontech.dr.nest.model.LoadShapingPost;
-import com.cannontech.dr.nest.model.LoadShapingPreparation;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 
 public class NestControlEventSimulatorParameters {
     private GearControlMethod controlMethod;
     private DateTime startTime;
     private DateTime stopTime;
     private String groupName;
-    private LoadShapingPreparation loadShapingPreparation;
-    private LoadShapingPeak loadShapingPeak;
-    private LoadShapingPost loadShapingPost;
+    private PrepLoadShape loadShapingPreparation;
+    private PeakLoadShape loadShapingPeak;
+    private PostLoadShape loadShapingPost;
 
     public GearControlMethod getControlMethod() {
         return controlMethod;
@@ -32,27 +32,27 @@ public class NestControlEventSimulatorParameters {
         this.groupName = groupName;
     }
 
-    public LoadShapingPreparation getLoadShapingPreparation() {
+    public PrepLoadShape getPrepLoadShape() {
         return loadShapingPreparation;
     }
 
-    public void setLoadShapingPreparation(LoadShapingPreparation loadShapingPreparation) {
+    public void setPrepLoadShape(PrepLoadShape loadShapingPreparation) {
         this.loadShapingPreparation = loadShapingPreparation;
     }
 
-    public LoadShapingPeak getLoadShapingPeak() {
+    public PeakLoadShape getPeakLoadShape() {
         return loadShapingPeak;
     }
 
-    public void setLoadShapingPeak(LoadShapingPeak loadShapingPeak) {
+    public void setPeakLoadShape(PeakLoadShape loadShapingPeak) {
         this.loadShapingPeak = loadShapingPeak;
     }
 
-    public LoadShapingPost getLoadShapingPost() {
+    public PostLoadShape getPostLoadShape() {
         return loadShapingPost;
     }
 
-    public void setLoadShapingPost(LoadShapingPost loadShapingPost) {
+    public void setPostLoadShape(PostLoadShape loadShapingPost) {
         this.loadShapingPost = loadShapingPost;
     }
 
