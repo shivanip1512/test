@@ -10,6 +10,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.web.common.dashboard.widget.validator.ControlAreaOrProgramOrScenarioPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
+import com.cannontech.web.common.dashboard.widget.validator.MonitorPickerValidator;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
@@ -91,7 +92,7 @@ public enum WidgetType implements DisplayableEnum {
                                       new WidgetParameter("showRfDa", WidgetInputType.CHECKBOX, null, "false"),
                                       new WidgetParameter("showRfGatewayDataRequest", WidgetInputType.CHECKBOX, null, "false"),
                                       new WidgetParameter("showRfGatewayData", WidgetInputType.CHECKBOX, null, "false"))
-            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null))
+            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, MonitorPickerValidator.get()))
             .put(PORTER_QUEUE_COUNTS, new WidgetParameter("selectPorts", WidgetInputType.PORT_PICKER, null));
         widgetParameters = builder.build();
     }

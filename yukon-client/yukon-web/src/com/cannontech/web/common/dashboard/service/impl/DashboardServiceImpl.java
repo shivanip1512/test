@@ -146,9 +146,6 @@ public class DashboardServiceImpl implements DashboardService {
         int dashboardId = dashboardDao.create(dashboardBase);
         if (dashboardBase instanceof Dashboard) {
             Dashboard dashboard = (Dashboard) dashboardBase;
-            for (Widget widget : dashboard.getAllWidgets()) {
-                widgetService.createWidget(widget.getType(), widget.getParameters());
-            }
             dashboardDao.insertWidgets(dashboardId, dashboard.getColumn1Widgets(), 1);
             dashboardDao.insertWidgets(dashboardId, dashboard.getColumn2Widgets(), 2);
         }
@@ -161,6 +158,7 @@ public class DashboardServiceImpl implements DashboardService {
             WidgetParameterValidationException, WidgetMissingParameterException {
         ListMultimap<DashboardPageType, Integer> userPageMap = dashboardDao.getPageAssignmentToUserIdMap(dashboard.getDashboardId());
         Dashboard existingDashboard = dashboardDao.getDashboard(dashboard.getDashboardId());
+        validateWidgetParameters(dashboard);
         dashboardDao.deleteDashboard(dashboard.getDashboardId());
         int dashboardId = create(dashboard);
         for (DashboardPageType type : userPageMap.keySet()) {
@@ -183,6 +181,7 @@ public class DashboardServiceImpl implements DashboardService {
         dashboard.setDescription(description);
         dashboard.setName(name);
         dashboard.setVisibility(visibility);
+        validateWidgetParameters(dashboard);
         return create(dashboard);
     }
 
@@ -218,4 +217,9 @@ public class DashboardServiceImpl implements DashboardService {
         return dashboardDao.getAllUsersForDashboard(dashboardId);
     }
 
+    private void validateWidgetParameters(Dashboard dashboard) throws WidgetMissingParameterException, WidgetParameterValidationException {
+        for (Widget widget : dashboard.getAllWidgets()) {
+            widgetService.createWidget(widget.getType(), widget.getParameters());
+        }
+    }
 }

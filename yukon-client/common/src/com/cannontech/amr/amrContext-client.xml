@@ -124,7 +124,7 @@
 
     <bean class="com.cannontech.amr.profileCollection.service.impl.ProfileCollectionServiceImpl"/>
 
-    <bean class="com.cannontech.amr.monitors.impl.MonitorCacheServiceImpl"/>
+    <bean id="monitorCacheService" class="com.cannontech.amr.monitors.impl.MonitorCacheServiceImpl"/>
 
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectServiceImpl" />
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectPlcServiceImpl" />
