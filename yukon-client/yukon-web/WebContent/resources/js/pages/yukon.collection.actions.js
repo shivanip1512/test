@@ -21,7 +21,7 @@ yukon.collection.actions = (function () {
             clone.removeClass("js-device-collection-template");
             $("#collectionActionsAccordion").find(".js-view-selected-devices").empty();
             $("#collectionActionsAccordion").find(".js-view-selected-devices").append(clone.html());
-        } else if(isNumDevicesEmpty === true){
+        } else if(isNumDevicesEmpty === true) {
             $("#collectionActionsAccordion").find(".js-view-selected-devices").empty();
         }
     },
@@ -143,13 +143,13 @@ yukon.collection.actions = (function () {
 
             $(document).on('click', '.js-view-selected-devices .icon-magnifier', function () {
                 var activeAccordion = $("#collectionActionsAccordion").accordion("option", "active");
-                if (activeAccordion === 2){
+                if (activeAccordion === 2) {
                     $('#collectionActionsContainer').removeClass('dn');
                 }
             });
 
             var activeAccordion = $("#collectionActionsAccordion").accordion("option", "active");
-            if (activeAccordion > 0){
+            if (activeAccordion > 0) {
                 _appendViewAllDevices();
             }
 
