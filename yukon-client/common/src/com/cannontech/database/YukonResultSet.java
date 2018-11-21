@@ -284,7 +284,7 @@ public class YukonResultSet {
         ResultSetMetaData metadata = rs.getMetaData();
         int columns = metadata.getColumnCount();
         for (int index = 1; index <= columns; index++) {
-            if (columnName.equals(metadata.getColumnName(index))) {
+            if (columnName.equalsIgnoreCase(metadata.getColumnName(index))) {
                 return true;
             }
         }
