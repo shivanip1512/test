@@ -48,6 +48,7 @@ import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.UserDashboardSettings;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
+import com.cannontech.web.common.dashboard.model.WidgetHelper;
 import com.cannontech.web.common.dashboard.model.WidgetType;
 import com.cannontech.web.common.dashboard.service.DashboardService;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
@@ -304,8 +305,9 @@ public class DashboardsController {
     }
     
     @RequestMapping(value = "{id}/view", method = RequestMethod.GET)
-    public String viewDashboard(@PathVariable int id, @RequestParam(value="dashboardPageType", required=false) DashboardPageType dashboardPageType, ModelMap model, 
-                                LiteYukonUser yukonUser, FlashScope flash) {
+    public String viewDashboard(@PathVariable int id,
+            @RequestParam(value = "dashboardPageType", required = false) DashboardPageType dashboardPageType,
+            ModelMap model, LiteYukonUser yukonUser, FlashScope flash, YukonUserContext yukonUserContext) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         boolean adminDashboards = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS, yukonUser);
         if (adminDashboards || dashboardService.isVisible(yukonUser.getUserID(), id)) {
@@ -326,6 +328,7 @@ public class DashboardsController {
             model.addAttribute("widgetCss", widgetCss);
             List<LiteDashboard> ownedDashboards = dashboardService.getOwnedDashboards(yukonUser.getUserID());
             Collections.sort(ownedDashboards);
+            WidgetHelper.getWidgetHelpTextArguments(dashboard.getAllWidgets(), yukonUserContext);
             model.addAttribute("ownedDashboards", ownedDashboards);
             return "dashboardView.jsp";
         } else {

@@ -13,6 +13,7 @@ public class Widget {
     private WidgetType type;
     private int dashboardId;
     private Map<String, String> parameters = new HashMap<>();
+    private String helpText;
     
     public int getId() {
         return id;
@@ -51,5 +52,13 @@ public class Widget {
             this.parameters = new HashMap<>();
             this.parameters.putAll(parameters);
         }
+    }
+
+    public String getHelpText() {
+        return helpText;
+    }
+
+    public void setHelpText(String helpText) {
+        this.helpText = helpText;
     }
 }

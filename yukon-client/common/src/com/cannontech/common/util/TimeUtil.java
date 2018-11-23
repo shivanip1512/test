@@ -472,4 +472,15 @@ public static int differenceMinutes(Date from, Date to) {
             return false;
         }
     }
+
+    /**
+     * @param totalHours
+     * @return : Hours remaining after converting total hours to days.
+     */
+    public static long hoursRemainingAfterConveritngToDays(Long totalHours) {
+        if (totalHours > 0) {
+            return totalHours % 24;
+        } else
+            return 0;
+    }
 }

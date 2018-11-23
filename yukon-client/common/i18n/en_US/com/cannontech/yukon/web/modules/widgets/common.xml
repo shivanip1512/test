@@ -189,10 +189,15 @@
         The Refresh button will force an update of the operational status.
         The date/time displays the date/time when operational status was last updated.
         <ul>
-            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous configurable number of days (default is 7).</li>
+            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous {0}{2,choice,0# day(s)|1# day(s) and {2} hour(s)|2# day(s) and {2} hour(s)|3# day(s) and {2} hour(s)|4# day(s) and {2} hour(s)|5# day(s) and {2} hour(s)|6# day(s) and {2} hour(s)|7# day(s) and {2} hour(s)|8# day(s) and {2} hour(s)|9# day(s) and {2} hour(s)|10# day(s) and {2} hour(s)
+            |11# day(s) and {2} hour(s)|12# day(s) and {2} hour(s)|13# day(s) and {2} hour(s)|14# day(s) and {2} hour(s)|15# day(s) and {2} hour(s)|16# day(s) and {2} hour(s)|17# day(s) and {2} hour(s)|18# day(s) and {2} hour(s)
+            |19# day(s) and {2} hour(s)|20# day(s) and {2} hour(s)|21# day(s) and {2} hour(s)|22# day(s) and {2} hour(s)|23# day(s) and {2} hour(s)}.</li>
             <li><b>Opted Out (Blue):</b> Devices have been taken out of service and are no longer responding to events.</li>
-            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous configurable number of days (default is 7).</li>
-            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous configurable number of hours (default is 60).</li>
+            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous {0}{2,choice,0# day(s)|1# day(s) and {2} hour(s)
+            |2# day(s) and {2} hour(s)|3# day(s) and {2} hour(s)|4# day(s) and {2} hour(s)|5# day(s) and {2} hour(s)|6# day(s) and {2} hour(s)|7# day(s) and {2} hour(s)|8# day(s) and {2} hour(s)|9# day(s) and {2} hour(s)|10# day(s) and {2} hour(s)
+            |11# day(s) and {2} hour(s)|12# day(s) and {2} hour(s)|13# day(s) and {2} hour(s)|14# day(s) and {2} hour(s)|15# day(s) and {2} hour(s)|16# day(s) and {2} hour(s)|17# day(s) and {2} hour(s)|18# day(s) and {2} hour(s)
+            |19# day(s) and {2} hour(s)|20# day(s) and {2} hour(s)|21# day(s) and {2} hour(s)|22# day(s) and {2} hour(s)|23# day(s) and {2} hour(s)}.</li>
+            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous {1} hours.</li>
         </ul>
 ]]></entry>
 
