@@ -162,6 +162,7 @@ public class TimeUtilTest {
         assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
             TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
     }
+
     @Test
     public void test_hoursRemainingAfterConveritngToDays_validHours_withoutExtraHours() {
         long totalHours = 48;
@@ -169,6 +170,7 @@ public class TimeUtilTest {
         assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
             TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
     }
+
     @Test
     public void test_hoursRemainingAfterConveritngToDays_inValidHours() {
         long totalHours = -25;
