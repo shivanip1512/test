@@ -25,9 +25,8 @@ public class WidgetHelper {
                 long totalHours = globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS);
                 long totalDays = TimeUnit.DAYS.convert(totalHours, TimeUnit.HOURS);
                 long hoursRemaining = TimeUtil.hoursRemainingAfterConveritngToDays(totalHours);
-                widget.setHelpText(
-                    accessor.getMessage(helpTextBaseKey + widget.getType().getBeanName() + ".helpText", totalDays,
-                        globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS), hoursRemaining, ">"));
+                widget.setHelpText(accessor.getMessage(helpTextBaseKey + widget.getType().getBeanName() + ".helpText",
+                    totalDays, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS), hoursRemaining));
                 break;
             default:
                 widget.setHelpText(
