@@ -154,5 +154,26 @@ public class TimeUtilTest {
         }
         return false;
     }
-    
+
+    @Test
+    public void test_hoursRemainingAfterConveritngToDays_validHours_withExtraHours() {
+        long totalHours = 25;
+        long expectedResult = 1;
+        assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
+            TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+    }
+    @Test
+    public void test_hoursRemainingAfterConveritngToDays_validHours_withoutExtraHours() {
+        long totalHours = 48;
+        long expectedResult = 0;
+        assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
+            TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+    }
+    @Test
+    public void test_hoursRemainingAfterConveritngToDays_inValidHours() {
+        long totalHours = -25;
+        long expectedResult = 0;
+        assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
+            TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+    }
 }
