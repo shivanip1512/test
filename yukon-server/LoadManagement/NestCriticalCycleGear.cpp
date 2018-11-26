@@ -31,7 +31,7 @@ bool NestCriticalCycleGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
 
         expectedLoadReduced += ( currentLMGroup->getKWCapacity() * loadScalar );
  
-        return nestGroup->sendCriticalCycleControl( controlSeconds );
+        return nestGroup->sendCycleControl( controlSeconds );
     }
 
     CTILOG_WARN( dout, "Group does not implement the nest control interface: " << currentLMGroup->getPAOName() );

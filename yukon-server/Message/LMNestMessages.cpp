@@ -10,9 +10,9 @@ namespace Cti            {
 namespace Messaging      {
 namespace LoadManagement {
 
-LMNestCriticalCyclingControlMessage::LMNestCriticalCyclingControlMessage( int groupId,
-                                                                          int startTime,
-                                                                          int controlDuration )
+LMNestCyclingControlMessage::LMNestCyclingControlMessage( int groupId,
+                                                          int startTime,
+                                                          int controlDuration )
     :   _groupId( groupId ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration )
@@ -20,7 +20,7 @@ LMNestCriticalCyclingControlMessage::LMNestCriticalCyclingControlMessage( int gr
     // empty
 }
 
-void LMNestCriticalCyclingControlMessage::streamInto( cms::StreamMessage & message ) const
+void LMNestCyclingControlMessage::streamInto( cms::StreamMessage & message ) const
 {
     message.writeInt( _groupId );
     message.writeInt( _startTime );
@@ -29,30 +29,18 @@ void LMNestCriticalCyclingControlMessage::streamInto( cms::StreamMessage & messa
 
 ///
 
-LMNestStandardCyclingControlMessage::LMNestStandardCyclingControlMessage( int groupId,
-                                                                          int startTime,
-                                                                          int controlDuration,
-                                                                          int prepOption,
-                                                                          int peakOption,
-                                                                          int postOption )
+LMNestRestoreMessage::LMNestRestoreMessage( int groupId,
+                                            int restoreTime )
     :   _groupId( groupId ),
-        _startTime( startTime ),
-        _stopTime( startTime + controlDuration ),
-        _prepOption( prepOption ),
-        _peakOption( peakOption ),
-        _postOption( postOption )
+        _restoreTime( restoreTime )
 {
     // empty
 }
 
-void LMNestStandardCyclingControlMessage::streamInto( cms::StreamMessage & message ) const
+void LMNestRestoreMessage::streamInto( cms::StreamMessage & message ) const
 {
     message.writeInt( _groupId );
-    message.writeInt( _startTime );
-    message.writeInt( _stopTime );
-    message.writeByte( _prepOption );
-    message.writeByte( _peakOption );
-    message.writeByte( _postOption );
+    message.writeInt( _restoreTime );
 }
 
 }

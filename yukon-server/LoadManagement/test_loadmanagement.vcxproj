@@ -342,7 +342,6 @@
   <ItemGroup>
     <ClInclude Include="include\lmgroupnest.h" />
     <ClInclude Include="include\NestControlinterface.h" />
-    <ClInclude Include="include\NestLoadShapingOptions.h" />
     <ClInclude Include="include\SmartGroupBase.h" />
   </ItemGroup>
   <ItemGroup>
@@ -452,7 +451,6 @@
     <ClCompile Include="loadmanager.cpp">
     </ClCompile>
     <ClCompile Include="NestCriticalCycleGear.cpp" />
-    <ClCompile Include="NestLoadShapingOptions.cpp" />
     <ClCompile Include="NestStandardCycleGear.cpp" />
     <ClCompile Include="sepcyclegear.cpp">
     </ClCompile>

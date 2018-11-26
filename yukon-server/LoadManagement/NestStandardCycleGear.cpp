@@ -6,15 +6,11 @@
 #include "std_helper.h"
 
 using namespace Cti::LoadManagement;
-using namespace NestLoadShaping;
 
 
 
 NestStandardCycleGear::NestStandardCycleGear( Cti::RowReader & rdr )
-    :   CtiLMProgramDirectGear( rdr ),
-        _prepOption( PreparationOption::Lookup( rdr[ "PreparationOption" ].as<std::string>() ) ),
-        _peakOption( PeakOption::Lookup( rdr[ "PeakOption" ].as<std::string>() ) ),
-        _postOption( PostOption::Lookup( rdr[ "PostPeakOption" ].as<std::string>() ) )
+    :   CtiLMProgramDirectGear( rdr )
 {
     // empty
 }
@@ -36,10 +32,7 @@ bool NestStandardCycleGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
 
         expectedLoadReduced += ( currentLMGroup->getKWCapacity() * loadScalar );
 
-        return nestGroup->sendStandardCycleControl( controlSeconds, 
-                                                    _prepOption.getValue(),
-                                                    _peakOption.getValue(),
-                                                    _postOption.getValue() );
+        return nestGroup->sendCycleControl( controlSeconds );
     }
 
     CTILOG_WARN( dout, "Group does not implement the nest control interface: " << currentLMGroup->getPAOName() );

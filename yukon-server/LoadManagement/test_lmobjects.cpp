@@ -15,7 +15,6 @@
 #include "honeywellCycleGear.h"
 
 #include "lmgroupnest.h"
-#include "NestLoadShapingOptions.h"
 
 #include "lmfactory.h"
 
@@ -530,22 +529,6 @@ BOOST_AUTO_TEST_CASE( test_lmobjects_nest_group )
     BOOST_CHECK_EQUAL( group->getPAOName(),         "Test Nest Group" );
     BOOST_CHECK_EQUAL( group->getPAOType(),         TYPE_LMGROUP_NEST );
     BOOST_CHECK_EQUAL( group->getPAOTypeString(),   "NEST GROUP" );
-}
-
-BOOST_AUTO_TEST_CASE( test_lmobjects_nest_load_shaping_options )
-{
-    // Document the enumeration values
-
-    BOOST_CHECK_EQUAL( 0,   NestLoadShaping::PreparationOption::Standard.getValue() );
-    BOOST_CHECK_EQUAL( 1,   NestLoadShaping::PreparationOption::None.getValue() );
-    BOOST_CHECK_EQUAL( 2,   NestLoadShaping::PreparationOption::Ramping.getValue() );
-
-    BOOST_CHECK_EQUAL( 0,   NestLoadShaping::PeakOption::Standard.getValue() );
-    BOOST_CHECK_EQUAL( 1,   NestLoadShaping::PeakOption::Uniform.getValue() );
-    BOOST_CHECK_EQUAL( 2,   NestLoadShaping::PeakOption::Symmetric.getValue() );
-
-    BOOST_CHECK_EQUAL( 0,   NestLoadShaping::PostOption::Standard.getValue() );
-    BOOST_CHECK_EQUAL( 1,   NestLoadShaping::PostOption::Ramping.getValue() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

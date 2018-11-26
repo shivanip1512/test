@@ -2,7 +2,6 @@
 
 #include "lmprogramdirect.h"
 #include "smartgearbase.h"
-#include "NestLoadShapingOptions.h"
 
 
 
@@ -22,11 +21,5 @@ public:
     bool stopControl( CtiLMGroupPtr currentLMGroup ) override;
 
     unsigned long estimateOffTime( long controlSeconds ) override;
-
-private:
-
-    NestLoadShaping::PreparationOption  _prepOption;
-    NestLoadShaping::PeakOption         _peakOption;
-    NestLoadShaping::PostOption         _postOption;
 };
 

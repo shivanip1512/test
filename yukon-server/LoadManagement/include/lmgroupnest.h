@@ -22,12 +22,7 @@ public:
     virtual bool sendStopControl( bool stopImmediately ) override;
     virtual bool sendShedControl( long controlMinutes ) override;
 
-    bool sendCriticalCycleControl( long controlDurationSeconds ) override;
-
-    bool sendStandardCycleControl( long controlDurationSeconds,
-                                   int  prepOption,
-                                   int  peakOption,
-                                   int  postOption ) override;
+    bool sendCycleControl( long controlDurationSeconds ) override;
 };
 
 typedef boost::shared_ptr<LMGroupNest> LMGroupNestPtr;

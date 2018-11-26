@@ -452,7 +452,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="main.cpp">
     </ClCompile>
     <ClCompile Include="NestCriticalCycleGear.cpp" />
-    <ClCompile Include="NestLoadShapingOptions.cpp" />
     <ClCompile Include="NestStandardCycleGear.cpp" />
     <ClCompile Include="sepcyclegear.cpp">
     </ClCompile>
@@ -520,7 +519,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\LMScheduledMessageHolder.h" />
     <ClInclude Include="include\NestControlinterface.h" />
     <ClInclude Include="include\NestCriticalCycleGear.h" />
-    <ClInclude Include="include\NestLoadShapingOptions.h" />
     <ClInclude Include="include\NestStandardCycleGear.h" />
     <ClInclude Include="include\SEPControlInterface.h" />
     <ClInclude Include="include\sepcyclegear.h" />

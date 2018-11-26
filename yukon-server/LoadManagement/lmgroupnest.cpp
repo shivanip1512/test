@@ -32,7 +32,7 @@ CtiLMGroupBase* LMGroupNest::replicate() const
 }
 
 
-bool LMGroupNest::sendCriticalCycleControl( long controlDurationSeconds )
+bool LMGroupNest::sendCycleControl( long controlDurationSeconds )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
@@ -41,16 +41,16 @@ bool LMGroupNest::sendCriticalCycleControl( long controlDurationSeconds )
     CtiTime now;
     CtiTime utcNow( now - now.secondOffsetToGMT() );
 
-//    ActiveMQConnectionManager::enqueueMessage( 
-//            OutboundQueue::NestCriticalCyclingControl, 
-//            std::make_unique<LMNestCriticalCyclingControlMessage>( 
-//                    getPAOId(), 
-//                    static_cast<int>(utcNow.seconds()),
-//                    controlDurationSeconds ) );
+    ActiveMQConnectionManager::enqueueMessage( 
+        OutboundQueue::NestCyclingControl, 
+        std::make_unique<LMNestCyclingControlMessage>( 
+            getPAOId(), 
+            static_cast<int>( utcNow.seconds() ),
+            controlDurationSeconds ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Critical Cycle command, LM Group: " << getPAOName() );
+        CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Cycle command, LM Group: " << getPAOName() );
     }
 
     setLastControlSent( now );
@@ -58,40 +58,6 @@ bool LMGroupNest::sendCriticalCycleControl( long controlDurationSeconds )
 
     return true;
 }
-
-bool LMGroupNest::sendStandardCycleControl( long controlDurationSeconds,
-                                            int  prepOption,
-                                            int  peakOption,
-                                            int  postOption )
-{
-    using namespace Cti::Messaging;
-    using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
-
-    CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
-
-//    ActiveMQConnectionManager::enqueueMessage( 
-//            OutboundQueue::NestStandardCyclingControl, 
-//            std::make_unique<LMNestStandardCyclingControlMessage>( 
-//                    getPAOId(), 
-//                    static_cast<int>(utcNow.seconds()),
-//                    controlDurationSeconds,
-//                    prepOption,
-//                    peakOption,
-//                    postOption ) );
-
-    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
-    {
-        CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Standard Cycle command, LM Group: " << getPAOName() );
-    }
-
-    setLastControlSent( now );
-    setLastStopTimeSent( now );
-
-    return true;
-}
-
 
 bool LMGroupNest::sendStopControl( bool stopImmediately )
 {
@@ -102,7 +68,11 @@ bool LMGroupNest::sendStopControl( bool stopImmediately )
     CtiTime now;
     CtiTime utcNow( now - now.secondOffsetToGMT() );
 
-    //  Needs definition of the message and queue name
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::NestRestore,
+        std::make_unique<LMNestRestoreMessage>(
+            getPAOId(),
+            static_cast<int>( utcNow.seconds() ) ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -124,7 +94,11 @@ bool LMGroupNest::sendShedControl( long controlMinutes )
     CtiTime now;
     CtiTime utcNow( now - now.secondOffsetToGMT() );
 
-    //  Needs definition of the message and queue name
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::NestRestore,
+        std::make_unique<LMNestRestoreMessage>(
+            getPAOId(),
+            static_cast<int>( utcNow.seconds() ) ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

@@ -26,11 +26,11 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::HoneywellRestore
     {"yukon.notif.stream.dr.HoneywellRestoreMessage"};
 const IM_EX_MSG OutboundQueue
-    OutboundQueue::NestCriticalCyclingControl
-    {"yukon.notif.stream.dr.NestCriticalCyclingControlMessage"};
+    OutboundQueue::NestCyclingControl
+    {"yukon.notif.stream.dr.NestCyclingControlMessage"};
 const IM_EX_MSG OutboundQueue
-    OutboundQueue::NestStandardCyclingControl
-    {"yukon.notif.stream.dr.NestStandardCyclingControlMessage"};
+    OutboundQueue::NestRestore
+    {"yukon.notif.stream.dr.NestRestoreMessage"};
 const IM_EX_MSG OutboundQueue
     OutboundQueue::HistoryRowAssociationResponse
     {"yukon.notif.stream.dr.HistoryRowAssociationResponse"};
