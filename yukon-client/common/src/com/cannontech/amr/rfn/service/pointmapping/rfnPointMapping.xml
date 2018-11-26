@@ -4825,30 +4825,6 @@
     <pointGroup>
         <paoType value="RFN530S4X" />
         
-        <point name="Avg Voltage Phase A">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-                <modifier>Avg</modifier>
-            </modifiers>
-        </point>
-        <point name="Avg Voltage Phase B">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-                <modifier>Avg</modifier>
-            </modifiers>
-        </point>
-        <point name="Avg Voltage Phase C">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-                <modifier>Avg</modifier>
-            </modifiers>
-        </point>
         <point name="Net kW">
             <uom>W</uom>
             <multiplier value=".001"/>
