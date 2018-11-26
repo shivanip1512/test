@@ -1,4 +1,4 @@
-# To execut this PowerShell Script, we need to execute this administrator only
+# To execute this PowerShell Script, we need to execute this administrator only
 # Execute following command if we have ExecutionPolicy set to Restricted
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
@@ -76,7 +76,7 @@ Write-Host "Services configured for automatic start or currently running: `r`n`r
 <#
     CheckServiceStatus function check running and stopped status of services.
     Returns 
-        -- $True   - If all servcies have been stopped in case of $serviceStatus = Stopped
+        -- $True   - If all services have been stopped in case of $serviceStatus = Stopped
                    - If all services are running in case of $serviceStatus = Running  
         -- $False  - If any service is still not stopped in case of $serviceStatus = Stopped
                    - If any service is still not running in case of $serviceStatus = Running 
@@ -210,7 +210,7 @@ If($Operation -ne 'start')
 # Call StopService function to stop services #
     StopServices
 
-    # Continously checking if any service is still not stopped upto 5 minutes #
+    # Continuously checking if any service is still not stopped up to 5 minutes #
     Write-Host "-------------------------------------------" 
     Write-Host "Checking Services Status - $STOPPED"
     Write-Host "-------------------------------------------" 
@@ -246,7 +246,7 @@ If($Operation -ne 'stop')
     # Calling StartServices function to start services
     StartServices
 
-    # Wait for 1 minute and again chek if any service is not running 
+    # Wait for 1 minute and again check if any service is not running 
     Write-Host "Waiting 1 minute to check Running status of all services.."
     Start-Sleep -s 60
 
@@ -257,7 +257,7 @@ If($Operation -ne 'stop')
     $AllRunning = CheckServiceStatus($RUNNING)
     if($AllRunning)
     {
-        Write-Host "All Services are runnning."
+        Write-Host "All Services are running."
     }
 }
 Write-Host ""
