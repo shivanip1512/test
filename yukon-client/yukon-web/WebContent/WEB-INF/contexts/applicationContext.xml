@@ -1300,6 +1300,7 @@
     
     <bean class="com.cannontech.web.common.dashboard.service.impl.DashboardServiceImpl"/>
     <bean class="com.cannontech.web.common.dashboard.widget.service.impl.WidgetServiceImpl"/>
+    <bean class="com.cannontech.web.common.dashboard.model.WidgetHelper"/>
     
     <bean id="dataCollectionWidgetListener" class="com.cannontech.web.common.widgets.service.impl.DataCollectionWidgetServiceImpl"/>
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">

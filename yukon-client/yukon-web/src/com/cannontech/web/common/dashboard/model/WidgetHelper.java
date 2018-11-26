@@ -3,21 +3,21 @@ package com.cannontech.web.common.dashboard.model;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 
 public class WidgetHelper {
+    @Autowired GlobalSettingDao globalSettingDao;
+    @Autowired YukonUserContextMessageSourceResolver messageResolver;
     private final static String helpTextBaseKey = "yukon.web.widgets.";
 
-    public static void getWidgetHelpTextArguments(List<Widget> allWidgets, YukonUserContext yukonUserContext) {
-        GlobalSettingDao globalSettingDao = YukonSpringHook.getBean("globalSettingDao", GlobalSettingDao.class);
-        YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(
-            "yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
+    public void getWidgetHelpTextArguments(List<Widget> allWidgets, YukonUserContext yukonUserContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         for (Widget widget : allWidgets) {
             switch (widget.getType()) {

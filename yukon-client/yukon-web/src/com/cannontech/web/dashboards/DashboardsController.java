@@ -67,6 +67,7 @@ public class DashboardsController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DashboardValidator validator;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private WidgetHelper widgetHelper;
 
     private final static String baseKey = "yukon.web.modules.dashboard.";
 
@@ -328,7 +329,7 @@ public class DashboardsController {
             model.addAttribute("widgetCss", widgetCss);
             List<LiteDashboard> ownedDashboards = dashboardService.getOwnedDashboards(yukonUser.getUserID());
             Collections.sort(ownedDashboards);
-            WidgetHelper.getWidgetHelpTextArguments(dashboard.getAllWidgets(), yukonUserContext);
+            widgetHelper.getWidgetHelpTextArguments(dashboard.getAllWidgets(), yukonUserContext);
             model.addAttribute("ownedDashboards", ownedDashboards);
             return "dashboardView.jsp";
         } else {
