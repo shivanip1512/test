@@ -28,8 +28,8 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper.PointMapper;
 import com.cannontech.amr.rfn.dao.impl.RfnDeviceAttributeDaoImpl;
+import com.cannontech.amr.rfn.service.pointmapping.PointMapper;
 import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMappingParser;
 import com.cannontech.common.config.dao.RfnPointMappingDao;
 import com.cannontech.common.mock.MockPointDao;

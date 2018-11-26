@@ -391,7 +391,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         return builder.build();
     }
     
-    private PointMapper createPointMapper(Element pointElement) {
+    static PointMapper createPointMapper(Element pointElement) {
         String name = pointElement.getAttributeValue("name");
         String uom = pointElement.getChildTextTrim("uom");
         Element multiplierElement = pointElement.getChild("multiplier");
@@ -416,9 +416,9 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
             modifiersMatcherList.add(modifiersMatcher);
         }
         
-        // 'Base' modifier sets, used for tieing coincidental measurments to the channel data that spawned them
-        // example: the var measurement taken at the peak demand event, the base uom and base modifiers would be
-        // those of the peak demand channel data.
+        // 'Base' modifier sets, used for tying coincidental measurements to the channel data that spawned them.
+        // Example: for the Var measurement taken at the Peak Demand event, the base UOM and base modifiers would be
+        // those of the Peak Demand channel data.
         Iterable<Element> baseModifiersElements = getElementChildren(pointElement, "baseModifiers");
         List<ModifiersMatcher> baseModifiersMatcherList = null;
         String baseUom = pointElement.getChildTextTrim("baseUom"); // will be null if not present
@@ -440,7 +440,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         return pointMapper;
     }
     
-    private ModifiersMatcher getModifiersMatcher(Element modifiersElement) {
+    private static ModifiersMatcher getModifiersMatcher(Element modifiersElement) {
         String matchStyleStr = modifiersElement.getAttributeValue("match");
         MatchStyle matchStyle = MatchStyle.valueOf(matchStyleStr);
         Iterable<Element> modifierElements = getElementChildren(modifiersElement, "modifier");

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pointMappings>
+<pointMappings
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="rfnPointMapping.xsd">
 
 <!--    NOTES RE: ELO's RFN 213x models
     NOTE 1: 213s added here at the top because they are COMPLETELY SEPARATE from the

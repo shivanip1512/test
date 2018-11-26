@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:simpleType name="Uom">
+        <xs:restriction base="xs:string">
+            <!--  Metrics -->
+            <xs:enumeration value="Wh" />
+            <xs:enumeration value="W" />
+            <xs:enumeration value="Varh" />
+            <xs:enumeration value="Var" />
+            <xs:enumeration value="VAh" />
+            <xs:enumeration value="VA" />
+            <xs:enumeration value="PF" />
+            <xs:enumeration value="PF degree" />
+            <xs:enumeration value="A" />
+            <xs:enumeration value="A degree" />
+            <xs:enumeration value="V" />
+            <xs:enumeration value="V degree" />
+            <xs:enumeration value="ft^3" />
+            <xs:enumeration value="m^3" />
+            <xs:enumeration value="gal" />
+            <xs:enumeration value="°C" />
+            <xs:enumeration value="-" />
+            <!--  Event related -->
+            <xs:enumeration value="Outage Count" />
+            <xs:enumeration value="Restore Count" />
+            <xs:enumeration value="Outage Blink Count" />
+            <xs:enumeration value="Restore Blink Count" />
+            <!--  Actual event  -->
+            <xs:enumeration value="Demand Reset" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Modifier">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Quadrant 1" />
+            <xs:enumeration value="Quadrant 2" />
+            <xs:enumeration value="Quadrant 3" />
+            <xs:enumeration value="Quadrant 4" />
+            
+            <xs:enumeration value="TOU Rate A" />
+            <xs:enumeration value="TOU Rate B" />
+            <xs:enumeration value="TOU Rate C" />
+            <xs:enumeration value="TOU Rate D" />
+            <xs:enumeration value="TOU Rate E" />
+            
+            <xs:enumeration value="Min" />
+            <xs:enumeration value="Max" />
+            <xs:enumeration value="Avg" />
+            <xs:enumeration value="Net Flow" />
+            <xs:enumeration value="Daily Max" />
+            <xs:enumeration value="Cumulative" />
+            <xs:enumeration value="Previous" />
+            
+            <xs:enumeration value="Phase A" />
+            <xs:enumeration value="Phase B" />
+            <xs:enumeration value="Phase C" />
+
+            <xs:enumeration value="Primary" />
+            <xs:enumeration value="Phase Neutral->Ground" />
+
+            <xs:enumeration value="Harmonic" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="MatchType">
+        <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="equal" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ModifiersMatcher">
+        <xs:sequence>
+            <xs:element name="modifier" type="Modifier" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="match" type="MatchType" />
+    </xs:complexType>
+
+    <xs:simpleType name="PositiveDouble">
+        <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="Multiplier">
+        <xs:attribute name="value" type="PositiveDouble" />
+    </xs:complexType>
+
+    <xs:complexType name="Point">
+        <xs:sequence>
+            <xs:element name="uom" type="Uom" minOccurs="0" />
+            <xs:element name="multiplier" minOccurs="0" type="Multiplier" />
+            <xs:element name="parseSiPrefix" minOccurs="0" />
+            <xs:element name="modifiers" type="ModifiersMatcher" />
+            <xs:sequence minOccurs="0">
+                <xs:element name="baseUom" type="Uom" minOccurs="0" />
+                <xs:element name="baseModifiers" type="ModifiersMatcher" />
+            </xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="name" />
+    </xs:complexType>
+
+    <xs:complexType name="PaoType">
+        <xs:attribute name="value" />
+    </xs:complexType>
+
+    <xs:complexType name="PointGroup">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="paoType" type="PaoType" />
+            </xs:choice>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="point" type="Point" />
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PointMappings">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="pointGroup" type="PointGroup" />
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="pointMappings" type="PointMappings" />
+
+</xs:schema>
