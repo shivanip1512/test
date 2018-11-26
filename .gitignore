@@ -69,9 +69,7 @@ yukon-client/web-common/build
 yukon-client/yukon-message-broker/activemq-data
 yukon-client/yukon-message-broker/bin
 yukon-client/yukon-message-broker/build
-yukon-client/yukon-watchdog-service/bin/beanRefContext.xml
-yukon-client/yukon-watchdog-service/bin/com
-yukon-client/yukon-watchdog-service/bin/manifest.mf
+yukon-client/yukon-watchdog-service/bin
 yukon-client/yukon-web/.tomcatplugin
 yukon-client/yukon-web/WebContent/WEB-INF/classes
 yukon-client/yukon-web/WebContent/capcontrol/_notes

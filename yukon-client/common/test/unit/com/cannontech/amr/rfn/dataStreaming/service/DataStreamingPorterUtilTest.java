@@ -34,31 +34,31 @@ public class DataStreamingPorterUtilTest {
         
     @Test
     public void test_valid() throws IOException {
-        String valid =
-                "Data Streaming Set Metrics Request:" + 
-                "\r\nDATA_STREAMING_JSON{" + 
-                "\r\n\"streamingEnabled\" : false," + 
-                "\r\n\"configuredMetrics\" : [" + 
-                "\r\n  {" + 
-                "\r\n    \"attribute\" : \"DELIVERED_DEMAND\"," + 
-                "\r\n    \"interval\" : 5," + 
-                "\r\n    \"enabled\" : true," + 
-                "\r\n    \"status\" : \"OK\"" + 
-                "\r\n  }," + 
-                "\r\n  {" + 
-                "\r\n    \"attribute\" : \"VOLTAGE\"," + 
-                "\r\n    \"interval\" : 15," + 
-                "\r\n    \"enabled\" : false," + 
-                "\r\n    \"status\" : \"CHANNEL_NOT_ENABLED\"" + 
-                "\r\n  }," + 
-                "\r\n  {" + 
-                "\r\n    \"attribute\" : \"POWER_FACTOR\"," + 
-                "\r\n    \"interval\" : 30," + 
-                "\r\n    \"enabled\" : true," + 
-                "\r\n    \"status\" : \"OK\"" + 
-                "\r\n  }]," + 
-                "\r\n\"sequence\" : 3735928559" + 
-                "\r\n}";
+        String valid = String.join("\r\n", 
+                "Data Streaming Set Metrics Request:", 
+                "DATA_STREAMING_JSON{", 
+                "\"streamingEnabled\" : false,", 
+                "\"configuredMetrics\" : [", 
+                "  {", 
+                "    \"attribute\" : \"DELIVERED_DEMAND\",", 
+                "    \"interval\" : 5,", 
+                "    \"enabled\" : true,", 
+                "    \"status\" : \"OK\"", 
+                "  },", 
+                "  {",
+                "    \"attribute\" : \"VOLTAGE\",", 
+                "    \"interval\" : 15,", 
+                "    \"enabled\" : false,", 
+                "    \"status\" : \"CHANNEL_NOT_ENABLED\"", 
+                "  },", 
+                "  {",
+                "    \"attribute\" : \"POWER_FACTOR\",", 
+                "    \"interval\" : 30,", 
+                "    \"enabled\" : true,", 
+                "    \"status\" : \"OK\"", 
+                "  }],", 
+                "\"sequence\" : 3735928559", 
+                "}");
             
         ReportedDataStreamingConfig config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(valid);
         
@@ -100,31 +100,31 @@ public class DataStreamingPorterUtilTest {
 
     @Test
     public void test_trailing() throws IOException {
-        String valid =
-                "Data Streaming Set Metrics Request:" + 
-                "\r\nDATA_STREAMING_JSON{" + 
-                "\r\n\"streamingEnabled\" : false," + 
-                "\r\n\"configuredMetrics\" : [" + 
-                "\r\n  {" + 
-                "\r\n    \"attribute\" : \"DELIVERED_DEMAND\"," + 
-                "\r\n    \"interval\" : 5," + 
-                "\r\n    \"enabled\" : true," + 
-                "\r\n    \"status\" : \"OK\"" + 
-                "\r\n  }," + 
-                "\r\n  {" + 
-                "\r\n    \"attribute\" : \"VOLTAGE\"," + 
-                "\r\n    \"interval\" : 15," + 
-                "\r\n    \"enabled\" : false," + 
-                "\r\n    \"status\" : \"CHANNEL_NOT_ENABLED\"" + 
-                "\r\n  }," + 
-                "\r\n  {" + 
-                "\r\n    \"attribute\" : \"POWER_FACTOR\"," + 
-                "\r\n    \"interval\" : 30," + 
-                "\r\n    \"enabled\" : true," + 
-                "\r\n    \"status\" : \"OK\"" + 
-                "\r\n  }]," + 
-                "\r\n\"sequence\" : 3735928559" + 
-                "\r\n}trailing nonsense{} this[] could{ break } /*things*/";
+        String valid = String.join("\r\n",
+                "Data Streaming Set Metrics Request:", 
+                "DATA_STREAMING_JSON{", 
+                "\"streamingEnabled\" : false,", 
+                "\"configuredMetrics\" : [", 
+                "  {", 
+                "    \"attribute\" : \"DELIVERED_DEMAND\",", 
+                "    \"interval\" : 5,", 
+                "    \"enabled\" : true,", 
+                "    \"status\" : \"OK\"", 
+                "  },", 
+                "  {", 
+                "    \"attribute\" : \"VOLTAGE\",", 
+                "    \"interval\" : 15,", 
+                "    \"enabled\" : false,", 
+                "    \"status\" : \"CHANNEL_NOT_ENABLED\"", 
+                "  },", 
+                "  {", 
+                "    \"attribute\" : \"POWER_FACTOR\",", 
+                "    \"interval\" : 30,", 
+                "    \"enabled\" : true,", 
+                "    \"status\" : \"OK\"", 
+                "  }],", 
+                "\"sequence\" : 3735928559", 
+                "}trailing nonsense{} this[] could{ break } /*things*/");
             
         ReportedDataStreamingConfig config = DataStreamingPorterUtil.extractReportedDataStreamingConfig(valid);
         
