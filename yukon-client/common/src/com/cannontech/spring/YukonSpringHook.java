@@ -128,7 +128,7 @@ public class YukonSpringHook {
             applicationContext = null;
 
             if (savedCtx != null && savedCtx instanceof ConfigurableApplicationContext) {
-                ((ConfigurableApplicationContext) savedCtx).close();
+                ((ConfigurableApplicationContext) savedCtx.getParentBeanFactory()).close();
             }
             factoryKey = null;
         }
