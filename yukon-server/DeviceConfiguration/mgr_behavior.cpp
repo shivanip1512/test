@@ -40,11 +40,11 @@ namespace {
     template<typename T>
     struct DatabaseTypeNameFor
     {
-        static constexpr std::string value();
+        static const std::string value();
     };
 
     template<>
-    constexpr std::string DatabaseTypeNameFor<RfnDataStreamingBehavior>::value()
+    const std::string DatabaseTypeNameFor<RfnDataStreamingBehavior>::value()
     {
         return "DATA_STREAMING";
     }
