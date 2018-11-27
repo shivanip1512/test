@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.pageTitle">Asset Availability Details</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.pageHeading">Asset Availability Details</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.crumbTitle">Asset Availability Details</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.targetLevel">Target Level</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.helpTitle">Asset Availability Results Help</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.helpText"><![CDATA[
+        You can apply the following filters to the report:
+        <ul>
+            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous configurable number of days (default is 7).</li>
+            <li><b>Opted Out (Blue):</b> Devices have been taken out of service and are no longer responding to events.</li>
+            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous configurable number of days (default is 7).</li>
+            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous configurable number of hours (default is 60).</li>
+        </ul>
+        Click on the Filter button to filter the results.<br/>
+        The resulting devices will display in a table with the total count of filtered devices.<br/>
+        Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Map Devices, Download data, etc.).<br/>
+        Click on the Gear Icon next to each device to view options you can do for the individual device (Collection Actions, Map Device, etc.). <br/>
+    ]]></entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.deviceGroups">Device Groups</entry>
+    <!-- TODO: Range? Recent Readings? Is it correct? -->
+    <entry key="yukon.web.modules.dr.assetAvailability.range">Recent Reading</entry>
+    
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.lastCommunication">Last Communication</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.lastRun">Last Run</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.collectionActions">Collection Actions</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.noResults">No results found.</entry>
+    
+</properties>

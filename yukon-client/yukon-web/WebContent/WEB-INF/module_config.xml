@@ -544,6 +544,7 @@
           <page name="searchResults" type="BASIC" hideSearch="true">
             <link>/dr/search</link>
           </page>
+          <page name="assetAvailability.detail" type="BASIC"/>
         </pages>
       </page>
     </pages>

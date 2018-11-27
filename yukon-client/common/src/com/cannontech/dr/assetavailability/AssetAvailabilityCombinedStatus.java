@@ -8,9 +8,9 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
     ACTIVE(AssetAvailabilityStatus.ACTIVE),
+    OPTED_OUT(null),
     INACTIVE(AssetAvailabilityStatus.INACTIVE),
-    UNAVAILABLE(AssetAvailabilityStatus.UNAVAILABLE),
-    OPTED_OUT(null);
+    UNAVAILABLE(AssetAvailabilityStatus.UNAVAILABLE);
 
     private final AssetAvailabilityStatus backingStatus;
     private final static ImmutableMap<AssetAvailabilityStatus, AssetAvailabilityCombinedStatus> byBackingStatus;

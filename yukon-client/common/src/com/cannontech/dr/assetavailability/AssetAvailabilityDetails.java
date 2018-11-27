@@ -15,6 +15,8 @@ public class AssetAvailabilityDetails {
     private Instant lastRun;
     private String appliances;
     private AssetAvailabilityCombinedStatus availability;
+    private Integer inventoryId;
+    private Integer deviceId;
 
     public String getSerialNumber() {
         return serialNumber;
@@ -64,4 +66,19 @@ public class AssetAvailabilityDetails {
         this.availability = availability;
     }
 
+    public Integer getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(Integer inventoryId) {
+        this.inventoryId = inventoryId;
+    }
+
+    public Integer getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
+    }
 }

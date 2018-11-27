@@ -115,7 +115,7 @@ yukon.widget.assetAvailability = (function () {
     _buildChart = function (chart, data) {
         debug.log('building chart');
         var container = chart.closest('.widgetWrapper'),
-            summaryPage = chart.closest('.js-pie-chart-summary'),
+            summaryPage = chart.closest('.js-asset-availability-pie-chart-summary'),
             onWidget = container.length,
             containerWidth = onWidget ? container.width() : summaryPage.width(),
             chartWidth = containerWidth - 20;
@@ -140,7 +140,7 @@ yukon.widget.assetAvailability = (function () {
                 borderWidth: 0,
                 useHTML: true,
                 labelFormatter: function (point) {
-                    var legendValueText = '<span class="js-legend-value dn">' + this.filter + '</span>';
+                    var legendValueText = '<span class="js-asset-availability-legend-value dn">' + this.filter + '</span>';
                     var spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
                     return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
@@ -185,9 +185,29 @@ yukon.widget.assetAvailability = (function () {
                 _update(true);
             });
             
+            $(document).on('click', '.js-asset-availability-data-pie', function () {
+                var widget = $(this).closest('.js-asset-availability-widget'),
+                    controlAreaOrProgramOrScenarioId = $(widget).find('input[name=controlAreaOrProgramOrScenarioId]').val(),
+                    statuses = [];
+                
+                //check which legend items are selected
+                $(widget).find('div.highcharts-legend-item').each(function(index, elem) {
+                    if (!$(elem).hasClass('highcharts-legend-item-hidden')) {
+                        var legendValue = $(elem).find('.js-asset-availability-legend-value').text();
+                        statuses.push(legendValue);
+                    }
+                });
+                
+                window.open(yukon.url('/dr/assetAvailability/detail?controlAreaOrProgramOrScenarioId=' + controlAreaOrProgramOrScenarioId + '&statuses=' + statuses));
+            });
+            
             _update(false);
             
             _initialized = true;
+        },
+        
+        buildChart : function (chart, data) {
+            _buildChart(chart, data);
         }
     };
     

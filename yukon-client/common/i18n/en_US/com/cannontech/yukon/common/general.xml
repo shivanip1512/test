@@ -66,6 +66,7 @@
 <entry key="yukon.common.clientApplicationRememberMe.USERNAME">Username (recommended)</entry>
 <entry key="yukon.common.clientApplicationRememberMe.USERNAME_AND_PASSWORD">Username and Password (less secure)</entry>
 <entry key="yukon.common.close">Close</entry>
+<entry key="yukon.common.collectionActions">Collection Actions</entry>
 <entry key="yukon.common.collapseAll">Collapse All</entry>
 <entry key="yukon.common.comma">,</entry>
 <entry key="yukon.common.complete">Complete</entry>
@@ -178,6 +179,7 @@
 <entry key="yukon.common.mailEncryptionType.NONE">None</entry>
 <entry key="yukon.common.mailEncryptionType.SSL">SSL</entry>
 <entry key="yukon.common.mailEncryptionType.TLS">TLS</entry>
+<entry key="yukon.common.mapDevices">Map Devices</entry>
 <entry key="yukon.common.max">Max</entry>
 <entry key="yukon.common.meterGroups.MCT">MCT</entry>
 <entry key="yukon.common.meterGroups.RF_MESH">RF Mesh</entry>
@@ -234,6 +236,7 @@
 <entry key="yukon.common.quality">Quality</entry>
 <entry key="yukon.common.quickView">Quick View</entry>
 <entry key="yukon.common.range">Range</entry>
+<entry key="yukon.common.readAttribute">Read Attribute</entry>
 <entry key="yukon.common.remove">Remove</entry>
 <entry key="yukon.common.reports">Reports</entry>
 <entry key="yukon.common.requestFailed">Request Failed</entry>
@@ -256,6 +259,7 @@
 <entry key="yukon.common.selectGroups">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selector.selectOne">-- Select One --</entry>
+<entry key="yukon.common.sendCommand">Send Command</entry>
 <entry key="yukon.common.settings">Settings</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
 <entry key="yukon.common.showAll">Show All</entry>
