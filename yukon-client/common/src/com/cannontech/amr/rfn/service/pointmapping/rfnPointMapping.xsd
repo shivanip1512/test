@@ -73,7 +73,7 @@
         <xs:sequence>
             <xs:element name="modifier" type="Modifier" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
-        <xs:attribute name="match" type="MatchType" />
+        <xs:attribute name="match" type="MatchType" use="required" />
     </xs:complexType>
 
     <xs:simpleType name="PositiveDouble">
@@ -83,25 +83,25 @@
     </xs:simpleType>
 
     <xs:complexType name="Multiplier">
-        <xs:attribute name="value" type="PositiveDouble" />
+        <xs:attribute name="value" type="PositiveDouble" use="required" />
     </xs:complexType>
 
     <xs:complexType name="Point">
         <xs:sequence>
-            <xs:element name="uom" type="Uom" minOccurs="0" />
-            <xs:element name="multiplier" minOccurs="0" type="Multiplier" />
-            <xs:element name="parseSiPrefix" minOccurs="0" />
+            <xs:element name="uom" type="Uom" minOccurs="0" maxOccurs="1" />
+            <xs:element name="multiplier" minOccurs="0" maxOccurs="1" type="Multiplier" />
+            <xs:element name="parseSiPrefix" minOccurs="0" maxOccurs="1" />
             <xs:element name="modifiers" type="ModifiersMatcher" />
-            <xs:sequence minOccurs="0">
-                <xs:element name="baseUom" type="Uom" minOccurs="0" />
+            <xs:sequence minOccurs="0" maxOccurs="1">
+                <xs:element name="baseUom" type="Uom" minOccurs="0"  maxOccurs="1" />
                 <xs:element name="baseModifiers" type="ModifiersMatcher" />
             </xs:sequence>
         </xs:sequence>
-        <xs:attribute name="name" />
+        <xs:attribute name="name" use="required" />
     </xs:complexType>
 
     <xs:complexType name="PaoType">
-        <xs:attribute name="value" />
+        <xs:attribute name="value" use="required" />
     </xs:complexType>
 
     <xs:complexType name="PointGroup">
