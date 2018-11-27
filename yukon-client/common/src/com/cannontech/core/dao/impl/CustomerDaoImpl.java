@@ -482,7 +482,7 @@ public final class CustomerDaoImpl implements CustomerDao {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT CustomerId, PrimaryContactId, CustomerTypeId, Timezone, CustomerNumber, RateScheduleId, AltTrackNum, TemperatureUnit");
                 sql.append("FROM Customer");
-                sql.append("WHERE AltTrackNum IN('(none)', '', ' '");
+                sql.append("WHERE AltTrackNum IN('(none)', '', ' ')");
                 sql.append("AND CustomerId").in(subList);
                 return sql;           
             }

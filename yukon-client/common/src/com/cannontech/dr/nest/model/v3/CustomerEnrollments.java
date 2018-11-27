@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class CustomerEnrollments {
     private List<CustomerEnrollment> customerEnrollments = new ArrayList<>();
 
@@ -13,7 +16,7 @@ public class CustomerEnrollments {
     }
     
     @JsonCreator
-    public CustomerEnrollments(List<CustomerEnrollment> customerEnrollments) {
+    public CustomerEnrollments(@JsonProperty("customerEnrollments") List<CustomerEnrollment> customerEnrollments) {
         this.customerEnrollments = customerEnrollments;
     }
 

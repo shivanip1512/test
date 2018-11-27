@@ -182,7 +182,7 @@ public class AddressDaoImpl implements AddressDao {
                 sql.append("SELECT AccountSiteId, AddressID, LocationAddress1, LocationAddress2, CityName, StateCode, ZipCode, County");
                 sql.append("FROM Address a");
                 sql.append("JOIN AccountSite site ON a.AddressId = site.StreetAddressId ");
-                sql.append("WHERE LocationAddress1 IN('(none)', '', ' '");
+                sql.append("WHERE LocationAddress1 IN('(none)', '', ' ')");
                 sql.append("AND site.AccountSiteId").in(subList);
                 return sql;           
             }

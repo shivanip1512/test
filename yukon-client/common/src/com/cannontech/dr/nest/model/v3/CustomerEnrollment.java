@@ -4,7 +4,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class CustomerEnrollment {
     private String customerId;
     private EnrollmentState enrollmentState;
@@ -16,8 +19,9 @@ public class CustomerEnrollment {
     }
     
     @JsonCreator
-    public CustomerEnrollment(String customerId, EnrollmentState enrollmentState, String groupId,
-            RejectionReason rejectionReason, String rejectionNote) {
+    public CustomerEnrollment(@JsonProperty("customerId") String customerId, @JsonProperty("enrollmentState") EnrollmentState enrollmentState, 
+                              @JsonProperty("groupId") String groupId, @JsonProperty("rejectionReason") RejectionReason rejectionReason, 
+                              @JsonProperty("rejectionNote") String rejectionNote) {
         super();
         this.customerId = customerId;
         this.enrollmentState = enrollmentState;

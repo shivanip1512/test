@@ -31,7 +31,7 @@ public enum NestURL{
         builder.put(NestURL.CREATE_EVENT, "/v3/partners/{partnerId}/rushHourEvents/{eventType}");
         builder.put(NestURL.STOP_EVENT, "/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop");
         builder.put(NestURL.CANCEL_EVENT, "/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel");
-        builder.put(NestURL.ENROLLMENT, "/v3/partners/{partnerId}/customers");
+        builder.put(NestURL.ENROLLMENT, "/v3/partners/{partnerId}/customers:batchUpdateEnrollments");
         builder.put(NestURL.GET_CUSTOMER_LIST, "/v3/partners/{partnerId}/customers");
         return builder.build();
     }

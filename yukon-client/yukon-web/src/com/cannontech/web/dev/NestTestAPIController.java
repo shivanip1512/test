@@ -4,15 +4,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,9 +23,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,6 +43,7 @@ import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.model.v3.EventId;
 import com.cannontech.dr.nest.model.v3.PostalAddress;
 import com.cannontech.dr.nest.model.v3.ProgramType;
+import com.cannontech.dr.nest.model.v3.RetrieveCustomers;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
@@ -80,19 +81,25 @@ public class NestTestAPIController {
     
     @IgnoreCsrfCheck
     @RequestMapping(value = "/v3/partners/{partnerId}/customers:batchUpdateEnrollments", method = RequestMethod.PUT)
-    public void updateEnrollment(@PathVariable("partnerId") String partnerId, @RequestBody CustomerEnrollments enrollments) {
+    public @ResponseBody String updateEnrollment(HttpEntity<CustomerEnrollments> requestEntity, @PathVariable("partnerId") String partnerId) {
         log.debug("partnerId {}", partnerId);
-        processEnrollment(enrollments);
+        Optional<String> response = processEnrollment(requestEntity.getBody());
+        if (response.isPresent()) {
+            return response.get();
+        } else {
+            return null;
+        }
       //simulate errors
     }
 
-    private void processEnrollment(CustomerEnrollments enrollments) {
+    private Optional<String> processEnrollment(CustomerEnrollments enrollments) {
         CustomerEnrollment enrollment = enrollments.getCustomerEnrollments().get(0);
         if (enrollment.getEnrollmentState() == EnrollmentState.DISSOLVED) {
-            nestSimService.dissolveAccountWithNest(enrollment);
+            return nestSimService.dissolveAccountWithNest(enrollment);
         } else if (enrollment.getEnrollmentState() == EnrollmentState.ACCEPTED) {
-            nestSimService.updateGroup(enrollment);
+            return nestSimService.updateGroup(enrollment);
         }
+        return Optional.empty();
     }
     
     @IgnoreCsrfCheck
@@ -113,22 +120,18 @@ public class NestTestAPIController {
    
     @IgnoreCsrfCheck
     @RequestMapping(value = "/v3/partners/{partnerId}/rushHourEvents/{eventType}", method = RequestMethod.POST)
-    @ResponseBody
-    public EventId control(@PathVariable("partnerId") String partnerId, @PathVariable("eventType") String eventType,
+    public @ResponseBody EventId control(@PathVariable("partnerId") String partnerId, @PathVariable("eventType") String eventType,
             HttpServletRequest request, HttpServletResponse response) {
         log.debug("Control partnerId {} eventType {}", partnerId, eventType);
-        byte[] array = new byte[5];
-        new Random().nextBytes(array);
-        String generatedString = new String(array, Charset.forName("UTF-8"));
-        return new EventId(generatedString);
+        UUID uid = UUID.randomUUID();
+        return new EventId(uid.toString());
         // simulate errors
         //if error return SchedulabilityError? We do not know if it is one error or a map
     }
     
     @IgnoreCsrfCheck
-    @RequestMapping(value = "/v3/partners/{partnerId}/customers", method = RequestMethod.GET)
-    @ResponseBody
-    public Customers getAllCustomers(@PathVariable("partnerId") String partnerId) {
+    @RequestMapping(value = "v3/partners/{partnerId}/customers", method = RequestMethod.GET)
+    public @ResponseBody Customers getAllCustomers(HttpEntity<RetrieveCustomers> requestEntity, @PathVariable("partnerId") String partnerId) {
         return getCustomerInfos();
     }
 

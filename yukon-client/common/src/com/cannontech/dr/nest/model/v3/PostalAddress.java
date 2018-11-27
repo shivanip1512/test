@@ -4,7 +4,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PostalAddress {
     private String streetAddress;
     private String city;
@@ -12,7 +15,8 @@ public class PostalAddress {
     private String postalCode;
     
     @JsonCreator
-    public PostalAddress(String streetAddress, String city, String state, String postalCode) {
+    public PostalAddress(@JsonProperty("streetAddress") String streetAddress, @JsonProperty("city") String city, 
+                         @JsonProperty("state") String state, @JsonProperty("postalCode") String postalCode) {
         this.streetAddress = streetAddress;
         this.city = city;
         this.state = state;

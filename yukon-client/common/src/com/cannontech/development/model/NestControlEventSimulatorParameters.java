@@ -32,27 +32,27 @@ public class NestControlEventSimulatorParameters {
         this.groupName = groupName;
     }
 
-    public PrepLoadShape getPrepLoadShape() {
+    public PrepLoadShape getLoadShapingPreparation() {
         return loadShapingPreparation;
     }
 
-    public void setPrepLoadShape(PrepLoadShape loadShapingPreparation) {
+    public void setLoadShapingPreparation(PrepLoadShape loadShapingPreparation) {
         this.loadShapingPreparation = loadShapingPreparation;
     }
 
-    public PeakLoadShape getPeakLoadShape() {
+    public PeakLoadShape getLoadShapingPeak() {
         return loadShapingPeak;
     }
 
-    public void setPeakLoadShape(PeakLoadShape loadShapingPeak) {
+    public void setLoadShapingPeak(PeakLoadShape loadShapingPeak) {
         this.loadShapingPeak = loadShapingPeak;
     }
 
-    public PostLoadShape getPostLoadShape() {
+    public PostLoadShape getLoadShapingPost() {
         return loadShapingPost;
     }
 
-    public void setPostLoadShape(PostLoadShape loadShapingPost) {
+    public void setLoadShapingPost(PostLoadShape loadShapingPost) {
         this.loadShapingPost = loadShapingPost;
     }
 

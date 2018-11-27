@@ -1,6 +1,7 @@
 package com.cannontech.web.dev;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.development.model.NestControlEventSimulatorParameters;
@@ -36,6 +38,7 @@ import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.NestURL;
 import com.cannontech.dr.nest.model.v3.ControlEvent;
+import com.cannontech.dr.nest.model.v3.EventId;
 import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.service.NestCommunicationService;
@@ -202,6 +205,28 @@ public class NestTestController {
         }
         String message = sendEvent(nestParameters);
         model.addAttribute("message", message);
+        try {
+            EventId event = JsonUtils.fromJson(message, EventId.class);
+            model.addAttribute("eventKey", event.getId());
+        } catch (IOException e) {
+            log.warn("caught exception in sendEvent", e);
+        }
+        return "nest/nestControlEvents.jsp";
+    }
+    
+    @RequestMapping(value = "/stopEvent", method = RequestMethod.POST)
+    public String stopEvent(String eventId, ModelMap model) {
+        NestControlEventSimulatorParameters nestParameters = new NestControlEventSimulatorParameters();
+        model.addAttribute("nestParameters", nestParameters);
+        setupModelMap(model);
+        return "nest/nestControlEvents.jsp";
+    }
+    
+    @RequestMapping(value = "/cancelEvent", method = RequestMethod.POST)
+    public String cancelEvent(String eventId, ModelMap model) {
+        NestControlEventSimulatorParameters nestParameters = new NestControlEventSimulatorParameters();
+        model.addAttribute("nestParameters", nestParameters);
+        setupModelMap(model);
         return "nest/nestControlEvents.jsp";
     }
     

@@ -3,8 +3,9 @@ package com.cannontech.dr.nest.service.impl;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.bind.DatatypeConverter;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -54,14 +56,14 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     @Autowired
     public NestCommunicationServiceImpl(GlobalSettingDao settingDao) {
         this.settingDao = settingDao;
-        proxy = YukonHttpProxy.fromGlobalSetting(settingDao)
-                .map(YukonHttpProxy::getJavaHttpProxy)
-                .orElse(null);
+        String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
         restTemplate = new RestTemplate();
-        
+
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        if(proxy != null) {
-            factory.setProxy(proxy);
+        if (useProxy(nestUrl)) {
+            YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
+                factory.setProxy(httpProxy.getJavaHttpProxy());
+            });
         }
         restTemplate.setRequestFactory(factory);
     }
@@ -165,19 +167,16 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         
         CustomerEnrollments enrollments = new CustomerEnrollments();
         enrollments.addEnrollment(enrollment);
+        HttpEntity<CustomerEnrollments> requestEntity = new HttpEntity<>(enrollments, headers);
         try {
-            String body = JsonUtils.toJson(enrollments);
-            log.debug("json {}", body);
-            HttpEntity<?> entity = new HttpEntity<>(headers);
-            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-            try {
-                HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, entity, String.class, partnerId);
-                return Optional.ofNullable(response.getBody());
-            } catch (HttpClientErrorException e) {
-                throw new NestException("Error getting valid reponse from Nest.", e);
-            }
-        } catch (JsonProcessingException e1) {
-            throw new NestException("Unable create json from:" + enrollment, e1);
+            HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, requestEntity, String.class, partnerId);
+            
+            //restTemplate.put(requestUrl, requestEntity, partnerId);
+            //return Optional.empty();
+            return Optional.ofNullable(response.getBody());
+            //return response.getBody();
+        } catch (HttpClientErrorException e) {
+            throw new NestException("Error getting valid reponse from Nest.", e);
         }
     }
     
@@ -194,17 +193,12 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         
         RetrieveCustomers retrieve = new  RetrieveCustomers();
         retrieve.setEnrollmentStateFilter(state);
+        HttpEntity<RetrieveCustomers> requestEntity = new HttpEntity<>(retrieve, headers);
         try {
-            String body = JsonUtils.toJson(retrieve);
-            HttpEntity<?> entity = new HttpEntity<>(body, headers);
-            try {
-                HttpEntity<Customers> response = restTemplate.exchange(requestUrl, HttpMethod.GET, entity, Customers.class, partnerId);
-                return response.getBody().getCustomers();
-            } catch (HttpClientErrorException e) {
-                throw new NestException("Error getting valid reponse from Nest.", e);
-            }
-        } catch (JsonProcessingException e1) {
-            throw new NestException("Unable create json from:" + retrieve, e1);
+            ResponseEntity<Customers> response = restTemplate.exchange(requestUrl, HttpMethod.GET, requestEntity, Customers.class, partnerId);
+            return response.getBody().getCustomers();
+        } catch (HttpClientErrorException e) {
+            throw new NestException("Error getting valid reponse from Nest.", e);
         }
     }
     
@@ -220,21 +214,23 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", encodeAuthorization());
- 
+        
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("partnerId", partnerId);
+        urlParams.put("eventType", type.name());
+
+        HttpEntity<ControlEvent> entity = new HttpEntity<>(event, headers);
         try {
-            String body = JsonUtils.toJson(event);
-            HttpEntity<?> entity = new HttpEntity<>(body, headers);
-            try {
-                HttpEntity<String> response =
-                    restTemplate.exchange(url, HttpMethod.POST, entity, String.class, partnerId, type.name());
-                log.debug("response:" + response.getBody());
-                return response.getBody();
-            } catch (HttpClientErrorException e) {
-                log.error("Error getting response from Nest:" + e.getResponseBodyAsString(), e);
-                return e.getResponseBodyAsString();
-            }
-        } catch (JsonProcessingException e1) {
-            throw new NestException("Unable create json from:" + event, e1);
+            ResponseEntity<EventId> response =
+                restTemplate.exchange(url, HttpMethod.POST, entity, EventId.class, urlParams);
+            log.debug("response:" + response.getBody());
+            return JsonUtils.toJson(response.getBody());
+        } catch (HttpClientErrorException e) {
+            log.error("Error getting response from Nest:" + e.getResponseBodyAsString(), e);
+            return e.getResponseBodyAsString();
+        } catch (JsonProcessingException e) {
+            log.error("Error parsing json from Nest", e);
+            return e.getMessage();
         }
     }
         

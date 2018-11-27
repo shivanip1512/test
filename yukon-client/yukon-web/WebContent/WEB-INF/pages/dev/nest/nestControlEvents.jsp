@@ -6,13 +6,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <cti:standardPage module="dev" page="nest.viewControlEvents">
-    <!-- Sending control events to Nest -->
-    <cti:url var="sendEventUrl" value="sendEvent"/>
-    <form:form id="controlEventNestForm" modelAttribute="nestParameters" method ="POST" action="${sendEventUrl}" >
-    <cti:csrfToken/>
+
     <cti:msg2 key=".controlEvent.helpText" var="helpText"/>
-        <div class="column-8-8-8">
-            <tags:sectionContainer title="Control Event Generation" helpText="${helpText}">
+    <div class="column-8-8-8">
+        <tags:sectionContainer title="Control Event Generation" helpText="${helpText}">
+            <!-- Sending control events to Nest -->
+            <cti:url var="sendEventUrl" value="sendEvent"/>
+            <form:form id="controlEventNestForm" modelAttribute="nestParameters" method ="POST" action="${sendEventUrl}" >
+                <cti:csrfToken/>
                 <tags:nameValueContainer2>
                      <tags:nameValue2 nameKey=".controlEvent.controlMethod">
                          <form:select path="controlMethod" id= "controlMethod">
@@ -66,12 +67,23 @@
                         <cti:button id="send-button" label="Send Event" type="submit"/>
                     </div>
                 </div>
-            </tags:sectionContainer>
-            <tags:sectionContainer title="Response">
-                <div class="code pr">
-                    <div id="responseDiv">${message}</div>
-                </div>
-            </tags:sectionContainer>
-        </div>
-    </form:form>
+                
+            </form:form>
+        </tags:sectionContainer>
+        <tags:sectionContainer title="Response">
+            <div class="code pr">
+                <div id="responseDiv">${message}</div>
+            </div>
+            <c:if test="${!empty message}">
+                <cti:url var="stopEventUrl" value="stopEvent"/>
+                <form:form method ="POST" action="${stopEventUrl}" >
+                    <cti:csrfToken/>
+                    <span class="fl">Event: <input name="eventId" type="text" value="${eventKey}" size="40"></span>
+                    <cti:button label="Stop Event" type="submit"/>
+                    <cti:button id="cancel-button" label="Cancel Event"/>
+                </form:form>
+            </c:if>
+        </tags:sectionContainer>
+    </div>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.nestSimulator.js" />
 </cti:standardPage>

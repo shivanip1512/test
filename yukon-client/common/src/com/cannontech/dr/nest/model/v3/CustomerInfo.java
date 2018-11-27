@@ -6,7 +6,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerInfo {
     private String customerId;
     private String accountNumber;
@@ -29,10 +32,13 @@ public class CustomerInfo {
     }
     
     @JsonCreator
-    public CustomerInfo(String customerId, String accountNumber, String name, PostalAddress serviceAddress,
-            String email, int deviceCount, List<String> deviceIds, String enrollTime, String approveTime,
-            String groupId, EnrollmentSource enrollmentSource, EnrollmentState enrollmentState,
-            List<ProgramType> programType, String rejectionReason, String rejectionNotes) {
+    public CustomerInfo(@JsonProperty("customerId") String customerId, @JsonProperty("accountNumber") String accountNumber, 
+            @JsonProperty("name") String name, @JsonProperty("serviceAddress") PostalAddress serviceAddress,
+            @JsonProperty("email") String email, @JsonProperty("deviceCount") int deviceCount, @JsonProperty("deviceIds") List<String> deviceIds, 
+            @JsonProperty("enrollTime") String enrollTime, @JsonProperty("approveTime") String approveTime,
+            @JsonProperty("groupId") String groupId, @JsonProperty("enrollmentSource") EnrollmentSource enrollmentSource, 
+            @JsonProperty("enrollmentState") EnrollmentState enrollmentState, @JsonProperty("programType") List<ProgramType> programType, 
+            @JsonProperty("rejectionReason") String rejectionReason, @JsonProperty("rejectionNotes") String rejectionNotes) {
         this.customerId = customerId;
         this.accountNumber = accountNumber;
         this.name = name;
