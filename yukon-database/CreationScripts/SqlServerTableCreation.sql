@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/26/2018 12:51:39 PM                       */
+/* Created on:     11/27/2018 9:04:04 AM                        */
 /*==============================================================*/
 
 
@@ -10495,7 +10495,6 @@ insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
 INSERT INTO YukonListEntry VALUES (2000, 1005, 0, 'LCR-6200 (RFN)', 1324);
 INSERT INTO YukonListEntry VALUES (2001, 1005, 0, 'LCR-6600 (RFN)', 1325);
-INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
 INSERT INTO YukonListEntry VALUES (2002, 1005, 0, 'LCR-6200 (ZigBee)', 1320); 
 INSERT INTO YukonListEntry VALUES (2003, 1005, 0, 'LCR-6200 (ExpressCom)', 1321); 
 INSERT INTO YukonListEntry VALUES (2004, 1005, 0, 'LCR-6600 (ZigBee)', 1322); 
@@ -10531,8 +10530,9 @@ INSERT INTO YukonListEntry VALUES (2031, 1005, 0, 'Honeywell Wi-Fi VisionPRO 800
 INSERT INTO YukonListEntry VALUES (2032, 1005, 0, 'Honeywell Wi-Fi FocusPRO', 1334);
 INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335);
 
-INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'Nest', 1338);
-INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'LCR-6601S', 1339);
+INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
+INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
+INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
