@@ -136,7 +136,7 @@
     
     <!-- Exceptions -->
     <entry key="yukon.web.modules.dashboard.exception.missingParameters">Widget is missing inputs: {0}</entry>
-    <entry key="yukon.web.modules.dashboard.exception.invalidMonitorId">Invalid Monitor Id : {0}</entry>
+    <entry key="yukon.web.modules.dashboard.exception.invalidMonitorId">Invalid Monitor Id: {0}</entry>
     <entry key="yukon.web.modules.dashboard.exception.nonIntDeviceId">Device ID is not an integer: {0}</entry>
     
     <!-- Dashboard Deletion -->

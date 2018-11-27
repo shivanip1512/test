@@ -37,7 +37,7 @@ public class MonitorPickerValidator implements WidgetInputValidator {
     }
 
     /**
-     * This method takes monitorId with prefix. The first character determine the Monitor Type
+     * This method takes monitorId with prefix. The first character determines the Monitor Type
      * and the rest part consist of monitorId.
      */
     private boolean isValidMonitorId(String monitorId) {

@@ -158,7 +158,7 @@ public class DashboardServiceImpl implements DashboardService {
             WidgetParameterValidationException, WidgetMissingParameterException {
         ListMultimap<DashboardPageType, Integer> userPageMap = dashboardDao.getPageAssignmentToUserIdMap(dashboard.getDashboardId());
         Dashboard existingDashboard = dashboardDao.getDashboard(dashboard.getDashboardId());
-        validateWidgetParameters(dashboard);
+        createDashboardWidgets(dashboard);
         dashboardDao.deleteDashboard(dashboard.getDashboardId());
         int dashboardId = create(dashboard);
         for (DashboardPageType type : userPageMap.keySet()) {
@@ -181,7 +181,7 @@ public class DashboardServiceImpl implements DashboardService {
         dashboard.setDescription(description);
         dashboard.setName(name);
         dashboard.setVisibility(visibility);
-        validateWidgetParameters(dashboard);
+        createDashboardWidgets(dashboard);
         return create(dashboard);
     }
 
@@ -217,7 +217,12 @@ public class DashboardServiceImpl implements DashboardService {
         return dashboardDao.getAllUsersForDashboard(dashboardId);
     }
 
-    private void validateWidgetParameters(Dashboard dashboard) throws WidgetMissingParameterException, WidgetParameterValidationException {
+    
+    /**
+     * This method is used to create dashboard widgets according to the widget parameters.
+     * Widget parameters will be validated as part of widgetService validateParameters method call.
+     */
+    private void createDashboardWidgets(Dashboard dashboard) throws WidgetMissingParameterException, WidgetParameterValidationException {
         for (Widget widget : dashboard.getAllWidgets()) {
             widgetService.createWidget(widget.getType(), widget.getParameters());
         }
