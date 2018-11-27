@@ -13,8 +13,8 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 
 public class WidgetHelper {
-    @Autowired GlobalSettingDao globalSettingDao;
-    @Autowired YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private final static String helpTextBaseKey = "yukon.web.widgets.";
 
     public void setWidgetHelpTextArguments(List<Widget> allWidgets, YukonUserContext yukonUserContext) {
