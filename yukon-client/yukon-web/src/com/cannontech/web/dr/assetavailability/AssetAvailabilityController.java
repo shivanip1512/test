@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.joda.time.Instant;
@@ -30,12 +31,15 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
@@ -61,6 +65,7 @@ public class AssetAvailabilityController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     @GetMapping(value = "updateChart")
     public @ResponseBody Map<String, Object> updateChart(Integer controlAreaOrProgramOrScenarioId, YukonUserContext userContext) throws Exception {
@@ -114,6 +119,21 @@ public class AssetAvailabilityController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
+        
+        /* set Asset Availability filter help text. */
+        long totalHours = globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS);
+        long totalDays = TimeUnit.DAYS.convert(totalHours, TimeUnit.HOURS);
+        long hoursRemaining = TimeUtil.hoursRemainingAfterConveritngToDays(totalHours);
+        String days = accessor.getMessage("yukon.common.duration.days", totalDays);
+        String hours = "";
+        if (totalDays > 0) {
+            hours = accessor.getMessage("yukon.common.duration.hours.withDays", hoursRemaining);
+        } else {
+            hours = accessor.getMessage("yukon.common.duration.hours", hoursRemaining);
+        }
+        String helpText = accessor.getMessage(baseKey + "helpText",
+            days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS));
+        model.addAttribute("helpText", helpText);
 
         /* Filter Results */
         //TODO: Replace call to mockSearchResults() later with service call once YUK-18954 is done.

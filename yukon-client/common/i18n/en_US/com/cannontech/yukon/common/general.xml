@@ -285,6 +285,7 @@
 <entry key="yukon.common.duration">Duration</entry>
 <entry key="yukon.common.duration.minutes">{0} min.</entry>
 <entry key="yukon.common.duration.hours">{0} {0, choice, 1#hour|1&lt;hours}</entry>
+<entry key="yukon.common.duration.hours.withDays">{0,choice,0# | 1# and {0} hour | 1 &lt; and {0} hours}</entry>
 <entry key="yukon.common.duration.days">{0} {0, choice, 1#day|1&lt;days}</entry>
 <entry key="yukon.common.duration.weeks">{0} {0, choice, 1#week|1&lt;weeks}</entry>
 <entry key="yukon.common.duration.months">{0, choice, 1#{0} month|1&lt; &gt; 1 month}</entry>

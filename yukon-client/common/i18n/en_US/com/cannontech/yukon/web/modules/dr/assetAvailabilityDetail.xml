@@ -9,10 +9,10 @@
     <entry key="yukon.web.modules.dr.assetAvailability.detail.helpText"><![CDATA[
         You can apply the following filters to the report:
         <ul>
-            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous configurable number of days (default is 7).</li>
+            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
             <li><b>Opted Out (Blue):</b> Devices have been taken out of service and are no longer responding to events.</li>
-            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous configurable number of days (default is 7).</li>
-            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous configurable number of hours (default is 60).</li>
+            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.</li>
+            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous {2} hours.</li>
         </ul>
         Click on the Filter button to filter the results.<br/>
         The resulting devices will display in a table with the total count of filtered devices.<br/>
