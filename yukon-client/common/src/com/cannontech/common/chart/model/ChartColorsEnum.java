@@ -4,11 +4,11 @@ public enum ChartColorsEnum {
 
 	GREEN("#009933"), 
     BLUE("#0000FF"), 
-    LIGHT_BLUE("#3F6995"), 
+    LIGHT_BLUE("#849FBB"), 
     RED("#FF0000"), 
-    LIGHT_RED("#A83535"), 
+    LIGHT_RED("#C77D7D"), 
     YELLOW("#CC9900"),
-    GREEN_FILL("#DDB67E")
+    GREEN_FILL("#97D5AC")
     ;
     
     private String rgb;
