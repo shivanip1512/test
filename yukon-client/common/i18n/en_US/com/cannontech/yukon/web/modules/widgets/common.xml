@@ -189,15 +189,10 @@
         The Refresh button will force an update of the operational status.
         The date/time displays the date/time when operational status was last updated.
         <ul>
-            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous {0}{2,choice,0# day(s)|1# day(s) and {2} hour(s)|2# day(s) and {2} hour(s)|3# day(s) and {2} hour(s)|4# day(s) and {2} hour(s)|5# day(s) and {2} hour(s)|6# day(s) and {2} hour(s)|7# day(s) and {2} hour(s)|8# day(s) and {2} hour(s)|9# day(s) and {2} hour(s)|10# day(s) and {2} hour(s)
-            |11# day(s) and {2} hour(s)|12# day(s) and {2} hour(s)|13# day(s) and {2} hour(s)|14# day(s) and {2} hour(s)|15# day(s) and {2} hour(s)|16# day(s) and {2} hour(s)|17# day(s) and {2} hour(s)|18# day(s) and {2} hour(s)
-            |19# day(s) and {2} hour(s)|20# day(s) and {2} hour(s)|21# day(s) and {2} hour(s)|22# day(s) and {2} hour(s)|23# day(s) and {2} hour(s)}.</li>
+            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
             <li><b>Opted Out (Blue):</b> Devices have been taken out of service and are no longer responding to events.</li>
-            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous {0}{2,choice,0# day(s)|1# day(s) and {2} hour(s)
-            |2# day(s) and {2} hour(s)|3# day(s) and {2} hour(s)|4# day(s) and {2} hour(s)|5# day(s) and {2} hour(s)|6# day(s) and {2} hour(s)|7# day(s) and {2} hour(s)|8# day(s) and {2} hour(s)|9# day(s) and {2} hour(s)|10# day(s) and {2} hour(s)
-            |11# day(s) and {2} hour(s)|12# day(s) and {2} hour(s)|13# day(s) and {2} hour(s)|14# day(s) and {2} hour(s)|15# day(s) and {2} hour(s)|16# day(s) and {2} hour(s)|17# day(s) and {2} hour(s)|18# day(s) and {2} hour(s)
-            |19# day(s) and {2} hour(s)|20# day(s) and {2} hour(s)|21# day(s) and {2} hour(s)|22# day(s) and {2} hour(s)|23# day(s) and {2} hour(s)}.</li>
-            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous {1} hours.</li>
+            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.</li>
+            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous {2} hours.</li>
         </ul>
 ]]></entry>
 
@@ -237,5 +232,7 @@
     The Comm Channel Queue Counts widget displays up to 3 (default) months of historical data for a maximum number of  5 (default) communication channels (not inclusive of RF Meters). The number of months and communication channel limits may be modified at a system level in the Yukon Configuration Settings.
 The communication channels are selected when the widget is created and are used to populate the graph each time the widget is loaded. Temporarily change the selected communication channels using the picker. To permanently change the default selected communication channels, edit the dashboard and select different communication channels, and click save.
 ]]></entry>
-
+<entry key="yukon.web.widgets.days">{0,choice,0# | 1# {0} day | 1 &lt; {0} days}</entry>
+<entry key="yukon.web.widgets.hours">{0,choice,0# | 1# {0} hour | 1 &lt; {0} hours}</entry>
+<entry key="yukon.web.widgets.hours.withDays">{0,choice,0# | 1# and {0} hour | 1 &lt; and {0} hours}</entry>
 </properties>

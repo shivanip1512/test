@@ -17,7 +17,7 @@ public class WidgetHelper {
     @Autowired YukonUserContextMessageSourceResolver messageResolver;
     private final static String helpTextBaseKey = "yukon.web.widgets.";
 
-    public void getWidgetHelpTextArguments(List<Widget> allWidgets, YukonUserContext yukonUserContext) {
+    public void setWidgetHelpTextArguments(List<Widget> allWidgets, YukonUserContext yukonUserContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         for (Widget widget : allWidgets) {
             switch (widget.getType()) {
@@ -25,8 +25,15 @@ public class WidgetHelper {
                 long totalHours = globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS);
                 long totalDays = TimeUnit.DAYS.convert(totalHours, TimeUnit.HOURS);
                 long hoursRemaining = TimeUtil.hoursRemainingAfterConveritngToDays(totalHours);
+                String days = accessor.getMessage(helpTextBaseKey + "days", totalDays);
+                String hours = "";
+                if (totalDays > 0) {
+                    hours = accessor.getMessage(helpTextBaseKey + "hours.withDays", hoursRemaining);
+                } else {
+                    hours = accessor.getMessage(helpTextBaseKey + "hours", hoursRemaining);
+                }
                 widget.setHelpText(accessor.getMessage(helpTextBaseKey + widget.getType().getBeanName() + ".helpText",
-                    totalDays, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS), hoursRemaining));
+                    days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
                 break;
             default:
                 widget.setHelpText(

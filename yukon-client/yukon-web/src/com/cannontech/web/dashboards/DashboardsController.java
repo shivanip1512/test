@@ -329,7 +329,7 @@ public class DashboardsController {
             model.addAttribute("widgetCss", widgetCss);
             List<LiteDashboard> ownedDashboards = dashboardService.getOwnedDashboards(yukonUser.getUserID());
             Collections.sort(ownedDashboards);
-            widgetHelper.getWidgetHelpTextArguments(dashboard.getAllWidgets(), yukonUserContext);
+            widgetHelper.setWidgetHelpTextArguments(dashboard.getAllWidgets(), yukonUserContext);
             model.addAttribute("ownedDashboards", ownedDashboards);
             return "dashboardView.jsp";
         } else {
