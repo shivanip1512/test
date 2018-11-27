@@ -90,7 +90,7 @@ public class AssetAvailabilityController {
     @GetMapping(value = "detail")
     public String detail(ModelMap model, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
-            @DefaultSort(dir = Direction.asc, sort = "deviceName") SortingParameters sorting,
+            @DefaultSort(dir = Direction.asc, sort = "serialNumber") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Instant lastUpdateTime = new Instant();
@@ -220,7 +220,6 @@ public class AssetAvailabilityController {
             return value;
         }*/
         
-        deviceName,
         serialNumber,
         deviceType,
         lastCommunication,
