@@ -25,19 +25,21 @@ private:
     template<class T>
     void loadDeviceTcpProperties(const T& devices);
 
-    Connections::SocketAddress getDeviceSocketAddress( const long device_id ) const;
+    using TcpSocketAddress = Connections::SocketAddress;
 
-    void updateCommStatuses(std::set<Connections::SocketAddress> addresses, YukonError_t status);
-    void updateCommStatus(Connections::SocketAddress addr, YukonError_t status);
+    TcpSocketAddress getDeviceSocketAddress( const long device_id ) const;
+
+    void updateCommStatuses(std::set<TcpSocketAddress> addresses, YukonError_t status);
+    void updateCommStatus(TcpSocketAddress addr, YukonError_t status);
     void updateDeviceCommStatus(long device_id, YukonError_t status);
 
-    using address_ids = boost::bimap<boost::bimaps::multiset_of<Connections::SocketAddress>, long>;
+    using address_ids = boost::bimap<boost::bimaps::multiset_of<TcpSocketAddress>, long>;
 
     address_ids _address_devices;
 
-    std::map<Connections::SocketAddress, DnpLookup> _socketAddresses;
+    std::map<TcpSocketAddress, DnpLookup> _socketAddresses;
 
-    packet *findPacket( const Connections::SocketAddress addr, Protocols::PacketFinder &pf );
+    packet *findPacket( const TcpSocketAddress addr, Protocols::PacketFinder &pf );
 
 protected:
 

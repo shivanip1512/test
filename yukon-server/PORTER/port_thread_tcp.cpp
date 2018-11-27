@@ -129,7 +129,7 @@ void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> 
         return dev && ! dev->isInhibited();
     };
 
-    auto enabledDevices = devices | boost::adaptors::filtered(enabled);
+    auto enabledDevices = boost::copy_range<std::vector<const CtiDeviceSingle*>>(devices | boost::adaptors::filtered(enabled));
 
     // chunk collection so as not to break the reader
     unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_SELECT", 950);
@@ -175,7 +175,7 @@ void TcpPortHandler::loadDeviceTcpProperties(const T& devices)
         
     if ( ! device_ids.empty() )
     {
-        sql += " AND " + Cti::Database::createIdInClause( "pp1", "PAObjectId", size(device_ids) );
+        sql += " AND " + Cti::Database::createIdInClause( "pp1", "PAObjectId", device_ids.size() );
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
@@ -245,6 +245,7 @@ void TcpPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
 
         _address_devices.right.erase(itr);
 
+        //  If there are no other devices using this address, disconnect it.
         if( ! _address_devices.left.count(addr) )
         {
             _connectionManager.disconnect(addr);
