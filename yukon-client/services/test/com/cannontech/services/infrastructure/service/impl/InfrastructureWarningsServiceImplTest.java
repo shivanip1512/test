@@ -12,7 +12,6 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.InfrastructureEventLogService;
-import com.cannontech.common.events.service.EventLogMockServiceFactory;
 import com.cannontech.common.i18n.Displayable;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoCategory;
@@ -24,8 +23,9 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
+import com.cannontech.services.mock.EventLogMockServiceFactory;
+import com.cannontech.services.mock.StubServerDatabaseCache;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.StubServerDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
 public class InfrastructureWarningsServiceImplTest {

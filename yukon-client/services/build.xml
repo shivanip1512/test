@@ -41,6 +41,74 @@
    </target>
 
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
-   <target name="runUnitTests" description="Run all unit tests, stop on failure" />
+   <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
+       <antcall target="executeTests">
+           <param name="halt" value="no"/>
+           <param name="srcdir" value="test"/>
+           <param name="destdir" value="test/build/unit"/>
+        </antcall>
+   </target>
+    
+    <!-- Compile unit tests - will compile all unit tests -->
+        <target name="compileUnitTests">
+            <antcall target="compileTests">
+                <param name="srcdir" value="test"/>
+                <param name="destdir" value="test/build/unit" />
+            </antcall>
+        </target>
+
+    <!-- Compile the test classes for testing. This target must be supplied a srcdir and a destdir property -->
+        <target name="compileTests">
+            <delete dir="test/build/unit" />
+            <mkdir dir="test/build/unit" />
+            <javac srcdir="test"
+                   destdir="test/build/unit"
+                   target="${yukon.javac.target}"
+                   source="${yukon.javac.source}"
+                   bootclasspath="${yukon.javac.bootclasspath}"
+                   debug="${yukon.javac.debug}">
+                <classpath>
+                    <fileset dir="${yukon.lib}">
+                        <include name="**/*.jar" />
+                    </fileset>
+                </classpath>
+            </javac>
+        </target>
+
+    <!-- Run tests. This target must be supplied a halt and destdir property -->
+        <target name="executeTests">
+
+            <property name="test.results.dir" value="test/testResults"/>
+            <!-- Clear out any old results -->
+                    <delete dir="${test.results.dir}" />
+                    <mkdir dir="${test.results.dir}" />
+
+            <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+            <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}">
+                <classpath id="junit.class.path">
+                    <pathelement location="${srcdir}"/>
+                    <pathelement location="${destdir}"/>
+                    <fileset dir="${yukon.lib}">
+                        <include name="**/*.jar" />
+                        <exclude name="**/WebContent/**" />
+                    </fileset>
+                </classpath>
+                <formatter type="xml" />
+                <batchtest fork="yes" todir="${test.results.dir}">
+                    <fileset dir="${destdir}">
+                        <include name="**/*Test.class" />
+                    </fileset>
+                </batchtest>
+            </junit>
+
+            <!-- Create the html reports for test results -->
+            <property name="test.results.dir" value="test/unitTestResults" />
+            <junitreport todir="${test.results.dir}">
+                <fileset dir="${test.results.dir}">
+                    <include name="TEST-*.xml" />
+                </fileset>
+                <report todir="${test.results.dir}" />
+            </junitreport>
+        </target>
 
 </project>
