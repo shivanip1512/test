@@ -258,7 +258,7 @@
 
                     <c:set var="isStatusEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
                     <c:set var="cssClass" value="disabled"/>
-                    <c:if test="isStatusEnabled">
+                    <c:if test="${isStatusEnabled}">
                         <c:set var="cssClass" value=""/>
                     </c:if>
 
@@ -384,7 +384,7 @@
 
                     <c:set var="isValidationEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
                     <c:set var="cssClass" value="disabled"/>
-                    <c:if test="${monitor.evaluatorStatus eq 'ENABLED'}">
+                    <c:if test="${isValidationEnabled}">
                         <c:set var="cssClass" value=""/>
                     </c:if>
 
