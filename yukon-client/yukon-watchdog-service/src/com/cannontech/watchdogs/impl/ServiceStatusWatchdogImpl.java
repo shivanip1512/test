@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.watchdog.base.WatchdogBase;
 import com.cannontech.watchdog.base.YukonServices;
@@ -33,20 +35,30 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     public static final String SERVICE_STATUS = "Status";
 
     private List<YukonServices> runningServices = new ArrayList<>();
+    private List<YukonServices> optionalServices = new ArrayList<>();
 
     Multiset<YukonServices> stoppingServicesCount = HashMultiset.create();
 
     private List<YukonServices> serviceNotificationSent = Collections.synchronizedList(new ArrayList<YukonServices>());
 
-    private static final List<YukonServices> optionalServices = Arrays.asList(
-        YukonServices.MACS,
-        YukonServices.REALTIMESCANNER,
-        YukonServices.FDR,
-        YukonServices.CALCLOGIC
-        );
-
     public abstract YukonServices getServiceName();
 
+    @Autowired
+    public ServiceStatusWatchdogImpl(ConfigurationSource configSource) {
+        Collections.addAll(optionalServices,
+                           YukonServices.MACS,
+                           YukonServices.REALTIMESCANNER,
+                           YukonServices.FDR,
+                           YukonServices.CALCLOGIC
+                           );
+             
+        // When DEVELOPMENT_MODE is on, we mark NM as optional. This is being done to help with our VMs that have
+        // NM devices but do not have the simulator or a real NM.
+        if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
+            optionalServices.add(YukonServices.NETWORKMANAGER);
+        }
+    }
+    
     @Override
     public Watchdogs getName() {
         return Watchdogs.SERVICE_STATUS;
@@ -72,6 +84,7 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     public void start() {
         executor.scheduleAtFixedRate(this::doWatchAction, 1, 5, TimeUnit.MINUTES);
     }
+    
 
     /**
      * This will generate WatchdogWarnings , containing WatchdogWarningType and {key , value} pair of arguments . 

@@ -26,6 +26,10 @@ import com.cannontech.watchdog.service.WatchdogWatcherService;
 
 @Service
 public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
+    public NetworkManagerWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
+
     private static final Logger log = YukonLogManager.getLogger(NetworkManagerWatcher.class);
 
     @Autowired private ConnectionFactory connectionFactory;

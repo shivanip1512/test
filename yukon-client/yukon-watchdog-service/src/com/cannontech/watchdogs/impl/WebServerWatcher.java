@@ -27,6 +27,10 @@ import com.cannontech.watchdog.model.WatchdogWarnings;
 
 @Service
 public class WebServerWatcher extends ServiceStatusWatchdogImpl {
+    public WebServerWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
+
     private static final Logger log = YukonLogManager.getLogger(WebServerWatcher.class);
 
     @Autowired private WebserverUrlResolver webserverUrlResolver;

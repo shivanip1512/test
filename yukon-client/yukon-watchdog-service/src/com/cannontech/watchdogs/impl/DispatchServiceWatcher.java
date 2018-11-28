@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.util.ConnectionFactoryService;
@@ -29,6 +30,10 @@ import com.cannontech.watchdogs.util.WatchdogDispatchClientConnection;
 
 @Service
 public class DispatchServiceWatcher extends ServiceStatusWatchdogImpl implements WatchdogMessageListener {
+
+    public DispatchServiceWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
 
     private static final Logger log = YukonLogManager.getLogger(DispatchServiceWatcher.class);
 

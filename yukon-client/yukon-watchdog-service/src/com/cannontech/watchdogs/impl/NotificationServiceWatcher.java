@@ -6,12 +6,17 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 
 @Service
 public class NotificationServiceWatcher extends ServiceStatusWatchdogImpl {
+    public NotificationServiceWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
+
     private static final Logger log = YukonLogManager.getLogger(NotificationServiceWatcher.class);
 
     @Override

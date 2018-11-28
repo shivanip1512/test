@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.macs.message.RetrieveSchedule;
 import com.cannontech.message.util.Message;
@@ -26,6 +27,10 @@ import com.cannontech.watchdogs.util.WatchdogMACSConnection;
 
 @Service
 public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements WatchdogMessageListener {
+    public MACSServiceWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
+
     private static final Logger log = YukonLogManager.getLogger(MACSServiceWatcher.class);
 
     @Autowired private ConnectionFactoryService connectionFactorySvc;

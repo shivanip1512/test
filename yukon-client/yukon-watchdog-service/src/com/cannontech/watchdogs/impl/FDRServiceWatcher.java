@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -32,6 +33,10 @@ import com.google.common.collect.ImmutableSet;
 
 @Service
 public class FDRServiceWatcher extends ServiceStatusWatchdogImpl implements PointDataListener {
+
+    public FDRServiceWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
 
     private static final Logger log = YukonLogManager.getLogger(FDRServiceWatcher.class);
 

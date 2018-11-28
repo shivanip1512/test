@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.util.ConnectionFactoryService;
@@ -28,6 +29,10 @@ import com.cannontech.watchdogs.util.WatchdogPorterClientConnection;
 
 @Service
 public class PorterServiceWatcher extends ServiceStatusWatchdogImpl implements WatchdogMessageListener {
+
+    public PorterServiceWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
 
     private static final Logger log = YukonLogManager.getLogger(PorterServiceWatcher.class);
     @Autowired private ConnectionFactoryService connectionFactorySvc;

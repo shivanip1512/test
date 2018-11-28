@@ -24,6 +24,10 @@ import com.cannontech.watchdog.model.WatchdogWarnings;
 
 @Service
 public class YukonMessageBrokerWatcher extends ServiceStatusWatchdogImpl {
+    public YukonMessageBrokerWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
+
     private static final Logger log = YukonLogManager.getLogger(YukonMessageBrokerWatcher.class);
 
     @Autowired private GlobalSettingDao globalSettingDao;

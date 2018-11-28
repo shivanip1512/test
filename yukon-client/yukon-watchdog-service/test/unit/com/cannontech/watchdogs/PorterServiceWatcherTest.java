@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MockConfigurationSource;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdogs.impl.PorterServiceWatcher;
 import com.cannontech.watchdogs.impl.ServiceStatusWatchdogImpl.ServiceStatus;
@@ -13,9 +15,16 @@ import com.cannontech.watchdogs.impl.ServiceStatusWatchdogImpl.ServiceStatus;
 public class PorterServiceWatcherTest {
     private PorterServiceWatcher watcher;
 
+    class WatcherMockConfigurationSource extends MockConfigurationSource {
+        @Override
+        public boolean getBoolean(MasterConfigBoolean developmentMode) {
+            return false;
+        }
+    }
+    
     @Before
     public void setUp() throws NoSuchMethodException, SecurityException {
-        watcher = new PorterServiceWatcher();
+        watcher = new PorterServiceWatcher(new WatcherMockConfigurationSource());
     }
 
     @Test

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.util.Message;
@@ -29,6 +30,10 @@ import com.cannontech.watchdogs.util.WatchdogCapControlClientConnection;
 
 @Service
 public class CapControlServiceWatcher extends ServiceStatusWatchdogImpl implements WatchdogMessageListener {
+
+    public CapControlServiceWatcher(ConfigurationSource configSource) {
+        super(configSource);
+    }
 
     private static final Logger log = YukonLogManager.getLogger(CapControlServiceWatcher.class);
 
