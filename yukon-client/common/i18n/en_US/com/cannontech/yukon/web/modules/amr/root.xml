@@ -313,6 +313,6 @@
     
     <entry key="yukon.web.modules.amr.invalidGroupName">Device Group selection required.</entry>
 
-    <!-- allMonitorsWidget\render.jsp -->
+    <!-- allMonitorsWidget/render.jsp -->
     <entry key="yukon.web.modules.amr.mapViolations">Map Violations</entry>
 </properties>
