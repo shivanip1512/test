@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.web.common.dashboard.widget.validator.ControlAreaOrProgramOrScenarioPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
@@ -37,7 +38,8 @@ public enum WidgetType implements DisplayableEnum {
     SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI, "scheduledGroupRequestExecutionWidget", "image-scheduled-requests"),
     GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming", MasterConfigBoolean.RF_DATA_STREAMING_ENABLED.name()),
     DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-data-collection"),
-    ASSET_AVAILABILITY(DashboardScope.GENERAL, WidgetCategory.DR, "assetAvailabilityWidget", "image-asset-availability");
+    ASSET_AVAILABILITY(DashboardScope.GENERAL, WidgetCategory.DR, "assetAvailabilityWidget", "image-asset-availability"),
+    RF_BROADCAST(DashboardScope.GENERAL, WidgetCategory.DR, "rfBroadcastWidget", "image-rf-broadcast", YukonRole.DEMAND_RESPONSE.name());
     
     /*
     //Meter Detail

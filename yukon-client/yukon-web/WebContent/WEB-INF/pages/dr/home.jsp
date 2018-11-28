@@ -73,7 +73,7 @@
         </tags:sectionContainer2>
         
         <c:if test="${showRfPerformance}">
-            <tags:sectionContainer2 nameKey="rfPerformance">
+            <tags:sectionContainer2 nameKey="rfPerformance,yukon.web.widgets.rfBroadcastWidget">
                 <div class="stacked">
                     <tags:nameValueContainer2 naturalWidth="false">
                         <tr>

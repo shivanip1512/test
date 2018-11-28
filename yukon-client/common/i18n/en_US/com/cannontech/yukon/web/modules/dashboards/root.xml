@@ -76,6 +76,8 @@
     <entry key="yukon.web.modules.dashboard.widgetType.ASSET_AVAILABILITY.description">
         Provides operational information for two-way Demand Response devices.
     </entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.RF_BROADCAST.name">RF Broadcast Performance</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.RF_BROADCAST.description">Displays RF Broadcast Performance summary for recent events.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.name">Favorites</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.description">Displays links to any pages that you mark as your favorite.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.name">Monitor Subscriptions</entry>

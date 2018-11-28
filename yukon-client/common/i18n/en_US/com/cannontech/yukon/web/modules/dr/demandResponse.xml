@@ -690,19 +690,6 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.rf.details.unreported.popup.title">Unreported Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.success.popup.title">Confirmed Success Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.rfPerformanceResult">RF Broadcast Performance Result</entry>
-<entry key="yukon.web.modules.dr.home.rfPerformance.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
-<br>
-The devices in this category have confirmed receiving the unique RF Broadcast Performance message for the selected day.
-<br><br>
-<span style="background-color:orange; color:white ;font-weight:bold">Confirmed Missed</span>
-<br>
-The devices in this category have reported all other data accumulated during the expected RF Broadcast Performance time interval and have not confirmed receiving the selected day's unique message.
-<br><br>
-<span style="background-color:gray; color:white ;font-weight:bold">Unreported</span>
-<br>
-The devices in this category have not reported data accumulated during the expected RF Broadcast Performance time interval for the selected day.
-]]></entry>
-
 <!-- Recent Event Participation -->
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.title">Recent Event Participation</entry>
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>

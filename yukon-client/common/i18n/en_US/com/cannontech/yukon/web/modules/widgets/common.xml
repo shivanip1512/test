@@ -235,4 +235,19 @@ The communication channels are selected when the widget is created and are used 
 <entry key="yukon.web.widgets.days">{0,choice,0# | 1# {0} day | 1 &lt; {0} days}</entry>
 <entry key="yukon.web.widgets.hours">{0,choice,0# | 1# {0} hour | 1 &lt; {0} hours}</entry>
 <entry key="yukon.web.widgets.hours.withDays">{0,choice,0# | 1# and {0} hour | 1 &lt; and {0} hours}</entry>
+<entry key="yukon.web.widgets.rfBroadcastWidget">RF Broadcast Performance</entry>
+<entry key="yukon.web.widgets.rfBroadcastWidget.lastRun">Last Run</entry>
+<entry key="yukon.web.widgets.rfBroadcastWidget.viewDetails">View Details</entry>
+<entry key="yukon.web.widgets.rfBroadcastWidget.helpText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
+<br>
+The devices in this category have confirmed receiving the unique RF Broadcast Performance message for the selected day.
+<br><br>
+<span style="background-color:orange; color:white ;font-weight:bold">Confirmed Missed</span>
+<br>
+The devices in this category have reported all available data for the selected day and the analysis has determined the unique BPR message was not received by the device.
+<br><br>
+<span style="background-color:gray; color:white ;font-weight:bold">Unreported</span>
+<br>
+The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique BPR receipt for the device. When the data is received, the device will re-categorized appropriately.
+]]></entry>
 </properties>
