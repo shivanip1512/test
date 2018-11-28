@@ -105,6 +105,7 @@
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.alreadyExists.name">Name already exists</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.uniqueOrder">Order values must be unique</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.errorCodesFormat">Error field must be either blank or populated with non-negative, unique, comma separated integers</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.monitorNotFound">Porter Response Monitor Does Not Exist.</entry>
 
 	<!-- FlashScope messages -->
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.created">Porter Response Monitor Created</entry>

@@ -17,6 +17,8 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -39,6 +41,7 @@ import com.google.common.base.Joiner;
 public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
 
     @Autowired protected MonitorCacheService monitorCacheService;
+    @Autowired private DeviceGroupService deviceGroupService;
 
     public AllMonitorsWidget() {
     }
@@ -86,6 +89,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("outageMonitors", outageMonitors);
         
         tamperFlagMonitors.sort(Comparator.comparing(TamperFlagMonitor::getName));
+        model.addAttribute("tamperFlagGroupBase", deviceGroupService.getFullPath(SystemGroupEnum.TAMPER_FLAG));
         model.addAttribute("tamperFlagMonitors", tamperFlagMonitors);
         
         statusPointMonitors.sort(Comparator.comparing(StatusPointMonitor::getName));

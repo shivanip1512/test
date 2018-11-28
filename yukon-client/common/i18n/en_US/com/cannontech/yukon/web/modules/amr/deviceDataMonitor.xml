@@ -145,6 +145,7 @@
     <!-- validation errors -->
     <entry key="yukon.web.modules.amr.deviceDataMonitor.empty.name">Name cannot be empty.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.alreadyExists.name">Name already exists.</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.monitorNotFound">Device Data Monitor Does Not Exist.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.unableToUpdate.yukonServiceManager">Unable to update. Yukon Service Manager is down or we are not configured properly to talk to it.</entry>
     
     <!-- FlashScope messages -->

@@ -108,4 +108,6 @@
     <entry key="yukon.web.modules.amr.statusPointMonitor.updated">Status Point Monitor Updated: {0}</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.deleted">Status Point Monitor Deleted: {0}</entry>
 
+    <entry key="yukon.web.modules.amr.statusPointMonitor.monitorNotFound">Status Point Monitor Does Not Exist.</entry>
+
 </properties>

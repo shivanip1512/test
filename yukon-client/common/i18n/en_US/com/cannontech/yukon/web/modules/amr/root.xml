@@ -312,4 +312,7 @@
     <entry key="yukon.web.modules.amr.noPriorities">No Priorities</entry>
     
     <entry key="yukon.web.modules.amr.invalidGroupName">Device Group selection required.</entry>
+
+    <!-- allMonitorsWidget\render.jsp -->
+    <entry key="yukon.web.modules.amr.mapViolations">Map Violations</entry>
 </properties>
