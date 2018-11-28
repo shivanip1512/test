@@ -10,6 +10,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import static com.cannontech.web.search.lucene.index.MonitorTypePrefixEnum.*;
 
 public class MonitorIndexManager extends SimpleIndexManager {
     
@@ -63,22 +64,22 @@ public class MonitorIndexManager extends SimpleIndexManager {
         String concatId = "";
         switch (type) {
         case "Device Data":
-            concatId = "1".concat(Integer.toString(id));
+            concatId = DEVICE_DATA_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
         case "Outage":
-            concatId = "2".concat(Integer.toString(id));
+            concatId = OUTAGE_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
         case "Tamper Flag":
-            concatId = "3".concat(Integer.toString(id));
+            concatId = TAMPER_FLAG_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
         case "Status Point":
-            concatId = "4".concat(Integer.toString(id));
+            concatId = STATUS_POINT_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
         case "Porter Response":
-            concatId = "5".concat(Integer.toString(id));
+            concatId = PORTER_RESPONSE_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
         case "Validation":
-            concatId = "6".concat(Integer.toString(id));
+            concatId = VALIDATION_MONITOR.getPrefix().concat(Integer.toString(id));
             break;
         default:
             //Non-monitor subscription

@@ -9,6 +9,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.WidgetInputType;
+import com.cannontech.web.search.lucene.index.MonitorTypePrefixEnum;
 
 public class MonitorPickerValidator implements WidgetInputValidator {
 
@@ -45,25 +46,25 @@ public class MonitorPickerValidator implements WidgetInputValidator {
             return false;
         }
         PointMonitor pointMonitor = null;
-        int prefix = Integer.parseInt(monitorId.substring(0, 1));
+        MonitorTypePrefixEnum monitor = MonitorTypePrefixEnum.fromName(monitorId.substring(0, 1));
         int id = Integer.parseInt(monitorId.substring(1));
-        switch (prefix) {
-        case 1: // Device data Monitor
+        switch (monitor) {
+        case DEVICE_DATA_MONITOR:
             pointMonitor = monitorCacheService.getDeviceMonitor(id);
             break;
-        case 2: // Outage Monitor
+        case OUTAGE_MONITOR:
             pointMonitor = monitorCacheService.getOutageMonitor(id);
             break;
-        case 3: // Tamper Flat Monitor
+        case TAMPER_FLAG_MONITOR:
             pointMonitor = monitorCacheService.getTamperFlagMonitor(id);
             break;
-        case 4: // Status Point Monitor
+        case STATUS_POINT_MONITOR:
             pointMonitor = monitorCacheService.getStatusPointMonitor(id);
             break;
-        case 5: // Porter Response Monitor
+        case PORTER_RESPONSE_MONITOR:
             pointMonitor = monitorCacheService.getPorterResponseMonitor(id);
             break;
-        case 6: // Validation Monitor
+        case VALIDATION_MONITOR:
             pointMonitor = monitorCacheService.getValidationMonitor(id);
             break;
         }
