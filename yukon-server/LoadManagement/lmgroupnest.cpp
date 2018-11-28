@@ -45,7 +45,7 @@ bool LMGroupNest::sendCycleControl( long controlDurationSeconds )
         OutboundQueue::NestCyclingControl, 
         std::make_unique<LMNestCyclingControlMessage>( 
             getPAOId(), 
-            static_cast<int>( utcNow.seconds() ),
+            utcNow.seconds(),
             controlDurationSeconds ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -72,7 +72,7 @@ bool LMGroupNest::sendStopControl( bool stopImmediately )
         OutboundQueue::NestRestore,
         std::make_unique<LMNestRestoreMessage>(
             getPAOId(),
-            static_cast<int>( utcNow.seconds() ) ) );
+            utcNow.seconds() ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -98,7 +98,7 @@ bool LMGroupNest::sendShedControl( long controlMinutes )
         OutboundQueue::NestRestore,
         std::make_unique<LMNestRestoreMessage>(
             getPAOId(),
-            static_cast<int>( utcNow.seconds() ) ) );
+            utcNow.seconds() ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

@@ -10,9 +10,9 @@ namespace Cti            {
 namespace Messaging      {
 namespace LoadManagement {
 
-LMNestCyclingControlMessage::LMNestCyclingControlMessage( int groupId,
-                                                          int startTime,
-                                                          int controlDuration )
+LMNestCyclingControlMessage::LMNestCyclingControlMessage( int       groupId,
+                                                          long long startTime,
+                                                          int       controlDuration )
     :   _groupId( groupId ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration )
@@ -23,14 +23,14 @@ LMNestCyclingControlMessage::LMNestCyclingControlMessage( int groupId,
 void LMNestCyclingControlMessage::streamInto( cms::StreamMessage & message ) const
 {
     message.writeInt( _groupId );
-    message.writeInt( _startTime );
-    message.writeInt( _stopTime );
+    message.writeLong( _startTime );
+    message.writeLong( _stopTime );
 }
 
 ///
 
-LMNestRestoreMessage::LMNestRestoreMessage( int groupId,
-                                            int restoreTime )
+LMNestRestoreMessage::LMNestRestoreMessage( int       groupId,
+                                            long long restoreTime )
     :   _groupId( groupId ),
         _restoreTime( restoreTime )
 {
@@ -40,7 +40,7 @@ LMNestRestoreMessage::LMNestRestoreMessage( int groupId,
 void LMNestRestoreMessage::streamInto( cms::StreamMessage & message ) const
 {
     message.writeInt( _groupId );
-    message.writeInt( _restoreTime );
+    message.writeLong( _restoreTime );
 }
 
 }
