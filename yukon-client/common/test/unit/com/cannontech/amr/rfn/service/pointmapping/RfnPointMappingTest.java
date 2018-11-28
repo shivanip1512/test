@@ -19,7 +19,7 @@ public class RfnPointMappingTest {
     private final static String mapping = "com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml";
 
     @Test
-    public void initialize() throws IOException, JDOMException {
+    public void detectDuplicateMappings() throws IOException, JDOMException {
         ClassPathResource rfnPointMappingXml = new ClassPathResource(mapping);
         SAXBuilder saxBuilder = new SAXBuilder();
         Document configDoc = saxBuilder.build(rfnPointMappingXml.getInputStream());

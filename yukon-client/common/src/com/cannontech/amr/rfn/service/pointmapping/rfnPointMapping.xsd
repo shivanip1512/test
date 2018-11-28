@@ -88,12 +88,12 @@
 
     <xs:complexType name="Point">
         <xs:sequence>
-            <xs:element name="uom" type="Uom" minOccurs="0" maxOccurs="1" />
-            <xs:element name="multiplier" minOccurs="0" maxOccurs="1" type="Multiplier" />
-            <xs:element name="parseSiPrefix" minOccurs="0" maxOccurs="1" />
+            <xs:element name="uom" type="Uom" minOccurs="0" />
+            <xs:element name="multiplier" minOccurs="0" type="Multiplier" />
+            <xs:element name="parseSiPrefix" minOccurs="0" />
             <xs:element name="modifiers" type="ModifiersMatcher" />
-            <xs:sequence minOccurs="0" maxOccurs="1">
-                <xs:element name="baseUom" type="Uom" minOccurs="0"  maxOccurs="1" />
+            <xs:sequence minOccurs="0">
+                <xs:element name="baseUom" type="Uom" minOccurs="0" />
                 <xs:element name="baseModifiers" type="ModifiersMatcher" />
             </xs:sequence>
         </xs:sequence>
@@ -106,10 +106,10 @@
 
     <xs:complexType name="PointGroup">
         <xs:sequence>
-            <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:choice maxOccurs="unbounded">
                 <xs:element name="paoType" type="PaoType" />
             </xs:choice>
-            <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:choice maxOccurs="unbounded">
                 <xs:element name="point" type="Point" />
             </xs:choice>
         </xs:sequence>
