@@ -22,7 +22,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.nest.dao.NestDao;
-import com.cannontech.dr.nest.model.NestControlHistory;
+import com.cannontech.dr.nest.model.NestControlEvent;
 import com.cannontech.dr.nest.model.NestSync;
 import com.cannontech.dr.nest.model.NestSyncDetail;
 import com.cannontech.dr.nest.model.NestSyncI18nKey;
@@ -180,43 +180,62 @@ public class NestDaoImpl implements NestDao {
     }
     
     @Override
-    public void createControlHistory(NestControlHistory history) {
-        //http://loutcsjira01.napa.ad.etn.com:8080/browse/YUK-18897
-            
-        /*CREATE TABLE LMNestControlHistory (
+    public void saveControlEvent(NestControlEvent event) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT NestControlEventId");
+        sql.append("FROM LMNestControlEvent");
+        sql.append("WHERE NestControlEventId").eq(event.getId());
 
-                NestHistoryId               NUMERIC             NOT NULL,
-                NestGroup        VARCHAR(20)             NOT NULL,
-                NestKey          VARCHAR(20)        NOT NULL,
-                StartTime      datetime         NULL,
-                StopTime      datetime         NULL,
-                CancelRequestTime      datetime         NULL,
-                CancelResponse     VARCHAR(200)     NULL
-
-            );*/
+        SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
+        try {
+            jdbcTemplate.queryForInt(sql);
+            SqlParameterSink params = updateCreateSql.update("LMNestControlEvent");
+            params.addValue("CancelRequestTime", event.getCancelRequestTime());
+            params.addValue("CancelResponse", event.getCancelResponse());
+            updateCreateSql.append("WHERE NestControlEventId").eq(event.getId());
+        } catch (EmptyResultDataAccessException e) {
+            SqlParameterSink params = updateCreateSql.insertInto("LMNestControlEvent");
+            event.setId(nextValueHelper.getNextValue("LMNestControlEvent"));
+            params.addValue("NestControlEventId", event.getId());
+            params.addValue("NestGroup", event.getGroup());
+            params.addValue("NestKey", event.getKey());
+            params.addValue("StartTime", event.getStartTime());
+            params.addValue("StopTime", event.getStopTime());
+            params.addValue("CancelOrStop", event.getCancelOrStop());
+        }
+        jdbcTemplate.update(updateCreateSql);
     }
     
     @Override
-    public void updateCancelRequestTime(int id) {
-       // CancelRequestTime = now
+    public NestControlEvent getCancelableEvent(String group) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT NestControlEventId, NestGroup, NestKey, StartTime, StopTime, CancelOrStop, CancelResponse, CancelRequestTime");
+        sql.append("FROM LMNestControlEvent");
+        sql.append("WHERE NestGroup").eq(group);
+        //still scheduled or running
+        sql.append("AND StopTime").gt(Instant.now());
+        //was not canceled
+        sql.append("AND CancelOrStop IS NULL");
+        sql.append("AND StartTime = (SELECT MAX(StartTime) FROM LMNestControlEvent");
+        sql.append("        WHERE NestGroup").eq(group);
+        sql.append("        AND StopTime").gt(Instant.now());
+        sql.append("        AND CancelOrStop IS NULL)");
+        return jdbcTemplate.queryForObject(sql, controlEventRowMapper);
     }
     
-    @Override
-    public void updateNestResponse(int id, String response) {
-       // CancelResponse = response
-    }
-    
-    @Override
-    public NestControlHistory getRecentHistoryForGroup(String group) {
-       /*
-        * Select group with the most recent start time
-        * Where 
-        * Nest Group = group
-        * 
-        * StopTime > now (is still running)
-        * CancelRequestTime != null (was not canceled)
-        * 
-        */
-        return null;
-    }
+    private YukonRowMapper<NestControlEvent> controlEventRowMapper = new YukonRowMapper<NestControlEvent>() {
+        @Override
+        public NestControlEvent mapRow(YukonResultSet rs) throws SQLException {
+            NestControlEvent row = new NestControlEvent();
+            row.setId(rs.getInt("NestControlEventId"));
+            row.setGroup(rs.getString("NestGroup"));
+            row.setCancelOrStop(rs.getString("CancelOrStop"));
+            row.setCancelRequestTime(rs.getInstant("CancelRequestTime"));
+            row.setStartTime(rs.getInstant("StartTime"));
+            row.setStopTime(rs.getInstant("StopTime"));
+            row.setKey(rs.getString("NestKey"));
+            row.setCancelResponse(rs.getString("CancelOrStop"));
+            return row;
+        }
+    };
 }
