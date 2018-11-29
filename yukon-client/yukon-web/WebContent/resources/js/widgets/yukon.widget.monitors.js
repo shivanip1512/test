@@ -38,7 +38,7 @@ yukon.widget.monitors = (function () {
     _greyOutColumn = function (monitorRow, columnClass, isEnabled) {
         var column = monitorRow.find(columnClass);
         if (column.exists()) {
-            column.toggleClass("disabled", !isEnabled);
+            column.toggleClass("very-disabled-look", !isEnabled);
         }
     },
 

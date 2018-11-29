@@ -42,7 +42,7 @@ public class AllMonitorsController {
 
     @CheckRoleProperty(YukonRoleProperty.DEVICE_DATA_MONITORING)
     @RequestMapping(value = "/device-data-monitor/{monitorId}/toggle", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> toggleDeviceData(HttpServletResponse resp, @PathVariable int monitorId, YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> toggleDeviceData(@PathVariable int monitorId, YukonUserContext yukonUserContext) {
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
         try {
@@ -58,7 +58,7 @@ public class AllMonitorsController {
 
     @CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
     @RequestMapping(value = "/outage-monitor/{outageMonitorId}/toggle", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> toggleOutage(HttpServletResponse resp, @PathVariable int outageMonitorId, YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> toggleOutage(@PathVariable int outageMonitorId, YukonUserContext yukonUserContext) {
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
         try {
@@ -73,7 +73,7 @@ public class AllMonitorsController {
 
     @CheckRoleProperty(YukonRoleProperty.STATUS_POINT_MONITORING)
     @RequestMapping(value = "/status-point-monitor/{statusPointMonitorId}/toggle", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> toggleStatusPoint(HttpServletResponse resp, @PathVariable int statusPointMonitorId, YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> toggleStatusPoint(@PathVariable int statusPointMonitorId, YukonUserContext yukonUserContext) {
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
         try {
@@ -88,7 +88,7 @@ public class AllMonitorsController {
 
     @CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
     @RequestMapping(value = "/tamper-flag-monitor/{tamperFlagMonitorId}/toggle", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> toggleTamperFlag(HttpServletResponse resp, @PathVariable int tamperFlagMonitorId, YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> toggleTamperFlag(@PathVariable int tamperFlagMonitorId, YukonUserContext yukonUserContext) {
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
         try {
@@ -103,7 +103,7 @@ public class AllMonitorsController {
 
     @CheckRoleProperty(YukonRoleProperty.PORTER_RESPONSE_MONITORING)
     @RequestMapping(value = "/porter-response-monitor/{monitorId}/toggle", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> togglePorterResponse(HttpServletResponse resp, @PathVariable int monitorId, YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> togglePorterResponse(@PathVariable int monitorId, YukonUserContext yukonUserContext) {
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
         try {
@@ -117,7 +117,7 @@ public class AllMonitorsController {
     }
     @CheckRoleProperty(YukonRoleProperty.VALIDATION_ENGINE)
     @RequestMapping(value = "/validation-monitor/{validationMonitorId}/toggle", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> toggleValidation(HttpServletResponse resp, @PathVariable int validationMonitorId, YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> toggleValidation(@PathVariable int validationMonitorId, YukonUserContext yukonUserContext) {
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
         try {

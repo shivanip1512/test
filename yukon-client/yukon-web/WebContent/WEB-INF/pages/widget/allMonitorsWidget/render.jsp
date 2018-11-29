@@ -44,10 +44,7 @@
                         <a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitor.name)}"/>">${fn:escapeXml(monitor.name)}</a>
                     </td>
 
-                    <c:set var="cssClass" value="disabled"/>
-                    <c:if test="${monitor.enabled}">
-                        <c:set var="cssClass" value=""/>
-                    </c:if>
+                    <c:set var="cssClass" value="${monitor.enabled ? '' : 'very-disabled-look'}"/>
 
                     <%-- violations count --%>
                     <td class="tar">
@@ -114,10 +111,7 @@
                     </td>
 
                     <c:set var="isOutageEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
-                    <c:set var="cssClass" value="disabled"/>
-                    <c:if test="${isOutageEnabled}">
-                        <c:set var="cssClass" value=""/>
-                    </c:if>
+                    <c:set var="cssClass" value="${isOutageEnabled ? '' : 'very-disabled-look'}"/>
 
                     <%-- violations count --%>
                     <td id="violations_${monitorId}" class="tar">
@@ -187,10 +181,7 @@
                     </td>
 
                     <c:set var="isTamperEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
-                    <c:set var="cssClass" value="disabled"/>
-                    <c:if test="${isTamperEnabled}">
-                        <c:set var="cssClass" value=""/>
-                    </c:if>
+                    <c:set var="cssClass" value="${isTamperEnabled ? '' : 'very-disabled-look'}"/>
 
                     <%-- violations count --%>
                     <td class="tar">
@@ -257,10 +248,7 @@
                 </td>
 
                     <c:set var="isStatusEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
-                    <c:set var="cssClass" value="disabled"/>
-                    <c:if test="${isStatusEnabled}">
-                        <c:set var="cssClass" value=""/>
-                    </c:if>
+                    <c:set var="cssClass" value="${isStatusEnabled ? '' : 'very-disabled-look'}"/>
 
                 <%-- monitoring count --%>
                 <td class="tar">
@@ -321,10 +309,7 @@
                 </td>
 
                 <c:set var="isPorterEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
-                <c:set var="cssClass" value="disabled"/>
-                <c:if test="${isPorterEnabled}">
-                    <c:set var="cssClass" value=""/>
-                </c:if>
+                <c:set var="cssClass" value="${isPorterEnabled ? '' : 'very-disabled-look'}"/>
 
                 <%-- cog-menu --%>
                 <td>
@@ -383,10 +368,7 @@
                 </td>
 
                     <c:set var="isValidationEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
-                    <c:set var="cssClass" value="disabled"/>
-                    <c:if test="${isValidationEnabled}">
-                        <c:set var="cssClass" value=""/>
-                    </c:if>
+                    <c:set var="cssClass" value="${isValidationEnabled? '' : 'very-disabled-look'}"/>
 
                 <%-- threshold --%>
                 <td class="tar js-threshold ${cssClass}">
