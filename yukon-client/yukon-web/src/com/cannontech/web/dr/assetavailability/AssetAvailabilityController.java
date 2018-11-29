@@ -96,7 +96,7 @@ public class AssetAvailabilityController {
     public String detail(ModelMap model, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging) throws Exception {
+            @DefaultItemsPerPage(value = 250) PagingParameters paging) {
         Instant lastUpdateTime = new Instant();
         AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(
             controlAreaOrProgramOrScenarioId, lastUpdateTime);
@@ -105,7 +105,8 @@ public class AssetAvailabilityController {
         model.addAttribute("statusTypes", AssetAvailabilityCombinedStatus.values());
         model.addAttribute("paoName", cache.getAllPaosMap().get(controlAreaOrProgramOrScenarioId).getPaoName());
         model.addAttribute("controlAreaOrProgramOrScenarioId", controlAreaOrProgramOrScenarioId);
-        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups, statuses);
+        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups,
+            statuses);
         return "dr/assetAvailability/detail.jsp";
     }
     
@@ -113,8 +114,9 @@ public class AssetAvailabilityController {
     public String filterResults(ModelMap model, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging) throws Exception {
-        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups, statuses);
+            @DefaultItemsPerPage(value = 250) PagingParameters paging) {
+        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups,
+            statuses);
         return "dr/assetAvailability/filteredResults.jsp";
     }
     
@@ -122,8 +124,9 @@ public class AssetAvailabilityController {
     public String filterResultsTable(ModelMap model, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging) throws Exception {
-        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups, statuses);
+            @DefaultItemsPerPage(value = 250) PagingParameters paging) {
+        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups,
+            statuses);
         return "dr/assetAvailability/filteredResultsTable.jsp";
     }
     
