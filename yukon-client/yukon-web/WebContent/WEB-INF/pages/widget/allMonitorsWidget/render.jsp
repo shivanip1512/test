@@ -64,6 +64,7 @@
                                 <cti:param name="group.name" value="${monitor.groupName}"/>
                                 <cti:param name="monitorType" value="Device Data"/>
                                 <cti:param name="monitorId" value="${monitor.id}"/>
+                                <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" 
                                                href="${mapUrl}" newTab="true"/>
@@ -130,6 +131,7 @@
                                 <cti:param name="group.name" value="${monitor.groupName}"/>
                                 <cti:param name="monitorType" value="Outage"/>
                                 <cti:param name="monitorId" value="${monitorId}"/>
+                                <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isOutageEnabled)? 'dn': ''}" 
@@ -199,6 +201,7 @@
                             <cti:url var="mapUrl" value="/tools/map/dynamic">
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${tamperFlagGroupBase}${monitor.name}"/>
+                                <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
                             <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isTamperEnabled)? 'dn': ''}" 
