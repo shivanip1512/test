@@ -188,9 +188,6 @@
     <ClCompile Include="NestStandardCycleGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NestLoadShapingOptions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h">
@@ -386,9 +383,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\NestStandardCycleGear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\NestLoadShapingOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
