@@ -95,16 +95,42 @@ public class AssetAvailabilityController {
     @GetMapping(value = "detail")
     public String detail(ModelMap model, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
-            @DefaultSort(dir = Direction.asc, sort = "serialNumber") SortingParameters sorting,
+            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging) throws Exception {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Instant lastUpdateTime = new Instant();
         AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(
             controlAreaOrProgramOrScenarioId, lastUpdateTime);
         model.addAttribute("summary", summary);
+        model.addAttribute("totalDevices", summary.getTotalDeviceCount());
         model.addAttribute("statusTypes", AssetAvailabilityCombinedStatus.values());
         model.addAttribute("paoName", cache.getAllPaosMap().get(controlAreaOrProgramOrScenarioId).getPaoName());
-        model.addAttribute("totalDevices", summary.getTotalDeviceCount());
+        model.addAttribute("controlAreaOrProgramOrScenarioId", controlAreaOrProgramOrScenarioId);
+        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups, statuses);
+        return "dr/assetAvailability/detail.jsp";
+    }
+    
+    @GetMapping(value = "filterResults")
+    public String filterResults(ModelMap model, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
+            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
+            @DefaultItemsPerPage(value = 250) PagingParameters paging) throws Exception {
+        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups, statuses);
+        return "dr/assetAvailability/filteredResults.jsp";
+    }
+    
+    @GetMapping(value = "filterResultsTable")
+    public String filterResultsTable(ModelMap model, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
+            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
+            @DefaultItemsPerPage(value = 250) PagingParameters paging) throws Exception {
+        getFilteredResults(model, sorting, paging, userContext, controlAreaOrProgramOrScenarioId, deviceSubGroups, statuses);
+        return "dr/assetAvailability/filteredResultsTable.jsp";
+    }
+    
+    private void getFilteredResults(ModelMap model, SortingParameters sorting, PagingParameters paging,
+            YukonUserContext userContext, Integer controlAreaOrProgramOrScenarioId, String[] deviceSubGroups,
+            AssetAvailabilityCombinedStatus[] statuses) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         if (statuses == null) {
             model.addAttribute("statuses", AssetAvailabilityCombinedStatus.values());
         } else {
@@ -154,10 +180,10 @@ public class AssetAvailabilityController {
                                                                             .map(device -> device.getPaoIdentifier().getPaoId())
                                                                             .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
-        return "dr/assetAvailabilityDetails.jsp";
+        
     }
-    
-    //TODO: Remove this once YUK-18954 is done..
+
+    //TODO: Remove this once YUK-18954 is done.
     private SearchResults<AssetAvailabilityDetails> mockSearchResults() {
 
         SearchResults<AssetAvailabilityDetails> results = SearchResults.emptyResult();
@@ -219,32 +245,13 @@ public class AssetAvailabilityController {
         return results;
     }
 
-    //TODO: Update this enum once YUK-18954 is done.
     public enum AssetAvailabilitySortBy implements DisplayableEnum {
-
-        /*deviceName(SortBy.PAO_NAME),
-        deviceType(SortBy.PAO_TYPE),
-        noteText(SortBy.NOTE_TEXT),
-        createdBy(SortBy.CREATE_USERNAME),
-        createDate(SortBy.CREATE_DATE),
-        editedBy(SortBy.EDIT_USERNAME),
-        editDate(SortBy.EDIT_DATE);
-
-        private final SortBy value;
-
-        private PaoNoteSortBy(SortBy value) {
-            this.value = value;
-        }
-
-        public SortBy getValue() {
-            return value;
-        }*/
         
-        serialNumber,
-        deviceType,
-        lastCommunication,
-        lastRun;
-
+        SERIAL_NUM,
+        TYPE,
+        LAST_COMM,
+        LAST_RUN;
+        
         @Override
         public String getFormatKey() {
             return baseKey + name();

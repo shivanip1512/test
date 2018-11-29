@@ -22,11 +22,8 @@
     <entry key="yukon.web.modules.dr.assetAvailability.deviceGroups">Device Groups</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.range">Recent Reading</entry>
     
-    <entry key="yukon.web.modules.dr.assetAvailability.detail.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.dr.assetAvailability.detail.deviceType">Device Type</entry>
-    <entry key="yukon.web.modules.dr.assetAvailability.detail.lastCommunication">Last Communication</entry>
-    <entry key="yukon.web.modules.dr.assetAvailability.detail.lastRun">Last Run</entry>
-    <entry key="yukon.web.modules.dr.assetAvailability.detail.collectionActions">Collection Actions</entry>
-    <entry key="yukon.web.modules.dr.assetAvailability.noResults">No results found.</entry>
-    
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.SERIAL_NUM">Serial Number</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.TYPE">Device Type</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.LAST_COMM">Last Communication</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.LAST_RUN">Last Run</entry>
 </properties>
