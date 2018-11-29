@@ -198,7 +198,7 @@ yukon.widget.assetAvailability = (function () {
                     }
                 });
                 
-                window.open(yukon.url('/dr/assetAvailability/detail?controlAreaOrProgramOrScenarioId=' + controlAreaOrProgramOrScenarioId + '&statuses=' + statuses));
+                window.open(yukon.url('/dr/assetAvailability/detail?assetId=' + controlAreaOrProgramOrScenarioId + '&statuses=' + statuses));
             });
             
             _update(false);

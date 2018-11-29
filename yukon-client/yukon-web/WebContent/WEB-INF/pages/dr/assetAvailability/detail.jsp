@@ -13,7 +13,7 @@
         
     <cti:url var="formAction" value="/dr/assetAvailability/detail"/>
     <form id="js-asset-availability-filter-form" action="${formAction}" method="GET">
-        <input type="hidden" name="controlAreaOrProgramOrScenarioId" value="${controlAreaOrProgramOrScenarioId}"/>
+        <input type="hidden" name="assetId" value="${assetId}"/>
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:nameValueContainer2>

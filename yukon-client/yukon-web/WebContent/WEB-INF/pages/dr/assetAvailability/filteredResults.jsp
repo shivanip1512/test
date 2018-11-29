@@ -20,7 +20,7 @@
                 <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" newTab="true" href="${collectionActionsUrl}"/>
             
                 <!-- Download -->
-                <cti:url var="downloadUrl" value="/dr/assetAvailability/${controlAreaOrProgramOrScenarioId}/download"/>
+                <cti:url var="downloadUrl" value="/dr/assetAvailability/${assetId}/download"/>
                 <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
             
                 <!-- Map Devices -->
@@ -52,7 +52,7 @@
         </span>
         
         <cti:url var="filterUrl" value="/dr/assetAvailability/filterResultsTable">
-            <cti:param name="controlAreaOrProgramOrScenarioId" value="${controlAreaOrProgramOrScenarioId}"/>
+            <cti:param name="assetId" value="${assetId}"/>
             <c:forEach var="subGroup" items="${deviceSubGroups}">
                 <cti:param name="deviceSubGroups" value="${subGroup}"/>
             </c:forEach>
