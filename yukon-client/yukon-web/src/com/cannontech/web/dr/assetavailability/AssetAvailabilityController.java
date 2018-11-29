@@ -1,5 +1,6 @@
 package com.cannontech.web.dr.assetavailability;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +8,15 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.joda.time.Instant;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -35,8 +40,11 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -45,6 +53,7 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
 import com.cannontech.web.common.widgets.service.AssetAvailabilityWidgetService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -56,6 +65,7 @@ public class AssetAvailabilityController {
     private final static String widgetKey = "yukon.web.widgets.";
     private final static String baseKey = "yukon.web.modules.dr.assetAvailability.detail.";
     
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private AssetAvailabilityWidgetService assetAvailabilityWidgetService;
@@ -184,6 +194,60 @@ public class AssetAvailabilityController {
                                                                             .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         
+    }
+
+    @GetMapping("/{controlAreaOrProgramOrScenarioId}/download")
+    public void downloadAssetAvailability(HttpServletResponse response, YukonUserContext userContext,
+            @PathVariable int controlAreaOrProgramOrScenarioId) throws IOException {
+
+        LiteYukonPAObject liteYukonPAObject = cache.getAllPaosMap().get(controlAreaOrProgramOrScenarioId);
+        // get the header row
+        String[] headerRow = getDownloadHeaderRow(userContext);
+        // get the data rows
+        List<String[]> dataRows = getDownloadDataRows(liteYukonPAObject, userContext);
+
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), DateFormatEnum.BOTH, userContext);
+        String fileName = liteYukonPAObject.getPaoName() + "_" + dateStr + ".csv";
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
+    }
+
+    protected String[] getDownloadHeaderRow(YukonUserContext userContext) {
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        // header row
+        String[] headerRow = new String[5];
+        headerRow[0] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.SERIAL_NUM);
+        headerRow[1] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.TYPE);
+        headerRow[2] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_COMM);
+        headerRow[3] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_RUN);
+        headerRow[4] = messageSourceAccessor.getMessage(baseKey + "AVAILABILITY");
+
+        return headerRow;
+    }
+
+    protected List<String[]> getDownloadDataRows(LiteYukonPAObject liteYukonPAObject, YukonUserContext userContext) {
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        SearchResults<AssetAvailabilityDetails> results =
+            assetAvailabilityService.getAssetAvailability(liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING,
+                AssetAvailabilityCombinedStatus.values(), null, userContext);
+
+        List<String[]> dataRows = Lists.newArrayList();
+
+        results.getResultList().forEach(details -> {
+            String[] dataRow = new String[5];
+
+            dataRow[0] = details.getSerialNumber();
+            dataRow[1] = details.getType().toString();
+            dataRow[2] = (details.getLastComm() == null) ? "" : dateFormattingService.format(details.getLastComm(), DateFormatEnum.BOTH, userContext);
+            dataRow[3] = (details.getLastRun() == null) ? "" : dateFormattingService.format(details.getLastRun(), DateFormatEnum.BOTH, userContext);
+            dataRow[4] = messageSourceAccessor.getMessage(details.getAvailability());
+            dataRows.add(dataRow);
+        });
+
+        return dataRows;
     }
 
     //TODO: Remove this once YUK-18954 is done.
