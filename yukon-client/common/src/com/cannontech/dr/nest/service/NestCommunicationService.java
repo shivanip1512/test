@@ -3,7 +3,7 @@ package com.cannontech.dr.nest.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.cannontech.dr.nest.model.NestControlHistory;
+import com.cannontech.dr.nest.model.NestControlEvent;
 import com.cannontech.dr.nest.model.NestURL;
 import com.cannontech.dr.nest.model.v3.ControlEvent;
 import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
@@ -17,12 +17,12 @@ public interface NestCommunicationService{
     /**
      * Sends message to Nest to cancel event
      */
-    Optional<String> cancelEvent(NestControlHistory history);
+    Optional<String> cancelEvent(NestControlEvent history);
 
     /**
      * Sends message to Nest to stop event
      */
-    Optional<String> stopEvent(NestControlHistory history);
+    Optional<String> stopEvent(NestControlEvent history);
     
     /**
      * Sends message to Nest to start event, used by simulator to show result on the screen without starting control 

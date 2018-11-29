@@ -53,6 +53,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -127,6 +128,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private AddressDao addressDao;
     @Autowired private HardwareService hardwareService;
     @Autowired private CustomerDao customerDao;
+    @Autowired private PaoCreationHelper paoCreationHelper;
     private EnergyCompany energyCompany;
        
     /**
@@ -770,6 +772,7 @@ public class NestSyncServiceImpl implements NestSyncService{
             YukonPAObject pao = LMFactory.createLoadManagement(PaoType.LM_GROUP_NEST);
             pao.setPAOName(group);
             dbPersistentDao.performDBChange(pao, TransactionType.INSERT);
+            paoCreationHelper.addDefaultPointsToPao(PaoIdentifier.of(pao.getPAObjectID(), pao.getPaoType()));
             NestSyncDetail detail =
                 new NestSyncDetail(0, syncId, AUTO, FOUND_GROUP_ONLY_IN_NEST, AUTO_CREATED_GROUP_IN_YUKON);
             detail.addValue(GROUP, group);

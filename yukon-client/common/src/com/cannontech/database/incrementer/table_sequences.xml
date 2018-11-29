@@ -429,5 +429,8 @@
       <sequence name="NestSyncValue">
         <table name="NestSyncValue" identitycolumn="SyncValueId" initsequence="true"/>
       </sequence>
+      <sequence name="LMNestControlEvent">
+        <table name="LMNestControlEvent" identitycolumn="NestControlEventId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

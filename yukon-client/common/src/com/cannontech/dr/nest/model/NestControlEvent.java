@@ -4,13 +4,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
-public class NestControlHistory {
+public class NestControlEvent {
     private int id;
     private String key;
+    private String group;
     private Instant startTime;
     private Instant stopTime;
     private Instant cancelRequestTime;
     private String cancelResponse;
+    private String cancelOrStop;
     public int getId() {
         return id;
     }
@@ -47,7 +49,19 @@ public class NestControlHistory {
     public void setCancelResponse(String cancelResponse) {
         this.cancelResponse = cancelResponse;
     }
+    public String getCancelOrStop() {
+        return cancelOrStop;
+    }
+    public void setCancelOrStop(String cancelOrStop) {
+        this.cancelOrStop = cancelOrStop;
+    }
     
+    public String getGroup() {
+        return group;
+    }
+    public void setGroup(String group) {
+        this.group = group;
+    }
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)

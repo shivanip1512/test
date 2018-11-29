@@ -17,7 +17,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.http.HttpHost;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
@@ -52,7 +51,6 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     @Autowired private AccountService accountService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private NestCommunicationService nestCommunicationService;
-    private HttpHost host;
     private GlobalSettingDao settingDao;
     private Proxy proxy;
 
@@ -66,9 +64,6 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         this.settingDao = settingDao;
         proxy = YukonHttpProxy.fromGlobalSetting(settingDao)
                 .map(YukonHttpProxy::getJavaHttpProxy)
-                .orElse(null);
-        host = YukonHttpProxy.fromGlobalSetting(settingDao)
-                .map(YukonHttpProxy::getJavaHttpHost)
                 .orElse(null);
     }
 
@@ -255,7 +250,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     public void uploadExisting(List<NestExisting> existing) {
         String filePath = NestSimulatorServiceImpl.SIMULATED_FILE_PATH;
         String defaultFileName = getFileName(YukonSimulatorSettingsKey.NEST_FILE_NAME);
-        File existingFile = new File(filePath+System.getProperty("file.separator")+defaultFileName);
+        File existingFile = new File(filePath + System.getProperty("file.separator") + defaultFileName);
         String path = existingFile.getAbsolutePath();
         boolean isDeleted = existingFile.delete();
         log.debug("idDeleled {} file {}", isDeleted, existingFile);
@@ -266,7 +261,6 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
     /**
      * Returns the row of the account found
      */
-    
     private NestExisting getRowToModifyAndRemoveAllOtherAccounts(List<NestExisting> existing, String refNumber) {
         return existing.stream()
                 .filter(row -> row.getRef().equals(refNumber))

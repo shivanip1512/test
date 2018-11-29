@@ -82,35 +82,42 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Override
     public void sendShed(int loadGroupId, int durationInSeconds) {
 
+        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_NEST) {
+            throw new IllegalArgumentException("Nest load groups cannot be directly shed.");
+        }
         Message msg = new LMCommand(LMCommand.SHED_GROUP, loadGroupId,
                                     durationInSeconds, 0.0);
         loadControlClientConnection.write(msg);
 
-        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
         demandResponseEventLogService.loadGroupShed(loadGroup.getName(),
                                                     durationInSeconds);
     }
 
     @Override
     public void sendRestore(int loadGroupId) {
-
+        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_NEST) {
+            throw new IllegalArgumentException("Nest load groups cannot be directly restored.");
+        }
         Message msg = new LMCommand(LMCommand.RESTORE_GROUP, loadGroupId,
                                     0, 0.0);
         loadControlClientConnection.write(msg);
-
-        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        
         demandResponseEventLogService.loadGroupRestore(loadGroup.getName());
     }
 
     @Override
     public void setEnabled(int loadGroupId, boolean isEnabled) {
-
+        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_NEST) {
+            throw new IllegalArgumentException("Nest load groups cannot be directly restored.");
+        }
         int loadControlCommand = isEnabled ? LMCommand.ENABLE_GROUP
                 : LMCommand.DISABLE_GROUP;
         Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);
         loadControlClientConnection.write(msg);
 
-        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
         String name = loadGroup.getName();
         if(isEnabled) {
             demandResponseEventLogService.loadGroupEnabled(name);

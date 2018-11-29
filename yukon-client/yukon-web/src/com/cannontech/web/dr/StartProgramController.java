@@ -7,12 +7,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletResponse;
-import com.cannontech.core.roleproperties.YukonRole;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
@@ -28,8 +32,11 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.RolePropertyTypeHelper;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.nest.model.v3.SchedulabilityError;
+import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
@@ -53,6 +60,7 @@ public class StartProgramController extends ProgramControllerBase {
     
     private StartProgramDatesValidator datesValidator = new StartProgramDatesValidator();
     private StartProgramAdjustmentsValidator gearAdjustmentsValidator = new StartProgramAdjustmentsValidator();
+    @Autowired private NestService nestService;
 
     /**
      * Page one of the "start program" saga.
@@ -228,6 +236,11 @@ public class StartProgramController extends ProgramControllerBase {
         int gearNumber = backingBean.getGearNumber();
         Date startDate = backingBean.getStartDate();
         boolean scheduleStop = backingBean.isScheduleStop();
+        
+        if(nestService.isNestProgram(programId)) {
+            Optional<SchedulabilityError> error = nestService.scheduleControl(programId, gearNumber, startDate, backingBean.getActualStopDate());
+        }
+
         programService.startProgram(programId, gearNumber, startDate, null,
                                     scheduleStop, backingBean.getActualStopDate(), null,
                                     overrideConstraints != null && overrideConstraints,
@@ -581,6 +594,16 @@ public class StartProgramController extends ProgramControllerBase {
                 startOffset = scenarioProgram.getStartOffset();
                 stopOffset = scenarioProgram.getStopOffset();
             }
+            
+            if (nestService.isNestProgram(programStartInfo.getProgramId())) {
+                Optional<SchedulabilityError> error = nestService.scheduleControl(programStartInfo.getProgramId(),
+                    programStartInfo.getGearNumber(), backingBean.getStartDate(), backingBean.getActualStopDate());
+                if(error.isPresent()) {
+                    //Nest returned an error
+                    //Do we need to write this to some event log? If so which one?
+                    continue;
+                }
+            }
 
             programService.startProgram(programStartInfo.getProgramId(),
                                         programStartInfo.getGearNumber(),
@@ -694,7 +717,7 @@ public class StartProgramController extends ProgramControllerBase {
                        Map<Integer, ScenarioProgram> scenarioPrograms) {
 
         setStartProgramBackingBeanBaseDefaults(backingBean, userContext);
-        List<ProgramStartInfo> programStartInfo = new ArrayList<ProgramStartInfo>(programs.size());
+        List<ProgramStartInfo> programStartInfo = new ArrayList<>(programs.size());
         for (DisplayablePao program : programs) {
             int programId = program.getPaoIdentifier().getPaoId();
             int gearNumber = 1;

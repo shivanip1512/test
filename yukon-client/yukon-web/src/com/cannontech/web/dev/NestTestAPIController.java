@@ -4,8 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -46,6 +44,7 @@ import com.cannontech.dr.nest.model.v3.ProgramType;
 import com.cannontech.dr.nest.model.v3.RetrieveCustomers;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
+import com.cannontech.dr.nest.service.impl.NestServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -54,12 +53,7 @@ import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 @Controller
 @RequestMapping("/nestApi/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
-public class NestTestAPIController {
-
-    //Nest timestamp in RFC3339 UTC "Zulu" format
-    private DateTimeFormatter formatter = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-            .withZone(ZoneId.of("UTC"));
+public class NestTestAPIController {;
     
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class);
     @Autowired NestSimulatorService nestSimService;
@@ -124,7 +118,7 @@ public class NestTestAPIController {
             HttpServletRequest request, HttpServletResponse response) {
         log.debug("Control partnerId {} eventType {}", partnerId, eventType);
         UUID uid = UUID.randomUUID();
-        return new EventId(uid.toString());
+        return new EventId(uid.toString().substring(0, 10));
         // simulate errors
         //if error return SchedulabilityError? We do not know if it is one error or a map
     }
@@ -138,7 +132,7 @@ public class NestTestAPIController {
     private Customers getCustomerInfos() {
         List<NestExisting> simulated = nestSimService.downloadExisting();
         List<CustomerInfo> infos = simulated.stream().map(sim -> {
-            String date = formatter.format(new DateTime(Integer.parseInt(sim.getYear()),
+            String date = NestServiceImpl.formatter.format(new DateTime(Integer.parseInt(sim.getYear()),
                 Integer.parseInt(sim.getMonth()), Integer.parseInt(sim.getDay()), 0, 0, 0, 0).toDate().toInstant());
             CustomerInfo info = new CustomerInfo();
             info.setAccountNumber(sim.getAccountNumber());

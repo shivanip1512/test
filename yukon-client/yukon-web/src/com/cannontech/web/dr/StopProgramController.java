@@ -7,9 +7,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletResponse;
-import com.cannontech.core.roleproperties.YukonRole;
+
 import org.joda.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
@@ -27,8 +30,10 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.service.ConstraintViolations;
@@ -45,6 +50,7 @@ import com.google.common.collect.Maps;
 @RequestMapping("/program/stop/*")
 public class StopProgramController extends ProgramControllerBase {
 	
+    @Autowired private NestService nestService;
     private static class StopProgramValidator extends SimpleValidator<StopProgramBackingBeanBase> {
         
         public StopProgramValidator() {
@@ -139,6 +145,11 @@ public class StopProgramController extends ProgramControllerBase {
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
 
+        if(nestService.isNestProgram(backingBean.getProgramId())) {
+            String error = nestService.stopControl(backingBean.getProgramId());
+            System.out.println("----------------------" + error);
+        }
+
         Date stopDate = backingBean.getStopDate();
         int gearNumber = backingBean.getGearNumber();
         if (backingBean.isUseStopGear()) {
@@ -225,7 +236,7 @@ public class StopProgramController extends ProgramControllerBase {
         if (fromBack == null || !fromBack) {
             backingBean.setStopNow(true);
             backingBean.setStopDate(new Date());
-            List<ProgramStopInfo> programStopInfo = new ArrayList<ProgramStopInfo>(programs.size());
+            List<ProgramStopInfo> programStopInfo = new ArrayList<>(programs.size());
             for (DisplayablePao program : programs) {
                 int programId = program.getPaoIdentifier().getPaoId();
                 int gearNumber = 1;
@@ -305,7 +316,16 @@ public class StopProgramController extends ProgramControllerBase {
                 boolean stopGearAllowed =
                         rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                       userContext.getYukonUser());
+                if (nestService.isNestProgram(programStopInfo.getProgramId())) {
+                    String error = nestService.stopControl(programStopInfo.getProgramId());
+                    // Nest program returned an error, we are going to skip this program
+                    // Do we need to write this to some event log? If so which one?
+                    if(error != null) {
+                        continue;
+                    }
+                }
                 
+            
                 if (backingBean.isStopNow() && stopOffset == null) {
                     programService.stopProgram(programStopInfo.getProgramId());
                 } else if (stopGearAllowed && programStopInfo.isUseStopGear()) {

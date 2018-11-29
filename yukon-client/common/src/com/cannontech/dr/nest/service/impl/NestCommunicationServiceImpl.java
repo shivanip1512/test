@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +26,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.nest.dao.NestDao;
-import com.cannontech.dr.nest.model.NestControlHistory;
+import com.cannontech.dr.nest.model.NestControlEvent;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestURL;
 import com.cannontech.dr.nest.model.v3.ControlEvent;
@@ -49,7 +50,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class); 
     private Proxy proxy;
     private GlobalSettingDao settingDao;
-    private NestDao nestDao;
+    @Autowired private NestDao nestDao;
     //this id probably will be in global settings, I am assuming EC will get it from Nest
     private String partnerId = "simulator";
          
@@ -74,18 +75,19 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
      */
     @Override
     public Optional<SchedulabilityError> sendEvent(ControlEvent event, RushHourEventType type) {
-        log.debug("Sending request to create standard event");
-        String requestUrl = constructNestUrl(NestURL.CANCEL_EVENT);
+        log.debug("Sending {} event {}", type, event);
+        String requestUrl = constructNestUrl(NestURL.CREATE_EVENT);
         log.debug("Request url {}", requestUrl);
         String response = getNestResponse(requestUrl, event, type);
         try {
             EventId nestId = JsonUtils.fromJson(response, EventId.class);
-            NestControlHistory history = new NestControlHistory();
+            NestControlEvent history = new NestControlEvent();
+            history.setGroup(event.getGroupIds().get(0));
             history.setStartTime(event.getStart());
             history.setStopTime(event.getStop());
             history.setKey(nestId.getId());
             //create entry only if response is success
-            nestDao.createControlHistory(history);
+            nestDao.saveControlEvent(history);
             return Optional.empty();
         } catch (IOException e) {
             try {
@@ -99,9 +101,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     }
     
     @Override
-    public Optional<String> cancelEvent(NestControlHistory history) {
+    public Optional<String> cancelEvent(NestControlEvent event) {
         //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel
-        log.debug("Canceling event {}", history);
+        log.debug("Canceling event {}", event);
         String requestUrl = constructNestUrl(NestURL.STOP_EVENT);
         log.debug("Request url {}", requestUrl);
         HttpHeaders headers = new HttpHeaders();
@@ -110,11 +112,13 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         
         HttpEntity<?> entity = new HttpEntity<>(headers);
         try {
-            //add type cancel
-            nestDao.updateCancelRequestTime(history.getId());
+            event.setCancelOrStop("C");
+            event.setCancelRequestTime(Instant.now());
+            nestDao.saveControlEvent(event);
             HttpEntity<String> response =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, history.getKey());
-            nestDao.updateNestResponse(history.getId(), response.getBody());
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, event.getKey());
+            event.setCancelResponse(response.getBody());
+            nestDao.saveControlEvent(event);
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
@@ -122,9 +126,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     }
     
     @Override
-    public Optional<String> stopEvent(NestControlHistory history) {
+    public Optional<String> stopEvent(NestControlEvent event) {
         //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop
-        log.debug("Stopping event {}", history);    
+        log.debug("Stopping event {}", event);    
         String requestUrl = constructNestUrl(NestURL.STOP_EVENT);
         log.debug("Request url {}", requestUrl);
         HttpHeaders headers = new HttpHeaders();
@@ -133,11 +137,13 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         
         HttpEntity<?> entity = new HttpEntity<>(headers);
         try {
-           //add type stop
-            nestDao.updateCancelRequestTime(history.getId());
+            event.setCancelOrStop("S");
+            event.setCancelRequestTime(Instant.now());
+            nestDao.saveControlEvent(event);
             HttpEntity<String> response =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, history.getKey());
-            nestDao.updateNestResponse(history.getId(), response.getBody());
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, event.getKey());
+            event.setCancelResponse(response.getBody());
+            nestDao.saveControlEvent(event);
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
