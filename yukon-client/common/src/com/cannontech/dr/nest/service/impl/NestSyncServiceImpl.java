@@ -141,7 +141,7 @@ public class NestSyncServiceImpl implements NestSyncService{
      * 
      * For all the blacklisted data user will see a discrepancy he will need to fix.
      */
-    private static class Blacklist {
+    protected static class Blacklist {
         Map<String, NestSyncI18nKey> groups = new HashMap<>();
         Map<String, NestSyncI18nKey> thermostats = new HashMap<>();
         
@@ -611,7 +611,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Returns true if the program has an area
      */
-    private boolean hasArea(Collection<PaoIdentifier> programs,
+    protected boolean hasArea(Collection<PaoIdentifier> programs,
             Multimap<PaoIdentifier, PaoIdentifier> programsToAreas) {
         for (PaoIdentifier programId : programs) {
             if (!programsToAreas.get(programId).isEmpty()) {
@@ -625,7 +625,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Checks if Nest groups have areas and programs are setup correctly
      */
-    private List<NestSyncDetail> validateProgramAndAreaSetup(int syncId, List<LiteYukonPAObject> nestGroups,
+    protected List<NestSyncDetail> validateProgramAndAreaSetup(int syncId, List<LiteYukonPAObject> nestGroups,
             Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms,
             Multimap<PaoIdentifier, PaoIdentifier> programsToAreas, Blacklist ignore) {
         
@@ -640,7 +640,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Builds a NestSyncDetail, or returns an empty Optional if the setup is correct.
      */
-    private Optional<NestSyncDetail> buildSyncDetail(int syncId, LiteYukonPAObject group,
+    protected Optional<NestSyncDetail> buildSyncDetail(int syncId, LiteYukonPAObject group,
             Multimap<PaoIdentifier, PaoIdentifier> groupsToPrograms,
             Multimap<PaoIdentifier, PaoIdentifier> programsToAreas, Blacklist ignore) {
 
@@ -666,7 +666,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Returns list of discrepancies if the thermostat in Nest file corresponds to a non Nest thermostat in Yukon
      */
-    private List<NestSyncDetail> validateThermostats(Set<String> thermostatsInNest, Map<String, Thermostat> thermostatsInYukon,
+    protected List<NestSyncDetail> validateThermostats(Set<String> thermostatsInNest, Map<String, Thermostat> thermostatsInYukon,
             int syncId, Blacklist ignore) {
         return thermostatsInNest.stream()
                 .filter(thermostatInNest -> {
@@ -691,7 +691,7 @@ public class NestSyncServiceImpl implements NestSyncService{
      * 
      * @return list of sync details
      */
-    private List<NestSyncDetail> filterNestGroups(List<String> groupsInNest, int syncId, Blacklist ignore) {
+    protected List<NestSyncDetail> filterNestGroups(List<String> groupsInNest, int syncId, Blacklist ignore) {
         List<String> nonNestGroupsWithNestGroupName = dbCache.getAllLMGroups().stream()
                 .filter(group -> group.getPaoType() != PaoType.LM_GROUP_NEST && groupsInNest.contains(group.getPaoName()))
                 .map(group -> group.getPaoName())
