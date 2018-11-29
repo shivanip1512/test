@@ -25,13 +25,13 @@ yukon.widget.rfBroadcast = (function () {
             setTimeout(function () {
                 refreshButton.attr('disabled', false);
                 refreshButton.attr('title', $("#js-update-tooltip").val());
-                }, $("#js-force-update-interval").val())
+                }, $("#js-force-update-interval").val());
         });
     },
     
     _update = function () {
         _refreshWidget();
-        setTimeout(_update, _updateInterval)
+        setTimeout(_update, _updateInterval);
     },
     
     mod = {

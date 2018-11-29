@@ -14,11 +14,17 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.OnOff;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
 @Controller
 @RequestMapping("/rfBroadcastWidget/*")
+@CheckRole(YukonRole.DEMAND_RESPONSE)
 public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
 
     private final static String widgetKey = "yukon.web.widgets.";
@@ -26,20 +32,28 @@ public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
 
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     @RequestMapping("render")
     public String updateWidget(ModelMap model, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Instant lastUpdateTime = new Instant();
-        // Get latest 6 RFBroadcast event data.
-        List<PerformanceVerificationEventMessageStats> results = getRFBroadcastMockData();
-        model.addAttribute("results", results);
-        model.addAttribute("lastAttemptedRefresh", lastUpdateTime);
-        Instant nextRun = lastUpdateTime.plus(SECONDS_TO_WAIT_BEFORE_NEXT_REFRESH);
-        String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-        model.addAttribute("forceRefreshInterval", SECONDS_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis());
-        model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
-        model.addAttribute("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+        
+        OnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, OnOff.class);
+        boolean showRfBroadcastWidget = (rfPerformance == OnOff.ON);
+        model.addAttribute("showRfBroadcastWidget", showRfBroadcastWidget);
+        if (showRfBroadcastWidget) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            Instant lastUpdateTime = new Instant();
+            // Get latest 6 RFBroadcast event data.
+            List<PerformanceVerificationEventMessageStats> results = getRFBroadcastMockData();
+            model.addAttribute("results", results);
+            model.addAttribute("lastAttemptedRefresh", lastUpdateTime);
+            Instant nextRun = lastUpdateTime.plus(SECONDS_TO_WAIT_BEFORE_NEXT_REFRESH);
+            String nextRefreshDate =
+                dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("forceRefreshInterval", SECONDS_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis());
+            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
+            model.addAttribute("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+        }
         return "rfBroadcastWidget/render.jsp";
     }
 
