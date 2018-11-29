@@ -148,7 +148,6 @@
     <entry key="yukon.web.modules.operator.hardware.serialNumber.defaultWarehouse">General Inventory</entry>
 
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.label">Asset Availability</entry>
-    <entry key="yukon.web.modules.operator.hardware.assetAvailability.filter">Filter:</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.active">Active</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.inactive">Inactive</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.unavailable">Unavailable</entry>

@@ -34,7 +34,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -45,7 +44,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
@@ -155,59 +153,12 @@ public class LoadGroupController extends DemandResponseControllerBase {
         }
         return "dr/assetAvailability.jsp";
     }
-    
-    @RequestMapping("/loadGroup/assetDetails")
-    public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
-            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting, int assetId,
-            ModelMap model, YukonUserContext userContext) {
-
-        rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
-
-        SearchResults<AssetAvailabilityDetails> result = getResultsList(loadGroup, userContext, null, paging, sorting);
-
-        getAssetAvailabilityInfo(loadGroup, model, userContext);
-
-        model.addAttribute("assetId", assetId);
-        model.addAttribute("loadGroupId", assetId);
-        model.addAttribute("loadGroup", loadGroup);
-        model.addAttribute("type", "loadGroup");
-        model.addAttribute("result", result);
-        model.addAttribute("filter",
-            AssetAvailabilityCombinedStatus.getStringValues(AssetAvailabilityCombinedStatus.values()));
-
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        addAssetColumns(model, accessor, sorting);
-
-        return "dr/assetDetails.jsp";
-    }
 
     @ResponseBody
     @RequestMapping("/loadGroup/pingDevices")
     public void pingDevices(int assetId, LiteYukonUser user) {
         DisplayablePao controlArea = loadGroupService.getLoadGroup(assetId);
         assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), user);
-    }
-
-    @RequestMapping("/loadGroup/page")
-    public String page(ModelMap model, YukonUserContext userContext, String assetId,
-            @DefaultItemsPerPage(25) PagingParameters paging,
-            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
-            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters) {
-
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
-        SearchResults<AssetAvailabilityDetails> result = getResultsList(loadGroup, userContext, filters, paging, sorting);
-
-        model.addAttribute("result", result);
-        model.addAttribute("type", "loadGroup");
-        model.addAttribute("assetId", assetId);
-        model.addAttribute("colorMap", colorMap);
-        model.addAttribute("filter",AssetAvailabilityCombinedStatus.getStringValues(filters));
-
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        addAssetColumns(model, accessor, sorting);
-
-        return "dr/assetTable.jsp";
     }
 
     @RequestMapping("/loadGroup/{id}/aa/download/{type}")

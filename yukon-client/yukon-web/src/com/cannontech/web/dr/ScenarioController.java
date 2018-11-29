@@ -43,7 +43,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
@@ -140,62 +139,12 @@ public class ScenarioController extends DemandResponseControllerBase {
         }
         return "dr/assetAvailability.jsp";
     }
-    
-
-    @RequestMapping("/scenario/assetDetails")
-    public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
-            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting, int assetId,
-            ModelMap model, YukonUserContext userContext) throws IOException {
-
-        rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
-        DisplayablePao scenario = scenarioService.getScenario(assetId);
-
-        SearchResults<AssetAvailabilityDetails> result = getResultsList(scenario, userContext, null, paging, sorting);
-
-        getAssetAvailabilityInfo(scenario, model, userContext);
-
-        model.addAttribute("assetId", assetId);
-        model.addAttribute("scenarioId", assetId);
-        model.addAttribute("scenario", scenario);
-        model.addAttribute("type", "scenario");
-        model.addAttribute("result", result);
-        model.addAttribute("filter",
-            AssetAvailabilityCombinedStatus.getStringValues(AssetAvailabilityCombinedStatus.values()));
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        addAssetColumns(model, accessor, sorting);
-
-        return "dr/assetDetails.jsp";
-    }
 
     @ResponseBody
     @RequestMapping("/scenario/pingDevices")
     public void pingDevices(int assetId, LiteYukonUser user) {
         DisplayablePao controlArea = scenarioService.getScenario(assetId);
         assetAvailabilityPingService.readDevicesInDrGrouping(controlArea.getPaoIdentifier(), user);
-    }
-
-    /**
-     * Used for paging and filtering operations.
-     */
-    @RequestMapping("/scenario/page")
-    public String page(ModelMap model, YukonUserContext userContext, int assetId,
-            @DefaultItemsPerPage(25) PagingParameters paging,
-            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
-            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters) {
-
-        DisplayablePao scenario = scenarioService.getScenario(assetId);
-        SearchResults<AssetAvailabilityDetails> result = getResultsList(scenario, userContext, filters, paging, sorting);
-
-        model.addAttribute("result", result);
-        model.addAttribute("type", "scenario");
-        model.addAttribute("assetId", assetId);
-        model.addAttribute("colorMap", colorMap);
-        model.addAttribute("filter", AssetAvailabilityCombinedStatus.getStringValues(filters));
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        addAssetColumns(model, accessor, sorting);
-
-        return "dr/assetTable.jsp";
     }
 
     @RequestMapping("/scenario/{id}/aa/download/{type}")

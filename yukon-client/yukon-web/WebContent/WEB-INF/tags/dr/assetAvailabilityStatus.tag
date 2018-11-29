@@ -57,11 +57,13 @@
 <div class="column-24 clearfix">
     <div class="column one nogutter">
         <c:if test="${showDetails}">
-            <cti:url var="assetsUrl" value="assetDetails">
-                <cti:param name="assetId" value="${assetId}"/>
+            <cti:url var="assetDetailsUrl" value="/dr/assetAvailability/detail">
+                <cti:param name="controlAreaOrProgramOrScenarioId" value="${assetId}"/>
             </cti:url>
-            <div><a href="${assetsUrl}">
-                <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/></a>
+            <div>
+                <a href="${assetDetailsUrl}">
+                    <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.viewDetails"/>
+                </a>
             </div>
         </c:if>
         

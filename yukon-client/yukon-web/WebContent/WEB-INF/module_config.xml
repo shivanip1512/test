@@ -474,11 +474,6 @@
               <page name="scenarioDetail" type="DETAIL">
                 <link>/dr/scenario/detail?scenarioId=${scenarioId}</link>
                 <labelArgument>${scenario.name}</labelArgument>
-                <pages>
-                  <page name="scenario.assetDetails" type="DETAIL_CHILD">
-                    <labelArgument>${scenario.name}</labelArgument>
-                  </page>
-                </pages>
               </page>
             </pages>
           </page>
@@ -488,11 +483,6 @@
               <page name="controlAreaDetail" type="DETAIL">
                 <link>/dr/controlArea/detail?controlAreaId=${controlAreaId}</link>
                 <labelArgument>${controlArea.name}</labelArgument>
-                <pages>
-                  <page name="controlArea.assetDetails" type="DETAIL_CHILD">
-                    <labelArgument>${controlArea.name}</labelArgument>
-                  </page>
-                </pages>
               </page>
             </pages>
           </page>
@@ -502,11 +492,6 @@
               <page name="programDetail" type="DETAIL">
                 <link>/dr/program/detail?programId=${programId}</link>
                 <labelArgument>${program.name}</labelArgument>
-                <pages>
-                  <page name="program.assetDetails" type="DETAIL_CHILD">
-                    <labelArgument>${program.name}</labelArgument>
-                  </page>
-                </pages>
               </page>
             </pages>
           </page>
@@ -516,11 +501,6 @@
               <page name="loadGroupDetail" type="DETAIL">
                 <link>/dr/loadGroup/detail?loadGroupId=${loadGroupId}</link>
                 <labelArgument>${loadGroup.name}</labelArgument>
-                <pages>
-                  <page name="loadGroup.assetDetails" type="DETAIL_CHILD">
-                    <labelArgument>${loadGroup.name}</labelArgument>
-                  </page>
-                </pages>
               </page>
             </pages>
           </page>

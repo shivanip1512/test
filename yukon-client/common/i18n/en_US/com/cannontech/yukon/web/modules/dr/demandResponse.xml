@@ -74,19 +74,6 @@
 <entry key="yukon.web.modules.dr.paoType.MACRO_GROUP">Macro Group</entry>
 
 <!-- Asset Availability Details -->
-<entry key="yukon.web.modules.dr.scenario.assetDetails.pageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.scenario.assetDetails.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.scenario.assetDetails.contextualPageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.controlArea.assetDetails.pageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.controlArea.assetDetails.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.controlArea.assetDetails.contextualPageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.program.assetDetails.pageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.program.assetDetails.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.program.assetDetails.contextualPageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.loadGroup.assetDetails.pageName">Asset Availability</entry>
-<entry key="yukon.web.modules.dr.loadGroup.assetDetails.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.dr.loadGroup.assetDetails.contextualPageName">Asset Availability</entry>
-
 <entry key="yukon.web.modules.dr.assetDetails.status.ACTIVE">Active</entry>
 <entry key="yukon.web.modules.dr.assetDetails.status.INACTIVE">Inactive</entry>
 <entry key="yukon.web.modules.dr.assetDetails.status.UNAVAILABLE">Unavailable</entry>
@@ -118,7 +105,7 @@
 <entry key="yukon.web.modules.dr.searchResults.pageDescription">Search</entry>
 <!-- opt out -->
 <entry key="yukon.web.modules.operator.optOutAdmin.pageName">Opt Out Status</entry>
-<entry key="yukon.web.modules.operator.optOutAdmin.pageDescription">Opt Out Status</entry>    
+<entry key="yukon.web.modules.operator.optOutAdmin.pageDescription">Opt Out Status</entry>
 <entry key="yukon.web.modules.operator.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
 <entry key="yukon.web.modules.operator.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
 
