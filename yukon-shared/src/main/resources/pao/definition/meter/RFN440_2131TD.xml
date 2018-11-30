@@ -21,6 +21,7 @@
         <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="USAGE_PER_INTERVAL"/>
+        <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Disconnect Status" init="true" attributes="DISCONNECT_STATUS"/>
         <pointInfo name="Forward Capacitive kVArh per Interval" init="true" attributes="FORWARD_CAPACITIVE_KVARH_PER_INTERVAL"/>
         <pointInfo name="Forward Inductive kVArh" init="true" attributes="FORWARD_INDUCTIVE_KVARH"/>
@@ -41,6 +42,7 @@
         <pointInfo name="Reverse Inductive kVArh" init="true" attributes="REVERSE_INDUCTIVE_KVARH"/>
         <pointInfo name="Reverse Inductive kVArh per Interval" init="true" attributes="REVERSE_INDUCTIVE_KVARH_PER_INTERVAL"/>
         <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
+        <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="Volts Phase A" init="true" attributes="VOLTAGE"/>
     </pointInfos>
