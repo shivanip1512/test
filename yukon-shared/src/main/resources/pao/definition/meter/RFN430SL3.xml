@@ -54,6 +54,7 @@
         <pointInfo name="Demand at Peak kVa Coincidental" attributes="DEMAND_PEAK_KVA_COIN"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
+        <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Inactive Phase Current Diagnostic Error" attributes="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR"/>
         <pointInfo name="kVA" attributes="KVA"/>
@@ -122,6 +123,7 @@
         <pointInfo name="Register Full-scale Exceeded" attributes="REGISTER_FULL_SCALE_EXCEEDED"/>
         <pointInfo name="Reverse Rotation" attributes="REVERSE_POWER_FLAG"/>
         <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
+        <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>
         <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
         <pointInfo name="Season Change" attributes="SEASON_CHANGE"/>
         <pointInfo name="SiteScan Error" attributes="SITESCAN_ERROR"/>
