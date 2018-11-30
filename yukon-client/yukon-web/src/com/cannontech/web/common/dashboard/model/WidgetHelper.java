@@ -35,7 +35,12 @@ public class WidgetHelper {
                 widget.setHelpText(accessor.getMessage(helpTextBaseKey + widget.getType().getBeanName() + ".helpText",
                     days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
                 break;
-            default:
+             case RF_BROADCAST:
+                String rfBroadcastWidgetDetail = accessor.getMessage("yukon.web.widgets.rfBroadcastWidget.widgetDetail");
+                String broadcastEventStatusDetail = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.infoText");
+                widget.setHelpText(rfBroadcastWidgetDetail + broadcastEventStatusDetail);
+                break;
+             default:
                 widget.setHelpText(
                     accessor.getMessageWithDefault(helpTextBaseKey + widget.getType().getBeanName() + ".helpText", ""));
             }

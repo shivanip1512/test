@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
 import com.cannontech.web.common.dashboard.widget.validator.ControlAreaOrProgramOrScenarioPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
@@ -39,7 +40,7 @@ public enum WidgetType implements DisplayableEnum {
     GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming", MasterConfigBoolean.RF_DATA_STREAMING_ENABLED.name()),
     DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-data-collection"),
     ASSET_AVAILABILITY(DashboardScope.GENERAL, WidgetCategory.DR, "assetAvailabilityWidget", "image-asset-availability"),
-    RF_BROADCAST(DashboardScope.GENERAL, WidgetCategory.DR, "rfBroadcastWidget", "image-rf-broadcast");
+    RF_BROADCAST(DashboardScope.GENERAL, WidgetCategory.DR, "rfBroadcastWidget", "image-rf-broadcast", GlobalSettingType.RF_BROADCAST_PERFORMANCE.name());
     
     /*
     //Meter Detail

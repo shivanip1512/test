@@ -14,6 +14,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.checker.AggregateOrUserChecker;
 import com.cannontech.user.checker.NotUserChecker;
@@ -21,6 +22,7 @@ import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
+import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.Lists;
 
 public class RoleAndPropertyDescriptionService {
@@ -119,14 +121,22 @@ public class RoleAndPropertyDescriptionService {
             }
 
             try {
-                boolean globalSettingValue = globalSettingDao.getBoolean(GlobalSettingType.valueOf(someEnumName));
-
-                UserChecker propertyChecker = globalSettingValue ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
-                if (inverted) {
-                    propertyChecker = globalSettingValue ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
+                GlobalSettingType type = GlobalSettingType.valueOf(someEnumName);
+                InputType<?> dataType = type.getType();
+                Boolean globalSettingValue = null;
+                if (dataType.getTypeClass() == Boolean.class) {
+                    globalSettingValue = globalSettingDao.getBoolean(type);
+                } else if (dataType.getTypeClass() == OnOff.class) {
+                    globalSettingValue = globalSettingDao.getEnum(type, OnOff.class).isOn();
                 }
-                checkers.add(propertyChecker);
-                continue;
+                if (globalSettingValue != null) {
+                    UserChecker propertyChecker = globalSettingValue ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
+                    if (inverted) {
+                        propertyChecker = globalSettingValue ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
+                    }
+                    checkers.add(propertyChecker);
+                    continue;
+                }
             } catch (IllegalArgumentException ignore) {
                 // It's not a system setting.
             }
@@ -159,7 +169,7 @@ public class RoleAndPropertyDescriptionService {
                 // It's not a master.cfg boolean.
             }
 
-            // If we get here, we must not have a valid setting of any time.
+           // If we get here, we must not have a valid setting of any time.
             throw new IllegalArgumentException("Can't use '" + someEnumName
                 + "', check that it is a valid role, category, boolean property, or boolean global setting.");
         }

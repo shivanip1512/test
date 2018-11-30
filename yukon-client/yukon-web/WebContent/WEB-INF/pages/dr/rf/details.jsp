@@ -39,7 +39,7 @@
                 <th>
                     <i:inline key=".results"/>
                     <div id="rf-event-info" class="dn" data-title="<cti:msg2 key=".rf.details.rfPerformanceResult"/>" data-width="500">
-                        <i:inline key="yukon.web.widgets.rfBroadcastWidget.helpText"/>
+                        <i:inline key="yukon.web.modules.dr.home.rfPerformance.infoText"/>
                     </div>
                     <cti:icon icon="icon-information" classes="fn cp" data-popup="#rf-event-info" data-popup-toggle=""/>
                 </th>

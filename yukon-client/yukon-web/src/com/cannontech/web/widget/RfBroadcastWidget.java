@@ -3,6 +3,7 @@ package com.cannontech.web.widget;
 import java.util.Collections;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +46,13 @@ public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
         boolean showRfBroadcastWidget = (rfPerformance == OnOff.ON);
         if (showRfBroadcastWidget) {
             /* Get last 6 days Rf Broadcast Performance data */
-            Instant from = new Instant().minus(Duration.standardDays(6));
-            Instant to = new Instant();
+            DateTime now = DateTime.now();
+            Instant to = now.toInstant();
+            Instant from = now.withTimeAtStartOfDay().minusDays(5).toInstant();
             List<PerformanceVerificationEventMessageStats> results = rfPerformanceDao.getReports(Range.inclusiveExclusive(from, to));
             Collections.sort(results, (t1, t2) -> t2.getTimeMessageSent().compareTo(t1.getTimeMessageSent()));
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            Instant lastUpdateTime = new Instant();
+            Instant lastUpdateTime = now.toInstant();
             model.addAttribute("results", results);
             model.addAttribute("lastAttemptedRefresh", lastUpdateTime);
 
