@@ -29,7 +29,8 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
     // Temp lists that hold the previous state of the load groups for a given // program
     private List<Object> currentAvailableList;
     private List<Object> currentSelectedList;
-
+    private boolean isNest = false;
+    
     public LMProgramListPanel() {
         super();
         initialize();
@@ -178,6 +179,7 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     } else if (isHoneywellProgram && isGroupHoneywellCompatible(paoType)) {
                         newList.addElement(group);
                     } else if (isNestProgram && isGroupNestCompatible(paoType)) {
+                        isNest = true;
                         newList.addElement(group);
                     }
                 }
@@ -209,10 +211,13 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
     @Override
     public boolean isInputValid() {
         if (getAddRemovePanel().rightListGetModel().getSize() <= 0) {
-            setErrorString("At least 1 load group must present in this current program.");
+            setErrorString("At least 1 load group must be present in this current program.");
             return false;
         }
-
+        if (getAddRemovePanel().rightListGetModel().getSize() > 1 && isNest) {
+            setErrorString("Only 1 load group may be present in a nest program.");
+            return false;
+        }
         if (!checkForEnrollmentConflicts()) {
             return false;
         }
