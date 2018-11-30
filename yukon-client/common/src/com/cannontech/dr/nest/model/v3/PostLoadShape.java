@@ -14,23 +14,23 @@ public enum PostLoadShape implements DatabaseRepresentationSource, DisplayableEn
     private static HashMap<String, PostLoadShape> nameMap;
     static {
         nameMap = new HashMap<>();
-        nameMap.put(POST_UNSPECIFIED.getName(), POST_UNSPECIFIED);
-        nameMap.put(POST_STANDARD.getName(), POST_STANDARD);
-        nameMap.put(POST_RAMPING.getName(), POST_RAMPING);
+        nameMap.put(POST_UNSPECIFIED.getDisplayText(), POST_UNSPECIFIED);
+        nameMap.put(POST_STANDARD.getDisplayText(), POST_STANDARD);
+        nameMap.put(POST_RAMPING.getDisplayText(), POST_RAMPING);
     }
     
     public static PostLoadShape getFromNameMap(String name) {
         return nameMap.get(name);
     }
     
-    private String name;
+    private String displayText;
     
-    PostLoadShape(String name) {
-        this.name = name;
+    PostLoadShape(String displayText) {
+        this.displayText = displayText;
     }
     
-    public String getName() {
-        return name;
+    public String getDisplayText() {
+        return displayText;
     }
     
     @Override

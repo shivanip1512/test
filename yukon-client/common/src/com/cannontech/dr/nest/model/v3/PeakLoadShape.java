@@ -13,27 +13,27 @@ public enum PeakLoadShape implements DatabaseRepresentationSource, DisplayableEn
     ;
     private static String baseKey = "yukon.web.modules.dr.nest.loadShapingType.";
     
-    private static HashMap<String, PeakLoadShape> nameMap;
+    private static HashMap<String, PeakLoadShape> displayTextMap;
     static {
-        nameMap = new HashMap<>();
-        nameMap.put(PEAK_UNSPECIFIED.getName(), PEAK_UNSPECIFIED);
-        nameMap.put(PEAK_STANDARD.getName(), PEAK_STANDARD);
-        nameMap.put(PEAK_UNIFORM.getName(), PEAK_UNIFORM);
-        nameMap.put(PEAK_SYMMETRIC.getName(), PEAK_SYMMETRIC);
+        displayTextMap = new HashMap<>();
+        displayTextMap.put(PEAK_UNSPECIFIED.getDisplayText(), PEAK_UNSPECIFIED);
+        displayTextMap.put(PEAK_STANDARD.getDisplayText(), PEAK_STANDARD);
+        displayTextMap.put(PEAK_UNIFORM.getDisplayText(), PEAK_UNIFORM);
+        displayTextMap.put(PEAK_SYMMETRIC.getDisplayText(), PEAK_SYMMETRIC);
     }
     
-    public static PeakLoadShape getFromNameMap(String name) {
-        return nameMap.get(name);
+    public static PeakLoadShape getFromNameMap(String displayText) {
+        return displayTextMap.get(displayText);
     }
     
-    private String name;
+    private String displayText;
     
-    PeakLoadShape(String name) {
-        this.name = name;
+    PeakLoadShape(String displayText) {
+        this.displayText = displayText;
     }
     
-    public String getName() {
-        return name;
+    public String getDisplayText() {
+        return displayText;
     }
     
     @Override

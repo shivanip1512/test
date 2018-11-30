@@ -13,27 +13,27 @@ public enum PrepLoadShape implements DatabaseRepresentationSource, DisplayableEn
     ;
     private static String baseKey = "yukon.web.modules.dr.nest.loadShapingType.";
 
-    private static HashMap<String, PrepLoadShape> nameMap;
+    private static HashMap<String, PrepLoadShape> displayTextMap;
     static {
-        nameMap = new HashMap<>();
-        nameMap.put(PREP_UNSPECIFIED.getName(), PREP_UNSPECIFIED);
-        nameMap.put(PREP_STANDARD.getName(), PREP_STANDARD);
-        nameMap.put(PREP_RAMPING.getName(), PREP_RAMPING);
-        nameMap.put(PREP_NONE.getName(), PREP_NONE);
+        displayTextMap = new HashMap<>();
+        displayTextMap.put(PREP_UNSPECIFIED.getDisplayText(), PREP_UNSPECIFIED);
+        displayTextMap.put(PREP_STANDARD.getDisplayText(), PREP_STANDARD);
+        displayTextMap.put(PREP_RAMPING.getDisplayText(), PREP_RAMPING);
+        displayTextMap.put(PREP_NONE.getDisplayText(), PREP_NONE);
     }
     
-    public static PrepLoadShape getFromNameMap(String name) {
-        return nameMap.get(name);
+    public static PrepLoadShape getFromNameMap(String displayText) {
+        return displayTextMap.get(displayText);
     }
     
-    private String name;
+    private String displayText;
     
-    PrepLoadShape(String name) {
-        this.name = name;
+    PrepLoadShape(String displayText) {
+        this.displayText = displayText;
     }
     
-    public String getName() {
-        return name;
+    public String getDisplayText() {
+        return displayText;
     }
     
     @Override
