@@ -2,7 +2,16 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* No Updates */
+/* @start YUK-19044 if YUK-18280 */
+/* error ignore is added here because this may have been fixed on the customer database manually. */
+
+/* @error ignore-begin */
+ALTER TABLE DeviceDataMonitorProcessor
+MODIFY ( StateGroupId NUMBER NULL );
+/* @error ignore-end */
+
+INSERT INTO DBUpdates VALUES('YUK-19044', '7.1.3', SYSDATE);
+/* @end YUK-19044 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
