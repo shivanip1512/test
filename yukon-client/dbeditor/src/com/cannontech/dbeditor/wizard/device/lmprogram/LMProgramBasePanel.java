@@ -259,9 +259,7 @@ private javax.swing.JComboBox<String> getJComboBoxOperationalState() {
 			ivjJComboBoxOperationalState.setName("JComboBoxOperationalState");
 			// user code begin {1}
 			if (programType == PaoType.LM_NEST_PROGRAM) {
-			ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_MANUALONLY );
-            ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_AUTOMATIC );
-            ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_TIMED);
+			    ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_MANUALONLY );
 			} else {
     			ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_AUTOMATIC );
     			ivjJComboBoxOperationalState.addItem( LMProgramBase.OPSTATE_MANUALONLY );
