@@ -27,7 +27,7 @@ private:
 
     using TcpSocketAddress = Connections::SocketAddress;
 
-    TcpSocketAddress getDeviceSocketAddress( const long device_id ) const;
+    boost::optional<const TcpSocketAddress> getDeviceSocketAddress( const long device_id ) const;
 
     void updateCommStatuses(std::set<TcpSocketAddress> addresses, YukonError_t status);
     void updateCommStatus(TcpSocketAddress addr, YukonError_t status);
@@ -39,29 +39,29 @@ private:
 
     std::map<TcpSocketAddress, DnpLookup> _socketAddresses;
 
-    packet *findPacket( const TcpSocketAddress addr, Protocols::PacketFinder &pf );
+    auto findPacket( const TcpSocketAddress addr, Protocols::PacketFinder &pf ) -> std::unique_ptr<packet>;
 
 protected:
 
-    virtual std::string describePort( void ) const;
+    std::string describePort( void ) const override;
 
-    virtual bool setupPort( void );
-    virtual bool manageConnections( void );
-    virtual YukonError_t sendOutbound( device_record &dr );
-    virtual unsigned getDeviceTimeout( const device_record &dr ) const;
-    virtual bool collectInbounds(const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
+    bool setupPort( void ) override;
+    bool manageConnections( void ) override;
+    YukonError_t sendOutbound( device_record &dr ) override;
+    unsigned getDeviceTimeout( const device_record &dr ) const override;
+    bool collectInbounds(const Cti::Timing::MillisecondTimer & timer, const unsigned long until) override;
 
-    virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
+    void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices) override;
 
-    virtual void addDeviceProperties   (const CtiDeviceSingle &device);
-    virtual void updateDeviceProperties(const CtiDeviceSingle &device);
-    virtual void deleteDeviceProperties(const CtiDeviceSingle &device);
+    void addDeviceProperties   (const CtiDeviceSingle &device) override;
+    void updateDeviceProperties(const CtiDeviceSingle &device) override;
+    void deleteDeviceProperties(const CtiDeviceSingle &device) override;
 
-    virtual void updatePortProperties( void );
+    void updatePortProperties( void ) override;
 
-    virtual bool isDeviceDisconnected( const long device_id ) const;
+    bool isDeviceDisconnected( const long device_id ) const override;
 
-    virtual std::string describeDeviceAddress( const long device_id ) const;
+    std::string describeDeviceAddress( const long device_id ) const override;
 
 public:
 

@@ -27,8 +27,6 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/algorithm/cxx11/all_of.hpp>
 
-using namespace std;
-
 extern CtiDeviceManager DeviceManager;
 
 using Cti::Protocols::GpuffProtocol;
@@ -46,9 +44,9 @@ void PortTcpThread(void *pid)
 
     if( Port && Port->getType() == PortTypeTcp )
     {
-        ostringstream thread_name;
+        std::ostringstream thread_name;
 
-        thread_name << "TCP PortID " << setw(4) << setfill('0') << Port->getPortID();
+        thread_name << "TCP PortID " << std::setw(4) << std::setfill('0') << Port->getPortID();
 
         SetThreadName(-1, thread_name.str().c_str());
 
@@ -96,7 +94,7 @@ bool TcpPortHandler::manageConnections( void )
 }
 
 
-void TcpPortHandler::updateCommStatuses(std::set<Connections::SocketAddress> addresses, YukonError_t status)
+void TcpPortHandler::updateCommStatuses(std::set<TcpSocketAddress> addresses, YukonError_t status)
 {
     for( const auto addr : addresses )
     {
@@ -104,7 +102,7 @@ void TcpPortHandler::updateCommStatuses(std::set<Connections::SocketAddress> add
     }
 }
 
-void TcpPortHandler::updateCommStatus(Connections::SocketAddress addr, YukonError_t status)
+void TcpPortHandler::updateCommStatus(TcpSocketAddress addr, YukonError_t status)
 {
     for( const auto device_id : _address_devices.left.equal_range(addr) | boost::adaptors::map_values )
     {
@@ -123,7 +121,7 @@ void TcpPortHandler::updateDeviceCommStatus(const long device_id, YukonError_t s
 }
 
 
-void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> &devices)
+void TcpPortHandler::loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices)
 {
     auto enabled = [](const CtiDeviceSingle* dev) {
         return dev && ! dev->isInhibited();
@@ -255,17 +253,34 @@ void TcpPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
 
 void TcpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 {
-    //  This is a little wrong - if the properties are removed, this won't detect it
-    //
-    //  We don't really handle nonexistent IPs or ports anyway - we should do that, too
-
     if( device.isInhibited() )
     {
         deleteDeviceProperties(device);
+
+        return;
     }
-    else
+
+    auto old_address_itr = _address_devices.right.find(device.getID());
+    
+    std::optional<TcpSocketAddress> old_address;
+
+    if( old_address_itr != _address_devices.right.end() )
     {
-        addDeviceProperties(device);
+        old_address.emplace(old_address_itr->second);
+
+        _socketAddresses[*old_address].deleteDevice(device.getID());
+
+        _address_devices.right.erase(old_address_itr);
+    }
+
+    addDeviceProperties(device);
+
+    if( old_address )
+    {
+        if( ! _address_devices.left.count(*old_address) )
+        {
+            _connectionManager.disconnect(*old_address);
+        }
     }
 }
 
@@ -288,12 +303,22 @@ YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
     TcpConnectionManager::bytes buf(dr.xfer.getOutBuffer(),
                                     dr.xfer.getOutBuffer() + dr.xfer.getOutCount());
 
-    auto addr = getDeviceSocketAddress(dr.device->getID());
+    const auto optAddr = getDeviceSocketAddress(dr.device->getID());
+
+    if( ! optAddr )
+    {
+        CTILOG_ERROR(dout, "Socket address not found for device " << dr.device->getName() << " id " << dr.device->getID() << ", cannot send packet");
+
+        updateDeviceCommStatus(dr.device->getID(), ClientErrors::DeviceNotConnected);
+
+        return ClientErrors::DeviceNotConnected;
+    }
+
+    const auto& addr = *optAddr;
 
     if( gConfigParms.getValueAsULong("PORTER_TCP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CTILOG_DEBUG(dout, "sending packet to "<< addr <<
-                endl << buf);
+        CTILOG_DEBUG(dout, "sending packet to "<< addr << "\n" << buf);
     }
 
     try
@@ -330,13 +355,9 @@ unsigned TcpPortHandler::getDeviceTimeout( const device_record &dr ) const
 }
 
 
-string TcpPortHandler::describePort( void ) const
+std::string TcpPortHandler::describePort( void ) const
 {
-    ostringstream ostr;
-
-    ostr << "TCP port " << _tcp_port->getName();
-
-    return ostr.str();
+    return "TCP port " + _tcp_port->getName();
 }
 
 
@@ -384,7 +405,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
                     {
                         if( auto dr = getDeviceRecordById(*device_id) )
                         {
-                            addInboundWork(*dr, p);
+                            addInboundWork(*dr, p.release());
                         }
                         else
                         {
@@ -410,7 +431,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
             {
                 p->protocol = packet::ProtocolTypeGpuff;
 
-                addInboundWork(*(device_records.front()), p);
+                addInboundWork(*(device_records.front()), p.release());
             }
         }
         else
@@ -436,7 +457,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
 }
 
 
-UnsolicitedHandler::packet *TcpPortHandler::findPacket( const Connections::SocketAddress addr, Protocols::PacketFinder &pf )
+auto TcpPortHandler::findPacket( const TcpSocketAddress addr, Protocols::PacketFinder &pf ) -> std::unique_ptr<packet>
 {
     if( !_connectionManager.searchStream(addr, pf) )
     {
@@ -457,20 +478,22 @@ UnsolicitedHandler::packet *TcpPortHandler::findPacket( const Connections::Socke
 
     copy(pf.begin(), pf.end(), p->data);
 
-    return p;
+    return std::unique_ptr<packet>{p};
 }
 
 
-Connections::SocketAddress TcpPortHandler::getDeviceSocketAddress( const long device_id ) const
+auto TcpPortHandler::getDeviceSocketAddress( const long device_id ) const -> boost::optional<const TcpSocketAddress>
 {
-    static const Connections::SocketAddress invalidAddress { string(), numeric_limits<u_short>::max() };
-
-    return mapFindOrDefault(_address_devices.right, device_id, invalidAddress);
+    return mapFind(_address_devices.right, device_id);
 }
 
 std::string TcpPortHandler::describeDeviceAddress( const long device_id ) const
 {
-    return getDeviceSocketAddress(device_id).toString();
+    if( auto addr = getDeviceSocketAddress(device_id) )
+    {
+        return addr->toString();
+    }
+    return "address missing";
 }
 
 

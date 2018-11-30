@@ -46,6 +46,8 @@ TcpConnectionManager::bytes *TcpConnectionManager::findStream(const address addr
 
 void TcpConnectionManager::disconnect(const address addr)
 {
+    CTILOG_INFO(dout, "Disconnecting from " << addr);
+
     _established.erase(addr);
     _pending    .erase(addr);
     _inactive   .erase(addr);
