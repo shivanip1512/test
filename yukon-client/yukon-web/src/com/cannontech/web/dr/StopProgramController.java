@@ -145,11 +145,6 @@ public class StopProgramController extends ProgramControllerBase {
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
 
-        if(nestService.isNestProgram(backingBean.getProgramId())) {
-            String error = nestService.stopControl(backingBean.getProgramId());
-            System.out.println("----------------------" + error);
-        }
-
         Date stopDate = backingBean.getStopDate();
         int gearNumber = backingBean.getGearNumber();
         if (backingBean.isUseStopGear()) {
@@ -164,6 +159,9 @@ public class StopProgramController extends ProgramControllerBase {
                                                                   program.getName(),
                                                                   stopDate);
         } else if (backingBean.isStopNow()) {
+            if(nestService.isEnabledNestProgramWithEnabledGroup(backingBean.getProgramId())) {
+                String error = nestService.stopControlForProgram(backingBean.getProgramId());
+            }
             programService.stopProgram(backingBean.getProgramId());
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
                                                                   program.getName(),
@@ -316,17 +314,16 @@ public class StopProgramController extends ProgramControllerBase {
                 boolean stopGearAllowed =
                         rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                       userContext.getYukonUser());
-                if (nestService.isNestProgram(programStopInfo.getProgramId())) {
-                    String error = nestService.stopControl(programStopInfo.getProgramId());
-                    // Nest program returned an error, we are going to skip this program
-                    // Do we need to write this to some event log? If so which one?
-                    if(error != null) {
-                        continue;
-                    }
-                }
-                
-            
+               
                 if (backingBean.isStopNow() && stopOffset == null) {
+                    if (nestService.isEnabledNestProgramWithEnabledGroup(programStopInfo.getProgramId())) {
+                        String error = nestService.stopControlForProgram(programStopInfo.getProgramId());
+                        // Nest program returned an error, we are going to skip this program
+                        // Do we need to write this to some event log? If so which one?
+                        if(error != null) {
+                            continue;
+                        }
+                    }
                     programService.stopProgram(programStopInfo.getProgramId());
                 } else if (stopGearAllowed && programStopInfo.isUseStopGear()) {
                     programService.stopProgramWithGear(programStopInfo.getProgramId(), 

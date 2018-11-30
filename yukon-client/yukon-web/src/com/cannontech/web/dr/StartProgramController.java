@@ -237,7 +237,7 @@ public class StartProgramController extends ProgramControllerBase {
         Date startDate = backingBean.getStartDate();
         boolean scheduleStop = backingBean.isScheduleStop();
         
-        if(nestService.isNestProgram(programId)) {
+        if(nestService.isEnabledNestProgramWithEnabledGroup(programId)) {
             Optional<SchedulabilityError> error = nestService.scheduleControl(programId, gearNumber, startDate, backingBean.getActualStopDate());
         }
 
@@ -595,7 +595,7 @@ public class StartProgramController extends ProgramControllerBase {
                 stopOffset = scenarioProgram.getStopOffset();
             }
             
-            if (nestService.isNestProgram(programStartInfo.getProgramId())) {
+            if (nestService.isEnabledNestProgramWithEnabledGroup(programStartInfo.getProgramId())) {
                 Optional<SchedulabilityError> error = nestService.scheduleControl(programStartInfo.getProgramId(),
                     programStartInfo.getGearNumber(), backingBean.getStartDate(), backingBean.getActualStopDate());
                 if(error.isPresent()) {

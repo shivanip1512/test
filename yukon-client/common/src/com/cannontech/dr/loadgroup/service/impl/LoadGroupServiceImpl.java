@@ -81,7 +81,6 @@ public class LoadGroupServiceImpl implements LoadGroupService {
 
     @Override
     public void sendShed(int loadGroupId, int durationInSeconds) {
-
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
         if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_NEST) {
             throw new IllegalArgumentException("Nest load groups cannot be directly shed.");
@@ -110,9 +109,6 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Override
     public void setEnabled(int loadGroupId, boolean isEnabled) {
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
-        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_NEST) {
-            throw new IllegalArgumentException("Nest load groups cannot be directly restored.");
-        }
         int loadControlCommand = isEnabled ? LMCommand.ENABLE_GROUP
                 : LMCommand.DISABLE_GROUP;
         Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);

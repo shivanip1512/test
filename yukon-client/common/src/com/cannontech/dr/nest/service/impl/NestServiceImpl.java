@@ -13,13 +13,16 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.device.lm.NestCriticalCycleGear;
 import com.cannontech.database.data.device.lm.NestStandardCycleGear;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.NestControlEvent;
 import com.cannontech.dr.nest.model.NestException;
@@ -34,6 +37,9 @@ import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestService;
+import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.yukon.IDatabaseCache;
@@ -48,6 +54,8 @@ public class NestServiceImpl implements NestService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private CustomerDao customerDao;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private ProgramService programService;
+    @Autowired private LoadGroupService loadGroupService;
     
     //Nest timestamp in RFC3339 UTC "Zulu" format
     public static DateTimeFormatter formatter = DateTimeFormatter
@@ -60,7 +68,7 @@ public class NestServiceImpl implements NestService {
     public Optional<SchedulabilityError> scheduleControl(int programId, int gearId, Date startTime, Date stopTime) {
         
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(programId));
-        String group = getNestGroupForProgram(groupIds, programId);
+        String group = getNestGroupForProgram(groupIds, programId).getPaoName();
         Period period = new Period(new Instant(startTime), new Instant(stopTime)); 
 
         try {
@@ -91,12 +99,17 @@ public class NestServiceImpl implements NestService {
     }
     
     @Override
-    public String stopControl(int programId) {
+    public String stopControlForProgram(int programId) {
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(programId));
-        String group = getNestGroupForProgram(groupIds, programId);
+        String group = getNestGroupForProgram(groupIds, programId).getPaoName();
+        return stopControlForGroup(group);
+    }
+
+    @Override
+    public String stopControlForGroup(String group) {
         NestControlEvent event = nestDao.getCancelableEvent(group);
         if (event == null) {
-            throw new NestException("Nest Control History for programId " + programId + " group " + group
+            throw new NestException("Nest Control History for group " + group
                 + " is not found or this event is already canceled. Unable to cancel control.");
         }
         Optional<String> result;
@@ -139,10 +152,31 @@ public class NestServiceImpl implements NestService {
     }
     
     @Override
-    public boolean isNestProgram(int programId) {
-        boolean isNestProgram = dbCache.getAllLMPrograms().stream()
-                .anyMatch(p -> p.getPaoType() == PaoType.LM_NEST_PROGRAM && p.getLiteID() == programId);
-        return isNestProgram;
+    public boolean isEnabledNestProgramWithEnabledGroup(int programId) {
+        return dbCache.getAllLMPrograms().stream()
+                .anyMatch(p -> p.getPaoType() == PaoType.LM_NEST_PROGRAM 
+                            && p.getLiteID() == programId 
+                            && isProgramEnabled(programId) 
+                            && isGroupEnabled(programId));
+    }
+
+    /**
+     * Returns true if group is enabled
+     */
+    private boolean isGroupEnabled(int programId) {
+        List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(programId));
+        LiteYukonPAObject groupPao = getNestGroupForProgram(groupIds, programId);
+        LMDirectGroupBase group = loadGroupService.getGroupForPao(groupPao);
+        return !group.getDisableFlag();
+    }
+
+    /**
+     * Returns true if group is enabled
+     */
+    private boolean isProgramEnabled(int programId) {
+        DisplayablePao pao = programService.getProgram(programId);
+        LMProgramBase program = programService.getProgramForPao(pao);
+        return !program.getDisableFlag();
     }
     
     //UNIT TEST
@@ -167,7 +201,7 @@ public class NestServiceImpl implements NestService {
      *                 if no nest groups are associated with the program
      * 
      */
-    private String getNestGroupForProgram(List<Integer> groupIds, int programId){
+    private LiteYukonPAObject getNestGroupForProgram(List<Integer> groupIds, int programId){
         if (groupIds.size() > 1) {
             String programName = getProgramName(programId);
             throw new NestException(programName + " has " + groupIds.size()
@@ -175,7 +209,6 @@ public class NestServiceImpl implements NestService {
         }
         return dbCache.getAllLMGroups().stream()
             .filter(g -> g.getPaoType() == PaoType.LM_GROUP_NEST && groupIds.contains(g.getLiteID()))
-            .map(LiteYukonPAObject::getPaoName)
             .findFirst()
             .orElseThrow(() -> new NestException("Nest Group is not found for program id "+ programId));
     }

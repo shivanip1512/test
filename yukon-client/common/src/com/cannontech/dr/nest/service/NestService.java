@@ -20,16 +20,29 @@ public interface NestService {
 
     /**
      * Sends control message to Nest
+     * 
+     * @throws NestException if more then 1 group is assigned to the program
      */
     Optional<SchedulabilityError> scheduleControl(int programId, int gearId, Date startTime, Date stopTime);
 
     /**
-     * Sends message to Nest to stop or cancel control
+     * Returns true if the programId is of the Nest program, the program and the group are enabled
+     * 
+     * @throws NestException if more then 1 group is assigned to the program
      */
-    String stopControl(int programId);
+    boolean isEnabledNestProgramWithEnabledGroup(int programId);
 
     /**
-     * Returns true if the programId is of the Nest program
+     * Sends message to Nest to stop or cancel control
+     * 
+     * @throws NestException if more then 1 group is assigned to the program
      */
-    boolean isNestProgram(int programId);
+    String stopControlForProgram(int programId);
+    
+    /**
+     * Sends message to Nest to stop or cancel control
+     * 
+     * @throws NestException if more then 1 group is assigned to the program
+     */
+    String stopControlForGroup(String groupName);
 }
