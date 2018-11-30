@@ -192,6 +192,7 @@ public class NestDaoImpl implements NestDao {
             SqlParameterSink params = updateCreateSql.update("LMNestControlEvent");
             params.addValue("CancelRequestTime", event.getCancelRequestTime());
             params.addValue("CancelResponse", event.getCancelResponse());
+            params.addValue("CancelOrStop", event.getCancelOrStop());
             updateCreateSql.append("WHERE NestControlEventId").eq(event.getId());
         } catch (EmptyResultDataAccessException e) {
             SqlParameterSink params = updateCreateSql.insertInto("LMNestControlEvent");
@@ -201,7 +202,6 @@ public class NestDaoImpl implements NestDao {
             params.addValue("NestKey", event.getKey());
             params.addValue("StartTime", event.getStartTime());
             params.addValue("StopTime", event.getStopTime());
-            params.addValue("CancelOrStop", event.getCancelOrStop());
         }
         jdbcTemplate.update(updateCreateSql);
     }
@@ -216,10 +216,12 @@ public class NestDaoImpl implements NestDao {
         sql.append("AND StopTime").gt(Instant.now());
         //was not canceled
         sql.append("AND CancelOrStop IS NULL");
-        sql.append("AND StartTime = (SELECT MAX(StartTime) FROM LMNestControlEvent");
+        sql.append("AND NestControlEventId = (SELECT MAX(NestControlEventId) FROM LMNestControlEvent");
         sql.append("        WHERE NestGroup").eq(group);
         sql.append("        AND StopTime").gt(Instant.now());
         sql.append("        AND CancelOrStop IS NULL)");
+        System.out.println(Instant.now());
+        System.out.println(sql.getDebugSql());
         return jdbcTemplate.queryForObject(sql, controlEventRowMapper);
     }
     
