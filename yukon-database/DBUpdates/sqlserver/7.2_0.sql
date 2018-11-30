@@ -5,9 +5,11 @@
 /* @start YUK-18039 */
 ALTER TABLE InfrastructureWarnings
 ADD Timestamp DATETIME;
+GO
 
 UPDATE InfrastructureWarnings
 SET Timestamp = '01-JAN-1990';
+GO
 
 ALTER TABLE InfrastructureWarnings
 ALTER COLUMN Timestamp DATETIME NOT NULL;
