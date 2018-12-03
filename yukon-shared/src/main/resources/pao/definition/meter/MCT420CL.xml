@@ -209,5 +209,32 @@
         <command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
             <cmd text="getconfig intervals"/>
         </command>
+        <command name="Read kWh, Daily Peak Demand, Blink Count">
+            <cmd text="getvalue daily read detail"/>
+            <point name="Blink Count"/>
+            <point name="kWh"/>
+            <point name="kW"/>
+            <point name="Peak Demand Daily"/>
+        </command>
+        <command name="Read Daily kWh, Daily Peak Demand, Min/Max Voltage (Channel 1)">
+            <cmd text="getvalue daily read detail channel 1"/>
+            <point name="Min Volts"/>
+            <point name="Max Volts"/>
+            <point name="kWh"/>
+            <point name="kW"/>
+            <point name="Peak Demand Daily"/>
+        </command>
+        <command name="Read Daily kWh, Daily Peak Demand, Min/Max Voltage (Channel 2)">
+            <cmd text="getvalue daily read detail channel 2"/>
+            <point name="Blink Count"/>
+            <point name="kWh (Channel 2)"/>
+            <point name="kW (Channel 2)"/>
+        </command>
+        <command name="Read Daily kWh, Daily Peak Demand, Min/Max Voltage (Channel 3)">
+            <cmd text="getvalue daily read detail channel 2"/>
+            <point name="Blink Count"/>
+            <point name="kWh (Channel 3)"/>
+            <point name="kW (Channel 3)"/>
+        </command>
     </commands>
 </pao>
