@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -169,7 +170,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
 
     @Override
     public float getPercentDone() {
-        checkForException();
+        checkAndRebuildIndex();
 
         if (recordCount == 0) {
             return recordCount;
@@ -234,7 +235,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler, final int maxResults)
                 throws IOException {
             // Make sure there are currently no issues with the index
-            checkForException();
+            checkAndRebuildIndex();
 
             // Make sure the index is not currently being built
             if (isBuilding) {
@@ -446,11 +447,21 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     }
 
     /**
-     * Helper method to check for a current exception and throw if there is one
+     * Helper method to check for a current exception and rebuild index
      */
-    private void checkForException() {
-        if (currentException != null) {
-            log.warn("This index may be corrupted because of a previous exception:", currentException);
+    private void checkAndRebuildIndex() {
+        File indexFileLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + getIndexName());
+        if (currentException != null || !indexFileLocation.exists()) {
+            shutdown();
+            if (currentException != null) {
+                boolean isDeleted = FileUtils.deleteQuietly(indexFileLocation);
+                if (isDeleted == false) {
+                    log.warn("This index may be corrupted because of a previous exception: ", currentException);
+                    return;
+                }
+            }
+            log.info("Rebuilding indexes for ", getIndexName());
+            processBuild(true);
         }
     }
 
