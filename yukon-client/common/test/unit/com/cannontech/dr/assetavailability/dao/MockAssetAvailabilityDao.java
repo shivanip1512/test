@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
@@ -24,24 +21,21 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
 public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityDao.class);
 
     @Override
-    public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
+    public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
             SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
-        List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
+        List<ApplianceAssetAvailabilityDetails> resultList = new ArrayList<ApplianceAssetAvailabilityDetails>();
 
-        AssetAvailabilityDetails assetAvailability = new AssetAvailabilityDetails();
+        ApplianceAssetAvailabilityDetails assetAvailability = new ApplianceAssetAvailabilityDetails();
         assetAvailability.setAppliances("LCR");
         assetAvailability.setSerialNumber("1234");
         assetAvailability.setType(HardwareType.LCR_4000);
         assetAvailability.setAvailability(AssetAvailabilityCombinedStatus.ACTIVE);
         resultList.add(assetAvailability);
-        SearchResults<AssetAvailabilityDetails> result = SearchResults.pageBasedForSublist(resultList, 1, 10, 20);
+        SearchResults<ApplianceAssetAvailabilityDetails> result = SearchResults.pageBasedForSublist(resultList, 1, 10, 20);
         
         return result;
     }
@@ -70,4 +64,25 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
         summary.addRunning(Sets.newHashSet(10011, 10032));
         return summary;
     }
+
+    @Override
+    public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
+            Iterable<Integer> loadGroupIds, PagingParameters pagingParameters,
+            AssetAvailabilityCombinedStatus[] filterCriteria, SortingParameters sortingParameters,
+            Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime,
+            YukonUserContext userContext) {
+        List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
+
+        AssetAvailabilityDetails assetAvailability = new AssetAvailabilityDetails();
+        assetAvailability.setInventoryId(121234);
+        assetAvailability.setDeviceId(0);
+        assetAvailability.setSerialNumber("1234");
+        assetAvailability.setType(HardwareType.LCR_4000);
+        assetAvailability.setAvailability(AssetAvailabilityCombinedStatus.ACTIVE);
+        resultList.add(assetAvailability);
+        SearchResults<AssetAvailabilityDetails> result = SearchResults.pageBasedForSublist(resultList, 1, 10, 20);
+
+        return result;
+    }
+
 }

@@ -15,7 +15,6 @@ import org.springframework.ui.ModelMap;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
@@ -26,14 +25,12 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
-import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
@@ -47,13 +44,10 @@ public abstract class DemandResponseControllerBase {
     
     private static final Logger log = YukonLogManager.getLogger(DemandResponseControllerBase.class);
     
-    @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private InventoryDao inventoryDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     
     protected static final TypeReference<Set<AssetAvailabilityCombinedStatus>> assetAvailStatusType
@@ -109,13 +103,13 @@ public abstract class DemandResponseControllerBase {
         return assetTotal;
     }
 
-    protected SearchResults<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, YukonUserContext userContext,
+    protected SearchResults<ApplianceAssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, YukonUserContext userContext,
         AssetAvailabilityCombinedStatus[] filters, PagingParameters paging, SortingParameters sortBy) {
 
     paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
     log.debug("Getting asset availability for " + dispPao.getPaoIdentifier());
-    SearchResults<AssetAvailabilityDetails> resultList =
-        assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), paging, filters, sortBy,
+    SearchResults<ApplianceAssetAvailabilityDetails> resultList =
+        assetAvailabilityService.getAssetAvailabilityWithAppliance(dispPao.getPaoIdentifier(), paging, filters, sortBy,
             userContext);
 
     return resultList;
@@ -152,13 +146,13 @@ public abstract class DemandResponseControllerBase {
 
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        SearchResults<AssetAvailabilityDetails> results =
-            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), PagingParameters.EVERYTHING,
+        SearchResults<ApplianceAssetAvailabilityDetails> results =
+            assetAvailabilityService.getAssetAvailabilityWithAppliance(dispPao.getPaoIdentifier(), PagingParameters.EVERYTHING,
                 filters, null, userContext);
 
-        List<AssetAvailabilityDetails> resultList = results.getResultList();
+        List<ApplianceAssetAvailabilityDetails> resultList = results.getResultList();
         List<String[]> dataRows = Lists.newArrayList();
-        for (AssetAvailabilityDetails details : resultList) {
+        for (ApplianceAssetAvailabilityDetails details : resultList) {
             String[] dataRow = new String[6];
 
             dataRow[0] = details.getSerialNumber();

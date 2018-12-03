@@ -24,16 +24,18 @@ import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.TimeUtil;
@@ -75,6 +77,7 @@ public class AssetAvailabilityController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
 
     @GetMapping(value = "updateChart")
@@ -179,9 +182,12 @@ public class AssetAvailabilityController {
             model.addAttribute(column.name(), col);
         }
 
-        /* Filter Results */
-        //TODO: Replace call to mockSearchResults() later with service call once YUK-18954 is done.
-        SearchResults<AssetAvailabilityDetails> searchResults = mockSearchResults();
+        PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(assetId).getPaoIdentifier();
+
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
+            subGroups, paoIdentifier, paging, statuses, sorting, userContext);
+
         model.addAttribute("searchResults", searchResults);
         
         /* Build temporary collection for Collection Actions */
@@ -199,6 +205,16 @@ public class AssetAvailabilityController {
                                                                             .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         
+    }
+
+    private List<DeviceGroup> retrieveSubGroups(String[] deviceSubGroups) {
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
+        }
+        return subGroups;
     }
 
     @GetMapping("/{assetId}/download")
@@ -235,9 +251,8 @@ public class AssetAvailabilityController {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        SearchResults<AssetAvailabilityDetails> results =
-            assetAvailabilityService.getAssetAvailability(liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING,
-                AssetAvailabilityCombinedStatus.values(), null, userContext);
+        SearchResults<AssetAvailabilityDetails> results = assetAvailabilityService.getAssetAvailabilityDetails(
+            null, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, AssetAvailabilityCombinedStatus.values(), null, userContext);
 
         List<String[]> dataRows = Lists.newArrayList();
 
@@ -255,78 +270,17 @@ public class AssetAvailabilityController {
         return dataRows;
     }
 
-    //TODO: Remove this once YUK-18954 is done.
-    private SearchResults<AssetAvailabilityDetails> mockSearchResults() {
-
-        SearchResults<AssetAvailabilityDetails> results = SearchResults.emptyResult();
-
-        List<AssetAvailabilityDetails> list = Lists.newArrayList();
-        AssetAvailabilityDetails aad = new AssetAvailabilityDetails();
-        aad.setAvailability(AssetAvailabilityCombinedStatus.ACTIVE);
-        aad.setLastComm(new Instant());
-        aad.setLastRun(new Instant());
-        aad.setSerialNumber("1123421");
-        aad.setType(HardwareType.COMMERCIAL_EXPRESSSTAT);
-        aad.setInventoryId(6993);
-        aad.setDeviceId(128884);
-        list.add(aad);
-
-        AssetAvailabilityDetails aad1 = new AssetAvailabilityDetails();
-        aad1.setAvailability(AssetAvailabilityCombinedStatus.ACTIVE);
-        aad1.setLastComm(new Instant());
-        aad1.setLastRun(new Instant());
-        aad1.setSerialNumber("777");
-        aad1.setType(HardwareType.ECOBEE_SMART);
-        aad1.setInventoryId(6992);
-        aad1.setDeviceId(128885);
-        list.add(aad1);
-        
-        AssetAvailabilityDetails aad2 = new AssetAvailabilityDetails();
-        aad2.setAvailability(AssetAvailabilityCombinedStatus.OPTED_OUT);
-        aad2.setLastComm(new Instant());
-        aad2.setLastRun(new Instant());
-        aad2.setSerialNumber("76477");
-        aad2.setType(HardwareType.HONEYWELL_FOCUSPRO);
-        aad2.setInventoryId(63);
-        aad2.setDeviceId(34736);
-        list.add(aad2);
-        
-        AssetAvailabilityDetails aad3 = new AssetAvailabilityDetails();
-        aad3.setAvailability(AssetAvailabilityCombinedStatus.UNAVAILABLE);
-        aad3.setLastComm(new Instant());
-        aad3.setLastRun(new Instant());
-        aad3.setSerialNumber("6666");
-        aad3.setType(HardwareType.LCR_5000_VERSACOM);
-        aad3.setInventoryId(362);
-        aad3.setDeviceId(0);
-        list.add(aad3);
-        
-        AssetAvailabilityDetails aad4 = new AssetAvailabilityDetails();
-        aad4.setAvailability(AssetAvailabilityCombinedStatus.UNAVAILABLE);
-        aad4.setLastComm(new Instant());
-        aad4.setLastRun(new Instant());
-        aad4.setSerialNumber("54533");
-        aad4.setType(HardwareType.EXPRESSSTAT);
-        aad4.setInventoryId(394);
-        aad4.setDeviceId(0);
-        list.add(aad4);
-        
-        results.setResultList(list);
-        results.setBounds(0, 5, 5);
-        results.setHitCount(5);
-        return results;
-    }
-
     public enum AssetAvailabilitySortBy implements DisplayableEnum {
-        
-        SERIAL_NUM,
-        TYPE,
-        LAST_COMM,
+
+        SERIAL_NUM, 
+        TYPE, 
+        LAST_COMM, 
         LAST_RUN;
-        
+
         @Override
         public String getFormatKey() {
             return baseKey + name();
+
         }
     }
 

@@ -4,9 +4,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -19,9 +22,9 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
-import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
@@ -34,9 +37,10 @@ import com.google.common.collect.Lists;
 public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private DeviceGroupService deviceGroupService;
 
     @Override
-    public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
+    public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
             SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
@@ -81,28 +85,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("WHERE ApplianceCategoryId=appbase.ApplianceCategoryID) AS appliances,");
         sqlCommon.append("inv.DeviceId AS deviceid,lmbase.InventoryID AS inventoryid, lmbase.ManufacturerSerialNumber "
             + "AS serial_num,");
-        sqlCommon.append("(SELECT YukonDefinitionId");
-        sqlCommon.append("FROM YukonListEntry");
-        sqlCommon.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
-        sqlCommon.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
-        sqlCommon.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(
-            AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
-        sqlCommon.append("(SELECT CASE WHEN lmbase.InventoryId IN");
-        sqlCommon.append("(SELECT DISTINCT ib.InventoryId");
-        sqlCommon.append("FROM InventoryBase ib ");
-        sqlCommon.append("JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
-        sqlCommon.append("AND ooe.StopDate").gt(currentTime);
-        sqlCommon.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(")THEN").
-            appendArgument_k(AssetAvailabilityCombinedStatus.OPTED_OUT);
-        sqlCommon.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
-        sqlCommon.append("WHEN LastCommunication").gt(communicatingWindowEnd);
-        sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
-        sqlCommon.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
-        sqlCommon.append(getTable().getSql());
-        sqlCommon.append(")END");
-        sqlCommon.append(getTable().getSql());
-        sqlCommon.append(")  AS availability");
+        sqlCommon.appendFragment(buildAssetAvailabilityDetailsCommonsql(communicatingWindowEnd, runtimeWindowEnd, currentTime));
         sqlCommon.append("FROM LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,"
             + "InventoryBase inv");
         sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
@@ -124,7 +107,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             sqlPaginateQuery.append(" AND ");
             sqlPaginateQuery.append(pagingParameters.getOneBasedEndIndex());
         }
-        final List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
+        final List<ApplianceAssetAvailabilityDetails> resultList = new ArrayList<ApplianceAssetAvailabilityDetails>();
 
         int totalHitCount = yukonJdbcTemplate.queryForInt(sqlTotalCountQuery);
 
@@ -132,7 +115,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             yukonJdbcTemplate.query(sqlPaginateQuery, new YukonRowCallbackHandler() {
                 @Override
                 public void processRow(YukonResultSet rs) throws SQLException {
-                    AssetAvailabilityDetails assetAvailability = new AssetAvailabilityDetails();
+                    ApplianceAssetAvailabilityDetails assetAvailability = new ApplianceAssetAvailabilityDetails();
                     assetAvailability.setAppliances(rs.getString("appliances"));
                     assetAvailability.setSerialNumber(rs.getString("serial_num"));
                     assetAvailability.setType(HardwareType.valueOf(rs.getInt("type")));
@@ -143,7 +126,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
                 }
             });
         }
-        SearchResults<AssetAvailabilityDetails> result =
+        SearchResults<ApplianceAssetAvailabilityDetails> result =
             SearchResults.pageBasedForSublist(resultList, pagingParameters, totalHitCount);
         return result;
 
@@ -325,4 +308,111 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
 
         return builder;
     }
+
+    public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups, Iterable<Integer> loadGroupIds,
+            PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
+            SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
+            Instant currentTime, YukonUserContext userContext) {
+        String sortingOrder = (sortingParameters == null) ? "SERIAL_NUM" : sortingParameters.getSort();
+        Direction sortingDirection = ((sortingParameters == null) ? Direction.asc : sortingParameters.getDirection());
+
+        SqlStatementBuilder sqlPaginateQuery = new SqlStatementBuilder();
+        SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
+        SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
+        sqlTotalCountQuery.append("SELECT COUNT(*)");
+        sqlPaginateQuery.append("SELECT *");
+
+        sqlPaginateQuery.append("FROM (");
+        sqlPaginateQuery.append("SELECT (ROW_NUMBER() OVER (ORDER BY");
+        sqlPaginateQuery.append(sortingOrder);
+        sqlPaginateQuery.append(" ");
+        sqlPaginateQuery.append(sortingDirection);
+        sqlPaginateQuery.append(")) AS RowNumber, DeviceId, InventoryId, serial_num, Type, last_comm, last_run,"
+            + "Availability");
+        sqlCommon.append("FROM ");
+        sqlCommon.append("(SELECT DISTINCT ");
+        sqlCommon.append("inv.DeviceId AS deviceid, lmbase.InventoryID AS inventoryid, lmbase.ManufacturerSerialNumber "
+            + "AS serial_num,");
+        sqlCommon.appendFragment(buildAssetAvailabilityDetailsCommonsql(communicatingWindowEnd, runtimeWindowEnd, currentTime));
+        sqlCommon.append("FROM LMHardwareBase lmbase, LMHardwareConfiguration hdconf,"
+            + "InventoryBase inv");
+        sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
+        sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
+        sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
+        sqlCommon.append("WHERE AddressingGroupID").in(loadGroupIds);
+        if (!CollectionUtils.isEmpty(subGroups)) {
+            sqlCommon.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(subGroups, "inv.DeviceId"));
+        }
+        sqlCommon.append(")) innertable ");
+        
+        if (filterCriteria != null && filterCriteria.length != 0) {
+            sqlCommon.append(" WHERE Availability").in(Lists.newArrayList(filterCriteria));
+        }
+        sqlTotalCountQuery.append(sqlCommon);
+        sqlPaginateQuery.append(sqlCommon);
+        sqlPaginateQuery.append(")outertable");
+        if (pagingParameters != null) {
+            sqlPaginateQuery.append(" WHERE RowNumber BETWEEN");
+            sqlPaginateQuery.append(pagingParameters.getOneBasedStartIndex());
+            sqlPaginateQuery.append(" AND ");
+            sqlPaginateQuery.append(pagingParameters.getOneBasedEndIndex());
+        }
+        
+        final List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
+
+        int totalHitCount = yukonJdbcTemplate.queryForInt(sqlTotalCountQuery);
+
+        if (totalHitCount > 0) {
+            yukonJdbcTemplate.query(sqlPaginateQuery, new YukonRowCallbackHandler() {
+                @Override
+                public void processRow(YukonResultSet rs) throws SQLException {
+                    AssetAvailabilityDetails assetAvailability = new AssetAvailabilityDetails();
+                    assetAvailability.setDeviceId(rs.getInt("DeviceId"));
+                    assetAvailability.setInventoryId(rs.getInt("InventoryId"));
+                    assetAvailability.setSerialNumber(rs.getString("serial_num"));
+                    assetAvailability.setType(HardwareType.valueOf(rs.getInt("type")));
+                    assetAvailability.setLastComm(rs.getInstant("last_comm"));
+                    assetAvailability.setLastRun(rs.getInstant("last_run"));
+                    assetAvailability.setAvailability(rs.getEnum("availability", AssetAvailabilityCombinedStatus.class));
+                    resultList.add(assetAvailability);
+                }
+            });
+        }
+        SearchResults<AssetAvailabilityDetails> result =
+            SearchResults.pageBasedForSublist(resultList, pagingParameters, totalHitCount);
+        return result;
+    }
+
+    private SqlStatementBuilder buildAssetAvailabilityDetailsCommonsql(Instant communicatingWindowEnd, Instant runtimeWindowEnd,
+            Instant currentTime) {
+
+        SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
+        sqlCommon.append("(SELECT YukonDefinitionId");
+        sqlCommon.append("FROM YukonListEntry");
+        sqlCommon.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
+        sqlCommon.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
+        sqlCommon.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(
+            AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
+        sqlCommon.append("(SELECT CASE WHEN lmbase.InventoryId IN");
+        sqlCommon.append("(SELECT DISTINCT ib.InventoryId");
+        sqlCommon.append("FROM InventoryBase ib ");
+        sqlCommon.append("JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(
+            currentTime);
+        sqlCommon.append("AND ooe.StopDate").gt(currentTime);
+        sqlCommon.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(
+            ")THEN").appendArgument_k(AssetAvailabilityCombinedStatus.OPTED_OUT);
+        sqlCommon.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
+        sqlCommon.append("WHEN LastCommunication").gt(communicatingWindowEnd);
+        sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
+        sqlCommon.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
+        sqlCommon.append(getTable().getSql());
+        sqlCommon.append(")END");
+        sqlCommon.append(getTable().getSql());
+        sqlCommon.append(")  AS availability");
+        
+        return sqlCommon;
+
+    }
+
 }

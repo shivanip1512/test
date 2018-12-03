@@ -20,7 +20,7 @@ import com.google.common.collect.Sets;
 public class AssetAvailabilityServiceTest {
    
     @Test
-    public void getAssetAvailability_ByDrGroupPaoIdentifier() {
+    public void getAssetAvailabilityWithAppliance_ByDrGroupPaoIdentifier() {
         Instant now = getNow();
 
         // All the data this method asserts against is set up here
@@ -29,11 +29,11 @@ public class AssetAvailabilityServiceTest {
         // 107 = area containing all inventory
         PaoIdentifier paoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA);
         
-        SearchResults<AssetAvailabilityDetails> result = assetAvailabilityService.getAssetAvailability(paoIdentifier, 
+        SearchResults<ApplianceAssetAvailabilityDetails> result = assetAvailabilityService.getAssetAvailabilityWithAppliance(paoIdentifier, 
             PagingParameters.EVERYTHING, filters, null, null);
-        List<AssetAvailabilityDetails> assetAvailabilityDetails = result.getResultList();
+        List<ApplianceAssetAvailabilityDetails> assetAvailabilityDetails = result.getResultList();
 
-        testAssetAvailabilityDetails(assetAvailabilityDetails.get(0));
+        testAssetAvailabilityDetailsWithAppliance(assetAvailabilityDetails.get(0));
     }
     
     @Test
@@ -145,7 +145,7 @@ public class AssetAvailabilityServiceTest {
         Assert.assertEquals("Incorrect number of unavailable inventory", 1, aaSummary.getUnavailableSize().intValue()); //exclude opted-out
     }
     
-    private void testAssetAvailabilityDetails(AssetAvailabilityDetails availability) {
+    private void testAssetAvailabilityDetailsWithAppliance(ApplianceAssetAvailabilityDetails availability) {
         Assert.assertEquals("Incorrect A.A. status.", AssetAvailabilityCombinedStatus.ACTIVE, availability.getAvailability());
         Assert.assertNull("Incorrect communication time.", availability.getLastComm());
         Assert.assertNull("Incorrect last non-zero run time.", availability.getLastRun());
@@ -367,5 +367,32 @@ public class AssetAvailabilityServiceTest {
                .withData(1007, tenMinutesAgo, null, null, null, null);
                //no data for inventory 8 (it's unavailable) - entry does not exist
         return builder.build();
+    }
+    
+    @Test
+    public void getAssetAvailability_ByDrGroupPaoIdentifier() {
+        Instant now = getNow();
+
+        // All the data this method asserts against is set up here
+        AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState(false, now);
+        AssetAvailabilityCombinedStatus[] filters = { AssetAvailabilityCombinedStatus.ACTIVE };
+        // 107 = area containing all inventory
+        PaoIdentifier paoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA);
+        
+        SearchResults<AssetAvailabilityDetails> result = assetAvailabilityService.getAssetAvailabilityDetails(null,paoIdentifier, 
+            PagingParameters.EVERYTHING, filters, null, null);
+        List<AssetAvailabilityDetails> assetAvailabilityDetails = result.getResultList();
+
+        testAssetAvailabilityDetails(assetAvailabilityDetails.get(0));
+    }
+    
+    private void testAssetAvailabilityDetails(AssetAvailabilityDetails availability) {
+        Assert.assertEquals("Incorrect A.A. status.", AssetAvailabilityCombinedStatus.ACTIVE, availability.getAvailability());
+        Assert.assertNull("Incorrect communication time.", availability.getLastComm());
+        Assert.assertNull("Incorrect last non-zero run time.", availability.getLastRun());
+        Assert.assertNotNull("Incorrect serial number", availability.getSerialNumber());
+        Assert.assertNotNull("Incorrect type", availability.getType());
+        Assert.assertNotNull("Incorrect DeviceID", availability.getDeviceId());
+        Assert.assertNotNull("Incorrect InventoryID", availability.getInventoryId());
     }
 }

@@ -1,11 +1,15 @@
 package com.cannontech.dr.assetavailability.dao;
 
+import java.util.List;
+
 import org.joda.time.Instant;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
@@ -17,7 +21,7 @@ import com.cannontech.user.YukonUserContext;
  */
 public interface AssetAvailabilityDao {
     /**
-     * Creates AssetAvailabilityDetails list which have the details of assets
+     * Creates ApplianceAssetAvailabilityDetails list which have the details of assets
      * 
      * @param loadGroupIds -- list of load group ids.
      * @param pagingParameters -- paging details.
@@ -27,9 +31,9 @@ public interface AssetAvailabilityDao {
      * @param runtimeWindowEnd -- runtime window end time
      * @param currentTime -- current Time.
      * @param userContext - user context used to extract the user details.
-     * @return SearchResults of AssetAvailabilityDetails which have the details of assets.
+     * @return SearchResults of ApplianceAssetAvailabilityDetails which have the details of assets.
      */
-    SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
+    SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filters,
             SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext);
@@ -57,5 +61,25 @@ public interface AssetAvailabilityDao {
      */    
     ApplianceAssetAvailabilitySummary getApplianceAssetAvailabilitySummary(PaoIdentifier drPaoIdentifier,
             Instant communicatingWindowEnd, Instant runtimeWindowEnd,Instant currentTime);
+
+    /**
+     * Creates AssetAvailabilityDetails list which have the details of assets
+     * 
+     * @param subGroups  -- list of selected Device Groups
+     * @param loadGroupIds -- list of load group ids.
+     * @param pagingParameters -- paging details.
+     * @param filters -- filter details.
+     * @param sortingParameters -- Sorting details. Sorting order and direction are fetched from this.
+     * @param communicatingWindowEnd -- communicating window end time.
+     * @param runtimeWindowEnd -- runtime window end time
+     * @param currentTime -- current Time.
+     * @param userContext - user context used to extract the user details.
+     * @return SearchResults of AssetAvailabilityDetails which have the details of assets.
+     */
+    SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
+            Iterable<Integer> loadGroupIds, PagingParameters pagingParameters,
+            AssetAvailabilityCombinedStatus[] filterCriteria, SortingParameters sortingParameters,
+            Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime,
+            YukonUserContext userContext);
 
 }

@@ -1,14 +1,17 @@
 package com.cannontech.dr.assetavailability.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
@@ -66,9 +69,9 @@ public interface AssetAvailabilityService {
      * @param filters - List of selected filters.
      * @param sortBy - sorting order.
      * @param userContext - used to get the user details
-     * @return SearchResults of AssetAvailabilityDetails.
+     * @return SearchResults of ApplianceAssetAvailabilityDetails.
      */
-    public SearchResults<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters 
+    public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityWithAppliance(PaoIdentifier paoIdentifier, PagingParameters 
             paging, AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy, YukonUserContext userContext);
 
     /**
@@ -76,4 +79,13 @@ public interface AssetAvailabilityService {
      * availability status is "unavailable".
      */
     public Set<SimpleDevice> getUnavailableDevicesInDrGrouping(YukonPao yukonPao);
+
+    /**
+     * Gets the details of assets for a program/load group/control area/scenario based on subGroups, filters and paging
+     * provided.
+     */
+    SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
+            PaoIdentifier paoIdentifier, PagingParameters paging, AssetAvailabilityCombinedStatus[] filters,
+            SortingParameters sortBy, YukonUserContext userContext);
+
 }
