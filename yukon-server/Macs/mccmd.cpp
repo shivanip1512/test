@@ -79,9 +79,9 @@ char* ScheduleIDVariable = "ScheduleID";
 char* HolidayScheduleIDVariable = "HolidayScheduleID";
 char* PILRequestPriorityVariable = "MessagePriority";
 
-CtiClientConnection* PorterConnection = 0;
-CtiClientConnection* VanGoghConnection = 0;
-CtiClientConnection* NotificationConnection = 0;
+std::unique_ptr<CtiClientConnection> PorterConnection;
+std::unique_ptr<CtiClientConnection> VanGoghConnection;
+std::unique_ptr<CtiClientConnection> NotificationConnection;
 
 void _MessageThrFunc();
 
@@ -358,23 +358,23 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const cha
 
     CTILOG_INFO(dout, "MCCMD done loading cparms");
 
-    PorterConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::porter );
+    PorterConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::ActiveMQ::Queue::porter );
     PorterConnection->setName("MCCMD to Porter");
     PorterConnection->start();
 
     //Send a registration message
-    CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
-    PorterConnection->WriteConnQue(reg, CALLSITE);
+    auto reg = std::make_unique<CtiRegistrationMsg>("MCCMD", 0, false);
+    PorterConnection->WriteConnQue(std::move(reg), CALLSITE);
 
-    VanGoghConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+    VanGoghConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::ActiveMQ::Queue::dispatch );
     VanGoghConnection->setName("MCCMD to Dispatch");
     VanGoghConnection->start();
 
     //Send a registration message
-    CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("MCCMD", 0, false );
-    VanGoghConnection->WriteConnQue(reg2, CALLSITE);
+    auto reg2 = std::make_unique<CtiRegistrationMsg>("MCCMD", 0, false);
+    VanGoghConnection->WriteConnQue(std::move(reg2), CALLSITE);
 
-    NotificationConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification );
+    NotificationConnection = std::make_unique<CtiClientConnection>( Cti::Messaging::ActiveMQ::Queue::notification );
     NotificationConnection->setName("MCCMD to Notification");
     NotificationConnection->start();
 
@@ -403,14 +403,9 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, const 
 
     NotificationConnection->close();
 
-    delete PorterConnection;
-    PorterConnection = 0;
-
-    delete VanGoghConnection;
-    VanGoghConnection = 0;
-
-    delete NotificationConnection;
-    NotificationConnection = 0;
+    PorterConnection       = nullptr;
+    VanGoghConnection      = nullptr;
+    NotificationConnection = nullptr;
 
     return 0;
 
@@ -1692,7 +1687,14 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     // We now always send the cancel message.
     if( two_way && timeout > 0 && !gDoNotSendCancel)
     {
-        PorterConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, msgid), CALLSITE);
+        if( PorterConnection )
+        {
+            PorterConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, msgid), CALLSITE);
+        }
+        else
+        {
+            CTILOG_WARN(dout, "Porter connection has been reset - could not send cancel for request ID " << msgid);
+        }
     }
 
     // set up good and bad tcl lists
