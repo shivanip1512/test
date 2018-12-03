@@ -120,6 +120,23 @@ public class AssetAvailabilityController {
         } else {
             model.addAttribute("statuses", statuses);
         }
+        
+        /* set Asset Availability filter help text. */
+        long totalHours = globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS);
+        long totalDays = TimeUnit.DAYS.convert(totalHours, TimeUnit.HOURS);
+        long hoursRemaining = TimeUtil.hoursRemainingAfterConveritngToDays(totalHours);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String days = accessor.getMessage("yukon.common.duration.days", totalDays);
+        String hours = "";
+        if (totalDays > 0) {
+            hours = accessor.getMessage("yukon.common.duration.hours.withDays", hoursRemaining);
+        } else {
+            hours = accessor.getMessage("yukon.common.duration.hours", hoursRemaining);
+        }
+        String helpText = accessor.getMessage(baseKey + "helpText",
+            days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS));
+        model.addAttribute("helpText", helpText);
+        
         return "dr/assetAvailability/detail.jsp";
     }
     
@@ -161,21 +178,6 @@ public class AssetAvailabilityController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
-        
-        /* set Asset Availability filter help text. */
-        long totalHours = globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS);
-        long totalDays = TimeUnit.DAYS.convert(totalHours, TimeUnit.HOURS);
-        long hoursRemaining = TimeUtil.hoursRemainingAfterConveritngToDays(totalHours);
-        String days = accessor.getMessage("yukon.common.duration.days", totalDays);
-        String hours = "";
-        if (totalDays > 0) {
-            hours = accessor.getMessage("yukon.common.duration.hours.withDays", hoursRemaining);
-        } else {
-            hours = accessor.getMessage("yukon.common.duration.hours", hoursRemaining);
-        }
-        String helpText = accessor.getMessage(baseKey + "helpText",
-            days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS));
-        model.addAttribute("helpText", helpText);
 
         /* Filter Results */
         //TODO: Replace call to mockSearchResults() later with service call once YUK-18954 is done.
