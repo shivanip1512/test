@@ -41,6 +41,10 @@ private:
 
     auto findPacket( const TcpSocketAddress addr, Protocols::PacketFinder &pf ) -> std::unique_ptr<packet>;
 
+    std::optional<TcpSocketAddress> removeAddressMappings(long device_id);
+
+    void disconnectIfUnused(TcpSocketAddress addr);
+
 protected:
 
     std::string describePort( void ) const override;

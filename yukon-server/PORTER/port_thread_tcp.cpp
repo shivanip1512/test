@@ -234,20 +234,9 @@ void TcpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 
 void TcpPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
 {
-    if( auto itr = _address_devices.right.find(device.getID()); 
-        itr != _address_devices.right.end() )
+    if( auto addr = removeAddressMappings(device.getID()) )
     {
-        const auto addr = itr->second;
-
-        _socketAddresses[addr].deleteDevice(device.getID());
-
-        _address_devices.right.erase(itr);
-
-        //  If there are no other devices using this address, disconnect it.
-        if( ! _address_devices.left.count(addr) )
-        {
-            _connectionManager.disconnect(addr);
-        }
+        disconnectIfUnused(*addr);
     }
 }
 
@@ -259,28 +248,42 @@ void TcpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 
         return;
     }
-
-    auto old_address_itr = _address_devices.right.find(device.getID());
     
-    std::optional<TcpSocketAddress> old_address;
-
-    if( old_address_itr != _address_devices.right.end() )
-    {
-        old_address.emplace(old_address_itr->second);
-
-        _socketAddresses[*old_address].deleteDevice(device.getID());
-
-        _address_devices.right.erase(old_address_itr);
-    }
+    auto old_address = removeAddressMappings(device.getID());
 
     addDeviceProperties(device);
 
     if( old_address )
     {
-        if( ! _address_devices.left.count(*old_address) )
-        {
-            _connectionManager.disconnect(*old_address);
-        }
+        disconnectIfUnused(*old_address);
+    }
+}
+
+
+auto TcpPortHandler::removeAddressMappings(const long device_id) -> std::optional<TcpSocketAddress>
+{
+    if( auto address_itr = _address_devices.right.find(device_id);
+        address_itr != _address_devices.right.end() )
+    {
+        auto addr = address_itr->second;
+
+        _socketAddresses[addr].deleteDevice(device_id);
+
+        _address_devices.right.erase(address_itr);
+
+        return addr;
+    }
+
+    return std::nullopt;
+}
+
+
+void TcpPortHandler::disconnectIfUnused(TcpSocketAddress addr)
+{
+    //  If there are no other devices using this address, disconnect it.
+    if( !_address_devices.left.count(addr) )
+    {
+        _connectionManager.disconnect(addr);
     }
 }
 
@@ -499,7 +502,7 @@ std::string TcpPortHandler::describeDeviceAddress( const long device_id ) const
 
 bool TcpPortHandler::isDeviceDisconnected( const long device_id ) const
 {
-    if( auto address = mapFind(_address_devices.right, device_id) )
+    if( auto address = getDeviceSocketAddress(device_id) )
     {
         return ! _connectionManager.isConnected(*address);
     }
