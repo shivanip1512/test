@@ -25,12 +25,16 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.i18n.WebMessageSourceResolvable;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class RtuServiceImpl implements RtuService{
+    
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private IDatabaseCache cache;
     @Autowired private PointDao pointDao;
     @Autowired private DBPersistentDao dbPersistentDao;
@@ -143,6 +147,7 @@ public class RtuServiceImpl implements RtuService{
         if (copyPointFlag) {
             List<PointBase> points = pointDao.getPointsForPao(oldRtuId);
             paoCreationHelper.applyPoints(rtuDnp, points);
+            dbChangeManager.processPaoDbChange(rtuDnp, DbChangeType.UPDATE);
         }
         return newPaoId;
     }
