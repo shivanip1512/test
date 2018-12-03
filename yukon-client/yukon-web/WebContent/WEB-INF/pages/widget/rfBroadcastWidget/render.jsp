@@ -18,13 +18,14 @@
                     </thead>
                     <tbody>
                         <c:forEach var="test" varStatus="loop" items="${results}">
+                            <cti:formatDate value="${test.timeMessageSent}" type="FULL" var="eventTime"/>
                             <tr>
                             <c:choose>
                                 <c:when test="${loop.index == 0}">
-                                    <td><i:inline key=".lastRun"/></td>
+                                    <td title="${eventTime}"><i:inline key=".lastRun"/></td>
                                 </c:when>
                                 <c:otherwise>
-                                    <td><cti:formatDate type="DATE" value="${test.timeMessageSent}"/></td>
+                                    <td title="${eventTime}"><cti:formatDate type="DATE" value="${test.timeMessageSent}"/></td>
                                 </c:otherwise>
                             </c:choose>
                                 <td colspan="2">

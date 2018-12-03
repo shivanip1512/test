@@ -1091,14 +1091,14 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.home.rfPerformance.infoText">
 <![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
 <br>
-The devices in this category have confirmed receiving the unique RF Broadcast Performance message for the selected day.
+The devices in this category have confirmed receiving the unique RF Broadcast Performance test message for the selected day.
 <br><br>
 <span style="background-color:orange; color:white ;font-weight:bold">Confirmed Missed</span>
 <br>
-The devices in this category have reported all available data for the selected day and the analysis has determined the unique BPR message was not received by the device.
+The devices in this category have reported all available data for the selected day and the analysis has determined the unique RF Broadcast Performance test message was not received by the device.
 <br><br>
 <span style="background-color:gray; color:white ;font-weight:bold">Unreported</span>
 <br>
-The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique BPR receipt for the device. When the data is received, the device will re-categorized appropriately.
+The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique RF Broadcast Performance test message for the device. When the data is received, the device will re-categorized appropriately.
 ]]></entry>
 </properties>
