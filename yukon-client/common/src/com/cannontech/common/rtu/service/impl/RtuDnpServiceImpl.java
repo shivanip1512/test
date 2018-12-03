@@ -92,7 +92,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
     public SearchResults<RtuPointDetail> getRtuPointDetail(int rtuId, RtuPointsFilter filter, Direction direction,
             SortBy sortBy, PagingParameters paging) {
 
-        if (filter.getDeviceIds() != null) {
+        if (filter.getDeviceIds() != null && !filter.getDeviceIds().isEmpty()) {
             return rtuDnpDao.getRtuPointDetail(filter.getDeviceIds(), filter.getPointNames(), filter.getTypes(),
                 direction, sortBy, paging);
         } else {
