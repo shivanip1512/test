@@ -6,15 +6,15 @@
 #include "cmd_rfn_TouConfiguration.h"
 #include "cmd_rfn_OvUvConfiguration.h"
 
-
-namespace Cti       {
-namespace Devices   {
+namespace Cti::Devices {
 
 
 class IM_EX_DEVDB RfnCommercialDevice
     :   public RfnMeterDevice
 {
 protected:
+
+    YukonError_t executePutConfig            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
 
     YukonError_t executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
@@ -42,5 +42,3 @@ typedef RfnCommercialDevice Rfn530s4erxrDevice;
 
 
 }
-}
-

@@ -92,18 +92,17 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_immediate_demand_freeze )
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+        BOOST_CHECK_EQUAL_RANGES( rcv, exp );
     }
 }
-/*
-BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_getconfig_install_freezeday )
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_freezeday_reset )
 {
     test_RfnCommercialDevice    dev;
 
-    CtiCommandParser    parse("getconfig install freezeday");
+    CtiCommandParser    parse("putconfig freezeday reset");
 
-    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
     {
@@ -120,49 +119,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_getconfig_install_freezeday )
 
         // execute message and check request bytes
 
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x55 )( 0x01 );
+        const std::vector< unsigned char > exp { 0x55, 0x02, 0x00 };  //  55 = freezeday, 02 = write, 00 = disabled
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+        BOOST_CHECK_EQUAL_RANGES( rcv, exp );
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_freezeday )
-{
-    test_RfnCommercialDevice    dev;
-
-    CtiCommandParser    parse("putconfig install freezeday 24");
-
-    BOOST_CHECK_EQUAL( NoError, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-
-    {
-        const auto & returnMsg = *returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
-    }
-
-    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-    {
-        auto& command = rfnRequests.front();
-
-        // execute message and check request bytes
-
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x55 )( 0x01 );
-
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
-    }
-}
-*/
 BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configuration_alpha )
 {
     test_RfnCommercialDevice dut;
@@ -251,10 +215,10 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             // use the order provided by the set
             const std::vector<unsigned long> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
 
-            const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
+            const auto dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
             BOOST_REQUIRE( !! dynMetricsRcv );
-            BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
+            BOOST_CHECK_EQUAL_RANGES( *dynMetricsRcv, dynMetricsExp );
         }
         {
             auto& command = *rfnRequest_itr++;
@@ -292,12 +256,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             BOOST_CHECK_EQUAL(
                     result.description,
                     "Channel Interval Recording Request:"
-                    "\nStatus: Success (0)\n"
-                    "Channel Interval Recording Full Description:\n"
-                    "Metric(s) descriptors:\n"
-                    "Watt hour total/sum (3): Scaling Factor: 1\n"
-                    "Watt hour net (4): Scaling Factor: 1\n"
-                    "Watts delivered, current demand (5): Scaling Factor: 1\n");
+                    "\nStatus: Success (0)"
+                    "\nChannel Interval Recording Full Description:"
+                    "\nMetric(s) descriptors:"
+                    "\nWatt hour total/sum (3): Scaling Factor: 1"
+                    "\nWatt hour net (4): Scaling Factor: 1"
+                    "\nWatts delivered, current demand (5): Scaling Factor: 1"
+                    "\n");
 
             dut.extractCommandResult( *command );
 
@@ -309,13 +274,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             // use the order provided by the set
             const std::vector<int> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
 
-            const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics );
+            const auto dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics );
 
             BOOST_REQUIRE( !! dynMetricsRcv );
             BOOST_CHECK_EQUAL_RANGES( *dynMetricsRcv, dynMetricsExp );
 
-            const boost::optional<unsigned> recordingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
-            const boost::optional<unsigned> reportingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
+            const auto recordingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
+            const auto reportingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
 
             BOOST_REQUIRE( !! recordingIntervalRcv );
             BOOST_REQUIRE( !! reportingIntervalRcv );
@@ -419,10 +384,10 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             // use the order provided by the set
             const std::vector<unsigned long> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
 
-            const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
+            const auto dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
             BOOST_REQUIRE( !! dynMetricsRcv );
-            BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
+            BOOST_CHECK_EQUAL_RANGES( *dynMetricsRcv, dynMetricsExp );
         }
         {
             auto& command = *rfnRequest_itr++;
@@ -460,12 +425,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             BOOST_CHECK_EQUAL(
                     result.description,
                     "Channel Interval Recording Request:"
-                    "\nStatus: Success (0)\n"
-                    "Channel Interval Recording Full Description:\n"
-                    "Metric(s) descriptors:\n"
-                    "Watt hour total/sum (3): Scaling Factor: 1\n"
-                    "Watt hour net (4): Scaling Factor: 1\n"
-                    "Watts (200): Scaling Factor: 1\n");
+                    "\nStatus: Success (0)"
+                    "\nChannel Interval Recording Full Description:"
+                    "\nMetric(s) descriptors:"
+                    "\nWatt hour total/sum (3): Scaling Factor: 1"
+                    "\nWatt hour net (4): Scaling Factor: 1"
+                    "\nWatts (200): Scaling Factor: 1"
+                    "\n");
 
             dut.extractCommandResult( *command );
 
@@ -477,13 +443,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             // use the order provided by the set
             const std::vector<int> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
 
-            const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics );
+            const auto dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics );
 
             BOOST_REQUIRE( !! dynMetricsRcv );
             BOOST_CHECK_EQUAL_RANGES( *dynMetricsRcv, dynMetricsExp );
 
-            const boost::optional<unsigned> recordingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
-            const boost::optional<unsigned> reportingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
+            const auto recordingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
+            const auto reportingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
 
             BOOST_REQUIRE( !! recordingIntervalRcv );
             BOOST_REQUIRE( !! reportingIntervalRcv );
@@ -568,8 +534,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         returnExpectMoreRcv.push_back(Cti::Test::extractExpectMore(returnMsgs));
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
-    BOOST_CHECK_EQUAL_COLLECTIONS( returnExpectMoreRcv.begin(), returnExpectMoreRcv.end(), returnExpectMoreExp.begin(), returnExpectMoreExp.end() );
+    BOOST_CHECK_EQUAL_RANGES( requestMsgsRcv, requestMsgsExp );
+    BOOST_CHECK_EQUAL_RANGES( returnExpectMoreRcv, returnExpectMoreExp );
 }
 
 BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
