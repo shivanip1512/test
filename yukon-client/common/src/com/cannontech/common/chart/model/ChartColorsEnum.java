@@ -4,9 +4,9 @@ public enum ChartColorsEnum {
 
 	GREEN("#009933"), 
     BLUE("#0000FF"), 
-    LIGHT_BLUE("#849FBB"), 
+    LIGHT_BLUE("#6587AA"), 
     RED("#FF0000"), 
-    LIGHT_RED("#C77D7D"), 
+    LIGHT_RED("#B95D5D"), 
     YELLOW("#CC9900"),
     GREEN_FILL("#97D5AC")
     ;
