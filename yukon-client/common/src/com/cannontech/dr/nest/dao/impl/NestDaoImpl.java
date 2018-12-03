@@ -220,9 +220,11 @@ public class NestDaoImpl implements NestDao {
         sql.append("        WHERE NestGroup").eq(group);
         sql.append("        AND StopTime").gt(Instant.now());
         sql.append("        AND CancelOrStop IS NULL)");
-        System.out.println(Instant.now());
-        System.out.println(sql.getDebugSql());
-        return jdbcTemplate.queryForObject(sql, controlEventRowMapper);
+        try {
+            return jdbcTemplate.queryForObject(sql, controlEventRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     
     private YukonRowMapper<NestControlEvent> controlEventRowMapper = new YukonRowMapper<NestControlEvent>() {
@@ -231,12 +233,12 @@ public class NestDaoImpl implements NestDao {
             NestControlEvent row = new NestControlEvent();
             row.setId(rs.getInt("NestControlEventId"));
             row.setGroup(rs.getString("NestGroup"));
-            row.setCancelOrStop(rs.getString("CancelOrStop"));
+            row.setCancelOrStop(rs.getStringSafe("CancelOrStop"));
             row.setCancelRequestTime(rs.getInstant("CancelRequestTime"));
             row.setStartTime(rs.getInstant("StartTime"));
             row.setStopTime(rs.getInstant("StopTime"));
-            row.setKey(rs.getString("NestKey"));
-            row.setCancelResponse(rs.getString("CancelOrStop"));
+            row.setKey(rs.getStringSafe("NestKey"));
+            row.setCancelResponse(rs.getStringSafe("CancelOrStop"));
             return row;
         }
     };

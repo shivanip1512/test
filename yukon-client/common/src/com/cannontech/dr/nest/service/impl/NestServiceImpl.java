@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.device.lm.NestCriticalCycleGear;
@@ -26,6 +25,7 @@ import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.NestControlEvent;
 import com.cannontech.dr.nest.model.NestException;
+import com.cannontech.dr.nest.model.NestStopEventResult;
 import com.cannontech.dr.nest.model.v3.ControlEvent;
 import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
@@ -40,7 +40,6 @@ import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -99,28 +98,35 @@ public class NestServiceImpl implements NestService {
     }
     
     @Override
-    public String stopControlForProgram(int programId) {
+    public NestStopEventResult stopControlForProgram(int programId) {
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(programId));
         String group = getNestGroupForProgram(groupIds, programId).getPaoName();
         return stopControlForGroup(group);
     }
 
     @Override
-    public String stopControlForGroup(String group) {
+    public NestStopEventResult stopControlForGroup(String group) {
+        NestStopEventResult result = new NestStopEventResult();
         NestControlEvent event = nestDao.getCancelableEvent(group);
         if (event == null) {
-            throw new NestException("Nest Control History for group " + group
-                + " is not found or this event is already canceled. Unable to cancel control.");
+            log.error("Nest Control History for group {} is not found or this event is already canceled. Unable to cancel control.", group);
+            return result;
         }
-        Optional<String> result;
+        result.setStopPossible(true);
+        Optional<String> nestResult;
         if (event.getStartTime().isAfterNow()) {
             // control not started
-            result = nestCommunicationService.cancelEvent(event);
+            nestResult = nestCommunicationService.cancelEvent(event);
         } else {
             // control started
-            result = nestCommunicationService.stopEvent(event);
+            nestResult = nestCommunicationService.stopEvent(event);
         }
-        return result.get();
+        if(nestResult.isPresent()) {
+            result.setNestResponse(nestResult.get());
+        } else {
+            result.setSuccess(true);
+        }
+        return result;
     }
 
     /**
@@ -134,10 +140,9 @@ public class NestServiceImpl implements NestService {
     }
      
     @Override
-    public Optional<String> dissolveAccountWithNest(CustomerAccount account) {
-        log.info("Removing accountNumber {} from Nest", account.getAccountNumber());
-        CustomerEnrollment enrollment =
-            createEnrollement(customerDao.getLiteCustomer(account.getAccountId()), account.getAccountNumber());
+    public Optional<String> dissolveAccountWithNest(LiteCustomer account, String accountNumber) {
+        log.info("Removing accountNumber {} from Nest", account.getLiteID());
+        CustomerEnrollment enrollment = createEnrollement(account, accountNumber);
         enrollment.setEnrollmentState(EnrollmentState.DISSOLVED);
         return nestCommunicationService.updateEnrollment(enrollment);
     }

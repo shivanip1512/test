@@ -3,6 +3,8 @@ package com.cannontech.dr.nest.service;
 import java.util.Date;
 import java.util.Optional;
 
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.dr.nest.model.NestStopEventResult;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 
@@ -16,8 +18,7 @@ public interface NestService {
     /**
      * Sends message to Nest to remove account
      */
-    Optional<String> dissolveAccountWithNest(CustomerAccount account);
-
+    Optional<String> dissolveAccountWithNest(LiteCustomer account, String accountNumber);
     /**
      * Sends control message to Nest
      * 
@@ -36,13 +37,21 @@ public interface NestService {
      * Sends message to Nest to stop or cancel control
      * 
      * @throws NestException if more then 1 group is assigned to the program
+     * @return NestStopEventResult
+     *              isStopPossible is false - request was not sent to Nest because the control is finished or we already sent a request
+     *              isSuccess is false - got an error from Nest
+     *              nestResponse - failure response from Nest 
      */
-    String stopControlForProgram(int programId);
+    NestStopEventResult stopControlForProgram(int programId);
     
     /**
      * Sends message to Nest to stop or cancel control
      * 
      * @throws NestException if more then 1 group is assigned to the program
+     * @return NestStopEventResult
+     *              isStopPossible is false - request was not sent to Nest because the control is finished or we already sent a request
+     *              isSuccess is false - got an error from Nest
+     *              nestResponse - failure response from Nest 
      */
-    String stopControlForGroup(String groupName);
+    NestStopEventResult stopControlForGroup(String groupName);
 }

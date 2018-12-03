@@ -526,7 +526,7 @@ public class AccountServiceImpl implements AccountService {
         accountEventLogService.accountDeleted(user, account.getAccountNumber());
         
         if (deleteFromNest) {
-            nestService.dissolveAccountWithNest(account);
+            nestService.dissolveAccountWithNest(liteCustomer, account.getAccountNumber());
         }
     }
     

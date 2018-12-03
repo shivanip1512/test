@@ -33,6 +33,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.nest.model.NestStopEventResult;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -160,7 +161,7 @@ public class StopProgramController extends ProgramControllerBase {
                                                                   stopDate);
         } else if (backingBean.isStopNow()) {
             if(nestService.isEnabledNestProgramWithEnabledGroup(backingBean.getProgramId())) {
-                String error = nestService.stopControlForProgram(backingBean.getProgramId());
+                NestStopEventResult error = nestService.stopControlForProgram(backingBean.getProgramId());
             }
             programService.stopProgram(backingBean.getProgramId());
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
@@ -317,10 +318,10 @@ public class StopProgramController extends ProgramControllerBase {
                
                 if (backingBean.isStopNow() && stopOffset == null) {
                     if (nestService.isEnabledNestProgramWithEnabledGroup(programStopInfo.getProgramId())) {
-                        String error = nestService.stopControlForProgram(programStopInfo.getProgramId());
+                        NestStopEventResult result = nestService.stopControlForProgram(programStopInfo.getProgramId());
                         // Nest program returned an error, we are going to skip this program
                         // Do we need to write this to some event log? If so which one?
-                        if(error != null) {
+                        if(result.isStopPossible() && !result.isSuccess()) {
                             continue;
                         }
                     }
