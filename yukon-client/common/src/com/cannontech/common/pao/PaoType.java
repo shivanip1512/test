@@ -681,7 +681,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART, ECOBEE_3_LITE);
         honeywellTypes = ImmutableSet.of(HONEYWELL_9000, HONEYWELL_FOCUSPRO, HONEYWELL_VISIONPRO_8000, HONEYWELL_THERMOSTAT);
-        nestTypes = ImmutableSet.of(NEST, LM_GROUP_NEST, LM_NEST_PROGRAM);
+        nestTypes = ImmutableSet.of(NEST);
         b = ImmutableSet.builder();
         b.addAll(ecobeeTypes);
         b.addAll(honeywellTypes);

@@ -17,6 +17,6 @@
         <dr:programListActions pao="${pao}"/>
     </c:when>
     <c:otherwise>
-        <dr:loadGroupListActions pao="${pao}" disabled="${pao.paoIdentifier.paoType.isNest()}"/>
+        <dr:loadGroupListActions pao="${pao}" disabled="${pao.paoIdentifier.paoType == 'LM_GROUP_NEST'}"/>
     </c:otherwise>
 </c:choose>

@@ -93,7 +93,7 @@
                                     <td><cti:dataUpdaterValue type="DR_LOADGROUP" identifier="${loadGroupId}/REDUCTION"/></td>
                                 </cti:checkRolesAndProperties>
                                 <c:set var="allowShed" value="${loadGroup.paoIdentifier.paoType != 'LM_GROUP_ECOBEE'}"/>
-                                <c:set var="isNest" value="${loadGroup.paoIdentifier.paoType.isNest()}"/>
+                                <c:set var="isNest" value="${loadGroup.paoIdentifier.paoType == 'LM_GROUP_NEST'}"/>
                                 <cti:msg2 var="cogKey" key="yukon.web.modules.dr.nest.groupActionsNotAvailable"/>
                                 <c:set var="cogTitle" value="${isNest ? cogKey : ''}"/>
                                 <td title="${cogTitle}"><dr:loadGroupListActions pao="${loadGroup}" allowShed="${allowShed}" disabled="${isNest}"/></td>

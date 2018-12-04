@@ -59,7 +59,7 @@
                     on the dynamically updated SHOW_ACTION value.
                 --%>
                 <!-- Page Dropdown Actions -->
-                <c:if test="${!loadGroup.paoIdentifier.paoType.isNest()}">
+                <c:if test="${loadGroup.paoIdentifier.paoType != 'LM_GROUP_NEST'}">
                     <div id="page-actions" class="dn">
     
                         <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
