@@ -214,7 +214,6 @@
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td></td>
-                        <td></td>
                     </c:otherwise>
                 </c:choose>
             </tr>
@@ -375,6 +374,7 @@
             </td>
         </tr>
         <tr class="js-loading-row" data-gateway="" data-loaded="false">
+            <td class="js-notes"></td>
             <td class="js-gw-conn-status"><cti:icon icon="icon-loading-bars"/></td>
             <td class="js-gw-name"></td>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
