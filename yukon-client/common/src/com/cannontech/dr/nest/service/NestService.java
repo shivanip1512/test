@@ -19,12 +19,28 @@ public interface NestService {
      * Sends message to Nest to remove account
      */
     Optional<String> dissolveAccountWithNest(LiteCustomer account, String accountNumber);
+
     /**
      * Sends control message to Nest
      * 
-     * @throws NestException if more then 1 group is assigned to the program
+     * Currently adjustStopTime is set to false when if when one program is started at a time, as UI
+     * validates that the end date is filled out and Nest will error out if duration exceeds maximum time
+     * allowed, the error will be displayed to the user,
+     * 
+     * If control is started from control area or scenario the adjustStopTime is true, if duration between
+     * stop and start time more then 4 hours or null the stopTime will be set to startTime + 4 hours.
+     * 
+     * @param programId
+     * @param gearId
+     * @param startTime - time to start control
+     * @param stopTime - time to stop control, if adjustStopTime is true, stopTime will be modified as described below
+     * @param adjustStopTime - if true check that duration between stop and start time is 4 hours or less, if
+     *        stop time is null or duration is greater then 4 hours adjust the duration to be 4 hours
+     * @return SchedulabilityError - error received from Nest
+     * @throws NestException if more then 1 group is assigned to the program or if stopTime is null and adjustStopTime is false
      */
-    Optional<SchedulabilityError> scheduleControl(int programId, int gearId, Date startTime, Date stopTime);
+    Optional<SchedulabilityError> scheduleControl(int programId, int gearId, Date startTime, Date stopTime,
+            boolean adjustStopTime);
 
     /**
      * Returns true if the programId is of the Nest program, the program and the group are enabled

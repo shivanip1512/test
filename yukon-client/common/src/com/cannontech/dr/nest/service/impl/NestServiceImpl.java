@@ -1,20 +1,24 @@
 package com.cannontech.dr.nest.service.impl;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.device.lm.NestCriticalCycleGear;
@@ -56,20 +60,32 @@ public class NestServiceImpl implements NestService {
     @Autowired private ProgramService programService;
     @Autowired private LoadGroupService loadGroupService;
     
-    //Nest timestamp in RFC3339 UTC "Zulu" format
-    public static DateTimeFormatter formatter = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-            .withZone(ZoneId.of("UTC"));
+    DateTimeFormatter debugFormatter = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
+    
+    private static Hours NEST_MAX_CONTROL_HOURS = Hours.FOUR;
     
     private static final Logger log = YukonLogManager.getLogger(NestServiceImpl.class);
 
     @Override
-    public Optional<SchedulabilityError> scheduleControl(int programId, int gearId, Date startTime, Date stopTime) {
-        
+    public Optional<SchedulabilityError> scheduleControl(int programId, int gearId, Date startTime, Date stopTime,
+            boolean adjustStopTime) {
+
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(programId));
         String group = getNestGroupForProgram(groupIds, programId).getPaoName();
+        
+        if(adjustStopTime) {
+            stopTime = adjustStopTime(startTime, stopTime);
+        }
+        
+        if (stopTime == null) {
+            // currently stop time can't be null as UI defaults stop time to 2023 if the time is not selected
+            throw new NestException("stopTime can't be null if adjustStopTime is false");
+        }
+        
         Period period = new Period(new Instant(startTime), new Instant(stopTime)); 
 
+        String startTimeStr = Iso8601DateUtil.formatIso8601Date(startTime, true);
+        String durationStr = "";
         try {
             // retrieve standard gear
             NestStandardCycleGear standard = new NestStandardCycleGear();
@@ -79,8 +95,7 @@ public class NestServiceImpl implements NestService {
             PrepLoadShape prep = standard.getPrepLoadShape();
             PostLoadShape post = standard.getPostLoadShape();
             LoadShapingOptions loadShaping = new LoadShapingOptions(prep, peak, post);
-            ControlEvent event = new ControlEvent(formatter.format(startTime.toInstant()), "PT30M",
-                Lists.newArrayList(group), loadShaping);
+            ControlEvent event = new ControlEvent(startTimeStr, durationStr, Lists.newArrayList(group), loadShaping);
             event.setStart(new Instant(startTime));
             event.setStop(new Instant(stopTime));
             return nestCommunicationService.sendEvent(event, RushHourEventType.STANDARD);
@@ -89,14 +104,31 @@ public class NestServiceImpl implements NestService {
             NestCriticalCycleGear critical = new NestCriticalCycleGear();
             critical.setGearID(gearId);
             critical = (NestCriticalCycleGear) dbPersistentDao.retrieveDBPersistent(critical);
-            ControlEvent event =
-                new ControlEvent(formatter.format(startTime.toInstant()), "PT30M", Lists.newArrayList(group));
+            ControlEvent event = new ControlEvent(startTimeStr, durationStr, Lists.newArrayList(group));
             event.setStart(new Instant(startTime));
             event.setStop(new Instant(stopTime));
             return nestCommunicationService.sendEvent(event, RushHourEventType.CRITICAL);
         }
     }
     
+    //UNIT TEST
+    /**
+     * Adjusts stop time if it is null or duration between start and stop time greater then 4 hours
+     */
+    private Date adjustStopTime(Date startTime, Date stopTime) {
+        if (stopTime == null) {
+            stopTime = new DateTime(startTime).plusHours(NEST_MAX_CONTROL_HOURS.getHours()).toDate();
+        } else {
+            Duration duration = new Duration(new Instant(startTime), new Instant(stopTime));
+            if (duration.isLongerThan(NEST_MAX_CONTROL_HOURS.toStandardDuration())) {
+                stopTime = new DateTime(startTime).plusHours(NEST_MAX_CONTROL_HOURS.getHours()).toDate();
+            }
+        }
+        log.debug("Control start time {} stop time {}", new DateTime(startTime).toString(debugFormatter),
+            new DateTime(stopTime).toString(debugFormatter));
+        return stopTime;
+    }
+
     @Override
     public NestStopEventResult stopControlForProgram(int programId) {
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(programId));
@@ -109,7 +141,9 @@ public class NestServiceImpl implements NestService {
         NestStopEventResult result = new NestStopEventResult();
         NestControlEvent event = nestDao.getCancelableEvent(group);
         if (event == null) {
-            log.error("Nest Control History for group {} is not found or this event is already canceled. Unable to cancel control.", group);
+            log.info(
+                "Nest Control History for group {} is not found or this event is already canceled. Unable to cancel control with Nest.",
+                group);
             return result;
         }
         result.setStopPossible(true);

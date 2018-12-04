@@ -236,9 +236,10 @@ public class StartProgramController extends ProgramControllerBase {
         int gearNumber = backingBean.getGearNumber();
         Date startDate = backingBean.getStartDate();
         boolean scheduleStop = backingBean.isScheduleStop();
-        
-        if(nestService.isEnabledNestProgramWithEnabledGroup(programId)) {
-            Optional<SchedulabilityError> error = nestService.scheduleControl(programId, gearNumber, startDate, backingBean.getActualStopDate());
+
+        if (nestService.isEnabledNestProgramWithEnabledGroup(programId)) {
+            Optional<SchedulabilityError> error =
+                nestService.scheduleControl(programId, gearNumber, startDate, backingBean.getActualStopDate(), false);
         }
 
         programService.startProgram(programId, gearNumber, startDate, null,
@@ -597,7 +598,7 @@ public class StartProgramController extends ProgramControllerBase {
             
             if (nestService.isEnabledNestProgramWithEnabledGroup(programStartInfo.getProgramId())) {
                 Optional<SchedulabilityError> error = nestService.scheduleControl(programStartInfo.getProgramId(),
-                    programStartInfo.getGearNumber(), backingBean.getStartDate(), backingBean.getActualStopDate());
+                    programStartInfo.getGearNumber(), backingBean.getStartDate(), backingBean.getActualStopDate(), true);
                 if(error.isPresent()) {
                     //Nest returned an error
                     //Do we need to write this to some event log? If so which one?

@@ -33,9 +33,21 @@ public class Iso8601DateUtil {
      * @return
      */
     public static String formatIso8601Date(Date date) {
-    	DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis();
-    	DateTime dateTime = new DateTime(date, DateTimeZone.UTC);
-       	return dateTimeFormatter.print(dateTime);
+        return formatIso8601Date(date, false);
+    }
+
+    /**
+     * Helper method to format date into Iso8601 string
+     * Returns date formatted as ISO with UTC zone.
+     * Ex: 2018-11-30T20:01:00.000Z
+     */
+    public static String formatIso8601Date(Date date, boolean includeMillis) {
+        DateTime dateTime = new DateTime(date, DateTimeZone.UTC);
+        if (includeMillis) {
+            return ISODateTimeFormat.dateTime().print(dateTime);
+        } else {
+            return ISODateTimeFormat.dateTimeNoMillis().print(dateTime);
+        }
     }
     
     /**

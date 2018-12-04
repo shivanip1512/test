@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
 import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
@@ -44,7 +45,6 @@ import com.cannontech.dr.nest.model.v3.ProgramType;
 import com.cannontech.dr.nest.model.v3.RetrieveCustomers;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
-import com.cannontech.dr.nest.service.impl.NestServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -132,8 +132,8 @@ public class NestTestAPIController {;
     private Customers getCustomerInfos() {
         List<NestExisting> simulated = nestSimService.downloadExisting();
         List<CustomerInfo> infos = simulated.stream().map(sim -> {
-            String date = NestServiceImpl.formatter.format(new DateTime(Integer.parseInt(sim.getYear()),
-                Integer.parseInt(sim.getMonth()), Integer.parseInt(sim.getDay()), 0, 0, 0, 0).toDate().toInstant());
+            String date = Iso8601DateUtil.formatIso8601Date(new DateTime(Integer.parseInt(sim.getYear()),
+                Integer.parseInt(sim.getMonth()), Integer.parseInt(sim.getDay()), 0, 0, 0, 0).toDate(), true);
             CustomerInfo info = new CustomerInfo();
             info.setAccountNumber(sim.getAccountNumber());
             info.setApproveTime(date.toString());
