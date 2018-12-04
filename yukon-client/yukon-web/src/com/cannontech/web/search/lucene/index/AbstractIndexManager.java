@@ -455,7 +455,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             shutdown();
             if (currentException != null) {
                 boolean isDeleted = FileUtils.deleteQuietly(indexFileLocation);
-                if (isDeleted == false) {
+                if (!isDeleted) {
                     log.warn("This index may be corrupted because of a previous exception: ", currentException);
                     return;
                 }
