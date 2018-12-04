@@ -131,7 +131,7 @@ $( function () {
                 <td width="33%">
                     <table>
                         <tr><td>
-                            <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
+                            <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()" disabled="${program.paoIdentifier.paoType.isNest()}"/>
                             <label for="scheduleStopCheckbox">
                                 <cti:msg2 key=".scheduleStop"/>
                             </label><br>

@@ -205,7 +205,10 @@
                                 <td>
                                     <dr:stateText pao="${pao}"/>
                                 </td>
-                                <td>
+                                <c:set var="isNestGroup" value="${pao.paoIdentifier.paoType == 'LM_GROUP_NEST'}"/>
+                                <cti:msg2 var="cogKey" key="yukon.web.modules.dr.nest.groupActionsNotAvailable"/>
+                                <c:set var="cogTitle" value="${isNestGroup ? cogKey : ''}"/>
+                                <td title="${cogTitle}">
                                     <dr:listActions pao="${pao}"/>
                                 </td>
                             </tr>

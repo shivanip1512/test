@@ -59,90 +59,92 @@
                     on the dynamically updated SHOW_ACTION value.
                 --%>
                 <!-- Page Dropdown Actions -->
-                <div id="page-actions" class="dn">
-
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
-                        <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
-                        <tags:dynamicChoose updaterString="DR_LOADGROUP/${loadGroupId}/SHOW_ACTION" suffix="${loadGroupId}">
-                            <tags:dynamicChooseOption optionId="unknown">
-                                <%-- Actions are disabled when Load Management doesn't know about the Load group --%>
-                                <cti:msg2 var="loadGroupUnknown" key=".unknown"/>
-                                <c:if test="${allowShed}">
-                                    <cm:dropdownOption icon="icon-control-play-blue" key=".actions.sendShed" disabled="true" title="${loadGroupUnknown}"/>
-                                </c:if>
-                                <cm:dropdownOption icon="icon-control-stop-blue" key=".actions.sendRestore" disabled="true" title="${loadGroupUnknown}"/>
-                                <cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${loadGroupUnknown}"/>
-                            </tags:dynamicChooseOption>
-                            
-                            <cti:msgScope paths=",modules.dr.loadGroup">
-                            <cti:msg2 var="noEnableDisable" key=".actions.noEnableDisable"/> 
-                                <tags:dynamicChooseOption optionId="enabled">
-                                    <%-- Actions shown when the Load Group is enabled --%>
+                <c:if test="${!loadGroup.paoIdentifier.paoType.isNest()}">
+                    <div id="page-actions" class="dn">
+    
+                        <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
+                            <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
+                            <tags:dynamicChoose updaterString="DR_LOADGROUP/${loadGroupId}/SHOW_ACTION" suffix="${loadGroupId}">
+                                <tags:dynamicChooseOption optionId="unknown">
+                                    <%-- Actions are disabled when Load Management doesn't know about the Load group --%>
+                                    <cti:msg2 var="loadGroupUnknown" key=".unknown"/>
                                     <c:if test="${allowShed}">
-                                        <cti:url var="sendShedUrl" value="/dr/loadGroup/sendShedConfirm">
+                                        <cm:dropdownOption icon="icon-control-play-blue" key=".actions.sendShed" disabled="true" title="${loadGroupUnknown}"/>
+                                    </c:if>
+                                    <cm:dropdownOption icon="icon-control-stop-blue" key=".actions.sendRestore" disabled="true" title="${loadGroupUnknown}"/>
+                                    <cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${loadGroupUnknown}"/>
+                                </tags:dynamicChooseOption>
+                                
+                                <cti:msgScope paths=",modules.dr.loadGroup">
+                                <cti:msg2 var="noEnableDisable" key=".actions.noEnableDisable"/> 
+                                    <tags:dynamicChooseOption optionId="enabled">
+                                        <%-- Actions shown when the Load Group is enabled --%>
+                                        <c:if test="${allowShed}">
+                                            <cti:url var="sendShedUrl" value="/dr/loadGroup/sendShedConfirm">
+                                                <cti:param name="loadGroupId" value="${loadGroupId}"/>
+                                            </cti:url>
+                                            <li><tags:simpleDialogLink titleKey=".sendShedConfirm.title" 
+                                                    dialogId="drDialog" actionUrl="${sendShedUrl}" 
+                                                    icon="icon-control-play-blue"
+                                                    labelKey=".actions.sendShed"/></li>
+                                        </c:if>
+                                        <cti:url var="sendRestoreUrl" value="/dr/loadGroup/sendRestoreConfirm">
                                             <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                         </cti:url>
-                                        <li><tags:simpleDialogLink titleKey=".sendShedConfirm.title" 
-                                                dialogId="drDialog" actionUrl="${sendShedUrl}" 
-                                                icon="icon-control-play-blue"
-                                                labelKey=".actions.sendShed"/></li>
-                                    </c:if>
-                                    <cti:url var="sendRestoreUrl" value="/dr/loadGroup/sendRestoreConfirm">
-                                        <cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                    </cti:url>
-                                    <li><tags:simpleDialogLink titleKey=".sendRestoreConfirm.title" 
-                                            dialogId="drDialog" actionUrl="${sendRestoreUrl}" 
-                                            icon="icon-control-stop-blue"
-                                            labelKey=".actions.sendRestore"/></li>
-                                            
-                                     <c:choose>
-										<c:when test="${enableDisableProgramsAllowed}">       
-                                    		<cti:url var="sendDisableUrl" value="/dr/loadGroup/sendEnableConfirm">
-                                        		<cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                        		<cti:param name="isEnabled" value="false"/>
-                                    		</cti:url>
-                                    		<li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title" 
-                                            	dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
-                                            	labelKey=".actions.disable"/></li>
-                                       	</c:when>
-                                       	<c:otherwise>
-                                        	<cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${noEnableDisable}"/>
-                                       	</c:otherwise>
-                                      </c:choose>     
-                                            
-                                </tags:dynamicChooseOption>
-    
-                                <tags:dynamicChooseOption optionId="disabled">
-                                    <%-- Actions shown when the Load Group is disabled --%>
-                                    <c:choose>
-										<c:when test="${enableDisableProgramsAllowed}">  
-                                    		<cti:url var="sendEnableUrl" value="/dr/loadGroup/sendEnableConfirm">
-                                        		<cti:param name="loadGroupId" value="${loadGroupId}"/>
-                                        		<cti:param name="isEnabled" value="true"/>
-                                    		</cti:url>
-                                    		<li><tags:simpleDialogLink titleKey=".sendEnableConfirm.title" 
-                                            		dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                                            		labelKey=".actions.enable"/></li>
-                                        </c:when>
-                                        <c:otherwise>
-                                        	<cm:dropdownOption icon="icon-accept" key=".actions.enable" disabled="true" title="${noEnableDisable}"/>
-                                        </c:otherwise>
-                                     </c:choose>     
-                                </tags:dynamicChooseOption>
-                            </cti:msgScope>
-                        </tags:dynamicChoose>
-                    </cti:checkPaoAuthorization>
-                    
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
-                        <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
-                        <cti:msg2 var="noLoadGroupControl" key=".noControl"/>
-                        <c:if test="${allowShed}">
-                            <cm:dropdownOption icon="icon-control-play-blue" key=".actions.sendShed" disabled="true" title="${noLoadGroupControl}"/>
-                        </c:if>
-                        <cm:dropdownOption icon="icon-control-stop-blue" key=".actions.sendRestore" disabled="true" title="${noLoadGroupControl}"/>
-                        <cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${noLoadGroupControl}"/>
-                    </cti:checkPaoAuthorization>
-                </div>
+                                        <li><tags:simpleDialogLink titleKey=".sendRestoreConfirm.title" 
+                                                dialogId="drDialog" actionUrl="${sendRestoreUrl}" 
+                                                icon="icon-control-stop-blue"
+                                                labelKey=".actions.sendRestore"/></li>
+                                                
+                                         <c:choose>
+    										<c:when test="${enableDisableProgramsAllowed}">       
+                                        		<cti:url var="sendDisableUrl" value="/dr/loadGroup/sendEnableConfirm">
+                                            		<cti:param name="loadGroupId" value="${loadGroupId}"/>
+                                            		<cti:param name="isEnabled" value="false"/>
+                                        		</cti:url>
+                                        		<li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title" 
+                                                	dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+                                                	labelKey=".actions.disable"/></li>
+                                           	</c:when>
+                                           	<c:otherwise>
+                                            	<cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${noEnableDisable}"/>
+                                           	</c:otherwise>
+                                          </c:choose>     
+                                                
+                                    </tags:dynamicChooseOption>
+        
+                                    <tags:dynamicChooseOption optionId="disabled">
+                                        <%-- Actions shown when the Load Group is disabled --%>
+                                        <c:choose>
+    										<c:when test="${enableDisableProgramsAllowed}">  
+                                        		<cti:url var="sendEnableUrl" value="/dr/loadGroup/sendEnableConfirm">
+                                            		<cti:param name="loadGroupId" value="${loadGroupId}"/>
+                                            		<cti:param name="isEnabled" value="true"/>
+                                        		</cti:url>
+                                        		<li><tags:simpleDialogLink titleKey=".sendEnableConfirm.title" 
+                                                		dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
+                                                		labelKey=".actions.enable"/></li>
+                                            </c:when>
+                                            <c:otherwise>
+                                            	<cm:dropdownOption icon="icon-accept" key=".actions.enable" disabled="true" title="${noEnableDisable}"/>
+                                            </c:otherwise>
+                                         </c:choose>     
+                                    </tags:dynamicChooseOption>
+                                </cti:msgScope>
+                            </tags:dynamicChoose>
+                        </cti:checkPaoAuthorization>
+                        
+                        <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
+                            <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
+                            <cti:msg2 var="noLoadGroupControl" key=".noControl"/>
+                            <c:if test="${allowShed}">
+                                <cm:dropdownOption icon="icon-control-play-blue" key=".actions.sendShed" disabled="true" title="${noLoadGroupControl}"/>
+                            </c:if>
+                            <cm:dropdownOption icon="icon-control-stop-blue" key=".actions.sendRestore" disabled="true" title="${noLoadGroupControl}"/>
+                            <cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${noLoadGroupControl}"/>
+                        </cti:checkPaoAuthorization>
+                    </div>
+                </c:if>
             </div>
         </div>
     </c:if>
