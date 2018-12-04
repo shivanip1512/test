@@ -104,6 +104,11 @@ public enum RfnManufacturerModel {
     RFN_530S4RT(PaoType.RFN530S4ERXR, "LGYR", "S4-RT"),
     RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
     RFN_RELAY(PaoType.RFN_RELAY, "EATON", "RFRelay")
+    
+    /* For documentation only */
+    // RFN_GATEWAY(PaoType.RFN_GATEWAY, "CPS", "RFGateway"),
+    // GWY_800(PaoType.GWY800, "CPS", "RFGateway2"),
+    // NETWORK_MANAGER(null, "Eaton", "NetworkManager"),
     ;
     
     private PaoType type;
