@@ -23,7 +23,7 @@ public interface NestService {
     /**
      * Sends control message to Nest
      * 
-     * Currently adjustStopTime is set to false when if when one program is started at a time, as UI
+     * Currently adjustStopTime is set to false when one program is started at a time, as UI
      * validates that the end date is filled out and Nest will error out if duration exceeds maximum time
      * allowed, the error will be displayed to the user,
      * 
@@ -34,8 +34,8 @@ public interface NestService {
      * @param gearId
      * @param startTime - time to start control
      * @param stopTime - time to stop control, if adjustStopTime is true, stopTime will be modified as described below
-     * @param adjustStopTime - if true check that duration between stop and start time is 4 hours or less, if
-     *        stop time is null or duration is greater then 4 hours adjust the duration to be 4 hours
+     * @param adjustStopTime - if true checks that duration between stop and start time is 4 hours or less, if
+     *        stop time is null or duration is greater then 4 hours adjusts the duration to be 4 hours
      * @return SchedulabilityError - error received from Nest
      * @throws NestException if more then 1 group is assigned to the program or if stopTime is null and adjustStopTime is false
      */
