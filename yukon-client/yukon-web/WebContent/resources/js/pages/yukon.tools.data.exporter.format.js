@@ -255,7 +255,7 @@ yukon.tools.dataExporterFormat = (function () {
                 data.exportFieldJson = row.find('td:first-child input').val();
             
                 // send attributes and format type in request
-                $.get('field', data)
+                $.get(_fieldUrl, data)
                 .done(function (data) {
                     
                     popup.html(data);
