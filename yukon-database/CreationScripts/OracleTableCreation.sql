@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/27/2018 9:03:17 AM                        */
+/* Created on:     12/4/2018 10:29:04 AM                        */
 /*==============================================================*/
 
 
@@ -6685,7 +6685,7 @@ create table LMNestControlEvent  (
    StopTime             DATE,
    CancelRequestTime    DATE,
    CancelResponse       VARCHAR2(200),
-   CancelOrStop         CHAR(1)                         not null,
+   CancelOrStop         CHAR(1),
    constraint PK_LMNestControlEvent primary key (NestControlEventId)
 );
 
@@ -10519,6 +10519,7 @@ INSERT INTO YukonServices VALUES (21, 'EcobeeMessageListener', 'classpath:com/ca
 INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (23, 'BrokerSystemMetricsListener','classpath:com/cannontech/services/BrokerSystemMetricsListener/brokerSystemMetricsListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (24, 'InfrastructureWarnings', 'classpath:com/cannontech/services/infrastructure/infrastructureWarningsContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+INSERT INTO YukonServices VALUES (25, 'NestMessageListener', 'classpath:com/cannontech/services/nestMessageListener/nestMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */

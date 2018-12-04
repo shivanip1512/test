@@ -217,6 +217,15 @@ MODIFY ( StateGroupId NUMBER NULL );
 INSERT INTO DBUpdates VALUES('YUK-19044', '7.2.0', SYSDATE);
 /* @end YUK-19044 */
 
+/* @start YUK-19141 */
+INSERT INTO YukonServices VALUES(25, 'NestMessageListener', 'classpath:com/cannontech/services/nestMessageListener/nestMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+
+ALTER TABLE LMNestControlEvent
+MODIFY CancelOrStop CHAR(1) NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-19141', '7.2.0', SYSDATE);
+/* @end YUK-19141 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -199,6 +199,7 @@ SET CancelOrStop = 'S';
 
 ALTER TABLE LMNestControlEvent
 ALTER COLUMN CancelOrStop CHAR(1) NOT NULL;
+GO
 
 INSERT INTO DBUpdates VALUES ('YUK-19048', '7.2.0', GETDATE());
 /* @end YUK-19048 */
@@ -214,6 +215,15 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WH
 
 INSERT INTO DBUpdates VALUES ('YUK-19042', '7.2.0', GETDATE());
 /* @end YUK-19042 */
+
+/* @start YUK-19141 */
+INSERT INTO YukonServices VALUES(25, 'NestMessageListener', 'classpath:com/cannontech/services/nestMessageListener/nestMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+
+ALTER TABLE LMNestControlEvent
+ALTER COLUMN CancelOrStop CHAR(1) NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-19141', '7.2.0', GETDATE());
+/* @end YUK-19141 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
