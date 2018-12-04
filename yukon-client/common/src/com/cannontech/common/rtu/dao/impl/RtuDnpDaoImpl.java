@@ -76,10 +76,10 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
         sql.append("FROM Point P");
         sql.append("  JOIN YukonPaobject pao ON pao.PaobjectId = p.PaobjectId");
         sql.append("WHERE P.PAObjectID").in(paoIds);
-        if (types != null) {
+        if (types != null && !types.isEmpty()) {
             sql.append("  AND PointType").in(types);
         }
-        if (pointNames != null) {
+        if (pointNames != null && !pointNames.isEmpty()) {
             sql.append("  AND PointName").in(pointNames);
         }
         if (sortBy != null) {
