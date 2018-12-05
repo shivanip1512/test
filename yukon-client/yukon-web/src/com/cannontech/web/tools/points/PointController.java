@@ -508,7 +508,13 @@ public class PointController {
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", pointName));
 
-        return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+        String redirectPaoHome = paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+        if (redirectPaoHome != null) {
+            return "redirect:" + redirectPaoHome;
+        } else {
+            // no details page exists yet
+            return "redirect:/dashboard";
+        }
     }
 
     @RequestMapping(value = "/points/manual-entry", method = RequestMethod.POST)

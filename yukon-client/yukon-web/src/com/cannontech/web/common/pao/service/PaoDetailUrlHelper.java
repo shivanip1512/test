@@ -58,6 +58,14 @@ public class PaoDetailUrlHelper {
         });
         pageNameBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, "relayDetail");
         
+        urlBuilder.put(PaoTag.GATEWAY_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/stars/gateways/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        pageNameBuilder.put(PaoTag.GATEWAY_DETAIL_DISPLAYABLE, "gatewayDetail");
+        
         urlBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
@@ -187,9 +195,6 @@ public class PaoDetailUrlHelper {
         
         PaoType type = pao.getPaoIdentifier().getPaoType();
         
-        if (PaoType.getRfGatewayTypes().contains(type)) {
-            return "/stars/gateways/" + pao.getPaoIdentifier().getPaoId();
-        }
         if (type.isCapControl()) {
             return capControlUrlPatterns.get(type).apply(pao);
         }
