@@ -23,6 +23,8 @@ public:
     virtual bool sendShedControl( long controlMinutes ) override;
 
     bool sendCycleControl( long controlDurationSeconds ) override;
+
+    bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
 };
 
 typedef boost::shared_ptr<LMGroupNest> LMGroupNestPtr;

@@ -19,18 +19,15 @@ LMGroupNest::LMGroupNest( Cti::RowReader &rdr )
     // empty
 }
 
-
 LMGroupNest::~LMGroupNest()
 {
     // empty
 }
 
-
 CtiLMGroupBase* LMGroupNest::replicate() const
 {
     return new LMGroupNest( *this );
 }
-
 
 bool LMGroupNest::sendCycleControl( long controlDurationSeconds )
 {
@@ -53,8 +50,15 @@ bool LMGroupNest::sendCycleControl( long controlDurationSeconds )
         CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Cycle command, LM Group: " << getPAOName() );
     }
 
+    if ( getGroupControlState() != ActiveState )
+    {
+        setControlStartTime( now );
+        incrementDailyOps();
+    }
+
     setLastControlSent( now );
-    setLastStopTimeSent( now );
+    setLastStopTimeSent( now + controlDurationSeconds );
+    setGroupControlState( ActiveState );
 
     return true;
 }
@@ -81,34 +85,20 @@ bool LMGroupNest::sendStopControl( bool stopImmediately )
 
     setLastControlSent( now );
     setLastStopTimeSent( now );
+    setGroupControlState( InactiveState );
 
     return true;
 }
 
 bool LMGroupNest::sendShedControl( long controlMinutes )
 {
-    using namespace Cti::Messaging;
-    using namespace Cti::Messaging::LoadManagement;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+    CTILOG_INFO( dout, "Shed command is unsupported for " << _groupTypeName << " load groups. LM Group: " << getPAOName() );
 
-    CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
+    return false;
+}
 
-    ActiveMQConnectionManager::enqueueMessage(
-        OutboundQueue::NestRestore,
-        std::make_unique<LMNestRestoreMessage>(
-            getPAOId(),
-            utcNow.seconds() ) );
-
-    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
-    {
-        CTILOG_DEBUG(dout, "Sending " << _groupTypeName << " Shed command, LM Group: " << getPAOName()
-                            << ", control minutes: " << controlMinutes );
-    }
-
-    setLastControlSent( now );
-    setLastStopTimeSent( now + ( controlMinutes * 60 ) );
-
-    return true;
+bool LMGroupNest::doesStopRequireCommandAt( const CtiTime & currentTime ) const
+{
+    return getControlStartTime() < currentTime && currentTime <= getLastStopTimeSent();
 }
 
