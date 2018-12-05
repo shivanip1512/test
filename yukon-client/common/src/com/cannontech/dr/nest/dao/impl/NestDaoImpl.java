@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -20,6 +21,7 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.NestControlEvent;
@@ -28,6 +30,10 @@ import com.cannontech.dr.nest.model.NestSyncDetail;
 import com.cannontech.dr.nest.model.NestSyncI18nKey;
 import com.cannontech.dr.nest.model.NestSyncI18nValue;
 import com.cannontech.dr.nest.model.NestSyncType;
+import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.google.common.collect.Lists;
 
 public class NestDaoImpl implements NestDao {
@@ -242,4 +248,32 @@ public class NestDaoImpl implements NestDao {
             return row;
         }
     };
+    
+    
+    @Override
+    public LoadShapingOptions findNestLoadShapingOptions(int gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PreparationOption, PeakOption, PostPeakOption");
+        sql.append("FROM LMNestLoadShapingGear nestGear JOIN LMProgramDirectGear gear ON nestGear.GearId = gear.GearId");
+        sql.append("WHERE nestGear.GearId").eq(gearId);
+        sql.append("AND ControlMethod").eq_k(GearControlMethod.NestStandardCycle);
+
+        try {
+            return jdbcTemplate.queryForObject(sql, new YukonRowMapper<LoadShapingOptions>() {
+                @Override
+                public LoadShapingOptions mapRow(YukonResultSet rs) throws SQLException {
+                    
+                    PrepLoadShape prepLoadShape = rs.getEnum("PreparationOption", PrepLoadShape.class);
+                    PeakLoadShape peakLoadShape = rs.getEnum("PeakOption", PeakLoadShape.class);
+                    PostLoadShape postLoadShape = rs.getEnum("PostPeakOption", PostLoadShape.class);
+                    
+                    return new LoadShapingOptions(prepLoadShape, peakLoadShape, postLoadShape);
+                }
+            });
+        } catch (IncorrectResultSizeDataAccessException e) {
+            // gearId is NOT Nest Standard Cycle Gear
+            return null;
+        }
+    }
+
 }

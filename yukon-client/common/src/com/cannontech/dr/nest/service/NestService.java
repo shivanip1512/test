@@ -70,4 +70,9 @@ public interface NestService {
      *              nestResponse - failure response from Nest 
      */
     NestStopEventResult stopControlForGroup(String groupName);
+
+    /**
+     * Creates duration string from start and stop date
+     */
+    String createDurationStr(Date startTime, Date stopTime);
 }

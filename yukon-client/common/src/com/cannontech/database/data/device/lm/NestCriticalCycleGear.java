@@ -1,22 +1,12 @@
 package com.cannontech.database.data.device.lm;
 
-import java.sql.SQLException;
-
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.database.db.device.lm.LMNestGear;
 
-public class NestCriticalCycleGear extends com.cannontech.database.db.device.lm.LMProgramDirectGear {
-
-    private static final long serialVersionUID = 1L;
-    public static final String TABLE_NAME_NEST = "LMNestLoadShapingGear";
+public class NestCriticalCycleGear extends LMNestGear {
 
     public NestCriticalCycleGear() {
         setControlMethod(GearControlMethod.NestCriticalCycle);
         setGearID(super.getGearID());
-    }
-
-    @Override
-    public void update() throws SQLException {
-        super.update();
-        delete(TABLE_NAME_NEST, "GearID", getGearID());
     }
 }

@@ -228,14 +228,13 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
     @Override
     public Object getValue(Object gearObj) {
         NestStandardCycleGear gear = (NestStandardCycleGear) gearObj;
-        NestStandardCycleGear sGear = (NestStandardCycleGear) gear;
         String prepString = (String) getJComboBoxPrepLoadShape().getSelectedItem();
         String peakString = (String) getJComboBoxPeakLoadShape().getSelectedItem();
         String postString = (String) getJComboBoxPostLoadShape().getSelectedItem();
-        sGear.setPrepLoadShape(PrepLoadShape.getFromNameMap(prepString));
-        sGear.setPeakLoadShape(PeakLoadShape.getFromNameMap(peakString));
-        sGear.setPostLoadShape(PostLoadShape.getFromNameMap(postString));
-        return sGear;
+        gear.setLoadShapingOptions(PrepLoadShape.getFromNameMap(prepString), 
+                                   PeakLoadShape.getFromNameMap(peakString),
+                                   PostLoadShape.getFromNameMap(postString));
+        return gear;
     }
 
     private void handleException(Throwable exception) {
@@ -376,11 +375,9 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
             return;
         }
         NestStandardCycleGear gear = (NestStandardCycleGear) gearObj;
-
-        NestStandardCycleGear hGear = (NestStandardCycleGear) gear;
-        getJComboBoxPrepLoadShape().setSelectedItem(hGear.getPrepLoadShape());
-        getJComboBoxPeakLoadShape().setSelectedItem(hGear.getPeakLoadShape());
-        getJComboBoxPostLoadShape().setSelectedItem(hGear.getPostLoadShape());
+        getJComboBoxPrepLoadShape().setSelectedItem(gear.getPrepLoadShape());
+        getJComboBoxPeakLoadShape().setSelectedItem(gear.getPeakLoadShape());
+        getJComboBoxPostLoadShape().setSelectedItem(gear.getPostLoadShape());
     }
 
     @Override

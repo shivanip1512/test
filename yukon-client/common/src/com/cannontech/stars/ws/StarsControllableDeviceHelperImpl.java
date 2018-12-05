@@ -48,6 +48,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsExcept
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
 import com.cannontech.stars.dr.honeywell.HoneywellBuilder;
+import com.cannontech.stars.dr.nest.NestBuilder;
 import com.cannontech.stars.dr.route.exception.StarsRouteNotFoundException;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
@@ -80,6 +81,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private NestBuilder nestBuilder;
     
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -311,6 +313,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 } catch (BadTemplateDeviceCreationException e) {
                     throw new StarsInvalidArgumentException(e.getMessage(), e);
                 }
+            } else if (ht.isNest()) {
+                nestBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
             } else if (ht.isEcobee()) {
                 try {
                     ecobeeBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);

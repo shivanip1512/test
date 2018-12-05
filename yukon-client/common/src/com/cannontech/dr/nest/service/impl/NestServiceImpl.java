@@ -10,7 +10,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
-import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,6 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.database.data.device.lm.NestCriticalCycleGear;
-import com.cannontech.database.data.device.lm.NestStandardCycleGear;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
@@ -34,9 +30,6 @@ import com.cannontech.dr.nest.model.v3.ControlEvent;
 import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
-import com.cannontech.dr.nest.model.v3.PeakLoadShape;
-import com.cannontech.dr.nest.model.v3.PostLoadShape;
-import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.nest.service.NestCommunicationService;
@@ -51,14 +44,13 @@ import com.google.common.collect.Sets;
 
 public class NestServiceImpl implements NestService {
 
+    @Autowired private CustomerDao customerDao;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private LoadGroupService loadGroupService;
     @Autowired private NestCommunicationService nestCommunicationService;
     @Autowired private NestDao nestDao;
     @Autowired private ProgramDao programDao;
-    @Autowired private IDatabaseCache dbCache;
-    @Autowired private CustomerDao customerDao;
-    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private ProgramService programService;
-    @Autowired private LoadGroupService loadGroupService;
     
     DateTimeFormatter debugFormatter = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
     
@@ -82,35 +74,28 @@ public class NestServiceImpl implements NestService {
             throw new NestException("stopTime can't be null if adjustStopTime is false");
         }
         
-        Period period = new Period(new Instant(startTime), new Instant(stopTime)); 
-
         String startTimeStr = Iso8601DateUtil.formatIso8601Date(startTime, true);
-        String durationStr = "";
-        try {
-            // retrieve standard gear
-            NestStandardCycleGear standard = new NestStandardCycleGear();
-            standard.setGearID(gearId);
-            standard = (NestStandardCycleGear) dbPersistentDao.retrieveDBPersistent(standard);
-            PeakLoadShape peak = standard.getPeakLoadShape();
-            PrepLoadShape prep = standard.getPrepLoadShape();
-            PostLoadShape post = standard.getPostLoadShape();
-            LoadShapingOptions loadShaping = new LoadShapingOptions(prep, peak, post);
-            ControlEvent event = new ControlEvent(startTimeStr, durationStr, Lists.newArrayList(group), loadShaping);
-            event.setStart(new Instant(startTime));
-            event.setStop(new Instant(stopTime));
+        String durationStr = createDurationStr(startTime, stopTime);
+        ControlEvent event = new ControlEvent();
+        event.setStart(new Instant(startTime));
+        event.setStop(new Instant(stopTime)); 
+        event.setDuration(durationStr);
+        event.setGroupIds(Lists.newArrayList(group));
+        event.setStartTime(startTimeStr);
+        LoadShapingOptions loadShaping = nestDao.findNestLoadShapingOptions(gearId);
+        if (loadShaping != null) { // Standard Cycle
+            event.setLoadShapingOptions(loadShaping);
             return nestCommunicationService.sendEvent(event, RushHourEventType.STANDARD);
-        } catch (Exception | Error e) {
-            // retrieve critical gear
-            NestCriticalCycleGear critical = new NestCriticalCycleGear();
-            critical.setGearID(gearId);
-            critical = (NestCriticalCycleGear) dbPersistentDao.retrieveDBPersistent(critical);
-            ControlEvent event = new ControlEvent(startTimeStr, durationStr, Lists.newArrayList(group));
-            event.setStart(new Instant(startTime));
-            event.setStop(new Instant(stopTime));
+        } else { // Critical Cycle
             return nestCommunicationService.sendEvent(event, RushHourEventType.CRITICAL);
         }
     }
     
+    @Override
+    public String createDurationStr(Date startTime, Date stopTime) {
+        return "YUK-19143";
+    }
+
     //UNIT TEST
     /**
      * Adjusts stop time if it is null or duration between start and stop time greater then 4 hours

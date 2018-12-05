@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ControlEvent {
@@ -18,36 +17,6 @@ public class ControlEvent {
     private Instant start;
     @JsonIgnore
     private Instant stop;
-    
-    @JsonCreator
-    public ControlEvent(String startTime, String duration, List<String> groupIds,
-            LoadShapingOptions loadShapingOptions) {
-        this(startTime, duration, groupIds);
-        this.loadShapingOptions = loadShapingOptions;
-    }
-
-    @JsonCreator
-    public ControlEvent(String startTime, String duration, List<String> groupIds) {
-        this.startTime = startTime;
-        this.duration = duration;
-        this.groupIds = groupIds;
-    }
-
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public List<String> getGroupIds() {
-        return groupIds;
-    }
-
-    public LoadShapingOptions getLoadShapingOptions() {
-        return loadShapingOptions;
-    }
     
     @JsonIgnore
     public Instant getStop() {
@@ -69,6 +38,38 @@ public class ControlEvent {
         return start;
     }
     
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public List<String> getGroupIds() {
+        return groupIds;
+    }
+
+    public void setGroupIds(List<String> groupIds) {
+        this.groupIds = groupIds;
+    }
+
+    public LoadShapingOptions getLoadShapingOptions() {
+        return loadShapingOptions;
+    }
+
+    public void setLoadShapingOptions(LoadShapingOptions loadShapingOptions) {
+        this.loadShapingOptions = loadShapingOptions;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)

@@ -9,6 +9,7 @@ import com.cannontech.dr.nest.model.NestControlEvent;
 import com.cannontech.dr.nest.model.NestSync;
 import com.cannontech.dr.nest.model.NestSyncDetail;
 import com.cannontech.dr.nest.model.NestSyncType;
+import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 
 public interface NestDao {
 
@@ -51,4 +52,9 @@ public interface NestDao {
      * returns the NestSync by Sync Id
      */
     NestSync getNestSyncById(int syncId);
+    
+    /**
+     * Returns LMNestLoadShapingGear for gearId. If not found, returns null.
+     */
+    public LoadShapingOptions findNestLoadShapingOptions(int gearId);
 }
