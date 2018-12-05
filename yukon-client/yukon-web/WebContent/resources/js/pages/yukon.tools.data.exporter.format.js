@@ -226,7 +226,7 @@ yukon.tools.dataExporterFormat = (function () {
                     attribute = JSON.parse(row.find('td:first-child input').val()),
                     popup = $('#format-popup');
                 
-                popup.load('attribute', function () {
+                popup.load(_attributeUrl, function () {
                     popup.find('select[name=attribute]').addClass("dn");
                     popup.find('select[name=attribute]').val(attribute.attribute).trigger("chosen:updated");
                     popup.find('select[name=attribute]').removeClass("dn");
