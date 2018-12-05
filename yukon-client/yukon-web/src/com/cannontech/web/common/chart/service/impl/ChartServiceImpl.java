@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -94,7 +95,7 @@ public class ChartServiceImpl implements ChartService {
                 if (interval.getMillis() >= ChartInterval.DAY.getMillis()) {
                     axisChartData = getXAxisMinMaxValues(interval, chartData, graphDetail.isMin());
                 } else {
-                    axisChartData = chartData;
+                    axisChartData = chartData.stream().map(e -> adjustForFlotTimezone(e)).collect(Collectors.toList());
                 }
                 graph.setLines(graphDetail.getLines());
                 graph.setPoints(graphDetail.getPoints());
