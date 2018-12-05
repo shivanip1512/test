@@ -49,8 +49,8 @@ public class NestSyncServiceImplTest {
         Multimap<PaoIdentifier, PaoIdentifier> mm = ArrayListMultimap.create();
         mm.putAll(program1, set1);
         mm.putAll(program2, set2);
-        assertTrue(impl.programHasArea(Collections.singleton(program1), mm));
-        assertFalse(impl.programHasArea(Collections.singleton(program2), mm));
+        assertTrue(impl.programsHaveArea(Collections.singleton(program1), mm));
+        assertFalse(impl.programsHaveArea(Collections.singleton(program2), mm));
     }
     
     @Test
