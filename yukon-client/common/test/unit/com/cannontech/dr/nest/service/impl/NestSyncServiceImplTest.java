@@ -39,7 +39,7 @@ public class NestSyncServiceImplTest {
     }
     
     @Test
-    public void test_hasArea() {
+    public void test_programHasArea() {
         PaoIdentifier program1 = new PaoIdentifier(1, PaoType.LM_NEST_PROGRAM);
         PaoIdentifier program2 = new PaoIdentifier(2, PaoType.LM_ECOBEE_PROGRAM);
         PaoIdentifier area1 = new PaoIdentifier(3, PaoType.LM_CONTROL_AREA);
@@ -49,8 +49,8 @@ public class NestSyncServiceImplTest {
         Multimap<PaoIdentifier, PaoIdentifier> mm = ArrayListMultimap.create();
         mm.putAll(program1, set1);
         mm.putAll(program2, set2);
-        assertTrue(impl.hasArea(Collections.singleton(program1), mm));
-        assertFalse(impl.hasArea(Collections.singleton(program2), mm));
+        assertTrue(impl.programHasArea(Collections.singleton(program1), mm));
+        assertFalse(impl.programHasArea(Collections.singleton(program2), mm));
     }
     
     @Test

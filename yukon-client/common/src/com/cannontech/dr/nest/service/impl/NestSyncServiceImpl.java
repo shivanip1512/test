@@ -611,7 +611,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     /**
      * Returns true if the program has an area
      */
-    protected boolean hasArea(Collection<PaoIdentifier> programs,
+    protected boolean programHasArea(Collection<PaoIdentifier> programs,
             Multimap<PaoIdentifier, PaoIdentifier> programsToAreas) {
         for (PaoIdentifier programId : programs) {
             if (!programsToAreas.get(programId).isEmpty()) {
@@ -652,7 +652,7 @@ public class NestSyncServiceImpl implements NestSyncService{
                 SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP);
             detail.addValue(GROUP, group.getPaoName());
             ignore.groups.put(group.getPaoName(), NOT_FOUND_PROGRAM_FOR_NEST_GROUP);
-        } else if (!hasArea(programs, programsToAreas)) {
+        } else if (!programHasArea(programs, programsToAreas)) {
             log.debug("Nest group {} doesn't have an area setup", group.getPaoName());
             detail = new NestSyncDetail(0, syncId, MANUAL, NOT_FOUND_AREA_FOR_NEST_GROUP,
                 SETUP_PROGRAM_AND_AREA_CORRECTLY_FOR_NEST_GROUP);
