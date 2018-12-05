@@ -370,6 +370,10 @@ public class OperatorHardwareController {
             model.addAttribute("deviceId", deviceId);
             model.addAttribute("showNetworkInfo", true);
             model.addAttribute("showMapNetwork", true);
+        } else if (hardware.getHardwareType().isTwoWayPlcLcr()) {
+            int deviceId = inventoryDao.getDeviceId(inventoryId);
+            model.addAttribute("deviceId", deviceId);
+            model.addAttribute("showMapNetwork", true);
         }
         return "operator/hardware/hardware.jsp";
     }
