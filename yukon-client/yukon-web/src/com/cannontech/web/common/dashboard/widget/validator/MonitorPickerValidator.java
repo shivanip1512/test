@@ -30,6 +30,9 @@ public class MonitorPickerValidator implements WidgetInputValidator {
         StringTokenizer tokenizer = new StringTokenizer(inputValue.toString(), ",");
         while (tokenizer.hasMoreElements()) {
             String monitorId = tokenizer.nextElement().toString();
+            if (StringUtils.isBlank(monitorId)) {
+                return;
+            }
             if (!isValidMonitorId(monitorId)) {
                 throw new WidgetParameterValidationException("Valid Monitor Id is required", inputName,
                     "invalidMonitorId", inputValue);
