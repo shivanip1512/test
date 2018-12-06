@@ -25,9 +25,17 @@ public interface NestCommunicationService{
     Optional<String> stopEvent(NestControlEvent history);
     
     /**
-     * Sends message to Nest to start event, used by simulator to show result on the screen without starting control 
+     * Sends message to Nest to start event, used by simulator to show result on the screen
      */
     String getNestResponse(String url, ControlEvent event, RushHourEventType type);
+    
+    /**
+     * Sends message to Nest to stop control, used by simulator to show result on the screen
+     * 
+     * @param Nest key used to cancel event
+     * @param url - STOP or CANCEL
+     */
+    Optional<String> cancelEvent(String key, NestURL url);
 
     // this method will be removed from interface 
     boolean useProxy(String stringUrl);

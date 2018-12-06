@@ -101,6 +101,25 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     }
     
     @Override
+    public Optional<String> cancelEvent(String key, NestURL url) {
+        log.debug("{} event {}", url, key);
+        String requestUrl = constructNestUrl(url);
+        log.debug("Request url {}", requestUrl);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", encodeAuthorization());
+        
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        try {
+            HttpEntity<String> response =
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, key);
+            return Optional.ofNullable(response.getBody());
+        } catch (HttpClientErrorException e) {
+            throw new NestException("Error getting valid reponse from Nest.", e);
+        }
+    }
+    
+    @Override
     public Optional<String> cancelEvent(NestControlEvent event) {
         //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel
         log.debug("Canceling event {}", event);
