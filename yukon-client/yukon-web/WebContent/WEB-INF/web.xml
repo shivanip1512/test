@@ -220,12 +220,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>jws</servlet-name>
-        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>dynamicBilling</servlet-name>
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -545,11 +539,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>jws</servlet-name>
-        <url-pattern>/jws/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>contextualMenu</servlet-name>
         <url-pattern>/contextualMenu/*</url-pattern>
     </servlet-mapping>
@@ -847,7 +836,6 @@
         <servlet-name>collectionActions</servlet-name>
         <servlet-name>commander</servlet-name>
         <servlet-name>picker</servlet-name>
-        <servlet-name>jws</servlet-name>
         <servlet-name>dynamicBilling</servlet-name>
         <servlet-name>scheduledBilling</servlet-name>
         <servlet-name>contextualMenu</servlet-name>

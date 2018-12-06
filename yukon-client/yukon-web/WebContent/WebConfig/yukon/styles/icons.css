@@ -1317,12 +1317,6 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-32-openadr { background-position:-448px -224px; }
 .icon-32-multispeak { background-position:-448px -256px; }
 
-/* Yukon Application Icons */
-.icon-32-database-editor { background-image: url(../Icons/32/DatabaseEditor32.png); }
-.icon-32-tdc { background-image: url(../Icons/32/TDC32.png); }
-.icon-32-commander { background-image: url(../Icons/32/Commander32.png); }
-.icon-32-trending { background-image: url(../Icons/32/GraphTrending32.png); }
-
 /* non-sprite icons */
 .icon-arrow-down-green-animated { background-image: url(../Icons/arrow_down_green_anim.gif); }
 .icon-arrow-down-orange-animated { background-image: url(../Icons/arrow_down_orange_anim.gif); }

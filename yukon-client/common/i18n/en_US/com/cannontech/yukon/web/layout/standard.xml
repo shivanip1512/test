@@ -15,10 +15,6 @@
 
 <entry key="yukon.web.layout.standard.siteMap">Site Map</entry>
 <entry key="yukon.web.layout.standard.support">Support</entry>
-<entry key="yukon.web.layout.standard.applications">Apps</entry>
-<entry key="yukon.web.layout.standard.applications.title">Yukon Applications</entry>
-<entry key="yukon.web.layout.standard.applications.description">Java must be installed on this computer for the application to launch. Try to {0} or contact your administrator if the application will not launch.</entry>
-<entry key="yukon.web.layout.standard.applications.installJava">install Java</entry>
 
 <!-- No page description for this guy -->
 <entry key="yukon.web.layout.standard.pageType.BASIC.pagePart.pageTitle">{moduleName}: {pageName}</entry>
