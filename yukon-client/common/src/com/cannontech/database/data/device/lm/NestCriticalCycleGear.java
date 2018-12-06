@@ -7,6 +7,5 @@ public class NestCriticalCycleGear extends LMNestGear {
 
     public NestCriticalCycleGear() {
         setControlMethod(GearControlMethod.NestCriticalCycle);
-        setGearID(super.getGearID());
     }
 }

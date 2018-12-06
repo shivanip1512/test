@@ -239,12 +239,12 @@ public class NestDaoImpl implements NestDao {
             NestControlEvent row = new NestControlEvent();
             row.setId(rs.getInt("NestControlEventId"));
             row.setGroup(rs.getString("NestGroup"));
-            row.setCancelOrStop(rs.getStringSafe("CancelOrStop"));
+            row.setCancelOrStop(rs.getString("CancelOrStop"));
             row.setCancelRequestTime(rs.getInstant("CancelRequestTime"));
             row.setStartTime(rs.getInstant("StartTime"));
             row.setStopTime(rs.getInstant("StopTime"));
-            row.setKey(rs.getStringSafe("NestKey"));
-            row.setCancelResponse(rs.getStringSafe("CancelOrStop"));
+            row.setKey(rs.getString("NestKey"));
+            row.setCancelResponse(rs.getString("CancelResponse"));
             return row;
         }
     };

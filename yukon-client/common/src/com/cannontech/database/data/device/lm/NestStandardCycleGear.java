@@ -18,7 +18,6 @@ public class NestStandardCycleGear extends com.cannontech.database.db.device.lm.
 
     public NestStandardCycleGear() {
         setControlMethod(GearControlMethod.NestStandardCycle);
-        setGearID(super.getGearID());
     }
 
     @Override
