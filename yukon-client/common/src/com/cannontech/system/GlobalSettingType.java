@@ -126,21 +126,22 @@ public enum GlobalSettingType implements DisplayableEnum {
     YUKON_EXTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "http://127.0.0.1:8080"),
     YUKON_INTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
     
-    // Data Export (previously Billing)
-    WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
-    INPUT_FILE(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "c:\\yukon\\client\\bin\\BillingIn.txt"),
-    DEFAULT_BILLING_FORMAT(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "CTI-CSV"),
-    DEMAND_DAYS_PREVIOUS(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 30),
-    ENERGY_DAYS_PREVIOUS(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 7),
-    APPEND_TO_FILE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
-    REMOVE_MULTIPLIER(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
-    COOP_ID_CADP_ONLY(GlobalSettingSubCategory.DATA_EXPORT, stringType(), null),
-    DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.DATA_EXPORT, InputTypeFactory.enumType(RoundingMode.class), RoundingMode.HALF_EVEN),
-    SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_EXPORT, stringType(), ".csv,.dat,.txt"),
+    // Data Import/Export (previously Billing)
+    WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, booleanType(), false),
+    INPUT_FILE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), "c:\\yukon\\client\\bin\\BillingIn.txt"),
+    DEFAULT_BILLING_FORMAT(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), "CTI-CSV"),
+    DEMAND_DAYS_PREVIOUS(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, integerType(), 30),
+    ENERGY_DAYS_PREVIOUS(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, integerType(), 7),
+    APPEND_TO_FILE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, booleanType(), false),
+    REMOVE_MULTIPLIER(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, booleanType(), false),
+    COOP_ID_CADP_ONLY(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), null),
+    DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, InputTypeFactory.enumType(RoundingMode.class), RoundingMode.HALF_EVEN),
+    SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), ".csv,.dat,.txt"),
     // Defaulting to directory specified by CTIUtilities.getExportDirPath(), typically C:\Yukon\Client\Export.
-    SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_EXPORT, stringType(), CtiUtilities.getExportDirPath()),
-    HISTORY_CLEANUP_DAYS_TO_KEEP(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 0),
-    HISTORY_CLEANUP_FILES_TO_KEEP(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 0),
+    SCHEDULE_PARAMETERS_IMPORT_PATH(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), CtiUtilities.getImportDirPath()),
+    SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), CtiUtilities.getExportDirPath()),
+    HISTORY_CLEANUP_DAYS_TO_KEEP(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, integerType(), 0),
+    HISTORY_CLEANUP_FILES_TO_KEEP(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, integerType(), 0),
 
     // AMI  (may fit better for future under Misc.?)
     DEVICE_DISPLAY_TEMPLATE(GlobalSettingSubCategory.AMI, InputTypeFactory.enumType(MeterDisplayFieldEnum.class), MeterDisplayFieldEnum.DEVICE_NAME),

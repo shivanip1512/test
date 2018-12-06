@@ -5,7 +5,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 
 public enum GlobalSettingSubCategory implements DisplayableEnum {
 
-    DATA_EXPORT(GlobalSettingCategory.APPLICATION),
+    DATA_IMPORT_EXPORT(GlobalSettingCategory.APPLICATION),
     GRAPHING(GlobalSettingCategory.APPLICATION),
     DASHBOARD_WIDGET(GlobalSettingCategory.APPLICATION, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
     

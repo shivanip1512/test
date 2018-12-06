@@ -323,6 +323,11 @@ public final class CtiUtilities {
         return getYukonBase() + sep + "Client" + sep + "Export" + sep;
     }
     
+    public final static String getImportDirPath() {
+        final String sep = System.getProperty("file.separator");
+        return getYukonBase() + sep + "Client" + sep + "Import" + sep;
+    }
+    
     public final static String getJavaRuntimeDirPath() {
         final String sep = System.getProperty("file.separator");
         return getYukonBase() + sep + "Runtime" + sep + "bin";

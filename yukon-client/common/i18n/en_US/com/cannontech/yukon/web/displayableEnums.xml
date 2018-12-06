@@ -153,8 +153,8 @@
     <!-- YukonSettingSubCategory -->
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION">Authentication</entry>
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION.description">Authentication, Active Directory, LDAP server settings</entry>
-    <entry key="yukon.common.setting.subcategory.DATA_EXPORT">Data Export</entry>
-    <entry key="yukon.common.setting.subcategory.DATA_EXPORT.description">Data export settings, schedule options, and billing format settings</entry>
+    <entry key="yukon.common.setting.subcategory.DATA_IMPORT_EXPORT">Data Import/Export</entry>
+    <entry key="yukon.common.setting.subcategory.DATA_IMPORT_EXPORT.description">Data import and export settings, schedule options, and billing format settings.</entry>
     <entry key="yukon.common.setting.subcategory.MULTISPEAK">Multispeak</entry>
     <entry key="yukon.common.setting.subcategory.MULTISPEAK.description">Vendor info, device mapping, billing groups</entry>
     <entry key="yukon.common.setting.subcategory.VOICE">Voice</entry>
@@ -232,6 +232,8 @@
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE.description">Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS">Available File Extensions</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS.description">Comma separated list of file extensions allowed to override the default file extension for scheduled reports.</entry>
+    <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_IMPORT_PATH">Allowable Import Path Directories</entry>
+    <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_IMPORT_PATH.description">Comma separated list of directories that can be selected for scheduled file import.</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_EXPORT_PATH">Allowable Export Path Directories</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_EXPORT_PATH.description">Comma separated list of directories allowed to select for exporting a scheduled report to.</entry>
     <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP">Export History Days To Keep</entry>

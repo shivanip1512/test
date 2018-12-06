@@ -134,6 +134,7 @@
         <property name="yukon.exampleXml" value="${basedir}/yukon-client/lib/exampleXml"/>
         <mkdir dir="${client.dir}"/>
            <mkdir dir="${client.dir}/Export"/>
+           <mkdir dir="${client.dir}/Import"/>
            <mkdir dir="${client.dir}/Log"/>
         
         <copy todir="${client.bag}" preservelastmodified="yes">

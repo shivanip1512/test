@@ -77,7 +77,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.DR, "icon-app icon-app-32-lightbulb");
         b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-app icon-app-32-widgets");
         b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-app icon-app-32-world");
-        b.put(GlobalSettingSubCategory.DATA_EXPORT, "icon-app icon-app-32-list");
+        b.put(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, "icon-app icon-app-32-list");
         b.put(GlobalSettingSubCategory.GRAPHING, "icon-app icon-app-32-chart-line");
         b.put(GlobalSettingSubCategory.MULTISPEAK, "icon-32-multispeak");
         b.put(GlobalSettingSubCategory.VOICE, "icon-app icon-app-32-phone");
@@ -131,7 +131,7 @@ public class YukonConfigurationController {
         Collections.sort(systemSetup, sorter);
         
         List<Pair<GlobalSettingSubCategory, String>> application = Lists.newArrayList();
-        application.add(Pair.of(GlobalSettingSubCategory.DATA_EXPORT, iconMap.get(GlobalSettingSubCategory.DATA_EXPORT)));
+        application.add(Pair.of(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, iconMap.get(GlobalSettingSubCategory.DATA_IMPORT_EXPORT)));
         application.add(Pair.of(GlobalSettingSubCategory.GRAPHING, iconMap.get(GlobalSettingSubCategory.GRAPHING)));
         application.add(Pair.of(GlobalSettingSubCategory.DASHBOARD_WIDGET, iconMap.get(GlobalSettingSubCategory.DASHBOARD_WIDGET)));
         Collections.sort(application, sorter);
