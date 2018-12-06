@@ -241,11 +241,6 @@
         <copy file="${basedir}/yukon-build/yukonservice.bat"
             todir="${install.bag}/Tomcat/bin" preservelastmodified="true"/>
 
-        <!-- WebStart Component -->
-        <copy todir="${install.bag}/WebStartJRE" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/WebStartJRE" />
-        </copy>
-
         <!-- Yukon Web Deployment Component -->
         <copy todir="${install.bag}/Yukon Web Deployment/ROOT" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll,msvcr71.dll" />

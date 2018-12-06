@@ -704,22 +704,6 @@ public final class CtiUtilities {
         return sw.toString();
     }
 
-    public static String getJREInstaller() {
-        final StringBuilder dirPath = new StringBuilder(CtiUtilities.getYukonBase());
-        dirPath.append(System.getProperty("file.separator"));
-        dirPath.append("Server");
-        dirPath.append(System.getProperty("file.separator"));
-        dirPath.append("Static");
-        dirPath.append(System.getProperty("file.separator"));
-        dirPath.append("JRE");
-
-        File[] fileList = new File(dirPath.toString()).listFiles();
-        if (fileList != null && fileList.length > 0) {
-            return fileList[0].getName();
-        }
-        return null;
-    }
-
     private static String getJvmInputArgs() {
         final List<String> inputArgs = ManagementFactory.getRuntimeMXBean().getInputArguments();
         final StringBuilder sb = new StringBuilder();
