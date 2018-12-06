@@ -26,159 +26,59 @@ public class PaoDetailUrlHelper {
         // Device urls
         Builder<PaoTag, Function<YukonPao, String>> urlBuilder = ImmutableMap.builder();
         Builder<PaoTag, String> pageNameBuilder = ImmutableMap.builder();
-        urlBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+
+        urlBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, pao -> "/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, "meterDetail.electric");
 
-        urlBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/meter/water/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, pao -> "/meter/water/home?deviceId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, "meterDetail.water");
         
-        urlBuilder.put(PaoTag.GAS_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/meter/gas/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.GAS_METER_DETAIL_DISPLAYABLE, pao -> "/meter/gas/home?deviceId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.GAS_METER_DETAIL_DISPLAYABLE, "meterDetail.gas");
         
-        urlBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/stars/relay/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, pao -> "/stars/relay/home?deviceId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, "relayDetail");
         
-        urlBuilder.put(PaoTag.GATEWAY_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/stars/gateways/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.GATEWAY_DETAIL_DISPLAYABLE, pao -> "/stars/gateways/" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.GATEWAY_DETAIL_DISPLAYABLE, "gatewayDetail");
         
-        urlBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/stars/rtu/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, pao -> "/stars/rtu/" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, "rtuDetail.VIEW");
 
-        urlBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.LM_SCENARIO, pao -> "/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.LM_SCENARIO, "scenarioDetail");
 
-        urlBuilder.put(PaoTag.LM_CONTROL_AREA, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.LM_CONTROL_AREA, pao -> "/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.LM_CONTROL_AREA, "controlAreaDetail");
 
-        urlBuilder.put(PaoTag.LM_PROGRAM, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.LM_PROGRAM, pao -> "/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.LM_PROGRAM, "programDetail");
 
-        urlBuilder.put(PaoTag.LM_GROUP, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/dr/loadGroup/detail?loadGroupId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.LM_GROUP, pao -> "/dr/loadGroup/detail?loadGroupId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.LM_GROUP, "loadGroupDetail");
         
-        urlBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/stars/operator/inventory/view?deviceId=" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        urlBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, pao -> "/stars/operator/inventory/view?deviceId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, "hardware.VIEW");
 
         supportDeviceUrlPatterns = urlBuilder.build();
         supportDevicePageNames = pageNameBuilder.build();
 
+
         Builder<PaoType, Function<YukonPao, String>> capControlUrlBuilder = ImmutableMap.builder();
 
-        Function<YukonPao, String> cbcLink = new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/cbc/" + pao.getPaoIdentifier().getPaoId();
-            }
-        };
-        Function<YukonPao, String> regulatorLink = new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/regulators/" + pao.getPaoIdentifier().getPaoId();
-            }
-        };
         for (PaoType type : PaoType.getCbcTypes()) {
-            capControlUrlBuilder.put(type, cbcLink);
+            capControlUrlBuilder.put(type, pao -> "/capcontrol/cbc/" + pao.getPaoIdentifier().getPaoId());
         }
         for (PaoType type : PaoType.getRegulatorTypes()) {
-            capControlUrlBuilder.put(type, regulatorLink);
+            capControlUrlBuilder.put(type, pao -> "/capcontrol/regulators/" + pao.getPaoIdentifier().getPaoId());
         }
         
-        capControlUrlBuilder.put(PaoType.CAPBANK, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/capbanks/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
-        
-        capControlUrlBuilder.put(PaoType.CAP_CONTROL_FEEDER, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/feeders/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
-        
-        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBBUS, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/buses/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
-        
-        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBSTATION, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/substations/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
-        
-        capControlUrlBuilder.put(PaoType.CAP_CONTROL_AREA, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/areas/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
-        
-        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SPECIAL_AREA, new Function<YukonPao, String>() {
-            @Override
-            public String apply(YukonPao pao) {
-                return "/capcontrol/areas/" + pao.getPaoIdentifier().getPaoId();
-            }
-        });
+        capControlUrlBuilder.put(PaoType.CAPBANK, pao -> "/capcontrol/capbanks/" + pao.getPaoIdentifier().getPaoId());
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_FEEDER, pao -> "/capcontrol/feeders/" + pao.getPaoIdentifier().getPaoId());
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBBUS, pao -> "/capcontrol/buses/" + pao.getPaoIdentifier().getPaoId());
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SUBSTATION, pao -> "/capcontrol/substations/" + pao.getPaoIdentifier().getPaoId());
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_AREA, pao -> "/capcontrol/areas/" + pao.getPaoIdentifier().getPaoId());
+        capControlUrlBuilder.put(PaoType.CAP_CONTROL_SPECIAL_AREA, pao -> "/capcontrol/areas/" + pao.getPaoIdentifier().getPaoId());
         
         capControlUrlPatterns = capControlUrlBuilder.build();
     }
@@ -226,5 +126,4 @@ public class PaoDetailUrlHelper {
         // No page name found, return null
         return null;
     }
-    
 }
