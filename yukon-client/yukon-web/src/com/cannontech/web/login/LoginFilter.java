@@ -76,11 +76,6 @@ public class LoginFilter implements Filter {
                          "/**/*.gif",
                          "/**/*.jpg",
                          "/**/*.html",
-                         // Web start jars are protected by custom token filter. See JwsController.
-                         "/jws/*.jar",
-                         "/jws/bc.jnlp",
-                         "/jws/client_libs.jnlp",
-                         "/jws/sqlserver_jdbc.jnlp",
                          "/common/images/*",
                          "/resources/favicon.ico",
                          "/dev/mockecobee/**",
@@ -88,7 +83,6 @@ public class LoginFilter implements Filter {
 
     private final static ImmutableList<String> excludedRedirectedPaths =
         ImmutableList.of("/servlet/SOAPClient/**",
-                         "/jws/*",
                          "/common/config/deviceDefinition",
                          "/common/config/rfn",
                          "/remote/MasterConfig",
