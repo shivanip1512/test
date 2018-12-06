@@ -937,16 +937,20 @@
     <![CDATA[Mapping Options are as below -
     <ul>
     <li>Auto/Remote Control - AUTO_REMOTE_CONTROL</li>
-	<li>Auto Block Enable - AUTO_BLOCK_ENABLE</li>
-	<li>Raise Tap Position - TAP_UP</li>
-	<li>Lower Tap Position - TAP_DOWN</li>
-	<li>Tap Position - TAP_POSITION</li>
-	<li>Terminate - TERMINATE</li>
-	<li>Source Voltage - SOURCE_VOLTAGE</li>
-	<li>Voltage - VOLTAGE</li>
-	<li>Keep Alive - KEEP_ALIVE</li>
-	<li>Forward Set Point - FORWARD_SET_POINT</li>
-	<li>Forward Bandwidth - FORWARD_BANDWIDTH</li>
+    <li>Auto Block Enable - AUTO_BLOCK_ENABLE</li>
+    <li>Raise Tap Position - TAP_UP</li>
+    <li>Lower Tap Position - TAP_DOWN</li>
+    <li>Tap Position - TAP_POSITION</li>
+    <li>Terminate - TERMINATE</li>
+    <li>Source Voltage - SOURCE_VOLTAGE</li>
+    <li>Voltage - VOLTAGE</li>
+    <li>Keep Alive - KEEP_ALIVE</li>
+    <li>Forward Set Point - FORWARD_SET_POINT</li>
+    <li>Forward Bandwidth - FORWARD_BANDWIDTH</li>
+    <li>Reverse Set Point - REVERSE_SET_POINT</li>
+    <li>Reverse Bandwidth - REVERSE_BANDWIDTH</li>
+    <li>Reverse Flow Indicator - REVERSE_FLOW_INDICATOR</li>
+    <li>Control Mode - CONTROL_MODE</li>
     </ul>
     ]]></entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.POINT NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the point to map</entry>
