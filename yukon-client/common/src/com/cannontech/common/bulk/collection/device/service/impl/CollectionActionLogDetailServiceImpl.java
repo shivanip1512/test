@@ -246,26 +246,30 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     }
 
     private void deleteOldCollectionActionLogs() {
-        log.info("Deletion of old collection action log started.");
         int daysToKeep = globalSettingDao.getInteger(GlobalSettingType.HISTORY_CLEANUP_DAYS_TO_KEEP);
-        DateTime retentionDate = new DateTime().minusDays(daysToKeep);
-        // Get Collection Action logs which are older than retentionDate (based on HISTORY_CLEANUP_DAYS_TO_KEEP)
-        List<String> filesToDelete = collectionActionDao.getAllOldCollectionActionIds(retentionDate)
-                                                        .stream()
-                                                        .map(collectionId -> String.valueOf(collectionId) + ".csv")
-                                                        .collect(Collectors.toList());
-        if (filesToDelete.isEmpty()) {
-            return;
-        }
-        File currentDirectory = new File(CtiUtilities.getCollectionActionDirPath());
-        File[] files = currentDirectory.listFiles(file -> filesToDelete.contains(file.getName()));
-        if (files.length == 0) {
-            log.info("No collection action log file found to delete.");
-        }
-        for (File file : files) {
-            if (file.delete()) {
-                log.info("Collection action log file " + file.getName() + " has deleted.");
+        
+        if (daysToKeep > 0) {
+            DateTime retentionDate = new DateTime().minusDays(daysToKeep);
+            log.info("Collection action log file cleanup started. Deleting files older than " + retentionDate.toDate().toString() + ".");
+            // Get Collection Action logs which are older than retentionDate (based on HISTORY_CLEANUP_DAYS_TO_KEEP)
+            List<String> filesToDelete = collectionActionDao.getAllOldCollectionActionIds(retentionDate)
+                                                            .stream()
+                                                            .map(collectionId -> String.valueOf(collectionId) + ".csv")
+                                                            .collect(Collectors.toList());
+            int filesDeleted = 0;
+            if (!filesToDelete.isEmpty()) {
+                File currentDirectory = new File(CtiUtilities.getCollectionActionDirPath());
+                File[] files = currentDirectory.listFiles(file -> filesToDelete.contains(file.getName()));
+                for (File file : files) {
+                    if (file.delete()) {
+                        filesDeleted++;
+                        log.info("Deleted collection action log file: " + file.getPath());
+                    }
+                }
             }
+            log.info("Collection action log file cleanup is complete. " + filesDeleted + " log files were deleted.");
+        } else {
+            log.info("Collection action log file cleanup is disabled. No files were deleted.");
         }
     }
 }
