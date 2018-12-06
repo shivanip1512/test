@@ -226,6 +226,13 @@ MODIFY CancelOrStop CHAR(1) NULL;
 INSERT INTO DBUpdates VALUES ('YUK-19141', '7.2.0', SYSDATE);
 /* @end YUK-19141 */
 
+/* @start YUK-19198 */
+DELETE FROM YukonGroupRole WHERE RolePropertyID = -10812;
+DELETE FROM YukonRoleProperty WHERE RolePropertyID = -10812;
+
+INSERT INTO DBUpdates VALUES ('YUK-19198', '7.2.0', SYSDATE);
+/* @end YUK-19198 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
