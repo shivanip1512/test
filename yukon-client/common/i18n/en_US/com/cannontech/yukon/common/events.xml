@@ -553,9 +553,8 @@
     <entry key="yukon.common.events.system.login.loginOutboundVoiceFailed">User {1} login attempt via Outbound Voice from remote address {2} failed.</entry>
     <entry key="yukon.common.events.system.login.loginClientFailed">User {1} login attempt via Client from remote address {2} failed with {3}.</entry>
 
-    <entry key="yukon.common.events.system.logout.logoutWeb">User {1} has logged out from {2}.</entry>
-    <entry key="yukon.common.events.system.logout.unexpectedLogout">User {1} has been logged out from {2}. Reason: {3}</entry>
-    <entry key="yukon.common.events.system.logout.unexpectedLogout.3">Logout Reason</entry>
+    <entry key="yukon.common.events.system.logout.logoutWeb">User {1} has logged out from {2}. Reason: {3}</entry>
+    <entry key="yukon.common.events.system.logout.logoutWeb.3">Logout Reason</entry>
 
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}.</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}.</entry>

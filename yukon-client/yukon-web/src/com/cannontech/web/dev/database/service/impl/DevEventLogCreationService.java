@@ -834,8 +834,7 @@ public class DevEventLogCreationService {
                 systemEventLogService.loginPasswordChangeAttempted(user, devEventLog.getEventSource());
                 systemEventLogService.loginUsernameChangeAttempted(user, newUsername, devEventLog.getEventSource());
                 systemEventLogService.loginWeb(user, remoteAddress);
-                systemEventLogService.logoutWeb(user, remoteAddress);
-                systemEventLogService.unexpectedLogout(user, remoteAddress, "Some Reason");
+                systemEventLogService.logoutWeb(user, remoteAddress, "Some Reason");
                 
                 systemEventLogService.passwordRequestAttempted("barney", "barney@eaton.com", "123123123", EventSource.CONSUMER);
                 systemEventLogService.rphDeleteDanglingEntries(rowsDeleted, start, finish);
@@ -1097,7 +1096,7 @@ public class DevEventLogCreationService {
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 36),
+        SYSTEM(SystemEventLogService.class, 35),
         TOOLS(ToolsEventLogService.class, 22),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
