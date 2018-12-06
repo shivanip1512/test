@@ -135,7 +135,6 @@
 		<row><td>Trending</td><td>{8D2982AF-094C-49E2-86FD-CD8CB9F33208}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Watchdog</td><td>{A11E02B2-037D-43A2-A5FE-EA6AE98E171E}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Web Deployment</td><td>{4DEA3DA8-40AC-43FF-90FF-EB6B8649160F}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>529</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>WebStart JRE</td><td>{3C821777-81A3-491F-B232-7CCCE49AE6CC}</td><td>JRE</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Control">
@@ -451,7 +450,6 @@
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat XML Config</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Web Deployment</td></row>
-		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>WebStart JRE</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td>Java Runtime</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Porter</td></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>Dispatch</td></row>
@@ -551,7 +549,6 @@
 		<row><td>Trending</td><td/><td/><td>_C776352F_352E_4DCA_ADD6_A06317337691_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Watchdog</td><td/><td/><td>_13A7F99A_C8F5_481E_B049_4713177A4F1B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Web Deployment</td><td/><td/><td>_39776812_3316_4905_B00F_4B78AFE83EAF_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>WebStart JRE</td><td/><td/><td>_F90FFA2E_106A_46BA_AD6D_7D94F625064D_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISComponentSubFolder">
@@ -627,7 +624,6 @@
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td>web.xml; server.xml</td><td>2</td></row>
 		<row><td>Watchdog</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>watchdog.conf</td><td/><td>0</td></row>
 		<row><td>Web Deployment</td><td>&lt;PATH_TO_WEB_DEP_FILES&gt;</td><td>1</td><td>*.*</td><td>sublist.html; sublist.jlx;</td><td>2</td></row>
-		<row><td>WebStart JRE</td><td>&lt;PATH_TO_WEBSTARTJRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>0</td></row>
 	</table>
 
 	<table name="ISFeatureExtended">
