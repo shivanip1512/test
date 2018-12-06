@@ -17,7 +17,7 @@ public class WidgetSettingCallbackHandler implements YukonRowCallbackHandler {
     public void processRow(YukonResultSet rs) throws SQLException {
         int widgetId = rs.getInt("WidgetId");
         String name = rs.getString("Name");
-        String value = rs.getString("Value");
+        String value = rs.getStringSafe("Value");
         Map<String, String> parameters = parameterMap.get(widgetId);
         if (parameters == null) {
             parameters = new HashMap<>();
