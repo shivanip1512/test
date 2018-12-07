@@ -161,7 +161,11 @@ public class StopProgramController extends ProgramControllerBase {
                                                                   stopDate);
         } else if (backingBean.isStopNow()) {
             if(nestService.isEnabledNestProgramWithEnabledGroup(backingBean.getProgramId())) {
-                NestStopEventResult error = nestService.stopControlForProgram(backingBean.getProgramId());
+                NestStopEventResult result = nestService.stopControlForProgram(backingBean.getProgramId());
+                if (!result.isSuccess() && result.getNestResponse() != null) {
+                    flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getNestResponse()));
+                    return details(model, true, backingBean, bindingResult, userContext, flashScope);
+                }
             }
             programService.stopProgram(backingBean.getProgramId());
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,

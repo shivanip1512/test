@@ -438,7 +438,9 @@
     <entry key="yukon.web.modules.dev.nest.controlEvent.loadShapingPreparation">Load Shaping Preparation</entry>
     <entry key="yukon.web.modules.dev.nest.controlEvent.loadShapingPeak">Load Shaping Peak</entry>
     <entry key="yukon.web.modules.dev.nest.controlEvent.loadShapingPost">Load Shaping Post</entry>
-    <entry key="yukon.web.modules.dev.nest.controlEvent.loadShapingPost">Load Shaping Post</entry>
+    <entry key="yukon.web.modules.dev.nest.controlEvent.startError">Start Program Error</entry>
+    <entry key="yukon.web.modules.dev.nest.controlEvent.stopError">Stop Program Error</entry>
+    <entry key="yukon.web.modules.dev.nest.controlEvent.cancelError">Cancel Program Error</entry>
     <entry key="yukon.web.modules.dev.nest.controlEvent.emptyGroup">Group Name cannot be empty</entry>
     <entry key="yukon.web.modules.dev.nest.controlEvent.incorrectDate">Stop date cannot be less than start date</entry>
     

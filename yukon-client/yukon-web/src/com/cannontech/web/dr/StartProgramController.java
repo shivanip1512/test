@@ -240,6 +240,10 @@ public class StartProgramController extends ProgramControllerBase {
         if (nestService.isEnabledNestProgramWithEnabledGroup(programId)) {
             Optional<SchedulabilityError> error =
                 nestService.scheduleControl(programId, gearNumber, startDate, backingBean.getActualStopDate(), false);
+            if (error.isPresent()) {
+                flashScope.setError(new YukonMessageSourceResolvable(error.get().getFormatKey()));
+                return details(model, true, backingBean, bindingResult, userContext, flashScope);       
+            }
         }
 
         programService.startProgram(programId, gearNumber, startDate, null,

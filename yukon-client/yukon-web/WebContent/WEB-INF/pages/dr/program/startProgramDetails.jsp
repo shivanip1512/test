@@ -131,7 +131,11 @@ $( function () {
                 <td width="33%">
                     <table>
                         <tr><td>
-                            <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()" disabled="${program.paoIdentifier.paoType == 'LM_NEST_PROGRAM'}"/>
+                            <c:set var="disabledCheckbox" value="${program.paoIdentifier.paoType == 'LM_NEST_PROGRAM'}"/>
+                            <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()" disabled="${disabledCheckbox}"/>
+                            <c:if test="${disabledCheckbox}">
+                                <input type="hidden" name="scheduleStop" value="true"/>
+                            </c:if>
                             <label for="scheduleStopCheckbox">
                                 <cti:msg2 key=".scheduleStop"/>
                             </label><br>

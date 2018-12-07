@@ -89,7 +89,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             //create entry only if response is success
             nestDao.saveControlEvent(history);
             return Optional.empty();
-        } catch (IOException e) {
+        } catch (Exception e) {
             try {
                 SchedulabilityError error = JsonUtils.fromJson(response, SchedulabilityError.class);
                 log.error("Reply from Nest contains an error="+ error);
@@ -110,9 +110,13 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         headers.add("Authorization", encodeAuthorization());
         
         HttpEntity<?> entity = new HttpEntity<>(headers);
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("partnerId", partnerId);
+        urlParams.put("eventId", key);
+        
         try {
             HttpEntity<String> response =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, key);
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, urlParams);
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
@@ -129,13 +133,17 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", encodeAuthorization());
         
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("partnerId", partnerId);
+        urlParams.put("eventId", event.getKey());
+        
         HttpEntity<?> entity = new HttpEntity<>(headers);
         try {
             event.setCancelOrStop("C");
             event.setCancelRequestTime(Instant.now());
             nestDao.saveControlEvent(event);
             HttpEntity<String> response =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, event.getKey());
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, urlParams);
             event.setCancelResponse(response.getBody());
             nestDao.saveControlEvent(event);
             return Optional.ofNullable(response.getBody());
@@ -154,13 +162,17 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", encodeAuthorization());
         
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("partnerId", partnerId);
+        urlParams.put("eventId", event.getKey());
+        
         HttpEntity<?> entity = new HttpEntity<>(headers);
         try {
             event.setCancelOrStop("S");
             event.setCancelRequestTime(Instant.now());
             nestDao.saveControlEvent(event);
             HttpEntity<String> response =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, partnerId, event.getKey());
+                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, urlParams);
             event.setCancelResponse(response.getBody());
             nestDao.saveControlEvent(event);
             return Optional.ofNullable(response.getBody());
@@ -195,11 +207,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         HttpEntity<CustomerEnrollments> requestEntity = new HttpEntity<>(enrollments, headers);
         try {
             HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, requestEntity, String.class, partnerId);
-            
-            //restTemplate.put(requestUrl, requestEntity, partnerId);
-            //return Optional.empty();
             return Optional.ofNullable(response.getBody());
-            //return response.getBody();
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
         }
@@ -246,8 +254,10 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
 
         HttpEntity<ControlEvent> entity = new HttpEntity<>(event, headers);
         try {
-            ResponseEntity<EventId> response =
-                restTemplate.exchange(url, HttpMethod.POST, entity, EventId.class, urlParams);
+/*            ResponseEntity<EventId> response =
+                restTemplate.exchange(url, HttpMethod.POST, entity, EventId.class, urlParams);*/
+            ResponseEntity<Object> response =
+                    restTemplate.exchange(url, HttpMethod.POST, entity, Object.class, urlParams);
             log.debug("response:" + response.getBody());
             return JsonUtils.toJson(response.getBody());
         } catch (HttpClientErrorException e) {

@@ -43,6 +43,7 @@ import com.cannontech.dr.nest.model.v3.EventId;
 import com.cannontech.dr.nest.model.v3.PostalAddress;
 import com.cannontech.dr.nest.model.v3.ProgramType;
 import com.cannontech.dr.nest.model.v3.RetrieveCustomers;
+import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.nest.service.NestSimulatorService;
 import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
@@ -53,10 +54,11 @@ import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 @Controller
 @RequestMapping("/nestApi/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
-public class NestTestAPIController {;
+public class NestTestAPIController {
     
     private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class);
     @Autowired NestSimulatorService nestSimService;
+    @Autowired private NestSimulatorConfiguration nestSimulatorConfiguration;
  
     @RequestMapping(value = "/download")
     public void download(HttpServletResponse response) {
@@ -97,30 +99,42 @@ public class NestTestAPIController {;
     }
     
     @IgnoreCsrfCheck
-    @RequestMapping(value = "/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop ", method = RequestMethod.POST)
-    public void stop(@PathVariable("partnerId") String partnerId, @PathVariable("eventId") String eventId,
+    @RequestMapping(value = "/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop", method = RequestMethod.POST)
+    public @ResponseBody String stop(@PathVariable("partnerId") String partnerId, @PathVariable("eventId") String eventId,
             HttpServletRequest request, HttpServletResponse response) {
-        log.debug("Stropped control partnerId {} eventId {}", eventId);
-        //simulate errors
+        log.debug("Stopped control partnerId {} eventId {}", eventId);
+        String stopError = nestSimulatorConfiguration.getStopError();
+        if (stopError != null) {
+            return stopError;
+        }
+        return null;
     }
     
     @IgnoreCsrfCheck
     @RequestMapping(value = "/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel", method = RequestMethod.POST)
-    public void cancel(@PathVariable("partnerId") String partnerId, @PathVariable("eventId") String eventId,
+    public @ResponseBody String cancel(@PathVariable("partnerId") String partnerId, @PathVariable("eventId") String eventId,
             HttpServletRequest request, HttpServletResponse response) {
         log.debug("Canceled control partnerId {} eventId {}", eventId);
-      //simulate errors
+        String cancelError = nestSimulatorConfiguration.getCancelError();
+        if (cancelError != null) {
+            return cancelError;
+        }
+        return null;
     }
    
     @IgnoreCsrfCheck
     @RequestMapping(value = "/v3/partners/{partnerId}/rushHourEvents/{eventType}", method = RequestMethod.POST)
-    public @ResponseBody EventId control(@PathVariable("partnerId") String partnerId, @PathVariable("eventType") String eventType,
+    public @ResponseBody Object control(@PathVariable("partnerId") String partnerId, @PathVariable("eventType") String eventType,
             HttpServletRequest request, HttpServletResponse response) {
         log.debug("Control partnerId {} eventType {}", partnerId, eventType);
-        UUID uid = UUID.randomUUID();
-        return new EventId(uid.toString().substring(0, 10));
-        // simulate errors
-        //if error return SchedulabilityError? We do not know if it is one error or a map
+        SchedulabilityError error = nestSimulatorConfiguration.getStartError();
+        if (error != null) {
+            return error;
+        } else {
+            UUID uid = UUID.randomUUID();
+            EventId event = new EventId(uid.toString().substring(0,  10));
+            return event;
+        }
     }
     
     @IgnoreCsrfCheck

@@ -56,7 +56,7 @@
 
     <div class="action-area">
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">
-            <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
+            <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit" busy="true"/>
         </c:if>
         <cti:url var="backUrl" value="/dr/program/start/details">
             <cti:param name="fromBack" value="true"/>

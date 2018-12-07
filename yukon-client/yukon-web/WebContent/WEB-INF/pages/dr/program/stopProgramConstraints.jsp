@@ -59,7 +59,7 @@ overrideConstraintsChecked = function() {
 
     <div class="action-area">
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">
-            <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
+            <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit" busy="true"/>
             <c:if test="${!empty violations.constraintContainers}">
                 <script type="text/javascript">document.getElementById('okButton').disabled = true</script>
                 <!-- TODO:  need to disable submit via text field too -->

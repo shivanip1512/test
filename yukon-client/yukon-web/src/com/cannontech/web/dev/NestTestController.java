@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +41,7 @@ import com.cannontech.dr.nest.model.v3.PeakLoadShape;
 import com.cannontech.dr.nest.model.v3.PostLoadShape;
 import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
+import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.nest.service.NestCommunicationService;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.nest.service.NestSimulatorService;
@@ -67,6 +69,7 @@ public class NestTestController {
     @Autowired NestService nestService; 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private NestSimulatorConfiguration nestSimulatorConfiguration;
     
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
@@ -213,11 +216,27 @@ public class NestTestController {
         return "nest/nestControlEvents.jsp";
     }
     
+    @RequestMapping(value = "/setErrors", method = RequestMethod.POST)
+    public String setErrors(@ModelAttribute("nestSimulatorConfiguration") NestSimulatorConfiguration nestSimulatorSettings, ModelMap model, FlashScope flash) {
+        nestSimulatorConfiguration.setCancelError(nestSimulatorSettings.getCancelError());
+        nestSimulatorConfiguration.setStartError(nestSimulatorSettings.getStartError());
+        nestSimulatorConfiguration.setStopError(nestSimulatorSettings.getStopError());
+        NestControlEventSimulatorParameters nestParameters = new NestControlEventSimulatorParameters();
+        model.addAttribute("nestParameters", nestParameters);
+        setupModelMap(model);
+        flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Error has been set."));
+        return "nest/nestControlEvents.jsp";
+    }
+    
     @RequestMapping(value = "/stopEvent", method = RequestMethod.POST)
     public String stopEvent(String eventId, ModelMap model) {
         NestControlEventSimulatorParameters nestParameters = new NestControlEventSimulatorParameters();
         model.addAttribute("nestParameters", nestParameters);
         setupModelMap(model);
+        Optional<String> response = nestCommService.cancelEvent(eventId, NestURL.STOP_EVENT);
+        if (response.isPresent()) {
+            model.addAttribute("message", response.get());
+        }
         return "nest/nestControlEvents.jsp";
     }
     
@@ -226,6 +245,10 @@ public class NestTestController {
         NestControlEventSimulatorParameters nestParameters = new NestControlEventSimulatorParameters();
         model.addAttribute("nestParameters", nestParameters);
         setupModelMap(model);
+        Optional<String> response = nestCommService.cancelEvent(eventId, NestURL.CANCEL_EVENT);
+        if (response.isPresent()) {
+            model.addAttribute("message", response.get());
+        }
         return "nest/nestControlEvents.jsp";
     }
     
@@ -236,10 +259,14 @@ public class NestTestController {
         model.addAttribute("loadShapingPeaks", PeakLoadShape.values());
         model.addAttribute("loadShapingPosts", PostLoadShape.values());
         
+        model.addAttribute("errorTypes", SchedulabilityError.values());
+        
         List<GearControlMethod> controlMethods = new ArrayList<>();
         controlMethods.add(GearControlMethod.NestCriticalCycle);
         controlMethods.add(GearControlMethod.NestStandardCycle);
         model.addAttribute("controlMethods", controlMethods);
+        
+        model.addAttribute("nestSimulatorConfiguration", nestSimulatorConfiguration);
     }
 
     // Sends control event to nest
