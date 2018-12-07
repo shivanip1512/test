@@ -37,7 +37,7 @@
                                 <cti:button renderMode="appButton" icon="icon-32 ${subcategory.second}" href="${category_url}"/>
                                 <div class="box fl meta">
                                     <div><a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a></div>
-                                    <div class="detail"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}.description"/></div>
+                                    <div class="detail wrbw" style = "max-width : 360px"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}.description"/></div>
                                 </div>
                             </div>
                         </c:if>

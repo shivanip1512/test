@@ -154,7 +154,7 @@
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION">Authentication</entry>
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION.description">Authentication, Active Directory, LDAP server settings</entry>
     <entry key="yukon.common.setting.subcategory.DATA_IMPORT_EXPORT">Data Import/Export</entry>
-    <entry key="yukon.common.setting.subcategory.DATA_IMPORT_EXPORT.description">Data import and export settings, schedule options, and billing format settings.</entry>
+    <entry key="yukon.common.setting.subcategory.DATA_IMPORT_EXPORT.description">Data import and export settings, schedule options, and billing format settings</entry>
     <entry key="yukon.common.setting.subcategory.MULTISPEAK">Multispeak</entry>
     <entry key="yukon.common.setting.subcategory.MULTISPEAK.description">Vendor info, device mapping, billing groups</entry>
     <entry key="yukon.common.setting.subcategory.VOICE">Voice</entry>
