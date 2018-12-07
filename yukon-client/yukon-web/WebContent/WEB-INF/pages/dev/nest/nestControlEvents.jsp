@@ -8,7 +8,7 @@
 <cti:standardPage module="dev" page="nest.viewControlEvents">
 
     <div class="column-12-12">
-    
+
         <div class="column one">
     
         <cti:msg2 key=".controlEvent.helpText" var="helpText"/>
@@ -83,7 +83,8 @@
         
         </div>
         <div class="column two nogutter">
-            <tags:sectionContainer title="Error Generation">
+            <cti:msg2 key=".controlEventErrors.helpText" var="helpText"/>
+            <tags:sectionContainer title="Error Generation" helpText="${helpText}">
                 <cti:url var="setErrorsUrl" value="setErrors"/>
                 <form:form method="POST" action="${setErrorsUrl}" modelAttribute="nestSimulatorConfiguration">
                     <cti:csrfToken/>
@@ -93,8 +94,6 @@
                             <option label="NONE"></option>
                               <c:forEach var="errorType" items="${errorTypes}">
                                 <form:option value="${errorType}"></form:option>
-<%--                                 <c:set var="selectedText" value="${errorType == selectedError ? 'selected=selected' : ''}"/>
-                                  <option label="${errorType}" value="${errorType}" ${selectedText}></option> --%>
                               </c:forEach>
                           </form:select>
                        </tags:nameValue2>

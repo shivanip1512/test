@@ -445,16 +445,16 @@
     <entry key="yukon.web.modules.dev.nest.controlEvent.incorrectDate">Stop date cannot be less than start date</entry>
     
     <entry key="yukon.web.modules.dev.nest.controlEvent.helpText"><![CDATA[
-    <ul>
-    <li>Control Method: Control method to use.  </li>
-    <li>Control Start: Start time of control.</li>
-    <li>Control Stop: Stop time of control.</li>
-    * Start time and Stop time will be used to calculate duration.
-    <li>Group Name:  Comma separated list of group names.</li>
-    <li>Load Shaping Preparation: Add text to describe the options </li>
-    <li>Load Shaping Peak: Add text to describe the options</li>
-    <li>Load Shaping Post: Add text to describe the options</li>
-    </ul>
+        The Control Event Generation section simulates responses that we get from Nest when starting, stopping or canceling an event/program. 
+        Set the control parameters that you would like to test and click on Send Event to Simulate sending an event to Nest.  
+        The response that is returned will display in the Response section. If an Event ID is displayed, it was successful, otherwise it will display an error code.
+        You can then simulate stopping/canceling the event by clicking on the corresponding button.
+     ]]></entry>
+     
+     <entry key="yukon.web.modules.dev.nest.controlEventErrors.helpText"><![CDATA[
+        The Error Generation section simulates errors that we receive from Nest.  
+        Select the error that you would like to simulate when Starting, Stopping or Cancelling a program/event and click on Set Error to save the settings.
+        You can then start/stop/cancel a program/event to simulate the error.
      ]]></entry>
 
     <!-- I18N Demo -->
