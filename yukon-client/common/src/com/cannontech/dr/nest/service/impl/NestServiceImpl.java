@@ -229,7 +229,7 @@ public class NestServiceImpl implements NestService {
         if (groupIds.size() > 1) {
             String programName = getProgramName(programId);
             throw new NestException(programName + " has " + groupIds.size()
-                + " groups. Nest program must have one one group. Please remove additional groups.");
+                + " groups. Nest program must have one group. Please remove additional groups.");
         }
         return dbCache.getAllLMGroups().stream()
             .filter(g -> g.getPaoType() == PaoType.LM_GROUP_NEST && groupIds.contains(g.getLiteID()))

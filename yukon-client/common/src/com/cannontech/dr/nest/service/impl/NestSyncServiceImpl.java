@@ -69,6 +69,8 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestSync;
@@ -129,6 +131,7 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private HardwareService hardwareService;
     @Autowired private CustomerDao customerDao;
     @Autowired private PaoCreationHelper paoCreationHelper;
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
     private EnergyCompany energyCompany;
        
     /**
@@ -185,12 +188,34 @@ public class NestSyncServiceImpl implements NestSyncService{
            syncGroups(groupsInNest, sync.getId(), ignore);
            validateProgramAndAreaSetup(groupsInNest, sync.getId(), ignore);
            syncAccounts(existing, groupsInNest, sync.getId(), ignore);
+           updateAssetAvailability(existing);
         }
         sync.setStopTime(new Instant());
         nestDao.saveSyncInfo(sync);
         
         syncInProgress = false;
         log.info("Nest sync finished");
+    }
+    
+    /**
+     * Updates asset availability for all Nest thermostats
+     */
+    private void updateAssetAvailability(List<CustomerInfo> existing) {
+        Set<String> thermostatsInNest = getThermostatsInNest(existing);
+        dbCache.getAllYukonPAObjects().stream()
+            .filter(pao -> pao.getPaoType() == PaoType.NEST && thermostatsInNest.contains(pao.getPaoName()))
+            .forEach(pao -> updateAssetAvailability(pao.getLiteID()));
+    }
+
+    /**
+     * Updates asset availability for Nest thermostat
+     */
+    private void updateAssetAvailability(int paoId) {
+        Instant now = Instant.now();
+        AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(paoId);
+        times.setLastCommunicationTime(now);
+        times.setRelayRuntime(1, now);
+        dynamicLcrCommunicationsDao.insertData(times);
     }
 
     /**
@@ -211,10 +236,7 @@ public class NestSyncServiceImpl implements NestSyncService{
      */
     private void syncAccounts(List<CustomerInfo> existing, List<String> groups, int syncId, Blacklist ignore) {
         log.debug("Syncing {} accounts", existing.size());
-        Set<String> thermostatsInNest = existing.stream()
-                .map(CustomerInfo::getDeviceIds)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+        Set<String> thermostatsInNest = getThermostatsInNest(existing);
         Map<String, Thermostat> thermostatsInYukon = getThermostatsInYukon(thermostatsInNest);
         
         nestDao.saveSyncDetails(validateThermostats(thermostatsInNest, thermostatsInYukon, syncId, ignore));
@@ -235,6 +257,17 @@ public class NestSyncServiceImpl implements NestSyncService{
         updateAltTrackingNumberWithNestCustomerId(nestAccounts, yukonAccounts);
         syncAddresses(syncId, nestAccounts, yukonAccounts);
         syncThermostatsAndEnrollments(existing, groups, syncId, ignore, nestAccounts, thermostatsInYukon, yukonAccounts);        
+    }
+
+    /**
+     * Returns all Nest thermostats
+     */
+    private Set<String> getThermostatsInNest(List<CustomerInfo> existing) {
+        Set<String> thermostatsInNest = existing.stream()
+                .map(CustomerInfo::getDeviceIds)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+        return thermostatsInNest;
     }
 
     private void updateAltTrackingNumberWithNestCustomerId(Map<String, CustomerInfo> nestAccounts,
@@ -484,8 +517,8 @@ public class NestSyncServiceImpl implements NestSyncService{
             int accountId = accountService.addAccount(updatableAccount, energyCompany.getUser());
             log.debug("Created account for account number {} account id {}", row.getAccountNumber(), accountId);
         } catch (Exception e) {
-           log.error("Unable to create a new account for account number " + row.getAccountNumber() + " row:" + row, e);
-           return null;
+            log.error("Unable to create a new account for account number " + row.getAccountNumber() + " row:" + row, e);
+            return null;
         }
         NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_FOUND_ACCOUNT, AUTO_CREATED_ACCOUNT);
             detail.addValue(ACCOUNT_NUMBER, row.getAccountNumber());
