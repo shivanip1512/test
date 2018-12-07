@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.web.modules.operator.scheduledDataImportList.pageName">Scheduled Data Imports</entry>
+    
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.CREATE.pageName">Create Scheduled Data Import</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.CREATE.pageDescription">Create Scheduled Data Import</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.EDIT.pageHeading">Edit Scheduled Data Import: {0}</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.EDIT.pageTitle">Scheduled Data Import: {0}</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.VIEW.pageHeading">Scheduled Data Import: {0}</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.VIEW.pageTitle">Scheduled Data Import: {0}</entry>
+    
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.scheduleName">Schedule Name</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.schedule">Schedule</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.nextRun">Next Run</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.status">Status</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.importPath">Import Path</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.errorFileOutputPath">Error File Output Path</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.invalidCronExpression">Invalid Cron expression.</entry>
+    
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.delete.success">{0} deleted successfully.</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.save.success">{0} saved successfully.</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.editDeletedJob.error">Cannot edit a deleted job.</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.editRunningJob.error">Cannot edit a running job.</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.jobStatus.DELETED">Deleted</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.jobStatus.DISABLED">Disabled</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.jobStatus.SCHEDULED">Scheduled</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.jobStatus.RUNNING">Running</entry>
+    
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.info">Info</entry>
+    
+    <entry key="yukon.web.modules.operator.scheduledData.importType.ASSET_IMPORT">Asset Import</entry>
+    
+</properties>

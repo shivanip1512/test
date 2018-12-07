@@ -259,6 +259,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/mapNetwork</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/relay</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/rtu</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/scheduledDataImport</value>
                 <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/bulk</value>

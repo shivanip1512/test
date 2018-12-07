@@ -1206,6 +1206,19 @@
                     <page name="rtuDetail.CREATE" type="BASIC"/>
                 </pages>
             </page>
+            <page name="scheduledDataImportList" type="BASIC" hideSearch="true">
+                <link>/stars/scheduledDataImport/list</link>
+                <pages>
+                    <page name="scheduledDataImportDetail.CREATE" type="BASIC"/>
+                    <page name="scheduledDataImportDetail.VIEW" type="DETAIL">
+                        <link>/stars/rtu/{jobId}</link>
+                        <labelArgument>${scheduledImportData.scheduleName}</labelArgument>
+                    </page>
+                    <page name="scheduledDataImportDetail.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${scheduledImportData.scheduleName}</labelArgument>
+                    </page>
+                </pages>
+            </page>
             <page name="infrastructureWarnings" type="BASIC" hideSearch="true">
                 <link>/stars/infrastructureWarnings/detail</link>
             </page>
