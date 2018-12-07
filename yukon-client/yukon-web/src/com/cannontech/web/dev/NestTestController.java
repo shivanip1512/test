@@ -121,6 +121,9 @@ public class NestTestController {
     public String viewControlEvents(ModelMap model, YukonUserContext userContext) {
         setupModelMap(model);
         NestControlEventSimulatorParameters nestParameters = new NestControlEventSimulatorParameters();
+        nestParameters.setLoadShapingPeak(PeakLoadShape.PEAK_STANDARD);
+        nestParameters.setLoadShapingPost(PostLoadShape.POST_STANDARD);
+        nestParameters.setLoadShapingPreparation(PrepLoadShape.PREP_STANDARD);
         model.addAttribute("nestParameters", nestParameters);
         return "nest/nestControlEvents.jsp";
     }
