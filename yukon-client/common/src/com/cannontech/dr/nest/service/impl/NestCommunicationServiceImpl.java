@@ -254,8 +254,6 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
 
         HttpEntity<ControlEvent> entity = new HttpEntity<>(event, headers);
         try {
-/*            ResponseEntity<EventId> response =
-                restTemplate.exchange(url, HttpMethod.POST, entity, EventId.class, urlParams);*/
             ResponseEntity<Object> response =
                     restTemplate.exchange(url, HttpMethod.POST, entity, Object.class, urlParams);
             log.debug("response:" + response.getBody());
