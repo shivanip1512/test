@@ -8,15 +8,15 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
  *
  */
 public enum ImportType implements DisplayableEnum, DatabaseRepresentationSource {
-    
+
     ASSET_IMPORT("AssetImport");
-    
+
     private String importType;
-    
-    private ImportType (String importType) {
+
+    private ImportType(String importType) {
         this.importType = importType;
     }
-    
+
     public String getImportType() {
         return importType;
     }
