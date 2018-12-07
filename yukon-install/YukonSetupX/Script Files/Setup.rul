@@ -384,6 +384,12 @@ begin
         DeleteFile (shortcutDir);
     endif;
 
+    //Delete Static folder in case of upgrade when installed version < "7.2.0".
+    if(IsInstalledVersionLesser("7.2.0")) then
+        sDir = TARGETDIR ^ "\\Server\\Static";
+        DeleteDir(sDir, ALLCONTENTS);
+    endif;
+
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
 	
