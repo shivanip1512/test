@@ -1340,5 +1340,6 @@
      <bean id="pqrConfigBackingService" class="com.cannontech.web.updater.pqrConfig.PqrConfigBackingService"/>
      
      <bean class="com.cannontech.web.paonote.validator.PaoNoteValidator"/>
+     <bean id="scheduledDataImportService" class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportServiceImpl"/>
      
 </beans>

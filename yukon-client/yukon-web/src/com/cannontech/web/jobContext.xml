@@ -518,7 +518,52 @@
             </bean>
         </property>
     </bean>
-    
+
+    <!-- Scheduled Data File Import Job Definition -->
+    <bean id="scheduledDataImportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+    <qualifier value="scheduledDataImport"/>
+        <property name="taskName">
+            <idref bean="scheduledDataImportTask"/>
+        </property>
+        <property name="title" value="Scheduled Data File Import Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="scheduleName"/>
+                            <property name="displayName" value="Schedule Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="importPath"/>
+                            <property name="displayName" value="Import Path"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="errorFileOutputPath"/>
+                            <property name="displayName" value="Error File Output Path"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="importType"/>
+                            <property name="displayName" value="Import Type"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
    <bean id="deviceConfigVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="deviceConfigVerification"/>
         <property name="taskName">
@@ -605,6 +650,7 @@
     
     <bean id="deviceConfigVerificationTask" class="com.cannontech.web.tools.device.config.DeviceConfigVerificationTask" scope="prototype"/>
 
-    <bean id="nestSyncTask" class="com.cannontech.web.dr.nest.NestSyncTask" scope="prototype"/>    
+    <bean id="nestSyncTask" class="com.cannontech.web.dr.nest.NestSyncTask" scope="prototype"/>
+    <bean id="scheduledDataImportTask" class="com.cannontech.web.scheduledDataImport.tasks.ScheduledDataImportTask" scope="prototype"/>
 </beans>
 
