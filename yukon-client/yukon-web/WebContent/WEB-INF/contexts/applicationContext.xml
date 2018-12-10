@@ -1341,5 +1341,6 @@
      
      <bean class="com.cannontech.web.paonote.validator.PaoNoteValidator"/>
      <bean id="scheduledDataImportService" class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportServiceImpl"/>
+     <bean class="com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory"/>
      
 </beans>
