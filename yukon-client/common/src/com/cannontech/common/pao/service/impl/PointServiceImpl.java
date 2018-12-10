@@ -43,7 +43,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
@@ -115,7 +114,7 @@ public class PointServiceImpl implements PointService {
 
         try {
             LitePoint point = this.getPointForPao(pao, pointIdentifier);
-            if (point.getPointType() == PointTypes.SYSTEM_POINT) {
+            if (point.getPointTypeEnum() == PointType.System) {
                 return false;
             }
         } catch (NotFoundException e) {

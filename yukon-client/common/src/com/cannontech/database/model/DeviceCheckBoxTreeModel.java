@@ -16,7 +16,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -27,7 +27,7 @@ public class DeviceCheckBoxTreeModel extends AbstractDeviceTreeModel implements 
     private boolean showPoints = true;
     
     //a Vector only needed to store temporary things
-    private java.util.List pointTempList = new java.util.Vector(20);
+    private java.util.List<LitePoint> pointTempList = new java.util.Vector<LitePoint>(20);
     
     //a mutable lite point used for comparisons
     private static final LitePoint DUMMY_LITE_POINT = new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0 );
@@ -299,24 +299,24 @@ public class DeviceCheckBoxTreeModel extends AbstractDeviceTreeModel implements 
         {
             LitePoint lp = (LitePoint) pointTempList.get(j);
             
-            if( lp.getPointType() == PointTypes.ANALOG_POINT)
+            if( lp.getPointTypeEnum() == PointType.Analog)
             {
                 anNode = addDummyTreeNode( lp, anNode, "Analog", deviceNode );
             }
-            else if( lp.getPointType() == PointTypes.STATUS_POINT)
+            else if( lp.getPointTypeEnum() == PointType.Status)
             {
                 stNode = addDummyTreeNode( lp, stNode, "Status", deviceNode );
             }
-            else if ( lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
+            else if ( lp.getPointTypeEnum() == PointType.PulseAccumulator)
             {
                 accPulsNode = addDummyTreeNode( lp, accPulsNode, "Pulse Accumulator", deviceNode );
             }
-            else if ( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+            else if ( lp.getPointTypeEnum() == PointType.DemandAccumulator)
             {
                 accDmndNode = addDummyTreeNode( lp, accDmndNode, "Demand Accumulator", deviceNode );
             }
-            else if ( lp.getPointType() == PointTypes.CALCULATED_POINT
-                    || lp.getPointType() == PointTypes.CALCULATED_STATUS_POINT )
+            else if ( lp.getPointTypeEnum() == PointType.CalcAnalog
+                    || lp.getPointTypeEnum() == PointType.CalcStatus)
             {
                 calcNode = addDummyTreeNode( lp, calcNode, "Calculated", deviceNode );
             }

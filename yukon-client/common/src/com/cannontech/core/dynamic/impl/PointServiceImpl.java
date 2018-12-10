@@ -26,7 +26,7 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.user.YukonUserContext;
@@ -64,7 +64,7 @@ public class PointServiceImpl implements PointService {
                     
                     int nextCondition = signal.getCondition();
                     String conditionText = AlarmUtils.getAlarmConditionText(nextCondition, lp); 
-                    if (lp.getPointType() == PointTypes.ANALOG_POINT 
+                    if (lp.getPointTypeEnum() == PointType.Analog
                                 && conditionText.equalsIgnoreCase(IAlarmDefs.OTHER_ALARM_STATES[10])) {
                         // Skip the stale state since it's not a real state in the stategroup.
                         // This will need to change if we decide that the stale alarm condition 

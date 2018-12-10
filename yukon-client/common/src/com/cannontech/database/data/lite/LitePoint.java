@@ -184,9 +184,8 @@ public class LitePoint extends LiteBase {
     @Override
     public String toString() {
         if (showPointOffsets) {
-            if (getPointType() == PointTypes.CALCULATED_POINT
-                    || getPointType() == PointTypes.CALCULATED_STATUS_POINT
-                    || getPointType() == PointTypes.INVALID_POINT) {
+            if (getPointTypeEnum() == PointType.CalcAnalog
+                    || getPointTypeEnum() == PointType.CalcStatus) {
                 return getPointName();
             } else {
                 if (getPointOffset() == 0) {

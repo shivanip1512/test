@@ -35,7 +35,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
@@ -398,7 +397,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
     private PointData buildPointData(int pointId, DateTime date, double value) {
         PointData pointData = new PointData();
         pointData.setId(pointId);
-        pointData.setType(PointTypes.ANALOG_POINT); //Analog
+        pointData.setType(PointType.Analog.getPointTypeId()); //Analog
         pointData.setMillis(0);
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setTime(date.toDate());

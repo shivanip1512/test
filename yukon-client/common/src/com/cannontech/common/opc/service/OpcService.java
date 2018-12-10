@@ -35,7 +35,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
@@ -210,7 +210,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
             return;
         }
 
-        if (point.getPointType() == PointTypes.ANALOG_POINT) {
+        if (point.getPointTypeEnum() == PointType.Analog) {
             try {
                 offset = (int)(double)point.getDataOffset();
             } catch (NullPointerException e) {
@@ -312,7 +312,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         PointData pointData = new PointData();
         pointData.setId(statusPointId);
         pointData.setPointQuality(PointQuality.Normal);
-        pointData.setType(PointTypes.STATUS_POINT);
+        pointData.setType(PointType.Status.getPointTypeId());
         pointData.setValue(status);
         pointData.setTimeStamp(new Date());
         try {

@@ -1,6 +1,7 @@
 package com.cannontech.dr.honeywellWifi;
 
-import static com.cannontech.common.util.TimeUtil.*;
+import static com.cannontech.common.util.TimeUtil.getLeastRecent;
+import static com.cannontech.common.util.TimeUtil.getStartOfHour;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
@@ -230,7 +230,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
                                                              
                                                              PointData pointData = new PointData();
                                                              pointData.setId(runtimePoint.getLiteID());
-                                                             pointData.setType(PointTypes.ANALOG_POINT);
+                                                             pointData.setType(PointType.Analog.getPointTypeId());
                                                              pointData.setMillis(0);
                                                              pointData.setPointQuality(PointQuality.Normal);
                                                              pointData.setTime(runtimeDate);

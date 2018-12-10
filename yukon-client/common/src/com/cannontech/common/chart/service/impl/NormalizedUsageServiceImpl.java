@@ -17,7 +17,7 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.Lists;
 
 
@@ -66,7 +66,7 @@ public class NormalizedUsageServiceImpl implements NormalizedUsageService {
             Date cvDate = new Date(cv.getTime());
             double cvValue = cv.getValue();
 
-            PointValueHolder pvh = new SimplePointValue(cvId, cvDate, PointTypes.PULSE_ACCUMULATOR_POINT, cvValue);
+            PointValueHolder pvh = new SimplePointValue(cvId, cvDate, PointType.PulseAccumulator.getPointTypeId(), cvValue);
             pvhs.add(pvh);
         }
         return pvhs;

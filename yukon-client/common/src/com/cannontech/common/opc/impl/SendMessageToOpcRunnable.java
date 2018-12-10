@@ -6,7 +6,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.opc.model.YukonOpcItem;
 import com.cannontech.common.opc.service.OpcService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.point.PointTypes;
 import com.netmodule.jpc.driver.opc.OpcGroup;
 import com.netmodule.jpc.driver.opc.OpcItem;
 
@@ -37,10 +36,10 @@ public class SendMessageToOpcRunnable implements Runnable {
 		}
 
 		// Set the new value of the item.
-		switch (pointData.getType()) {
+		switch (pointData.getPointType()) {
 			// Catch Status points here, the rest all rely on a double value.
-			case PointTypes.STATUS_POINT:
-			case PointTypes.CALCULATED_STATUS_POINT: {
+			case Status:
+			case CalcStatus: {
 	
 				// Determine the boolean of the point.
 				boolean status = pointData.getValue() == 0 ? false : true;
