@@ -16,7 +16,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupEmetcon;
 import com.cannontech.loadcontrol.data.LMGroupExpresscom;
@@ -177,7 +177,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 		for (MspLMGroupCommunications mspLMGroupCommunication : mspLMGroupCommunications) {
 			try {
 				LitePoint commStatusPoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(mspLMGroupCommunication.getTransmitterId(),
-																2000, PointTypes.STATUS_POINT);
+																2000, PointType.Status.getPointTypeId());
 				pointIds.add(commStatusPoint.getPointID());
 			} catch (NotFoundException e) {
 				//can't check if point doesn't exist

@@ -29,7 +29,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -106,7 +106,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         pointData.setId(pointId);
         pointData.setValue(scadaAnalog.getValue().getValue());
         pointData.setPointQuality(getPointQuality(scadaAnalog.getQuality().getValue()));
-        pointData.setType(PointTypes.ANALOG_POINT);
+        pointData.setType(PointType.Analog.getPointTypeId());
         pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
         pointData.setUserName(userName);
         if (scadaAnalog.getTimeStamp() != null) {
