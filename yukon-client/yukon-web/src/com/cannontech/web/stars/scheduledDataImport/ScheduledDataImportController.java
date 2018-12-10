@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.scheduledFileImport.ImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.util.StringUtils;
@@ -167,4 +168,16 @@ public class ScheduledDataImportController {
         model.addAttribute("scheduledImportData", scheduledDataImport);
     }
 
+    public enum Column implements DisplayableEnum {
+        NAME,
+        TYPE,
+        SCHEDULE,
+        NEXT_RUN,
+        STATUS;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.scheduledDataImportList." + name();
+        }
+    }
 }
