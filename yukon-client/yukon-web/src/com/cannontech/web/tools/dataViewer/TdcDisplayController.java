@@ -72,7 +72,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -416,14 +416,14 @@ public class TdcDisplayController {
         backingBean.setPointId(pointId);
         backingBean.setDeviceId(deviceId);
         LitePoint litePoint = pointDao.getLitePoint(pointId);
-        if (litePoint.getPointType() == PointTypes.ANALOG_POINT) {
+        if (litePoint.getPointTypeEnum() == PointType.Analog) {
             PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
             backingBean.setValue(pointValue.getValue());
-        } else if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+        } else if (litePoint.getPointTypeEnum() == PointType.Status) {
             LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
             List<LiteState> stateList = new ArrayList<>(group.getStatesList());
             
-            if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+            if (litePoint.getPointTypeEnum() == PointType.Status) {
                 long tags = asyncDynamicDataSource.getTags(litePoint.getLiteID());
                 boolean controllable = TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags);
                 if (controllable) {
@@ -446,7 +446,7 @@ public class TdcDisplayController {
                                     FlashScope flashScope) throws IOException {
         
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
-        if (litePoint.getPointType() == PointTypes.ANALOG_POINT) {
+        if (litePoint.getPointTypeEnum() == PointType.Analog) {
             validator.validate(backingBean, bindingResult);
             if (bindingResult.hasErrors()) {
                 LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
@@ -462,7 +462,7 @@ public class TdcDisplayController {
                                                backingBean.getValue(),
                                                userContext.getYukonUser());
 
-        } else if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+        } else if (litePoint.getPointTypeEnum() == PointType.Status) {
             if (backingBean.getStateId() == 0) {
                 commandService.toggleControlRequest(backingBean.getDeviceId(),
                                                 backingBean.getPointId(),

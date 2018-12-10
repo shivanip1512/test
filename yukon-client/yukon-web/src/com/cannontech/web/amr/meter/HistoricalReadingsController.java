@@ -78,7 +78,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -226,8 +226,8 @@ public class HistoricalReadingsController {
         backingBean.setPointId(pointId);
         backingBean.setTimestamp(dateTime.toInstant());
         LitePoint litePoint = pointDao.getLitePoint(pointId);
-        if (litePoint.getPointType() == PointTypes.STATUS_POINT
-            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
+        if (litePoint.getPointTypeEnum() == PointType.Status
+            || litePoint.getPointTypeEnum() == PointType.CalcStatus) {
             LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
             model.put("stateList", group.getStatesList());
             backingBean.setStateId((int) value);
@@ -253,8 +253,8 @@ public class HistoricalReadingsController {
         double newValue;
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         LiteYukonPAObject liteYukonPAO = databaseCache.getAllPaosMap().get(litePoint.getPaobjectID());
-        if (litePoint.getPointType() == PointTypes.STATUS_POINT
-            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
+        if (litePoint.getPointTypeEnum() == PointType.Status
+            || litePoint.getPointTypeEnum() == PointType.CalcStatus) {
             newValue = backingBean.getStateId();
         } else {
             validator.validate(backingBean, bindingResult);

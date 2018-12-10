@@ -525,8 +525,8 @@ public class PointController {
         backingBean.setPointId(pointId);
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
-        if (litePoint.getPointType() == PointTypes.STATUS_POINT
-            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
+        if (litePoint.getPointTypeEnum() == PointType.Status
+            || litePoint.getPointTypeEnum() == PointType.CalcStatus) {
             LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
             model.put("stateList", group.getStatesList());
             backingBean.setStateId((int) pointValue.getValue());
@@ -548,8 +548,8 @@ public class PointController {
 
         double newPointValue;
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
-        if (litePoint.getPointType() == PointTypes.STATUS_POINT
-            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
+        if (litePoint.getPointTypeEnum() == PointType.Status
+            || litePoint.getPointTypeEnum() == PointType.CalcStatus) {
             newPointValue = backingBean.getStateId();
         } else {
             validator.validate(backingBean, bindingResult);

@@ -32,7 +32,6 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -141,7 +140,7 @@ public class PointEditorServiceImpl implements PointEditorService {
      */
     private List<AlarmTableEntry> getAlarmTableEntries(PointBase pointBase) {
         
-        int ptType = PointTypes.getType(pointBase.getPoint().getPointType());
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
 
         ArrayList<AlarmTableEntry> notifEntries = new ArrayList<>();
         
@@ -154,7 +153,7 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         // this drives what list of strings we will put into our table
         String[] alarm_cats = IAlarmDefs.OTHER_ALARM_STATES;
-        if (ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT) {
+        if (ptType == PointType.Status || ptType == PointType.CalcStatus) {
             alarm_cats = IAlarmDefs.STATUS_ALARM_STATES;
         }
         LiteStateGroup stateGroup = stateGroupDao.getStateGroup(pointBase.getPoint().getStateGroupID());
@@ -173,7 +172,7 @@ public class PointEditorServiceImpl implements PointEditorService {
             notifEntries.add(entry);
         }
 
-        if (ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT) {
+        if (ptType == PointType.Status || ptType == PointType.CalcStatus) {
 
             for (int j = 0; j < stateNames.length; j++, i++) {
                 if (i >= alarmStates.length()) {
