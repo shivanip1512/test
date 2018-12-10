@@ -16,7 +16,7 @@ import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -47,7 +47,7 @@ public class PowerFailPointCreate extends PointCreate
 	@Override
     public boolean isPointCreated( LitePoint lp ) {
 		return ((lp.getPointOffset() == 20) && 
-				(lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT));
+				(lp.getPointTypeEnum() == PointType.PulseAccumulator));
 	}
 	/**
 	 * Parses through the powerFailPointsDeviceList and creates a mutiDBPersistent

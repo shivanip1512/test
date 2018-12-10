@@ -15,7 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
 public class ReversePowerFlagPointCreate extends PointCreate
@@ -43,7 +43,7 @@ public class ReversePowerFlagPointCreate extends PointCreate
 	@Override
     public boolean isPointCreated(LitePoint lp) {
 		return (( lp.getPointOffset() == REVERSE_POWER_FLAG_POINT_OFFSET) && 
-				(lp.getPointType() == PointTypes.STATUS_POINT));
+				(lp.getPointTypeEnum() == PointType.Status));
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class ReversePowerFlagPointCreate extends PointCreate
 		    int pointID = pointDao.getNextPointId();
 			
 		    PointBase pointBase = PointFactory.createNewPoint(pointID,
-                    PointTypes.STATUS_POINT,
+                    PointType.Status.getPointTypeId(),
                     "Reverse Power",
                     litePaobject.getYukonID(),
                     REVERSE_POWER_FLAG_POINT_OFFSET);

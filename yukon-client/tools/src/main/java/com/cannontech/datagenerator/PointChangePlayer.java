@@ -12,7 +12,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -91,7 +91,7 @@ public class PointChangePlayer {
 
 			while( rset.next() ) {
 				PointData pch = new PointData();
-				pch.setType(PointTypes.ANALOG_POINT);
+				pch.setType(PointType.Analog.getPointTypeId());
 				pch.setId(rset.getInt(1));
 				int pointQuality = rset.getInt(2);
 				pch.setPointQuality(PointQuality.getPointQuality(pointQuality));

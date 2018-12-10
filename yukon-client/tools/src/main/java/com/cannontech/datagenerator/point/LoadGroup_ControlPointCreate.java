@@ -14,7 +14,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.UnitOfMeasure;
@@ -123,7 +123,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			    int pointID = pointDao.getNextPointId();
 				PointBase pointBase = PointFactory.createNewPoint(
 						new Integer(pointID),
-						PointTypes.STATUS_POINT,
+						PointType.Status.getPointTypeId(),
 						"CONTROL STATUS",
 						new Integer(paobjectID),
 						new Integer(0) );
@@ -188,17 +188,17 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	@Override
     public boolean isPointCreated( com.cannontech.database.data.lite.LitePoint lp)
 	{
-		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_DAILY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_DAILY_HISTORY && lp.getPointTypeEnum() == PointType.Analog)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).dailyhistory = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MONTHLY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MONTHLY_HISTORY && lp.getPointTypeEnum() == PointType.Analog)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).monthlyHistory = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_SEASONAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_SEASONAL_HISTORY && lp.getPointTypeEnum() == PointType.Analog)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).seasonalHistory = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_ANNUAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_ANNUAL_HISTORY && lp.getPointTypeEnum() == PointType.Analog)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).annualHistory = false;
-		else if( lp.getPointOffset() == 0 && lp.getPointType() == PointTypes.STATUS_POINT)
+		else if( lp.getPointOffset() == 0 && lp.getPointTypeEnum() == PointType.Status)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).controlStatus = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_CONTROL_COUNTDOWN && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_CONTROL_COUNTDOWN && lp.getPointTypeEnum() == PointType.Analog)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).controlCountdown = false;
 			
 		return false;

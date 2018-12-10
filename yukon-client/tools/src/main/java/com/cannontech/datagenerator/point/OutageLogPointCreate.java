@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
@@ -37,7 +37,7 @@ public class OutageLogPointCreate extends PointCreate
 	@Override
     public boolean isPointCreated(LitePoint lp) {
 		return (( lp.getPointOffset() == 100) && 
-				(lp.getPointType() == PointTypes.ANALOG_POINT));
+				(lp.getPointTypeEnum() == PointType.Analog));
 	}
 	/**
 	 * Parses through the OutageLogPointsDeviceList and creates a mutiDBPersistent

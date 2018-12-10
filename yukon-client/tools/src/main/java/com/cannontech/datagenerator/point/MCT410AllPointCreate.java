@@ -14,7 +14,7 @@ import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -300,25 +300,25 @@ public class MCT410AllPointCreate extends PointCreate
 	@Override
     public boolean isPointCreated( LitePoint lp)
 	{
-		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT )
+		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).voltageLP = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_PEAK_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_PEAK_KW_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).peakKw = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MAX_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MAX_VOLT_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).maxVolts = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MIN_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MIN_VOLT_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).minVolts = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_KW_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).kw = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).voltage = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).kWLP = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_TOTAL_KWH && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_TOTAL_KWH && lp.getPointTypeEnum() == PointType.PulseAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).kWh = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_BLINK_COUNT && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_BLINK_COUNT && lp.getPointTypeEnum() == PointType.PulseAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).blinkCount = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_OUTAGE && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_OUTAGE && lp.getPointTypeEnum() == PointType.Analog)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).outageLog = false;
 		
 		return false;

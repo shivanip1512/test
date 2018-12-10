@@ -14,7 +14,7 @@ import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -157,11 +157,11 @@ public class MCT410FrozenPointCreate extends PointCreate
 	@Override
     public boolean isPointCreated( LitePoint lp)
 	{
-		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).frozenPeakKw = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).frozenMaxVolts = false;
-		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT && lp.getPointTypeEnum() == PointType.DemandAccumulator)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).frozenMinVolts = false;
 		
 		return false;

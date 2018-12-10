@@ -24,7 +24,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointUnit;
@@ -55,7 +55,7 @@ public class CapBank_OpCntPointCreate extends PointCreate
 	@Override
     public boolean isPointCreated( LitePoint lp ) {
 		return ((lp.getPointOffset() == 1) && 
-				(lp.getPointType() == PointTypes.ANALOG_POINT));
+				(lp.getPointTypeEnum() == PointType.Analog));
 	}
 	
 	/**
@@ -83,7 +83,7 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			CTILogger.info("Adding PointId " + pointID + " to Cap Bank " + litePaobject.getPaoName());
 	
 			// This is an Analog point		
-			AnalogPoint analogPoint = (AnalogPoint)PointFactory.createPoint(PointTypes.ANALOG_POINT);
+			AnalogPoint analogPoint = (AnalogPoint)PointFactory.createPoint(PointType.Analog.getPointTypeId());
 			analogPoint.setPointID(new Integer(pointID));
 			
 			// set default settings for BASE point

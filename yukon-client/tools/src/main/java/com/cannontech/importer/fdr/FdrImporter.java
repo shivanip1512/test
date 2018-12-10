@@ -1,9 +1,21 @@
 package com.cannontech.importer.fdr;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
@@ -15,7 +27,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.importer.fdr.translation.ProgressOpcImportParserImpl;
 import com.cannontech.importer.fdr.translation.ProgressTextImportParseImpl;
 import com.cannontech.importer.fdr.translation.ProgressValmetImportParserImpl;
@@ -23,12 +35,6 @@ import com.cannontech.importer.fdr.translation.TranslationBase;
 import com.cannontech.importer.fdr.translation.TranslationParse;
 import com.cannontech.importer.point.PointImportUtility;
 import com.cannontech.spring.YukonSpringHook;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import org.apache.logging.log4j.Logger;
-import org.springframework.dao.DataAccessException;
 
 
 public class FdrImporter {
@@ -178,13 +184,13 @@ public class FdrImporter {
                 }else {
                     System.out.println("Skipped");
                     int deviceid = base.getDevice().getPAObjectID();
-                    int type;
+                    PointType type;
                     if( statusPoint ) {
-                        type = PointTypes.STATUS_POINT;
+                        type = PointType.Status;
                     }else {
-                        type = PointTypes.ANALOG_POINT;
+                        type = PointType.Analog;
                     }
-                    List<LitePoint> list = pointDao.getLitePointIdByDeviceId_PointType(deviceid,type);
+                    List<LitePoint> list = pointDao.getLitePointIdByDeviceId_PointType(deviceid,type.getPointTypeId());
                     
                     if( list.size() == 0) {
                         log.error("Point not found in the database, translation cannot be added.");
@@ -225,17 +231,17 @@ public class FdrImporter {
         
         for(TranslationBase base : translationList) {
             FdrTranslation fdr = base.getTranslation();
-            int type = 0;
+            PointType type = null;
             if( "Analog".equalsIgnoreCase(base.getPointParameter("POINTTYPE")) ) {
-                type = PointTypes.ANALOG_POINT;
+                type = PointType.Analog;
             }else {
-                type = PointTypes.STATUS_POINT;
+                type = PointType.Status;
             }
             try{ 
                 int offset = Integer.parseInt(base.getPointParameter("OFFSET"));
                 int deviceid = base.getDevice().getDevice().getDeviceID();
                 
-                LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(deviceid,offset,type);
+                LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(deviceid,offset,type.getPointTypeId());
                 
                 int liteid = point.getLiteID();
                 fdr.setPointId(liteid);

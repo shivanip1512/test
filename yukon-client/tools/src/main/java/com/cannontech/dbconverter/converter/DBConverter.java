@@ -15,7 +15,7 @@ import com.cannontech.database.data.device.MCTIEDBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.device.DeviceGroupMember;
@@ -559,17 +559,17 @@ public boolean processAccumulatorPoints()
 	    
 		Integer pointID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
 		
-		String pointType = tokenizer.nextElement().toString();
-		
+		String pointTypeStr = tokenizer.nextElement().toString();
+		PointType pointType = PointType.getForString(pointTypeStr);
 		com.cannontech.database.data.point.AccumulatorPoint accumPoint = null;
 			
         
 		//if pointType
-		if( PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT).equals(pointType) )
+		if(PointType.DemandAccumulator == pointType)
 		{
 			// This is an Demand Accumulator point
 			accumPoint = (com.cannontech.database.data.point.AccumulatorPoint)
-                    PointFactory.createPoint(PointTypes.DEMAND_ACCUMULATOR_POINT);
+                    PointFactory.createPoint(PointType.DemandAccumulator.getPointTypeId());
 
 			// default state group ID
 			accumPoint.getPoint().setStateGroupID( new Integer(-2) );
@@ -578,7 +578,7 @@ public boolean processAccumulatorPoints()
 		{
 			// This is an Accumulator point
 			accumPoint = (com.cannontech.database.data.point.AccumulatorPoint)
-                            PointFactory.createPoint(PointTypes.PULSE_ACCUMULATOR_POINT);
+                            PointFactory.createPoint(PointType.PulseAccumulator.getPointTypeId());
 
 			// default state group ID
 			accumPoint.getPoint().setStateGroupID( new Integer(-2) );
@@ -743,16 +743,17 @@ public boolean processAnalogPoints()
 		//2541,Analog,5285_05_KVAR_T,126,Y,0,KVAR  ,1,0,-1,,0,0,,0,0,none,1
 		Integer pointID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
 		
-		String pointType = tokenizer.nextElement().toString();
+		String pointTypeStr = tokenizer.nextElement().toString();
+		PointType pointType = PointType.getForString(pointTypeStr);
 
 		com.cannontech.database.data.point.ScalarPoint analogPoint = null;
 			
 		//if pointType
-        if( PointTypes.getType(PointTypes.CALCULATED_POINT).equals(pointType) )
+        if( PointType.CalcAnalog == pointType)
 		{
 			// This is a Caclulated Analog point
 			analogPoint = (com.cannontech.database.data.point.CalculatedPoint)
-                                PointFactory.createPoint(PointTypes.CALCULATED_POINT);
+                                PointFactory.createPoint(PointType.CalcAnalog.getPointTypeId());
 		
 			// default state group ID
 			analogPoint.getPoint().setStateGroupID( new Integer(-3) );
@@ -760,7 +761,7 @@ public boolean processAnalogPoints()
 		else
 		{
 			analogPoint = (com.cannontech.database.data.point.AnalogPoint)
-			                PointFactory.createPoint(PointTypes.ANALOG_POINT);
+			                PointFactory.createPoint(PointType.Analog.getPointTypeId());
 			
 			// default state group ID
 			analogPoint.getPoint().setStateGroupID( new Integer(-1) );
@@ -819,7 +820,7 @@ public boolean processAnalogPoints()
 		else 
 			analogPoint.getPointUnit().setUomID( new Integer( 0  ) );
 			
-		if( PointTypes.getType(PointTypes.CALCULATED_POINT).equals(pointType) )
+		if(PointType.CalcAnalog == pointType)
 		{
 			// move the token up 3
 			tokenizer.nextElement().toString();
@@ -1828,11 +1829,11 @@ public boolean processStatusPoints()
 
 		Integer pointID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
 		
-		String pointType = tokenizer.nextElement().toString();
+		String pointTypeStr = tokenizer.nextElement().toString();
 		
 		com.cannontech.database.data.point.StatusPoint statusPoint = 
                 (com.cannontech.database.data.point.StatusPoint)
-                        PointFactory.createPoint(PointTypes.STATUS_POINT);
+                        PointFactory.createPoint(PointType.Status.getPointTypeId());
 				
 		//set our unique deviceID
 		statusPoint.setPointID(pointID);
