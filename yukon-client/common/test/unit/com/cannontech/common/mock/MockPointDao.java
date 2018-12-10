@@ -93,13 +93,13 @@ public class MockPointDao implements PointDao {
 
         switch (pointType) {
 
-        case Analog:
-            return pointOffset;
-        case PulseAccumulator:
-            return 1;
-        case DemandAccumulator:
-            return pointOffset;
         case Status:
+            return pointOffset;
+        case Analog:
+            return 1;
+        case PulseAccumulator:
+            return pointOffset;
+        case DemandAccumulator:
             return 3;
         default:
             return PointTypes.SYS_PID_SYSTEM;
