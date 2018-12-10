@@ -43,9 +43,9 @@
             <li><b>Note Text</b> - text contained within a note, case is ignored.</li>
             <li><b>Device Selection</b> - select one to many devices to filter the results.</li>
                 <ul>
-                    <li><b>All Devices</b> - no filtering by device.</li>
-                    <li><b>Select Individually</b> - filter notes attached to one or more individual device(s).</li>
-                    <li><b>By Device Groups</b> - filter notes attached to any device within a device group.</li>
+                    <li><b>All</b> - no filtering by device.</li>
+                    <li><b>Group</b> - filter notes attached to any device within a device group.</li>
+                    <li><b>Selected</b> - filter notes attached to one or more selected individual device(s).</li>
                 </ul>
             </li>
             <li><b>Create Date range</b> - filter notes created between the start date and the end date.</li>
