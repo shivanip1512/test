@@ -30,6 +30,7 @@ import static com.cannontech.dr.nest.model.NestSyncI18nValue.PROGRAM;
 import static com.cannontech.dr.nest.model.NestSyncI18nValue.SERIAL_NUMBER;
 import static com.cannontech.dr.nest.model.NestSyncType.AUTO;
 import static com.cannontech.dr.nest.model.NestSyncType.MANUAL;
+import com.cannontech.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,6 +102,7 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
+import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -503,7 +505,9 @@ public class NestSyncServiceImpl implements NestSyncService{
         } catch (Exception e) {
             log.error("Unable to split name {} into first and last name", row.getName());
         }
-        account.setEmailAddress(row.getEmail());
+        if(Validator.isEmailAddress(row.getEmail())) {
+            account.setEmailAddress(row.getEmail());
+        }
         Address address = new Address(row.getServiceAddress().getStreetAddress(), "", row.getServiceAddress().getCity(),
             row.getServiceAddress().getState(), row.getServiceAddress().getPostalCode(), "");
         account.setStreetAddress(address);

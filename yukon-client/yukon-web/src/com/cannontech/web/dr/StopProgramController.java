@@ -321,15 +321,16 @@ public class StopProgramController extends ProgramControllerBase {
                         rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                       userContext.getYukonUser());
                
-                if (backingBean.isStopNow() && stopOffset == null) {
-                    if (nestService.isEnabledNestProgramWithEnabledGroup(programStopInfo.getProgramId())) {
-                        NestStopEventResult result = nestService.stopControlForProgram(programStopInfo.getProgramId());
-                        // Nest program returned an error, we are going to skip this program
-                        // Do we need to write this to some event log? If so which one?
-                        if(result.isStopPossible() && !result.isSuccess()) {
-                            continue;
-                        }
+                if (backingBean.isStopNow()
+                    && nestService.isEnabledNestProgramWithEnabledGroup(programStopInfo.getProgramId())) {
+                    NestStopEventResult result = nestService.stopControlForProgram(programStopInfo.getProgramId());
+                    // Nest program returned an error, we are going to skip this program
+                    // Do we need to write this to some event log? If so which one?
+                    if (result.isStopPossible() && !result.isSuccess()) {
+                        continue;
                     }
+                }
+                if (backingBean.isStopNow() && stopOffset == null) {
                     programService.stopProgram(programStopInfo.getProgramId());
                 } else if (stopGearAllowed && programStopInfo.isUseStopGear()) {
                     programService.stopProgramWithGear(programStopInfo.getProgramId(), 

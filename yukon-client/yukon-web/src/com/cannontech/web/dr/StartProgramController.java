@@ -605,7 +605,6 @@ public class StartProgramController extends ProgramControllerBase {
                     programStartInfo.getGearNumber(), backingBean.getStartDate(), backingBean.getActualStopDate(), true);
                 if(error.isPresent()) {
                     //Nest returned an error
-                    //Do we need to write this to some event log? If so which one?
                     continue;
                 }
             }
