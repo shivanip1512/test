@@ -68,7 +68,7 @@
                 </cti:displayForPageEditModes>
             
                 <cti:displayForPageEditModes modes="EDIT">
-                    <cti:url var="viewUrl" value="/stars/scheduledDataImport/${scheduledImportData.jobId}"/>
+                    <cti:url var="viewUrl" value="/stars/scheduledDataImport/${scheduledImportData.jobId}/view"/>
                     <cti:button nameKey="cancel" href="${viewUrl}"/>
                 </cti:displayForPageEditModes>
             

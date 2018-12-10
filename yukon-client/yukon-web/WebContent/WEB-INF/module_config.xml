@@ -1211,7 +1211,7 @@
                 <pages>
                     <page name="scheduledDataImportDetail.CREATE" type="BASIC"/>
                     <page name="scheduledDataImportDetail.VIEW" type="DETAIL">
-                        <link>/stars/rtu/{jobId}</link>
+                        <link>/stars/scheduledDataImport/{jobId}/view</link>
                         <labelArgument>${scheduledImportData.scheduleName}</labelArgument>
                     </page>
                     <page name="scheduledDataImportDetail.EDIT" type="BASIC" hideFavorite="true">
