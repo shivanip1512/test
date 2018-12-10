@@ -9,7 +9,6 @@ import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.database.data.point.PointTypes;
 
 /**
  * Class which represents billing data for a Sentinel meter
@@ -29,9 +28,9 @@ public class Sentinel extends BillingDeviceBase {
 
         ReadingType readingType = getReadingType(unitOfMeasure);
 
-        switch (pointIdentifier.getPointType().getPointTypeId()) {
+        switch (pointIdentifier.getPointType()) {
 
-        case PointTypes.ANALOG_POINT:
+        case Analog:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -253,7 +252,7 @@ public class Sentinel extends BillingDeviceBase {
 
             break;
 
-        case PointTypes.PULSE_ACCUMULATOR_POINT:
+        case PulseAccumulator:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -283,7 +282,7 @@ public class Sentinel extends BillingDeviceBase {
 
             break;
 
-        case PointTypes.DEMAND_ACCUMULATOR_POINT:
+        case DemandAccumulator:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -310,14 +309,15 @@ public class Sentinel extends BillingDeviceBase {
             }
 
             break;
+        default:
         }
     }
 
     @Override
     public boolean isEnergy(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getPointType().getPointTypeId()) {
+        switch (pointIdentifier.getPointType()) {
 
-        case PointTypes.ANALOG_POINT:
+        case Analog:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -346,7 +346,7 @@ public class Sentinel extends BillingDeviceBase {
 
             break;
 
-        case PointTypes.PULSE_ACCUMULATOR_POINT:
+        case PulseAccumulator:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -358,15 +358,16 @@ public class Sentinel extends BillingDeviceBase {
             }
 
             break;
+        default:
         }
         return false;
     }
     
     @Override
     public boolean isDemand(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getPointType().getPointTypeId()) {
+        switch (pointIdentifier.getPointType()) {
 
-        case PointTypes.ANALOG_POINT:
+        case Analog:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -393,7 +394,7 @@ public class Sentinel extends BillingDeviceBase {
 
             break;
 
-        case PointTypes.DEMAND_ACCUMULATOR_POINT:
+        case DemandAccumulator:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -405,6 +406,7 @@ public class Sentinel extends BillingDeviceBase {
             }
 
             break;
+        default:
         }
         return false;
     }
