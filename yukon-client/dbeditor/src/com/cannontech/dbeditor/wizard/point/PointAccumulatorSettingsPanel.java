@@ -3,8 +3,10 @@ package com.cannontech.dbeditor.wizard.point;
 import java.util.List;
 
 import javax.swing.JLabel;
+
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -70,16 +72,16 @@ private void connEtoM2() {
  * Insert the method's description here.
  * Creation date: (4/30/2001 3:14:26 PM)
  */
-public int getAccumulatorPointType() 
+public PointType getAccumulatorPointType() 
 {
 
 	if(getDialReadingRadioButton().isSelected() )
 	{
-		return com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT;
+		return PointType.PulseAccumulator;
 	}
 	else
 	{
-		return com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT;	
+		return PointType.DemandAccumulator;	
 	}
 	
 }
@@ -343,10 +345,10 @@ public Object getValue(Object val)
 	//Assuming commonObject is an AccumulatorPoint
 	com.cannontech.database.data.point.AccumulatorPoint point = (com.cannontech.database.data.point.AccumulatorPoint) val;
 
-	if( getAccumulatorPointType() == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT )
-		point.getPoint().setPointType( com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT) );
+	if( getAccumulatorPointType() == PointType.PulseAccumulator)
+		point.getPoint().setPointTypeEnum(PointType.PulseAccumulator);
 	else
-		point.getPoint().setPointType( com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT) );
+		point.getPoint().setPointTypeEnum(PointType.DemandAccumulator);
 	
 	//Make sure the text in correct format
 	Double multiplier = null;

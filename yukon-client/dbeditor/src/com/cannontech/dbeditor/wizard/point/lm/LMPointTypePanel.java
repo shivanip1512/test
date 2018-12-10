@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.point.lm;
 
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointType;
 
 /**
  * This type was created in VisualAge.
@@ -95,16 +96,16 @@ private javax.swing.ButtonGroup getButtonGroup() {
  * This method was created in VisualAge.
  * @return int
  */
-public int getSelectedType() {
+public PointType getSelectedType() {
 
 	if( getAnalogRadioButton().isSelected() )
 	{
-		return com.cannontech.database.data.point.PointTypes.ANALOG_POINT;
+		return PointType.Analog;
 	}
 	else
 	if( getStatusRadioButton().isSelected() )
  	{
-	 	return com.cannontech.database.data.point.PointTypes.STATUS_POINT;
+	 	return PointType.Status;
  	}
  		throw new Error(getClass() + "::getSelectedType() - No radio button is selected");
 }
@@ -161,9 +162,9 @@ public Object getValue(Object val) {
 	//Ignore val - we're determing the type of the DBPersistent
 	//Figure out the type, create it, and then return it
 
-	int type = getSelectedType();
+	PointType type = getSelectedType();
 	
-	com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint( type );
+	com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint( type.getPointTypeId() );
 
 	newPoint.getPoint().setAlarmInhibit( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
 	newPoint.getPoint().setServiceFlag( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );

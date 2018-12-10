@@ -24,6 +24,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -322,14 +323,14 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 		
 		//create and add the points here
 		com.cannontech.database.data.point.PointBase historyPoint =
-			com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
+			PointFactory.createPoint(PointType.Status.getPointTypeId());
 
 		int[] ids = YukonSpringHook.getBean(PointDao.class).getNextPointIds(6);
 		
 		//set default for point tables
 		historyPoint = PointFactory.createNewPoint(
 				new Integer(ids[0]),
-				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
+				PointType.Status.getPointTypeId(),
 				"CONTROL STATUS",
 				paoID,
 				new Integer(0) );

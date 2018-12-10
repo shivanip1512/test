@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.customer.CICustomerPointData;
 
 public class CICustomerPointPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -80,8 +80,8 @@ private boolean isPointValid( LitePoint lPoint )
 {
     return
         lPoint != null && 
-        (lPoint.getPointType() == PointTypes.ANALOG_POINT
-        || lPoint.getPointType() == PointTypes.CALCULATED_POINT);
+        (lPoint.getPointTypeEnum() == PointType.Analog
+        || lPoint.getPointTypeEnum() == PointType.CalcAnalog);
     
 }
 

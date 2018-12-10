@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.wizard.point;
  */
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointWizardPanel extends com.cannontech.common.wizard.WizardPanel
@@ -88,22 +89,22 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		//Depending on the type selected in PointTypePanel
 		switch (getPointTypePanel().getPointType())
 		{
-			case PointTypes.ANALOG_POINT :
+			case Analog :
                 getPointAnalogSettingsPanel().setFirstFocus();
 				return getPointAnalogSettingsPanel();
 
-			case PointTypes.STATUS_POINT :
-			case PointTypes.CALCULATED_STATUS_POINT :
+			case Status :
+			case CalcStatus :
 				getPointStatusSettingsPanel().setValue(null);
                 getPointStatusSettingsPanel().setFirstFocus();
 				return getPointStatusSettingsPanel();
 
-			case PointTypes.PULSE_ACCUMULATOR_POINT :
-			case PointTypes.DEMAND_ACCUMULATOR_POINT :
+			case PulseAccumulator :
+			case DemandAccumulator :
                 getPointAccumulatorSettingsPanel().setFirstFocus();
 				return getPointAccumulatorSettingsPanel();
 
-			case PointTypes.CALCULATED_POINT :
+			case CalcAnalog :
 				getPointCalcBaseSettingsPanel().setValue(null);
                 getPointCalcBaseSettingsPanel().setFirstFocus();
 				return getPointCalcBaseSettingsPanel();
@@ -113,7 +114,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 					getClass()
 						+ "::"
 						+ "getNextInputPanel() - Unrecognized point type:  "
-						+ PointTypes.getType(getPointTypePanel().getPointType()));
+						+ getPointTypePanel().getPointType().getPointTypeString());
 		}
 	}
 	else if (currentInputPanel == getPointAnalogSettingsPanel())
@@ -138,7 +139,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	else if (currentInputPanel == getPointStatusSettingsPanel())
 	{
 		
-		if(getPointTypePanel().getPointType() == PointTypes.CALCULATED_STATUS_POINT)
+		if(getPointTypePanel().getPointType() == PointType.CalcStatus)
 		{
 			getPointCalcBaseSettingsPanel().setValue(null);
             getPointCalcBaseSettingsPanel().setFirstFocus();

@@ -26,7 +26,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMProgram;
@@ -679,7 +679,7 @@ public Object getValue(Object o)
 
         PointCreationService pointCreationService = 
             (PointCreationService) YukonSpringHook.getBean("pointCreationService");
-        PointBase point = pointCreationService.createPoint(PointTypes.STATUS_POINT,
+        PointBase point = pointCreationService.createPoint(PointType.Status.getPointTypeId(),
                                                            "Status",
                                                            new PaoIdentifier(controlArea.getPAObjectID(), PaoType.LM_CONTROL_AREA),
                                                            1,

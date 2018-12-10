@@ -21,7 +21,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.spring.YukonSpringHook;
@@ -32,11 +31,11 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
 {
      private JLabel actualValueLabel;
     private JLabel txtValueLabel;
-    private JComboBox pointComboBox;
+    private JComboBox<LitePoint> pointComboBox;
     private JLabel pointLabel;
     private JLabel deviceLabel;
     private JLabel typeLabel;
-    private JComboBox deviceComboBox;
+    private JComboBox<LiteYukonPAObject> deviceComboBox;
     private JComboBox typeComboBox;
     private JTextField textFieldLabel;
     private JLabel basLbl;
@@ -147,7 +146,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         }
     }
     
-    private void initDeviceComboBox( javax.swing.JComboBox comboBox )
+    private void initDeviceComboBox( javax.swing.JComboBox<LiteYukonPAObject> comboBox )
     {
         if( comboBox == null ) return;
 
@@ -156,7 +155,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
     }
 
     //TODO: This is inefficient
-    private void setDeviceComboBoxes( final javax.swing.JComboBox comboBox )
+    private void setDeviceComboBoxes( final javax.swing.JComboBox<LiteYukonPAObject> comboBox )
     {     
         if( comboBox == null ) return;
         
@@ -164,7 +163,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
             getLitePointsBy(Lists.newArrayList(PointType.Analog, PointType.CalcAnalog));
         
             //ensures uniqueness and ordering by name
-            TreeSet paoSet = new TreeSet( LiteComparators.liteStringComparator );
+            TreeSet<LiteYukonPAObject> paoSet = new TreeSet<LiteYukonPAObject>(LiteComparators.liteStringComparator );
 
             for(LitePoint litePoint : points) {
                 //use the validPt boolean to see if this point is worthy
@@ -178,16 +177,16 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
             }
 
             //add the unique ordered elements to the combo box
-            Iterator it = paoSet.iterator();
+            Iterator<LiteYukonPAObject> it = paoSet.iterator();
             while( it.hasNext() )
-                comboBox.addItem( it.next() );        
+                comboBox.addItem( it.next() );
     }
     
     /**
      * Sets the point selctions to the given ID
      * 
      */
-    public void setPointComboBox( int ptId, JComboBox pointCombo, JComboBox deviceCombo ) 
+    public void setPointComboBox( int ptId, JComboBox<LitePoint> pointCombo, JComboBox<LiteYukonPAObject> deviceCombo ) 
     {   
         LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( ptId );
 
@@ -211,8 +210,8 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
     {
         return
             lPoint != null && 
-            (lPoint.getPointType() == PointTypes.ANALOG_POINT
-            || lPoint.getPointType() == PointTypes.CALCULATED_POINT);
+            (lPoint.getPointTypeEnum() == PointType.Analog
+            || lPoint.getPointTypeEnum() == PointType.CalcAnalog);
         
     }
     
@@ -260,10 +259,10 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
      * Return the JComboBoxPoint111 property value.
      * @return javax.swing.JComboBox
      */
-    public javax.swing.JComboBox getJComboBoxPoint() {
+    public javax.swing.JComboBox<LitePoint> getJComboBoxPoint() {
         if (pointComboBox == null) {
             try {
-                pointComboBox = new javax.swing.JComboBox();
+                pointComboBox = new javax.swing.JComboBox<LitePoint>();
                 pointComboBox.setName("JComboBoxPointBase");
                 pointComboBox.setEnabled( false );
                 pointComboBox.setMinimumSize(new Dimension( 225, 20));
@@ -359,10 +358,10 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
      * Return the JComboDevice111 property value.
      * @return javax.swing.JComboBox
      */
-    public javax.swing.JComboBox getJComboDevice() {
+    public javax.swing.JComboBox<LiteYukonPAObject> getJComboDevice() {
         if (deviceComboBox == null) {
             try {
-                deviceComboBox = new javax.swing.JComboBox();
+                deviceComboBox = new javax.swing.JComboBox<LiteYukonPAObject>();
                 deviceComboBox.setName("JComboDeviceBase");
                 deviceComboBox.setMinimumSize(new Dimension( 225, 20));
             } catch (java.lang.Throwable ivjExc) {
@@ -449,7 +448,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         CTILogger.error( exception.getMessage(), exception );;
     }
     
-    public void jComboBoxPoint_ActionPerformed( JComboBox pointCombo )
+    public void jComboBoxPoint_ActionPerformed( JComboBox<LitePoint> pointCombo )
     {
         if( pointCombo == null ) return;
 
@@ -464,7 +463,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
      * device in the deviceComboBox
      * 
      */
-    public void jComboBoxDevice_ActionPerformed( JComboBox deviceCombo, JComboBox pointCombo ) 
+    public void jComboBoxDevice_ActionPerformed( JComboBox<LiteYukonPAObject> deviceCombo, JComboBox<LitePoint> pointCombo ) 
     {
         if( deviceCombo == null || pointCombo == null ) return;
         int deviceID = 0;

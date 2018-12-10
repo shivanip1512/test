@@ -4,13 +4,15 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointType;
 
 /**
  * This type was created in VisualAge.
  */
 
 public class PointTypePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
-	private int pointType = com.cannontech.database.data.point.PointTypes.ANALOG_POINT;
+    PointType pointType = PointType.Analog;
+//	private int pointType = com.cannontech.database.data.point.PointTypes.ANALOG_POINT;
 	private javax.swing.JRadioButton ivjAnalogRadioButton = null;
 	private javax.swing.ButtonGroup ivjButtonGroup = null;
 	private javax.swing.JRadioButton ivjCalculatedRadioButton = null;
@@ -59,7 +61,7 @@ public void accumulatorRadioButton_ActionPerformed(java.awt.event.ActionEvent ac
 	getJRadioButtonAnalogOutput().setVisible(false);
 	getJRadioButtonStatusOutput().setVisible(false);
 	
-	pointType = com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT;
+	pointType = PointType.PulseAccumulator;
 
 	return;
 }
@@ -90,7 +92,7 @@ public void analogRadioButton_ActionPerformed(java.awt.event.ActionEvent actionE
 	getJRadioButtonAnalogOutput().setVisible(false);
 	getJRadioButtonStatusOutput().setVisible(false);
 	
-	pointType = com.cannontech.database.data.point.PointTypes.ANALOG_POINT;
+	pointType = PointType.Analog;
 
 	return;
 }
@@ -99,7 +101,7 @@ public void analogRadioButton_ActionPerformed(java.awt.event.ActionEvent actionE
  */
 public void calculatedRadioButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	pointType = com.cannontech.database.data.point.PointTypes.CALCULATED_POINT;
+	pointType = PointType.CalcAnalog;
 	getJRadioButtonAnalogOutput().setVisible(true);
 	getJRadioButtonAnalogOutput().setSelected(true);
 	getJRadioButtonStatusOutput().setVisible(true);
@@ -469,7 +471,7 @@ private javax.swing.JRadioButton getJRadioButtonStatusOutput() {
  * Creation date: (4/30/2001 3:23:30 PM)
  * @return int
  */
-public int getPointType()
+public PointType getPointType()
 {
 	return pointType;
 }
@@ -526,9 +528,9 @@ public Object getValue(Object val) {
 	//Ignore val - we're determing the type of the DBPersistent
 	//Figure out the type, create it, and then return it
 
-	int type = getPointType();
+	PointType type = getPointType();
 	
-	PointBase newPoint = PointFactory.createPoint( type );
+	PointBase newPoint = PointFactory.createPoint( type.getPointTypeId() );
 	
 	newPoint.getPoint().setAlarmInhibit( CtiUtilities.getFalseCharacter() );
 	newPoint.getPoint().setServiceFlag( CtiUtilities.getFalseCharacter() );
@@ -628,7 +630,7 @@ private void initialize() {
  */
 public void jRadioButtonAnalogOutput_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	
-	pointType = com.cannontech.database.data.point.PointTypes.CALCULATED_POINT;
+	pointType = PointType.CalcAnalog;
 	getJRadioButtonStatusOutput().setSelected(false);
 	
 	return;
@@ -638,7 +640,7 @@ public void jRadioButtonAnalogOutput_ActionPerformed(java.awt.event.ActionEvent 
  */
 public void jRadioButtonStatusOutput_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	
-	pointType = com.cannontech.database.data.point.PointTypes.CALCULATED_STATUS_POINT;
+	pointType = PointType.CalcStatus;
 	getJRadioButtonAnalogOutput().setSelected(false);
 	
 	return;
@@ -670,14 +672,9 @@ public void jRadioButtonStatusOutput_ActionPerformed(java.awt.event.ActionEvent 
  * Creation date: (4/30/2001 3:23:30 PM)
  * @return int
  */
-public void setPointType( int ptType )
+public void setPointType(PointType  ptType )
 {
-	if( com.cannontech.database.data.point.PointTypes.isValidPointType(ptType) )
-	{
 		pointType = ptType;
- 	}
- 	else
- 		throw new Error(getClass() + "::setPointType() - Invalid point type specified (" + ptType +")" );
 }
 /**
  * This method was created in VisualAge.
@@ -724,7 +721,7 @@ public void statusRadioButton_ActionPerformed(java.awt.event.ActionEvent actionE
 	getJRadioButtonAnalogOutput().setVisible(false);
 	getJRadioButtonStatusOutput().setVisible(false);
  	
- 	pointType = com.cannontech.database.data.point.PointTypes.STATUS_POINT;
+ 	pointType = PointType.Status;
  	
 	return;
 }

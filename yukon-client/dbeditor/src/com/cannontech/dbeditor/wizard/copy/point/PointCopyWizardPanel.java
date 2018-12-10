@@ -9,7 +9,7 @@ import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.spring.YukonSpringHook;
 
 public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPanel {
@@ -17,7 +17,7 @@ public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPan
 	private com.cannontech.database.db.DBPersistent copyObject = null;
 	private PointCopyOffsetsPanel pointCopyOffsetsPanel;
 	private int pointDeviceID = -1;
-	private int pointType;
+	private PointType pointType;
 	
 /**
  * DeviceWizardPanel constructor comment.
@@ -112,12 +112,7 @@ protected PointCopyOffsetsPanel getPointCopyOffsetsPanel() {
 	return pointCopyOffsetsPanel;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (6/5/2001 9:40:05 AM)
- * @return int
- */
-public int getPointType()
+public PointType getPointType()
 {
 	return pointType;
 }
@@ -145,7 +140,7 @@ public void initialize()
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel)
 {
 	if ((currentPanel == getPointCopyNameDevicePanel()) 
-		&& ((getPointType() == PointTypes.CALCULATED_POINT) || (getPointType() == PointTypes.CALCULATED_STATUS_POINT)))
+		&& ((getPointType() == PointType.CalcAnalog) || (getPointType() == PointType.CalcStatus)))
 		return true;
 	else if (currentPanel == getPointCopyNameDevicePanel())
 		return false;
@@ -188,12 +183,8 @@ public void setPointDeviceID(Object val)
 	pointDeviceID = lPoint.getPaobjectID();
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (6/5/2001 9:41:41 AM)
- */
 public void setPointType()
 {
-	pointType = com.cannontech.database.data.point.PointTypes.getType(((PointBase) getCopyObject()).getPoint().getPointType());
+	pointType = PointType.getForString(((PointBase) getCopyObject()).getPoint().getPointType());
 }
 }

@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.point.lm;
 
+import com.cannontech.database.data.point.PointType;
 /**
  * This type was created in VisualAge.
  */
@@ -94,15 +95,15 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	else if( currentInputPanel == getPointSettingsPanel() )
 	{
 		//Depending on the type selected in PointTypePanel
-		int type = getLMPointTypePanel().getSelectedType();
+		PointType type = getLMPointTypePanel().getSelectedType();
 
 		switch( type )
 		{
-			case PointTypes.ANALOG_POINT:
+			case Analog :
                 getPointAnalogSettingsPanel().setFirstFocus();
 				return getPointAnalogSettingsPanel();
 
-			case PointTypes.STATUS_POINT:
+			case Status :
 				getPointStatusSettingsPanel().setValue(null);
                 getPointStatusSettingsPanel().setFirstFocus();
 				return getPointStatusSettingsPanel();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -384,14 +385,14 @@ public void pointOffsetSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
     this.fireInputUpdate();
 	return;
 }
-public void reinitialize(Integer pointDeviceID, int pointType) {
+public void reinitialize(Integer pointDeviceID, PointType pointType) {
 
 	getUsedPointOffsetLabel().setText("");
 	
     List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(pointDeviceID);
     usedPointOffsetsVector = new java.util.Vector(points.size());
     for (LitePoint point : points) {
-        if(pointType == point.getPointType()) {
+        if(pointType == point.getPointTypeEnum()) {
             usedPointOffsetsVector.add(point);
         }
     }

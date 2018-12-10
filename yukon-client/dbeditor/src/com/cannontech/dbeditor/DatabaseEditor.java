@@ -108,6 +108,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.CTIDbChange;
@@ -582,7 +583,7 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
         } else if (selectedObject instanceof PointBase) {
             type = ((PointBase) selectedObject).getPoint().getPointType();
             currentType = PointTypes.getType(type);
-            newType = ((Integer) p.getValue(null)).intValue();
+            newType = ((PointType) p.getValue(null)).getPointTypeId();
         }
 
         int confirm = 0;

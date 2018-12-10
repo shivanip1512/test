@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.spring.YukonSpringHook;
@@ -613,7 +614,7 @@ public void setValue(Object val)
 	
 	//Consider defaultObject an instance of com.cannontech.database.data.point.PointBase
 	com.cannontech.database.data.point.PointBase point = (com.cannontech.database.data.point.PointBase) val;
-   int ptType = com.cannontech.database.data.point.PointTypes.getType( point.getPoint().getPointType() );
+	PointType ptType = point.getPoint().getPointTypeEnum();
 	
 	Character alarmInhibit = point.getPoint().getAlarmInhibit();
 
@@ -638,8 +639,8 @@ public void setValue(Object val)
 			throw new ArrayIndexOutOfBoundsException("No AlarmStates exist, unable to create alarms, occurred in " + this.getClass() );
 	   
       
-		if( ptType == com.cannontech.database.data.point.PointTypes.STATUS_POINT
-			|| ptType == com.cannontech.database.data.point.PointTypes.CALCULATED_STATUS_POINT )
+		if( ptType == PointType.Status
+			|| ptType == PointType.CalcStatus)
 		{
 			String[] stateNames = null;
 

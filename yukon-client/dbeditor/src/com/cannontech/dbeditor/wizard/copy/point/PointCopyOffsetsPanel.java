@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
@@ -310,16 +311,16 @@ public Object getValue(Object val)
 	Object pointOffsetSpinVal = getPointOffsetSpinner().getValue();
 	Integer pointOffset = new Integer( ((Number)pointOffsetSpinVal).intValue() );
 
-	int type = PointTypes.getType(point.getPoint().getPointType());
+	PointType type = point.getPoint().getPointTypeEnum();
 	
-	if(type == PointTypes.ANALOG_POINT)
+	if(type == PointType.Analog)
 	{
 		if ( (getUsedPointOffsetLabel().getText()) == "" )
 			((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPointOffset(pointOffset);
 		else
 			((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPointOffset(null);
 	}
-	if(type == PointTypes.DEMAND_ACCUMULATOR_POINT || type == PointTypes.PULSE_ACCUMULATOR_POINT)
+	if(type == PointType.DemandAccumulator || type == PointType.PulseAccumulator)
 	{
 		if ( (getUsedPointOffsetLabel().getText()) == "" )
 			((com.cannontech.database.data.point.AccumulatorPoint) val).getPoint().setPointOffset(pointOffset);
@@ -327,7 +328,7 @@ public Object getValue(Object val)
 			((com.cannontech.database.data.point.AccumulatorPoint) val).getPoint().setPointOffset(null);
 	}
 
-	if(type == PointTypes.STATUS_POINT)
+	if(type == PointType.Status)
 	{
 		Object controlOffsetSpinVal = getControlOffsetSpinner().getValue();
 		Integer controlOffset = new Integer( ((Number)controlOffsetSpinVal).intValue() );
@@ -563,7 +564,7 @@ public void setCopyValue(Object val, int newDeviceID)
 {
 	PointBase thePoint = (PointBase)val;
 	
-	if(PointTypes.getType(thePoint.getPoint().getPointType()) == PointTypes.STATUS_POINT)
+	if(thePoint.getPoint().getPointTypeEnum() == PointType.Status)
 		thePoint = (StatusPoint)val;
 	else
 	{
@@ -573,11 +574,11 @@ public void setCopyValue(Object val, int newDeviceID)
 		getControlOffsetLabel().setVisible(false);	
 	}
 	
-	if(PointTypes.getType(thePoint.getPoint().getPointType()) == PointTypes.PULSE_ACCUMULATOR_POINT
-			|| PointTypes.getType(thePoint.getPoint().getPointType()) == PointTypes.DEMAND_ACCUMULATOR_POINT)
+	if(thePoint.getPoint().getPointTypeEnum() == PointType.PulseAccumulator
+			|| thePoint.getPoint().getPointTypeEnum() == PointType.DemandAccumulator)
 		thePoint = (AccumulatorPoint)val;
 		
-	if(PointTypes.getType(thePoint.getPoint().getPointType()) == PointTypes.ANALOG_POINT)
+	if(thePoint.getPoint().getPointTypeEnum() == PointType.Analog)
 		thePoint = (AnalogPoint)val;
 		
 	getUsedPointOffsetLabel().setText("");

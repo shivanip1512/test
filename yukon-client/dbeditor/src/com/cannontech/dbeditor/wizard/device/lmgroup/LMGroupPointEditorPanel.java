@@ -20,7 +20,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -187,7 +187,7 @@ public class LMGroupPointEditorPanel extends DataInputPanel implements
                     List<LitePoint> pointList = new ArrayList<LitePoint>(points.size() / 2);
 
                     for (LitePoint point : points) {
-                        if (point.getPointType() == PointTypes.STATUS_POINT) {
+                        if (point.getPointTypeEnum() == PointType.Status) {
                             // a DBPersistent must be created from the Lite object so you can do a retrieve this process is expensive!!! This is why
                             // LitePoints are stored in the localHashTable
                             StatusPoint dbPoint = (StatusPoint) LiteFactory.createDBPersistent(point);
