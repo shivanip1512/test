@@ -65,7 +65,7 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType)
+    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, PointType pointType)
             throws NotFoundException {
 
         int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
@@ -89,21 +89,21 @@ public class MockPointDao implements PointDao {
      * the point offset if type is 2
      */
     @Override
-    public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType) {
+    public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, PointType pointType) {
 
         switch (pointType) {
 
-        case 0:
+        case Analog:
             return pointOffset;
-        case 1:
+        case PulseAccumulator:
             return 1;
-        case 2:
+        case DemandAccumulator:
             return pointOffset;
-        case 3:
+        case Status:
             return 3;
+        default:
+            return PointTypes.SYS_PID_SYSTEM;
         }
-
-        return PointTypes.SYS_PID_SYSTEM;
     }
 
     @Override
@@ -203,12 +203,12 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId, int pointType) throws NotFoundException {
+    public List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId, PointType pointType) throws NotFoundException {
         return null;
     }
 
     @Override
-    public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType) {
+    public boolean deviceHasPoint(int deviceId, int pointOffset, PointType pointType) {
         return false;
     }
 

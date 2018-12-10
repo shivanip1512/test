@@ -34,7 +34,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.ControlStateType;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusControlType;
 
 public class StatusPointImportProcessor extends PointImportProcessor {
@@ -62,7 +62,7 @@ public class StatusPointImportProcessor extends PointImportProcessor {
         if (row.hasValue(POINT_OFFSET.NAME)) {
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
             if (pointOffset > 0) {
-                if (pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.STATUS_POINT)) {
+                if (pointDao.deviceHasPoint(paoId, pointOffset, PointType.Status)) {
                     String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse",
                         pointOffset, deviceName);
                     throw new ProcessingException(error, "pointOffsetInUse");

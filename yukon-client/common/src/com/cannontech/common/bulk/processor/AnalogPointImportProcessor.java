@@ -1,19 +1,27 @@
 package com.cannontech.common.bulk.processor;
 
+import static com.cannontech.common.bulk.model.PointImportParameters.DATA_OFFSET;
+import static com.cannontech.common.bulk.model.PointImportParameters.DEADBAND;
+import static com.cannontech.common.bulk.model.PointImportParameters.DEVICE_NAME;
+import static com.cannontech.common.bulk.model.PointImportParameters.DEVICE_TYPE;
+import static com.cannontech.common.bulk.model.PointImportParameters.DISABLED;
+import static com.cannontech.common.bulk.model.PointImportParameters.METER_DIALS;
+import static com.cannontech.common.bulk.model.PointImportParameters.MULTIPLIER;
+import static com.cannontech.common.bulk.model.PointImportParameters.POINT_NAME;
+import static com.cannontech.common.bulk.model.PointImportParameters.POINT_OFFSET;
+
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.csvImport.types.StrictBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.ImportPaoType;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.point.PointBuilderFactory;
 import com.cannontech.common.point.AnalogPointBuilder;
+import com.cannontech.common.point.PointBuilderFactory;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.point.PointTypes;
-
-import static com.cannontech.common.bulk.model.PointImportParameters.*;
+import com.cannontech.database.data.point.PointType;
 
 public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
     
@@ -36,7 +44,7 @@ public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
         if (row.hasValue(POINT_OFFSET.NAME)) {
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
             if (pointOffset > 0) {
-                if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
+                if(pointDao.deviceHasPoint(paoId, pointOffset, PointType.Analog)) {
                     String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
                     throw new ProcessingException(error, "pointOffsetInUse");
                 }

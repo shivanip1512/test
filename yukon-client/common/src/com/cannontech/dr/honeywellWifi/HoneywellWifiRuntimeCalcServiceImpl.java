@@ -213,7 +213,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
         try {
             runtimePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(pao.getPaoIdentifier().getPaoId(), 
                                                                               runtimePointOffset, 
-                                                                              PointType.Analog.getPointTypeId());
+                                                                              PointType.Analog);
         } catch (NotFoundException e) {
             log.error("Unable to insert runtime for " + pao.getPaoIdentifier() + " - no runtime point at analog offset " 
                       + runtimePointOffset + ".");

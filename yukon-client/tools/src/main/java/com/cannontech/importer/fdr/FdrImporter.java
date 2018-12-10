@@ -190,7 +190,7 @@ public class FdrImporter {
                     }else {
                         type = PointType.Analog;
                     }
-                    List<LitePoint> list = pointDao.getLitePointIdByDeviceId_PointType(deviceid,type.getPointTypeId());
+                    List<LitePoint> list = pointDao.getLitePointIdByDeviceId_PointType(deviceid,type);
                     
                     if( list.size() == 0) {
                         log.error("Point not found in the database, translation cannot be added.");
@@ -241,7 +241,7 @@ public class FdrImporter {
                 int offset = Integer.parseInt(base.getPointParameter("OFFSET"));
                 int deviceid = base.getDevice().getDevice().getDeviceID();
                 
-                LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(deviceid,offset,type.getPointTypeId());
+                LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(deviceid,offset,type);
                 
                 int liteid = point.getLiteID();
                 fdr.setPointId(liteid);

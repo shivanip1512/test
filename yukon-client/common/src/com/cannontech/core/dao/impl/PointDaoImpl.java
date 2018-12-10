@@ -406,7 +406,7 @@ public class PointDaoImpl implements PointDao {
         int offset = paoPointIdentifier.getPointIdentifier().getOffset();
         PointType pointType = paoPointIdentifier.getPointIdentifier().getPointType();
 
-        return getLitePointIdByDeviceId_Offset_PointType(paoId, offset, pointType.getPointTypeId());
+        return getLitePointIdByDeviceId_Offset_PointType(paoId, offset, pointType);
     }
 
     /**
@@ -678,7 +678,7 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public int getPointIDByDeviceID_Offset_PointType(int deviceId, int pointOffset, int pointType) {
+    public int getPointIDByDeviceID_Offset_PointType(int deviceId, int pointOffset, PointType pointType) {
         try {
             LitePoint point = getLitePointIdByDeviceId_Offset_PointType(deviceId, pointOffset, pointType);
             return point.getPointID();
@@ -688,13 +688,13 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int paobjectId, int pointOffset, int pointType) {
+    public LitePoint getLitePointIdByDeviceId_Offset_PointType(int paobjectId, int pointOffset, PointType pointType) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
         sql.append("where PAObjectId").eq(paobjectId);
         sql.append("and PointOffset").eq(pointOffset);
-        sql.append("and PointType").eq(PointTypes.getType(pointType));
+        sql.append("and PointType").eq_k(pointType);
         try {
             return jdbcTemplate.queryForObject(sql, LITE_POINT_ROW_MAPPER);
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -766,12 +766,12 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePointIdByDeviceId_PointType(int paobjectId, int pointType) throws NotFoundException {
+    public List<LitePoint> getLitePointIdByDeviceId_PointType(int paobjectId, PointType pointType) throws NotFoundException {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
         sql.append("where PAObjectId").eq(paobjectId);
-        sql.append("and PointType").eq(PointTypes.getType(pointType));
+        sql.append("and PointType").eq_k(pointType);
         try {
             List<LitePoint> pointList = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
             return pointList;
@@ -820,7 +820,7 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType) {
+    public boolean deviceHasPoint(int deviceId, int pointOffset, PointType pointType) {
         int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
         return pointId != 0;
     }

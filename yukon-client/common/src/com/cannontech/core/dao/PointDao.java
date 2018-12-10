@@ -164,7 +164,7 @@ public interface PointDao {
      * 
      * @return the pointId of the matching point or 0
      */
-    int getPointIDByDeviceID_Offset_PointType(int deviceId, int pointOffset, int pointType);
+    int getPointIDByDeviceID_Offset_PointType(int deviceId, int pointOffset, PointType pointType);
 
     /**
      * Delegates to getPointIDByDeviceID_Offset_PointType.
@@ -202,14 +202,14 @@ public interface PointDao {
      * @throws NotFoundException if no point matches
      * @return the matching LitePoint
      */
-    LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType)
+    LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, PointType pointType)
             throws NotFoundException;
 
     /**
      * @return True if the specified device has a point with the specified offset and type,
      *         otherwise false.
      */
-    boolean deviceHasPoint(int deviceId, int pointOffset, int pointType);
+    boolean deviceHasPoint(int deviceId, int pointOffset, PointType pointType);
 
     /**
      * Similar to getPointIDByDeviceID_Offset_PointType, but will returns the actual LitePoint
@@ -218,7 +218,7 @@ public interface PointDao {
      * @throws NotFoundException if no point matches
      * @return the matching LitePoint's in a List<LitePoint>
      */
-    List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId, int pointType) throws NotFoundException;
+    List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId, PointType pointType) throws NotFoundException;
 
     List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank);
 

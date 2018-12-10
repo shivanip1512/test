@@ -177,7 +177,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 		for (MspLMGroupCommunications mspLMGroupCommunication : mspLMGroupCommunications) {
 			try {
 				LitePoint commStatusPoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(mspLMGroupCommunication.getTransmitterId(),
-																2000, PointType.Status.getPointTypeId());
+																2000, PointType.Status);
 				pointIds.add(commStatusPoint.getPointID());
 			} catch (NotFoundException e) {
 				//can't check if point doesn't exist

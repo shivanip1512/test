@@ -12,6 +12,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class PointDataGenerator implements PointValueUpdater {
@@ -67,7 +68,7 @@ public class PointDataGenerator implements PointValueUpdater {
         }
         // find status point
         
-        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(lpao.getLiteID(), offset, type);
+        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(lpao.getLiteID(), offset, PointType.getForId(type));
         point = pointDao.getLitePoint(pointId);
         if (point == null) {
             log.warn("Unable to find point. DeviceId=" + lpao.getLiteID() 

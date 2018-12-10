@@ -1,8 +1,13 @@
 package com.cannontech.dr.honeywellWifi;
 
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.createStrictMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -288,7 +293,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockDispatch);
         
         PointDao mockPointDao = createNiceMock(PointDao.class);
-        expect(mockPointDao.getLitePointIdByDeviceId_Offset_PointType(honeywell9000Id, 5, PointType.Analog.getPointTypeId()))
+        expect(mockPointDao.getLitePointIdByDeviceId_Offset_PointType(honeywell9000Id, 5, PointType.Analog))
             .andReturn(new LitePoint(1));
         replay(mockPointDao);
         
@@ -328,7 +333,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockDispatch);
         
         PointDao mockPointDao = createNiceMock(PointDao.class);
-        expect(mockPointDao.getLitePointIdByDeviceId_Offset_PointType(honeywell9000Id, 5, PointType.Analog.getPointTypeId()))
+        expect(mockPointDao.getLitePointIdByDeviceId_Offset_PointType(honeywell9000Id, 5, PointType.Analog))
             .andReturn(new LitePoint(1));
         replay(mockPointDao);
         
