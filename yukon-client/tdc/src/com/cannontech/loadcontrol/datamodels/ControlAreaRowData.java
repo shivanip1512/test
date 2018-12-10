@@ -6,6 +6,7 @@ package com.cannontech.loadcontrol.datamodels;
  * @author: 
  */
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.spring.YukonSpringHook;
@@ -32,7 +33,7 @@ public java.lang.String getCurrentValue()
 	if( currentValue == null )
 	{
 		//Returns the current value of the point
-		if( getLitePoint().getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
+		if( getLitePoint().getPointTypeEnum() == PointType.Status)
 		{
 			currentValue = YukonSpringHook.getBean(StateGroupDao.class).findLiteState(
 					 			getLitePoint().getStateGroupID(), getTrigger().getPointValue().intValue() ).getStateText();

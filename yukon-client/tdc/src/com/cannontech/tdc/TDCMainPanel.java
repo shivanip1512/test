@@ -58,7 +58,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTag;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.graph.model.TrendModel;
@@ -87,7 +87,6 @@ import com.cannontech.tdc.roweditor.TagsEditorPanel;
 import com.cannontech.tdc.toolbar.AlarmToolBar;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class TDCMainPanel extends javax.swing.JPanel 
 implements com.cannontech.tdc.bookmark.BookMarkSelectionListener, 
@@ -483,39 +482,40 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 
 	try
 	{
-		String ptType = tableModel.getPointType( selectedRow );
+		String ptTypeStr = tableModel.getPointType( selectedRow );
+		PointType pointType = PointType.getForString(ptTypeStr);
 		PointValues pt = tableModel.getPointValue( selectedRow );
 		Object currentValue = tableModel.getPointDynamicValue( selectedRow );
 
 		EditorDialogData data = new EditorDialogData( pt, pt.getAllText() );
 
 			
-        if( PointTypes.getType(ptType) == PointTypes.ANALOG_POINT
+        if(pointType == PointType.Analog
             && ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
             && source != getJMenuItemPopUpManualEntry() )
         {
             return new AnalogControlEntryPanel( data, currentValue );
         }
-        else if( PointTypes.getType(ptType) == PointTypes.ANALOG_POINT ||
-    			 PointTypes.getType(ptType) == PointTypes.PULSE_ACCUMULATOR_POINT ||
-    			 PointTypes.getType(ptType) == PointTypes.DEMAND_ACCUMULATOR_POINT ||
-    			 PointTypes.getType(ptType) == PointTypes.CALCULATED_POINT )
+        else if(pointType == PointType.Analog ||
+                pointType  == PointType.PulseAccumulator ||
+                pointType  == PointType.DemandAccumulator ||
+                pointType == PointType.CalcAnalog)
 		{
 			return new AnalogManualEntryPanel( data, currentValue );
 		}
-		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
+		else if(pointType == PointType.Status
 					&& ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
 					&& source != getJMenuItemPopUpManualEntry() )
 		{			
 			return new StatusControlEntryPanel( data, currentValue );
 		}
-		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
-				 || PointTypes.getType(ptType) == PointTypes.CALCULATED_STATUS_POINT )
+		else if(pointType == PointType.Status
+				 || pointType == PointType.CalcStatus)
 		{			
 			return new StatusManualEntryPanel( data, currentValue );
 		}
 		else
-			CTILogger.info("** Unhandled POINTTYPE (" + ptType +") for a Manual Entry Panel **");
+			CTILogger.info("** Unhandled POINTTYPE (" + pointType +") for a Manual Entry Panel **");
 	}
 	catch( NullPointerException ex )
 	{   // one of the values we have is null, lets not create the panel
@@ -2700,7 +2700,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 				JMenuItem it = createAckAlarmJMenuItem(
 					"Condition: " +
 					AlarmUtils.getAlarmConditionText( 
-						sigs[i].getCondition(), lPoint.getPointType(), lPoint.getPointID() ) +
+						sigs[i].getCondition(), lPoint.getPointTypeEnum(), lPoint.getPointID() ) +
 					" (" + sigs[i].getDescription() + ")",
 					Colors.getColor(getTableDataModel().getAlarmColor((int)sigs[i].getCategoryID()) ),
 					sigs[i] );
