@@ -161,6 +161,7 @@ public class StopProgramController extends ProgramControllerBase {
                                                                   stopDate);
         } else if (backingBean.isStopNow()) {
             if(nestService.isEnabledNestProgramWithEnabledGroup(backingBean.getProgramId())) {
+                backingBean.setStopDate(new Date());
                 NestStopEventResult result = nestService.stopControlForProgram(backingBean.getProgramId());
                 if (!result.isSuccess() && result.getNestResponse() != null) {
                     flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getNestResponse()));
