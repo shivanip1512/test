@@ -23,7 +23,7 @@ public interface RfnPerformanceVerificationService {
     PerformanceVerificationAverageReports getAverageReports();
     
     /**
-     * Make entry of RFN event status in table RfnBroadcastArchivedEventStatus
+     * Make entry of RFN event status in table RfnBroadcastEventSummary
      * for each day older than 180 days. Remove message from
      * RfnBroadcastEventDeviceStatus that are older than 180 days.
      */

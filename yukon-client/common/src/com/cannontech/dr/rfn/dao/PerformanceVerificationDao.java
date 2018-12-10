@@ -102,7 +102,7 @@ public interface PerformanceVerificationDao {
     void archiveRfnBroadcastEventStatus(DateTime removeAfterDate);
     
     /**
-     * Retrieve archive event data from table RfnBroadcastArchivedEventStatus.  
+     * Retrieve archive event data from table RfnBroadcastEventSummary.  
      */
     
     List<PerformanceVerificationEventMessageStats> getArchiveReports(Range<Instant> range);
