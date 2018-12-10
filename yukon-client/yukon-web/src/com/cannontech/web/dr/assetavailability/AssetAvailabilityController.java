@@ -217,7 +217,7 @@ public class AssetAvailabilityController {
         return subGroups;
     }
 
-    @GetMapping("/{assetId}/download")
+    @GetMapping("/{assetId}/downloadAll")
     public void downloadAssetAvailability(HttpServletResponse response, YukonUserContext userContext,
             @PathVariable int assetId) throws IOException {
 
@@ -225,9 +225,27 @@ public class AssetAvailabilityController {
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(liteYukonPAObject, userContext);
+        List<String[]> dataRows = getDownloadDataRows(liteYukonPAObject, userContext, null, null);
 
-        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), DateFormatEnum.BOTH, userContext);
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
+            DateFormatEnum.BOTH, userContext);
+        String fileName = liteYukonPAObject.getPaoName() + "_" + dateStr + ".csv";
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
+    }
+
+    @GetMapping("/download")
+    public void downloadFilteredAssetAvailability(Integer assetId, String[] deviceSubGroups,
+            AssetAvailabilityCombinedStatus[] statuses, HttpServletResponse response, YukonUserContext userContext)
+            throws IOException {
+        LiteYukonPAObject liteYukonPAObject = cache.getAllPaosMap().get(assetId);
+        // get the header row
+        String[] headerRow = getDownloadHeaderRow(userContext);
+        // get the data rows
+        List<String[]> dataRows =
+            getDownloadDataRows(liteYukonPAObject, userContext, retrieveSubGroups(deviceSubGroups), statuses);
+
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
+            DateFormatEnum.BOTH, userContext);
         String fileName = liteYukonPAObject.getPaoName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
     }
@@ -247,12 +265,13 @@ public class AssetAvailabilityController {
         return headerRow;
     }
 
-    private List<String[]> getDownloadDataRows(LiteYukonPAObject liteYukonPAObject, YukonUserContext userContext) {
+    private List<String[]> getDownloadDataRows(LiteYukonPAObject liteYukonPAObject, YukonUserContext userContext,
+            List<DeviceGroup> subGroups, AssetAvailabilityCombinedStatus[] statuses) {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         SearchResults<AssetAvailabilityDetails> results = assetAvailabilityService.getAssetAvailabilityDetails(
-            null, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, AssetAvailabilityCombinedStatus.values(), null, userContext);
+            subGroups, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, statuses, null, userContext);
 
         List<String[]> dataRows = Lists.newArrayList();
 

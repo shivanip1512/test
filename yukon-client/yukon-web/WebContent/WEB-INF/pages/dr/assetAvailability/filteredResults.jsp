@@ -20,8 +20,7 @@
                 <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" newTab="true" href="${collectionActionsUrl}"/>
             
                 <!-- Download -->
-                <cti:url var="downloadUrl" value="/dr/assetAvailability/${assetId}/download"/>
-                <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
+                <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="primary action js-download-filter-result"/>
             
                 <!-- Map Devices -->
                 <cti:url var="mapUrl" value="/tools/map">

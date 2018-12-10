@@ -14,8 +14,20 @@ yukon.dr.assetavailability.detail = (function () {
     _initialized = false,
     
     _filterResults = function () {
+        var filters = _getFilters();
         yukon.ui.blockPage();
+        var url = yukon.url('/dr/assetAvailability/filterResults?assetId=' + filters.assetId + '&deviceSubGroups=' + filters.deviceSubGroups + '&statuses=' + filters.statuses);
+        $.get(url, function (data) {
+            $("#js-filtered-results").html(data);
+        }).always(function () {
+            yukon.ui.unbusy($('.js-filter-results'));
+            yukon.ui.unblockPage();
+        });
+    },
+    
+    _getFilters = function () {
         var statuses = [];
+        var deviceSubGroups = [];
         
         $('input[name=statuses]').each(function (index, element) {
             if($(element).prop('checked')){
@@ -28,22 +40,17 @@ yukon.dr.assetavailability.detail = (function () {
                 $(element).prop( "checked", true );
             });
         }
-        
-        var assetId = $("input[name=assetId]").val(),
-            deviceSubGroups = [];
-        
         $("input[name=deviceSubGroups]").each(function (index, element) {
             deviceSubGroups.push($(element).val());
         });
         
-        var url = yukon.url('/dr/assetAvailability/filterResults?assetId=' + assetId + '&deviceSubGroups=' + deviceSubGroups + '&statuses=' + statuses);
+        var filters = {
+                assetId : $("input[name=assetId]").val(),
+                deviceSubGroups : deviceSubGroups,
+                statuses : statuses 
+        };
         
-        $.get(url, function (data) {
-            $("#js-filtered-results").html(data);
-        }).always(function () {
-            yukon.ui.unbusy($('.js-filter-results'));
-            yukon.ui.unblockPage();
-        });
+        return filters;
     },
     
     mod = {
@@ -73,7 +80,13 @@ yukon.dr.assetavailability.detail = (function () {
             $(document).on('click', '.js-filter-results', function () {
                 _filterResults(); 
             });
-            
+
+            $(document).on('click', '.js-download-filter-result', function () {
+                var filters = _getFilters();
+                window.location.href = yukon.url('/dr/assetAvailability/download?assetId=' + filters.assetId + '&deviceSubGroups=' + filters.deviceSubGroups 
+                        + '&statuses=' + filters.statuses);
+             });
+
             _filterResults();
 
             _initialized = true;

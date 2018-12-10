@@ -6,6 +6,7 @@
     <entry key="yukon.web.modules.dr.assetAvailability.detail.crumbTitle">Asset Availability Details</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.targetLevel">Target Level</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.helpTitle">Asset Availability Results Help</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.download.hoverText">Download All</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.helpText"><![CDATA[
         You can apply the following filters to the report:
         <ul>

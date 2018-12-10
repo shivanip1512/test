@@ -12,13 +12,15 @@
     </c:forEach>
         
     <cti:url var="formAction" value="/dr/assetAvailability/detail"/>
+    <cti:url var="downloadAll" value="/dr/assetAvailability/${assetId}/downloadAll"/>
     <form id="js-asset-availability-filter-form" action="${formAction}" method="GET">
         <input type="hidden" name="assetId" value="${assetId}"/>
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".targetLevel">
-                        ${paoName} (${totalDevices}&nbsp;<i:inline key="yukon.common.Devices"/>)
+                        <span class="fl">${paoName} (${totalDevices}&nbsp;<i:inline key="yukon.common.Devices"/>)</span>
+                        <cti:icon icon="icon-csv" nameKey="download" href = "${downloadAll}"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div style="max-height: 200px;" class="js-asset-availability-pie-chart-summary"></div>
