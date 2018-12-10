@@ -22,7 +22,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implements Comparator<StarsAMRDetail>
@@ -168,7 +168,7 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	    sql.append("AND IB.DEVICEID > 0 ");
 	    sql.append("AND IB.DEVICEID = PAO.PAOBJECTID ");
 	    sql.append("AND P.PAOBJECTID = PAO.PAOBJECTID ");
-	    sql.append("AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
+	    sql.append("AND P.POINTTYPE").eq_k(PointType.PulseAccumulator);
 	    sql.append("AND P.POINTOFFSET = 1 ");
 	    sql.append("AND P.POINTID = RPH1.POINTID ");
 	    sql.append("AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 ");

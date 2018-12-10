@@ -32,7 +32,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
@@ -172,12 +172,12 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 
 	//Extensions of PointTypes
 	public final static int LOAD_PROFILE_POINT_TYPE = 101;	//some "unused" PointType int
-	public final static int CALC_POINT_TYPE = PointTypes.CALCULATED_POINT;
-	public final static int ANALOG_POINT_TYPE = PointTypes.ANALOG_POINT;
-	public final static int DEMAND_ACC_POINT_TYPE = PointTypes.DEMAND_ACCUMULATOR_POINT;
-	public final static int PULSE_ACC_POINT_TYPE = PointTypes.PULSE_ACCUMULATOR_POINT;
-	public final static int STATUS_POINT_TYPE = PointTypes.STATUS_POINT;
-	
+	public final static int CALC_POINT_TYPE = PointType.CalcAnalog.getPointTypeId();
+	public final static int ANALOG_POINT_TYPE = PointType.Analog.getPointTypeId();
+	public final static int DEMAND_ACC_POINT_TYPE = PointType.DemandAccumulator.getPointTypeId();
+	public final static int PULSE_ACC_POINT_TYPE = PointType.PulseAccumulator.getPointTypeId();
+	public final static int STATUS_POINT_TYPE = PointType.Status.getPointTypeId();
+
 	public final static String LOAD_PROFILE_POINT_TYPE_STRING = "All Load Profile";	//some "unused" PointType int
 	public final static String CALC_POINT_TYPE_STRING = "All Calculated";
 	public final static String ANALOG_POINT_TYPE_STRING = "All Analog";
@@ -328,26 +328,26 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 		
 		if (getPointType() == LOAD_PROFILE_POINT_TYPE ) {
 		    sql.append(" AND PAO.PAOBJECTID = DLP.DEVICEID ");
-			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
+			sql.append(" AND P.POINTTYPE").eq_k(PointType.DemandAccumulator);
 			sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
 			sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
 			sql.append(") ");
 		} else if ( getPointType() == STATUS_POINT_TYPE ) {
-			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.STATUS_POINT));
+			sql.append(" AND P.POINTTYPE").eq_k(PointType.Status);
 		} else if ( getPointType() == DEMAND_ACC_POINT_TYPE ) {
 		    sql.append(" AND PAO.PAOBJECTID = DLP.DEVICEID ");
-			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
+			sql.append(" AND P.POINTTYPE").eq_k(PointType.DemandAccumulator);
 			//Do not allow LP data, those points fall into the LP point type option.
 			sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
 			sql.append(" OR P.POINTOFFSET > ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
 			sql.append(")");			
 		} else if ( getPointType() == PULSE_ACC_POINT_TYPE ) {
-        	sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
+        	sql.append(" AND P.POINTTYPE").eq_k(PointType.PulseAccumulator);
         } else if ( getPointType() == ANALOG_POINT_TYPE ) {
-			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.ANALOG_POINT));
+			sql.append(" AND P.POINTTYPE").eq_k(PointType.Analog);
 		} else if ( getPointType() == CALC_POINT_TYPE) {
-			sql.append(" AND (P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_POINT));
-			sql.append(" OR P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT));
+			sql.append(" AND (P.POINTTYPE").eq_k(PointType.CalcAnalog);
+			sql.append(" OR P.POINTTYPE").eq_k(PointType.CalcStatus);
 			sql.append(" )");
 		}
 		if (excludeDisabledDevices) {
@@ -423,7 +423,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                                 intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
                             } else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null) {
                                 intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
-                            } else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null) {
+                            } else if (lp.getPointTypeEnum() == PointType.DemandAccumulator && liDemandRate != null) {
                                 intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
                             }
                             // else if( pointOffset == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
@@ -444,7 +444,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                     voltageDemandRate = null;
                     liDemandRate = null;
                     voltageDemandInterval = null;
-                    if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)					
+                    if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)
                     {
                         lpDemandRate = String.valueOf( rset.getInt(12));
                         voltageDemandRate = String.valueOf(rset.getInt(13));
@@ -481,7 +481,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                     intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
                 else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL3 && lpDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
-                else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
+                else if( lp.getPointTypeEnum() == PointType.DemandAccumulator && liDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
                 //				else if( pointOffset == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
                 //				    intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
@@ -558,7 +558,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
-				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+				    	if( lp.getPointTypeEnum() == PointType.DemandAccumulator) {
 					        if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
 					            return lpMeterData.getVoltageDemandRate();
 					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
@@ -567,7 +567,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 					            return lpMeterData.getDemandRate();
 					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL3)
 					            return lpMeterData.getDemandRate();
-					        else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+					        else if( lp.getPointTypeEnum() == PointType.DemandAccumulator)
 							    return lpMeterData.getLastIntervalDemand();
 	//				        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND)
 	//				            return lpMeterData.getLastIntervalVoltage();
@@ -647,7 +647,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
-				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+				    	if( lp.getPointTypeEnum() == PointType.DemandAccumulator) {
 					        if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ||
 					                lp.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND)
 					        {
@@ -675,7 +675,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
-				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+				    	if( lp.getPointTypeEnum() == PointType.DemandAccumulator) {
 					        if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
 					            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
 					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
@@ -684,7 +684,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                                 divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
                             else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL3)
                                 divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-					        else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+					        else if (lp.getPointTypeEnum() == PointType.DemandAccumulator)
 					            divisor = Integer.valueOf(lpMeterData.getLastIntervalDemand()).intValue();
 				    	}
 				    }				    
@@ -976,25 +976,22 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 		pointType = i;
 	}
 	
-	public String getPointTypeString(int pointTypeID)
-	{
-		switch (pointTypeID)
-		{
-			case LOAD_PROFILE_POINT_TYPE:
-				return LOAD_PROFILE_POINT_TYPE_STRING;
-			case CALC_POINT_TYPE:
-				return CALC_POINT_TYPE_STRING;
-			case ANALOG_POINT_TYPE:
-				return ANALOG_POINT_TYPE_STRING;
-			case DEMAND_ACC_POINT_TYPE:
-				return DEMAND_ACC_POINT_TYPE_STRING;
-			case PULSE_ACC_POINT_TYPE:
-				return PULSE_ACC_POINT_TYPE_STRING;
-			case STATUS_POINT_TYPE:
-				return STATUS_POINT_TYPE_STRING;
-		}
-		return "UNKNOWN";
-	}
+    public String getPointTypeString(int pointTypeID) {
+        if (pointTypeID == LOAD_PROFILE_POINT_TYPE)
+            return LOAD_PROFILE_POINT_TYPE_STRING;
+        else if (pointTypeID == CALC_POINT_TYPE)
+            return CALC_POINT_TYPE_STRING;
+        else if (pointTypeID == ANALOG_POINT_TYPE)
+            return ANALOG_POINT_TYPE_STRING;
+        else if (pointTypeID == DEMAND_ACC_POINT_TYPE)
+            return DEMAND_ACC_POINT_TYPE_STRING;
+        else if (pointTypeID == PULSE_ACC_POINT_TYPE)
+            return PULSE_ACC_POINT_TYPE_STRING;
+        else if (pointTypeID == STATUS_POINT_TYPE)
+            return STATUS_POINT_TYPE_STRING;
+        else
+            return "UNKNOWN";
+    }
 	/**
 	 * @return
 	 */

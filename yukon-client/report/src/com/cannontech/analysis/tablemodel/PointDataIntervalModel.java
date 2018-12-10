@@ -26,7 +26,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 
 /**
  *  WARNING!!! LiteRawPointHistory objects created in this report are NOT intended to be changed into RawPointHistory DBPersistent objects
@@ -58,11 +58,11 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 
 	//Extensions of PointTypes
 	public final static int LOAD_PROFILE_POINT_TYPE = 101;	//some "unused" PointType int
-	public final static int CALC_POINT_TYPE = PointTypes.CALCULATED_POINT;
-	public final static int ANALOG_POINT_TYPE = PointTypes.ANALOG_POINT;
-	public final static int DEMAND_ACC_POINT_TYPE = PointTypes.DEMAND_ACCUMULATOR_POINT;
-	public final static int PULSE_ACC_POINT_TYPE = PointTypes.PULSE_ACCUMULATOR_POINT;
-	public final static int STATUS_POINT_TYPE = PointTypes.STATUS_POINT;
+	public final static int CALC_POINT_TYPE = PointType.CalcAnalog.getPointTypeId();
+	public final static int ANALOG_POINT_TYPE = PointType.Analog.getPointTypeId();
+	public final static int DEMAND_ACC_POINT_TYPE = PointType.DemandAccumulator.getPointTypeId();
+	public final static int PULSE_ACC_POINT_TYPE = PointType.PulseAccumulator.getPointTypeId();
+	public final static int STATUS_POINT_TYPE = PointType.Status.getPointTypeId();
 	
 	public final static String LOAD_PROFILE_POINT_TYPE_STRING = "All Load Profile";	//some "unused" PointType int
 	public final static String CALC_POINT_TYPE_STRING = "All Calculated";
@@ -194,23 +194,23 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 	        sql.append(" AND PAO.PAOBJECTID IN (", getPaoIDs(), ")");
 	    }
 	    if (getPointType() == LOAD_PROFILE_POINT_TYPE ) {
-	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
+	        sql.append(" AND P.POINTTYPE").eq_k(PointType.DemandAccumulator);
 	        sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
 	        sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(")");
 	    } else if ( getPointType() == STATUS_POINT_TYPE ) {
-	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.STATUS_POINT));
+	        sql.append(" AND P.POINTTYPE").eq_k(PointType.Status);
 	    } else if ( getPointType() == DEMAND_ACC_POINT_TYPE) {
-	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
+	        sql.append(" AND P.POINTTYPE").eq_k(PointType.DemandAccumulator);
 	        //Do not allow LP data, those points fall into the LP point type option.
 	        sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
 	        sql.append( " OR P.POINTOFFSET > ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(") ");				
 	    } else if ( getPointType() == PULSE_ACC_POINT_TYPE) {
-	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
+	        sql.append(" AND P.POINTTYPE").eq_k(PointType.PulseAccumulator);
 	    } else if ( getPointType() == ANALOG_POINT_TYPE ) {
-	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.ANALOG_POINT));
+	        sql.append(" AND P.POINTTYPE").eq_k(PointType.Analog);
 	    } else if ( getPointType() == CALC_POINT_TYPE) {
-	        sql.append(" AND (P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_POINT));
-	        sql.append(" OR P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT)).append(")");
+	        sql.append(" AND (P.POINTTYPE").eq_k(PointType.CalcAnalog);
+	        sql.append(" OR P.POINTTYPE").eq_k(PointType.CalcStatus).append(")");
 	    }
 
 	    sql.append(" ORDER BY PAO.PAOBJECTID, P.POINTNAME ");
@@ -384,25 +384,22 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 		pointType = i;
 	}
 
-	public String getPointTypeString(int pointTypeID)
-	{
-		switch (pointTypeID)
-		{
-			case LOAD_PROFILE_POINT_TYPE:
-				return LOAD_PROFILE_POINT_TYPE_STRING;
-			case CALC_POINT_TYPE:
-				return CALC_POINT_TYPE_STRING;
-			case ANALOG_POINT_TYPE:
-				return ANALOG_POINT_TYPE_STRING;
-			case DEMAND_ACC_POINT_TYPE:
-				return DEMAND_ACC_POINT_TYPE_STRING;
-			case PULSE_ACC_POINT_TYPE:
-				return PULSE_ACC_POINT_TYPE_STRING;
-			case STATUS_POINT_TYPE:
-				return STATUS_POINT_TYPE_STRING;
-		}
-		return "UNKNOWN";
-	}
+    public String getPointTypeString(int pointTypeID) {
+        if (pointTypeID == LOAD_PROFILE_POINT_TYPE)
+            return LOAD_PROFILE_POINT_TYPE_STRING;
+        else if (pointTypeID == CALC_POINT_TYPE)
+            return CALC_POINT_TYPE_STRING;
+        else if (pointTypeID == ANALOG_POINT_TYPE)
+            return ANALOG_POINT_TYPE_STRING;
+        else if (pointTypeID == DEMAND_ACC_POINT_TYPE)
+            return DEMAND_ACC_POINT_TYPE_STRING;
+        else if (pointTypeID == PULSE_ACC_POINT_TYPE)
+            return PULSE_ACC_POINT_TYPE_STRING;
+        else if (pointTypeID == STATUS_POINT_TYPE)
+            return STATUS_POINT_TYPE_STRING;
+        else
+            return "UNKNOWN";
+    }
 	/**
 	 * @return
 	 */
