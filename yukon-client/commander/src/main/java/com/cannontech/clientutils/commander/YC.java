@@ -56,6 +56,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
@@ -1382,16 +1383,16 @@ public class YC extends Observable implements MessageListener {
                         
             if (liteYukonPAObject.getPaoType().isCbc()) {
                 // The Bank Status Point
-                pointId = getLogPointID(PointTypes.STATUS_POINT, 1);
+                pointId = getLogPointID(PointType.Status, 1);
                 
             } else if (liteYukonPAObject.getPaoType().isLoadGroup()) {
                 // The Control Status (Pseudo) Point
-                pointId = getLogPointID(PointTypes.STATUS_POINT, 0);
+                pointId = getLogPointID(PointType.Status, 0);
                 
             } else if (liteYukonPAObject.getPaoType().isMct()) {
                 if (commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1) {
                     // The Disconnect Status Point
-                    pointId = getLogPointID(PointTypes.STATUS_POINT, 1);
+                    pointId = getLogPointID(PointType.Status, 1);
                     
                 }
             } else if (liteYukonPAObject.getLiteID() == Device.SYSTEM_DEVICE_ID) {
@@ -1402,11 +1403,11 @@ public class YC extends Observable implements MessageListener {
         }
     }
     
-    private int getLogPointID(int pointType, int pointOffset) {
+    private int getLogPointID(PointType pointType, int pointOffset) {
         
         List<LitePoint> points = pointDao.getLitePointsByPaObjectId(liteYukonPao.getLiteID());
         for (LitePoint point : points) {
-            if (point.getPointType() == pointType && point.getPointOffset() == pointOffset) {
+            if (point.getPointTypeEnum() == pointType && point.getPointOffset() == pointOffset) {
                 return point.getPointID();
             }
         }

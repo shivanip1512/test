@@ -6,7 +6,7 @@ import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.model.BankMoveBean;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.capcontrol.model.BankMove;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.capcontrol.model.ChangeOpState;
@@ -123,7 +123,7 @@ public class CommandHelper {
         command.setStr("Manual change occurred using CBC Web Client");
         command.setTime(now);
         command.setTimeStamp(now);
-        command.setType(PointTypes.STATUS_POINT);
+        command.setType(PointType.Status.getPointTypeId());
         command.setUserName(user.getUsername());
         command.setValue(state);
         
@@ -138,7 +138,7 @@ public class CommandHelper {
         command.setStr("Capacitor Bank OP_COUNT change from CBC Client");
         command.setTime(now);
         command.setTimeStamp(now);
-        command.setType(PointTypes.ANALOG_POINT);
+        command.setType(PointType.Analog.getPointTypeId());
         command.setUserName(user.getUsername());
         command.setValue(count);
         
