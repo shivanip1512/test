@@ -24,6 +24,7 @@ $(document).ready(function(){
 <c:choose>
     
     <c:when test="${attributeGraphType != null}">
+        <input type="hidden" class="js-help-text" value="${helpText}"/>
     
         <h4 class="tac"><cti:msg2 key=".meter"/> <cti:deviceName deviceId="${widgetParameters.deviceId}"/></h4>
 
@@ -37,7 +38,7 @@ $(document).ready(function(){
             graphType="${graphType}"
             ymin="0"/>
 
-        <table class="compact-results-table trend-settings no-stripes">
+        <table class="compact-results-table trend-settings no-stripes js-trend">
         
             <%-- ATTRIBUTES GRAPH TYPES --%>
             <tr>
@@ -197,3 +198,4 @@ $(document).ready(function(){
     </c:otherwise>
 
 </c:choose>
+<cti:includeScript link="/resources/js/widgets/yukon.widget.csrTrend.js"/>
