@@ -491,28 +491,40 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0 && dto.getLatitude() != null
             && dto.getLongitude() != null) {
+
             DisplayablePao displayablePaoHardware =
                 paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
 
-            if (((dto.getLatitude() < -90.0) || (dto.getLatitude() > 90.0))) {
-                throw new ProcessingException(
-                    "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
-                        + displayablePaoHardware.getPaoIdentifier(),
-                    "invalidLatitude", "-90", "90", displayablePaoHardware.getPaoIdentifier());
-            } else if (((dto.getLongitude() < -180.0) || (dto.getLongitude() > 180.0))) {
-                throw new ProcessingException(
-                    "Valid Longitude (Must be between -180 and 180) not specified for device with paoId "
-                        + displayablePaoHardware.getPaoIdentifier(),
-                    "invalidLongitude", "-180", "180", displayablePaoHardware.getPaoIdentifier());
-            } else {
+            try {
+                validateForLocation(displayablePaoHardware, dto);
                 PaoLocation newLocation =
                     new PaoLocation(displayablePaoHardware.getPaoIdentifier(), dto.getLatitude(), dto.getLongitude());
                 paoLocationDao.save(newLocation);
+            } catch (ProcessingException e) {
+                throw e;
             }
+
         }
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0 && dto.getLatitude() == null
             && dto.getLongitude() == null) {
             paoLocationDao.delete(lib.getDeviceID());
+        }
+    }
+
+    /* Method to validate the Latitude and Longitude for the hardware */
+    private void validateForLocation(DisplayablePao displayablePaoForHardware, LmDeviceDto deviceDto) throws ProcessingException{
+        if (((deviceDto.getLatitude() < -90.0) || (deviceDto.getLatitude() > 90.0))) {
+            throw new ProcessingException(
+                "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
+                    + displayablePaoForHardware.getPaoIdentifier(),
+                "invalidLatitude", "-90", "90", displayablePaoForHardware.getPaoIdentifier());
+        } else if (((deviceDto.getLongitude() < -180.0) || (deviceDto.getLongitude() > 180.0))) {
+            throw new ProcessingException(
+                "Valid Longitude (Must be between -180 and 180) not specified for device with paoId "
+                    + displayablePaoForHardware.getPaoIdentifier(),
+                "invalidLongitude", "-180", "180", displayablePaoForHardware.getPaoIdentifier());
+        } else {
+            return;
         }
     }
 
