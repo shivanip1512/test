@@ -254,6 +254,7 @@
 <!-- stop program -->
 <entry key="yukon.web.modules.dr.program.stopProgram.title">Stop Program</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.confirmQuestion">Are you sure you want to stop the program {0}?</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.notPossible">Program cannot be stopped.</entry>
 
 <entry key="yukon.web.modules.dr.program.stopProgram.stopTime">Stop Time</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.stopGear">Stop Gear</entry>

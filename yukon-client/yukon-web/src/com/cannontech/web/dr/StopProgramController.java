@@ -163,7 +163,10 @@ public class StopProgramController extends ProgramControllerBase {
             if(nestService.isEnabledNestProgramWithEnabledGroup(backingBean.getProgramId())) {
                 backingBean.setStopDate(new Date());
                 NestStopEventResult result = nestService.stopControlForProgram(backingBean.getProgramId());
-                if (!result.isSuccess() && result.getNestResponse() != null) {
+                if (!result.isStopPossible()) {
+                    flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.notPossible"));
+                    return details(model, true, backingBean, bindingResult, userContext, flashScope);
+                } else if (!result.isSuccess()) {
                     flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getNestResponse()));
                     return details(model, true, backingBean, bindingResult, userContext, flashScope);
                 }
@@ -323,11 +326,16 @@ public class StopProgramController extends ProgramControllerBase {
                
                 if (backingBean.isStopNow()
                     && nestService.isEnabledNestProgramWithEnabledGroup(programStopInfo.getProgramId())) {
+                    backingBean.setStopDate(stopDate);
                     NestStopEventResult result = nestService.stopControlForProgram(programStopInfo.getProgramId());
                     // Nest program returned an error, we are going to skip this program
                     // Do we need to write this to some event log? If so which one?
-                    if (result.isStopPossible() && !result.isSuccess()) {
-                        continue;
+                    if (!result.isStopPossible()) {
+                        flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.notPossible"));
+                        return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
+                    } else if (!result.isSuccess()) {
+                        flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getNestResponse()));
+                        return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
                     }
                 }
                 if (backingBean.isStopNow() && stopOffset == null) {
