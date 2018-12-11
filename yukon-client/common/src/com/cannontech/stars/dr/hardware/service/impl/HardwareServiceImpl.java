@@ -16,6 +16,7 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
@@ -78,6 +79,7 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private OptOutService optOutService;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonListDao yukonListDao;
@@ -185,7 +187,12 @@ public class HardwareServiceImpl implements HardwareService {
         InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
         YukonPao pao = paoDao.getYukonPao(lib.getDeviceID());
         hardwareTypeExtensionService.moveDeviceToInventory(pao, id);
-        
+
+        // Remove Latitude and Longitude for Two way LCR
+        if (lib.getDeviceID() > 0 && paoLocationDao.getLocation(lib.getDeviceID()) != null) {
+            paoLocationDao.delete(lib.getDeviceID());
+        }
+
         // Log hardware deletion
         hardwareEventLogService.hardwareRemoved(user, lib.getDeviceLabel(), accountNumber);
     }
