@@ -51,7 +51,7 @@
         </span>
         
         <cti:url var="filterUrl" value="/dr/assetAvailability/filterResultsTable">
-            <cti:param name="assetId" value="${assetId}"/>
+            <cti:param name="paobjectId" value="${paobjectId}"/>
             <c:forEach var="subGroup" items="${deviceSubGroups}">
                 <cti:param name="deviceSubGroups" value="${subGroup}"/>
             </c:forEach>

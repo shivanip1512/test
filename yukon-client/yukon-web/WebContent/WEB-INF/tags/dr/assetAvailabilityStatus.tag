@@ -58,7 +58,7 @@
     <div class="column one nogutter">
         <c:if test="${showDetails}">
             <cti:url var="assetDetailsUrl" value="/dr/assetAvailability/detail">
-                <cti:param name="assetId" value="${assetId}"/>
+                <cti:param name="paobjectId" value="${assetId}"/>
             </cti:url>
             <div>
                 <a href="${assetDetailsUrl}">

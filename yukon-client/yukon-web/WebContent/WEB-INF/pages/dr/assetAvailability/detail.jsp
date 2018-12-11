@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -12,15 +13,17 @@
     </c:forEach>
         
     <cti:url var="formAction" value="/dr/assetAvailability/detail"/>
-    <cti:url var="downloadAll" value="/dr/assetAvailability/${assetId}/downloadAll"/>
+    <cti:url var="downloadAll" value="/dr/assetAvailability/${paobjectId}/downloadAll"/>
     <form id="js-asset-availability-filter-form" action="${formAction}" method="GET">
-        <input type="hidden" name="assetId" value="${assetId}"/>
+        <input type="hidden" name="paobjectId" value="${paobjectId}"/>
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".targetLevel">
-                        <span class="fl">${paoName} (${totalDevices}&nbsp;<i:inline key="yukon.common.Devices"/>)</span>
-                        <cti:icon icon="icon-csv" nameKey="download" href = "${downloadAll}"/>
+                    <tags:nameValue2 nameKey=".targetLevel" nameClass="mw100">
+                        <span>
+                            <span class="fl">${fn:escapeXml(paoName)}</span><span class="fl">&nbsp;(${totalDevices}&nbsp;<i:inline key="yukon.common.Devices"/>)</span>
+                            <cti:icon icon="icon-csv" nameKey="download" href = "${downloadAll}"/>
+                        </span>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div style="max-height: 200px;" class="js-asset-availability-pie-chart-summary"></div>

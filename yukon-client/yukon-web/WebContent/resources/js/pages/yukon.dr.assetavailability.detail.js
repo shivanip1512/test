@@ -16,7 +16,7 @@ yukon.dr.assetavailability.detail = (function () {
     _filterResults = function () {
         var filters = _getFilters();
         yukon.ui.blockPage();
-        var url = yukon.url('/dr/assetAvailability/filterResults?assetId=' + filters.assetId + '&deviceSubGroups=' + filters.deviceSubGroups + '&statuses=' + filters.statuses);
+        var url = yukon.url('/dr/assetAvailability/filterResults?paobjectId=' + filters.paobjectId + '&deviceSubGroups=' + filters.deviceSubGroups + '&statuses=' + filters.statuses);
         $.get(url, function (data) {
             $("#js-filtered-results").html(data);
         }).always(function () {
@@ -26,8 +26,8 @@ yukon.dr.assetavailability.detail = (function () {
     },
     
     _getFilters = function () {
-        var statuses = [];
-        var deviceSubGroups = [];
+        var statuses = [],
+            deviceSubGroups = [];
         
         $('input[name=statuses]').each(function (index, element) {
             if($(element).prop('checked')){
@@ -45,7 +45,7 @@ yukon.dr.assetavailability.detail = (function () {
         });
         
         var filters = {
-                assetId : $("input[name=assetId]").val(),
+        		paobjectId : $("input[name=paobjectId]").val(),
                 deviceSubGroups : deviceSubGroups,
                 statuses : statuses 
         };
@@ -83,7 +83,7 @@ yukon.dr.assetavailability.detail = (function () {
 
             $(document).on('click', '.js-download-filter-result', function () {
                 var filters = _getFilters();
-                window.location.href = yukon.url('/dr/assetAvailability/download?assetId=' + filters.assetId + '&deviceSubGroups=' + filters.deviceSubGroups 
+                window.location.href = yukon.url('/dr/assetAvailability/downloadFilteredResults?paobjectId=' + filters.paobjectId + '&deviceSubGroups=' + filters.deviceSubGroups 
                         + '&statuses=' + filters.statuses);
              });
 
