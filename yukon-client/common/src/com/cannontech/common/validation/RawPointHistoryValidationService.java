@@ -224,8 +224,8 @@ public class RawPointHistoryValidationService {
         sql2.append("from POINT p");
         sql2.append("  join YukonPAObject ypo on ypo.PAObjectID = p.PAObjectID");
         sql2.append("  join RAWPOINTHISTORY rph on p.POINTID = rph.POINTID");
-        sql2.append("where rph.CHANGEID").gt_k(lastChangeIdProcessed);
-        sql2.append("  and rph.CHANGEID").lte_k(stopChangeId);
+        sql2.append("where rph.CHANGEID").gt(lastChangeIdProcessed);
+        sql2.append("  and rph.CHANGEID").lte(stopChangeId);
         final WaitableExecutor waitableExecutor = new WaitableExecutor(executorService);
 
         jdbcTemplate.query(sql2, new YukonRowCallbackHandler() {

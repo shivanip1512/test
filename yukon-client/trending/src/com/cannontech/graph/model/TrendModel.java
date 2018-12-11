@@ -328,16 +328,15 @@ public class TrendModel implements GraphDefines {
         }
     }
 
-    private StringBuffer getSQLQueryString(int seriesTypeMask, int pointid) {
+    private StringBuffer getSQLQueryString(int seriesTypeMask) {
         String beginTSCompare = ">";
         // include the midnight reading for usage, PER DAVID!!!
         if (GDSTypesFuncs.isUsageType(seriesTypeMask))
             beginTSCompare += "=";
 
-        StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE, MILLIS " + "FROM RAWPOINTHISTORY WHERE POINTID IN (");
-        sql.append(pointid);
-
-        sql.append(")  AND ((TIMESTAMP " + beginTSCompare + " ? AND TIMESTAMP <= ? ) ");
+        StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE, MILLIS "
+                                            + "FROM RAWPOINTHISTORY WHERE POINTID = ? ");
+        sql.append(" AND ((TIMESTAMP " + beginTSCompare + " ? AND TIMESTAMP <= ? ) ");
         sql.append(" ) ORDER BY POINTID, TIMESTAMP");
         return sql;
     }
@@ -423,11 +422,15 @@ public class TrendModel implements GraphDefines {
         try {
 
             // Collect the NEXT most RECENT RPH entry for this pointid
-            StringBuffer sqlMaxQuery = new StringBuffer("SELECT TIMESTAMP, VALUE, MILLIS " + " FROM RAWPOINTHISTORY WHERE POINTID = " + pointID + " AND TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM RAWPOINTHISTORY RPH2 " + " WHERE RPH2.POINTID = " + pointID + " AND RPH2.TIMESTAMP <= ? ) ");
+            StringBuffer sqlMaxQuery = new StringBuffer("SELECT TIMESTAMP, VALUE, MILLIS " + 
+            " FROM RAWPOINTHISTORY WHERE POINTID = ? "+ 
+            " AND TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM RAWPOINTHISTORY RPH2 " + 
+            " WHERE RPH2.POINTID = ? AND RPH2.TIMESTAMP <= ? ) ");
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             pstmt = conn.prepareStatement(sqlMaxQuery.toString());
-
-            pstmt.setTimestamp(1, new java.sql.Timestamp(maxTS));
+            pstmt.setInt(1,  pointID);
+            pstmt.setInt(2, pointID);
+            pstmt.setTimestamp(3, new java.sql.Timestamp(maxTS));
             rset = pstmt.executeQuery();
             while (rset.next()) {
                 java.sql.Timestamp ts = rset.getTimestamp(1);
@@ -478,8 +481,9 @@ public class TrendModel implements GraphDefines {
                 } else if (GDSTypesFuncs.isGraphType(getTrendSeries()[s].getTypeMask())
                         || GDSTypesFuncs.isYesterdayType(getTrendSeries()[s].getTypeMask())
                         || GDSTypesFuncs.isUsageType(getTrendSeries()[s].getTypeMask())) {
-                    StringBuffer sql = getSQLQueryString(getTrendSeries()[s].getTypeMask(),
-                                                         getTrendSeries()[s].getPointId().intValue());
+                    
+                    int pointId = getTrendSeries()[s].getPointId().intValue();
+                    StringBuffer sql = getSQLQueryString(getTrendSeries()[s].getTypeMask());
                     if ((trendProps.getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
                         // Sort the rows in desc timestamp order for event
                         sql.append(" DESC");
@@ -558,8 +562,9 @@ public class TrendModel implements GraphDefines {
                             timeAndValueVector.add(timeAndValue);
                     }
 
-                    pstmt.setTimestamp(1, new java.sql.Timestamp(startTS));
-                    pstmt.setTimestamp(2, new java.sql.Timestamp(stopTS));
+                    pstmt.setInt(1, pointId);
+                    pstmt.setTimestamp(2, new java.sql.Timestamp(startTS));
+                    pstmt.setTimestamp(3, new java.sql.Timestamp(stopTS));
 
                     rset = pstmt.executeQuery();
 
@@ -705,9 +710,10 @@ public class TrendModel implements GraphDefines {
         if (getTrendSeries()[serieIndex] == null)
             return;
 
+        int pointId = getTrendSeries()[serieIndex].getPointId().intValue();
         StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE, MILLIS " +
-                " FROM RAWPOINTHISTORY WHERE POINTID = " + getTrendSeries()[serieIndex].getPointId().intValue()
-                + " AND (TIMESTAMP > ? AND TIMESTAMP <= ? ) ORDER BY POINTID, TIMESTAMP");
+                " FROM RAWPOINTHISTORY WHERE POINTID = ? " + 
+                " AND (TIMESTAMP > ? AND TIMESTAMP <= ? ) ORDER BY POINTID, TIMESTAMP");
 
         if (sql == null) {
             return;
@@ -752,8 +758,9 @@ public class TrendModel implements GraphDefines {
             getTrendSeries()[serieIndex].setLabel(getSerieLabel(getTrendSeries()[serieIndex].getLabel(), new Date(startTS)));
 
             CTILogger.info("START DATE > " + new Timestamp(startTS) + "  -  STOP DATE <= " + new Timestamp(stopTS));
-            pstmt.setTimestamp(1, new Timestamp(startTS));
-            pstmt.setTimestamp(2, new Timestamp(stopTS));
+            pstmt.setInt(1, pointId);
+            pstmt.setTimestamp(2, new Timestamp(startTS));
+            pstmt.setTimestamp(3, new Timestamp(stopTS));
 
             rset = pstmt.executeQuery();
 
@@ -891,9 +898,10 @@ public class TrendModel implements GraphDefines {
         List<PeakPointHistory> peakPointHist = new ArrayList<>();
 
         try {
+            int pointId = getTrendSeries()[serieIndex].getPointId().intValue() ;
             String sqlString = " SELECT RPH1.POINTID POINTID, RPH1.VALUE VALUE, RPH1.TIMESTAMP TIMESTAMP "
-                    + " FROM RAWPOINTHISTORY RPH1 WHERE " + " RPH1.TIMESTAMP >= ? " + " AND RPH1.POINTID = "
-                    + getTrendSeries()[serieIndex].getPointId().intValue() + " ORDER BY VALUE DESC, TIMESTAMP";
+                    + " FROM RAWPOINTHISTORY RPH1 WHERE " + " RPH1.TIMESTAMP >= ? " + " AND RPH1.POINTID = ? "
+                    + " ORDER BY VALUE DESC, TIMESTAMP";
 
             conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 
@@ -903,8 +911,9 @@ public class TrendModel implements GraphDefines {
             }
 
             pstmt = conn.prepareStatement(sqlString.toString());
-            pstmt.setTimestamp(1, new Timestamp(Long.valueOf(getTrendSeries()[serieIndex].getMoreData())
-                                                    .longValue()));
+            pstmt.setTimestamp(1, new Timestamp(Long.valueOf(getTrendSeries()[serieIndex].getMoreData()).longValue()));
+            pstmt.setInt(2,  pointId);
+            
             // pstmt.setTimestamp(2, new Timestamp(
             // Long.valueOf(getTrendSeries()[serieIndex].getMoreData()).longValue()));
             CTILogger.info("PEAK START DATE > " + new Timestamp(Long.valueOf(getTrendSeries()[serieIndex].getMoreData())
