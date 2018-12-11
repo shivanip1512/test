@@ -49,7 +49,7 @@
                 </ul>
             </li>
             <li><b>Create Date range</b> - filter notes created between the start date and the end date.</li>
-            <li><b>Created by</b> - filter notes created by any user or by a specific user.
+            <li><b>Created By</b> - filter notes created by any user or by a specific user.
                 <ul>
                     <li><b>Any User</b></li>
                     <li><b>Current User</b></li>
