@@ -7,7 +7,8 @@ import com.cannontech.common.pao.PaoType;
 public class WaterUsageCriteria extends YukonObjectCriteriaHelper {
     
     public WaterUsageCriteria() {
-        addCriteria("type", PaoType.RFWMETER.getDbString(), BooleanClause.Occur.SHOULD);
+        for (PaoType paoType : PaoType.getWaterMeterTypes()) {
+            addCriteria("type", paoType.getDbString(), BooleanClause.Occur.SHOULD);
+        }
     }
-    
 }

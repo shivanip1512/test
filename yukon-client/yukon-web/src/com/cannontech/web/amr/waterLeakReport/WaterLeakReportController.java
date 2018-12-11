@@ -53,7 +53,6 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.scheduledFileExport.WaterLeakExportGenerationParameters;
@@ -72,9 +71,6 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
-import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -120,9 +116,6 @@ public class WaterLeakReportController {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private MeterDao meterDao;
-    @Autowired private MspObjectDao mspObjectDao;
-    @Autowired private MultispeakDao multispeakDao;
-    @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private PaoDao paoDao;
     @Autowired private WaterMeterLeakService leaksService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -131,8 +124,8 @@ public class WaterLeakReportController {
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
-    @Autowired private DeviceCollectionService deviceCollectionService;
     @Autowired private MspHandler mspHandler;
+    @Autowired private DeviceCollectionService deviceCollectionService;
     
     private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
@@ -538,7 +531,7 @@ public class WaterLeakReportController {
             collection = deviceCollectionFactory.createDeviceCollection(request);
         } else {
 
-            String groupName = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_TYPES) + PaoType.RFWMETER.getPaoTypeName();
+            String groupName = deviceGroupService.getFullPath(SystemGroupEnum.ALL_RFW_METERS);
             // Setup default device group (this is probably the first time the user is hitting this page)
             DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
             if (deviceGroup == null) {
