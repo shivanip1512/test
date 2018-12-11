@@ -63,12 +63,15 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
             appDB.setNotes(starsAppliance.getNotes());
             appDB.setModelNumber(starsAppliance.getModelNumber());
 
-            if (starsAppliance.hasYearManufactured())
+            if (starsAppliance.hasYearManufactured()) {
                 appDB.setYearManufactured(starsAppliance.getYearManufactured());
-            if (starsAppliance.hasKwCapacity())
+            }
+            if (starsAppliance.hasKwCapacity()) {
                 appDB.setKWCapacity(starsAppliance.getKwCapacity());
-            if (starsAppliance.hasEfficiencyRating())
+            }
+            if (starsAppliance.hasEfficiencyRating()) {
                 appDB.setEfficiencyRating(starsAppliance.getEfficiencyRating());
+            }
 
             if (starsAppliance.getInventoryID() > 0) {
                 app.getLMHardwareConfig()
@@ -82,8 +85,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 }
             }
 
-            app = (com.cannontech.stars.database.data.appliance.ApplianceBase) 
-                      Transaction.createTransaction(Transaction.INSERT, app).execute();
+            app = Transaction.createTransaction(Transaction.INSERT, app).execute();
 
             starsAppliance.setApplianceID(app.getApplianceBase().getApplianceID());
             LiteStarsAppliance liteApp = new LiteStarsAppliance();
@@ -95,7 +97,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 appAC.setApplianceID(app.getApplianceBase().getApplianceID());
                 appAC.setTonnageID(starsAppliance.getAirConditioner().getTonnage().getEntryID());
                 appAC.setTypeID(starsAppliance.getAirConditioner().getAcType().getEntryID());
-                appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT,
+                appAC = Transaction.createTransaction(Transaction.INSERT,
                                                                                 appAC).execute();
 
                 liteApp.setAirConditioner(new LiteStarsAppliance.AirConditioner());
@@ -111,7 +113,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 appDS.setStageTwoTonnageID(
                           starsAppliance.getDualStageAC().getStageTwoTonnage().getEntryID());
                 appDS.setTypeID(starsAppliance.getDualStageAC().getAcType().getEntryID());
-                appDS = (ApplianceDualStageAirCond) Transaction.createTransaction(Transaction.INSERT,
+                appDS = Transaction.createTransaction(Transaction.INSERT,
                                                                                   appDS).execute();
 
                 liteApp.setDualStageAirCond(new LiteStarsAppliance.DualStageAirCond());
@@ -125,7 +127,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 appChill.setApplianceID(app.getApplianceBase().getApplianceID());
                 appChill.setTonnageID(starsAppliance.getChiller().getTonnage().getEntryID());
                 appChill.setTypeID(starsAppliance.getChiller().getAcType().getEntryID());
-                appChill = (ApplianceChiller) Transaction.createTransaction(Transaction.INSERT,
+                appChill = Transaction.createTransaction(Transaction.INSERT,
                                                                             appChill).execute();
 
                 liteApp.setChiller(new LiteStarsAppliance.Chiller());
@@ -144,7 +146,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 if (starsAppliance.getWaterHeater().hasNumberOfElements()) {
                     appWH.setNumberOfElements(starsAppliance.getWaterHeater().getNumberOfElements());
                 }
-                appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT,
+                appWH = Transaction.createTransaction(Transaction.INSERT,
                                                                              appWH).execute();
 
                 liteApp.setWaterHeater(new LiteStarsAppliance.WaterHeater());
@@ -164,7 +166,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                     appDF.setSecondaryKWCapacity(
                               starsAppliance.getDualFuel().getSecondaryKWCapacity());
                 }
-                appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT,
+                appDF = Transaction.createTransaction(Transaction.INSERT,
                                                                           appDF).execute();
 
                 liteApp.setDualFuel(new LiteStarsAppliance.DualFuel());
@@ -188,7 +190,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 if (starsAppliance.getGenerator().hasStartDelaySeconds()) {
                     appGen.setStartDelaySeconds(starsAppliance.getGenerator().getStartDelaySeconds());
                 }
-                appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT,
+                appGen = Transaction.createTransaction(Transaction.INSERT,
                                                                             appGen).execute();
 
                 liteApp.setGenerator(new LiteStarsAppliance.Generator());
@@ -210,7 +212,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                           starsAppliance.getGrainDryer().getBlowerHorsePower().getEntryID());
                 appGD.setBlowerHeatSourceID(
                           starsAppliance.getGrainDryer().getBlowerHeatSource().getEntryID());
-                appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.INSERT,
+                appGD = Transaction.createTransaction(Transaction.INSERT,
                                                                             appGD).execute();
 
                 liteApp.setGrainDryer(new LiteStarsAppliance.GrainDryer());
@@ -230,7 +232,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 if (starsAppliance.getStorageHeat().hasHoursToRecharge()) {
                     appSH.setHoursToRecharge(starsAppliance.getStorageHeat().getHoursToRecharge());
                 }
-                appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT,
+                appSH = Transaction.createTransaction(Transaction.INSERT,
                                                                              appSH).execute();
 
                 liteApp.setStorageHeat(new LiteStarsAppliance.StorageHeat());
@@ -249,7 +251,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                     appHP.setSecondsDelayToRestart(
                               starsAppliance.getHeatPump().getRestartDelaySeconds());
                 }
-                appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT,
+                appHP = Transaction.createTransaction(Transaction.INSERT,
                                                                           appHP).execute();
 
                 liteApp.setHeatPump(new LiteStarsAppliance.HeatPump());
@@ -273,7 +275,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                            starsAppliance.getIrrigation().getMeterLocation().getEntryID());
                 appIrr.setMeterVoltageID(
                            starsAppliance.getIrrigation().getMeterVoltage().getEntryID());
-                appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.INSERT,
+                appIrr = Transaction.createTransaction(Transaction.INSERT,
                                                                              appIrr).execute();
 
                 liteApp.setIrrigation(new LiteStarsAppliance.Irrigation());
@@ -396,6 +398,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
             }
 
             String programName = null;
+            String serialNumber = null;
             if (unenrollProgram) {
                 LoadGroupDao loadGroupDao = 
                     YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
@@ -410,7 +413,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 LmHardwareBaseDao lmHardwareBaseDao = 
                     YukonSpringHook.getBean("hardwareBaseDao", LmHardwareBaseDao.class);
                 LMHardwareBase hardwareBase = lmHardwareBaseDao.getById(liteApp.getInventoryID());
-                String serialNumber = hardwareBase.getManufacturerSerialNumber();
+                serialNumber = hardwareBase.getManufacturerSerialNumber();
 
                 EnrollmentHelper enrollmentHelper = 
                     new EnrollmentHelper(accountNumber, loadGroupName, programName, serialNumber);
@@ -427,7 +430,6 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
             app.setApplianceID(liteApp.getApplianceID());
             Transaction.createTransaction(Transaction.DELETE, app).execute();
 
-            String serialNumber = getSerialNumber(app);
             accountEventLogService.applianceDeleted(user, 
                                                     accountNumber,
                                                     liteApp.getApplianceCategory().getName(),
@@ -500,10 +502,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 appAC.setTypeID(liteStarsAppliance.getAirConditioner().getAcType().getEntryID());
 
                 if (liteApp.getAirConditioner() != null) {
-                    appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.UPDATE,
+                    appAC = Transaction.createTransaction(Transaction.UPDATE,
                                                                                     appAC).execute();
                 } else {
-                    appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT,
+                    appAC = Transaction.createTransaction(Transaction.INSERT,
                                                                                     appAC).execute();
                     liteApp.setAirConditioner(new LiteStarsAppliance.AirConditioner());
                 }
@@ -524,11 +526,11 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
 
                 if (liteApp.getDualStageAirCond() != null) {
                     dualStageAC = 
-                        (ApplianceDualStageAirCond) Transaction.createTransaction(Transaction.UPDATE,
+                        Transaction.createTransaction(Transaction.UPDATE,
                                                                                   dualStageAC).execute();
                 } else {
                     dualStageAC =
-                        (ApplianceDualStageAirCond) Transaction.createTransaction(Transaction.INSERT,
+                        Transaction.createTransaction(Transaction.INSERT,
                                                                                   dualStageAC).execute();
                     liteApp.setDualStageAirCond(new LiteStarsAppliance.DualStageAirCond());
                 }
@@ -545,10 +547,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 appChill.setTypeID(liteStarsAppliance.getChiller().getAcType().getEntryID());
 
                 if (liteApp.getChiller() != null) {
-                    appChill = (ApplianceChiller) Transaction.createTransaction(Transaction.UPDATE,
+                    appChill = Transaction.createTransaction(Transaction.UPDATE,
                                                                                 appChill).execute();
                 } else {
-                    appChill = (ApplianceChiller) Transaction.createTransaction(Transaction.INSERT,
+                    appChill = Transaction.createTransaction(Transaction.INSERT,
                                                                                 appChill).execute();
                     liteApp.setAirConditioner(new LiteStarsAppliance.AirConditioner());
                 }
@@ -570,10 +572,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                               liteStarsAppliance.getWaterHeater().getNumberOfElements());
                 }
                 if (liteApp.getWaterHeater() != null) {
-                    appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.UPDATE,
+                    appWH = Transaction.createTransaction(Transaction.UPDATE,
                                                                                  appWH).execute();
                 } else {
-                    appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT,
+                    appWH = Transaction.createTransaction(Transaction.INSERT,
                                                                                  appWH).execute();
                     liteApp.setWaterHeater(new LiteStarsAppliance.WaterHeater());
                 }
@@ -596,10 +598,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 }
 
                 if (liteApp.getDualFuel() != null) {
-                    appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.UPDATE,
+                    appDF = Transaction.createTransaction(Transaction.UPDATE,
                                                                               appDF).execute();
                 } else {
-                    appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT,
+                    appDF = Transaction.createTransaction(Transaction.INSERT,
                                                                               appDF).execute();
                     liteApp.setDualFuel(new LiteStarsAppliance.DualFuel());
                 }
@@ -627,10 +629,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 }
 
                 if (liteApp.getGenerator() != null) {
-                    appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.UPDATE,
+                    appGen = Transaction.createTransaction(Transaction.UPDATE,
                                                                                 appGen).execute();
                 } else {
-                    appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT,
+                    appGen = Transaction.createTransaction(Transaction.INSERT,
                                                                                 appGen).execute();
                     liteApp.setGenerator(new LiteStarsAppliance.Generator());
                 }
@@ -653,10 +655,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                           liteStarsAppliance.getGrainDryer().getBlowerHeatSource().getEntryID());
 
                 if (liteApp.getGrainDryer() != null) {
-                    appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.UPDATE,
+                    appGD = Transaction.createTransaction(Transaction.UPDATE,
                                                                                 appGD).execute();
                 } else {
-                    appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.INSERT,
+                    appGD = Transaction.createTransaction(Transaction.INSERT,
                                                                                 appGD).execute();
                     liteApp.setGrainDryer(new LiteStarsAppliance.GrainDryer());
                 }
@@ -679,10 +681,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 }
 
                 if (liteApp.getStorageHeat() != null) {
-                    appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.UPDATE,
+                    appSH = Transaction.createTransaction(Transaction.UPDATE,
                                                                                  appSH).execute();
                 } else {
-                    appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT,
+                    appSH = Transaction.createTransaction(Transaction.INSERT,
                                                                                  appSH).execute();
                     liteApp.setStorageHeat(new LiteStarsAppliance.StorageHeat());
                 }
@@ -704,10 +706,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 }
 
                 if (liteApp.getHeatPump() != null) {
-                    appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.UPDATE,
+                    appHP = Transaction.createTransaction(Transaction.UPDATE,
                                                                               appHP).execute();
                 } else {
-                    appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT,
+                    appHP = Transaction.createTransaction(Transaction.INSERT,
                                                                               appHP).execute();
                     liteApp.setHeatPump(new LiteStarsAppliance.HeatPump());
                 }
@@ -734,10 +736,10 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                            liteStarsAppliance.getIrrigation().getMeterVoltage().getEntryID());
 
                 if (liteApp.getIrrigation() != null) {
-                    appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.UPDATE,
+                    appIrr = Transaction.createTransaction(Transaction.UPDATE,
                                                                                  appIrr).execute();
                 } else {
-                    appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.INSERT,
+                    appIrr = Transaction.createTransaction(Transaction.INSERT,
                                                                                  appIrr).execute();
                     liteApp.setIrrigation(new LiteStarsAppliance.Irrigation());
                 }

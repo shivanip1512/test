@@ -262,6 +262,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                                   enrollmentHelper.getLoadGroupName());
         }
         if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
+            if(enrollmentHelper.getProgramName() == null) {
+                //thermostat is associated with account but is not enrolled
+                //do not log the unenrollment
+                return;
+            }
             accountEventLogService.deviceUnenrolled(user, enrollmentHelper.getAccountNumber(),
                                                     enrollmentHelper.getSerialNumber(),
                                                     enrollmentHelper.getProgramName(),
@@ -325,7 +330,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
         removedProgramEnrollment.setEnroll(true);
 
-        List<ProgramEnrollment> programEnrollmentResults = new ArrayList<ProgramEnrollment>();
+        List<ProgramEnrollment> programEnrollmentResults = new ArrayList<>();
         programEnrollmentResults.addAll(programEnrollments);
 
         boolean found = false;
@@ -407,7 +412,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             List<Program> programs =
                 enrollmentDao.getEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
             MappingList<Program, String> programNames =
-                new MappingList<Program, String>(programs, new ObjectMapper<Program, String>() {
+                new MappingList<>(programs, new ObjectMapper<Program, String>() {
                     @Override
                     public String map(Program from) {
                         return from.getProgramPaoName();
