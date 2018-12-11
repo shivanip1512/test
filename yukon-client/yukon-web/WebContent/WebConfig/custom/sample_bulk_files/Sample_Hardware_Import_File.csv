@@ -1,2 +1,2 @@
-ACCOUNT_NO,HW_Action,Device_Type,Serial_No,Install_Date,Remove_Date,Service_Company,Program_Name,Addr_Group,App_Type,App_kW,App_Relay_Num,MAC_Address,Device_Vendor_User_Id,Option_Params
-99999999,INSERT,LCR-4700,99999999,6/21/2010,,,AC,ALL RES AC RELAY 1,AIR CONDITIONER,,1,01:23:45:67:89:ab,5485,
+ACCOUNT_NO,HW_Action,Device_Type,Serial_No,Install_Date,Remove_Date,Service_Company,Program_Name,Addr_Group,App_Type,App_kW,App_Relay_Num,MAC_Address,Device_Vendor_User_Id,Option_Params,LATITUDE,LONGITUDE
+99999999,INSERT,LCR-4700,99999999,6/21/2010,,,AC,ALL RES AC RELAY 1,AIR CONDITIONER,,1,01:23:45:67:89:ab,5485,,44.986656,-93.258133

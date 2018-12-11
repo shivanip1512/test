@@ -67,6 +67,12 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             && StringUtils.isNumeric(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])) {
             dto.setDeviceVendorUserId(Integer.valueOf((hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])));
         }
+        if (!StringUtils.isBlank(hwFields[ImportFields.IDX_LATITUDE])
+            && !StringUtils.isBlank(hwFields[ImportFields.IDX_LONGITUDE])) {
+            dto.setLatitude(Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]));
+            dto.setLongitude(Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]));
+        }
+
         return dto;
     }
 
@@ -143,6 +149,11 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])
             && StringUtils.isNumeric(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])) {
             dto.setDeviceVendorUserId(Integer.valueOf((hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])));
+        }
+
+        if(!StringUtils.isBlank(hwFields[ImportFields.IDX_LATITUDE]) && !StringUtils.isBlank(hwFields[ImportFields.IDX_LONGITUDE])){
+            dto.setLatitude(Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]));
+            dto.setLongitude(Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]));
         }
     }
     

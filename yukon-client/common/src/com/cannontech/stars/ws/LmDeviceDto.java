@@ -21,6 +21,8 @@ public class LmDeviceDto {
     private String serviceCompanyName;
     private String inventoryRoute;
     private Date fieldRemoveDate;
+    private Double latitude;
+    private Double longitude;
     private Throwable throwable;    
 
     public String getAccountNumber() {
@@ -103,6 +105,22 @@ public class LmDeviceDto {
         this.deviceVendorUserId = deviceVendorUserId;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("accountNumber", getAccountNumber());
@@ -114,6 +132,8 @@ public class LmDeviceDto {
         tsc.append("fieldRemoveDate", getFieldRemoveDate());
         tsc.append("macAddress", getMacAddress());
         tsc.append("deviceVendorUserId", getDeviceVendorUserId());
+        tsc.append("latitude", getLatitude());
+        tsc.append("longitude", getLongitude());
         return tsc.toString();
     }
 

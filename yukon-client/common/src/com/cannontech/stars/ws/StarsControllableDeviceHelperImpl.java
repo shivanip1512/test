@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.constants.YukonListEntry;
@@ -19,13 +20,18 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.ServiceCompanyDto;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.SerialNumberValidation;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
@@ -71,9 +77,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private EcobeeBuilder ecobeeBuilder;
     @Autowired private HoneywellBuilder honeywellBuilder;
+    @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
@@ -308,6 +317,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     RfnDevice device = new RfnDevice(deviceName, newDevice.getPaoIdentifier(), rfn);
                     rfnDeviceDao.updateDevice(device);
                     inventoryBaseDao.updateInventoryBaseDeviceId(lib.getInventoryID(), device.getPaoIdentifier().getPaoId());
+                    lib.setDeviceID(device.getPaoIdentifier().getPaoId());
                     dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
                     DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
                 } catch (BadTemplateDeviceCreationException e) {
@@ -338,6 +348,9 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 }
             }
         }
+
+        setLocationForHardware(ht, dto, lib);
+
         return lib;
     }
 
@@ -423,6 +436,9 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
             // call service to update device on the customer account
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
+
+            setLocationForHardware(hardwareType, dto, lib);
+
         } else {
             // add device to account
             lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator, hardwareType);
@@ -455,6 +471,13 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         // Remove device from the account
         starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
+
+        // Remove Latitude and Longitude for Two way LCR
+        HardwareType hardwareType = getHardwareType(dto, energyCompany);
+        if (hardwareType.isTwoWay() && liteInv.getDeviceID() > 0
+            && paoLocationDao.getLocation(liteInv.getDeviceID()) != null) {
+            paoLocationDao.delete(liteInv.getDeviceID());
+        }
     }
 
     @Override
@@ -462,6 +485,35 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         HardwareType hardwareType = getHardwareType(dto, energyCompany);
         return isOperationAllowedForHardware(hardwareType);
+    }
+
+    /* Method to set or update the latitude and longitude for the hardware */
+    private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
+        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0 && dto.getLatitude() != null
+            && dto.getLongitude() != null) {
+            DisplayablePao displayablePaoHardware =
+                paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
+
+            if (((dto.getLatitude() < -90.0) || (dto.getLatitude() > 90.0))) {
+                throw new ProcessingException(
+                    "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
+                        + displayablePaoHardware.getPaoIdentifier(),
+                    "invalidLatitude", "-90", "90", displayablePaoHardware.getPaoIdentifier());
+            } else if (((dto.getLongitude() < -180.0) || (dto.getLongitude() > 180.0))) {
+                throw new ProcessingException(
+                    "Valid Longitude (Must be between -180 and 180) not specified for device with paoId "
+                        + displayablePaoHardware.getPaoIdentifier(),
+                    "invalidLongitude", "-180", "180", displayablePaoHardware.getPaoIdentifier());
+            } else {
+                PaoLocation newLocation =
+                    new PaoLocation(displayablePaoHardware.getPaoIdentifier(), dto.getLatitude(), dto.getLongitude());
+                paoLocationDao.save(newLocation);
+            }
+        }
+        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0 && dto.getLatitude() == null
+            && dto.getLongitude() == null) {
+            paoLocationDao.delete(lib.getDeviceID());
+        }
     }
 
     private boolean isOperationAllowedForHardware(HardwareType hardwareType) {

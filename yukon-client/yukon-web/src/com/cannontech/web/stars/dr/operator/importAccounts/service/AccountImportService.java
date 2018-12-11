@@ -1387,6 +1387,12 @@ public class AccountImportService {
         if (colIdx[result.COL_DEVICE_LABEL] >= 0 && colIdx[result.COL_DEVICE_LABEL] < columns.length) {
             fields[ImportFields.IDX_DEVICE_LABEL] = columns[ colIdx[result.COL_DEVICE_LABEL] ];
         }
+        if (colIdx[result.COL_LATITUDE] >= 0 && colIdx[result.COL_LATITUDE] < columns.length) {
+            fields[ImportFields.IDX_LATITUDE] = columns[ colIdx[result.COL_LATITUDE] ];
+        }
+        if (colIdx[result.COL_LONGITUDE] >= 0 && colIdx[result.COL_LONGITUDE] < columns.length) {
+            fields[ImportFields.IDX_LONGITUDE] = columns[ colIdx[result.COL_LONGITUDE] ];
+        }
     }
     
     private void setApplianceFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {

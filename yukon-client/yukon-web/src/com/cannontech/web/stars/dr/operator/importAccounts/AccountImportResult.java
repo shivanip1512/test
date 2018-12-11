@@ -71,7 +71,9 @@ public class AccountImportResult implements Completable {
         "MAC_ADDRESS",
         "DEVICE_VENDOR_USER_ID",
         "OPTION_PARAMS",
-        "DEVICE_LABEL"
+        "DEVICE_LABEL",
+        "LATITUDE",
+        "LONGITUDE"
     };
     
     // Column indices of the generic customer info file
@@ -119,6 +121,8 @@ public class AccountImportResult implements Completable {
     public final int COL_DEVICE_VENDOR_USER_ID = 13;
     public final int COL_OPTION_PARAMS = 14;
     public final int COL_DEVICE_LABEL = 15;
+    public final int COL_LATITUDE = 16;
+    public final int COL_LONGITUDE = 17;
     
     
     public final String UNENROLL_CASE = "UNENROLL";

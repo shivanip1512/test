@@ -212,6 +212,8 @@
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.MAC_ADDRESS">MAC Address of the hardware. Required for Honeywell Wi-Fi and ZigBee only, otherwise not used.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.DEVICE_VENDOR_USER_ID">User Id of the hardware's system vendor. Required for Honeywell Wi-Fi only, otherwise not used.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.OPTION_PARAMS">Optional parameter for special import functions.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.LATITUDE">The device's latitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.LONGITUDE">The device's longitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
     
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.a.label">a.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.a.text">These field are required to insert, update, or remove a load control device in STARS.</entry>
