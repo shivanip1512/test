@@ -262,11 +262,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                                   enrollmentHelper.getLoadGroupName());
         }
         if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
-            if(enrollmentHelper.getProgramName() == null) {
-                //thermostat is associated with account but is not enrolled
-                //do not log the unenrollment
-                return;
-            }
             accountEventLogService.deviceUnenrolled(user, enrollmentHelper.getAccountNumber(),
                                                     enrollmentHelper.getSerialNumber(),
                                                     enrollmentHelper.getProgramName(),
