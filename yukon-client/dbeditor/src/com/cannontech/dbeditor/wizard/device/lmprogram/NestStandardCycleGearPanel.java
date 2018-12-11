@@ -49,6 +49,7 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 helpPreparationButton.setFont(new Font("dialog", 0, 12));
                 helpPreparationButton.setAlignmentX(LEFT_ALIGNMENT);
                 helpPreparationButton.setMinimumSize(new Dimension(20, 20));
+                helpPreparationButton.setEnabled(false);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -68,6 +69,7 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 helpPeakButton.setFont(new Font("dialog", 0, 12));
                 helpPeakButton.setAlignmentX(LEFT_ALIGNMENT);
                 helpPeakButton.setMinimumSize(new Dimension(20, 20));
+                helpPeakButton.setEnabled(false);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -87,6 +89,7 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 helpPostButton.setFont(new Font("dialog", 0, 12));
                 helpPostButton.setAlignmentX(LEFT_ALIGNMENT);
                 helpPostButton.setMinimumSize(new Dimension(20, 20));
+                helpPostButton.setEnabled(false);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -160,9 +163,7 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 ivjJComboBoxPrepLoadShape.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
                 ivjJComboBoxPrepLoadShape.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
                 ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_STANDARD.getDisplayText());
-                ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_RAMPING.getDisplayText());
-                ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_NONE.getDisplayText());
-                ivjJComboBoxPrepLoadShape.addItem(PrepLoadShape.PREP_UNSPECIFIED.getDisplayText());
+                ivjJComboBoxPrepLoadShape.setEnabled(false);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -178,10 +179,8 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 ivjJComboBoxPeakLoadShape.setPreferredSize(new java.awt.Dimension(50, 23));
                 ivjJComboBoxPeakLoadShape.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
                 ivjJComboBoxPeakLoadShape.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-                ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_UNIFORM.getDisplayText());
                 ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_STANDARD.getDisplayText());
-                ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_SYMMETRIC.getDisplayText());
-                ivjJComboBoxPeakLoadShape.addItem(PeakLoadShape.PEAK_UNSPECIFIED.getDisplayText());
+                ivjJComboBoxPeakLoadShape.setEnabled(false);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -198,8 +197,7 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 ivjJComboBoxPostLoadShape.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
                 ivjJComboBoxPostLoadShape.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
                 ivjJComboBoxPostLoadShape.addItem(PostLoadShape.POST_STANDARD.getDisplayText());
-                ivjJComboBoxPostLoadShape.addItem(PostLoadShape.POST_RAMPING.getDisplayText());
-                ivjJComboBoxPostLoadShape.addItem(PostLoadShape.POST_UNSPECIFIED.getDisplayText());
+                ivjJComboBoxPostLoadShape.setEnabled(false);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
