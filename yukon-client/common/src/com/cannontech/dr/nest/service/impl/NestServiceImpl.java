@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
+import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,15 @@ public class NestServiceImpl implements NestService {
     
     @Override
     public String createDurationStr(Date startTime, Date stopTime) {
-        return "YUK-19143";
+        //A duration in seconds with up to nine fractional digits, terminated by 's'. Example: "3.5s"
+        //Duration
+        //A Duration represents a signed, fixed-length span of time represented as a count of seconds and fractions of 
+        //seconds at nanosecond resolution. It is independent of any calendar and concepts like "day" or "month". 
+        //It is related to Timestamp in that the difference between two Timestamp values is a Duration and it can be added or subtracted from a Timestamp. 
+        //Range is approximately +-10,000 years.
+
+        String seconds = Seconds.secondsBetween(new DateTime(startTime), new DateTime(stopTime)).toString();
+        return seconds + "s";
     }
 
     //UNIT TEST
