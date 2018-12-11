@@ -521,7 +521,7 @@
 
     <!-- Scheduled Data File Import Job Definition -->
     <bean id="scheduledDataImportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
-    <qualifier value="scheduledDataImport"/>
+        <qualifier value="scheduledDataImport"/>
         <property name="taskName">
             <idref bean="scheduledDataImportTask"/>
         </property>
