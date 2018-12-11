@@ -11,7 +11,7 @@ public class ScheduledDataImport {
     private String importPath;
     private String errorFileOutputPath;
     private String cronString;
-    private ImportType importType;
+    private ScheduledImportType importType;
     private Integer jobId;
     private String scheduleDescription;
     private JobState jobState;
@@ -64,11 +64,11 @@ public class ScheduledDataImport {
         this.scheduleDescription = scheduleDescription;
     }
 
-    public ImportType getImportType() {
+    public ScheduledImportType getImportType() {
         return importType;
     }
 
-    public void setImportType(ImportType importType) {
+    public void setImportType(ScheduledImportType importType) {
         this.importType = importType;
     }
 

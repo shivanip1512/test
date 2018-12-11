@@ -7,13 +7,13 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
  * This enum defines the type of schedule data import type.
  *
  */
-public enum ImportType implements DisplayableEnum, DatabaseRepresentationSource {
+public enum ScheduledImportType implements DisplayableEnum, DatabaseRepresentationSource {
 
     ASSET_IMPORT("AssetImport");
 
     private String importType;
 
-    private ImportType(String importType) {
+    private ScheduledImportType(String importType) {
         this.importType = importType;
     }
 
@@ -31,8 +31,8 @@ public enum ImportType implements DisplayableEnum, DatabaseRepresentationSource 
         return getImportType();
     }
 
-    public static ImportType fromName(String type) {
-        for (ImportType importType : values()) {
+    public static ScheduledImportType fromName(String type) {
+        for (ScheduledImportType importType : values()) {
             if (importType.getImportType().equalsIgnoreCase(type)) {
                 return importType;
             }

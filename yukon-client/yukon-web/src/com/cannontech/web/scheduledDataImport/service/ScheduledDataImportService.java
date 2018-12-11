@@ -20,14 +20,14 @@ public interface ScheduledDataImportService {
      * Schedule a new data import job with parameters defined inside ScheduledDataImport and
      * return an YukonJob object.
      */
-    YukonJob scheduleDataImport(ScheduledDataImport data, YukonUserContext userContext, HttpServletRequest request);
+    YukonJob scheduleDataImport(ScheduledDataImport data, YukonUserContext userContext);
 
     /**
      * Update the scheduleDataImport job with the specified jobId, using the specified ScheduledDataImport
      * object
      * and return an YukonJob object.
      */
-    YukonJob updateDataImport(ScheduledDataImport data, YukonUserContext userContext, HttpServletRequest request);
+    YukonJob updateDataImport(ScheduledDataImport data, YukonUserContext userContext);
 
     /**
      * Retrieve the scheduled data import job with the specified jobId.

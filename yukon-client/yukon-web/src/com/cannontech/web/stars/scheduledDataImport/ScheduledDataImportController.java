@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.scheduledFileImport.ImportType;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.SimpleValidator;
@@ -87,7 +87,7 @@ public class ScheduledDataImportController {
         }
         YukonJob savedJob = null;
         if (scheduledImportData.getJobId() == null) {
-            savedJob = scheduledDataImportService.scheduleDataImport(scheduledImportData, userContext, request);
+            savedJob = scheduledDataImportService.scheduleDataImport(scheduledImportData, userContext);
         } else {
             JobState currentJobState = scheduledDataImportService.getJobState(scheduledImportData.getJobId());
             if (currentJobState == JobState.DELETED) {
@@ -97,7 +97,7 @@ public class ScheduledDataImportController {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "editRunningJob.error"));
                 return "redirect:/stars/scheduledDataImport/" + scheduledImportData.getJobId() + "/view";
             }
-            savedJob = scheduledDataImportService.updateDataImport(scheduledImportData, userContext, request);
+            savedJob = scheduledDataImportService.updateDataImport(scheduledImportData, userContext);
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", scheduledImportData.getScheduleName()));
         return "redirect:/stars/scheduledDataImport/" + savedJob.getId() + "/view";
@@ -164,7 +164,7 @@ public class ScheduledDataImportController {
             cronExpressionTagService.parse(scheduledDataImport.getCronString(), userContext);
         model.addAttribute("cronExpressionTagState", cronExpressionTagState);
         
-        scheduledDataImport.setImportType(ImportType.ASSET_IMPORT);
+        scheduledDataImport.setImportType(ScheduledImportType.ASSET_IMPORT);
         model.addAttribute("scheduledImportData", scheduledDataImport);
     }
 

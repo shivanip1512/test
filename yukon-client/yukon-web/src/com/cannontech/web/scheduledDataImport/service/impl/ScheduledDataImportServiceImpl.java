@@ -18,7 +18,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.scheduledFileImport.ImportType;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -75,8 +75,7 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportList.";
 
     @Override
-    public YukonJob scheduleDataImport(ScheduledDataImport data, YukonUserContext userContext,
-            HttpServletRequest request) {
+    public YukonJob scheduleDataImport(ScheduledDataImport data, YukonUserContext userContext) {
         log.info("Scheduling Data Import job. name=" + data.getScheduleName() + " importType=" + data.getImportType());
         ScheduledDataImportTask task = buildTask(scheduledDataImportJobDefinition, data);
         YukonJob job =
@@ -87,8 +86,7 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     }
 
     @Override
-    public YukonJob updateDataImport(ScheduledDataImport data, YukonUserContext userContext,
-            HttpServletRequest request) {
+    public YukonJob updateDataImport(ScheduledDataImport data, YukonUserContext userContext) {
 
         log.info("Replacing Data Import job. existingJobId=" + data.getJobId() + " name=" + data.getScheduleName()
             + " importType=" + data.getImportType().getImportType());
@@ -148,7 +146,7 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
         scheduledDataImport.setCronString(job.getCronString());
         scheduledDataImport.setErrorFileOutputPath(task.getErrorFileOutputPath());
         scheduledDataImport.setScheduleDescription(getScheduleDescription(job));
-        scheduledDataImport.setImportType(ImportType.fromName(task.getImportType()));
+        scheduledDataImport.setImportType(ScheduledImportType.fromName(task.getImportType()));
         scheduledDataImport.setJobState(getJobState(job.getId()));
         return scheduledDataImport;
     }
