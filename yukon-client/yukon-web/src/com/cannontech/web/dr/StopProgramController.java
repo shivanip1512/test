@@ -328,14 +328,9 @@ public class StopProgramController extends ProgramControllerBase {
                     && nestService.isEnabledNestProgramWithEnabledGroup(programStopInfo.getProgramId())) {
                     backingBean.setStopDate(stopDate);
                     NestStopEventResult result = nestService.stopControlForProgram(programStopInfo.getProgramId());
-                    // Nest program returned an error, we are going to skip this program
-                    // Do we need to write this to some event log? If so which one?
-                    if (!result.isStopPossible()) {
-                        flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.notPossible"));
-                        return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
-                    } else if (!result.isSuccess()) {
-                        flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getNestResponse()));
-                        return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
+                    if (!result.isSuccess()) {
+                        //Nest returned error
+                        continue;
                     }
                 }
                 if (backingBean.isStopNow() && stopOffset == null) {

@@ -18,6 +18,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -199,6 +200,7 @@ public class NestDaoImpl implements NestDao {
             params.addValue("CancelRequestTime", event.getCancelRequestTime());
             params.addValue("CancelResponse", event.getCancelResponse());
             params.addValue("CancelOrStop", event.getCancelOrStop());
+            params.addValue("Success", event.getSuccess());
             updateCreateSql.append("WHERE NestControlEventId").eq(event.getId());
         } catch (EmptyResultDataAccessException e) {
             SqlParameterSink params = updateCreateSql.insertInto("LMNestControlEvent");
@@ -215,17 +217,18 @@ public class NestDaoImpl implements NestDao {
     @Override
     public NestControlEvent getCancelableEvent(String group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT NestControlEventId, NestGroup, NestKey, StartTime, StopTime, CancelOrStop, CancelResponse, CancelRequestTime");
+        sql.append("SELECT NestControlEventId, NestGroup, NestKey, StartTime, StopTime, CancelOrStop, Success, CancelResponse, CancelRequestTime");
         sql.append("FROM LMNestControlEvent");
         sql.append("WHERE NestGroup").eq(group);
         //still scheduled or running
         sql.append("AND StopTime").gt(Instant.now());
-        //was not canceled
-        sql.append("AND CancelOrStop IS NULL");
+        //cancellation didn't succeed or was not attempted
+        sql.append("AND (Success IS NULL OR Success").neq_k(YNBoolean.NO).append(")");
         sql.append("AND NestControlEventId = (SELECT MAX(NestControlEventId) FROM LMNestControlEvent");
         sql.append("        WHERE NestGroup").eq(group);
         sql.append("        AND StopTime").gt(Instant.now());
-        sql.append("        AND CancelOrStop IS NULL)");
+        sql.append("        AND (Success IS NULL OR Success").neq_k(YNBoolean.NO);
+        sql.append("        ))");
         try {
             return jdbcTemplate.queryForObject(sql, controlEventRowMapper);
         } catch (EmptyResultDataAccessException e) {
@@ -245,6 +248,7 @@ public class NestDaoImpl implements NestDao {
             row.setStopTime(rs.getInstant("StopTime"));
             row.setKey(rs.getString("NestKey"));
             row.setCancelResponse(rs.getString("CancelResponse"));
+            row.setSuccess(rs.getEnum("Success", YNBoolean.class));
             return row;
         }
     };

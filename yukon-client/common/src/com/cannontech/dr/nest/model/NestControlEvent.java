@@ -4,6 +4,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
+import com.cannontech.database.YNBoolean;
+
 public class NestControlEvent {
     private int id;
     private String key;
@@ -13,6 +15,8 @@ public class NestControlEvent {
     private Instant cancelRequestTime;
     private String cancelResponse;
     private String cancelOrStop;
+    private YNBoolean isSuccess;
+   
     public int getId() {
         return id;
     }
@@ -55,16 +59,22 @@ public class NestControlEvent {
     public void setCancelOrStop(String cancelOrStop) {
         this.cancelOrStop = cancelOrStop;
     }
-    
     public String getGroup() {
         return group;
     }
     public void setGroup(String group) {
         this.group = group;
     }
+    public YNBoolean getSuccess() {
+        return isSuccess;
+    }
+    public void setSuccess(YNBoolean isSuccess) {
+        this.isSuccess = isSuccess;
+    }
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
             + System.getProperty("line.separator");
     }
+
 }

@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YukonHttpProxy;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.model.NestControlEvent;
 import com.cannontech.dr.nest.model.NestException;
@@ -77,7 +78,6 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     public Optional<SchedulabilityError> sendEvent(ControlEvent event, RushHourEventType type) {
         log.debug("Sending {} event {}", type, event);
         String requestUrl = constructNestUrl(NestURL.CREATE_EVENT);
-        log.debug("Request url {}", requestUrl);
         String response = getNestResponse(requestUrl, event, type);
         try {
             EventId nestId = JsonUtils.fromJson(response, EventId.class);
@@ -125,62 +125,64 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     
     @Override
     public Optional<String> cancelEvent(NestControlEvent event) {
-        //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel
+        // POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel
         log.debug("Canceling event {}", event);
-        String requestUrl = constructNestUrl(NestURL.STOP_EVENT);
-        log.debug("Request url {}", requestUrl);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", encodeAuthorization());
-        
-        Map<String, String> urlParams = new HashMap<>();
-        urlParams.put("partnerId", partnerId);
-        urlParams.put("eventId", event.getKey());
-        
-        HttpEntity<?> entity = new HttpEntity<>(headers);
         try {
-            event.setCancelOrStop("C");
-            event.setCancelRequestTime(Instant.now());
-            nestDao.saveControlEvent(event);
-            HttpEntity<String> response =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, urlParams);
-            event.setCancelResponse(response.getBody());
-            nestDao.saveControlEvent(event);
+            HttpEntity<String> response = sendStopOrCancelRequest(event, NestURL.CANCEL_EVENT);
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
         }
     }
-    
+
     @Override
     public Optional<String> stopEvent(NestControlEvent event) {
-        //POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop
-        log.debug("Stopping event {}", event);    
-        String requestUrl = constructNestUrl(NestURL.STOP_EVENT);
-        log.debug("Request url {}", requestUrl);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", encodeAuthorization());
-        
-        Map<String, String> urlParams = new HashMap<>();
-        urlParams.put("partnerId", partnerId);
-        urlParams.put("eventId", event.getKey());
-        
-        HttpEntity<?> entity = new HttpEntity<>(headers);
+        // POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop
+        log.debug("Stopping event {}", event);
         try {
-            event.setCancelOrStop("S");
-            event.setCancelRequestTime(Instant.now());
-            nestDao.saveControlEvent(event);
-            HttpEntity<String> response =
-                restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, urlParams);
-            event.setCancelResponse(response.getBody());
-            nestDao.saveControlEvent(event);
+            HttpEntity<String> response = sendStopOrCancelRequest(event, NestURL.STOP_EVENT);
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
         }
     }
-    
+
+    /**
+     * Sends stop/cancel event request to Nest, persists results in the database
+     */
+    private HttpEntity<String> sendStopOrCancelRequest(NestControlEvent event, NestURL url) {
+        // Saving the cancellation/stop request initiation to database
+        event.setCancelOrStop(url == NestURL.CANCEL_EVENT ? "C" : "S");
+        event.setCancelRequestTime(Instant.now());
+        nestDao.saveControlEvent(event);
+
+        // Create URL for cancel or stop
+        String requestUrl = constructNestUrl(url);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", encodeAuthorization());
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("partnerId", partnerId);
+        urlParams.put("eventId", event.getKey());
+
+        HttpEntity<String> response =
+            restTemplate.exchange(requestUrl, HttpMethod.POST, entity, String.class, urlParams);
+        log.debug("Response from Nest {}", response.getBody());
+        // We are not sure what response we will get from nest
+        if (response.getBody() == null) {
+            event.setSuccess(YNBoolean.YES);
+        } else {
+            event.setSuccess(YNBoolean.NO);
+            event.setCancelResponse(response.getBody());
+        }
+        // Persisting response to the database;
+        nestDao.saveControlEvent(event);
+        return response;
+    }
+        
     @Override 
     public String constructNestUrl(NestURL url) {
         return constructNestUrl(NestURL.CURRENT_VERSION, url);        

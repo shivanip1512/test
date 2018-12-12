@@ -45,7 +45,6 @@ import com.cannontech.dr.nest.model.v3.ProgramType;
 import com.cannontech.dr.nest.model.v3.RetrieveCustomers;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.nest.service.NestSimulatorService;
-import com.cannontech.dr.nest.service.impl.NestCommunicationServiceImpl;
 import com.cannontech.dr.nest.service.impl.NestSimulatorServiceImpl;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -56,7 +55,7 @@ import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class NestTestAPIController {
     
-    private static final Logger log = YukonLogManager.getLogger(NestCommunicationServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(NestTestAPIController.class);
     @Autowired NestSimulatorService nestSimService;
     @Autowired private NestSimulatorConfiguration nestSimulatorConfiguration;
  
@@ -114,7 +113,7 @@ public class NestTestAPIController {
     @RequestMapping(value = "/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel", method = RequestMethod.POST)
     public @ResponseBody String cancel(@PathVariable("partnerId") String partnerId, @PathVariable("eventId") String eventId,
             HttpServletRequest request, HttpServletResponse response) {
-        log.debug("Canceled control partnerId {} eventId {}", eventId);
+        log.debug("Canceled control partnerId {} eventId {}", partnerId, eventId);
         String cancelError = nestSimulatorConfiguration.getCancelError();
         if (cancelError != null) {
             return cancelError;
