@@ -64,29 +64,14 @@ public class GraphDataSeries extends DBPersistent {
     }
     
     public static void deleteAllGraphDataSeries(Integer graphDefinitionID) {
-        deleteAllGraphDataSeries( graphDefinitionID, "yukon" );
-    }
-    
-    public static void deleteAllGraphDataSeries(Integer graphDefinitionID, String databaseAlias) {
-
-        String sqlString = "DELETE FROM GraphDataSeries WHERE GraphDefinitionID= " + graphDefinitionID.toString();
-
-        SqlStatement sql = new SqlStatement(sqlString, databaseAlias);
-
-        try {
-            sql.execute();
-        } catch (CommandExecutionException e) {
-            CTILogger.error(e.getMessage(), e);
-        }
-
-        return;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM GraphDataSeries WHERE GraphDefinitionID").eq(graphDefinitionID);
+        
+        YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
+        jdbcTemplate.update(sql);
     }
     
     public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID) {
-        return getAllGraphDataSeries(graphDefinitionID, CtiUtilities.getDatabaseAlias());
-    }
-    
-    public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID, String databaseAlias) {
         GraphDataSeries[] returnVal = null;
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS,");

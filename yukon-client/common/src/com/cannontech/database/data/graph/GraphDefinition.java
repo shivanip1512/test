@@ -116,7 +116,7 @@ public void retrieve() throws java.sql.SQLException
 	getGraphDefinition().setDbConnection(getDbConnection());
 	getGraphDefinition().retrieve();
 
-	Object[] gds = GraphDataSeries.getAllGraphDataSeries( getGraphDefinition().getGraphDefinitionID(), CtiUtilities.getDatabaseAlias() );
+	Object[] gds = GraphDataSeries.getAllGraphDataSeries( getGraphDefinition().getGraphDefinitionID());
 
 	for( int i = 0; i < gds.length; i++ )
 		getGraphDataSeries().add( gds[i] );
