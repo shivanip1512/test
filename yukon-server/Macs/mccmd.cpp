@@ -1016,16 +1016,25 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, cons
                 infoMsg += string (newFileName);
                 infoMsg += string (" is locked by another process");
 
-                CtiSignalMsg* msg = new CtiSignalMsg( SYS_PID_MACS,
-                                                      0,
-                                                      logMsg,
-                                                      infoMsg,
-                                                      7,
-                                                      SignalEvent,
-                                                      "macs");
+                if( VanGoghConnection )
+                {
+                    auto msg = std::make_unique<CtiSignalMsg>(
+                        SYS_PID_MACS,
+                        0,
+                        logMsg,
+                        infoMsg,
+                        7,
+                        SignalEvent,
+                        "macs");
 
-                // we wait this to keep running even if it fails
-                VanGoghConnection->WriteConnQue(msg, CALLSITE);
+                    // we wait this to keep running even if it fails
+                    VanGoghConnection->WriteConnQue(std::move(msg), CALLSITE);
+                }
+                else
+                {
+                    CTILOG_WARN(dout, "Could not send signal to Dispatch - VanGoghConnection is null\n" << logMsg << "- " << infoMsg);
+                }
+
                 decodeResult = ClientErrors::None;
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL)
@@ -1039,16 +1048,24 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, cons
                 infoMsg += file;
                 infoMsg += string (" is locked by another process");
 
-                CtiSignalMsg* msg = new CtiSignalMsg( SYS_PID_MACS,
-                                                      0,
-                                                      logMsg,
-                                                      infoMsg,
-                                                      7,
-                                                      SignalEvent,
-                                                      "macs");
+                if( VanGoghConnection )
+                {
+                    auto msg = std::make_unique<CtiSignalMsg>(
+                        SYS_PID_MACS,
+                        0,
+                        logMsg,
+                        infoMsg,
+                        7,
+                        SignalEvent,
+                        "macs");
 
-                // we wait this to keep running even if it fails
-                VanGoghConnection->WriteConnQue(msg, CALLSITE);
+                    // we wait this to keep running even if it fails
+                    VanGoghConnection->WriteConnQue(std::move(msg), CALLSITE);
+                }
+                else
+                {
+                    CTILOG_WARN(dout, "Could not send signal to Dispatch - VanGoghConnection is null\n" << logMsg << "- " << infoMsg);
+                }
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_OPEN_FILE)
             {
@@ -1238,15 +1255,26 @@ int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, const char* ar
     message = argv[index++];
     info = argv[index++];
 
-
-    CtiSignalMsg* msg = new CtiSignalMsg( SYS_PID_MACS,
-                                          0,
-                                          message,
-                                          info,
-                                          classification,
-                                          SignalEvent,
-                                          user);
-    VanGoghConnection->WriteConnQue(msg, CALLSITE);
+    if( VanGoghConnection )
+    {
+        auto msg = std::make_unique<CtiSignalMsg>(
+            SYS_PID_MACS,
+            0,
+            message,
+            info,
+            classification,
+            SignalEvent,
+            user);
+        VanGoghConnection->WriteConnQue(std::move(msg), CALLSITE);
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Could not log event - VanGoghConnection is null" << Cti::FormattedList::of(
+            "Classification", classification,
+            "User", user,
+            "Message", message,
+            "Info", info));
+    }
 
     return TCL_OK;
 }
@@ -1291,20 +1319,28 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, const 
         return TCL_ERROR;
     }
 
-    CtiNotifEmailMsg* msg = new CtiNotifEmailMsg();
+    auto msg = std::make_unique<CtiNotifEmailMsg>();
     msg->setNotifGroupId(id);
     msg->setSubject(argv[2]);
     msg->setBody(argv[3]);
 
-    Cti::FormattedList loglist;
-    loglist.add("notification group id") << msg->getNotifGroupId();
-    loglist.add("subject")               << msg->getSubject();
-    loglist.add("text")                  << msg->getBody();
+    Cti::FormattedList logList;
+    logList.add("notification group id") << msg->getNotifGroupId();
+    logList.add("subject")               << msg->getSubject();
+    logList.add("text")                  << msg->getBody();
 
-    CTILOG_INFO(dout, "Sending email notification to the notification server"<<
-            loglist);
+    if( NotificationConnection )
+    {
+        CTILOG_INFO(dout, "Sending email notification to the notification server" 
+            << logList);
 
-    NotificationConnection->WriteConnQue(msg, CALLSITE);
+        NotificationConnection->WriteConnQue(std::move(msg), CALLSITE);
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Could not send email notification - NotificationConnection is null"
+            << logList);
+    }
 
     return TCL_OK;
 }
@@ -2182,11 +2218,18 @@ int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, const char
     paoid = atoi( argv[index++] );
     user = argv[index++];
 
-    CtiDBChangeMsg *dbChange = new CtiDBChangeMsg(paoid, ChangePAODb, "Schedule", "Script", ChangeTypeAdd);
-    dbChange->setUser(user);
-    dbChange->setSource(app);
+    if( VanGoghConnection )
+    {
+        auto dbChange = std::make_unique<CtiDBChangeMsg>(paoid, ChangePAODb, "Schedule", "Script", ChangeTypeAdd);
+        dbChange->setUser(user);
+        dbChange->setSource(app);
 
-    VanGoghConnection->WriteConnQue(dbChange, CALLSITE);
+        VanGoghConnection->WriteConnQue(std::move(dbChange), CALLSITE);
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Could not send DBChange for pao ID " << paoid << " - VanGoghConnection is null");
+    }
 
     return TCL_OK;
 }
