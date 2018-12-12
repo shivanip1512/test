@@ -1666,7 +1666,7 @@ bool CtiCCCapBank::checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges,
                 long    stationID, areaID, specialAreaID;
 
                 CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+                CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                 if ( CtiCCFeederPtr feeder = store->findFeederByPAObjectID( getParentId() ) )
                 {

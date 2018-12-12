@@ -163,7 +163,7 @@ void CtiCCArea::setReEnableAreaFlag(const bool flag)
 void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     for ( const long paoId : getSubstationIds() )
     {
@@ -180,7 +180,7 @@ void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capM
 void CtiCCArea::checkAndUpdateChildVoltReductionFlags()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     bool isChildSubstationReducing = false;
 

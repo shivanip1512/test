@@ -186,7 +186,7 @@ void CtiCCService::Run()
 
         {
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-            CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+            CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
             if ( ! store->testDatabaseConnectivity() )
             {

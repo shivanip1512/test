@@ -312,7 +312,7 @@ void CtiCCSubstation::addCCSubId(const long busId)
 void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     for ( const long busId : getCCSubIds() )
     {
@@ -336,7 +336,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
 void CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     setRecentlyControlledFlag(
         std::any_of( _subBusIds.begin(), _subBusIds.end(),
@@ -353,7 +353,7 @@ void CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
 void CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     setChildVoltReductionFlag(
         std::any_of( _subBusIds.begin(), _subBusIds.end(),
@@ -374,7 +374,7 @@ void CtiCCSubstation::getPowerFactorData( double & watts, double & vars, double 
     estimatedVars = 0.0;
 
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     for ( const long busID : getCCSubIds() )
     {
@@ -419,7 +419,7 @@ void CtiCCSubstation::handleSpecializedPointData( const CtiPointDataMsg & messag
 
             {
                 CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+                CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                 if ( CtiCCAreaPtr parentArea = store->findAreaByPAObjectID( getParentId() ) )
                 {

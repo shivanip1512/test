@@ -14,8 +14,7 @@ void DispatchPointRegistry::updateRegistry( DispatchConnectionPtr dispatchConnec
 {
     using std::experimental::fundamentals_v2::erase_if;
 
-    CtiLockGuard<CtiMutex> guard( _mutex );
-
+    CTILOCKGUARD( CtiMutex, guard, _mutex );
 
     if ( dispatchConnection && dispatchConnection->valid() )     // We have a good dispatch connection
     {

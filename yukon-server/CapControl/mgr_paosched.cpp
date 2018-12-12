@@ -146,7 +146,7 @@ void CtiPAOScheduleManager::doResetThr()
         while (true)
         {
             {
-                CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+                CTILOCKGUARD( CtiCriticalSection, guard, _mutex );
 
                 CtiTime currentTime = CtiTime();
 
@@ -185,7 +185,7 @@ void CtiPAOScheduleManager::mainLoop()
         ThreadStatusKeeper threadStatus("CapControl mgrPAOSchedule mainLoop");
 
         {
-            CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+            CTILOCKGUARD( CtiCriticalSection, guard, _mutex );
             refreshSchedulesFromDB();
             refreshEventsFromDB();
         }
@@ -197,7 +197,7 @@ void CtiPAOScheduleManager::mainLoop()
         while(true)
         {
             {
-                CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+                CTILOCKGUARD( CtiCriticalSection, guard, _mutex );
                 currentTime= CtiTime();
                 mySchedules.clear();
 
@@ -609,7 +609,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
         }
 
         {
-            CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+            CTILOCKGUARD( CtiCriticalSection, guard, _mutex );
 
             std::swap( _schedules, tempSchedules );     // swap out the old for the new
         }
@@ -666,7 +666,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
         }
 
         {
-            CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+            CTILOCKGUARD( CtiCriticalSection, guard, _mutex );
 
             std::swap( _events, tempEvents );           // swap out the old for the new
         }
@@ -684,7 +684,7 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+        CTILOCKGUARD( CtiCriticalSection, guard, _mutex );
 
         if ( !schedules.empty() )
         {

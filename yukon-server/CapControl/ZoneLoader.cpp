@@ -271,7 +271,7 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
             try
             {
                 CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+                CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                 VoltageRegulatorManager::SharedPtr  regulator
                     = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );

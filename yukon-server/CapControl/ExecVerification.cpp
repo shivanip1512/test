@@ -99,7 +99,7 @@ VerificationExecutor::VerificationAction VerificationExecutor::convertVerificati
 void VerificationExecutor::startVerification()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long busID = _deviceId;
     CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(busID);
@@ -312,7 +312,7 @@ void VerificationExecutor::startVerification()
 void VerificationExecutor::stopVerification(bool forceStopImmediately)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CapControlType type = store->determineTypeById(_deviceId);
     CtiCCSubstationBus_vec buses = store->getAllSubBusesByIdAndType(_deviceId, type);

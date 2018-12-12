@@ -131,7 +131,8 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 
     try
     {
-        CtiLockGuard<CtiCriticalSection> guard( _connmutex );
+        CTILOCKGUARD( CtiCriticalSection, guard, _connmutex );
+
         for( int i = 0; i < _connections.size(); i++ )
         {
             try
@@ -230,7 +231,7 @@ void CtiCCClientListener::_listen()
                 new_conn->start();
 
                 {
-                    CtiLockGuard<CtiCriticalSection> guard( _connmutex );
+                    CTILOCKGUARD( CtiCriticalSection, guard, _connmutex );
                     _connections.push_back( new_conn.release() );
                 }
 
@@ -265,7 +266,7 @@ void CtiCCClientListener::_check()
     {
         try
         {
-            CtiLockGuard<CtiCriticalSection> guard( _connmutex );
+            CTILOCKGUARD( CtiCriticalSection, guard, _connmutex );
 
             CtiCCConnectionVec::iterator itr = _connections.begin();
             while( itr != _connections.end() )
@@ -306,7 +307,7 @@ void CtiCCClientListener::_check()
 
 void CtiCCClientListener::removeAllConnections()
 {
-    CtiLockGuard<CtiCriticalSection> guard( _connmutex );
+    CTILOCKGUARD( CtiCriticalSection, guard, _connmutex );
     _connections.clear();
 }
 

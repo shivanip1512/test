@@ -443,7 +443,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
 
                         {
                             CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-                            CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+                            CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                             store->getFeederParentInfo( this, specialAreaID, areaID, stationID );
                         }
@@ -3747,7 +3747,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                     strategy attached to the feeder.
             */
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-            CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+            CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
             if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( getParentId() ) )
             {
@@ -4067,7 +4067,7 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
                 strategy attached to the feeder.
         */
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+        CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
         if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( getParentId() ) )
         {
@@ -4170,7 +4170,7 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
                     strategy attached to the feeder.
             */
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-            CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+            CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
             if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( getParentId() ) )
             {

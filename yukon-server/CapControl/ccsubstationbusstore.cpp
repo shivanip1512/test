@@ -96,7 +96,8 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore(DynamicDumpFn dynamicDumpFn) :
     _zoneManager            ( make_unique<ZoneDBLoader>() ),
     _voltageRegulatorManager( make_unique<Cti::CapControl::VoltageRegulatorManager>( make_unique<VoltageRegulatorDBLoader>() ) )
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
+
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
     _ccCapBankStates = new CtiCCState_vec;
     _ccGeoAreas = new CtiCCArea_vec;
@@ -122,7 +123,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore(DynamicDumpFn dynamicDumpFn) :
 -----------------------------------------------------------------------------*/
 CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     shutdown();
 }
 
@@ -217,7 +218,7 @@ bool CtiCCSubstationBusStore::testDatabaseConnectivity() const
 */
 void CtiCCSubstationBusStore::processAnyDBChangesOrResets( const CtiTime & rightNow )
 {
-    CtiLockGuard<CtiCriticalSection>  guard( getMux() );
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if ( ! _isvalid && rightNow >= _lastdbreloadtime + 30 )
     {
@@ -260,7 +261,7 @@ void CtiCCSubstationBusStore::processAnyDBChangesOrResets( const CtiTime & right
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     return _ccSubstationBuses;
 }
@@ -272,7 +273,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses()
 ---------------------------------------------------------------------------*/
 CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     return _ccGeoAreas;
 }
@@ -284,7 +285,7 @@ CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas()
 ---------------------------------------------------------------------------*/
 CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     return _ccSpecialAreas;
 }
@@ -295,7 +296,7 @@ CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas()
 ---------------------------------------------------------------------------*/
 const CtiCCSubstation_vec& CtiCCSubstationBusStore::getCCSubstations()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     return _ccSubstations;
 }
@@ -308,7 +309,7 @@ const CtiCCSubstation_vec& CtiCCSubstationBusStore::getCCSubstations()
 ---------------------------------------------------------------------------*/
 CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     return _ccCapBankStates;
 }
@@ -1000,7 +1001,7 @@ void CtiCCSubstationBusStore::noOp()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::dumpAllDynamicDataImpl()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     /*{
         CTILOG_INFO(dout, "Store START dumpAllDynamicData");
@@ -1083,7 +1084,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicDataImpl()
 bool CtiCCSubstationBusStore::deleteCapControlMaps()
 {
     bool wasAlreadyRunning = false;
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     try
     {
         setStoreRecentlyReset(true);
@@ -1178,7 +1179,7 @@ void CtiCCSubstationBusStore::reset()
     try
     {
         {
-            CtiLockGuard<CtiCriticalSection>  guard(getMux());
+            CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
             {
                 CTILOG_INFO(dout, "Obtained connection to the database..." << " - Resetting substation buses from database...");            
             }
@@ -1459,7 +1460,7 @@ void CtiCCSubstationBusStore::reset()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     CTILOG_INFO(dout, "Checking AMFM system for updates...");
 
@@ -1563,7 +1564,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::handleAMFMChanges(Cti::RowReader& rdr)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     string       capacitor_id_string;
     long            circt_id_normal;
@@ -1745,7 +1746,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                                         string& cap_disable_type, string& inoperable_bad_order_equipnote,
                                                         string& open_tag_note, string& cap_change_type )
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     //long capacitor_id = atol(capacitor_id_string);
 
@@ -1940,7 +1941,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank, long feederid, long capswitchingorder)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     CtiCCCapBank_SVector& oldFeederCapBanks = oldFeeder->getCCCapBanks();
 
@@ -2050,7 +2051,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank, long capswitchingorder)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     long oldControlOrder = currentCapBank->getControlOrder();
 
@@ -2093,7 +2094,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(long feederid, long capid, string& enableddisabled, string& fixedswitched)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     bool found = false;
     if( _ccSubstationBuses->size() > 0 )
@@ -2158,7 +2159,7 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(long feederid, long capid, 
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(long feederid, string& fixedswitched, string& enableddisabled)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     bool found = false;
     if( _ccSubstationBuses->size() > 0 )
@@ -2214,7 +2215,7 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(long feederid, string& f
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::shutdown()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     dumpAllDynamicData();
     delete_container(*_ccSubstationBuses);
@@ -2281,7 +2282,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                 CTILOG_INFO(dout, "Controller refreshing OP STATS");
 
                 {
-                    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+                    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
                     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
                     CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
@@ -2644,7 +2645,7 @@ void CtiCCSubstationBusStore::setStrategyManager(std::unique_ptr<StrategyManager
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::isValid()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     return _isvalid;
 }
 
@@ -2655,7 +2656,7 @@ bool CtiCCSubstationBusStore::isValid()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setValid(bool valid)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     _isvalid = valid;
 }
 
@@ -2666,7 +2667,7 @@ void CtiCCSubstationBusStore::setValid(bool valid)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     return _reloadfromamfmsystemflag;
 }
 
@@ -2677,19 +2678,19 @@ bool CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setReloadFromAMFMSystemFlag(bool reload)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     _reloadfromamfmsystemflag = reload;
 }
 
 bool CtiCCSubstationBusStore::get2wayFlagUpdate()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     return _2wayFlagUpdate;
 }
 
 void CtiCCSubstationBusStore::set2wayFlagUpdate(bool flag)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     _2wayFlagUpdate = flag;
 }
 
@@ -2703,7 +2704,7 @@ void CtiCCSubstationBusStore::set2wayFlagUpdate(bool flag)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     for(int i=0;i<_ccSubstationBuses->size();i++)
     {
@@ -2934,7 +2935,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::resetDailyOperations()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     CtiMultiMsg* multiPointMsg = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multiPointMsg->getData();
 
@@ -3047,7 +3048,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     static const string updateSql = "update dynamicccsubstationbus set "
                                     "verificationflag = ? "
@@ -3095,7 +3096,7 @@ bool CtiCCSubstationBusStore::updateDisableFlag(unsigned int paoid, bool isDisab
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     bool updateSuccessful = updateDisableFlag(pao->getPaoId(), disableFlag);
 
@@ -3135,7 +3136,7 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     static const string updateSql = "update capbank set operationalstate = ? "
                                     " where deviceid = ?";
@@ -3168,7 +3169,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     static const string paobjectUpdateSql = "update yukonpaobject set paoname = ?, disableflag = ?, description = ? "
                                     " where capbank = ?";
@@ -3214,7 +3215,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     bool insertSuccessful = true;
 
     Cti::Database::DatabaseConnection   connection;
@@ -3261,7 +3262,7 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 
 bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     CtiTime currentDateTime = CtiTime();
     Cti::Database::DatabaseConnection   connection;
@@ -3395,7 +3396,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 {
 
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     try
     {
@@ -3515,9 +3516,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long strategyId)
 {
-
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
-
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     try
     {
@@ -3592,8 +3591,8 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyId)
 {
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
 {
         CtiTime currentDateTime;
@@ -3680,7 +3679,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                   CtiCCSubstation_vec *ccSubstations)
 try
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     {
         if ( substationId > 0 )
@@ -4281,7 +4280,7 @@ try
         }
     }
 
-    CtiLockGuard<CtiCriticalSection>  guard( getMux() );
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if ( areaId > 0 )
     {
@@ -4512,7 +4511,7 @@ try
         }
     }
 
-    CtiLockGuard<CtiCriticalSection>  guard( getMux() );
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     for ( auto idAreaPair : loadedAreas )
     {
@@ -4583,7 +4582,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
         }
     }
 
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
+
     try
     {
         if (subBusToUpdate != NULL)
@@ -6768,7 +6768,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(getMux());
+        CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
         {
             if ( _ccCapBankStates->size() > 0 )
             {
@@ -6886,7 +6886,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(getMux());
+        CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
         {
             const CtiTime fallbackTimeNow( CtiTime() - fallBackConstant ),
                           fallbackLastSendTime( lastSendTime - fallBackConstant );
@@ -6975,7 +6975,7 @@ void CtiCCSubstationBusStore::locateOrphans(PaoIdVector *orphanCaps, PaoIdVector
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(getMux());
+        CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
         {
         orphanFeeders->clear();
         PaoIdToFeederMap::iterator iter = paobject_feeder_map.begin();
@@ -7009,7 +7009,7 @@ bool CtiCCSubstationBusStore::isFeederOrphan(long feederId)
 {
    try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(getMux());
+       CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
         {
             for each(long orphanId in _orphanedFeeders)
             {
@@ -7028,7 +7028,7 @@ bool CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(getMux());
+        CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
         {
             for each (long orphanId in _orphanedCapBanks)
             {
@@ -7053,7 +7053,7 @@ void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(getMux());
+        CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
         _orphanedFeeders.erase(remove(_orphanedFeeders.begin(), _orphanedFeeders.end(), ccId), _orphanedFeeders.end());
         _orphanedCapBanks.erase(remove(_orphanedCapBanks.begin(), _orphanedCapBanks.end(), ccId), _orphanedCapBanks.end());
     }
@@ -8088,7 +8088,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(getMux());
+        CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
         {
 
             if (_reloadList.empty() && _2wayFlagUpdate)
@@ -8282,7 +8282,7 @@ void CtiCCSubstationBusStore::clearDBReloadList()
 
 void CtiCCSubstationBusStore::insertUnsolicitedCapBankList(CtiCCCapBankPtr x)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if (!list_contains(_unsolicitedCapBanks, x))
     {
@@ -8292,14 +8292,14 @@ void CtiCCSubstationBusStore::insertUnsolicitedCapBankList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     _unsolicitedCapBanks.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if (!_unsolicitedCapBanks.empty())
     {
@@ -8321,7 +8321,7 @@ void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
 
 void CtiCCSubstationBusStore::checkUnsolicitedList()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     CapBankList tempList = getUnsolicitedCapBankList();
     CapBankList::iterator listIter = tempList.begin();
@@ -8364,7 +8364,7 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
 
 void CtiCCSubstationBusStore::insertUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if (!list_contains(_unexpectedUnsolicited, x))
     {
@@ -8374,14 +8374,14 @@ void CtiCCSubstationBusStore::insertUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeFromUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     _unexpectedUnsolicited.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearUnexpectedUnsolicitedList()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if (!_unexpectedUnsolicited.empty())
     {
@@ -8402,7 +8402,7 @@ void CtiCCSubstationBusStore::clearUnexpectedUnsolicitedList()
 
 void CtiCCSubstationBusStore::checkUnexpectedUnsolicitedList()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     for (CapBankList::iterator listIter = _unexpectedUnsolicited.begin(); listIter != _unexpectedUnsolicited.end(); listIter++)
     {
@@ -8440,7 +8440,7 @@ void CtiCCSubstationBusStore::checkUnexpectedUnsolicitedList()
 
 void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if (!list_contains(_rejectedCapBanks, x))
     {
@@ -8450,14 +8450,14 @@ void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeCapbankFromRejectedCapBankList(CtiCCCapBankPtr x)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     _rejectedCapBanks.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearRejectedCapBankList()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     if (!_rejectedCapBanks.empty())
     {
@@ -8466,7 +8466,7 @@ void CtiCCSubstationBusStore::clearRejectedCapBankList()
 }
 void CtiCCSubstationBusStore::checkRejectedList()
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     CapBankList tempList = getRejectedControlCapBankList();
     CapBankList::iterator listIter = tempList.begin();
@@ -8897,7 +8897,7 @@ void CtiCCSubstationBusStore::resetAllConfirmationStats()
 
 void CtiCCSubstationBusStore::reCalculateAllStats( )
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
     {
         for ( auto currentSubstationBus : *_ccSubstationBuses )
         {
@@ -9688,7 +9688,7 @@ Cti::CapControl::ZoneManager & CtiCCSubstationBusStore::getZoneManager()
 
 bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     try
     {
@@ -9718,7 +9718,7 @@ Cti::CapControl::VoltageRegulatorManager *CtiCCSubstationBusStore::getVoltageReg
 
 bool CtiCCSubstationBusStore::reloadVoltageRegulatorFromDatabase(const long regulatorId)
 {
-    CtiLockGuard<CtiCriticalSection>  guard(getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
     try
     {

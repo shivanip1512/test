@@ -13,7 +13,7 @@ public:
     template<typename Container>
     void addPoints( const Container & collection )
     {
-        CtiLockGuard<CtiMutex> guard( _mutex );
+        CTILOCKGUARD( CtiMutex, guard, _mutex );
 
         for ( auto pointID : collection )
         {
@@ -24,7 +24,7 @@ public:
     template<typename Container>
     void removePoints( const Container & collection )
     {
-        CtiLockGuard<CtiMutex> guard( _mutex );
+        CTILOCKGUARD( CtiMutex, guard, _mutex );
 
         for ( auto pointID : collection )
         {

@@ -188,7 +188,7 @@ void CtiCCAreaBase::updatePowerFactorData()
             totalEstimatedVars = 0.0;
 
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     for ( long stationID : getSubstationIds() )
     {

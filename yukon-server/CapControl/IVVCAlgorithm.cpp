@@ -487,7 +487,7 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
             long    stationID, areaID, specialAreaID;
 
             {
-                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+                CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
                 store->getSubBusParentInfo( subbus, specialAreaID, areaID, stationID );
             }
 

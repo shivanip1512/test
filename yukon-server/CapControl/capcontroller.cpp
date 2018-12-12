@@ -267,7 +267,8 @@ void CtiCapController::messageSender()
         {
             CtiTime currentDateTime;
             {
-                CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+                CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
+
                 if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                 {
                     CTILOG_DEBUG(dout, "Message Sender start");
@@ -489,7 +490,7 @@ void CtiCapController::controlLoop()
 
                 try
                 {
-                    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+                    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                     if( Now > fifteenMinCheck && secondsFrom1970 != lastThreadPulse)
                     {//every  fifteen minutes tell the user if the control thread is still alive
@@ -525,7 +526,7 @@ void CtiCapController::controlLoop()
                 {
                     if ( Now >= peakTimeCheck )
                     {
-                        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+                        CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                         peakTimeCheck += 60;    // check every minute
 
@@ -569,7 +570,8 @@ void CtiCapController::controlLoop()
                     PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
                     for ( ;busIter != store->getPAOSubMap()->end(); busIter++)
                     {
-                        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+                        CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
+
                         if (store->getStoreRecentlyReset())
                             break;
 
@@ -737,7 +739,7 @@ void CtiCapController::controlLoop()
 
                 try
                 {
-                    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+                    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                     if (areaChanges.size() > 0 &&  !store->getStoreRecentlyReset())
                     {
@@ -858,7 +860,7 @@ void CtiCapController::controlLoop()
             //  under IVVC control.  If all the hierarchy is enabled then we send the heartbeat message 
             //  for the banks.  If any part of the hierarchy is disabled or orphaned then we stop the heartbeat.
             {
-                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+                CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
                 using boost::adaptors::filtered;
                 using namespace Cti::CapControl;
@@ -2434,8 +2436,10 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
     CtiCCAreaPtr currentArea = NULL;
 
     PointIdToSubBusMultiMap::iterator subIter, end;
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
     store->findSubBusByPointID(pointID, subIter, end);
+
     while (subIter != end )
     {
         try
@@ -2800,7 +2804,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, PointQu
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
     PointIdToFeederMultiMap::iterator feedIter, end;
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
     store->findFeederByPointID(pointID, feedIter, end);
 
     while (feedIter != end)
@@ -3052,7 +3057,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, PointQ
     CtiCCFeederPtr currentFeeder = NULL;
     CtiCCCapBankPtr currentCapBank = NULL;
     PointIdToCapBankMultiMap::iterator capIter, end;
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
     store->findCapBankByPointID(pointID, capIter, end);
 
     while (capIter != end)
@@ -3428,7 +3434,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
     }
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     int bankid = store->findCapBankIDbyCbcID(deviceId);
     if ( bankid == NULL )

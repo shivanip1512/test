@@ -11,7 +11,7 @@ CapControlDispatchConnection::CapControlDispatchConnection( const std::string& c
 void CapControlDispatchConnection::writeIncomingMessageToQueue(CtiMessage *msgPtr)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     DispatchConnection::writeIncomingMessageToQueue(msgPtr);
 }

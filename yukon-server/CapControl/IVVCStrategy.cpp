@@ -416,7 +416,7 @@ double IVVCStrategy::getPeakPFSetPoint() const
 
 void IVVCStrategy::registerControllable(const long paoid)
 {
-    CtiLockGuard<CtiMutex> guard(_mapMutex);
+    CTILOCKGUARD( CtiMutex, guard, _mapMutex );
 
     PaoToStateMap::iterator iter = _paoStateMap.find(paoid);
 
@@ -432,7 +432,7 @@ void IVVCStrategy::registerControllable(const long paoid)
 
 void IVVCStrategy::unregisterControllable(const long paoid)
 {
-    CtiLockGuard<CtiMutex> guard(_mapMutex);
+    CTILOCKGUARD( CtiMutex, guard, _mapMutex );
 
     PaoToStateMap::iterator iter = _paoStateMap.find(paoid);
 
@@ -487,7 +487,7 @@ void IVVCStrategy::execute()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     {
-        CtiLockGuard<CtiMutex> guard(_mapMutex);
+        CTILOCKGUARD( CtiMutex, guard, _mapMutex );
 
         for (PaoToStateMap::iterator b = _paoStateMap.begin(), e = _paoStateMap.end(); b != e; ++b)
         {

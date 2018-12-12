@@ -204,7 +204,7 @@ void CtiCCCommandExecutor::execute()
 void CtiCCCommandExecutor::EnableSubstation()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multi->getData();
@@ -240,7 +240,7 @@ void CtiCCCommandExecutor::EnableSubstation()
 void CtiCCCommandExecutor::DisableSubstation()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
@@ -287,7 +287,7 @@ void CtiCCCommandExecutor::DisableSubstation()
 void CtiCCCommandExecutor::EnableSubstationBus(long subBusId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
 
@@ -325,7 +325,7 @@ void CtiCCCommandExecutor::EnableSubstationBus(long subBusId)
 void CtiCCCommandExecutor::DisableSubstationBus(long subBusId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
 
@@ -363,7 +363,7 @@ void CtiCCCommandExecutor::DisableSubstationBus(long subBusId)
 void CtiCCCommandExecutor::EnableFeeder()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long feederID = _itemId;
     bool found = false;
@@ -413,7 +413,7 @@ void CtiCCCommandExecutor::EnableFeeder()
 void CtiCCCommandExecutor::DisableFeeder()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long feederID = _itemId;
     bool found = false;
@@ -461,7 +461,7 @@ void CtiCCCommandExecutor::DisableFeeder()
 void CtiCCCommandExecutor::EnableCapBank()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long capBankID = _itemId;
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
@@ -524,7 +524,7 @@ void CtiCCCommandExecutor::EnableCapBank()
 void CtiCCCommandExecutor::DisableCapBank()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long capBankID = _itemId;
     bool found = false;
@@ -584,7 +584,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     string commandName = " Sync CBC and CapBank States";
 
@@ -661,7 +661,7 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
 {
     string commandName = " Enable OvUv";
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -743,7 +743,7 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
 {
     string commandName = " Disable OvUv";
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -820,7 +820,7 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
     string commandName = " Enable Temp Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -910,7 +910,7 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
     string commandName = " Disable Temp Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -987,7 +987,7 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
     string commandName = " Enable Var Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -1063,7 +1063,7 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
     string commandName = " Disable Var Control";
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -1140,7 +1140,7 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
     bool implemented = false;
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -1231,7 +1231,7 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
     bool implemented = false;
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
@@ -1328,7 +1328,7 @@ void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilM
 void CtiCCCommandExecutor::SendTimeSync()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long paoId = _itemId;
     long controlID = 0;
@@ -1372,7 +1372,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     modifiedSubsList.clear();
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
     CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas();
@@ -1551,7 +1551,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, Cti::CapControl::CapControlType type, bool ovuvFlag, CtiCCSubstationBus_vec& modifiedSubBuses)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     switch (type)
     {
@@ -1624,7 +1624,7 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, Cti::CapContr
                                                         CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     string objectName;
     string objectType;
@@ -1778,7 +1778,7 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
 void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long controlID = 0;
     bool found = false;
@@ -2060,7 +2060,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
 void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long controlID = 0;
     bool found = false;
@@ -2348,7 +2348,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
 void CtiCCCommandExecutor::EnableArea()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long areaId = _itemId;
     long controlID = 0;
@@ -2460,7 +2460,7 @@ void CtiCCCommandExecutor::EnableArea()
 void CtiCCCommandExecutor::DisableArea()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long areaId = _itemId;
     long controlID = 0;
@@ -2582,7 +2582,7 @@ void CtiCCCommandExecutor::setAutoControlOvUvFlags(CtiCCSubstationBusPtr current
 void CtiCCCommandExecutor::AutoEnableOvUv()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long cmdId = _itemId;
 
@@ -2664,7 +2664,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
 void CtiCCCommandExecutor::AutoDisableOvUv()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long cmdId = _itemId;
 
@@ -2751,7 +2751,7 @@ void CtiCCCommandExecutor::AutoDisableOvUv()
 void CtiCCCommandExecutor::EnableSystem()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long areaId = _itemId;
     long controlID = 0;
@@ -2805,7 +2805,7 @@ void CtiCCCommandExecutor::EnableSystem()
 void CtiCCCommandExecutor::DisableSystem()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long areaId = _itemId;
     long controlID = 0;
@@ -2862,7 +2862,7 @@ void CtiCCCommandExecutor::DisableSystem()
 void CtiCCCommandExecutor::Flip7010Device()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long controlID = 0;
     long bankID = _itemId;
@@ -3129,7 +3129,7 @@ void CtiCCCommandExecutor::Flip7010Device()
 void CtiCCCommandExecutor::Scan2WayDevice(long bankId)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long cbcID = 0;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -3201,7 +3201,7 @@ void CtiCCCommandExecutor::Scan2WayDevice(long bankId)
 void CtiCCCommandExecutor::ConfirmSubstationBus()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long subId = _itemId;
     long controlID = 0;
@@ -3370,7 +3370,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
 void CtiCCCommandExecutor::ConfirmFeeder()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long fdrId = _itemId;
     long controlID = 0;
@@ -3538,7 +3538,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 void CtiCCCommandExecutor::ConfirmArea()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long areaId = _itemId;
     long controlID = 0;
@@ -3681,7 +3681,7 @@ void CtiCCCommandExecutor::ConfirmArea()
 void CtiCCCommandExecutor::ConfirmSubstation()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* confirmMulti = new CtiMultiMsg();
@@ -3742,7 +3742,7 @@ void CtiCCCommandExecutor::ConfirmSubstation()
 void CtiCCCommandExecutor::ConfirmOpen()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long controlID = 0;
     long bankID = _itemId;
@@ -4016,7 +4016,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
 void CtiCCCommandExecutor::ConfirmClose()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long controlID = 0;
     long bankID = _itemId;
@@ -4561,7 +4561,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
 void CtiCCCommandExecutor::SendAllData()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses()), CtiCCSubstationBusMsg::AllSubBusesSent))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas()))->execute();
@@ -4583,7 +4583,7 @@ void CtiCCCommandExecutor::SendAllData()
 void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long bankId = _itemId;
     bool found = false;
@@ -4654,7 +4654,7 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
 void CtiCCCommandExecutor::ReturnFeederToOriginalSubBus()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long fdrId = _itemId;
     bool found = false;
@@ -4714,7 +4714,7 @@ void CtiCCCommandExecutor::ReturnFeederToOriginalSubBus()
 void CtiCCCommandExecutor::ResetDailyOperations()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
 
@@ -4919,7 +4919,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
 void CtiCCCommandExecutor::ResetAllSystemOpCounts()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long areaId = _itemId;
     long controlID = 0;
@@ -5047,7 +5047,7 @@ void CtiCCCapBankMoveExecutor::execute()
 bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedCapBankId, long newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     // Source Feeder -- feeder we are moving from
 
@@ -5312,7 +5312,7 @@ void CtiCCFeederMoveExecutor::execute()
 void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedFeederId, long newSubBusId, float fdrSwitchingOrder)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCSubstationBus* oldSubBusPtr = NULL;
     CtiCCSubstationBus* newSubBusPtr = NULL;
@@ -5503,7 +5503,7 @@ void CtiCCForwardMsgToDispatchExecutor::execute()
 void CtiCCPointDataMsgExecutor::execute()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long pointID = _pointDataMsg->getId();
     double value = _pointDataMsg->getValue();
@@ -5777,7 +5777,7 @@ void CtiCCShutdownExecutor::execute()
 void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command, const std::string & user )
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     std::string commandName("Voltage Regulator ");
 
@@ -5852,7 +5852,7 @@ void DeleteItemExecutor::execute()
 void TriggerDmvTestExecutor::execute()
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+    CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     long busID = _message->getBusID();
     const std::string testName = _message->getDmvTestName();
