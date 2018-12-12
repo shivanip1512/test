@@ -15,6 +15,8 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="titleLinkHtml" %>
 <%@ attribute name="showArrows" type="java.lang.Boolean" %>
+<%@ attribute name="showHelpIcon" required="false" type="java.lang.Boolean" 
+              description="Show help icon even if the helpText or helpUrl is empty. The help text has to be loaded using some js code in this case." %>
 <%@ attribute name="smartNotificationsEvent" %>
 <%@ attribute name="useIdForCookie" type="java.lang.Boolean" %>
 
@@ -63,7 +65,7 @@
             <c:if test="${not empty pageScope.smartNotificationsEvent}">
                 <cti:button renderMode="image" icon="icon-email-open" classes="widget-controls" data-popup="#smart-notifications-popup-${thisId}"/>
             </c:if>
-            <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+            <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl or showHelpIcon}">
                 <cti:button renderMode="image" icon="icon-help" classes="widget-controls" data-popup="#box-container-info-popup-${thisId}"/>
             </c:if>
             <c:if test="${hideEnabled}">
@@ -82,7 +84,7 @@
     <div id="${thisId}_content" class="content clearfix"><jsp:doBody/></div>
 </div>
 
-<c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+<c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl or showHelpIcon}">
     <div id="box-container-info-popup-${thisId}" 
             class="dn" 
             data-title="${pageScope.title}"

@@ -8,6 +8,8 @@
 <%@ attribute name="helpText" description="The text to put inside of a help popup." %>
 <%@ attribute name="infoText" description="The text to put inside of a information popup." %>
 <%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
+<%@ attribute name="showHelpIcon" required="false" type="java.lang.Boolean" 
+              description="Show help icon even if the helpText or helpUrl is empty. The help text has to be loaded using some js code in this case." %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="hideInitially" type="java.lang.Boolean" %>
 <%@ attribute name="id" description="The id of the outer container element. If not provided, the id is generated." %>
@@ -41,7 +43,7 @@
           </c:otherwise>
         </c:choose>
         
-        <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+        <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl or showHelpIcon}">
             <cti:icon icon="icon-help" classes="cp" 
                 data-popup="#section-container-info-popup-${id}"
                 data-popup-toggle=""/>
@@ -59,7 +61,7 @@
     <div id="${id}_content" class="content clearfix ${hideMe}"><jsp:doBody/></div>
 </div>
 <%-- Help Popup --%>
-<c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+<c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl or showHelpIcon}">
     <div id="section-container-info-popup-${id}" class="dn" 
             data-title="${pageScope.title}" 
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if>

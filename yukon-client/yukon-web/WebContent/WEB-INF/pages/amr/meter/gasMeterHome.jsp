@@ -80,10 +80,8 @@
                 <tags:widget bean="deviceGroupWidget" />
             </div>
             <div class="column two nogutter">
-                <cti:msg2 key="yukon.web.attributeGraphType.USAGE_GAS.description" var="trendWidgetHelpText" blankIfMissing="true"/>
                 <div id="trendWidget">
-                    <tags:widget bean="gasCsrTrendWidget" tabularDataViewer="archivedDataReport"
-                        helpText="${trendWidgetHelpText}" />
+                    <tags:widget bean="gasCsrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
                 </div>
 
                 <c:if test="${showEvents}"><tags:widget bean="meterEventsWidget"/></c:if>

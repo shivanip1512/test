@@ -13,6 +13,8 @@
 
 <%@ attribute name="helpText" description="The text to put inside of a help popup." %>
 <%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
+<%@ attribute name="showHelpIcon" required="false" type="java.lang.Boolean" 
+              description="Show help icon even if the helpText or helpUrl is empty. The help text has to be loaded using some js code in this case." %>
 
 <%@ attribute name="container" description="container type: 'box' or 'section'. Default:'box'" %>
 <%@ attribute name="classes" description="CSS class names applied to the container." %>
@@ -96,6 +98,7 @@
                 hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" 
                 helpText="${pageScope.helpText}"
                 helpUrl="${pageScope.helpUrl}"
+                showHelpIcon="${pageScope.showHelpIcon}"
                 smartNotificationsEvent="${beanInst.smartNotificationsEvent}"
                 useIdForCookie="${useId}">
         </tags:boxContainer>
@@ -105,7 +108,8 @@
                 id="widget-titled-container-${widgetParameters.widgetId}" 
                 styleClass="widget-container ${classes}" 
                 helpText="${pageScope.helpText}"
-                helpUrl="${pageScope.helpUrl}">
+                helpUrl="${pageScope.helpUrl}"
+                showHelpIcon="${pageScope.showHelpIcon}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                     <c:when test="${!authorized}">
