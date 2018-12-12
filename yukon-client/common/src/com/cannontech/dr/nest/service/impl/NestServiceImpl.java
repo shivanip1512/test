@@ -92,6 +92,7 @@ public class NestServiceImpl implements NestService {
         }
     }
     
+    //UNIT TEST
     @Override
     public String createDurationStr(Date startTime, Date stopTime) {
         //A duration in seconds with up to nine fractional digits, terminated by 's'. Example: "3.5s"
@@ -101,7 +102,7 @@ public class NestServiceImpl implements NestService {
         //It is related to Timestamp in that the difference between two Timestamp values is a Duration and it can be added or subtracted from a Timestamp. 
         //Range is approximately +-10,000 years.
 
-        String seconds = Seconds.secondsBetween(new DateTime(startTime), new DateTime(stopTime)).toString();
+        int seconds = Seconds.secondsBetween(new DateTime(startTime), new DateTime(stopTime)).getSeconds();
         return seconds + "s";
     }
 
@@ -109,7 +110,7 @@ public class NestServiceImpl implements NestService {
     /**
      * Adjusts stop time if it is null or duration between start and stop time greater then 4 hours
      */
-    private Date adjustStopTime(Date startTime, Date stopTime) {
+    protected Date adjustStopTime(Date startTime, Date stopTime) {
         if (stopTime == null) {
             stopTime = new DateTime(startTime).plusHours(NEST_MAX_CONTROL_HOURS.getHours()).toDate();
         } else {
@@ -216,7 +217,7 @@ public class NestServiceImpl implements NestService {
     /**
      * Creates Nest enrollment object from yukon account
      */
-    private CustomerEnrollment createEnrollement(LiteCustomer customer, String accountNumber) {
+    protected CustomerEnrollment createEnrollement(LiteCustomer customer, String accountNumber) {
         CustomerEnrollment enrollment = new CustomerEnrollment();
         if (Strings.isEmpty(customer.getAltTrackingNumber()) || customer.getAltTrackingNumber().equals("(none)")) {
             throw new NestException(
@@ -234,7 +235,7 @@ public class NestServiceImpl implements NestService {
      *                 if no nest groups are associated with the program
      * 
      */
-    private LiteYukonPAObject getNestGroupForProgram(List<Integer> groupIds, int programId){
+    protected LiteYukonPAObject getNestGroupForProgram(List<Integer> groupIds, int programId){
         if (groupIds.size() > 1) {
             String programName = getProgramName(programId);
             throw new NestException(programName + " has " + groupIds.size()
