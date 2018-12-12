@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.Date;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobState;
@@ -117,6 +119,11 @@ public class ScheduledDataImportTaskJobWrapperFactory {
         public String getShortName() {
             return this.task.getScheduleName();
         }
+
+        public ScheduledImportType getImportType() {
+            return  ScheduledImportType.fromName(this.task.getImportType());
+        }
+       
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getJobNameComparator() {

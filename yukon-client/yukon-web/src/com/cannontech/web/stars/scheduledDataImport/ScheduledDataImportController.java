@@ -1,5 +1,8 @@
 package com.cannontech.web.stars.scheduledDataImport;
 
+import java.util.Map;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +17,28 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -33,6 +47,8 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
 
 @Controller
@@ -42,6 +58,8 @@ public class ScheduledDataImportController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledDataImportService scheduledDataImportService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
     
     private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportDetail.";
     
@@ -56,8 +74,23 @@ public class ScheduledDataImportController {
         }
     };
 
-    @GetMapping("list")
-    public String list() {
+    @RequestMapping("list")
+    public String list(YukonUserContext userContext, ModelMap model,
+            @DefaultItemsPerPage(10) PagingParameters paging,
+            @DefaultSort(dir=Direction.desc, sort="NEXT_RUN") SortingParameters sorting) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        Direction dir = sorting.getDirection();
+        Column sortBy = Column.valueOf(sorting.getSort());
+        for (Column column : Column.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+
+        SearchResults<ScheduledDataImportTaskJobWrapper> filterResult =
+                            scheduledDataImportService.getScheduledFileImportJobData(paging, sorting, userContext);
+        model.addAttribute("filterResult", filterResult);
         return "/scheduledDataImport/list.jsp";
     }
 
@@ -143,6 +176,24 @@ public class ScheduledDataImportController {
         ScheduledDataImport deleteJob = scheduledDataImportService.deleteJobById(jobId);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", deleteJob.getScheduleName()));
         return "redirect:/stars/scheduledDataImport/list";
+    }
+    
+    @GetMapping("toggleJob")
+    public @ResponseBody Map<String, Object> toggleEnabled(HttpServletRequest request) throws ServletException {
+            Map<String, Object> json = scheduledGroupRequestExecutionService.toggleJob(request);
+        return json;
+    }
+
+    @GetMapping("startJob")
+    public @ResponseBody Map<String, Object> startJob(HttpServletRequest request) throws ServletException {
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        String jobId = request.getParameter("toggleJobId");
+        String cronExpression = null;
+        try {
+            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
+        } catch (Exception e) {}
+        Map<String, Object> json = scheduledGroupRequestExecutionService.startJob(request, cronExpression);
+        return json;
     }
 
     private void setupModel(ModelMap model, ScheduledDataImport scheduledDataImport,
