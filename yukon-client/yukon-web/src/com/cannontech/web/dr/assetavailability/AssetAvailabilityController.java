@@ -227,10 +227,7 @@ public class AssetAvailabilityController {
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(liteYukonPAObject, userContext, null, null);
 
-        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
-            DateFormatEnum.BOTH, userContext);
-        String fileName = liteYukonPAObject.getPaoName() + "_" + dateStr + ".csv";
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
+        writeToCSV(headerRow, dataRows, liteYukonPAObject.getPaoName(), response, userContext);
     }
 
     @GetMapping("/downloadFilteredResults")
@@ -244,10 +241,7 @@ public class AssetAvailabilityController {
         List<String[]> dataRows =
             getDownloadDataRows(liteYukonPAObject, userContext, retrieveSubGroups(deviceSubGroups), statuses);
 
-        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
-            DateFormatEnum.BOTH, userContext);
-        String fileName = liteYukonPAObject.getPaoName() + "_" + dateStr + ".csv";
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
+        writeToCSV(headerRow, dataRows, liteYukonPAObject.getPaoName(), response, userContext);
     }
 
     private String[] getDownloadHeaderRow(YukonUserContext userContext) {
@@ -287,6 +281,14 @@ public class AssetAvailabilityController {
         });
 
         return dataRows;
+    }
+
+    private void writeToCSV(String[] headerRow, List<String[]> dataRows, String paoName, HttpServletResponse response,
+            YukonUserContext userContext) throws IOException {
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
+            DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = paoName + "_" + dateStr + ".csv";
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
     }
 
     public enum AssetAvailabilitySortBy implements DisplayableEnum {
