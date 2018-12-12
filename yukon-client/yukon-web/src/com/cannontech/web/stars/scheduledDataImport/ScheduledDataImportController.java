@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -51,7 +51,7 @@ public class ScheduledDataImportController {
         protected void doValidation(ScheduledDataImport importData, Errors errors) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.error.isBlank");
             if (!errors.hasFieldErrors("scheduleName")) {
-                YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", importData.getScheduleName(), 60);
+                YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", importData.getScheduleName(), 100);
             }
         }
     };

@@ -60,6 +60,14 @@
                         ${scheduledImportData.scheduleDescription}
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
+                <cti:displayForPageEditModes modes="EDIT,VIEW">
+                    <tags:nameValue2 nameKey=".errorFileOutputPath">
+                        <cti:dataUpdaterValue type="JOB" identifier="${scheduledImportData.jobId}/NEXT_RUN_DATE"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".errorFileOutputPath">
+                        <cti:dataUpdaterValue type="JOB" identifier="${scheduledImportData.jobId}/STATE_TEXT"/>
+                    </tags:nameValue2>
+                </cti:displayForPageEditModes>
             </tags:nameValueContainer2>
         
             <div class="page-action-area">
