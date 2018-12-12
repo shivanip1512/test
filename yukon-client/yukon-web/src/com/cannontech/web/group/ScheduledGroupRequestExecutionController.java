@@ -3,7 +3,6 @@ package com.cannontech.web.group;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +57,6 @@ import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -528,11 +526,7 @@ public class ScheduledGroupRequestExecutionController {
 
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
 
-        if (job.isDisabled()) {
-            jobManager.enableJob(job);
-        } else {
-            jobManager.disableJob(job);
-        }
+        jobManager.toggleJobStatus(job);
 
         mav.addObject("editJobId", toggleJobId);
 
@@ -543,24 +537,7 @@ public class ScheduledGroupRequestExecutionController {
     @RequestMapping("toggleJob")
     public @ResponseBody Map<String, Object> toggleJob(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
-        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
-        Map<String, Object> json = new HashMap<>();
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
-        if (jobManager.getJob(toggleJobId).isDeleted()) {
-            json.put("error",
-                messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
-            return json;
-        }
-
-        if (job.isDisabled()) {
-            jobManager.enableJob(job);
-        } else {
-            jobManager.disableJob(job);
-        }
-
-        return null;
+        return scheduledGroupRequestExecutionService.toggleJob(request);
     }
 
     @RequestMapping("startDialog")
@@ -600,36 +577,15 @@ public class ScheduledGroupRequestExecutionController {
     @RequestMapping(value = "startJob")
     public @ResponseBody Map<String, Object> startJob(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
-
-        Map<String, Object> json = new HashMap<>();
-
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
-        int toggleJobId = Integer.parseInt(request.getParameter("toggleJobId"));
-        if (jobManager.getJob(toggleJobId).isDeleted()) {
-            json.put("error",
-                messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
-            return json;
-        }
-
         String jobId = request.getParameter("toggleJobId");
-
         String cronExpression = null;
         try {
             cronExpression = cronExpressionTagService.build(jobId, request, userContext);
         } catch (Exception e) {
 
         }
-
-        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
-        try {
-            jobManager.startJob(job, cronExpression);
-        } catch (ScheduleException e) {
-            json.put("error", messageSourceAccessor.getMessage("yukon.common.device.schedules.home.pastDate"));
-        }
-
-        return json;
+        return scheduledGroupRequestExecutionService.startJob(request, cronExpression);
     }
 
     @RequestMapping("cancelScheduledJob")

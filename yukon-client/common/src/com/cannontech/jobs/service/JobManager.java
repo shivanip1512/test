@@ -164,4 +164,10 @@ public interface JobManager {
      */
     public JobStatus<YukonJob> getLatestStatusByJobId(int jobId);
 
+    /**
+     * Toggles Job status. If disabled, make enabled. If enabled,
+     * make disabled. Returns new state of the job.
+     */
+    public boolean toggleJobStatus(YukonJob job);
+
 }

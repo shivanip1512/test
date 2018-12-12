@@ -156,4 +156,9 @@ public class JobManagerStub implements JobManager {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
 
+    @Override
+    public boolean toggleJobStatus(YukonJob job) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+
 }

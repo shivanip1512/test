@@ -1,14 +1,9 @@
 package com.cannontech.web.scheduledDataImport.service;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.user.YukonUserContext;
@@ -50,15 +45,4 @@ public interface ScheduledDataImportService {
     SearchResults<ScheduledDataImportTaskJobWrapper> getScheduledFileImportJobData(PagingParameters paging,
             SortingParameters sorting, YukonUserContext userContext);
 
-    /**
-     * Toggles Job enabled status. If disabled, make enabled. If enabled,
-     * make disabled. Returns new state of the job.
-     * 
-     */
-    boolean toggleEnabled(int jobId, LiteYukonUser yukonUser);
-
-    /**
-     * Starts the job with the specified Job ID.
-     */
-    Map<String, Object> startJob(String jobId, HttpServletRequest request);
 }

@@ -1,11 +1,16 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
@@ -13,10 +18,16 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroupRequestExecutionService {
@@ -24,7 +35,10 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	private JobManager jobManager;
     private YukonJobDefinition<ScheduledGroupRequestExecutionTask> jobDefinition;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionServiceImpl.class);
+    private static final String baseKey = "yukon.web.modules.tools.schedules.VIEW.results.jobDetail.";
     
     @Override
     public YukonJob schedule(String name, String groupName, String command, DeviceRequestType type,
@@ -109,4 +123,40 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 			YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {
 		this.jobDefinition = scheduledGroupRequestExecutionJobDefinition;
 	}
+
+    @Override
+    public Map<String, Object> startJob(HttpServletRequest request, String cronExpression) {
+        Map<String, Object> json = new HashMap<>();
+        String jobId = request.getParameter("toggleJobId");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        int toggleJobId = Integer.parseInt(jobId);
+        if (jobManager.getJob(toggleJobId).isDeleted()) {
+            json.put("error", messageSourceAccessor.getMessage(baseKey + "error.editDeletedJob"));
+            return json;
+        }
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+        try {
+            jobManager.startJob(job, cronExpression);
+        } catch (ScheduleException e) {
+            json.put("error", messageSourceAccessor.getMessage(baseKey + "error.pastDate"));
+        }
+        return json;
+    }
+
+    @Override
+    public Map<String, Object>  toggleJob(HttpServletRequest request) throws ServletException {
+        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        Map<String, Object> json = new HashMap<>();
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+        if (job.isDeleted()) {
+            json.put("error",
+                messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
+            return json;
+        }
+        jobManager.toggleJobStatus(job);
+        return null;
+    }
 }

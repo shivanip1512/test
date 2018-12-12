@@ -849,4 +849,16 @@ public class JobManagerImpl implements JobManager {
     public JobStatus<YukonJob> getLatestStatusByJobId(int jobId) {
         return jobStatusDao.findLatestStatusByJobId(jobId);
     }
+
+    @Override
+    public boolean toggleJobStatus(YukonJob job) {
+        boolean enabled = false;
+        if (job.isDisabled()) {
+            enableJob(job);
+            enabled = true;
+        } else {
+            disableJob(job);
+        }
+        return enabled;
+    }
 }

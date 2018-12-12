@@ -2,40 +2,29 @@ package com.cannontech.web.scheduledDataImport.service.impl;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.JobStatusDao;
-import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory;
@@ -55,10 +44,6 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private JobStatusDao jobStatusDao;
     @Autowired private ScheduledDataImportTaskJobWrapperFactory scheduledDataImportTaskJobWrapperFactory;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
-    
     private Map<Column, Comparator<ScheduledDataImportTaskJobWrapper>> sorters;
     @PostConstruct
     public void initialize() {
@@ -72,8 +57,6 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     }
 
     private Logger log = YukonLogManager.getLogger(ScheduledDataImportServiceImpl.class);
-    private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportList.";
-
     @Override
     public YukonJob scheduleDataImport(ScheduledDataImport data, YukonUserContext userContext) {
         log.info("Scheduling Data Import job. name=" + data.getScheduleName() + " importType=" + data.getImportType());
@@ -159,7 +142,8 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     }
 
     @Override
-    public SearchResults<ScheduledDataImportTaskJobWrapper> getScheduledFileImportJobData(PagingParameters paging, SortingParameters sorting,YukonUserContext userContext) {
+    public SearchResults<ScheduledDataImportTaskJobWrapper> getScheduledFileImportJobData(PagingParameters paging,
+            SortingParameters sorting, YukonUserContext userContext) {
         List<ScheduledRepeatingJob> exportJobs =
             jobManager.getNotDeletedRepeatingJobsByDefinition(scheduledDataImportJobDefinition);
         List<ScheduledDataImportTaskJobWrapper> jobWrappers = Lists.newArrayListWithCapacity(exportJobs.size());
@@ -177,42 +161,5 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
             Collections.sort(jobWrappers, comparator);
         }
         return SearchResults.pageBasedForWholeList(paging, jobWrappers);
-    }
-
-    @Override
-    public boolean toggleEnabled(int jobId, LiteYukonUser yukonUser) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, yukonUser);
-        YukonJob job = jobManager.getJob(jobId);
-        boolean enabled = false;
-        if (job.isDisabled()) {
-            jobManager.enableJob(job);
-            enabled = true;
-        } else {
-            jobManager.disableJob(job);
-        }
-        return enabled;
-    }
-
-    @Override
-    public Map<String, Object> startJob(String jobId, HttpServletRequest request) {
-        Map<String, Object> json = new HashMap<>();
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
-        int toggleJobId = Integer.parseInt(jobId);
-        if (jobManager.getJob(toggleJobId).isDeleted()) {
-            json.put("error", messageSourceAccessor.getMessage(baseKey + "error.editDeletedJob"));
-            return json;
-        }
-        String cronExpression = null;
-        try {
-            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
-        } catch (Exception e) {}
-        ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
-        try {
-            jobManager.startJob(job, cronExpression);
-        } catch (ScheduleException e) {
-            json.put("error", messageSourceAccessor.getMessage(baseKey + "error.pastDate"));
-        }
-        return json;
     }
 }
