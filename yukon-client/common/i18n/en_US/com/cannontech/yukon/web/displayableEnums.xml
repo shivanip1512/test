@@ -71,7 +71,9 @@
 <entry key="yukon.web.attributeGraphType.DEMAND.label">Demand</entry>
 <entry key="yukon.web.attributeGraphType.DEMAND.description"><![CDATA[Graph of raw Demand data.]]></entry>
 <entry key="yukon.web.attributeGraphType.DAILY_USAGE.label">Daily Usage</entry>
-<entry key="yukon.web.attributeGraphType.DAILY_USAGE.description">Rfn Meter Daily Usage</entry>
+<entry key="yukon.web.attributeGraphType.DAILY_USAGE.description"><![CDATA[The <b>Daily Usage</b> graph is a normalized 
+                            view of daily usage data.<br><br>Each point on the graph is generated using the midnight 
+                            readings only with the following formula: (reading - previousReading) / (days between readings)]]></entry>
 <entry key="yukon.web.attributeGraphType.USAGE.label">Usage (Normalized)</entry>
 <entry key="yukon.web.attributeGraphType.USAGE.description"><![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
                             point on the graph is generated using the following formula: (reading - 
