@@ -61,10 +61,10 @@
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <cti:displayForPageEditModes modes="EDIT,VIEW">
-                    <tags:nameValue2 nameKey=".errorFileOutputPath">
+                    <tags:nameValue2 nameKey=".nextRun">
                         <cti:dataUpdaterValue type="JOB" identifier="${scheduledImportData.jobId}/NEXT_RUN_DATE"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".errorFileOutputPath">
+                    <tags:nameValue2 nameKey=".status">
                         <cti:dataUpdaterValue type="JOB" identifier="${scheduledImportData.jobId}/STATE_TEXT"/>
                     </tags:nameValue2>
                 </cti:displayForPageEditModes>
