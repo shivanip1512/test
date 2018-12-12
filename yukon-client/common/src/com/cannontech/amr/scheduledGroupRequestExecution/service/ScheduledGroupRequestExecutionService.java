@@ -21,13 +21,13 @@ public interface ScheduledGroupRequestExecutionService {
 	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Set<? extends Attribute> attributes, DeviceRequestType type, String cronExpression, YukonUserContext userContext, RetryStrategy retryStrategy);
 
     /**
-     * Starts the job with the specified Job ID.
+     * Starts the job with the specified Job ID in HttpServletRequest.
      */
     public Map<String, Object> startJob(HttpServletRequest request, String cronExpression);
 
     /**
      * Toggles Job status. If disabled, make enabled. If enabled,
-     * make disabled. Returns new state of the job.
+     * make disabled.
      * 
      */
     public Map<String, Object> toggleJob(HttpServletRequest request) throws ServletException;
