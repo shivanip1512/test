@@ -25,6 +25,10 @@ yukon.assets.scheduleddataimport = (function() {
                 $('#delete-scheduledDataImport-form').submit();
             });
             
+            $(document).on('click', '#cancel-btn', function (event) {
+                window.history.back();
+            });
+            
             _initialized = true;
         }
         
