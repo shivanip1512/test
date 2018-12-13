@@ -24,7 +24,7 @@ $(document).ready(function(){
 <c:choose>
     
     <c:when test="${attributeGraphType != null}">
-        <input type="hidden" class="js-help-text" value="${helpText}"/>
+        <input type="hidden" class="js-trend-help-text" value="${helpText}"/>
     
         <h4 class="tac"><cti:msg2 key=".meter"/> <cti:deviceName deviceId="${widgetParameters.deviceId}"/></h4>
 
