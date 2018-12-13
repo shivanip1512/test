@@ -15,7 +15,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobRunStatus;
 import com.cannontech.jobs.model.JobState;
@@ -26,6 +25,7 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.scheduledDataImport.tasks.ScheduledDataImportTask;
 
 public class ScheduledDataImportServiceImplTest {
@@ -34,15 +34,16 @@ public class ScheduledDataImportServiceImplTest {
     private ScheduledRepeatingJob job;
     private ScheduledDataImportTask task;
     private YukonUserContext context;
-    private JobStatusDao jobStatusDao;
     private JobStatus<YukonJob> jobStatus;
     private CronExpressionTagService cronExpressionTagService;
     private JobManager jobManager;
+    private ScheduleControllerHelper scheduleControllerHelper;
 
     @Before
     public void setUp() throws Exception {
         scheduledDataImportServiceImplTest = new ScheduledDataImportServiceImpl();
         cronExpressionTagService = EasyMock.createMock(CronExpressionTagService.class);
+        scheduleControllerHelper = EasyMock.createMock(ScheduleControllerHelper.class);
         jobManager = EasyMock.createMock(JobManager.class);
         LiteYukonUser user2 = new LiteYukonUser(-1);
         context = new SimpleYukonUserContext(user2, Locale.US, DateTimeZone.forID("GMT").toTimeZone(), "");
@@ -59,10 +60,6 @@ public class ScheduledDataImportServiceImplTest {
         jobStatus.setId(911);
         jobStatus.setJob(job);
         jobStatus.setJobRunStatus(JobRunStatus.STARTED);
-        jobStatusDao = EasyMock.createMock(JobStatusDao.class);
-        ReflectionTestUtils.setField(scheduledDataImportServiceImplTest, "jobStatusDao", jobStatusDao);
-        EasyMock.expect(jobStatusDao.findLatestStatusByJobId(911)).andReturn(jobStatus);
-        EasyMock.replay(jobStatusDao);
         ReflectionTestUtils.setField(scheduledDataImportServiceImplTest, "cronExpressionTagService",
             cronExpressionTagService);
         EasyMock.expect(cronExpressionTagService.getDescription("0 1 * * *", context)).andReturn("Daily, at 01:00 AM");
@@ -72,6 +69,10 @@ public class ScheduledDataImportServiceImplTest {
         EasyMock.expect(jobManager.getRepeatingJob(job.getId())).andReturn(job);
         EasyMock.expect(jobManager.instantiateTask(job)).andReturn(task);
         EasyMock.replay(jobManager);
+        ReflectionTestUtils.setField(scheduledDataImportServiceImplTest, "scheduleControllerHelper",
+            scheduleControllerHelper);
+        EasyMock.expect(scheduleControllerHelper.getJobState(job.getId())).andReturn(JobState.RUNNING);
+        EasyMock.replay(scheduleControllerHelper);
     }
 
     @Test
