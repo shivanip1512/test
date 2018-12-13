@@ -10,19 +10,13 @@ yukon.assets.scheduleddataimport = (function() {
     
     'use strict';
     
-    /**
-     * Display error messages
-     * @param {string} id - element id 
-     */
-    function displayErrors (errorMessages) {
-        var errors = $('#errorMessages');
-        errors.html(errorMessages);
-    }
-    
+    var 
+    _initialized = false,
+
     /**
      * Enable or Disable field
      */
-    function enableDisableField (field, disable) {
+    _enableOrDisableField = function (field, disable) {
         field.attr('disabled', disable);
         field.find('*').attr('disabled', disable);
         if (disable) {
@@ -30,9 +24,7 @@ yukon.assets.scheduleddataimport = (function() {
         } else {
             field.css('pointer-events', 'auto');
         }
-    }
-    
-    var _initialized = false,
+    },
 
     mod = {
         
@@ -60,7 +52,7 @@ yukon.assets.scheduleddataimport = (function() {
                      data: { 'toggleJobId': jobId }
                 }).done(function (data) {
                     if (data.error) {
-                        displayErrors(data.error);
+                        $('#errorMessages').html(data.error);
                     }
                 });
             });
@@ -75,7 +67,7 @@ yukon.assets.scheduleddataimport = (function() {
                      data: { 'toggleJobId': jobId }
                 }).done(function (data) {
                     if (data.error) {
-                        displayErrors(data.error);
+                        $('#errorMessages').html(data.error);
                     }
                 });
             });
@@ -83,7 +75,6 @@ yukon.assets.scheduleddataimport = (function() {
             $(document).on('yukon:schedule:delete', function (ev) {
                 $('#errorMessages').html("");
                 var jobId = $(ev.target).data('jobId');
-                ev.preventDefault();
                 //close the dialog
                 yukon.dialogConfirm.cancel();
                 $.ajax({
@@ -92,10 +83,6 @@ yukon.assets.scheduleddataimport = (function() {
                 }).done(function () {
                     window.location.reload();
                 });
-            });
-            
-            $(document).on('click', '#cancel-btn', function (event) {
-                window.history.back();
             });
             
             _initialized = true;
@@ -116,23 +103,23 @@ yukon.assets.scheduleddataimport = (function() {
                     enableSchedule.show();
                     disableSchedule.hide();
                     //enable -> enable and delete and disable start
-                    enableDisableField(startScheduleNow, true);
-                    enableDisableField(deleteJobButton, false);
-                    enableDisableField(enableSchedule, false);
+                    _enableOrDisableField(startScheduleNow, true);
+                    _enableOrDisableField(deleteJobButton, false);
+                    _enableOrDisableField(enableSchedule, false);
                 } else if (state === 'Running') {
                     enableSchedule.hide();
                     disableSchedule.show();
                     //disable -> start, disable and delete
-                    enableDisableField(startScheduleNow, true);
-                    enableDisableField(deleteJobButton, true);
-                    enableDisableField(disableSchedule, true);
+                    _enableOrDisableField(startScheduleNow, true);
+                    _enableOrDisableField(deleteJobButton, true);
+                    _enableOrDisableField(disableSchedule, true);
                 } else if (state === 'Scheduled') {
                     enableSchedule.hide();
                     disableSchedule.show();
                     //enable -> start and disable and delete
-                    enableDisableField(startScheduleNow, false);
-                    enableDisableField(deleteJobButton, false);
-                    enableDisableField(disableSchedule, false);
+                    _enableOrDisableField(startScheduleNow, false);
+                    _enableOrDisableField(deleteJobButton, false);
+                    _enableOrDisableField(disableSchedule, false);
                 } else if (state === 'Deleted') {
                     enableSchedule.hide();
                     disableSchedule.hide();
