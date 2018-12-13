@@ -55,22 +55,8 @@
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
                         <c:if test="${hasStats}">
                             <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
-                            <c:choose>
-                            <c:when test = "${test.eventMessage.archived}">
-                                <cm:dropdownOption key=".detailsNotAvailable"/>
-                            </c:when>
-                            <c:otherwise>
-                                <c:if test="${test.numUnknowns > 0}">
-                                    <cm:dropdownOption key=".showUnreported" classes="js-unknown" data-test="${test.messageId}"/>
-                                </c:if>
-                                <c:if test="${test.numFailures > 0}">
-                                    <cm:dropdownOption key=".showMissed" classes="js-failed" data-test="${test.messageId}"/>
-                                </c:if>
-                                <c:if test="${test.numSuccesses > 0}">
-                                    <cm:dropdownOption key=".showSuccess" classes="js-success" data-test="${test.messageId}"/>
-                                </c:if>
-                             </c:otherwise>
-                             </c:choose>
+                                <cti:url var="eventDetailsUrl" value="/dr/rf/broadcast/eventDetail/${test.messageId}"/>
+                                <cm:dropdownOption key="yukon.web.modules.dr.rfPerformance.eventDetails" href="${eventDetailsUrl}"/>
                             </cm:dropdown>
                         </c:if>
                     </td>

@@ -1113,4 +1113,5 @@ The devices in this category have reported all available data for the selected d
 <br>
 The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique RF Broadcast Performance test message for the device. When the data is received, the device will re-categorized appropriately.
 ]]></entry>
+<entry key="yukon.web.modules.dr.rfPerformance.eventDetails">Event Details</entry>
 </properties>
