@@ -216,6 +216,15 @@ public class NestStandardCycleGearPanel extends GenericGearPanel {
                 loadShapingDescLabel.setFont(new Font("dialog", 0, 12));
                 loadShapingDescLabel.setAlignmentX(LEFT_ALIGNMENT);
                 loadShapingDescLabel.setMinimumSize(new Dimension(1000, 200));
+                String desc;
+                desc = "<html><p><b>Nest Standard Cycle Gear</b><br>"
+                        + "The Nest standard cycle gear operates in the following manner.<br>"
+                        + "In the hours leading up to the event, the thermostat will decrease<br>"
+                        + "or increase the temperature set point in preparation for the requested<br>"
+                        + "control event. Maximum load reduction occurs at the start of the event<br>"
+                        + "and gradually decreases as the event progresses. At event stop time, the<br>"
+                        + "thermostat returns to their programmed behaviors. </p></html>";
+                loadShapingDescLabel.setText(desc);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }

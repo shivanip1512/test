@@ -26,11 +26,18 @@ public class NestCriticalCycleGearPanel extends GenericGearPanel {
                 descriptionLabel = new JLabel();
                 descriptionLabel.setName("JLabelDescription");
                 descriptionLabel.setAlignmentY(TOP_ALIGNMENT);
-                descriptionLabel.setText("This will describe what does critical cycle gear mean");
-                descriptionLabel.setMaximumSize(new Dimension(103, 14));
-                descriptionLabel.setPreferredSize(new Dimension(103, 14));
+                descriptionLabel.setMaximumSize(new Dimension(1000, 190));
+                descriptionLabel.setPreferredSize(new Dimension(1000, 190));
                 descriptionLabel.setFont(new Font("dialog", 0, 12));
-                descriptionLabel.setMinimumSize(new Dimension(103, 14));
+                descriptionLabel.setMinimumSize(new Dimension(1000, 200));
+                String desc;
+                desc = "<html><p><b>Nest Critical Cycle Gear</b><br>"
+                        + "The Nest critical cycle gear operates in the following manner.<br>"
+                        + "In the hours leading up to the event, the thermostat will continue<br>"
+                        + "to operate as programmed. Maximum load reduction occurs at the start of<br>"
+                        + "the event and gradually decreases as the event progresses. At event stop<br>"
+                        + "time, the thermostat returns to their programmed behaviors. </p></html>";
+                    descriptionLabel.setText(desc);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -56,7 +63,7 @@ public class NestCriticalCycleGearPanel extends GenericGearPanel {
 
             GridBagConstraints getJLabelDescription = new GridBagConstraints();
 
-            getJLabelDescription.insets = new Insets(0, 0, 5, 0);
+            getJLabelDescription.insets = new Insets(20, 20, 5, 5);
             getJLabelDescription.ipady = -3;
             getJLabelDescription.ipadx = 200;
             getJLabelDescription.gridwidth = 3;
