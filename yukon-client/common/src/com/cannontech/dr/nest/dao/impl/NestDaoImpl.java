@@ -223,11 +223,11 @@ public class NestDaoImpl implements NestDao {
         //still scheduled or running
         sql.append("AND StopTime").gt(Instant.now());
         //cancellation didn't succeed or was not attempted
-        sql.append("AND (Success IS NULL OR Success").neq_k(YNBoolean.NO).append(")");
+        sql.append("AND (Success IS NULL OR Success").eq_k(YNBoolean.NO).append(")");
         sql.append("AND NestControlEventId = (SELECT MAX(NestControlEventId) FROM LMNestControlEvent");
         sql.append("        WHERE NestGroup").eq(group);
         sql.append("        AND StopTime").gt(Instant.now());
-        sql.append("        AND (Success IS NULL OR Success").neq_k(YNBoolean.NO);
+        sql.append("        AND (Success IS NULL OR Success").eq_k(YNBoolean.NO);
         sql.append("        ))");
         try {
             return jdbcTemplate.queryForObject(sql, controlEventRowMapper);
