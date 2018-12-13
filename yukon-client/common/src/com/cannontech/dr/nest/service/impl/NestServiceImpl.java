@@ -171,7 +171,7 @@ public class NestServiceImpl implements NestService {
     @Override
     public Optional<String> dissolveAccountWithNest(LiteCustomer account, String accountNumber) {
         log.info("Removing accountNumber {} from Nest", account.getLiteID());
-        CustomerEnrollment enrollment = createEnrollement(account, accountNumber);
+        CustomerEnrollment enrollment = createEnrollment(account, accountNumber);
         enrollment.setEnrollmentState(EnrollmentState.DISSOLVED);
         return nestCommunicationService.updateEnrollment(enrollment);
     }
@@ -179,7 +179,7 @@ public class NestServiceImpl implements NestService {
     @Override
     public Optional<String> updateGroup(int customerId, String accountNumber, String newGroup) {
         log.info("Changing group for accountNumber {} to new group {}", accountNumber, newGroup);
-        CustomerEnrollment enrollment = createEnrollement(customerDao.getLiteCustomer(customerId), accountNumber);
+        CustomerEnrollment enrollment = createEnrollment(customerDao.getLiteCustomer(customerId), accountNumber);
         enrollment.setGroupId(newGroup);
         enrollment.setEnrollmentState(EnrollmentState.ACCEPTED);
         return nestCommunicationService.updateEnrollment(enrollment);
@@ -217,7 +217,7 @@ public class NestServiceImpl implements NestService {
     /**
      * Creates Nest enrollment object from yukon account
      */
-    protected CustomerEnrollment createEnrollement(LiteCustomer customer, String accountNumber) {
+    protected CustomerEnrollment createEnrollment(LiteCustomer customer, String accountNumber) {
         CustomerEnrollment enrollment = new CustomerEnrollment();
         if (Strings.isEmpty(customer.getAltTrackingNumber()) || customer.getAltTrackingNumber().equals("(none)")) {
             throw new NestException(
