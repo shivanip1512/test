@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -47,6 +47,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
@@ -59,7 +60,7 @@ public class ScheduledDataImportController {
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledDataImportService scheduledDataImportService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
+    @Autowired private ScheduleControllerHelper scheduleControllerHelper;
     
     private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportDetail.";
     
@@ -122,7 +123,7 @@ public class ScheduledDataImportController {
         if (scheduledImportData.getJobId() == null) {
             savedJob = scheduledDataImportService.scheduleDataImport(scheduledImportData, userContext);
         } else {
-            JobState currentJobState = scheduledDataImportService.getJobState(scheduledImportData.getJobId());
+            JobState currentJobState = scheduleControllerHelper.getJobState(scheduledImportData.getJobId());
             if (currentJobState == JobState.DELETED) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "editDeletedJob.error"));
                 return "redirect:/stars/scheduledDataImport/" + scheduledImportData.getJobId() + "/view";
@@ -164,7 +165,7 @@ public class ScheduledDataImportController {
     
     @DeleteMapping("{jobId}/delete")
     public String delete(@PathVariable int jobId, FlashScope flash) {
-        JobState currentJobState = scheduledDataImportService.getJobState(jobId);
+        JobState currentJobState = scheduleControllerHelper.getJobState(jobId);
         if (currentJobState == JobState.DELETED) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "editDeletedJob.error"));
             return "redirect:/stars/scheduledDataImport/" + jobId + "/view";
@@ -177,23 +178,23 @@ public class ScheduledDataImportController {
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", deleteJob.getScheduleName()));
         return "redirect:/stars/scheduledDataImport/list";
     }
-    
+
     @GetMapping("toggleJob")
     public @ResponseBody Map<String, Object> toggleEnabled(HttpServletRequest request) throws ServletException {
-            Map<String, Object> json = scheduledGroupRequestExecutionService.toggleJob(request);
-        return json;
+        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        return scheduleControllerHelper.toggleJob(toggleJobId, userContext);
     }
 
     @GetMapping("startJob")
     public @ResponseBody Map<String, Object> startJob(HttpServletRequest request) throws ServletException {
+        int jobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        String jobId = request.getParameter("toggleJobId");
         String cronExpression = null;
         try {
-            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
-        } catch (Exception e) {}
-        Map<String, Object> json = scheduledGroupRequestExecutionService.startJob(request, cronExpression);
-        return json;
+            cronExpression = cronExpressionTagService.build(Integer.toString(jobId), request, userContext);
+        } catch (CronException e) {}
+        return scheduleControllerHelper.startJob(jobId, cronExpression, userContext);
     }
 
     private void setupModel(ModelMap model, ScheduledDataImport scheduledDataImport,

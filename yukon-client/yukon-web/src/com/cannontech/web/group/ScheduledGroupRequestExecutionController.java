@@ -61,9 +61,11 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -86,6 +88,7 @@ public class ScheduledGroupRequestExecutionController {
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private ScheduleControllerHelper scheduleControllerHelper;
 
     private List<LiteCommand> meterCommands;
     private JobManager jobManager;
@@ -537,7 +540,9 @@ public class ScheduledGroupRequestExecutionController {
     @RequestMapping("toggleJob")
     public @ResponseBody Map<String, Object> toggleJob(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
-        return scheduledGroupRequestExecutionService.toggleJob(request);
+        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        return scheduleControllerHelper.toggleJob(toggleJobId, userContext);
     }
 
     @RequestMapping("startDialog")
@@ -577,15 +582,13 @@ public class ScheduledGroupRequestExecutionController {
     @RequestMapping(value = "startJob")
     public @ResponseBody Map<String, Object> startJob(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
+        int jobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        String jobId = request.getParameter("toggleJobId");
         String cronExpression = null;
         try {
-            cronExpression = cronExpressionTagService.build(jobId, request, userContext);
-        } catch (Exception e) {
-
-        }
-        return scheduledGroupRequestExecutionService.startJob(request, cronExpression);
+            cronExpression = cronExpressionTagService.build(Integer.toString(jobId), request, userContext);
+        } catch (CronException e) {}
+        return scheduleControllerHelper.startJob(jobId, cronExpression, userContext);
     }
 
     @RequestMapping("cancelScheduledJob")

@@ -852,13 +852,12 @@ public class JobManagerImpl implements JobManager {
 
     @Override
     public boolean toggleJobStatus(YukonJob job) {
-        boolean enabled = false;
         if (job.isDisabled()) {
             enableJob(job);
-            enabled = true;
+            return true;
         } else {
             disableJob(job);
+            return false;
         }
-        return enabled;
     }
 }

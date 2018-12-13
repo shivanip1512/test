@@ -166,7 +166,7 @@ public interface JobManager {
 
     /**
      * Toggles Job status. If disabled, make enabled. If enabled,
-     * make disabled. Returns new state of the job.
+     * make disabled. Returns true if new state of job is enabled, else false.
      */
     public boolean toggleJobStatus(YukonJob job);
 

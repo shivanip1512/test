@@ -35,11 +35,6 @@ public interface ScheduledDataImportService {
     ScheduledDataImport deleteJobById(int jobId);
 
     /**
-     * Return the state of job with the specified jobId.
-     */
-    JobState getJobState(int jobId);
-
-    /**
      * Retrieve the scheduled data import jobs with specified paging parameters and shorting parameters.
      */
     SearchResults<ScheduledDataImportTaskJobWrapper> getScheduledFileImportJobData(PagingParameters paging,

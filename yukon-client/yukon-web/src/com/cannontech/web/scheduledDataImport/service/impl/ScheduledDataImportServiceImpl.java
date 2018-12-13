@@ -17,16 +17,13 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.jobs.dao.JobStatusDao;
-import com.cannontech.jobs.dao.impl.JobDisabledStatus;
-import com.cannontech.jobs.model.JobState;
-import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
@@ -42,9 +39,11 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     @Autowired @Qualifier("scheduledDataImport") 
     private YukonJobDefinition<ScheduledDataImportTask> scheduledDataImportJobDefinition;
     @Autowired private CronExpressionTagService cronExpressionTagService;
-    @Autowired private JobStatusDao jobStatusDao;
     @Autowired private ScheduledDataImportTaskJobWrapperFactory scheduledDataImportTaskJobWrapperFactory;
+    @Autowired private ScheduleControllerHelper scheduleControllerHelper;
     private Map<Column, Comparator<ScheduledDataImportTaskJobWrapper>> sorters;
+    private static Logger log = YukonLogManager.getLogger(ScheduledDataImportServiceImpl.class);
+
     @PostConstruct
     public void initialize() {
         Builder<Column, Comparator<ScheduledDataImportTaskJobWrapper>> builder = ImmutableMap.builder();
@@ -56,7 +55,6 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
         sorters = builder.build();
     }
 
-    private Logger log = YukonLogManager.getLogger(ScheduledDataImportServiceImpl.class);
     @Override
     public YukonJob scheduleDataImport(ScheduledDataImport data, YukonUserContext userContext) {
         log.info("Scheduling Data Import job. name=" + data.getScheduleName() + " importType=" + data.getImportType());
@@ -97,14 +95,6 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
         return getScheduleImportData(job, task);
     }
 
-    @Override
-    public JobState getJobState(int jobId) {
-        JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(jobId);
-        JobDisabledStatus jobDisabledStatus = jobManager.getJobDisabledStatus(jobId);
-        JobState jobState = JobState.of(jobDisabledStatus, status);
-        return jobState;
-    }
-
     /**
      * Builds the task with the specified jobDefinition and scheduledDataImport object.
      */
@@ -130,7 +120,7 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
         scheduledDataImport.setErrorFileOutputPath(task.getErrorFileOutputPath());
         scheduledDataImport.setScheduleDescription(getScheduleDescription(job));
         scheduledDataImport.setImportType(ScheduledImportType.fromName(task.getImportType()));
-        scheduledDataImport.setJobState(getJobState(job.getId()));
+        scheduledDataImport.setJobState(scheduleControllerHelper.getJobState(job.getId()));
         return scheduledDataImport;
     }
 

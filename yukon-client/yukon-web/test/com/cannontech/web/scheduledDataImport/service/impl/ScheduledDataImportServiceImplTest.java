@@ -95,12 +95,6 @@ public class ScheduledDataImportServiceImplTest {
     }
 
     @Test
-    public void test_getJobState() {
-        JobState state = scheduledDataImportServiceImplTest.getJobState(job.getId());
-        assertThat(state, equalTo(JobState.RUNNING));
-    }
-
-    @Test
     public void test_getJobById() {
         ScheduledDataImport scheduledDataImport = scheduledDataImportServiceImplTest.getJobById(job.getId());
         assertNotNull(scheduledDataImport);
