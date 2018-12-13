@@ -40,6 +40,8 @@ public class ScheduleControllerHelperTest {
 
     private void setMockData(ScheduledRepeatingJob scheduledRepeatingJob) throws Exception {
         job = scheduledRepeatingJob;
+        job.setId(911);
+        job.setCronString("0 1 * * *");
         scheduleControllerHelperTest = new ScheduleControllerHelper();
         jobManager = EasyMock.createMock(JobManager.class);
         LiteYukonUser user2 = new LiteYukonUser(-1);
@@ -78,16 +80,11 @@ public class ScheduleControllerHelperTest {
     }
 
     private ScheduledRepeatingJob getJob() {
-        ScheduledRepeatingJob job = new ScheduledRepeatingJob();
-        job.setId(911);
-        job.setCronString("0 1 * * *");
-        return job;
+        return new ScheduledRepeatingJob();
     }
 
     private ScheduledRepeatingJob getDeletedJob() {
         ScheduledRepeatingJob job = new ScheduledRepeatingJob();
-        job.setId(911);
-        job.setCronString("0 1 * * *");
         job.setDeleted(true);
         return job;
     }
