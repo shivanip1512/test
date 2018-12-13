@@ -20,8 +20,8 @@ yukon.widget.csrTrend = (function () {
             
             if (_initialized) return;
             
-            $(document).on('click', '.icon-help', function () {
-                var popupId = $(this).closest('.button').data('popup'),
+            $(document).on('click', '.js-help-icon', function () {
+                var popupId = $(this).data('popup'),
                     popup = $(popupId),
                     titleContainer = $(this).closest('.titled-container'),
                     helpText = titleContainer.find('.js-trend-help-text');

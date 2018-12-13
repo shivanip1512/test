@@ -66,7 +66,7 @@
                 <cti:button renderMode="image" icon="icon-email-open" classes="widget-controls" data-popup="#smart-notifications-popup-${thisId}"/>
             </c:if>
             <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl or showHelpIcon}">
-                <cti:button renderMode="image" icon="icon-help" classes="widget-controls" data-popup="#box-container-info-popup-${thisId}"/>
+                <cti:button renderMode="image" icon="icon-help" classes="widget-controls js-help-icon" data-popup="#box-container-info-popup-${thisId}"/>
             </c:if>
             <c:if test="${hideEnabled}">
                 <cti:button renderMode="image" icon="show-hide" classes="widget-controls js-show-hide"/>
