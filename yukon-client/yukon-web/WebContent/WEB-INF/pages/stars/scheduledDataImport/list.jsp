@@ -63,10 +63,10 @@
                                         <cm:dropdown icon="icon-cog">
                                             <cm:dropdownOption id="start-schedule-${jobId}" classes="js-schedule-start-now" key=".start" data-job-id="${jobId}" icon="icon-bullet-go"/>
                                             <cm:dropdownOption id="view-history-${jobId}" key="yukon.web.components.button.history.label" icon="icon-script" />
-                                            <cm:dropdownOption id="delete-schedule-btn-${jobId}" data-ok-event="yukon:schedule:delete" data-job-id="${jobId}" key=".delete" icon="icon-cross" classes="js-hide-dropdown"/>
-                                            <d:confirm on="#delete-schedule-btn-${jobId}" nameKey="confirmDelete"  argument="${jobWrapper.name}"/>
                                             <cm:dropdownOption id="disable-schedule-${jobId}" key="yukon.common.disable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-delete"/>
                                             <cm:dropdownOption id="enable-schedule-${jobId}" key="yukon.common.enable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-accept"/>
+                                            <cm:dropdownOption id="delete-schedule-btn-${jobId}" data-ok-event="yukon:schedule:delete" data-job-id="${jobId}" key=".delete" icon="icon-cross" classes="js-hide-dropdown"/>
+                                            <d:confirm on="#delete-schedule-btn-${jobId}" nameKey="confirmDelete"  argument="${jobWrapper.name}"/>
                                         </cm:dropdown>
                                     </td>
                                 </tr>

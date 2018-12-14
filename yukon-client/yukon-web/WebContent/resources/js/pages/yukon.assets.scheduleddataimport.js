@@ -106,6 +106,7 @@ yukon.assets.scheduleddataimport = (function() {
                     startScheduleNow = $('#start-schedule-' + jobId),
                     deleteJobButton = $('#delete-schedule-btn-' + jobId);
                 if (state === 'Disabled') {
+                    $(jobRow).addClass('subtle');
                     enableSchedule.show();
                     disableSchedule.hide();
                     //enable -> enable and delete and disable start
@@ -120,6 +121,7 @@ yukon.assets.scheduleddataimport = (function() {
                     _enableOrDisableField(deleteJobButton, true);
                     _enableOrDisableField(disableSchedule, true);
                 } else if (state === 'Scheduled') {
+                    $(jobRow).removeClass('subtle');
                     enableSchedule.hide();
                     disableSchedule.show();
                     //enable -> start and disable and delete
