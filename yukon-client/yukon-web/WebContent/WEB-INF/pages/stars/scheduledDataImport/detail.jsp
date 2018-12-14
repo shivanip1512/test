@@ -11,7 +11,10 @@
     
     <cti:displayForPageEditModes modes="VIEW">
         <c:set var="disableJobEdit" value="${scheduledImportData.jobState eq 'RUNNING' or  scheduledImportData.jobState eq 'DELETED'}"/>
-        
+        <c:set var="disableJobCss" value=""/>
+        <c:if test="${disableJobEdit == true}">
+            <c:set var="disableJobCss" value="js-disable-job"/>
+        </c:if>
         <div id="page-actions" class="dn">
             <!-- Create -->
             <cti:url var="createUrl" value="/stars/scheduledDataImport/create" />
@@ -21,16 +24,18 @@
             <!-- Edit -->
             <cti:url var="editUrl" value="/stars/scheduledDataImport/${scheduledImportData.jobId}/edit" />
             <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"
-                               disabled="${disableJobEdit}" />
+                               disabled="${disableJobEdit}" classes="${disableJobCss}"/>
             <li class="divider"></li>
             <!-- Delete -->
-            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown ${disableJobCss}"
                                id="delete-option" data-ok-event="yukon:scheduledDataImport:delete" disabled="${disableJobEdit}"/>
-            <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${scheduledImportData.scheduleName}" />
-            <cti:url var="deleteUrl" value="/stars/scheduledDataImport/${scheduledImportData.jobId}/delete" />
-            <form:form id="delete-scheduledDataImport-form" action="${deleteUrl}" method="delete">
-                <cti:csrfToken/>
-            </form:form>
+            <c:if test="${disableJobEdit == false}">
+                <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${scheduledImportData.scheduleName}" />
+                <cti:url var="deleteUrl" value="/stars/scheduledDataImport/${scheduledImportData.jobId}/delete" />
+                <form:form id="delete-scheduledDataImport-form" action="${deleteUrl}" method="delete">
+                    <cti:csrfToken/>
+                </form:form>
+            </c:if>
         </div>
     </cti:displayForPageEditModes>
     

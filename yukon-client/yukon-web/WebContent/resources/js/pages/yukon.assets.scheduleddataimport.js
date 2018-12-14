@@ -91,6 +91,11 @@ yukon.assets.scheduleddataimport = (function() {
                 });
             });
             
+            $(document).on('click', '.js-disable-job', function (event) {
+                event.preventDefault();
+                $(this).css('cursor', 'default');
+            });
+            
             _initialized = true;
         },
         

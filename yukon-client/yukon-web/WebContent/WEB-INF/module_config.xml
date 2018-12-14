@@ -1211,12 +1211,15 @@
                 <pages>
                     <page name="scheduledDataImportDetail.CREATE" type="BASIC"/>
                     <page name="scheduledDataImportDetail.VIEW" type="DETAIL">
-                        <link>/stars/scheduledDataImport/{jobId}/view</link>
+                        <link>/stars/scheduledDataImport/${scheduledImportData.jobId}/view</link>
                         <labelArgument>${scheduledImportData.scheduleName}</labelArgument>
+                        <pages>
+                            <page name="scheduledDataImportDetail.EDIT" type="BASIC" hideFavorite="true">
+                                <labelArgument>${scheduledImportData.scheduleName}</labelArgument>
+                            </page>
+                        </pages>
                     </page>
-                    <page name="scheduledDataImportDetail.EDIT" type="BASIC" hideFavorite="true">
-                        <labelArgument>${scheduledImportData.scheduleName}</labelArgument>
-                    </page>
+                    
                 </pages>
             </page>
             <page name="infrastructureWarnings" type="BASIC" hideSearch="true">
