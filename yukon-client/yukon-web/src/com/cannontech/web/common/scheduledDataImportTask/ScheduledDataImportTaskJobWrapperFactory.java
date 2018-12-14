@@ -2,9 +2,11 @@ package com.cannontech.web.common.scheduledDataImportTask;
 
 import java.util.Comparator;
 import java.util.Date;
-import javax.annotation.Resource;
+
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
@@ -16,15 +18,14 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
-import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.scheduledDataImport.tasks.ScheduledDataImportTask;
-import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 public class ScheduledDataImportTaskJobWrapperFactory {
-    private JobManager jobManager;
+    @Autowired private JobManager jobManager;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private JobStatusDao jobStatusDao;
+    private static Logger log = YukonLogManager.getLogger(ScheduledDataImportTaskJobWrapperFactory.class);
 
     public ScheduledDataImportTaskJobWrapper createJobWrapper(ScheduledRepeatingJob scheduledRepeatingJob,
             YukonUserContext userContext) {
@@ -35,8 +36,6 @@ public class ScheduledDataImportTaskJobWrapperFactory {
         private ScheduledRepeatingJob job;
         private YukonUserContext yukonUserContext;
         private ScheduledDataImportTask task;
-
-        private CronExpressionTagState tagState;
         private JobState jobState;
 
         public ScheduledDataImportTaskJobWrapper(ScheduledRepeatingJob scheduledRepeatingJob,
@@ -44,31 +43,19 @@ public class ScheduledDataImportTaskJobWrapperFactory {
             this.job = scheduledRepeatingJob;
             this.yukonUserContext = yukonUserContext;
             this.task = (ScheduledDataImportTask) jobManager.instantiateTask(this.job);
-            this.setTagState(cronExpressionTagService.parse(scheduledRepeatingJob.getCronString(), yukonUserContext));
             JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(scheduledRepeatingJob.getId());
             JobDisabledStatus jobDisabledStatus = jobManager.getJobDisabledStatus(scheduledRepeatingJob.getId());
             this.jobState = JobState.of(jobDisabledStatus, status);
-        }
-
-        public Date getLastRun() {
-            JobStatus<YukonJob> lastRunJob = jobManager.getLatestStatusByJobId(this.job.getId());
-            if (lastRunJob == null) {
-                return null;
-            }
-            return lastRunJob.getStartTime();
         }
 
         public Date getNextRun() {
             Date nextRun = null;
             try {
                 nextRun = jobManager.getNextRuntime(job, new Date());
-            } catch (ScheduleException e) {}
-
+            } catch (ScheduleException e) {
+                log.error(e.getMessage());
+            }
             return nextRun;
-        }
-
-        public String getName() {
-            return this.task.getScheduleName();
         }
 
         public String getScheduleDescription() {
@@ -104,91 +91,36 @@ public class ScheduledDataImportTaskJobWrapperFactory {
             this.task = task;
         }
 
-        public CronExpressionTagState getTagState() {
-            return tagState;
-        }
-
-        public void setTagState(CronExpressionTagState tagState) {
-            this.tagState = tagState;
-        }
-
         public JobState getJobState() {
             return jobState;
         }
 
-        public String getShortName() {
+        public String getName() {
             return this.task.getScheduleName();
         }
 
         public ScheduledImportType getImportType() {
-            return  ScheduledImportType.fromName(this.task.getImportType());
+            return ScheduledImportType.fromName(this.task.getImportType());
         }
-       
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getJobNameComparator() {
-        Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<ScheduledDataImportTaskJobWrapper> jobNameOrdering =
-            normalStringComparer.onResultOf(new Function<ScheduledDataImportTaskJobWrapper, String>() {
-                @Override
-                public String apply(ScheduledDataImportTaskJobWrapper from) {
-                    return from.getName();
-                }
-            });
-        return jobNameOrdering;
+        return Ordering.natural().onResultOf(ScheduledDataImportTaskJobWrapper::getName);
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getRunScheduleComparator() {
-        Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<ScheduledDataImportTaskJobWrapper> jobRunScheduleOrdering =
-            normalStringComparer.onResultOf(new Function<ScheduledDataImportTaskJobWrapper, String>() {
-                @Override
-                public String apply(ScheduledDataImportTaskJobWrapper from) {
-                    return from.getScheduleDescription();
-                }
-            });
-        return jobRunScheduleOrdering;
+        return Ordering.natural().onResultOf(ScheduledDataImportTaskJobWrapper::getScheduleDescription);
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getNextRunComparator() {
-        Ordering<Date> dateComparer = Ordering.natural().nullsLast();
-        Ordering<ScheduledDataImportTaskJobWrapper> jobNextRunOrdering =
-            dateComparer.onResultOf(new Function<ScheduledDataImportTaskJobWrapper, Date>() {
-                @Override
-                public Date apply(ScheduledDataImportTaskJobWrapper from) {
-                    return from.getNextRun();
-                }
-            });
-        return jobNextRunOrdering;
+        return Ordering.natural().onResultOf(ScheduledDataImportTaskJobWrapper::getNextRun);
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getStatusComparator() {
-        Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<ScheduledDataImportTaskJobWrapper> jobStatusOrdering =
-            normalStringComparer.onResultOf(new Function<ScheduledDataImportTaskJobWrapper, String>() {
-                @Override
-                public String apply(ScheduledDataImportTaskJobWrapper from) {
-                    return from.getJobState().name();
-                }
-            });
-        return jobStatusOrdering;
+        return Ordering.natural().onResultOf(wrapper -> wrapper.getJobState().name());
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getJobTypeComparator() {
-        Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<ScheduledDataImportTaskJobWrapper> jobTypeOrdering =
-            normalStringComparer.onResultOf(new Function<ScheduledDataImportTaskJobWrapper, String>() {
-                @Override
-                public String apply(ScheduledDataImportTaskJobWrapper from) {
-                    return from.task.getImportType();
-                }
-            });
-        return jobTypeOrdering;
+        return Ordering.natural().onResultOf(wrapper -> wrapper.task.getImportType());
     }
-
-    @Resource(name = "jobManager")
-    public void setJobManager(JobManager jobManager) {
-        this.jobManager = jobManager;
-    }
-
 }

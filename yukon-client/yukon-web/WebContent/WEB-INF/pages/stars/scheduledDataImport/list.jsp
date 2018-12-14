@@ -40,7 +40,7 @@
                                 <%-- Schedule Name --%>
                                     <td>
                                         <cti:url var="jobDetailUrl" value="/stars/scheduledDataImport/${jobId}/view"/>
-                                        <a href="${jobDetailUrl}">${fn:escapeXml(jobWrapper.shortName)}</a>
+                                        <a href="${jobDetailUrl}">${fn:escapeXml(jobWrapper.name)}</a>
                                     </td>
                                     <%-- Import Type --%>
                                     <cti:msg2 var="importType" key="${jobWrapper.importType}"/>
