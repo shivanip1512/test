@@ -55,8 +55,15 @@
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
                         <c:if test="${hasStats}">
                             <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
-                                <cti:url var="eventDetailsUrl" value="/dr/rf/broadcast/eventDetail/${test.messageId}"/>
-                                <cm:dropdownOption key=".eventDetails" href="${eventDetailsUrl}"/>
+                                <c:choose>
+                                    <c:when test = "${test.eventMessage.archived}">
+                                        <cm:dropdownOption key=".detailsNotAvailable"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:url var="eventDetailsUrl" value="/dr/rf/broadcast/eventDetail/${test.messageId}"/>
+                                        <cm:dropdownOption key=".eventDetails" href="${eventDetailsUrl}"/>
+                                    </c:otherwise>
+                                </c:choose>
                             </cm:dropdown>
                         </c:if>
                     </td>

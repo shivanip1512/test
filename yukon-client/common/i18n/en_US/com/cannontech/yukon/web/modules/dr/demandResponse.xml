@@ -672,6 +672,7 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.rf.details.numTests">Tests Found</entry>
 <entry key="yukon.web.modules.dr.rf.details.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.rf.details.results">Results</entry>
+<entry key="yukon.web.modules.dr.rf.details.detailsNotAvailable">Individual device details are not available beyond 180 days.</entry>
 <entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
 <entry key="yukon.web.modules.dr.rf.details.accountNo">Account No.</entry>
 <entry key="yukon.web.modules.dr.rf.details.unknownType">Current Status</entry>
