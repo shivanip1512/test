@@ -672,10 +672,6 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.rf.details.numTests">Tests Found</entry>
 <entry key="yukon.web.modules.dr.rf.details.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.rf.details.results">Results</entry>
-<entry key="yukon.web.modules.dr.rf.details.showUnreported">Show Unreported</entry>
-<entry key="yukon.web.modules.dr.rf.details.showSuccess">Show Confirmed Success</entry>
-<entry key="yukon.web.modules.dr.rf.details.showMissed">Show Confirmed Missed</entry>
-<entry key="yukon.web.modules.dr.rf.details.detailsNotAvailable">Individual device details are not available beyond 180 days.</entry>
 <entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
 <entry key="yukon.web.modules.dr.rf.details.accountNo">Account No.</entry>
 <entry key="yukon.web.modules.dr.rf.details.unknownType">Current Status</entry>
@@ -689,6 +685,7 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.rf.details.unreported.popup.title">Unreported Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.success.popup.title">Confirmed Success Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.rfPerformanceResult">RF Broadcast Performance Result</entry>
+<entry key="yukon.web.modules.dr.rf.details.eventDetails">Event Details</entry>
 <!-- Recent Event Participation -->
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.title">Recent Event Participation</entry>
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
@@ -1113,5 +1110,4 @@ The devices in this category have reported all available data for the selected d
 <br>
 The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique RF Broadcast Performance test message for the device. When the data is received, the device will re-categorized appropriately.
 ]]></entry>
-<entry key="yukon.web.modules.dr.rfPerformance.eventDetails">Event Details</entry>
 </properties>

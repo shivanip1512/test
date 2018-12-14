@@ -56,7 +56,7 @@
                         <c:if test="${hasStats}">
                             <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
                                 <cti:url var="eventDetailsUrl" value="/dr/rf/broadcast/eventDetail/${test.messageId}"/>
-                                <cm:dropdownOption key="yukon.web.modules.dr.rfPerformance.eventDetails" href="${eventDetailsUrl}"/>
+                                <cm:dropdownOption key=".eventDetails" href="${eventDetailsUrl}"/>
                             </cm:dropdown>
                         </c:if>
                     </td>
