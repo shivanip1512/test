@@ -11,6 +11,7 @@ public enum ManagedService {
     MAINTENANCE("System Maintenance", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/maintenance/service/maintenanceContext.xml"),
     SERVER_DEVICE_CREATION("Server Device Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/serverDeviceCreation/serverDeviceCreationContext.xml"),
     ECOBEE_AUTH_TOKEN("Ecobee Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/ecobee/authToken/ecobeeAuthTokenContext.xml"),
+    NEST_MESSAGE_LISTENER("Nest Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/nestMessageListener/nestMessageListenerContext.xml")
     ;
     private final String name;
     private final ServiceType type;
