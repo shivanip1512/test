@@ -99,34 +99,14 @@ public class MenuController {
     
     private boolean hasYukonActionsPermission(YukonRoleProperty roleProperty, LiteYukonUser user) {
         return rolePropertyDao.checkAnyLevel(roleProperty, CapControlCommandsAccessLevel.getYukonActionsLevels(), user);
-/*        if (rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS, user) || 
-                rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS, user) ||
-                rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.YUKON_ACTIONS_ONLY, user)) {
-            return true;
-        }
-        return false;*/
     }
     
     private boolean hasNonOperationCommandsPermission(YukonRoleProperty roleProperty, LiteYukonUser user) {
         return rolePropertyDao.checkAnyLevel(roleProperty, CapControlCommandsAccessLevel.getNonOperationLevels(), user);
-/*
-        if (rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS, user) || 
-                rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS, user) ||
-                rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS, user) ||
-                rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS, user)) {
-            return true;
-        }
-        return false;*/
     }
     
     private boolean hasFieldOperationCommandsPermission(YukonRoleProperty roleProperty, LiteYukonUser user) {
         return rolePropertyDao.checkAnyLevel(roleProperty, CapControlCommandsAccessLevel.getFieldOperationLevels(), user);
-
-/*        if (rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS, user) || 
-                rolePropertyDao.checkLevel(roleProperty, CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS, user)) {
-            return true;
-        }
-        return false;*/
     }
     
     private void setupAreaMenuModel(ModelMap model, StreamableCapObject area, LiteYukonUser user) {
