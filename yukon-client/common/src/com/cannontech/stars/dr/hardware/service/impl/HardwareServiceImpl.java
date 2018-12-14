@@ -188,11 +188,6 @@ public class HardwareServiceImpl implements HardwareService {
         YukonPao pao = paoDao.getYukonPao(lib.getDeviceID());
         hardwareTypeExtensionService.moveDeviceToInventory(pao, id);
 
-        // Remove Latitude and Longitude for Two way LCR
-        if (lib.getDeviceID() > 0 && paoLocationDao.getLocation(lib.getDeviceID()) != null) {
-            paoLocationDao.delete(lib.getDeviceID());
-        }
-
         // Log hardware deletion
         hardwareEventLogService.hardwareRemoved(user, lib.getDeviceLabel(), accountNumber);
     }

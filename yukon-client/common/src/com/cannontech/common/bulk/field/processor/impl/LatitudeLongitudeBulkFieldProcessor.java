@@ -9,9 +9,11 @@ import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
@@ -36,19 +38,9 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                     + ": " + e.getMessage(), "deleteLocation", e, device.getPaoIdentifier() );
             }
         }
-        
-        // Otherwise, check for valid values and update lat/long
-        if (value.getLatitude() == null || ((value.getLatitude() < -90.0) || (value.getLatitude() > 90.0))) {
-            throw new ProcessingException(
-                "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
-                    + device.getPaoIdentifier(), "invalidLatitude", "-90", "90", device.getPaoIdentifier());
-        }
-        if (value.getLongitude() == null || ((value.getLongitude() < -180.0) || (value.getLongitude() > 180.0))) {
-            throw new ProcessingException(
-                "Valid Longitude (Must be between -180 and 180) not specified for device with paoId "
-                    + device.getPaoIdentifier(), "invalidLongitude", "-180", "180", device.getPaoIdentifier());
-        }
-        
+
+            locationValidation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude());
+
         try {
             PaoLocation location =
                 new PaoLocation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude(),
@@ -69,6 +61,34 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
         } catch (DataAccessException e) {
             throw new ProcessingException("Could not set location of device with paoId " + device.getPaoIdentifier()
                 + ": " + e.getMessage(), "setLocation", e, device.getPaoIdentifier());
+        }
+    }
+
+    public static void locationValidation(PaoIdentifier paoIdentifier, Double latitude, Double longitude) {
+        if (latitude != null) {
+            boolean isLatitudeValid = YukonValidationUtils.isLatitudeInRange(latitude);
+            if (!isLatitudeValid) {
+                throw new ProcessingException(
+                    "Valid Latitude (Must be between -90 and 90) not specified for device with paoId " + paoIdentifier,
+                    "invalidLatitude", "-90", "90", paoIdentifier);
+            }
+        } else {
+            throw new ProcessingException(
+                "Valid Latitude (Must be between -90 and 90) not specified for device with paoId " + paoIdentifier,
+                "invalidLatitude", "-90", "90", paoIdentifier);
+        }
+
+        if (longitude != null) {
+            boolean isLongitudeValid = YukonValidationUtils.isLongitudeInRange(longitude);
+            if (!isLongitudeValid) {
+                throw new ProcessingException(
+                    "Valid Longitude (Must be between -180 and 180) not specified for device with paoId " + paoIdentifier,
+                    "invalidLongitude", "-180", "180", paoIdentifier);
+            }
+        } else {
+            throw new ProcessingException(
+                "Valid Longitude (Must be between -180 and 180) not specified for device with paoId " + paoIdentifier,
+                "invalidLongitude", "-180", "180", paoIdentifier);
         }
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.bulk.field.processor.impl.LatitudeLongitudeBulkFieldProcessor;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
@@ -471,13 +472,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         // Remove device from the account
         starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
-
-        // Remove Latitude and Longitude for Two way LCR
-        HardwareType hardwareType = getHardwareType(dto, energyCompany);
-        if (hardwareType.isTwoWay() && liteInv.getDeviceID() > 0
-            && paoLocationDao.getLocation(liteInv.getDeviceID()) != null) {
-            paoLocationDao.delete(liteInv.getDeviceID());
-        }
     }
 
     @Override
@@ -489,43 +483,37 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
     /* Method to set or update the latitude and longitude for the hardware */
     private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
-        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0 && dto.getLatitude() != null
-            && dto.getLongitude() != null) {
 
-            DisplayablePao displayablePaoHardware =
+        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
+            if (dto.getLatitude() != null && dto.getLongitude() != null) {
+                saveLocation(dto, lib);
+            } else if (dto.getLatitude() != null || dto.getLongitude() != null) {
+                saveLocation(dto, lib);
+            } else if (dto.getLatitude() == null && dto.getLongitude() == null) {
+                paoLocationDao.delete(lib.getDeviceID());
+            }
+        }
+    }
+
+    /* Method to save the location for the hardware */
+    private void saveLocation(LmDeviceDto deviceDto, LiteInventoryBase lib) {
+        DisplayablePao displayablePaoHardware =
                 paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
 
             try {
-                validateForLocation(displayablePaoHardware, dto);
+                validateForLocation(displayablePaoHardware, deviceDto);
                 PaoLocation newLocation =
-                    new PaoLocation(displayablePaoHardware.getPaoIdentifier(), dto.getLatitude(), dto.getLongitude());
+                    new PaoLocation(displayablePaoHardware.getPaoIdentifier(), deviceDto.getLatitude(), deviceDto.getLongitude());
                 paoLocationDao.save(newLocation);
             } catch (ProcessingException e) {
                 throw e;
             }
-
-        }
-        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0 && dto.getLatitude() == null
-            && dto.getLongitude() == null) {
-            paoLocationDao.delete(lib.getDeviceID());
-        }
     }
-
+    
     /* Method to validate the Latitude and Longitude for the hardware */
     private void validateForLocation(DisplayablePao displayablePaoForHardware, LmDeviceDto deviceDto) throws ProcessingException{
-        if (((deviceDto.getLatitude() < -90.0) || (deviceDto.getLatitude() > 90.0))) {
-            throw new ProcessingException(
-                "Valid Latitude (Must be between -90 and 90) not specified for device with paoId "
-                    + displayablePaoForHardware.getPaoIdentifier(),
-                "invalidLatitude", "-90", "90", displayablePaoForHardware.getPaoIdentifier());
-        } else if (((deviceDto.getLongitude() < -180.0) || (deviceDto.getLongitude() > 180.0))) {
-            throw new ProcessingException(
-                "Valid Longitude (Must be between -180 and 180) not specified for device with paoId "
-                    + displayablePaoForHardware.getPaoIdentifier(),
-                "invalidLongitude", "-180", "180", displayablePaoForHardware.getPaoIdentifier());
-        } else {
-            return;
-        }
+        LatitudeLongitudeBulkFieldProcessor.locationValidation(displayablePaoForHardware.getPaoIdentifier(),
+            deviceDto.getLatitude(), deviceDto.getLongitude());
     }
 
     private boolean isOperationAllowedForHardware(HardwareType hardwareType) {

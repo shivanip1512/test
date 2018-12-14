@@ -32,7 +32,7 @@ public class StarsControllableDeviceHelperTest {
     }
 
     @Test
-    public void testIsvalidLocation() {
+    public void testIsValidLocation() {
         PaoIdentifier paoIdentifier = new PaoIdentifier(2804, PaoType.LCR6700_RFN);
         DisplayablePao displayablePao = new DisplayableDevice(paoIdentifier, "2879");
         LmDeviceDto lmDeviceDto = new LmDeviceDto();

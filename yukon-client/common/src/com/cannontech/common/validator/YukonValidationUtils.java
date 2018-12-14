@@ -231,4 +231,19 @@ public class YukonValidationUtils extends ValidationUtils {
         errors.rejectValue(fields[fields.length - 1], errorMessageKey, errorArgs, "yukon.common.blank");
     }
 
+    /* Validation for checking the latitude */
+    public static boolean isLatitudeInRange(Double latitude) {
+        if (latitude > 90 || latitude < -90) {
+            return false;
+        }
+        return true;
+    }
+
+    /* Validation for checking the longitude */
+    public static boolean isLongitudeInRange(Double longitude) {
+        if (longitude > 180 || longitude < -180) {
+            return false;
+        }
+        return true;
+    }
 }
