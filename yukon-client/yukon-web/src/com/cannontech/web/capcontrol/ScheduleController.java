@@ -32,6 +32,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
@@ -76,9 +77,8 @@ public class ScheduleController {
     private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
 
     private void setUpModel(String command, String schedule, LiteYukonUser user, ModelMap model) {
-        
-        boolean hasCapBankRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
-        boolean hasSubbusRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
+        boolean hasCapBankRole = rolePropertyDao.checkAnyLevel(YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, CapControlCommandsAccessLevel.getFieldOperationLevels(), user);
+        boolean hasSubbusRole = rolePropertyDao.checkAnyLevel(YukonRoleProperty.SUBBUS_COMMANDS_AND_ACTIONS, CapControlCommandsAccessLevel.getFieldOperationLevels(), user);
         model.addAttribute("hasActionRoles", hasCapBankRole && hasSubbusRole);
         
         //Create filters

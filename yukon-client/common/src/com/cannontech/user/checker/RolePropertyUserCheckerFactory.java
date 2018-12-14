@@ -4,6 +4,7 @@ import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
@@ -48,6 +49,32 @@ public class RolePropertyUserCheckerFactory {
             @Override
             public boolean check(LiteYukonUser user) {
                 return rolePropertyDao.checkLevel(property, accessLevel, user);
+            };
+            
+            @Override
+            public String toString() {
+                return YukonRoleProperty.ENDPOINT_PERMISSION + " checker";
+            }
+        };
+        return checker;
+    }
+    
+    public UserChecker createCapControlCommandsAccessChecker(YukonRoleProperty property, String level) {
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                boolean result = false;
+                if (!level.isEmpty()) {
+                    String[] possibleLevels = level.split(",");
+                    for (String possibleLevel : possibleLevels) {
+                        CapControlCommandsAccessLevel accessLevel = CapControlCommandsAccessLevel.valueOf(possibleLevel.trim());
+                        result = rolePropertyDao.checkLevel(property, accessLevel, user);
+                        if (result) {
+                            return result;
+                        }
+                    }
+                }
+                return result;
             };
             
             @Override

@@ -15,6 +15,12 @@
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
+<cti:checkRolesAndProperties value="SUBBUS_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasSubBusCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+
 <cti:url var="zoneCreatorUrl" value="/capcontrol/ivvc/wizard/zoneCreationWizard">
     <cti:param name="subBusId" value="${subBusId}"/>
 </cti:url>
@@ -27,15 +33,15 @@
 
 <cti:toJson object="${hours}" id="range-hours"/>
     
-<cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
+<c:if test="${hasSubBusCommandsAndActionsAccess}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="subbusState"]');
     </script>
-</cti:checkRolesAndProperties>
+</c:if>
 
 <c:set var="dividerAdded" value="false" />
 
- <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS"> 
+<c:if test="${hasSubBusCommandsAndActionsAccess}">
     <div class="js-page-additional-actions dn">
         <c:if test="${not dividerAdded}">
             <li class="divider">
@@ -43,7 +49,7 @@
         </c:if>
         <cm:dropdownOption linkId="subbusState_${subBusId}" key="yukon.common.actions" icon="icon-cog"/>
     </div>
-</cti:checkRolesAndProperties>
+</c:if>
 
 <c:if test="${hasEditingRole}">
     <div class="js-page-additional-actions dn">

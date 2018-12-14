@@ -27,6 +27,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.BadPropertyTypeException;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.NotInRoleException;
@@ -226,6 +227,31 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         try {
             AccessLevel level = getPropertyEnumValue(property, AccessLevel.class, user);
             return level.grantAccess(minLevel);
+        } catch (UserNotInRoleException e) {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean checkLevel(YukonRoleProperty property, CapControlCommandsAccessLevel level, LiteYukonUser user) {
+        try {
+            CapControlCommandsAccessLevel userLevel = getPropertyEnumValue(property, CapControlCommandsAccessLevel.class, user);
+            return userLevel.grantAccess(level);
+        } catch (UserNotInRoleException e) {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean checkAnyLevel(YukonRoleProperty property, CapControlCommandsAccessLevel[] levels, LiteYukonUser user) {
+        try {
+            CapControlCommandsAccessLevel userLevel = getPropertyEnumValue(property, CapControlCommandsAccessLevel.class, user);
+            for (CapControlCommandsAccessLevel level : levels) {
+                if (userLevel.grantAccess(level)) {
+                    return true;
+                }
+            }
+            return false;
         } catch (UserNotInRoleException e) {
             return false;
         }

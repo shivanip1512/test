@@ -21,10 +21,11 @@
     
     <tags:sectionContainer2 nameKey="properties" controls="${legend}">
         <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="prop">
+            <cti:msg2 var="propertyDisplayName" key="${prop.extra.key}"/>
             <div class="setting">
                 <div class="column-6-18 clearfix">
                     <div class="column one">
-                        <label for="${prop.extra.yukonRoleProperty}"><i:inline key="${prop.extra.key}"/></label>
+                        <label for="${prop.extra.yukonRoleProperty}">${propertyDisplayName}</label>
                     </div>
                     <div class="column two nogutter">
                         <div class="default-indicator">
@@ -38,13 +39,21 @@
                             <div class="value">
                                 <tags:simpleInputType id="${prop.extra.yukonRoleProperty}" 
                                     input="${prop.valueType}" path="${prop.path}"/>
+                                <cti:msg2 var="helpText" key="${prop.extra.yukonRoleProperty.helpTextKey}" blankIfMissing="true"/>
+                                <c:if test="${!empty helpText}">
+                                    <cti:icon icon="icon-help" classes="ML0 cp fn" 
+                                        data-popup="#helpText-${prop.extra.yukonRoleProperty}" data-popup-toggle=""/>
+                                        <div id="helpText-${prop.extra.yukonRoleProperty}" class="dn" 
+                                            data-title="${propertyDisplayName}" data-width="600">${helpText}</div>
+                                </c:if>
                             </div>
                             <div class="description">
                                 <p class="wrbw">
                                     <i:inline key="${prop.extra.description}"/>
                                     <c:if test="${!empty prop.extra.defaultValue}">
+                                        <cti:msg2 var="formattedDefault" key="${prop.extra.defaultValue}" blankIfMissing="true"/>
                                         <span class="default">
-                                            <i:inline key=".default"/>:&nbsp;(${fn:escapeXml(prop.extra.defaultValue)})
+                                            <i:inline key=".default"/>:&nbsp;(${fn:escapeXml(!empty formattedDefault ? formattedDefault : prop.extra.defaultValue)})
                                         </span>
                                     </c:if>
                                     <form:errors path="${prop.path}" cssClass="error" element="div"/>

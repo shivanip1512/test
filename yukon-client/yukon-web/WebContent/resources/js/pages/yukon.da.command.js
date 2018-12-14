@@ -1,10 +1,15 @@
 $(document).on('click', 'li.menuOption.command', function(event) {
    yukon.da.common.hideMenu();
-    var doCommand = true;
-    var menuOption = $(event.currentTarget).closest("li");
-    var ul = menuOption.parent("ul");
-    if (ul.find("input[name='warnOnCommands']").val() === 'true') {
+    var doCommand = true,
+        menuOption = $(event.currentTarget).closest("li"),
+        ul = menuOption.closest('ul'),
+        confirmPopupLevel = ul.find("input[name='warnOnCommands']").val();
+    if (confirmPopupLevel === 'ALL_COMMANDS') {
         doCommand = confirm(menuOption.find('span.confirmMessage').html());
+    } else if (confirmPopupLevel === 'OPERATIONAL_COMMANDS') {
+        if ($(event.currentTarget).data('operationalCommand')) {
+            doCommand = confirm(menuOption.find('span.confirmMessage').html());
+        }
     }
     
     if (doCommand) {

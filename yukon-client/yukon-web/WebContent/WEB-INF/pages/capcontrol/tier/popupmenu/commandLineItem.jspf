@@ -1,0 +1,20 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+ <cti:msg2 var="commandName" key="${command.commandName}"/>
+ <c:set var="commandId" value="${command.commandName.commandId}"/>
+ <c:choose>
+    <c:when test="${command.enabled}">
+        <li class="menuOption command" value="${commandId}" data-operational-command="${command.commandName.isFieldOperationCommand()}">
+            <a href="javascript:void(0);">${commandName}</a>
+            <span class="confirmMessage dn"><i:inline key="yukon.web.modules.capcontrol.command.confirm" 
+                  arguments="${commandName}"/></span>
+        </li>
+    </c:when>
+    <c:otherwise>
+        <li class="menuOption" title="<i:inline key="${command.disabledTextKey}"/>">
+            <a href="javascript:void(0);" class="disabled-look">${commandName}</a>
+        </li>
+    </c:otherwise>
+</c:choose> 

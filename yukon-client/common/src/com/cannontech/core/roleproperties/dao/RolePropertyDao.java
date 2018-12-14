@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -362,4 +363,24 @@ public interface RolePropertyDao {
 
     void verifyLevel(YukonRoleProperty property, HierarchyPermissionLevel minLevel, LiteYukonUser user)
             throws NotAuthorizedException;
+
+    /**
+     * Returns true if the user cap control commands access level is equal to the given level.
+     * @param property - property to check
+     * @param level - level that grants access
+     * @param user
+     * @return boolean true if access is allowed
+     */
+    boolean checkLevel(YukonRoleProperty property, CapControlCommandsAccessLevel level,
+                       LiteYukonUser user);
+    
+    /**
+     * Returns true if the user cap control commands access level is equal to any of the given levels.
+     * @param property - property to check
+     * @param levels - levels that grants access
+     * @param user
+     * @return boolean true if access is allowed
+     */
+    boolean checkAnyLevel(YukonRoleProperty property, CapControlCommandsAccessLevel[] levels,
+                       LiteYukonUser user);
 }

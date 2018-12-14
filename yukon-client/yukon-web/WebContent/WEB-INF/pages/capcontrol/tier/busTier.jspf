@@ -9,13 +9,17 @@
 
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-<cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
-<c:if test="${not empty subBusList}">
+<cti:checkRolesAndProperties value="SUBBUS_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasSubBusCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+
+<c:if test="${hasSubBusCommandsAndActionsAccess && not empty subBusList}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="subbusState"]');
     </script>
 </c:if>
-</cti:checkRolesAndProperties>
 
 <c:set var="styleClass" value=""/>
 <c:if test="${fn:length(subBusList) > 1}">
@@ -179,13 +183,13 @@
                     <cti:msg2 var="busAddInfoTitle" key=".busAddInfoTitle" arguments="${viewableSubBus.ccName}"/>
 
                     <cm:dropdown icon="icon-cog">
-                         <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
+                        <c:if test="${hasSubBusCommandsAndActionsAccess}">
                             <li>
                                 <a id="subbusState_${subbusId}" href="javascript:void(0)" class="clearfix">
                                     <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".bus.actions"/></span>
                                 </a>
                             </li>
-                        </cti:checkRolesAndProperties>
+                        </c:if>
                         <cm:dropdownOption key=".busAddInfo.label" href="javascript:yukon.da.common.showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}')" icon="icon-magnifier" />
                         <cm:dropdownOption key=".location.label" href="${locationLink}" icon="icon-interstate" />
                         <c:if test="${viewableSubBus.ivvcControlled}">

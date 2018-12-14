@@ -21,11 +21,17 @@
 
 <c:set var="substationId" value="${substation.id}"/>
 
-<cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+<cti:checkRolesAndProperties value="SUBSTATION_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasSubstationCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+
+<c:if test="${hasSubstationCommandsAndActionsAccess}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="substationState"]');
     </script>
-</cti:checkRolesAndProperties>
+</c:if>
 
 <c:if test="${!orphan}">
     <script type="text/javascript">
@@ -67,9 +73,9 @@ $(function() {
         <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
     
         <c:if test="${!orphan}">
-            <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+            <c:if test="${hasSubstationCommandsAndActionsAccess}">
                 <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
-            </cti:checkRolesAndProperties>
+            </c:if>
         </c:if>
 
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">

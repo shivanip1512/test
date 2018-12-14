@@ -11,8 +11,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -32,6 +34,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -45,9 +48,6 @@ import com.cannontech.message.capcontrol.model.CapControlServerResponse;
 import com.cannontech.message.capcontrol.model.ChangeOpState;
 import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.ItemCommand;
-import com.cannontech.message.capcontrol.model.VerifyBanks;
-import com.cannontech.message.capcontrol.model.VerifyInactiveBanks;
-import com.cannontech.message.capcontrol.model.VerifySelectedBank;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
@@ -55,6 +55,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckCapControlCommandsAccessLevel;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -74,25 +75,25 @@ public class CommandController {
     @Autowired private DbChangeManager dbChangeManager;
     
     private static final Logger log = YukonLogManager.getLogger(CommandController.class);
-
+    
     private static ImmutableMap<CapControlType, YukonRoleProperty> permissions;
     
     static {
         Builder<CapControlType, YukonRoleProperty> builder = ImmutableMap.builder();
-        builder.put(CapControlType.AREA, YukonRoleProperty.ALLOW_AREA_CONTROLS);
-        builder.put(CapControlType.SPECIAL_AREA, YukonRoleProperty.ALLOW_AREA_CONTROLS);
-        builder.put(CapControlType.SUBSTATION, YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS);
-        builder.put(CapControlType.SUBBUS, YukonRoleProperty.ALLOW_SUBBUS_CONTROLS);
-        builder.put(CapControlType.FEEDER, YukonRoleProperty.ALLOW_FEEDER_CONTROLS);
-        builder.put(CapControlType.CAPBANK, YukonRoleProperty.ALLOW_CAPBANK_CONTROLS);
-        builder.put(CapControlType.LTC, YukonRoleProperty.ALLOW_CAPBANK_CONTROLS);
-        builder.put(CapControlType.GO_REGULATOR, YukonRoleProperty.ALLOW_CAPBANK_CONTROLS);
-        builder.put(CapControlType.PO_REGULATOR, YukonRoleProperty.ALLOW_CAPBANK_CONTROLS);
+        builder.put(CapControlType.AREA, YukonRoleProperty.AREA_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.SPECIAL_AREA, YukonRoleProperty.AREA_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.SUBSTATION, YukonRoleProperty.SUBSTATION_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.SUBBUS, YukonRoleProperty.SUBBUS_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.FEEDER, YukonRoleProperty.FEEDER_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.CAPBANK, YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.LTC, YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.GO_REGULATOR, YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS);
+        builder.put(CapControlType.PO_REGULATOR, YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS);
         permissions = builder.build();
     }
     
     /* NORMAL COMMANDS */
-    @RequestMapping("system")
+    @PostMapping("system")
     public String system(HttpServletResponse response,
                          ModelMap model, 
                          YukonUserContext context, 
@@ -122,7 +123,7 @@ public class CommandController {
         return sendStatusResponse(response, accessor, commandType, null, model, success);
     }
     
-    @RequestMapping("itemCommand")
+    @PostMapping("itemCommand")
     public String itemCommand(HttpServletResponse response, 
                               ModelMap model, 
                               YukonUserContext context, 
@@ -139,7 +140,21 @@ public class CommandController {
         
         /* CHECK USER/COMMAND AUTHORIZATION */
         String commandName = accessor.getMessage(commandType);
-        if (!rolePropertyDao.checkProperty(permissions.get(type), user)) {
+        boolean authorized = true;
+        if (commandType.isFieldOperationCommand()) {
+            if (!rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getFieldOperationLevels(), user)) {
+                authorized = false;
+            }
+        } else if (commandType.isNonOperationCommand()) {
+            if (!rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getNonOperationLevels(), user)) {
+                authorized = false;
+            }
+        } else if (commandType.isYukonAction()) {
+            if (!rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getYukonActionsLevels(), user)) {
+                authorized = false;
+            }
+        }
+        if (!authorized) {
             return sendNotAuthorizedResponse(response, accessor, model, user, commandType);
         }
         
@@ -193,7 +208,7 @@ public class CommandController {
     }
 
     /* SPECIAL COMMANDS */
-    @RequestMapping("changeOpState")
+    @PostMapping("changeOpState")
     public String changeOpState(HttpServletResponse response, 
                                        ModelMap model, 
                                        YukonUserContext context, 
@@ -204,7 +219,7 @@ public class CommandController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LiteYukonUser user = context.getYukonUser();
         
-        if (!rolePropertyDao.checkProperty(permissions.get(CapControlType.CAPBANK), user)){
+        if (!rolePropertyDao.checkAnyLevel(YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, CapControlCommandsAccessLevel.getYukonActionsLevels(), user)) {
             return sendNotAuthorizedResponse(response, accessor, model, user, CommandType.CHANGE_OP_STATE);
         }
         
@@ -234,15 +249,12 @@ public class CommandController {
         return sendStatusResponse(response, accessor, CommandType.CHANGE_OP_STATE, bankName, model, success);
     }
     
-    @RequestMapping("bankMove")
-    public String bankMove(ModelMap model, 
-                           LiteYukonUser user,
-                           FlashScope flash,
-                           int substationId,
-                           String tempMove,
-                           @ModelAttribute("bankMoveBean") BankMoveBean bankMoveBean) {
-        
-        rolePropertyDao.verifyProperty(permissions.get(CapControlType.CAPBANK), user);
+    @CheckCapControlCommandsAccessLevel(property=YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, levels={CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+            CapControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,CapControlCommandsAccessLevel.YUKON_ACTIONS_ONLY})
+    @PostMapping("bankMove")
+    public String bankMove(ModelMap model, LiteYukonUser user, FlashScope flash, int substationId, 
+                           String tempMove, @ModelAttribute("bankMoveBean") BankMoveBean bankMoveBean) {
+
         model.addAttribute("substationId", substationId);
         model.addAttribute("areaId", cache.getParentAreaId(substationId));
         
@@ -280,10 +292,10 @@ public class CommandController {
             }
         };
         
-        CapControlServerResponse response = executor.blockingExecute(command, CapControlServerResponse.class, callback);
-        if (response.isTimeout()) {
+        CapControlServerResponse ccResponse = executor.blockingExecute(command, CapControlServerResponse.class, callback);
+        if (ccResponse.isTimeout()) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveTimeout", bank.getCcName(), newFeeder.getCcName()));
-        } else if (!response.isSuccess()) {
+        } else if (!ccResponse.isSuccess()) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveFailed", bank.getCcName(), newFeeder.getCcName(), callback.getErrorMessage()));
         } else {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveSuccess", bank.getCcName(), newFeeder.getCcName()));
@@ -292,8 +304,9 @@ public class CommandController {
         return "redirect:/capcontrol/substations/" + substationId;
     }
 
-    @CheckRoleProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS)
-    @RequestMapping(value="{bankId}/move-back")
+    @CheckCapControlCommandsAccessLevel(property=YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, levels={CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+            CapControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,CapControlCommandsAccessLevel.YUKON_ACTIONS_ONLY})
+    @GetMapping(value="{bankId}/move-back")
     public @ResponseBody Map<String, ? extends Object> returnBank(ModelMap model, FlashScope flash, @PathVariable int bankId, LiteYukonUser user) {
         CapBankDevice bank = cache.getCapBankDevice(bankId);
         Feeder feeder = cache.getFeeder(bank.getOrigFeederID());
@@ -301,8 +314,9 @@ public class CommandController {
         return doBankMoveCommand(model, flash, command, feeder, bank);
     }
 
-    @CheckRoleProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS)
-    @RequestMapping(value="{bankId}/assign-here")
+    @CheckCapControlCommandsAccessLevel(property=YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, levels={CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+            CapControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,CapControlCommandsAccessLevel.YUKON_ACTIONS_ONLY})
+    @GetMapping(value="{bankId}/assign-here")
     public @ResponseBody Map<String, ? extends Object> assignHere(ModelMap model, FlashScope flash, @PathVariable int bankId, LiteYukonUser user) {
         CapBankDevice bank = cache.getCapBankDevice(bankId);
         Feeder feeder = cache.getFeeder(bank.getParentID());
@@ -357,7 +371,7 @@ public class CommandController {
         }
     }
 
-    @RequestMapping("manualStateChange")
+    @PostMapping("manualStateChange")
     public String manualStateChange(HttpServletResponse response, 
                                            ModelMap model, 
                                            YukonUserContext context, 
@@ -368,8 +382,8 @@ public class CommandController {
         LiteYukonUser user = context.getYukonUser();
         String bankName = cache.getCapBankDevice(paoId).getCcName();
         
-        if (!rolePropertyDao.checkProperty(permissions.get(CapControlType.CAPBANK), user)){
-            return sendNotAuthorizedResponse(response, accessor, model, user, CommandType.CHANGE_OP_STATE);
+        if (!rolePropertyDao.checkAnyLevel(YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, CapControlCommandsAccessLevel.getYukonActionsLevels(), user)) {
+            return sendNotAuthorizedResponse(response, accessor, model, user, CommandType.MANUAL_ENTRY);
         }
         
         int pointId = cache.getCapBankDevice(paoId).getStatusPointID();
@@ -389,11 +403,11 @@ public class CommandController {
         return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bankName, model, success);
     }
     
-    @RequestMapping("resetBankOpCount")
+    @PostMapping("resetBankOpCount")
     public String resetBankOpCount(HttpServletResponse response, ModelMap model, YukonUserContext context, int bankId, int newOpCount) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LiteYukonUser user = context.getYukonUser();
-        if (!rolePropertyDao.checkProperty(permissions.get(CapControlType.CAPBANK), user)) {
+        if (!rolePropertyDao.checkAnyLevel(YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, CapControlCommandsAccessLevel.getYukonActionsLevels(), user)) {
             return sendNotAuthorizedResponse(response, accessor, model, context.getYukonUser(), CommandType.RESET_DAILY_OPERATIONS);
         }
         
@@ -407,55 +421,7 @@ public class CommandController {
             success = false;
         }
         
-        return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bank.getCcName(), model, success);
-    }
-    
-    @RequestMapping("verifyBanks")
-    public String verifyBanks(HttpServletResponse response, ModelMap model, YukonUserContext context, int commandId, int itemId, boolean disableOvUv) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        StreamableCapObject streamable = cache.getObject(itemId);
-        CommandType type = CommandType.getForId(commandId);
-        VerifyBanks command = CommandHelper.buildVerifyBanks(context.getYukonUser(), type, itemId, disableOvUv);
-        boolean success = true;
-        
-        try {
-            executor.execute(command);
-        } catch (CommandExecutionException e) {
-            success = false;
-        }
-        return sendStatusResponse(response, accessor, type, streamable.getCcName(), model, success);
-    }
-    
-    @RequestMapping("verifyInactiveBanks")
-    public String verifyInactiveBanks(HttpServletResponse response, ModelMap model, YukonUserContext context, int itemId, boolean disableOvUv, long inactivityTime) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        StreamableCapObject streamable = cache.getObject(itemId);
-        CommandType type = CommandType.VERIFY_INACTIVE_BANKS;
-        VerifyInactiveBanks command = CommandHelper.buildVerifyInactiveBanks(context.getYukonUser(), type, itemId, disableOvUv, inactivityTime);
-        boolean success = true;
-        
-        try {
-            executor.execute(command);
-        } catch (CommandExecutionException e) {
-            success = false;
-        }
-        return sendStatusResponse(response, accessor, type, streamable.getCcName(), model, success); 
-    }
-    
-    @RequestMapping("verifySelectedBank")
-    public String verifySelectedBank(HttpServletResponse response, ModelMap model, YukonUserContext context, int itemId, boolean disableOvUv, int bankId) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        StreamableCapObject streamable = cache.getObject(itemId);
-        CommandType type = CommandType.VERIFY_SELECTED_BANK;
-        VerifySelectedBank command = CommandHelper.buildVerifySelectedBank(context.getYukonUser(), type, itemId, bankId, disableOvUv);
-        boolean success = true;
-        
-        try {
-            executor.execute(command);
-        } catch (CommandExecutionException e) {
-            success = false;
-        }
-        return sendStatusResponse(response, accessor, type, streamable.getCcName(), model, success); 
+        return sendStatusResponse(response, accessor, CommandType.RESET_DAILY_OPERATIONS, bank.getCcName(), model, success);
     }
     
     private String sendNotAuthorizedResponse(HttpServletResponse response, 

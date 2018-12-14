@@ -38,12 +38,15 @@
                                 <a href="${currentSubUrl}">${fn:escapeXml(movedCapbank.currentFeederName)}</a>
                             </td>
                             <td>
-                                <cti:msg2 var="returnText" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER"/>
-                                <cti:msg2 var="assignText" key=".command.assignBankHere"/>
-                                <div class="button-group fr">
-                                    <cti:button classes="js-return" label="${returnText}" icon="icon-bullet-go-left" />
-                                    <cti:button classes="js-assign" label="${assignText}" icon="icon-bullet-go-down" />
-                                </div>
+                                <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+                                    NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+                                    <cti:msg2 var="returnText" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER"/>
+                                    <cti:msg2 var="assignText" key=".command.assignBankHere"/>
+                                    <div class="button-group fr">
+                                        <cti:button classes="js-return" label="${returnText}" icon="icon-bullet-go-left" />
+                                        <cti:button classes="js-assign" label="${assignText}" icon="icon-bullet-go-down" />
+                                    </div>
+                                </cti:checkRolesAndProperties>
                             </td>
                         </tr>
                     </c:forEach>

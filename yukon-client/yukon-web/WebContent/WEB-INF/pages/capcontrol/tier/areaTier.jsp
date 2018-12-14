@@ -8,7 +8,9 @@
 <cti:standardPage module="capcontrol" page="areas">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
-    <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
+    <cti:checkRolesAndProperties value="AREA_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+        ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+        NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
         <script type="text/javascript">
             addCommandMenuBehavior('a[id^="areaState_"]');
         </script>

@@ -19,11 +19,17 @@
 
     <tags:setFormEditMode mode="${mode}" />
     
-<cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+<cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasCapBankCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+
+<c:if test="${hasCapBankCommandsAndActionsAccess}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="capbankState_"]');
     </script>
-</cti:checkRolesAndProperties>
+</c:if>
 
     <div class="js-page-additional-actions dn">
         <cti:displayForPageEditModes modes="VIEW,EDIT">
@@ -34,9 +40,9 @@
             </cti:checkRolesAndProperties>
 
             <c:if test="${!orphan}">
-                <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+                <c:if test="${hasCapBankCommandsAndActionsAccess}">
                     <cm:dropdownOption linkId="capbankState_${capbank.id}" key=".substation.capBank.actions" icon="icon-cog" href="javascript:void(0);" />
-                </cti:checkRolesAndProperties>
+                </c:if>
             </c:if>
 
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
@@ -50,10 +56,9 @@
                     <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
                 </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
-        
-        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS,CBC_DATABASE_EDIT">
+        <c:if test="${hasCapBankCommandsAndActionsAccess}">
             <li class="divider" />
-        </cti:checkRolesAndProperties>
+        </c:if>
         
         <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${capbank.id}" 
             data-pao-name="${fn:escapeXml(capbank.name)}"/>

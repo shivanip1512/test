@@ -17,17 +17,28 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 <tags:setFormEditMode mode="${mode}"/>
 
-<cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
+<cti:checkRolesAndProperties value="AREA_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasAreaCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="SUBSTATION_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasSubstationCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+
+<c:if test="${hasAreaCommandsAndActionsAccess}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="areaState_"]');
     </script>
-</cti:checkRolesAndProperties>
+</c:if>
 
-<cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+<c:if test="${hasSubstationCommandsAndActionsAccess}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="substationState"]');
     </script>
-</cti:checkRolesAndProperties>
+</c:if>
 
 <div class="js-page-additional-actions dn">
     <cti:displayForPageEditModes modes="VIEW,EDIT">
@@ -49,9 +60,9 @@
         </i:simplePopup>
         <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
         
-        <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
-            <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
-        </cti:checkRolesAndProperties>
+        <c:if test="${hasAreaCommandsAndActionsAccess}">
+             <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
+        </c:if>
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <cm:dropdownOption key=".edit.stations" icon="icon-add-remove" data-popup=".js-edit-stations-popup" />
         </cti:checkRolesAndProperties>
@@ -321,14 +332,14 @@
                     </td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                           <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+                            <c:if test="${hasSubstationCommandsAndActionsAccess}">
                                 <li>
                                     <a id="substationState_${substationId}" href="javascript:void(0)" class="clearfix">
                                         <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".substation.actions"/></span>
                                     </a>
                                 </li>
                                 <li class="divider" />
-                            </cti:checkRolesAndProperties>
+                            </c:if>
                             <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${substationId}" 
                                 data-pao-name="${fn:escapeXml(station.name)}"/>
                             <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${substationId}" />

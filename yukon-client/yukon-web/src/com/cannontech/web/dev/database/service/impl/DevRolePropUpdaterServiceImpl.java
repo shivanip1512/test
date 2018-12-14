@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -145,11 +146,11 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     setRoleProperty(group, YukonRoleProperty.ADD_COMMENTS,true);
                     setRoleProperty(group, YukonRoleProperty.MODIFY_COMMENTS,true);
                     setRoleProperty(group, YukonRoleProperty.SYSTEM_WIDE_CONTROLS,true);
-                    setRoleProperty(group, YukonRoleProperty.ALLOW_AREA_CONTROLS,true);
-                    setRoleProperty(group, YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS,true);
-                    setRoleProperty(group, YukonRoleProperty.ALLOW_SUBBUS_CONTROLS,true);
-                    setRoleProperty(group, YukonRoleProperty.ALLOW_FEEDER_CONTROLS,true);
-                    setRoleProperty(group, YukonRoleProperty.ALLOW_CAPBANK_CONTROLS,true);
+                    setRoleProperty(group, YukonRoleProperty.AREA_COMMANDS_AND_ACTIONS,CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS.name());
+                    setRoleProperty(group, YukonRoleProperty.SUBSTATION_COMMANDS_AND_ACTIONS,CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS.name());
+                    setRoleProperty(group, YukonRoleProperty.SUBBUS_COMMANDS_AND_ACTIONS,CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS.name());
+                    setRoleProperty(group, YukonRoleProperty.FEEDER_COMMANDS_AND_ACTIONS,CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS.name());
+                    setRoleProperty(group, YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS,CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS.name());
                     setRoleProperty(group, YukonRoleProperty.CAP_CONTROL_IMPORTER, true);
                     results.put(YukonRole.CBC_SETTINGS, true);
                 } else {

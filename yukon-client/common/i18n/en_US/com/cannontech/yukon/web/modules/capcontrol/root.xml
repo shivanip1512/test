@@ -284,6 +284,9 @@
     <entry key="yukon.web.modules.capcontrol.cbcPoints.misc">Misc</entry>
     
     <!-- menu.jsp -->
+    <entry key="yukon.web.modules.capcontrol.menu.yukonActions">{0} Actions</entry>
+    <entry key="yukon.web.modules.capcontrol.menu.nonOperationCommands">Non-Operation Commands</entry>
+    <entry key="yukon.web.modules.capcontrol.menu.fieldOperationCommands">Field Operation Commands</entry>
     <entry key="yukon.web.modules.capcontrol.menu.viewComments">View Comments</entry>
     <entry key="yukon.web.modules.capcontrol.menu.viewRecentEvents">View Recent Events</entry>
     <entry key="yukon.web.modules.capcontrol.menu.moreControls">More Local Controls...</entry>
@@ -324,8 +327,10 @@
     <entry key="yukon.web.modules.capcontrol.command.DISABLE_FEEDER">Disable Feeder</entry>
     <entry key="yukon.web.modules.capcontrol.command.ENABLE_CAPBANK">Enable Cap Bank</entry>
     <entry key="yukon.web.modules.capcontrol.command.DISABLE_CAPBANK">Disable Cap Bank</entry>          
-    <entry key="yukon.web.modules.capcontrol.command.SEND_OPEN_CAPBANK">Open Cap Bank(s)</entry>
-    <entry key="yukon.web.modules.capcontrol.command.SEND_CLOSE_CAPBANK">Close Cap Bank(s)</entry>
+    <entry key="yukon.web.modules.capcontrol.command.SEND_OPEN_ALL_CAPBANKS">Open all Cap Banks</entry>
+    <entry key="yukon.web.modules.capcontrol.command.SEND_CLOSE_ALL_CAPBANKS">Close all Cap Banks</entry>
+    <entry key="yukon.web.modules.capcontrol.command.SEND_OPEN_CAPBANK">Open Cap Bank</entry>
+    <entry key="yukon.web.modules.capcontrol.command.SEND_CLOSE_CAPBANK">Close Cap Bank</entry>
     <entry key="yukon.web.modules.capcontrol.command.CONFIRM_OPEN">Confirm Open</entry>
     <entry key="yukon.web.modules.capcontrol.command.CONFIRM_CLOSE">Confirm Close</entry>
     <entry key="yukon.web.modules.capcontrol.command.REQUEST_ALL_DATA">Request All Substation Buses</entry>

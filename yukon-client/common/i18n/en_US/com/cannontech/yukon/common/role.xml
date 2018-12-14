@@ -57,5 +57,39 @@
     <entry key="yukon.common.role.VOICE_SERVER">Voice Server</entry>
     <entry key="yukon.common.role.WEB_GRAPH">Web Graph</entry>
     <entry key="yukon.common.role.SYSTEM">Yukon</entry>
+    
+    <!-- Cap Control Command Access Role Properties -->
+    <entry key="yukon.common.roleproperty.capControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS">All Device Commands w/ Yukon Actions</entry>
+    <entry key="yukon.common.roleproperty.capControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS">All Device Commands w/o Yukon Actions</entry>
+    <entry key="yukon.common.roleproperty.capControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS">Non-Operational Device Commands w/ Yukon Actions</entry>
+    <entry key="yukon.common.roleproperty.capControlCommandsAccessLevel.NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS">Non-Operational Device Commands w/o Yukon Actions</entry>
+    <entry key="yukon.common.roleproperty.capControlCommandsAccessLevel.YUKON_ACTIONS_ONLY">Yukon Actions only</entry>
+    <entry key="yukon.common.roleproperty.capControlCommandsAccessLevel.NONE">None</entry>
+    
+    <entry key="yukon.common.roleproperty.capControlConfirmationPopupsLevel.ALL_COMMANDS">All Commands</entry>
+    <entry key="yukon.common.roleproperty.capControlConfirmationPopupsLevel.OPERATIONAL_COMMANDS">Operational Commands</entry>
+    <entry key="yukon.common.roleproperty.capControlConfirmationPopupsLevel.NONE">None</entry>
 
+    <!-- Role Property Help Text -->
+    <entry key="yukon.common.roleproperty.CAPCONTROLCOMMANDS">
+        <![CDATA[
+            <ul style="list-style-type:none;padding-left:10px;">
+                <li><b>All Device Commands w/ Yukon Actions</b> - All field device commands and internal Yukon Actions are available to the user.</li>
+                <li><b>All Device Commands w/o Yukon Actions</b> - Only Non-Operational Commands and Field Operation Commands categories are allowed.</li>
+                <li><b>Non-Operational Device Commands w/ Yukon Actions</b> - Only Non-Operational Commands and Actions are allowed.</li>
+                <li><b>Non-Operational Device Commands w/o Yukon Actions</b> - Only Non-Operational Commands are allowed.</li>
+                <li><b>Yukon Actions only</b> - Only internal Yukon actions are available to the user.</li>
+                <li><b>None</b> - The user is not allowed to send any commands or make internal Yukon changes.</li>
+            </ul>
+        ]]>
+    </entry>
+        <entry key="yukon.common.roleproperty.CAPCONTROLPOPUPS">
+        <![CDATA[
+            <ul style="list-style-type:none;padding-left:10px;">
+                <li><b>All Commands</b> - All commands to field devices require confirmation.</li>
+                <li><b>Operational Commands</b> - Field commands that cause an operation require confirmation, but not non-operational commands.</li>
+                <li><b>None</b> - Never require confirmation for any command.</li>
+            </ul>
+        ]]>
+    </entry>
 </properties>

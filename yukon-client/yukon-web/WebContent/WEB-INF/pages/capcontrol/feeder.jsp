@@ -20,11 +20,17 @@
 <tags:setFormEditMode mode="${mode}"/>
 
 
-<cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
+<cti:checkRolesAndProperties value="FEEDER_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasFeederCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+
+<c:if test="${hasFeederCommandsAndActionsAccess}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="feederState_"]');
     </script>
-</cti:checkRolesAndProperties>
+</c:if>
 
 <div class="js-page-additional-actions dn">
 
@@ -36,9 +42,9 @@
         </cti:checkRolesAndProperties>
 
         <c:if test="${!orphan}">
-            <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
+            <c:if test="${hasFeederCommandsAndActionsAccess}">
                 <cm:dropdownOption linkId="feederState_${feeder.id}" key=".substation.feeder.actions" icon="icon-cog" href="javascript:void(0);" />
-            </cti:checkRolesAndProperties>
+            </c:if>
         </c:if>
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <cm:dropdownOption key=".edit.capbanks" icon="icon-add-remove" data-popup=".js-edit-capbanks-popup" />
@@ -52,9 +58,13 @@
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
     
-    <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS,CBC_DATABASE_EDIT">
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
+        <c:set var="dividerAdded" value="true"/>
     </cti:checkRolesAndProperties>
+    <c:if test="${hasFeederCommandsAndActionsAccess && !dividerAdded}">
+        <li class="divider" />
+    </c:if>
     
     <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${feeder.id}" 
         data-pao-name="${fn:escapeXml(feeder.name)}"/>

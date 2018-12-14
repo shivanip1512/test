@@ -51,6 +51,8 @@ public enum CommentAction {
         
         builder.put(CommandType.SEND_OPEN_CAPBANK, CAPBANK_CONTROL);
         builder.put(CommandType.SEND_CLOSE_CAPBANK, CAPBANK_CONTROL);
+        builder.put(CommandType.SEND_OPEN_ALL_CAPBANKS, CAPBANK_CONTROL);
+        builder.put(CommandType.SEND_CLOSE_ALL_CAPBANKS, CAPBANK_CONTROL);
         builder.put(CommandType.CONFIRM_OPEN, CAPBANK_CONTROL);
         builder.put(CommandType.CONFIRM_CLOSE, CAPBANK_CONTROL);
         builder.put(CommandType.SEND_SCAN_2WAY_DEVICE, CAPBANK_CONTROL);

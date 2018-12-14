@@ -9,6 +9,7 @@ import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -111,6 +112,13 @@ public class WebSecurityChecker {
         }
         throw new NotAuthorizedException("User " + getYukonUser() + " is not authorized to access this page.");
 
+    }
+    
+    public void checkCapControlCommandsAccessLevel(YukonRoleProperty property, CapControlCommandsAccessLevel[] levels) {
+        if (rolePropertyDao.checkAnyLevel(property, levels, getYukonUser())) {
+            return;
+        }
+        throw new NotAuthorizedException("User " + getYukonUser() + " is not authorized to access this page.");
     }
     
     private LiteYukonUser getYukonUser() {

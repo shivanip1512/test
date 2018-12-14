@@ -61,7 +61,9 @@
                     </td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
+                            <cti:checkRolesAndProperties value="AREA_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+                                ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+                                NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
                                 <li>
                                     <a id="areaState_${areaId}" href="javascript:void(0)" class="clearfix">
                                         <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".area.actions"/></span>

@@ -96,9 +96,6 @@
         </form>
     </div>
     
-<%--     <cti:uniqueIdentifier  prefix="addPao" var="addPao"/> --%>
-<%--     <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/> --%>
-    
     <cti:msg2 var="confirmCommand" key=".confirmCommand"/>
     <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
 
@@ -122,18 +119,11 @@
         </c:otherwise>
     </c:choose>
     
-    <c:choose>
-        <c:when test="${hasActionRoles}">
-            <cti:button id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" nameKey="add" disabled="${disabled}" title="${addAssignment}" />
-            <cti:button id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" nameKey="play" disabled="${disabled}" title="${playCommands}"/>
-            <cti:button id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" nameKey="stop" disabled="${disabled}" title="${stopCommands}"/>
-        </c:when>
-        <c:otherwise>
-            <cti:button id="systemAddScheduleAssignments" icon="icon-add" nameKey="addDisabled" />
-            <cti:button id="systemStartScheduleAssignments" icon="icon-control-play-blue" nameKey="playDisabled" />
-            <cti:button id="systemStopScheduleAssignments" icon="icon-control-stop-blue" nameKey="stopDisabled" />
-        </c:otherwise>
-    </c:choose>
+    <c:if test="${hasActionRoles}">
+        <cti:button id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" nameKey="add" disabled="${disabled}" title="${addAssignment}" />
+        <cti:button id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" nameKey="play" disabled="${disabled}" title="${playCommands}"/>
+        <cti:button id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" nameKey="stop" disabled="${disabled}" title="${stopCommands}"/>
+    </c:if>
     </div>
 
 </cti:standardPage>

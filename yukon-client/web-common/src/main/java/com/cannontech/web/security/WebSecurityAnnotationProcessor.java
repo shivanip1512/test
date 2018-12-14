@@ -13,6 +13,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.security.annotation.CheckAccessLevel;
+import com.cannontech.web.security.annotation.CheckCapControlCommandsAccessLevel;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckCparmString;
 import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
@@ -39,6 +40,7 @@ public class WebSecurityAnnotationProcessor {
         check(AnnotationUtils.findAnnotation(method, CheckFalseRoleProperty.class));
         check(AnnotationUtils.findAnnotation(method, CheckPermissionLevel.class));
         check(AnnotationUtils.findAnnotation(method, CheckAccessLevel.class));
+        check(AnnotationUtils.findAnnotation(method, CheckCapControlCommandsAccessLevel.class));
     }
 
     public void processClass(Class<?> clazz) throws Exception {
@@ -52,6 +54,7 @@ public class WebSecurityAnnotationProcessor {
         check(AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckPermissionLevel.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckAccessLevel.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckCapControlCommandsAccessLevel.class));
     }
 
     private void check(CheckCparm annotation) {
@@ -122,6 +125,13 @@ public class WebSecurityAnnotationProcessor {
     private void check(CheckAccessLevel annotation) {
         if (annotation != null) {
             webSecurityChecker.checkAccessLevel(annotation.property(), annotation.level());
+         }
+    }
+    
+    
+    private void check(CheckCapControlCommandsAccessLevel annotation) {
+        if (annotation != null) {
+            webSecurityChecker.checkCapControlCommandsAccessLevel(annotation.property(), annotation.levels());
          }
     }
 }

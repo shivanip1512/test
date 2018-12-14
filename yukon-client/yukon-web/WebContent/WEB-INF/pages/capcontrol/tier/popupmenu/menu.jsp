@@ -45,7 +45,7 @@ $('#resetBankOpCountOption').click(function(event) {
 </c:if>
 </script>
 
-<cti:getProperty var="warnOnCommands" property='CONTROL_WARNING'/>
+<cti:getProperty var="warnOnCommands" property='CONTROL_CONFIRMATION_POPUPS'/>
 
 <div id="menuPopupBoxContainer">
 	<input type="hidden" id="dialogTitle" value="${fn:escapeXml(paoName)}">
@@ -53,27 +53,48 @@ $('#resetBankOpCountOption').click(function(event) {
    
     <ul class="capcontrolMenu detail simple-list">
     
-        <%--Commands --%>
         <input type="hidden" name="paoId" value="${paoId}">
         <input type="hidden" name="warnOnCommands" value="${warnOnCommands}">
-        <c:forEach var="command" items="${commands}">
-             <cti:msg2 var="commandName" key="${command.commandName}"/>
-             <c:set var="commandId" value="${command.commandName.commandId}"/>
-             <c:choose>
-                <c:when test="${command.enabled}">
-                    <li class="menuOption command" value="${commandId}">
-                        <a href="javascript:void(0);">${commandName}</a>
-                        <span class="confirmMessage dn"><i:inline key="yukon.web.modules.capcontrol.command.confirm" 
-                              arguments="${commandName}"/></span>
-                    </li>
-                </c:when>
-                <c:otherwise>
-                    <li class="menuOption" title="<i:inline key="${command.disabledTextKey}"/>">
-                        <a href="javascript:void(0);" class="disabled-look">${commandName}</a>
-                    </li>
-                </c:otherwise>
-            </c:choose> 
-        </c:forEach> 
+    
+        <%--Yukon Actions--%>
+        <c:if test="${!empty yukonActions}">
+            <div class="PB10">
+                <i:inline key=".yukonActions" arguments="${capControlType}"/>
+                <c:forEach var="command" items="${yukonActions}">
+                    <%@ include file="commandLineItem.jspf" %>
+                </c:forEach> 
+            </div>
+        </c:if>
+        
+        <%--Non-Operation Commands--%>
+        <c:if test="${!empty nonOperationCommands}">
+            <div class="PB10">
+                <i:inline key=".nonOperationCommands"/>
+                <c:forEach var="command" items="${nonOperationCommands}">
+                    <%@ include file="commandLineItem.jspf" %>
+                </c:forEach> 
+            </div>
+        </c:if>
+
+        <%--Field Operation Commands--%>
+        <c:if test="${!empty fieldOperationCommands}">
+            <i:inline key=".fieldOperationCommands"/>
+            <c:forEach var="command" items="${fieldOperationCommands}">
+                <%@ include file="commandLineItem.jspf" %>
+            </c:forEach> 
+
+            <c:if test="${showLocalControl}">
+                <li class="menuOption" id="localControlsOption"><a href="javascript:void(0);"><i:inline key=".moreControls"/></a></li>
+            </c:if>
+        </c:if>
+        
+        <!-- Local Commands -->
+        <c:if test="${!empty commands}">
+            <c:forEach var="command" items="${commands}">
+                <%@ include file="commandLineItem.jspf" %>
+            </c:forEach> 
+        </c:if>
+                    
         <%--States --%>
         <c:forEach var="state" items="${states}">
             <li class="menuOption stateChange" value="${state.stateRawState}"><a href="javascript:void(0);">${state.stateText}</a></li>
@@ -86,10 +107,6 @@ $('#resetBankOpCountOption').click(function(event) {
         <c:if test="${showChangeOpState}">
             <li class="menuOption" id="changeOpStateOption"><a href="javascript:void(0);"><i:inline key="${changeOpState}"/></a></li>
         </c:if>
-        <c:if test="${showLocalControl}">
-            <li class="menuOption" id="localControlsOption"><a href="javascript:void(0);"><i:inline key=".moreControls"/></a></li>
-        </c:if>
-        
     </ul>
 </div>
 

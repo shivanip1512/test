@@ -5,11 +5,17 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
+<cti:checkRolesAndProperties value="FEEDER_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasFeederCommandsAndActionsAccess" value="true"/>
+</cti:checkRolesAndProperties>
+
+<c:if test="${hasFeederCommandsAndActionsAccess}">
     <script type="text/javascript">
         addCommandMenuBehavior('a[id^="feederState"]');
     </script>
-</cti:checkRolesAndProperties>
+</c:if>
 
 <table id="fdrTable" class="compact-results-table has-alerts-multi has-actions row-highlighting">
     <thead>
@@ -148,13 +154,13 @@
             </td>
             <td>
                 <cm:dropdown icon="icon-cog">
-                    <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
+                    <c:if test="${hasFeederCommandsAndActionsAccess}">
                         <li>
                             <a id="feederState_${feederId}" href="javascript:void(0)" class="clearfix">
                                 <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".feeder.actions"/></span>
                             </a>
                         </li>
-                    </cti:checkRolesAndProperties>
+                    </c:if>
                     <cti:url var="locationUrl" value="/capcontrol/capbank/capBankLocations">
                         <cti:param name="value" value="${feederId}"/>
                     </cti:url>

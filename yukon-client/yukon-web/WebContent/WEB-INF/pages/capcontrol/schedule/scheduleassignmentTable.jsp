@@ -45,24 +45,16 @@
                     <td>${fn:escapeXml(item.commandName)}</td>
                     <td>
                         <cm:dropdown>
-                            <c:choose>
-                                <c:when test="${hasActionRoles == true}">
-                                    <cm:dropdownOption classes="run-schedule" data-device-name="${fn:escapeXml(item.deviceName)}" 
-                                        data-schedule-name="${fn:escapeXml(item.scheduleName)}" data-event-id="${item.eventId}" 
-                                        icon="icon-control-play-blue" key="yukon.web.modules.capcontrol.play.label"></cm:dropdownOption>
-                                    <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
-                                        <cm:dropdownOption classes="stop-schedule" data-device-name="${fn:escapeXml(item.deviceName)}" 
-                                            data-device-id="${item.paoId}" data-event-id="${item.eventId}" 
-                                            icon="icon-control-stop-blue" key="yukon.web.modules.capcontrol.stop.label"></cm:dropdownOption>
-                                    </c:if>
-                                </c:when>
-                                <c:otherwise>
-                                    <cm:dropdownOption icon="icon-control-play-blue" disabled="disabled">${notAuthorizedText}</cm:dropdownOption>
-                                    <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
-                                        <cm:dropdownOption icon="icon-control-stop-blue" disabled="disabled">${notAuthorizedText}</cm:dropdownOption>
-                                    </c:if>
-                                </c:otherwise>
-                            </c:choose>
+                            <c:if test="${hasActionRoles == true}">
+                                <cm:dropdownOption classes="run-schedule" data-device-name="${fn:escapeXml(item.deviceName)}" 
+                                    data-schedule-name="${fn:escapeXml(item.scheduleName)}" data-event-id="${item.eventId}" 
+                                    icon="icon-control-play-blue" key="yukon.web.modules.capcontrol.play.label"></cm:dropdownOption>
+                                <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
+                                    <cm:dropdownOption classes="stop-schedule" data-device-name="${fn:escapeXml(item.deviceName)}" 
+                                        data-device-id="${item.paoId}" data-event-id="${item.eventId}" 
+                                        icon="icon-control-stop-blue" key="yukon.web.modules.capcontrol.stop.label"></cm:dropdownOption>
+                                </c:if>
+                            </c:if>
                             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                 <li>
                                     <cti:csrfToken var="csrfToken"/>

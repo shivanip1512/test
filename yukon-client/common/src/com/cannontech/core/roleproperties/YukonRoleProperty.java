@@ -110,12 +110,12 @@ public enum YukonRoleProperty {
     MODIFY_COMMENTS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 18, booleanType()),
     SYSTEM_WIDE_CONTROLS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 19, booleanType()),
     FORCE_COMMENTS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 20, booleanType()),
-    ALLOW_AREA_CONTROLS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 21, booleanType()),
-    ALLOW_SUBSTATION_CONTROLS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 22, booleanType()),
-    ALLOW_SUBBUS_CONTROLS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 23, booleanType()),
-    ALLOW_FEEDER_CONTROLS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 24, booleanType()),
-    ALLOW_CAPBANK_CONTROLS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 25, booleanType()),
-    CONTROL_WARNING(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 26, booleanType()),
+    AREA_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 21, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
+    SUBSTATION_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 22, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
+    SUBBUS_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 23, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
+    FEEDER_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 24, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
+    CAPBANK_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 25, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
+    CONTROL_CONFIRMATION_POPUPS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 26, InputTypeFactory.enumType(CapControlConfirmationPopups.class), "yukon.common.roleproperty.CAPCONTROLPOPUPS"),
     CAP_CONTROL_IMPORTER(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 27, booleanType()),
     
     RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL(RESIDENTIAL_CUSTOMER, RESIDENTIAL_CUSTOMER.getBasePropertyId() - 1, booleanType()),
@@ -296,6 +296,7 @@ public enum YukonRoleProperty {
     private final YukonRole role;
     private final int propertyId;
     private final InputType<?> type;
+    private String helpTextKey = null;
     private final static ImmutableMap<Integer, YukonRoleProperty> lookup;
     
     static {
@@ -318,6 +319,13 @@ public enum YukonRoleProperty {
         this.type = type;
     }
     
+    private YukonRoleProperty(YukonRole role, int propertyId, InputType<?> type, String helpTextKey) {
+        this.role = role;
+        this.propertyId = propertyId;
+        this.type = type;
+        this.helpTextKey = helpTextKey;
+    }
+    
     public YukonRole getRole() {
         return role;
     }
@@ -333,6 +341,10 @@ public enum YukonRoleProperty {
     @Override
     public String toString() {
         return name() + " (" + getPropertyId() + ")";
+    }
+
+    public String getHelpTextKey() {
+        return helpTextKey;
     }
     
 }

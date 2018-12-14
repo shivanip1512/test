@@ -61,19 +61,25 @@
                             <cti:url var="regulatorUrl" value="/capcontrol/regulators/${regulatorIdMap[phaseKey]}" />
 
                             <a href="${regulatorUrl}">${fn:escapeXml(regulatorNameMap[phaseKey])}</a>
-                            
-                            <cm:dropdown data-pao-id="${regulatorIdMap[phaseKey]}" triggerClasses="fr vv">
-                                <cm:dropdownOption key=".scan.label" icon="icon-transmit-blue" classes="js-command-button" 
-                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${scanCommandHolder.commandId}" />
-                                <cm:dropdownOption key=".up.label" icon="icon-arrow-up-green" classes="js-command-button" 
-                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${tapUpCommandHolder.commandId}" />
-                                <cm:dropdownOption key=".down.label" icon="icon-arrow-down-orange" classes="js-command-button" 
-                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${tapDownCommandHolder.commandId}" />
-                                <cm:dropdownOption key=".enable.label" icon="icon-accept" classes="js-command-button" 
-                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${enableRemoteCommandHolder.commandId}" />
-                                <cm:dropdownOption key=".disable.label" icon="icon-delete" classes="js-command-button" 
-                                    data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${disableRemoteCommandHolder.commandId}" />
-                            </cm:dropdown>
+                            <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+                                ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+                                NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS">
+                                <cm:dropdown data-pao-id="${regulatorIdMap[phaseKey]}" triggerClasses="fr vv">
+                                    <cm:dropdownOption key=".scan.label" icon="icon-transmit-blue" classes="js-command-button" 
+                                        data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${scanCommandHolder.commandId}" />
+                                        <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+                                            ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS">
+                                            <cm:dropdownOption key=".up.label" icon="icon-arrow-up-green" classes="js-command-button" 
+                                                data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${tapUpCommandHolder.commandId}" />
+                                            <cm:dropdownOption key=".down.label" icon="icon-arrow-down-orange" classes="js-command-button" 
+                                                data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${tapDownCommandHolder.commandId}" />
+                                            <cm:dropdownOption key=".enable.label" icon="icon-accept" classes="js-command-button" 
+                                                data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${enableRemoteCommandHolder.commandId}" />
+                                            <cm:dropdownOption key=".disable.label" icon="icon-delete" classes="js-command-button" 
+                                                data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${disableRemoteCommandHolder.commandId}" />
+                                        </cti:checkRolesAndProperties>
+                                </cm:dropdown>
+                            </cti:checkRolesAndProperties>
                         </td>
                     </tr>
                 </c:forEach>

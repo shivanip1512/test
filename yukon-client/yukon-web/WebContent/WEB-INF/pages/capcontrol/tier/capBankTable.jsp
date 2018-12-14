@@ -8,7 +8,12 @@
 <cti:includeScript link="JQUERY_TREE" />
 <cti:includeScript link="JQUERY_TREE_HELPERS" />
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
-<cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+    <c:set var="hasControlAttr" value="data-has-control" />
+
+<cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+    ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,
+    NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+    <c:set var="hasCapBankCommandsAndActionsAccess" value="true"/>
     <c:set var="hasControlAttr" value="data-has-control" />
 </cti:checkRolesAndProperties>
     <table id="capBankTable" class="compact-results-table has-alerts has-actions row-highlighting" ${hasControlAttr}>
@@ -152,12 +157,15 @@
                         <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
                     </cti:url>
                     <cm:dropdown icon="icon-cog">
-                        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+                        <c:if test="${hasCapBankCommandsAndActionsAccess}">
                             <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="js-bank-command" />
-                            <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="js-bank-state" />
+                            <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+                                NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
+                                <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="js-bank-state" />
+                            </cti:checkRolesAndProperties>
                             <li class="divider" />
-                        </cti:checkRolesAndProperties>
-                         <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
+                        </c:if>
+                        <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                             <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.ccName}" javaScriptEscape="true"/>
                             <cm:dropdownOption key=".capBank.info" icon="icon-magnifier" classes="js-bank-info"
                                 href="javascript:void(0);" />
@@ -171,7 +179,8 @@
                             data-pao-name="${fn:escapeXml(viewableCapBank.ccName)}"/>
                         <cti:url var="recentEventsUrl" value="/capcontrol/search/recentEvents?value=${bankId}" />
                         <cm:dropdownOption href="${recentEventsUrl}" key=".menu.viewRecentEvents" icon="icon-calendar-view-month"/>
-                        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+                        <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+                            NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
                             <li class="divider" />
                             <c:if test="${not viewableCapBank.bankMoved}">
                                 <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />

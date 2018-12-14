@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.roleproperties.AccessLevel;
+import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -107,6 +108,8 @@ public class RoleAndPropertyDescriptionService {
                 UserChecker propertyChecker;
                 if (property.getType().getTypeClass().isEnum() && property.getType().getTypeClass() == AccessLevel.class) {
                     propertyChecker = userCheckerFactory.createAccessLevelChecker(property, level);
+                } else if (property.getType().getTypeClass().isEnum() && property.getType().getTypeClass() == CapControlCommandsAccessLevel.class) {
+                    propertyChecker = userCheckerFactory.createCapControlCommandsAccessChecker(property, level);
                 } else if(!StringUtils.isEmpty(level)) {
                     propertyChecker = userCheckerFactory.createHeirarchicalLevelChecker(property, level);
                 } else if (inverted) {
