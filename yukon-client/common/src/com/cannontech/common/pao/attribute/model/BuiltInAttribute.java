@@ -29,7 +29,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
      /** 
        * Point Name naming convention: 
-       * [Net|Sum] [Delivered|Received] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #] 
+       * [Net|Sum] [Delivered|Received] [Peak] [UOM] [Cumulative] [Coincidental] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #] 
        * Examples: 
        * Net kWh OR Net Delivered kWh 
        * Received kWh Rate A 
@@ -174,11 +174,17 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PEAK_KVAR_RATE_B("Peak kVAr Rate B", AttributeGroup.REACTIVE),
     PEAK_KVAR_RATE_C("Peak kVAr Rate C", AttributeGroup.REACTIVE),
     PEAK_KVAR_RATE_D("Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    PEAK_KVAR_Q14("Peak kVAr (Quadrants 1 4)", AttributeGroup.REACTIVE),
+    PEAK_KVAR_Q23("Peak kVAr (Quadrants 2 3)", AttributeGroup.REACTIVE),
+    PEAK_KVAR_COIN_Q23("Peak kVAr Coincidental (Quadrants 2 3)", AttributeGroup.REACTIVE),
+    PEAK_KVAR_CUMU_COIN_Q14("Peak kVAr Cumulative Coincidental (Quadrants 1 4)", AttributeGroup.REACTIVE),
+    PEAK_KVAR_CUMU_COIN_Q23("Peak kVAr Cumulative Coincidental (Quadrants 2 3)", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVAR("Received Peak kVAr", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVAR_RATE_A("Received Peak kVAr Rate A", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVAR_RATE_B("Received Peak kVAr Rate B", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVAR_RATE_C("Received Peak kVAr Rate C", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVAR_RATE_D("Received Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    RECEIVED_PEAK_KVAR_COIN("Received Peak kVAr Coincidental", AttributeGroup.REACTIVE),
     SUM_PEAK_KVAR("Sum Peak kVAr", AttributeGroup.REACTIVE),
     SUM_PEAK_KVAR_RATE_A("Sum Peak kVAr Rate A", AttributeGroup.REACTIVE),
     SUM_PEAK_KVAR_RATE_B("Sum Peak kVAr Rate B", AttributeGroup.REACTIVE),

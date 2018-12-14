@@ -160,11 +160,17 @@ public:
     static const Attribute  PeakkVArRateB;
     static const Attribute  PeakkVArRateC;
     static const Attribute  PeakkVArRateD;
+    static const Attribute  PeakkVArQ14;
+    static const Attribute  PeakkVArQ23;
+    static const Attribute  PeakkVArCoincidentalQ23;
+    static const Attribute  PeakkVArCumulativeCoincidentalQ14;
+    static const Attribute  PeakkVArCumulativeCoincidentalQ23;
     static const Attribute  ReceivedPeakkVAr;
     static const Attribute  ReceivedPeakkVArRateA;
     static const Attribute  ReceivedPeakkVArRateB;
     static const Attribute  ReceivedPeakkVArRateC;
     static const Attribute  ReceivedPeakkVArRateD;
+    static const Attribute  ReceivedPeakkVArCoincidental;
     static const Attribute  SumPeakkVAr;
     static const Attribute  SumPeakkVArRateA;
     static const Attribute  SumPeakkVArRateB;
