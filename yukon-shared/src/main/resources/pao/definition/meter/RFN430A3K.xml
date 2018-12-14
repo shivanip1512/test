@@ -72,11 +72,6 @@
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Password Table Crc Error" attributes="PASSWORD_TABLE_CRC_ERROR"/>
         <pointInfo name="Peak kVA" attributes="PEAK_KVA"/>
-        <pointInfo name="Peak kVAr (Quadrants 1 4)" attributes="PEAK_KVAR_Q14"/>
-        <pointInfo name="Peak kVAr (Quadrants 2 3)" attributes="PEAK_KVAR_Q23"/>
-        <pointInfo name="Peak kVAr Coincidental (Quadrants 2 3)" attributes="PEAK_KVAR_COIN_Q23"/>
-        <pointInfo name="Peak kVAr Cumulative Coincidental (Quadrants 1 4)" attributes="PEAK_KVAR_CUMU_COIN_Q14"/>
-        <pointInfo name="Peak kVAr Cumulative Coincidental (Quadrants 2 3)" attributes="PEAK_KVAR_CUMU_COIN_Q23"/>
         <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
@@ -132,7 +127,6 @@
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>
         <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Received Peak kVAr Coincidental" attributes="RECEIVED_PEAK_KVAR_COIN"/>
         <pointInfo name="Reverse Rotation" attributes="REVERSE_POWER_FLAG"/>
         <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
         <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>

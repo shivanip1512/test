@@ -394,17 +394,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_RATE_C">Peak kVAr Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_RATE_D">Peak kVAr Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_COIN">Peak kVAr Coincidental</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_Q14">Peak kVAr (Quadrants 1 4)</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_Q23">Peak kVAr (Quadrants 2 3)</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_COIN_Q23">Peak kVAr Coincidental (Quadrants 2 3)</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_CUMU_COIN_Q14">Peak kVAr Cumulative Coincidental (Quadrants 1 4)</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_CUMU_COIN_Q23">Peak kVAr Cumulative Coincidental (Quadrants 2 3)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVAR">Received Peak kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVAR_RATE_A">Received Peak kVAr Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVAR_RATE_B">Received Peak kVAr Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVAR_RATE_C">Received Peak kVAr Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVAR_RATE_D">Received Peak kVAr Rate D</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVAR_COIN">Received Peak kVAr Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVAR">Sum Peak kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVAR_RATE_A">Sum Peak kVAr Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVAR_RATE_B">Sum Peak kVAr Rate B</entry>

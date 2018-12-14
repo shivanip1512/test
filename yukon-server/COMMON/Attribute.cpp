@@ -169,17 +169,11 @@ INIT_ATTRIBUTE( PeakkVArRateA,                                      "PEAK_KVAR_R
 INIT_ATTRIBUTE( PeakkVArRateB,                                      "PEAK_KVAR_RATE_B" );
 INIT_ATTRIBUTE( PeakkVArRateC,                                      "PEAK_KVAR_RATE_C" );
 INIT_ATTRIBUTE( PeakkVArRateD,                                      "PEAK_KVAR_RATE_D" );
-INIT_ATTRIBUTE( PeakkVArQ14,                                        "PEAK_KVAR_Q14" );
-INIT_ATTRIBUTE( PeakkVArQ23,                                        "PEAK_KVAR_Q23" );
-INIT_ATTRIBUTE( PeakkVArCoincidentalQ23,                            "PEAK_KVAR_COIN_Q23" );
-INIT_ATTRIBUTE( PeakkVArCumulativeCoincidentalQ14,                  "PEAK_KVAR_CUMU_COIN_Q14" );
-INIT_ATTRIBUTE( PeakkVArCumulativeCoincidentalQ23,                  "PEAK_KVAR_CUMU_COIN_Q23" );
 INIT_ATTRIBUTE( ReceivedPeakkVAr,                                   "RECEIVED_PEAK_KVAR" );
 INIT_ATTRIBUTE( ReceivedPeakkVArRateA,                              "RECEIVED_PEAK_KVAR_RATE_A" );
 INIT_ATTRIBUTE( ReceivedPeakkVArRateB,                              "RECEIVED_PEAK_KVAR_RATE_B" );
 INIT_ATTRIBUTE( ReceivedPeakkVArRateC,                              "RECEIVED_PEAK_KVAR_RATE_C" );
 INIT_ATTRIBUTE( ReceivedPeakkVArRateD,                              "RECEIVED_PEAK_KVAR_RATE_D" );
-INIT_ATTRIBUTE( ReceivedPeakkVArCoincidental,                       "RECEIVED_PEAK_KVAR_COIN" );
 INIT_ATTRIBUTE( SumPeakkVAr,                                        "SUM_PEAK_KVAR" );
 INIT_ATTRIBUTE( SumPeakkVArRateA,                                   "SUM_PEAK_KVAR_RATE_A" );
 INIT_ATTRIBUTE( SumPeakkVArRateB,                                   "SUM_PEAK_KVAR_RATE_B" );
