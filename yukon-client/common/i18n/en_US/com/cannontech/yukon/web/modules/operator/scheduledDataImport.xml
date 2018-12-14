@@ -33,13 +33,11 @@
     <entry key="yukon.web.modules.operator.scheduledDataImportDetail.info">Info</entry>
     
     <entry key="yukon.web.modules.operator.scheduledData.importType.ASSET_IMPORT">Asset Import</entry>
-    <entry key="yukon.web.modules.operator.scheduledDataImportList.create">Create Scheduled Import</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.tableTitle.title">Scheduled Data Imports</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.notification">Notification</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.start">Start Now</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.delete">Delete</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.jobID">Job ID: {0}</entry>
-    <entry key="yukon.web.modules.operator.scheduledDataImportList.deleteConfirm.title">Delete Scheduled Data Import Job</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.deleteConfirm.message">Are you sure you want to delete "{0}"?</entry>
     
     <entry key="yukon.web.modules.operator.scheduledDataImportList.NAME">Name</entry>

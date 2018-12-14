@@ -7,11 +7,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="scheduledDataImportList">
-    <div id="errorMessages" class="error"></div>
     <tags:sectionContainer2 nameKey="tableTitle">
         <div id="page-actions" class="dn">
             <cti:url var="createUrl" value="/stars/scheduledDataImport/create"/>
-            <cm:dropdownOption icon="icon-plus-green" key=".create" id="create-option" href= "${createUrl}"/>
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="create-option" href= "${createUrl}"/>
             <cm:dropdownOption icon="icon-email" key=".notification"/>
         </div>
         <cti:url var="listUrl" value="/stars/scheduledDataImport/list"/>
@@ -65,7 +64,7 @@
                                             <cm:dropdownOption id="start-schedule-${jobId}" classes="js-schedule-start-now" key=".start" data-job-id="${jobId}" icon="icon-bullet-go"/>
                                             <cm:dropdownOption id="view-history-${jobId}" key="yukon.web.components.button.history.label" icon="icon-script" />
                                             <cm:dropdownOption id="delete-schedule-btn-${jobId}" data-ok-event="yukon:schedule:delete" data-job-id="${jobId}" key=".delete" icon="icon-cross" classes="js-hide-dropdown"/>
-                                            <d:confirm on="#delete-schedule-btn-${jobId}" nameKey="deleteConfirm" argument="${jobWrapper.name}"/>
+                                            <d:confirm on="#delete-schedule-btn-${jobId}" nameKey="confirmDelete"  argument="${jobWrapper.name}"/>
                                             <cm:dropdownOption id="disable-schedule-${jobId}" key="yukon.common.disable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-delete"/>
                                             <cm:dropdownOption id="enable-schedule-${jobId}" key="yukon.common.enable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-accept"/>
                                         </cm:dropdown>

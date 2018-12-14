@@ -43,22 +43,23 @@ yukon.assets.scheduleddataimport = (function() {
             });
             
             $(".js-schedule-start-now").click(function(e) {
-                $('#errorMessages').html("");
+                yukon.ui.removeAlerts();
                 var selection = $(this);
                 var jobId = selection.data('jobId');
+                _enableOrDisableField($('#start-schedule-' + jobId), true);
                 $.ajax({
                      url: yukon.url('/stars/scheduledDataImport/startJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
                 }).done(function (data) {
                     if (data.error) {
-                        $('#errorMessages').html(data.error);
+                        yukon.ui.alertError(data.error);
                     }
                 });
             });
             
             $(".js-schedule-toggle").click(function(e) {
-                $('#errorMessages').html("");
+                yukon.ui.removeAlerts();
                 var selection = $(this);
                 var jobId = selection.data('jobId');
                 $.ajax({
@@ -67,21 +68,26 @@ yukon.assets.scheduleddataimport = (function() {
                      data: { 'toggleJobId': jobId }
                 }).done(function (data) {
                     if (data.error) {
-                        $('#errorMessages').html(data.error);
+                        yukon.ui.alertError(data.error);
                     }
                 });
             });
             
             $(document).on('yukon:schedule:delete', function (ev) {
-                $('#errorMessages').html("");
+                yukon.ui.removeAlerts();
                 var jobId = $(ev.target).data('jobId');
-                //close the dialog
-                yukon.dialogConfirm.cancel();
                 $.ajax({
                     url: yukon.url('/stars/scheduledDataImport/' + jobId + '/delete'),
-                    type: 'delete'
-                }).done(function () {
-                    window.location.reload();
+                    type: 'delete',
+                    success : function() {
+                        window.location.reload();
+                    },
+                    error: function(xhr, status) {
+                        if(xhr.status == 405) {
+                           // This is expected to get 405 error from controller while redirecting.
+                           window.location.reload();
+                        }
+                    }
                 });
             });
             

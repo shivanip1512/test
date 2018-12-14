@@ -75,7 +75,7 @@ public class ScheduledDataImportController {
         }
     };
 
-    @RequestMapping("list")
+    @GetMapping("list")
     public String list(YukonUserContext userContext, ModelMap model,
             @DefaultItemsPerPage(10) PagingParameters paging,
             @DefaultSort(dir=Direction.desc, sort="NEXT_RUN") SortingParameters sorting) {
