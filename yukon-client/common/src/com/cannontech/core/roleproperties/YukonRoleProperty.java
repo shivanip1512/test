@@ -296,7 +296,7 @@ public enum YukonRoleProperty {
     private final YukonRole role;
     private final int propertyId;
     private final InputType<?> type;
-    private String helpTextKey = null;
+    private final String helpTextKey;
     private final static ImmutableMap<Integer, YukonRoleProperty> lookup;
     
     static {
@@ -317,6 +317,7 @@ public enum YukonRoleProperty {
         this.role = role;
         this.propertyId = propertyId;
         this.type = type;
+        this.helpTextKey = null;
     }
     
     private YukonRoleProperty(YukonRole role, int propertyId, InputType<?> type, String helpTextKey) {

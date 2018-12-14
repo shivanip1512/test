@@ -21,7 +21,7 @@ public enum CapControlCommandsAccessLevel implements DisplayableEnum {
             new CapControlCommandsAccessLevel[] {ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS};
     private final static CapControlCommandsAccessLevel[] nonOperationLevels = 
             new CapControlCommandsAccessLevel[] {ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS};
-    public final static CapControlCommandsAccessLevel[] yukonActionsLevels = 
+    private final static CapControlCommandsAccessLevel[] yukonActionsLevels = 
             new CapControlCommandsAccessLevel[] {ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,YUKON_ACTIONS_ONLY};
 
     /**

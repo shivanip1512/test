@@ -140,18 +140,18 @@ public class CommandController {
         
         /* CHECK USER/COMMAND AUTHORIZATION */
         String commandName = accessor.getMessage(commandType);
-        boolean authorized = true;
+        boolean authorized = false;
         if (commandType.isFieldOperationCommand()) {
-            if (!rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getFieldOperationLevels(), user)) {
-                authorized = false;
+            if (rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getFieldOperationLevels(), user)) {
+                authorized = true;
             }
         } else if (commandType.isNonOperationCommand()) {
-            if (!rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getNonOperationLevels(), user)) {
-                authorized = false;
+            if (rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getNonOperationLevels(), user)) {
+                authorized = true;
             }
         } else if (commandType.isYukonAction()) {
-            if (!rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getYukonActionsLevels(), user)) {
-                authorized = false;
+            if (rolePropertyDao.checkAnyLevel(permissions.get(type), CapControlCommandsAccessLevel.getYukonActionsLevels(), user)) {
+                authorized = true;
             }
         }
         if (!authorized) {
