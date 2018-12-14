@@ -1,11 +1,13 @@
 package com.cannontech.web.stars.scheduledDataImport;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -46,6 +48,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
+import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
@@ -106,19 +109,21 @@ public class ScheduledDataImportController {
     @PostMapping("save")
     public String save(@ModelAttribute("scheduledImportData") ScheduledDataImport scheduledImportData, BindingResult result,
              FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request, YukonUserContext userContext) {
-        scheduledDataImportValidator.validate(scheduledImportData, result);
-        
-        if (result.hasErrors()) {
-            return bindAndForward(scheduledImportData, result, redirectAttributes);
-        }
-        
         try {
             String cronExpression = cronExpressionTagService.build("cronExpression", request, userContext);
             scheduledImportData.setCronString(cronExpression);
         } catch (CronException e) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "invalidCronExpression"));
+            result.rejectValue("cronString", "yukon.common.invalidCron");
+        }
+        
+        scheduledDataImportValidator.validate(scheduledImportData, result);
+        
+        if (result.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setError(messages);
             return bindAndForward(scheduledImportData, result, redirectAttributes);
         }
+        
         YukonJob savedJob = null;
         if (scheduledImportData.getJobId() == null) {
             savedJob = scheduledDataImportService.scheduleDataImport(scheduledImportData, userContext);
@@ -204,16 +209,21 @@ public class ScheduledDataImportController {
         }
         
         String globalImportPaths = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_IMPORT_PATH);
-        StringUtils.parseStringsForList(globalImportPaths);
-        model.addAttribute("importPaths", globalImportPaths);
+        model.addAttribute("importPaths", StringUtils.parseStringsForList(globalImportPaths));
 
         String globalErrorFileOutputPaths =
             globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_EXPORT_PATH);
-        StringUtils.parseStringsForList(globalErrorFileOutputPaths);
-        model.addAttribute("errorFileOutputPaths", globalErrorFileOutputPaths);
+        model.addAttribute("errorFileOutputPaths", StringUtils.parseStringsForList(globalErrorFileOutputPaths));
 
         CronExpressionTagState cronExpressionTagState =
             cronExpressionTagService.parse(scheduledDataImport.getCronString(), userContext);
+        if (model.containsAttribute("org.springframework.validation.BindingResult.scheduledImportData")) {
+            BindingResult bindingResult = (BindingResult) model.get("org.springframework.validation.BindingResult.scheduledImportData");
+            if (bindingResult.hasFieldErrors("cronString")) {
+                cronExpressionTagState.setCronTagStyleType(CronTagStyleType.CUSTOM);
+                model.addAttribute("invalidCronString", true);
+            }
+        }
         model.addAttribute("cronExpressionTagState", cronExpressionTagState);
         
         scheduledDataImport.setImportType(ScheduledImportType.ASSET_IMPORT);
