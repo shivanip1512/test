@@ -86,6 +86,12 @@
         <xs:attribute name="value" type="PositiveDouble" use="required" />
     </xs:complexType>
 
+    <xs:simpleType name="comma-separated-text">
+      <xs:restriction base="xs:token">
+        <xs:pattern value="[^,]+(, ?[^,]+)*"/>
+      </xs:restriction>
+    </xs:simpleType>
+
     <xs:complexType name="Point">
         <xs:sequence>
             <xs:element name="uom" type="Uom" minOccurs="0" />
@@ -98,6 +104,8 @@
             </xs:sequence>
         </xs:sequence>
         <xs:attribute name="name" use="required" />
+        <xs:attribute name="icd" type="xs:boolean" />
+        <xs:attribute name="icdExcludedTypes" type="comma-separated-text" />
     </xs:complexType>
 
     <xs:complexType name="PaoType">
