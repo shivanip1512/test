@@ -76,8 +76,10 @@
     ]]></entry>
     <entry key="yukon.web.modules.tools.collectionActions.progressReport.results.helpText"><![CDATA[
         Numbers in the pie graph may be greater than the actual device count in the following scenarios:
-        <li>Multiple commands are run for each device (if you select multiple attributes to be read or for Demand Reset).</li>
-        <li>If you Cancel a command, the results may come back after cancelation so a device may be counted as Canceled and also Success/Failure.</li>
+        <ul>
+            <li>Multiple commands are run for each device (if you select multiple attributes to be read or for Demand Reset).</li>
+            <li>If you Cancel a command, the results may come back after cancelation so a device may be counted as Canceled and also Success/Failure.</li>
+        </ul>
     ]]></entry>
     <entry key="yukon.web.modules.tools.collectionActions.progressReport.inputs.title">Inputs</entry>
     <entry key="yukon.web.modules.tools.collectionActions.progressReport.action">Action</entry>
