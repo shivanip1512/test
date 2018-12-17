@@ -40,12 +40,12 @@ public class ScheduledDataImportTaskJobWrapperFactory {
 
         public ScheduledDataImportTaskJobWrapper(ScheduledRepeatingJob scheduledRepeatingJob,
                 YukonUserContext yukonUserContext) {
-            this.job = scheduledRepeatingJob;
+            job = scheduledRepeatingJob;
             this.yukonUserContext = yukonUserContext;
-            this.task = (ScheduledDataImportTask) jobManager.instantiateTask(this.job);
+            task = (ScheduledDataImportTask) jobManager.instantiateTask(this.job);
             JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(scheduledRepeatingJob.getId());
             JobDisabledStatus jobDisabledStatus = jobManager.getJobDisabledStatus(scheduledRepeatingJob.getId());
-            this.jobState = JobState.of(jobDisabledStatus, status);
+            jobState = JobState.of(jobDisabledStatus, status);
         }
 
         public Date getNextRun() {
