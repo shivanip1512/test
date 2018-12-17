@@ -4,11 +4,8 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.bulk.processor.ProcessingException;
-import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.stars.ws.LmDeviceDto;
 
 public class LatitudeLongitudeBulkFieldProcessorTest {
 
