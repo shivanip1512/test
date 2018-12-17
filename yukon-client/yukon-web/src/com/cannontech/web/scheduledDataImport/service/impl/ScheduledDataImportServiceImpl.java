@@ -31,7 +31,6 @@ import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService
 import com.cannontech.web.scheduledDataImport.tasks.ScheduledDataImportTask;
 import com.cannontech.web.stars.scheduledDataImport.ScheduledDataImportController.Column;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class ScheduledDataImportServiceImpl implements ScheduledDataImportService {
