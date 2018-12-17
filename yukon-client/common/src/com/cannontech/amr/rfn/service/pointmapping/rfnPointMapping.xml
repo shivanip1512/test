@@ -2375,6 +2375,14 @@
             <uom>Restore Blink Count</uom>
             <modifiers match="equal"/> 
         </point>
+        
+        <point name="Device Temperature">
+            <uom>&#176;C</uom>
+            <multiplier value="1"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+            </modifiers>
+        </point>
     </pointGroup>
     
     <!-- ITRON SENTINEL LEVEL 1 -->
