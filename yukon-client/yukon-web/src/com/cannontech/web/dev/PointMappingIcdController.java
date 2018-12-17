@@ -268,8 +268,4 @@ public class PointMappingIcdController {
     
         return "rfn/pointMappingIcd.jsp";
     }
-
-    private static <T extends PointDefinition> PointSection makePointSection(String title, List<Named<T>> points) {
-        return PointSection.of(title, points, PointMappingIcdController::<T>describePoint);
-    }    
 }
