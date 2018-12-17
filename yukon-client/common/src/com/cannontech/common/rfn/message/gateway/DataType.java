@@ -8,5 +8,5 @@ public enum DataType {
     GATEWAY_LOGS,
     GENERAL_PURPOSE_DATA,
     SENSOR_DATA,
-    
+    GATEWAY_ALARMS,
 }

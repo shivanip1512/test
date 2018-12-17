@@ -214,6 +214,7 @@
     <entry key="yukon.web.modules.operator.gateways.sequenceType.GATEWAY_LOGS">Gateway Logs</entry>
     <entry key="yukon.web.modules.operator.gateways.sequenceType.GENERAL_PURPOSE_DATA">General Purpose Data</entry>
     <entry key="yukon.web.modules.operator.gateways.sequenceType.SENSOR_DATA">Sensor Data</entry>
+    <entry key="yukon.web.modules.operator.gateways.sequenceType.GATEWAY_ALARMS">Gateway Alarms</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionStatus.CONNECTED">Connected</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionStatus.DISCONNECTED">Disconnected</entry>
     <entry key="yukon.web.modules.operator.gateways.lastCommStatus.SUCCESSFUL">Successful</entry>
