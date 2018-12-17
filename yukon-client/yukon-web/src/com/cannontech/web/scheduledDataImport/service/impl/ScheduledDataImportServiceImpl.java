@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.Logger;
@@ -134,22 +135,17 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     @Override
     public SearchResults<ScheduledDataImportTaskJobWrapper> getScheduledFileImportJobData(PagingParameters paging,
             SortingParameters sorting, YukonUserContext userContext) {
-        List<ScheduledRepeatingJob> exportJobs =
-            jobManager.getNotDeletedRepeatingJobsByDefinition(scheduledDataImportJobDefinition);
-        List<ScheduledDataImportTaskJobWrapper> jobWrappers = Lists.newArrayListWithCapacity(exportJobs.size());
-        for (ScheduledRepeatingJob job : exportJobs) {
-            ScheduledDataImportTaskJobWrapper jobWrapper =
-                scheduledDataImportTaskJobWrapperFactory.createJobWrapper(job, userContext);
-            jobWrappers.add(jobWrapper);
-        }
+        List<ScheduledDataImportTaskJobWrapper> jobWrappers =
+            jobManager.getNotDeletedRepeatingJobsByDefinition(scheduledDataImportJobDefinition).stream().map(
+                job -> scheduledDataImportTaskJobWrapperFactory.createJobWrapper(job, userContext)).collect(
+                    Collectors.toList());
         Direction dir = sorting.getDirection();
         Column sortBy = Column.valueOf(sorting.getSort());
         Comparator<ScheduledDataImportTaskJobWrapper> comparator = sorters.get(sortBy);
         if (dir == Direction.desc) {
-            Collections.sort(jobWrappers, Collections.reverseOrder(comparator));
-        } else {
-            Collections.sort(jobWrappers, comparator);
+            comparator = Collections.reverseOrder(comparator);
         }
+        jobWrappers.sort(comparator);
         return SearchResults.pageBasedForWholeList(paging, jobWrappers);
     }
 }
