@@ -501,20 +501,15 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         DisplayablePao displayablePaoHardware =
                 paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
 
-            try {
-                validateForLocation(displayablePaoHardware, deviceDto);
-                PaoLocation newLocation =
-                    new PaoLocation(displayablePaoHardware.getPaoIdentifier(), deviceDto.getLatitude(), deviceDto.getLongitude());
-                paoLocationDao.save(newLocation);
-            } catch (ProcessingException e) {
-                throw e;
-            }
-    }
-    
-    /* Method to validate the Latitude and Longitude for the hardware */
-    private void validateForLocation(DisplayablePao displayablePaoForHardware, LmDeviceDto deviceDto) throws ProcessingException{
-        latitudeLongitudeBulkFieldProcessor.locationValidation(displayablePaoForHardware.getPaoIdentifier(),
-            deviceDto.getLatitude(), deviceDto.getLongitude());
+        try {
+            latitudeLongitudeBulkFieldProcessor.locationValidation(displayablePaoHardware.getPaoIdentifier(),
+                deviceDto.getLatitude(), deviceDto.getLongitude());
+            PaoLocation newLocation = new PaoLocation(displayablePaoHardware.getPaoIdentifier(),
+                deviceDto.getLatitude(), deviceDto.getLongitude());
+            paoLocationDao.save(newLocation);
+        } catch (ProcessingException e) {
+            throw e;
+        }
     }
 
     private boolean isOperationAllowedForHardware(HardwareType hardwareType) {
