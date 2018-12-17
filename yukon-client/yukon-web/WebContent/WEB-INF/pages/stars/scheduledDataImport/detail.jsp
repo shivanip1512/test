@@ -13,7 +13,7 @@
         <c:set var="disableJobEdit" value="${scheduledImportData.jobState eq 'RUNNING' or  scheduledImportData.jobState eq 'DELETED'}"/>
         <c:set var="disableJobCss" value=""/>
         <c:if test="${disableJobEdit == true}">
-            <c:set var="disableJobCss" value="js-disable-job"/>
+            <c:set var="disableJobCss" value="disabled-look"/>
         </c:if>
         <div id="page-actions" class="dn">
             <!-- Create -->
