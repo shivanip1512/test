@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.icd;
+package com.cannontech.amr.rfn.service.pointmapping.icd;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
@@ -22,7 +22,11 @@ public class Named<T extends PointDefinition> {
         return name;
     }
 
-    public T getValue() {
+    public PointDefinition getValue() {
         return value;
+    }
+    
+    public String toString() {
+        return name + "=" + value;
     }
 }

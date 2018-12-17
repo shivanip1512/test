@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.icd;
+package com.cannontech.amr.rfn.service.pointmapping.icd;
 
 import java.util.Optional;
 
@@ -6,10 +6,10 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class Model {
+public class ManufacturerModel {
 
     @JsonCreator
-    public Model(String manufacturerModel) {
+    public ManufacturerModel(String manufacturerModel) {
         
         this.original = manufacturerModel;
 
@@ -35,7 +35,7 @@ public class Model {
     public RfnManufacturerModel getManufacturerModel() {
         return mm;
     }
-
+    
     private String original;
     private RfnManufacturerModel mm;
 }

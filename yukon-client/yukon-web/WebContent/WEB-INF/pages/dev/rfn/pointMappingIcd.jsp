@@ -10,18 +10,20 @@
             <a data-show-hide="#models">Toggle</a> Models
         </h2>
         <table id="models" class="compact-results-table">
-            <c:forEach var="models" items="${meterModels}">
                 <tr>
-                    <th>Manufacturer</th>
+                    <th>Meter class</th>
                     <th>ICD Model string</th>
                     <th>RfnManufacturerModel</th>
                 </tr>
-                <c:forEach var="model" items="${models.value}">
-                    <tr>
-                        <td>${models.key}</td>
-                        <td>${model.original}</td>
-                        <td>${model.manufacturerModel}</td>
-                    </tr>
+            <c:forEach var="models" items="${meterModels}">
+                <c:forEach var="meterClass" items="${models.value}">
+                    <c:forEach var="model" items="${meterClass.value}">
+                        <tr>
+                            <td>${models.key.displayName} ${meterClass.key.displayName}</td>
+                            <td>${model.original}</td>
+                            <td>${model.manufacturerModel}</td>
+                        </tr>
+                    </c:forEach>
                 </c:forEach>
             </c:forEach>
         </table>
@@ -76,19 +78,19 @@
             <a data-show-hide="#centronxPoints">Toggle</a> Centronx
         </h2>
         <table id="centronxPoints" class="compact-results-table">
-            <thead>
-                <tr>
+            <c:forEach var="point" items="${centronxPoints}" varStatus="rows">
+                <c:if test="${(rows.count - 1) % 20 == 0}"><tr>
                     <th>Name</th>
                     <th class="tar">Metric</th>
                     <th>Unit</th>
                     <th>Modifiers</th>
                     <th>Models</th>
-                </tr>
-            </thead>
-            <c:forEach var="point" items="${centronxPoints}">
+                </tr></c:if>
                 <tr>
                     <td>${point.name}</td>
                     <td class="tar">${point.metric}</td>
+                    <td/>
+                    <td/>
                     <td><c:forEach var="model" items="${point.models}" varStatus="loop">
                         ${model}${loop.last ? "" : ","}
                     </c:forEach></td>

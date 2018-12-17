@@ -20,24 +20,25 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.cannontech.amr.rfn.service.pointmapping.icd.ManufacturerModel;
+import com.cannontech.amr.rfn.service.pointmapping.icd.ModelPointDefinition;
+import com.cannontech.amr.rfn.service.pointmapping.icd.Modifiers;
+import com.cannontech.amr.rfn.service.pointmapping.icd.NameScale;
+import com.cannontech.amr.rfn.service.pointmapping.icd.Named;
+import com.cannontech.amr.rfn.service.pointmapping.icd.PointDefinition;
+import com.cannontech.amr.rfn.service.pointmapping.icd.ElsterA3PointDefinition;
+import com.cannontech.amr.rfn.service.pointmapping.icd.NameScaleCoincidents;
+import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
+import com.cannontech.amr.rfn.service.pointmapping.icd.RfnPointMappingParser;
+import com.cannontech.amr.rfn.service.pointmapping.icd.SentinelPointDefinition;
+import com.cannontech.amr.rfn.service.pointmapping.icd.Units;
+import com.cannontech.amr.rfn.service.pointmapping.icd.WaterNodePointDefinition;
+import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParser;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.dao.RfnPointMappingDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
-import com.cannontech.web.dev.icd.ElsterA3PointDefinition;
-import com.cannontech.web.dev.icd.Model;
-import com.cannontech.web.dev.icd.ModelPointDefinition;
-import com.cannontech.web.dev.icd.Modifiers;
-import com.cannontech.web.dev.icd.NameScale;
-import com.cannontech.web.dev.icd.Named;
-import com.cannontech.web.dev.icd.PointDefinition;
-import com.cannontech.web.dev.icd.PointInfo;
-import com.cannontech.web.dev.icd.PointMappingIcd;
-import com.cannontech.web.dev.icd.RfnPointMappingParser;
-import com.cannontech.web.dev.icd.SentinelPointDefinition;
-import com.cannontech.web.dev.icd.Units;
-import com.cannontech.web.dev.icd.WaterNodePointDefinition;
-import com.cannontech.web.dev.icd.YukonPointMappingIcdParser;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -152,7 +153,7 @@ public class PointMappingIcdController {
         model.addAttribute("metrics", parsedIcd.metricIds); 
 
         Function<PointDefinition, String> pointDescriber = e -> 
-                NEWLINE_TAB + e.unit.toString() + 
+                NEWLINE_TAB + e.getUnit().toString() + 
                 NEWLINE_TAB + e.getModifiers().toString();
 
         Function<ModelPointDefinition, String> modelPointDescriber = e -> 
@@ -175,32 +176,32 @@ public class PointMappingIcdController {
                 NEWLINE_TAB + e.metricId;
         
         List<PointSection> points = ImmutableList.of(
-            PointSection.of("Centron",                   parsedIcd.centronWithAdvancedMetrology,  modelPointDescriber),
-            PointSection.of("Focus AX",                  parsedIcd.focusAxWithAdvancedMetrology,  pointDescriber),
-            PointSection.of("Focus kWh",                 parsedIcd.focusKwhWithAdvancedMetrology, pointDescriber),
-            PointSection.of("Elster A3",                 parsedIcd.elsterA3,                      elsterA3PointDescriber),
-            PointSection.of("ELO",                       parsedIcd.elo,                           pointDescriber),
-            PointSection.of("Itron Sentinel",            parsedIcd.itronSentinel,                 sentinelPointDescriber),
-            PointSection.of("RFN-500 Landis and Gyr S4", parsedIcd.rfn500LgyrS4,                  modelPointDescriber),
-            PointSection.of("RFN-500 Focus AX",          parsedIcd.rfn500LgyrFocusAx,             modelPointDescriber),
-            PointSection.of("Next Gen Water Node",       parsedIcd.nextGenWaterNode,              waterNodePointDescriber));
+            PointSection.of("Centron",                   parsedIcd.itronCentronWithAdvancedMetrology,      modelPointDescriber),
+            PointSection.of("Focus AX",                  parsedIcd.lgyrFocusAxRfn420WithAdvancedMetrology, pointDescriber),
+            PointSection.of("Focus kWh",                 parsedIcd.lgyrFocusKwhWithAdvancedMetrology,      pointDescriber),
+            PointSection.of("Elster A3",                 parsedIcd.elsterA3,                               elsterA3PointDescriber),
+            PointSection.of("ELO",                       parsedIcd.elo,                                    modelPointDescriber),
+            PointSection.of("Itron Sentinel",            parsedIcd.itronSentinel,                          sentinelPointDescriber),
+            PointSection.of("RFN-500 Landis and Gyr S4", parsedIcd.lgyrS4_rfn500,                          modelPointDescriber),
+            PointSection.of("RFN-500 Focus AX+RX",       parsedIcd.lgyrFocusAxRx_rfn500,                   modelPointDescriber),
+            PointSection.of("Next Gen Water Node",       parsedIcd.nextGenWaterNode,                       waterNodePointDescriber));
         
         model.addAttribute("points", points);
         
         Map<? extends PointDefinition, Integer> metricLookup = parsedIcd.metricIds.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
         
-        List<ModelPointSupport> centronxPoints = parsedIcd.centronWithAdvancedMetrology.stream()
-            .map(nmpd -> new ModelPointSupport(nmpd.name, metricLookup.get(nmpd.value), Lists.transform(nmpd.value.models, Model::getManufacturerModel)))
+        List<ModelPointSupport> centronxPoints = parsedIcd.itronCentronWithAdvancedMetrology.stream()
+            .map(nmpd -> new ModelPointSupport(nmpd.name, metricLookup.get(nmpd.value), Lists.transform(nmpd.value.models, ManufacturerModel::getManufacturerModel)))
             .collect(Collectors.toList());
         
         model.addAttribute("centronxPoints", centronxPoints);
         
-        Map<PointDefinition, PointInfo> icdPoints = Maps.newHashMap();
-        PointInfo pi = null;
+        Map<PointDefinition, NameScaleCoincidents> icdPoints = Maps.newHashMap();
+        NameScaleCoincidents bpi = null;
         for (Named<ElsterA3PointDefinition> mpd : parsedIcd.elsterA3) {
             if (mpd.value.models.stream().anyMatch(m -> m.getManufacturerModel() == RfnManufacturerModel.RFN_430A3K)) {
-                Units u = mpd.value.unit;
+                Units u = mpd.value.getUnit();
                 Set<Modifiers> modifiers = new HashSet<>(mpd.value.getModifiers());
                 
                 modifiers.removeIf(Modifiers::isSiPrefix);
@@ -208,21 +209,21 @@ public class PointMappingIcdController {
                 NameScale ns = new NameScale(mpd.name, 1.0);
                 PointDefinition pd = new PointDefinition(u, modifiers);
                 if (modifiers.removeIf(Modifiers::isCoincident)) {
-                    pi.addCoincidentPoint(pd, ns);
+                    bpi.addCoincidentPoint(pd, ns);
                 } else {
-                    pi = new PointInfo(ns);
-                    icdPoints.put(pd, pi);
+                    bpi = new NameScaleCoincidents(ns);
+                    icdPoints.put(pd, bpi);
                 }
             }
         }
 
         try {
-            Map<PaoType, Map<PointDefinition, PointInfo>> rfnPointMapping = RfnPointMappingParser.parseRfnPointMappingXml(rfnPointMappingDao.getPointMappingFile());
+            Map<PaoType, Map<PointDefinition, NameScaleCoincidents>> rfnPointMapping = RfnPointMappingParser.getPaoTypePointsMappedToCoincidents(rfnPointMappingDao.getPointMappingFile());
             
-            Map<PointDefinition, PointInfo> rpm_Rfn430A3k = rfnPointMapping.get(PaoType.RFN430A3K);
+            Map<PointDefinition, NameScaleCoincidents> rpm_Rfn430A3k = rfnPointMapping.get(PaoType.RFN430A3K);
             
-            Function<PointInfo, String> getPointName = pointInfo ->
-                Optional.ofNullable(pointInfo).map(PointInfo::getNameScale).map(NameScale::toString).orElse("(missing)");
+            Function<NameScaleCoincidents, String> getPointName = pointInfo ->
+                Optional.ofNullable(pointInfo).map(NameScaleCoincidents::getNameScale).map(NameScale::toString).orElse("(missing)");
             
             List<PointRow> pointTable = 
                     Sets.union(rpm_Rfn430A3k.keySet(), icdPoints.keySet()).stream()
@@ -266,5 +267,9 @@ public class PointMappingIcdController {
         }
     
         return "rfn/pointMappingIcd.jsp";
+    }
+
+    private static <T extends PointDefinition> PointSection makePointSection(String title, List<Named<T>> points) {
+        return PointSection.of(title, points, PointMappingIcdController::<T>describePoint);
     }    
 }

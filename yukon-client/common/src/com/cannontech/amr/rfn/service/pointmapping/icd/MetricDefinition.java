@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.icd;
+package com.cannontech.amr.rfn.service.pointmapping.icd;
 
 public class MetricDefinition extends PointDefinition {
     public String name;

@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.icd;
+package com.cannontech.amr.rfn.service.pointmapping.icd;
 
 import java.util.Map;
 import java.util.Optional;
@@ -77,5 +77,9 @@ public enum Units {
 
     public double getMultiplier() {
         return multiplier;
+    }
+    
+    public boolean isMetric() {
+        return this != SECONDS;
     }
 }
