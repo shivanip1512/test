@@ -64,28 +64,17 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
         }
     }
 
-    public static void locationValidation(PaoIdentifier paoIdentifier, Double latitude, Double longitude) {
-        if (latitude != null) {
-            boolean isLatitudeValid = YukonValidationUtils.isLatitudeInRange(latitude);
-            if (!isLatitudeValid) {
-                throw new ProcessingException(
-                    "Valid Latitude (Must be between -90 and 90) not specified for device with paoId " + paoIdentifier,
-                    "invalidLatitude", "-90", "90", paoIdentifier);
-            }
-        } else {
+    public void locationValidation(PaoIdentifier paoIdentifier, Double latitude, Double longitude) {
+
+        boolean isLatitudeValid = YukonValidationUtils.isLatitudeInRange(latitude);
+        if (!isLatitudeValid) {
             throw new ProcessingException(
                 "Valid Latitude (Must be between -90 and 90) not specified for device with paoId " + paoIdentifier,
                 "invalidLatitude", "-90", "90", paoIdentifier);
         }
 
-        if (longitude != null) {
-            boolean isLongitudeValid = YukonValidationUtils.isLongitudeInRange(longitude);
-            if (!isLongitudeValid) {
-                throw new ProcessingException(
-                    "Valid Longitude (Must be between -180 and 180) not specified for device with paoId " + paoIdentifier,
-                    "invalidLongitude", "-180", "180", paoIdentifier);
-            }
-        } else {
+        boolean isLongitudeValid = YukonValidationUtils.isLongitudeInRange(longitude);
+        if (!isLongitudeValid) {
             throw new ProcessingException(
                 "Valid Longitude (Must be between -180 and 180) not specified for device with paoId " + paoIdentifier,
                 "invalidLongitude", "-180", "180", paoIdentifier);

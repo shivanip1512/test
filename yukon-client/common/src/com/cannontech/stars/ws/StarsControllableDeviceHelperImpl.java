@@ -92,6 +92,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private NestBuilder nestBuilder;
+    @Autowired private LatitudeLongitudeBulkFieldProcessor latitudeLongitudeBulkFieldProcessor;
     
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -512,7 +513,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     
     /* Method to validate the Latitude and Longitude for the hardware */
     private void validateForLocation(DisplayablePao displayablePaoForHardware, LmDeviceDto deviceDto) throws ProcessingException{
-        LatitudeLongitudeBulkFieldProcessor.locationValidation(displayablePaoForHardware.getPaoIdentifier(),
+        latitudeLongitudeBulkFieldProcessor.locationValidation(displayablePaoForHardware.getPaoIdentifier(),
             deviceDto.getLatitude(), deviceDto.getLongitude());
     }
 

@@ -233,7 +233,11 @@ public class YukonValidationUtils extends ValidationUtils {
 
     /* Validation for checking the latitude */
     public static boolean isLatitudeInRange(Double latitude) {
-        if (latitude > 90 || latitude < -90) {
+        if (latitude != null) {
+            if (latitude > 90 || latitude < -90) {
+                return false;
+            }
+        } else {
             return false;
         }
         return true;
@@ -241,7 +245,11 @@ public class YukonValidationUtils extends ValidationUtils {
 
     /* Validation for checking the longitude */
     public static boolean isLongitudeInRange(Double longitude) {
-        if (longitude > 180 || longitude < -180) {
+        if (longitude != null) {
+            if (longitude > 180 || longitude < -180) {
+                return false;
+            }
+        } else {
             return false;
         }
         return true;
