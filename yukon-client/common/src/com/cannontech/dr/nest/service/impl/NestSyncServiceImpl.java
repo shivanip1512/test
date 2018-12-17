@@ -30,9 +30,9 @@ import static com.cannontech.dr.nest.model.NestSyncI18nValue.PROGRAM;
 import static com.cannontech.dr.nest.model.NestSyncI18nValue.SERIAL_NUMBER;
 import static com.cannontech.dr.nest.model.NestSyncType.AUTO;
 import static com.cannontech.dr.nest.model.NestSyncType.MANUAL;
-import com.cannontech.util.Validator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -51,10 +51,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.events.loggers.NestEventLogService;
 import com.cannontech.common.model.Address;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -73,11 +77,13 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.nest.dao.NestDao;
+import com.cannontech.dr.nest.dao.NestDao.SortBy;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestSync;
 import com.cannontech.dr.nest.model.NestSyncDetail;
 import com.cannontech.dr.nest.model.NestSyncI18nKey;
 import com.cannontech.dr.nest.model.NestSyncTimeInfo;
+import com.cannontech.dr.nest.model.NestSyncType;
 import com.cannontech.dr.nest.model.v3.CustomerInfo;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.service.NestCommunicationService;
@@ -134,6 +140,8 @@ public class NestSyncServiceImpl implements NestSyncService{
     @Autowired private CustomerDao customerDao;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
+    @Autowired private NestEventLogService nestEventLogService;
+
     private EnergyCompany energyCompany;
        
     /**
@@ -175,12 +183,12 @@ public class NestSyncServiceImpl implements NestSyncService{
         if(yukonListEntry.isEmpty()) {
             throw new NestException("Device type 'Nest thermostat' has not been created.");
         }
-        
         syncInProgress = true;
         log.info("Nest sync started");
         persistedSystemValueDao.setValue(PersistedSystemValueKey.NEST_SYNC_TIME, new Instant());
         NestSync sync = new NestSync();
         nestDao.saveSyncInfo(sync);
+        nestEventLogService.syncStart(sync.getId(), sync.getStartTime());
         List<CustomerInfo> existing = nestCommunicationService.retrieveCustomers(EnrollmentState.ACCEPTED);
         
         if (!existing.isEmpty()) {
@@ -194,7 +202,9 @@ public class NestSyncServiceImpl implements NestSyncService{
         }
         sync.setStopTime(new Instant());
         nestDao.saveSyncInfo(sync);
-        
+        SearchResults<NestSyncDetail> autoResults = nestDao.getNestSyncDetail(sync.getId(), PagingParameters.EVERYTHING, SortBy.SYNCTYPE, Direction.desc, Arrays.asList(NestSyncType.AUTO));
+        SearchResults<NestSyncDetail> manualResults = nestDao.getNestSyncDetail(sync.getId(), PagingParameters.EVERYTHING, SortBy.SYNCTYPE, Direction.desc, Arrays.asList(NestSyncType.MANUAL));
+        nestEventLogService.syncResults(sync.getId(), sync.getStartTime(), sync.getStopTime(), autoResults.getHitCount(), manualResults.getHitCount());
         syncInProgress = false;
         log.info("Nest sync finished");
     }

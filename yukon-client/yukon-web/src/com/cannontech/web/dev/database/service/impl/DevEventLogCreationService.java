@@ -39,6 +39,7 @@ import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
+import com.cannontech.common.events.loggers.NestEventLogService;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.events.loggers.PqrEventLogService;
@@ -55,9 +56,14 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
+import com.cannontech.dr.nest.model.v3.EnrollmentState;
+import com.cannontech.dr.nest.model.v3.RejectionReason;
+import com.cannontech.dr.nest.model.v3.RushHourEventType;
+import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -87,6 +93,7 @@ public class DevEventLogCreationService {
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
+    @Autowired private NestEventLogService nestEventLogService;
     @Autowired private OutageEventLogService outageEventLogService;
     @Autowired private PointEventLogService pointEventLogService;
     @Autowired private PqrEventLogService pqrEventLogService;
@@ -707,6 +714,38 @@ public class DevEventLogCreationService {
                 multispeakEventLogService.substationNotFound(substationName, meterNumber, mspMethod, mspVendor);
             }
         });        
+        executables.put(LogType.NEST, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                int syncId = 1;
+                Instant start = new Instant();
+                String startTimeStr = start.toString();
+                Instant stop = new Instant();
+                Instant cancelTime = new Instant();
+                int autoCount = 5;
+                int manualCount = 6;
+                String duration = "5:00";
+                String type = RushHourEventType.STANDARD.name();
+                String sError =SchedulabilityError.EVENT_REQUEST_TOO_EARLY.name();
+                String key = "sampleKeyInput";
+                String group = "sampleGroupName";
+                String customer = "sampleCustomerName";
+                
+                nestEventLogService.syncStart(syncId, start);
+                nestEventLogService.syncResults(syncId, start, stop, autoCount, manualCount);
+                nestEventLogService.sendEvent(startTimeStr, duration, type);
+                nestEventLogService.sendEventSuccess(start, stop, type);
+                nestEventLogService.sendEventError(startTimeStr, duration, type, sError);
+                nestEventLogService.sendCancelEvent(key, group, start);
+                nestEventLogService.responseCancelEvent(key, group, start, cancelTime, YNBoolean.YES.getBoolean());
+                nestEventLogService.sendStopEvent(key, group, start);
+                nestEventLogService.responseStopEvent(key, group, start, stop, YNBoolean.NO.getBoolean());
+                nestEventLogService.sendUpdateEnrollment(group, customer);
+                nestEventLogService.responseUpdateEnrollment(customer, group, RejectionReason.INELIGIBLE_ADDRESS.name());
+                nestEventLogService.sendRetrieveCustomers(EnrollmentState.ACCEPTED.name());
+                nestEventLogService.responseRetrieveCustomers(11);
+            }
+        });
         executables.put(LogType.OUTAGE,  new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
@@ -1091,6 +1130,7 @@ public class DevEventLogCreationService {
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
+        NEST(NestEventLogService.class, 13),
         OUTAGE(OutageEventLogService.class, 10),
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),

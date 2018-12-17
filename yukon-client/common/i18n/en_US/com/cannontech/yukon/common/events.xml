@@ -15,6 +15,8 @@
     <entry key="yukon.common.events.action">Action</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
+    <entry key="yukon.common.events.auto">autoCount</entry>    
+    <entry key="yukon.common.events.cancelTime">Cancel Time</entry>
     <entry key="yukon.common.events.changeId">ChangeId</entry>
     <entry key="yukon.common.events.commandRequestExecutionContextId">CommandReqExecContextId</entry>
     <entry key="yukon.common.events.commandRequestExecutionId">CommandReqExecId</entry>
@@ -24,6 +26,7 @@
     <entry key="yukon.common.events.contactName">Contact Name</entry>
     <entry key="yukon.common.events.controlAreaName">Control Area Name</entry>
     <entry key="yukon.common.events.cron">Run Frequency</entry>
+    <entry key="yukon.common.events.customerId">Customer Id</entry>    
     <entry key="yukon.common.events.dashboardName">Dashboard Name</entry>
     <entry key="yukon.common.events.deviceConfig">Device Config</entry>
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
@@ -31,12 +34,14 @@
     <entry key="yukon.common.events.deviceName">Device Name</entry>
     <entry key="yukon.common.events.deviceRequestType">Device Request Type</entry>
     <entry key="yukon.common.events.drEncryption">DR Encryption</entry>
+    <entry key="yukon.common.events.duration">Duration</entry>
     <entry key="yukon.common.events.email">Email</entry>
     <entry key="yukon.common.events.endDate">End Date</entry>
     <entry key="yukon.common.events.energyCompanyId">Energy Company Id</entry>
     <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
     <entry key="yukon.common.events.energyCompanySettingType">Energy Company Setting</entry>
     <entry key="yukon.common.events.energyCompanySettingValue">Energy Company Setting Value</entry>
+    <entry key="yukon.common.events.error">Error</entry>
     <entry key="yukon.common.events.eventSource">Event Source</entry>
     <entry key="yukon.common.events.eventType">Event Type</entry>
     <entry key="yukon.common.events.failureCount">Failures</entry>
@@ -46,13 +51,16 @@
     <entry key="yukon.common.events.gearName">Gear Name</entry>
     <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
     <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
+    <entry key="yukon.common.events.group">Group</entry>
     <entry key="yukon.common.events.hardwareType">Hardware Type</entry>
     <entry key="yukon.common.events.input">Input</entry>
     <entry key="yukon.common.events.inventoryId">Inventory Id</entry>
     <entry key="yukon.common.events.ipAddress">IP Address</entry>
     <entry key="yukon.common.events.jobId">Job Id</entry>
+    <entry key="yukon.common.events.key">Key</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
+    <entry key="yukon.common.events.manual">Manual</entry>
     <entry key="yukon.common.events.media">Media</entry>
     <entry key="yukon.common.events.message">Message</entry>
     <entry key="yukon.common.events.meterDescription">Meter Description</entry>
@@ -83,16 +91,20 @@
     <entry key="yukon.common.events.serialNumber">Serial Number</entry>
     <entry key="yukon.common.events.shedDuration">Shed Duration</entry>
     <entry key="yukon.common.events.startDate">Start Date</entry>
+    <entry key="yukon.common.events.startTime">Start Time</entry>
     <entry key="yukon.common.events.state">Enabled/Disabled</entry>
     <entry key="yukon.common.events.statistics">Statistics</entry>
     <entry key="yukon.common.events.status">Status</entry>
+    <entry key="yukon.common.events.stopTime">Stop Time</entry>
     <entry key="yukon.common.events.substationName">Substation Name</entry>
     <entry key="yukon.common.events.successCount">Success</entry>
+    <entry key="yukon.common.events.syncId">Sync Id</entry>
     <entry key="yukon.common.events.syncIssueType">Sync Type</entry>
     <entry key="yukon.common.events.tagSet">Tag Set</entry>
     <entry key="yukon.common.events.taskName">Task Name</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
     <entry key="yukon.common.events.totalCount">Total</entry>
+    <entry key="yukon.common.events.type">Type</entry>
     <entry key="yukon.common.events.unsupportedCount">Unsupported</entry>
     <entry key="yukon.common.events.username">Username</entry>
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
@@ -847,5 +859,21 @@
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     
+    <!-- Nest-->
+    <entry key="yukon.common.events.dr.nest.syncStart">Sync Start: Sync Id: {7}, Start Time: {11}</entry>
+    <entry key="yukon.common.events.dr.nest.syncResults">Sync Results: Sync Id: {7}, Start Time: {11}, Stop Time: {12}, Auto Count: {8}, Manual Count: {9} </entry>
+    <entry key="yukon.common.events.dr.nest.sendEvent">Send Event: Start Time: {1}, Duration: {2}, Event Type: {3}</entry>
+    <entry key="yukon.common.events.dr.nest.sendEventSuccess">Send Event Success: Start Time: {11}, Stop Time: {12}, Event Type: {1}</entry>
+    <entry key="yukon.common.events.dr.nest.sendEventError">Send Event Error: Start Time: {1}, Duration: {2}, Event Type: {3}, Error: {4}</entry>
+    <entry key="yukon.common.events.dr.nest.sendCancelEvent">Send Cancel Event: Input Key: {1}, Group: {2}, Start Time: {11}</entry>
+    <entry key="yukon.common.events.dr.nest.responseCancelEvent">Cancel Event Response: Input Key: {1}, Group: {2}, success: {3}, Start Time: {11}, Cancel Time: {12}</entry>
+    <entry key="yukon.common.events.dr.nest.sendStopEvent">Send Stop Event: Input Key: {1}, Group: {2}, Start Time: {11}</entry>
+    <entry key="yukon.common.events.dr.nest.responseStopEvent">Stop Event Response: Input Key: {1}, Group: {2}, success: {3}, Start Time: {11}, Stop Time: {12}</entry>
+    <entry key="yukon.common.events.dr.nest.sendUpdateEnrollment">Sending Update Enrollment: Customer: {1}, Group: {2}</entry>
+    <entry key="yukon.common.events.dr.nest.responseUpdateEnrollment">Update Enrollment Response: Customer: {1}, Group: {2}, Rejection Reason: {3}.</entry>
+    <entry key="yukon.common.events.dr.nest.sendRetrieveCustomers">Retrieving customers with State: {1}</entry>
+    <entry key="yukon.common.events.dr.nest.responseRetrieveCustomers">{7} customers were found.</entry>
+    
+        
 </properties>
 

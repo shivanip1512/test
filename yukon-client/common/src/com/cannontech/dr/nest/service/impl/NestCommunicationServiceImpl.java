@@ -23,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.NestEventLogService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.database.YNBoolean;
@@ -52,6 +53,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     private Proxy proxy;
     private GlobalSettingDao settingDao;
     @Autowired private NestDao nestDao;
+    @Autowired private NestEventLogService nestEventLogService;
     //this id probably will be in global settings, I am assuming EC will get it from Nest
     private String partnerId = "simulator";
          
@@ -78,6 +80,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     public Optional<SchedulabilityError> sendEvent(ControlEvent event, RushHourEventType type) {
         log.debug("Sending {} event {}", type, event);
         String requestUrl = constructNestUrl(NestURL.CREATE_EVENT);
+        nestEventLogService.sendEvent(event.getStartTime(), event.getDuration(), type.name());
         String response = getNestResponse(requestUrl, event, type);
         try {
             EventId nestId = JsonUtils.fromJson(response, EventId.class);
@@ -88,11 +91,13 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             history.setKey(nestId.getId());
             //create entry only if response is success
             nestDao.saveControlEvent(history);
+            nestEventLogService.sendEventSuccess(event.getStart(), event.getStop(), type.name());
             return Optional.empty();
         } catch (Exception e) {
             try {
                 SchedulabilityError error = JsonUtils.fromJson(response, SchedulabilityError.class);
                 log.error("Reply from Nest contains an error="+ error);
+                nestEventLogService.sendEventError(event.getStartTime(), event.getDuration(), type.name(), error.name());
                 return Optional.of(error);
             } catch (IOException e1) {
                 throw new NestException("Error getting valid reponse from Nest.", e);
@@ -128,7 +133,10 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         // POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:cancel
         log.debug("Canceling event {}", event);
         try {
+            nestEventLogService.sendCancelEvent(event.getKey(), event.getGroup(), event.getStartTime());
             HttpEntity<String> response = sendStopOrCancelRequest(event, NestURL.CANCEL_EVENT);
+            nestEventLogService.responseCancelEvent(event.getKey(), event.getGroup(), event.getStartTime(), event.getCancelRequestTime(), event.getSuccess().getBoolean());
+
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
@@ -140,7 +148,10 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         // POST https://energy.api.nest.com/v3/partners/{partnerId}/rushHourEvents/{eventId}:stop
         log.debug("Stopping event {}", event);
         try {
+            nestEventLogService.sendStopEvent(event.getKey(), event.getGroup(), event.getStartTime());
             HttpEntity<String> response = sendStopOrCancelRequest(event, NestURL.STOP_EVENT);
+            nestEventLogService.responseStopEvent(event.getKey(), event.getGroup(), event.getStartTime(), event.getStopTime(), event.getSuccess().getBoolean());
+
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
@@ -208,7 +219,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         enrollments.addEnrollment(enrollment);
         HttpEntity<CustomerEnrollments> requestEntity = new HttpEntity<>(enrollments, headers);
         try {
+            nestEventLogService.sendUpdateEnrollment(enrollment.getCustomerId(), enrollment.getGroupId());
             HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, requestEntity, String.class, partnerId);
+            nestEventLogService.responseUpdateEnrollment(enrollment.getCustomerId(), enrollment.getGroupId(), enrollment.getRejectionReason().name());
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
@@ -230,7 +243,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         retrieve.setEnrollmentStateFilter(state);
         HttpEntity<RetrieveCustomers> requestEntity = new HttpEntity<>(retrieve, headers);
         try {
+            nestEventLogService.sendRetrieveCustomers(state.name());
             ResponseEntity<Customers> response = restTemplate.exchange(requestUrl, HttpMethod.GET, requestEntity, Customers.class, partnerId);
+            nestEventLogService.responseRetrieveCustomers(response.getBody().getCustomers().size());
             return response.getBody().getCustomers();
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);

@@ -138,4 +138,8 @@
     <bean id="pointEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.PointEventLogService" />
     </bean>
+    
+    <bean id="nestEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.NestEventLogService"/>
+    </bean>
 </beans>
