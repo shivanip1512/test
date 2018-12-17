@@ -65,12 +65,16 @@ public abstract class Try<T> {
      * Create a new Try from the result of invoking the supplier. If the supplier throws an exception, a failed Try will
      * be created with that exception.
      */
-    public static <T> Try<T> of(Supplier<T> supplier) {
+    public static <T> Try<T> of(ThrowingSupplier<T> supplier) {
         try {
             return success(supplier.get());
         } catch (Exception e) {
             return failure(e);
         }
+    }
+    
+    public static interface ThrowingSupplier<T> {
+        T get() throws Exception;
     }
     
     @Override
