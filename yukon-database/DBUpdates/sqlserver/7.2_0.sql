@@ -232,6 +232,111 @@ DELETE FROM YukonRoleProperty WHERE RolePropertyID = -10812;
 INSERT INTO DBUpdates VALUES ('YUK-19198', '7.2.0', GETDATE());
 /* @end YUK-19198 */
 
+/* @start YUK-19211 */
+UPDATE YukonRoleProperty 
+SET KeyName      = 'Area Commands and Actions', 
+    DefaultValue = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS', 
+    Description  = 'Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Areas.' 
+WHERE RolePropertyID = '-70021';
+
+UPDATE YukonGroupRole 
+SET Value = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS' 
+WHERE RolePropertyID = '-70021' 
+AND   Value          = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NONE' 
+WHERE RolePropertyID = '-70021' 
+AND   Value          = 'false';
+
+
+UPDATE YukonRoleProperty 
+SET KeyName      = 'Substation Commands and Actions',  
+    DefaultValue = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS', 
+    Description  = 'Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Substations.' 
+WHERE RolePropertyID = '-70022';
+
+UPDATE YukonGroupRole 
+SET Value = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS' 
+WHERE RolePropertyID = '-70022' 
+AND   Value          = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NONE' 
+WHERE RolePropertyID = '-70022' 
+AND   Value          = 'false';
+
+
+UPDATE YukonRoleProperty 
+SET KeyName      = 'SubBus Commands and Actions',
+    DefaultValue = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS', 
+    Description  = 'Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl SubBuses.' 
+WHERE RolePropertyID = '-70023';
+
+UPDATE YukonGroupRole 
+SET Value = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS' 
+WHERE RolePropertyID = '-70023' 
+AND   Value          = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NONE' 
+WHERE RolePropertyID = '-70023' 
+AND   Value          = 'false';
+
+
+UPDATE YukonRoleProperty 
+SET KeyName      = 'Feeder Commands and Actions', 
+    DefaultValue = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS', 
+    Description  = 'Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Feeders.' 
+WHERE RolePropertyID = '-70024';
+
+UPDATE YukonGroupRole 
+SET Value = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS' 
+WHERE RolePropertyID = '-70024' 
+AND   Value          = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NONE' 
+WHERE RolePropertyID = '-70024' 
+AND   Value          = 'false';
+
+
+UPDATE YukonRoleProperty 
+SET KeyName      = 'Capbank/CBC Commands and Actions', 
+    DefaultValue = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS', 
+    Description  = 'Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl CapBanks/CBCs.' 
+WHERE RolePropertyID = '-70025';
+
+UPDATE YukonGroupRole 
+SET Value = 'ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS' 
+WHERE RolePropertyID = '-70025' 
+AND   Value          = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NONE' 
+WHERE RolePropertyID = '-70025' 
+AND   Value          = 'false';
+
+
+UPDATE YukonRoleProperty 
+SET KeyName      = 'Control Confirmation pop-ups', 
+    DefaultValue = 'ALL_COMMANDS', 
+    Description  = 'Controls whether to display confirmation pop-ups for all Cap Control commands, only Operational commands or for no commands.'
+WHERE RolePropertyID = '-70026';
+
+UPDATE YukonGroupRole 
+SET Value = 'ALL_COMMANDS' 
+WHERE RolePropertyID = '-70026' 
+AND   Value          = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NONE' 
+WHERE RolePropertyID = '-70026' 
+AND   Value          = 'false';
+
+INSERT INTO DBUpdates VALUES ('YUK-19211', '7.2.0', GETDATE());
+/* @end YUK-19211 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

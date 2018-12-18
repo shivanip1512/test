@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/6/2018 3:44:44 AM                         */
+/* Created on:     12/18/2018 12:58:48 PM                       */
 /*==============================================================*/
 
 
@@ -10954,12 +10954,12 @@ insert into yukonroleproperty values(-70017,-700,'Add Comments', 'false', 'Allow
 insert into yukonroleproperty values(-70018,-700,'Modify Comments', 'false', 'Allows the user to Modify comments on Cap Bank objects.');
 insert into yukonroleproperty values(-70019,-700,'System Wide Controls', 'false', 'Allow system wide controls');
 INSERT INTO YukonRoleProperty VALUES(-70020,-700,'Force Default Comment', 'false', 'If the user does not provide a comment, a default comment will be stored.'); 
-INSERT INTO YukonRoleProperty VALUES(-70021,-700,'Allow Area Control','true','Enables or disables field and local Area controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70022,-700,'Allow Substation Control','true','Enables or disables field and local Substation controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70023,-700,'Allow SubBus Control','true','Enables or disables field and local Substation Bus controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70024,-700,'Allow Feeder Control','true','Enables or disables field and local Feeder controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','true','Enables or disables field and local Capbank/CBC controls for the given user'); 
-INSERT INTO YukonRoleProperty VALUES(-70026,-700,'Warn on control send.','true','If true the user will be asked if they are sure they want to send that command.');
+INSERT INTO YukonRoleProperty VALUES(-70021,-700,'Area Commands and Actions','ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS','Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Areas.'); 
+INSERT INTO YukonRoleProperty VALUES(-70022,-700,'Substation Commands and Actions','ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS','Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Substations.'); 
+INSERT INTO YukonRoleProperty VALUES(-70023,-700,'SubBus Commands and Actions','ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS','Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl SubBuses.'); 
+INSERT INTO YukonRoleProperty VALUES(-70024,-700,'Feeder Commands and Actions','ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS','Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Feeders.'); 
+INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Capbank/CBC Commands and Actions','ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS','Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl CapBanks/CBCs.'); 
+INSERT INTO YukonRoleProperty VALUES(-70026,-700,'Control Confirmation pop-ups','ALL_COMMANDS','Controls whether to display confirmation pop-ups for all Cap Control commands, only Operational commands or for no commands.');
 INSERT INTO YukonRoleProperty VALUES(-70027,-700,'Enable Importer','false','Allows access to the Cap Control importers');
 
 /* Notification / IVR Role properties */
