@@ -86,6 +86,9 @@
                 { "metricId" : 162, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_A" },
                 { "metricId" : 163, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_B" },
                 { "metricId" : 164, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_C" },
+    
+                { "metricId" : 180, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_Q14" },
+                { "metricId" : 181, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_Q23" },
 
                 { "metricId" : 184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR" },
 
