@@ -421,6 +421,12 @@
     <entry key="yukon.common.setting.NEST_USERNAME.description">Username to authenticate with the Nest service.</entry>
     <entry key="yukon.common.setting.NEST_PASSWORD">Nest Password</entry>
     <entry key="yukon.common.setting.NEST_PASSWORD.description">Password to authenticate with the Nest service.</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_API_URL">Itron HCM API URL</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_API_URL.description">URL to connect to the Itron HCM service.</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_USERNAME">Itron HCM Username</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_USERNAME.description">Username to authenticate with the Itron HCM service.</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_PASSWORD">Itron HCM Password</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_PASSWORD.description">Password to authenticate with the Itron HCM service.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>

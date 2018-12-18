@@ -119,6 +119,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     NEST_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://energy.api.nest.com"),
     NEST_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
     NEST_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
+    ITRON_HCM_API_URL(GlobalSettingSubCategory.DR, stringType(), ""),
+    ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
+    ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
@@ -220,7 +223,9 @@ public enum GlobalSettingType implements DisplayableEnum {
             SMTP_USERNAME,
             SMTP_PASSWORD,
             NEST_USERNAME,
-            NEST_PASSWORD);
+            NEST_PASSWORD,
+            ITRON_HCM_USERNAME,
+            ITRON_HCM_PASSWORD);
 
     }
 
