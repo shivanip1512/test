@@ -22,16 +22,16 @@ public class AssetAvailabilityChartServiceImpl implements AssetAvailabilityChart
     public Map<String, Object> getJsonPieData(AssetAvailabilitySummary aaSummary, YukonUserContext userContext) {
 
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String runningStr = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.active");
-        String notRunningStr = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.inactive");
-        String optedOutStr = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.optedOut");
-        String unavailableStr = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.unavailable");
+        String active = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.active");
+        String inactive = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.inactive");
+        String optedOut = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.optedOut");
+        String unavailable = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.unavailable");
         
         Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
-        labelDataColorMap.put(runningStr, new FlotPieDatas(aaSummary.getActiveSize(), "#093")); // .success
-        labelDataColorMap.put(notRunningStr, new FlotPieDatas(aaSummary.getInactiveSize(), "#ffac00")); // .warning
-        labelDataColorMap.put(optedOutStr, new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
-        labelDataColorMap.put(unavailableStr, new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
+        labelDataColorMap.put(active, new FlotPieDatas(aaSummary.getActiveSize(), "#009933")); // .pie-green
+        labelDataColorMap.put(optedOut, new FlotPieDatas(aaSummary.getOptedOutSize(), "#4d90fe")); // .pie-blue
+        labelDataColorMap.put(inactive, new FlotPieDatas(aaSummary.getInactiveSize(), "#ec971f")); // .orange
+        labelDataColorMap.put(unavailable, new FlotPieDatas(aaSummary.getUnavailableSize(), "#888")); // .grey
 
         Map<String, Object> pieJsonData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, false, false, 0.9);
         return pieJsonData;

@@ -27,22 +27,22 @@
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".active">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${activeSize}"/>
-                <span class="success">${activeSize} ${numberOfDevices}</span>
-            </tags:nameValue2>
-            
-            <tags:nameValue2 nameKey=".inactive">
-                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${inactiveSize}"/>
-                <span class="warning">${inactiveSize} ${numberOfDevices}</span>
+                <span class="pie-green">${activeSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".optedOut">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${optedOutSize}"/>
-                <span class="disabled">${optedOutSize} ${numberOfDevices}</span>
+                <span class="pie-blue">${optedOutSize} ${numberOfDevices}</span>
+            </tags:nameValue2>
+            
+            <tags:nameValue2 nameKey=".inactive">
+                <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${inactiveSize}"/>
+                <span class="orange">${inactiveSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".unavailable">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${unavailableSize}"/>
-                <span class="error">${unavailableSize} ${numberOfDevices}</span>
+                <span class="grey">${unavailableSize} ${numberOfDevices}</span>
             </tags:nameValue2>
         </tags:nameValueContainer2>
     </div>
