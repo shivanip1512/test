@@ -5,12 +5,12 @@ import static com.cannontech.core.service.DateFormattingService.DateOnlyMode.STA
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,10 +48,12 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.user.service.UserPreferenceService;
+import com.cannontech.web.widget.TrendWidgetDisplayParams.TrendWidgetTypeEnum;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -67,46 +69,27 @@ public class CsrTrendWidget extends WidgetControllerBase {
     @Autowired private AttributeService attributeService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private WeatherDataService weatherDataService;
-
+    @Autowired private List<TrendWidgetDisplayParams> trendWidgetDisplayParams;
+    
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
-    @Autowired @Qualifier("csrTrendWidgetCachingWidgetParameterGrabber")
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber;
     private BuiltInAttribute defaultAttribute = null;
+    private static final Map<TrendWidgetTypeEnum, TrendWidgetDisplayParams> trendWidgetTypeDisplayParams = Maps.newHashMap();
     
     public CsrTrendWidget() {
     }
     
+    @PostConstruct
+    public void init() {
+        for(TrendWidgetDisplayParams service : trendWidgetDisplayParams) {
+            trendWidgetTypeDisplayParams.put(service.getType(), service);
+        }
+    }
+    
     @Autowired
     public CsrTrendWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
-        
-        List<BuiltInAttribute> buildInAttributes = new ArrayList<BuiltInAttribute>();
-        buildInAttributes.add(BuiltInAttribute.SUM_KWH_PER_INTERVAL);
-        buildInAttributes.add(BuiltInAttribute.SUM_KW_LOAD_PROFILE);
-        buildInAttributes.add(BuiltInAttribute.DELIVERED_KWH_PER_INTERVAL);
-        buildInAttributes.add(BuiltInAttribute.DELIVERED_KW_LOAD_PROFILE);
-        buildInAttributes.add(BuiltInAttribute.LOAD_PROFILE);
-        buildInAttributes.add(BuiltInAttribute.VOLTAGE_PROFILE);
-        buildInAttributes.add(BuiltInAttribute.DEMAND);
-        buildInAttributes.add(BuiltInAttribute.USAGE);
-
-        List<AttributeGraphType> attributeGraphType = new ArrayList<AttributeGraphType>();
-
-        for (BuiltInAttribute attribute : buildInAttributes) {
-            AttributeGraphType attributeGraph = new AttributeGraphType();
-            attributeGraph.setAttribute(attribute);
-            attributeGraph.setGraphType((attribute == BuiltInAttribute.USAGE) ? GraphType.COLUMN
-                    : GraphType.LINE);
-            attributeGraph.setConverterType((attribute == BuiltInAttribute.USAGE)
-                    ? ConverterType.NORMALIZED_DELTA : ConverterType.RAW);
-
-            attributeGraphType.add(attributeGraph);
-        }
         addInput(simpleWidgetInput);
-        setDefaultAttribute(BuiltInAttribute.USAGE);
-        setSupportedAttributeGraphSet(attributeGraphType);
-        
         setIdentityPath("common/deviceIdentity.jsp");
-        setSupportedAttributeGraphSet(attributeGraphType);
     }
 
     @Override
@@ -119,6 +102,8 @@ public class CsrTrendWidget extends WidgetControllerBase {
 
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        
+        initialize(device);
 
         String defaultAttributeStr = 
                 WidgetParameterHelper.getStringParameter(request, "defaultAttribute", defaultAttribute.name());
@@ -200,6 +185,20 @@ public class CsrTrendWidget extends WidgetControllerBase {
         mav.addObject("reportTitle", accessor.getMessage(attributeGraphType.getConverterType().getFormatKey()+".title"));
         mav.addObject("helpText", accessor.getMessage(attributeGraphType.getDescription()));
         return mav;
+    }
+
+    private void initialize(SimpleDevice device) {
+        TrendWidgetDisplayParams trendWidgetDisplayParams = null;
+        if (device.getPaoIdentifier().getPaoType().isWaterMeter()) {
+            trendWidgetDisplayParams = trendWidgetTypeDisplayParams.get(TrendWidgetTypeEnum.WATER_CSR_TREND_WIDGET);
+        } else if (device.getPaoIdentifier().getPaoType().isGasMeter()) {
+            trendWidgetDisplayParams = trendWidgetTypeDisplayParams.get(TrendWidgetTypeEnum.GAS_CSR_TREND_WIDGET);
+        } else {
+            trendWidgetDisplayParams = trendWidgetTypeDisplayParams.get(TrendWidgetTypeEnum.CSR_TREND_WIDGET);
+        }
+        this.supportedAttributeGraphMap = trendWidgetDisplayParams.getSupportedAttributeGraphMap();
+        this.defaultAttribute = trendWidgetDisplayParams.getDefaultAttribute();
+        this.cachingWidgetParameterGrabber = trendWidgetDisplayParams.getCachingWidgetParameterGrabber();
     }
 
     private MutableRange<Date> getDateRange(ChartPeriod chartPeriod, YukonUserContext userContext, 
@@ -285,13 +284,9 @@ public class CsrTrendWidget extends WidgetControllerBase {
     }
     
 
-    public void setSupportedAttributeGraphSet(List<AttributeGraphType> supportedAttributeGraphSet) {
-        supportedAttributeGraphMap = new LinkedHashMap<>();
-        for (AttributeGraphType agt : supportedAttributeGraphSet) {
-            supportedAttributeGraphMap.put(agt.getLabel(), agt);
-        }
+    public void setSupportedAttributeGraphSet(Map<String, AttributeGraphType> supportedAttributeGraphMap) {
+        this.supportedAttributeGraphMap = supportedAttributeGraphMap;
     }
-
 
     public void setDefaultAttribute(BuiltInAttribute defaultAttribute) {
         this.defaultAttribute = defaultAttribute;

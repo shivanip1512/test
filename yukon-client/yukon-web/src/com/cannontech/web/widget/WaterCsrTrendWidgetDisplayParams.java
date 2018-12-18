@@ -1,0 +1,56 @@
+package com.cannontech.web.widget;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import com.cannontech.common.chart.model.AttributeGraphType;
+import com.cannontech.common.chart.model.ConverterType;
+import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
+
+@Component
+public class WaterCsrTrendWidgetDisplayParams implements TrendWidgetDisplayParams {
+
+    @Autowired
+    @Qualifier("waterCsrTrendWidgetCachingWidgetParameterGrabber")
+    private CachingWidgetParameterGrabber cachingWidgetParameterGrabber;
+    
+    private Map<String, AttributeGraphType> supportedAttributeGraphMap;
+    
+    @PostConstruct
+    public void init() {
+        this.supportedAttributeGraphMap = new LinkedHashMap<>();
+        AttributeGraphType attributeGraph = new AttributeGraphType();
+        attributeGraph.setAttribute(BuiltInAttribute.USAGE_WATER);
+        attributeGraph.setGraphType(GraphType.COLUMN);
+        attributeGraph.setConverterType(ConverterType.DELTA_WATER);
+        this.supportedAttributeGraphMap.put(attributeGraph.getLabel(), attributeGraph);
+    }
+
+    @Override
+    public CachingWidgetParameterGrabber getCachingWidgetParameterGrabber() {
+        return cachingWidgetParameterGrabber;
+    }
+
+    @Override
+    public BuiltInAttribute getDefaultAttribute() {
+        return BuiltInAttribute.USAGE_WATER;
+    }
+
+    @Override
+    public TrendWidgetTypeEnum getType() {
+        return TrendWidgetTypeEnum.WATER_CSR_TREND_WIDGET;
+    }
+
+    @Override
+    public Map<String, AttributeGraphType> getSupportedAttributeGraphMap() {
+        return this.supportedAttributeGraphMap;
+    }
+}

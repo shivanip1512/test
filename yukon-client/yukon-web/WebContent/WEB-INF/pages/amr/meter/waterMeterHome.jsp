@@ -90,7 +90,7 @@
             </div>
             <div class="column two nogutter">
                 <div id="trendWidget">
-                    <tags:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
+                    <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
                 </div>
 
                 <c:if test="${showEvents}"><tags:widget bean="meterEventsWidget"/></c:if>

@@ -180,66 +180,6 @@
     <entry key="yukon.web.widgetClasses.HbcTrendWidget.tabularUsageData">Tabular Usage Data</entry>
     <entry key="yukon.web.widgetClasses.HbcTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
     <entry key="yukon.web.widgetClasses.HbcTrendWidget.noTrendsAvailable">No trends available for device</entry>
-    
-    <!-- WaterCsrTrendWidget/render.jsp -->
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.prev24HourData">Previous 24 hours' data</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.prevWeeksData">Previous week's data</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.prev3MonthsData">Previous 3 months' data</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.oneDay">1D</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.oneWeek">1W</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.oneMonth">1M</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.threeMonths">3M</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.oneYear">1Y</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.custom">Custom</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.reloadUsingCustomDates.labelBusy">Reloading</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.line">Line</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.bar">Bar</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.barGraph">Bar Graph</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.tabularUsageData">Tabular Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.noTrendsAvailable">No trends available for device</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.meter">Meter</entry>
-    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.temperature">Temperature:</entry>
-    
-        <!-- GasCsrTrendWidget/render.jsp -->
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.prev24HourData">Previous 24 hours' data</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.prevWeeksData">Previous week's data</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.prev3MonthsData">Previous 3 months' data</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.oneDay">1D</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.oneWeek">1W</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.oneMonth">1M</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.threeMonths">3M</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.oneYear">1Y</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.custom">Custom</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.reloadUsingCustomDates.labelBusy">Reloading</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.line">Line</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.bar">Bar</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.barGraph">Bar Graph</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.tabularUsageData">Tabular Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.noTrendsAvailable">No trends available for device</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.meter">Meter</entry>
-    <entry key="yukon.web.widgetClasses.GasCsrTrendWidget.temperature">Temperature:</entry>
 
    <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
