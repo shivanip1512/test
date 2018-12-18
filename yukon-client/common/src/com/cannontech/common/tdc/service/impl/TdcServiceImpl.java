@@ -601,7 +601,7 @@ public class TdcServiceImpl implements TdcService {
     public Display updateCustomDisplay(int displayId, String name, String description,
             List<Integer> pointIds) throws DuplicateException {
         Display display = displayDao.getDisplayById(displayId);
-        display = updateCustomDisplay(displayId, name, display.getDescription(), pointIds,
+        display = updateCustomDisplay(displayId, name, description, pointIds,
             display.getColumns());
         dbChangeManager.processDbChange(displayId, DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.UPDATE);
         return display;
