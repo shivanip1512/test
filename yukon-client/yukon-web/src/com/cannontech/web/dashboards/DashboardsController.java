@@ -48,6 +48,7 @@ import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.UserDashboardSettings;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
+import com.cannontech.web.common.dashboard.model.WidgetCategory;
 import com.cannontech.web.common.dashboard.model.WidgetHelper;
 import com.cannontech.web.common.dashboard.model.WidgetType;
 import com.cannontech.web.common.dashboard.service.DashboardService;
@@ -354,8 +355,13 @@ public class DashboardsController {
     public String addWidgets(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         if (canUserEditDashboard(yukonUser, dashboard, flash)) {
-            model.addAttribute("widgetMap", widgetService.getTypesByCategory(yukonUser));
-            model.addAttribute("totalWidgets", WidgetType.values().length);
+            Map<WidgetCategory, List<WidgetType>> widgetMap = widgetService.getTypesByCategory(yukonUser);
+            long widgetCount = widgetMap.entrySet()
+                                         .stream()
+                                         .flatMap(e -> e.getValue().stream())
+                                         .count();
+            model.addAttribute("widgetMap", widgetMap);
+            model.addAttribute("totalWidgets", widgetCount);
             return "addWidgets.jsp";
         } else {
             return "redirect:/dashboards/manage";
