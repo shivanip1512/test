@@ -15,7 +15,6 @@
     <entry key="yukon.common.events.action">Action</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
-    <entry key="yukon.common.events.auto">autoCount</entry>    
     <entry key="yukon.common.events.cancelTime">Cancel Time</entry>
     <entry key="yukon.common.events.changeId">ChangeId</entry>
     <entry key="yukon.common.events.commandRequestExecutionContextId">CommandReqExecContextId</entry>
@@ -60,7 +59,6 @@
     <entry key="yukon.common.events.key">Key</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
-    <entry key="yukon.common.events.manual">Manual</entry>
     <entry key="yukon.common.events.media">Media</entry>
     <entry key="yukon.common.events.message">Message</entry>
     <entry key="yukon.common.events.meterDescription">Meter Description</entry>
@@ -862,15 +860,16 @@
     <!-- Nest-->
     <entry key="yukon.common.events.dr.nest.syncStart">Sync Start: Sync Id: {7}, Start Time: {11}</entry>
     <entry key="yukon.common.events.dr.nest.syncResults">Sync Results: Sync Id: {7}, Start Time: {11}, Stop Time: {12}, Auto Count: {8}, Manual Count: {9} </entry>
-    <entry key="yukon.common.events.dr.nest.sendEvent">Send Event: Start Time: {1}, Duration: {2}, Event Type: {3}</entry>
-    <entry key="yukon.common.events.dr.nest.sendEventSuccess">Send Event Success: Start Time: {11}, Stop Time: {12}, Event Type: {1}</entry>
-    <entry key="yukon.common.events.dr.nest.sendEventError">Send Event Error: Start Time: {1}, Duration: {2}, Event Type: {3}, Error: {4}</entry>
+    <entry key="yukon.common.events.dr.nest.syncResults.8">Auto Count</entry>
+    <entry key="yukon.common.events.dr.nest.syncResults.9">Manual Count</entry>
+    <entry key="yukon.common.events.dr.nest.sendStartEvent">Send Event: Start Time: {1}, Duration: {2}, Event Type: {3}</entry>
+    <entry key="yukon.common.events.dr.nest.responseStartEvent">Send Event Response: Start Time: {11} Stop Time: {12}, Duration: {1}, Event Type: {2}, Response: {3}</entry>
     <entry key="yukon.common.events.dr.nest.sendCancelEvent">Send Cancel Event: Input Key: {1}, Group: {2}, Start Time: {11}</entry>
     <entry key="yukon.common.events.dr.nest.responseCancelEvent">Cancel Event Response: Input Key: {1}, Group: {2}, success: {3}, Start Time: {11}, Cancel Time: {12}</entry>
     <entry key="yukon.common.events.dr.nest.sendStopEvent">Send Stop Event: Input Key: {1}, Group: {2}, Start Time: {11}</entry>
     <entry key="yukon.common.events.dr.nest.responseStopEvent">Stop Event Response: Input Key: {1}, Group: {2}, success: {3}, Start Time: {11}, Stop Time: {12}</entry>
     <entry key="yukon.common.events.dr.nest.sendUpdateEnrollment">Sending Update Enrollment: Customer: {1}, Group: {2}</entry>
-    <entry key="yukon.common.events.dr.nest.responseUpdateEnrollment">Update Enrollment Response: Customer: {1}, Group: {2}, Rejection Reason: {3}.</entry>
+    <entry key="yukon.common.events.dr.nest.responseUpdateEnrollment">Update Enrollment Response: Customer: {1}, Group: {2}, Enrollment State: {3}.</entry>
     <entry key="yukon.common.events.dr.nest.sendRetrieveCustomers">Retrieving customers with State: {1}</entry>
     <entry key="yukon.common.events.dr.nest.responseRetrieveCustomers">{7} customers were found.</entry>
     

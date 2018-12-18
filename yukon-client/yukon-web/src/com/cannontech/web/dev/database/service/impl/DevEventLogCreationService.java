@@ -61,7 +61,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
-import com.cannontech.dr.nest.model.v3.RejectionReason;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.rfn.model.PqrConfig;
@@ -733,15 +732,14 @@ public class DevEventLogCreationService {
                 
                 nestEventLogService.syncStart(syncId, start);
                 nestEventLogService.syncResults(syncId, start, stop, autoCount, manualCount);
-                nestEventLogService.sendEvent(startTimeStr, duration, type);
-                nestEventLogService.sendEventSuccess(start, stop, type);
-                nestEventLogService.sendEventError(startTimeStr, duration, type, sError);
+                nestEventLogService.sendStartEvent(startTimeStr, duration, type);
+                nestEventLogService.responseStartEvent(start, stop, duration, type, sError);
                 nestEventLogService.sendCancelEvent(key, group, start);
                 nestEventLogService.responseCancelEvent(key, group, start, cancelTime, YNBoolean.YES.getBoolean());
                 nestEventLogService.sendStopEvent(key, group, start);
                 nestEventLogService.responseStopEvent(key, group, start, stop, YNBoolean.NO.getBoolean());
                 nestEventLogService.sendUpdateEnrollment(group, customer);
-                nestEventLogService.responseUpdateEnrollment(customer, group, RejectionReason.INELIGIBLE_ADDRESS.name());
+                nestEventLogService.responseUpdateEnrollment(customer, group, EnrollmentState.ACCEPTED.name());
                 nestEventLogService.sendRetrieveCustomers(EnrollmentState.ACCEPTED.name());
                 nestEventLogService.responseRetrieveCustomers(11);
             }
@@ -1130,7 +1128,7 @@ public class DevEventLogCreationService {
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
-        NEST(NestEventLogService.class, 13),
+        NEST(NestEventLogService.class, 12),
         OUTAGE(OutageEventLogService.class, 10),
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),

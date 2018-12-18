@@ -16,24 +16,20 @@ public interface NestEventLogService {
     public void syncResults(@Arg(ArgEnum.syncId) int syncId, 
                             @Arg(ArgEnum.startTime) Instant startTime, 
                             @Arg(ArgEnum.stopTime) Instant stopTime, 
-                            @Arg(ArgEnum.auto) int autoCount,
-                            @Arg(ArgEnum.manual) int manualCount);
+                            int autoCount,
+                            int manualCount);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.nest")
-    public void sendEvent(@Arg(ArgEnum.startTime) String string, 
+    public void sendStartEvent(@Arg(ArgEnum.startTime) String string, 
                           @Arg(ArgEnum.duration) String duration, 
                           @Arg(ArgEnum.type) String type);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.nest")
-    public void sendEventSuccess(@Arg(ArgEnum.startTime) Instant start, 
-                                 @Arg(ArgEnum.stopTime) Instant stop, 
-                                 @Arg(ArgEnum.type) String type);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.nest")
-    public void sendEventError(@Arg(ArgEnum.startTime) String startTime, 
-                               @Arg(ArgEnum.duration) String duration, 
-                               @Arg(ArgEnum.type) String type,
-                               @Arg(ArgEnum.error) String error);
+    public void responseStartEvent(@Arg(ArgEnum.startTime) Instant start, 
+                                 @Arg(ArgEnum.stopTime) Instant stop,
+                                 @Arg(ArgEnum.duration) String duration,
+                                 @Arg(ArgEnum.type) String type,
+                                 @Arg(ArgEnum.status) String response);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.nest")
     public void sendCancelEvent(@Arg(ArgEnum.key) String key, 
@@ -66,7 +62,7 @@ public interface NestEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.nest")
     public void responseUpdateEnrollment(@Arg(ArgEnum.customerId) String customerId, 
                                          @Arg(ArgEnum.group) String groupId,
-                                         @Arg(ArgEnum.status) String rejectionReason);
+                                         @Arg(ArgEnum.status) String enrollmentState);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.nest")
     public void sendRetrieveCustomers(@Arg(ArgEnum.state) String state);

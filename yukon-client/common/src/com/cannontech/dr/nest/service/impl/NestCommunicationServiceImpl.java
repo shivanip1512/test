@@ -80,7 +80,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     public Optional<SchedulabilityError> sendEvent(ControlEvent event, RushHourEventType type) {
         log.debug("Sending {} event {}", type, event);
         String requestUrl = constructNestUrl(NestURL.CREATE_EVENT);
-        nestEventLogService.sendEvent(event.getStartTime(), event.getDuration(), type.name());
+        nestEventLogService.sendStartEvent(event.getStartTime(), event.getDuration(), type.name());
         String response = getNestResponse(requestUrl, event, type);
         try {
             EventId nestId = JsonUtils.fromJson(response, EventId.class);
@@ -91,13 +91,13 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             history.setKey(nestId.getId());
             //create entry only if response is success
             nestDao.saveControlEvent(history);
-            nestEventLogService.sendEventSuccess(event.getStart(), event.getStop(), type.name());
+            nestEventLogService.responseStartEvent(event.getStart(), event.getStop(), event.getDuration(), type.name(), response);
             return Optional.empty();
         } catch (Exception e) {
             try {
                 SchedulabilityError error = JsonUtils.fromJson(response, SchedulabilityError.class);
                 log.error("Reply from Nest contains an error="+ error);
-                nestEventLogService.sendEventError(event.getStartTime(), event.getDuration(), type.name(), error.name());
+                nestEventLogService.responseStartEvent(event.getStart(), event.getStop(), event.getDuration(), type.name(), error.name());
                 return Optional.of(error);
             } catch (IOException e1) {
                 throw new NestException("Error getting valid reponse from Nest.", e);
