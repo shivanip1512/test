@@ -21,11 +21,10 @@ public class GasCsrTrendWidgetDisplayParams implements TrendWidgetDisplayParams 
     @Autowired
     @Qualifier("gasCsrTrendWidgetCachingWidgetParameterGrabber")
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber;
-    private Map<String, AttributeGraphType> supportedAttributeGraphMap;
+    private Map<String, AttributeGraphType> supportedAttributeGraphMap = new LinkedHashMap<>();
     
     @PostConstruct
     public void init () {
-        this.supportedAttributeGraphMap = new LinkedHashMap<>();
         AttributeGraphType attributeGraph = new AttributeGraphType();
         attributeGraph.setAttribute(BuiltInAttribute.USAGE_GAS);
         attributeGraph.setGraphType(GraphType.COLUMN);

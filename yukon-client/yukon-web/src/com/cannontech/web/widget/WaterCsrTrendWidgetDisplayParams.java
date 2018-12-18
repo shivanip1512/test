@@ -22,11 +22,10 @@ public class WaterCsrTrendWidgetDisplayParams implements TrendWidgetDisplayParam
     @Qualifier("waterCsrTrendWidgetCachingWidgetParameterGrabber")
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber;
     
-    private Map<String, AttributeGraphType> supportedAttributeGraphMap;
+    private Map<String, AttributeGraphType> supportedAttributeGraphMap = new LinkedHashMap<>();
     
     @PostConstruct
     public void init() {
-        this.supportedAttributeGraphMap = new LinkedHashMap<>();
         AttributeGraphType attributeGraph = new AttributeGraphType();
         attributeGraph.setAttribute(BuiltInAttribute.USAGE_WATER);
         attributeGraph.setGraphType(GraphType.COLUMN);

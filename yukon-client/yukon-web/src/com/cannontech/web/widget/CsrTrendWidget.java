@@ -81,8 +81,8 @@ public class CsrTrendWidget extends WidgetControllerBase {
     
     @PostConstruct
     public void init() {
-        for(TrendWidgetDisplayParams service : trendWidgetDisplayParams) {
-            trendWidgetTypeDisplayParams.put(service.getType(), service);
+        for(TrendWidgetDisplayParams trendWidgetDisplayParam : trendWidgetDisplayParams) {
+            trendWidgetTypeDisplayParams.put(trendWidgetDisplayParam.getType(), trendWidgetDisplayParam);
         }
     }
     

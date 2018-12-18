@@ -24,7 +24,7 @@ public class CsrTrendWidgetDisplayParams implements TrendWidgetDisplayParams {
     @Qualifier("csrTrendWidgetCachingWidgetParameterGrabber")
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber;
     
-    private Map<String, AttributeGraphType> supportedAttributeGraphMap;
+    private Map<String, AttributeGraphType> supportedAttributeGraphMap = new LinkedHashMap<>();
     
     @PostConstruct
     public void init () {
@@ -38,7 +38,6 @@ public class CsrTrendWidgetDisplayParams implements TrendWidgetDisplayParams {
         buildInAttributes.add(BuiltInAttribute.DEMAND);
         buildInAttributes.add(BuiltInAttribute.USAGE);
 
-        this.supportedAttributeGraphMap = new LinkedHashMap<>();
         for (BuiltInAttribute attribute : buildInAttributes) {
             AttributeGraphType attributeGraph = new AttributeGraphType();
             attributeGraph.setAttribute(attribute);
