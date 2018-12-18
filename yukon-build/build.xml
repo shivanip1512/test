@@ -25,6 +25,7 @@
         <echo message=" build-server    - compile yukon-server module" />
         <echo message=" build-install   - InstallShield"/>
         <echo message=" build-dist      - packages and zips everything up for distribution " />
+        <echo message=" compile-java    - Builds all java/war but does not run unit tests " />
         <echo message=" jsdoctoolkit    - generates documentation from commented JavaScript source code" />
    </target>
 
@@ -69,7 +70,12 @@
         </ant>
     </target>
     
-    <target name="build-client" depends="init,clean,svn-info-build">
+    <target name="build-client">
+        <antcall target="compile-java" />
+        <antcall target="runUnitTests" />
+    </target>
+    
+    <target name="compile-java" depends="init,clean,svn-info-build">
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
         
@@ -84,7 +90,6 @@
         <ant dir="${basedir}/yukon-client/build"
              target="help"
              inheritAll="true"/>
-        <antcall target="runUnitTests" />
     </target>
     
     <target name="build-server" depends="init,clean">
