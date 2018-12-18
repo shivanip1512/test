@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--Highest Status OFFSET=1000 @ 2016-08-12-->
-<!--Highest Analog OFFSET=376 @ 2018-07-10-->
+<!--Highest Analog OFFSET=381 @ 2018-07-10-->
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
 <!-- Point Name naming convention: 
-[Net|Sum] [Delivered|Received] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #] 
+[Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #]
 Examples: 
 Net kWh OR Net Delivered kWh 
 Received kWh Rate A 
@@ -1131,7 +1131,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="262" type="Analog">
-        <name>Max kVAr</name>
+        <name>Peak kVAr (Quadrants 1 4)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAR"/>
         <decimalplaces value="3"/>
@@ -1824,6 +1824,36 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Average Power Factor (Quadrants 2 3 4)</name>
         <multiplier value="1.0"/>
         <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="377" type="Analog">
+        <name>Coincident Cumulative Peak kVAr (Quadrants 1 4)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="378" type="Analog">
+        <name>Coincident Peak kVAr (Quadrants 2 3)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="379" type="Analog">
+        <name>Peak kVAr (Quadrants 2 3)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="380" type="Analog">
+        <name>Coincident Cumulative Peak kVAr (Quadrants 2 3)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="381" type="Analog">
+        <name>Received Coincident Peak kVAr</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
         <decimalplaces value="3"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
