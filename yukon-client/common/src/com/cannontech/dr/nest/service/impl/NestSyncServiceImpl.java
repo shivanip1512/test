@@ -227,6 +227,7 @@ public class NestSyncServiceImpl implements NestSyncService{
         AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(paoId);
         times.setLastCommunicationTime(now);
         times.setRelayRuntime(1, now);
+        log.debug("Updating asset availability for pao id {}", paoId);
         dynamicLcrCommunicationsDao.insertData(times);
     }
 

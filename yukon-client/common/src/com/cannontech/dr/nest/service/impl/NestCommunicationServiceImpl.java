@@ -221,7 +221,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
         try {
             nestEventLogService.sendUpdateEnrollment(enrollment.getCustomerId(), enrollment.getGroupId());
             HttpEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.PUT, requestEntity, String.class, partnerId);
-            nestEventLogService.responseUpdateEnrollment(enrollment.getCustomerId(), enrollment.getGroupId(), enrollment.getRejectionReason().name());
+            //nestEventLogService.responseUpdateEnrollment(enrollment.getCustomerId(), enrollment.getGroupId(), enrollment.getRejectionReason().name());
             return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
             throw new NestException("Error getting valid reponse from Nest.", e);
