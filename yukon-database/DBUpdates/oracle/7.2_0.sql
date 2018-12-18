@@ -338,6 +338,13 @@ AND   Value          = 'false';
 INSERT INTO DBUpdates VALUES ('YUK-19211', '7.2.0', SYSDATE);
 /* @end YUK-19211 */
 
+/* @start YUK-19241 */
+ALTER TABLE LMNestControlEvent 
+ADD Success CHAR(1);
+
+INSERT INTO DBUpdates VALUES ('YUK-19241', '7.2.0', SYSDATE);
+/* @end YUK-19241 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

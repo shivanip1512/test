@@ -221,6 +221,7 @@ INSERT INTO YukonServices VALUES(25, 'NestMessageListener', 'classpath:com/canno
 
 ALTER TABLE LMNestControlEvent
 ALTER COLUMN CancelOrStop CHAR(1) NULL;
+GO
 
 INSERT INTO DBUpdates VALUES ('YUK-19141', '7.2.0', GETDATE());
 /* @end YUK-19141 */
@@ -336,6 +337,13 @@ AND   Value          = 'false';
 
 INSERT INTO DBUpdates VALUES ('YUK-19211', '7.2.0', GETDATE());
 /* @end YUK-19211 */
+
+/* @start YUK-19241 */
+ALTER TABLE LMNestControlEvent 
+ADD Success CHAR(1);
+
+INSERT INTO DBUpdates VALUES ('YUK-19241', '7.2.0', GETDATE());
+/* @end YUK-19241 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

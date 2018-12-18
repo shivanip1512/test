@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2018 12:57:57 PM                       */
+/* Created on:     12/18/2018 1:52:09 PM                        */
 /*==============================================================*/
 
 
@@ -6686,6 +6686,7 @@ create table LMNestControlEvent  (
    CancelRequestTime    DATE,
    CancelResponse       VARCHAR2(200),
    CancelOrStop         CHAR(1),
+   Success              CHAR(1),
    constraint PK_LMNestControlEvent primary key (NestControlEventId)
 );
 
