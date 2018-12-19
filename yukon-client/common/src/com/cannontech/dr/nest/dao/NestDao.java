@@ -57,4 +57,6 @@ public interface NestDao {
      * Returns LMNestLoadShapingGear for gearId. If not found, returns null.
      */
     public LoadShapingOptions findNestLoadShapingOptions(int gearId);
+
+    int getNestSyncDetailCount(int syncId, List<NestSyncType> syncTypes);
 }

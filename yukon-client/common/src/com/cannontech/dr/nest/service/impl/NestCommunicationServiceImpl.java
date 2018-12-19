@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
             history.setKey(nestId.getId());
             //create entry only if response is success
             nestDao.saveControlEvent(history);
-            nestEventLogService.responseStartEvent(event.getStart(), event.getStop(), event.getDuration(), type.name(), response);
+            nestEventLogService.responseStartEvent(event.getStart(), event.getStop(), event.getDuration(), type.name(), StringUtils.abbreviate(response, 2000));
             return Optional.empty();
         } catch (Exception e) {
             try {

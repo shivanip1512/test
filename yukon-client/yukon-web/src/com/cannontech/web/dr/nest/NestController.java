@@ -256,8 +256,8 @@ public class NestController {
         if (!syncTimes.isEmpty()) {
             syncId = syncTimes.get(0).getId();
         }
-        SearchResults<NestSyncDetail> searchResult = nestDao.getNestSyncDetail(syncId, PagingParameters.EVERYTHING, SortBy.SYNCTYPE, Direction.desc, Arrays.asList(NestSyncType.values()));
-        model.addAttribute("discrepancies", searchResult.getHitCount());
+        int discrepanciesCount = nestDao.getNestSyncDetailCount(syncId, Arrays.asList(NestSyncType.values()));
+        model.addAttribute("discrepancies", discrepanciesCount);
         return "dr/nest/statistics.jsp";
     }
     

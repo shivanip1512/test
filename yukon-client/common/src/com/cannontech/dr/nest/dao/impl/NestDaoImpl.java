@@ -126,6 +126,17 @@ public class NestDaoImpl implements NestDao {
         return searchResults;
     }
 
+    @Override
+    public int getNestSyncDetailCount(int syncId, List<NestSyncType> syncTypes) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT count(*)");
+        sql.append("FROM NestSyncDetail");
+        sql.append("WHERE SyncId").eq(syncId);
+        sql.append("AND SyncType").in(syncTypes);
+        return jdbcTemplate.queryForInt(sql);
+
+    }
+    
     private void addSyncValues(Map<Integer, NestSyncDetail> details) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SyncDetailId, SyncValueType, SyncValue");
@@ -135,15 +146,6 @@ public class NestDaoImpl implements NestDao {
             NestSyncDetail detail = details.get(rs.getInt("SyncDetailId"));
             detail.addValue(rs.getEnum("SyncValueType", NestSyncI18nValue.class), rs.getString("SyncValue"));
         });
-    }
-    
-    private int getNestSyncDetailCount(int syncId, List<NestSyncType> syncTypes) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT count(*)");
-        sql.append("FROM NestSyncDetail");
-        sql.append("WHERE SyncId").eq(syncId);
-        sql.append("AND SyncType").in(syncTypes);
-        return jdbcTemplate.queryForInt(sql);
     }
     
     @Override

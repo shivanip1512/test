@@ -862,8 +862,8 @@
     <entry key="yukon.common.events.dr.nest.syncResults">Sync Results: Sync Id: {7}, Start Time: {11}, Stop Time: {12}, Auto Count: {8}, Manual Count: {9} </entry>
     <entry key="yukon.common.events.dr.nest.syncResults.8">Auto Count</entry>
     <entry key="yukon.common.events.dr.nest.syncResults.9">Manual Count</entry>
-    <entry key="yukon.common.events.dr.nest.sendStartEvent">Send Event: Start Time: {1}, Duration: {2}, Event Type: {3}</entry>
-    <entry key="yukon.common.events.dr.nest.responseStartEvent">Send Event Response: Start Time: {11} Stop Time: {12}, Duration: {1}, Event Type: {2}, Response: {3}</entry>
+    <entry key="yukon.common.events.dr.nest.sendStartEvent">Send Start Event: Start Time: {1}, Duration: {2}, Event Type: {3}</entry>
+    <entry key="yukon.common.events.dr.nest.responseStartEvent">Send Start Event Response: Start Time: {11} Stop Time: {12}, Duration: {1}, Event Type: {2}, Response: {3}</entry>
     <entry key="yukon.common.events.dr.nest.sendCancelEvent">Send Cancel Event: Input Key: {1}, Group: {2}, Start Time: {11}</entry>
     <entry key="yukon.common.events.dr.nest.responseCancelEvent">Cancel Event Response: Input Key: {1}, Group: {2}, success: {3}, Start Time: {11}, Cancel Time: {12}</entry>
     <entry key="yukon.common.events.dr.nest.sendStopEvent">Send Stop Event: Input Key: {1}, Group: {2}, Start Time: {11}</entry>
