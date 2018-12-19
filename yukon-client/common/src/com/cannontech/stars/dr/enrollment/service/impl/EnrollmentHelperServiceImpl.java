@@ -15,6 +15,8 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -29,8 +31,10 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
+import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
@@ -72,6 +76,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private PaoDao paoDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
@@ -197,6 +203,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             programEnrollment = new ProgramEnrollment();
             programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
             programEnrollment.setAssignedProgramId(0);
+            for(ProgramEnrollment enroll : enrollmentData) {
+                if (enroll.getInventoryId() == programEnrollment.getInventoryId()) {
+                    AssignedProgram assignedProgram = assignedProgramDao.getById(enroll.getAssignedProgramId());
+                    enrollmentHelper.setProgramName(assignedProgram.getProgramName());
+                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(enroll.getLmGroupId());
+                    enrollmentHelper.setLoadGroupName(pao.getPaoName());
+                }
+            }
         } else {
 
             /**
