@@ -33,7 +33,7 @@ public enum CapControlCommandsAccessLevel implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.common.roleproperty.capControlCommandsAccessLevel." + name();
+        return "yukon.common.roleproperty.CapControlCommandsAccessLevel." + name();
     }
 
     public static CapControlCommandsAccessLevel[] getFieldOperationLevels() {

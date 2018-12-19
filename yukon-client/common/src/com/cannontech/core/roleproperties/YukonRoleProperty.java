@@ -110,12 +110,12 @@ public enum YukonRoleProperty {
     MODIFY_COMMENTS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 18, booleanType()),
     SYSTEM_WIDE_CONTROLS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 19, booleanType()),
     FORCE_COMMENTS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 20, booleanType()),
-    AREA_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 21, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
-    SUBSTATION_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 22, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
-    SUBBUS_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 23, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
-    FEEDER_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 24, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
-    CAPBANK_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 25, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class), "yukon.common.roleproperty.CAPCONTROLCOMMANDS"),
-    CONTROL_CONFIRMATION_POPUPS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 26, InputTypeFactory.enumType(CapControlConfirmationPopups.class), "yukon.common.roleproperty.CAPCONTROLPOPUPS"),
+    AREA_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 21, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class)),
+    SUBSTATION_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 22, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class)),
+    SUBBUS_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 23, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class)),
+    FEEDER_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 24, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class)),
+    CAPBANK_COMMANDS_AND_ACTIONS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 25, InputTypeFactory.enumType(CapControlCommandsAccessLevel.class)),
+    CONTROL_CONFIRMATION_POPUPS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 26, InputTypeFactory.enumType(CapControlConfirmationPopups.class)),
     CAP_CONTROL_IMPORTER(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 27, booleanType()),
     
     RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL(RESIDENTIAL_CUSTOMER, RESIDENTIAL_CUSTOMER.getBasePropertyId() - 1, booleanType()),
@@ -296,8 +296,8 @@ public enum YukonRoleProperty {
     private final YukonRole role;
     private final int propertyId;
     private final InputType<?> type;
-    private final String helpTextKey;
     private final static ImmutableMap<Integer, YukonRoleProperty> lookup;
+    private final static String baseKey = "yukon.common.roleproperty.";
     
     static {
         Builder<Integer, YukonRoleProperty> builder = ImmutableMap.builder();
@@ -317,14 +317,6 @@ public enum YukonRoleProperty {
         this.role = role;
         this.propertyId = propertyId;
         this.type = type;
-        this.helpTextKey = null;
-    }
-    
-    private YukonRoleProperty(YukonRole role, int propertyId, InputType<?> type, String helpTextKey) {
-        this.role = role;
-        this.propertyId = propertyId;
-        this.type = type;
-        this.helpTextKey = helpTextKey;
     }
     
     public YukonRole getRole() {
@@ -345,7 +337,8 @@ public enum YukonRoleProperty {
     }
 
     public String getHelpTextKey() {
-        return helpTextKey;
+        //Gets help text based on the Enum Type (if available) - used in Cap Control
+        return baseKey + type.getTypeClass().getSimpleName() + ".helpText";
     }
     
 }

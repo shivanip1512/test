@@ -17,6 +17,6 @@ public enum CapControlConfirmationPopups implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.common.roleproperty.capControlConfirmationPopupsLevel." + name();
+        return "yukon.common.roleproperty.CapControlConfirmationPopups." + name();
     }
 }
