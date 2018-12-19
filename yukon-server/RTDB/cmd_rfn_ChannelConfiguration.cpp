@@ -141,6 +141,9 @@ const MetricInfo metricInfos[] = {
         { 163,  TouRates,  "PF Phase B"                            },
         { 164,  TouRates,  "PF Phase C"                            },
         
+        { 180,  TouRates,  "Peak kVAr (Quadrants 1 4)"             },
+        { 181,  TouRates,  "Peak kVAr (Quadrants 2 3)"             },
+
         { 184,  TouRates,  "Sum Peak kVAr"                         },
 
         { 200,  TouRates,  "Watts"                                 },
