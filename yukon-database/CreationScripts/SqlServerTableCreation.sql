@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/18/2018 1:51:23 PM                        */
+/* Created on:     12/19/2018 6:24:51 AM                        */
 /*==============================================================*/
 
 
@@ -8799,6 +8799,27 @@ create table ScheduleTimePeriod (
    Quantity             numeric              not null,
    PredictedShipDate    datetime             not null,
    constraint PK_SCHEDULETIMEPERIOD primary key (TimePeriodID)
+)
+go
+
+/*==============================================================*/
+/* Table: ScheduledDataImportHistory                            */
+/*==============================================================*/
+create table ScheduledDataImportHistory (
+   EntryId              numeric              not null,
+   FileName             varchar(100)         not null,
+   FileImportType       varchar(50)          not null,
+   ImportDate           datetime             not null,
+   ArchiveFileName      varchar(100)         not null,
+   ArchiveFilePath      varchar(300)         not null,
+   ArchiveFileExists    char(1)              not null,
+   FailedFileName       varchar(100)         null,
+   FailedFilePath       varchar(300)         null,
+   SuccessCount         numeric              not null,
+   FailureCount         numeric              not null,
+   TotalCount           numeric              not null,
+   JobGroupId           int                  not null,
+   constraint PK_ScheduledDataImportHistory primary key (EntryId)
 )
 go
 

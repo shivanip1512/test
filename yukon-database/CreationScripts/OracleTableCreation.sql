@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2018 1:52:09 PM                        */
+/* Created on:     12/19/2018 6:27:50 AM                        */
 /*==============================================================*/
 
 
@@ -8277,6 +8277,26 @@ create table ScheduleTimePeriod  (
    Quantity             NUMBER                          not null,
    PredictedShipDate    DATE                            not null,
    constraint PK_SCHEDULETIMEPERIOD primary key (TimePeriodID)
+);
+
+/*==============================================================*/
+/* Table: ScheduledDataImportHistory                            */
+/*==============================================================*/
+create table ScheduledDataImportHistory  (
+   EntryId              NUMBER                          not null,
+   FileName             VARCHAR2(100)                   not null,
+   FileImportType       VARCHAR2(50)                    not null,
+   ImportDate           DATE                            not null,
+   ArchiveFileName      VARCHAR2(100)                   not null,
+   ArchiveFilePath      VARCHAR2(300)                   not null,
+   ArchiveFileExists    CHAR(1)                         not null,
+   FailedFileName       VARCHAR2(100),
+   FailedFilePath       VARCHAR2(300),
+   SuccessCount         NUMBER                          not null,
+   FailureCount         NUMBER                          not null,
+   TotalCount           NUMBER                          not null,
+   JobGroupId           INTEGER                         not null,
+   constraint PK_ScheduledDataImportHistory primary key (EntryId)
 );
 
 /*==============================================================*/
