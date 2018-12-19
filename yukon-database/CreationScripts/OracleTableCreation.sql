@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/19/2018 6:27:50 AM                        */
+/* Created on:     12/19/2018 10:40:19 AM                       */
 /*==============================================================*/
 
 
@@ -9958,6 +9958,7 @@ INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 
 INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
 INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
 INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
+INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);

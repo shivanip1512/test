@@ -367,6 +367,12 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19162', '7.2.0', GETDATE());
 /* @end YUK-19162 */
 
+/* @start YUK-19189 */
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-6600S', 1340);
+
+INSERT INTO DBUpdates VALUES ('YUK-19189', '7.2.0', GETDATE());
+/* @end YUK-19189 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
