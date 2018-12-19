@@ -4028,7 +4028,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
+        <point name="Net kVArh" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR,RFN530S4X">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4143,7 +4143,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kVAr" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Sum Peak kVAr" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4175,7 +4175,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kVA" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Sum Peak kVA" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
