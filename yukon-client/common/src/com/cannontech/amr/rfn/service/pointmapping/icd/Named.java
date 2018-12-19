@@ -22,7 +22,7 @@ public class Named<T extends PointDefinition> {
         return name;
     }
 
-    public PointDefinition getValue() {
+    public T getValue() {
         return value;
     }
     

@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -23,6 +22,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.stream.Try;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class RfnPointMappingParser {
     public static Map<PaoType, Map<PointDefinition, NameScaleCoincidents>> getPaoTypePointsMappedToCoincidents(InputStream rfnPointMappingFile) throws JDOMException, IOException {
@@ -33,7 +33,7 @@ public class RfnPointMappingParser {
         Map<PaoType, Map<BasePointDefinition, Map<PointDefinition, NameScale>>> paoTypePoints = 
                 rootElement.getChildren("pointGroup").stream()
                     .flatMap(rfnPointGroup -> {
-                        List<PaoType> paoTypes = getPaoTypes(rfnPointGroup);
+                        Set<PaoType> paoTypes = getPaoTypes(rfnPointGroup);
                         
                         //  Get the map of points in the pointGroup
                         Map<BasePointDefinition, Map<PointDefinition, NameScale>> points =
@@ -72,7 +72,7 @@ public class RfnPointMappingParser {
         //  iterate through pointGroups
         return rootElement.getChildren("pointGroup").stream()
                     .flatMap(rfnPointGroup -> {
-                        List<PaoType> paoTypes = getPaoTypes(rfnPointGroup);
+                        Set<PaoType> paoTypes = getPaoTypes(rfnPointGroup);
                         
                         //  Get the map of points in the pointGroup
                         Map<PointMapping, NameScale> points =
@@ -80,6 +80,8 @@ public class RfnPointMappingParser {
                                     .collect(Collectors.toMap(
                                             RfnPointMappingParser::getNormalizedPoint,
                                             RfnPointMappingParser::getNameScale));
+                        
+                        validateExcludedTypes(points, paoTypes);
                         
                         //  Associate each paoType with its own copy of the points
                         return paoTypes.stream()
@@ -89,6 +91,16 @@ public class RfnPointMappingParser {
                               Pair::getLeft, 
                               Pair::getRight, 
                               RfnPointMappingParser::combineMaps));
+    }
+
+    private static void validateExcludedTypes(Map<PointMapping, NameScale> points, Set<PaoType> paoTypes) {
+        points.entrySet().stream()
+            .filter(e -> !paoTypes.containsAll(e.getKey().getExcludedTypes()))
+            .findFirst()
+            .ifPresent(e -> { 
+                Object invalidTypes = Sets.difference(e.getKey().getExcludedTypes(), paoTypes);
+                throw new RuntimeException(e.getValue().getName() + " excludes " + invalidTypes + ", which is not included in pointGroup types " + paoTypes);
+            });
     }
 
     private static <T, U, V> Map<T, Map<U, V>> copyOf(Map<T, Map<U, V>> original) {
@@ -128,11 +140,11 @@ public class RfnPointMappingParser {
         return configDoc.getRootElement();
     }
 
-    private static List<PaoType> getPaoTypes(Element rfnPointGroup) {
+    private static Set<PaoType> getPaoTypes(Element rfnPointGroup) {
         return rfnPointGroup.getChildren("paoType").stream()
             .map(paoTypeElement -> paoTypeElement.getAttributeValue("value"))
             .map(PaoType::valueOf)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     }
 
     private static Map<PointDefinition, NameScale> getPointDefinitionToNameScale(Element pointElement) {

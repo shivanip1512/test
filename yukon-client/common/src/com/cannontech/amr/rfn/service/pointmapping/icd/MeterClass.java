@@ -16,7 +16,8 @@ public enum MeterClass {
     LGYR_FOCUS_AX_RX_500("Landis and Gyr Focus AX-RX-500"),
     LGYR_S4("Landis and Gyr S4"),
     ELSTER_A3("Elster A3"),
-    ELO("ELO");
+    ELO("ELO"),
+    NEXT_GEN_WATER_NODE("Next Gen Water Node");
     
     private static Map<String, MeterClass> nameLookup;
     

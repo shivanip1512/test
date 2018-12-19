@@ -24,6 +24,9 @@ public class PointMapping {
     public boolean isMappedFor(PaoType type) {
         return pointDefinition.isMapped() && !excludedTypes.contains(type);
     }
+    public Set<PaoType> getExcludedTypes() {
+        return excludedTypes;
+    }
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -55,6 +58,6 @@ public class PointMapping {
     }
     @Override
     public String toString() {
-        return "NormalizedPoint [pointDefinition=" + pointDefinition + ", basePoint=" + basePoint + "]";
+        return "PointMapping [pointDefinition=" + pointDefinition + ", basePoint=" + basePoint + "]";
     }
 }
