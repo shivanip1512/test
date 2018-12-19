@@ -364,6 +364,9 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </Xml>
     <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\yukon-shared\src\main\resources\metricIdToAttributeMapping.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
