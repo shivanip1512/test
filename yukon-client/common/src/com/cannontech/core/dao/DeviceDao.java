@@ -159,8 +159,8 @@ public interface DeviceDao {
     List<DisplayableDevice> getChildDevices(int parentId);
 
     /**
-     * Creates of updates device's Mac address
-     * @throws StarsInvalidArgumentException is the address is invalid
+     * Creates or updates device's Mac address
+     * @throws StarsInvalidArgumentException if the address is invalid
      */
     void updateDeviceMacAddress(int deviceId, String macAddress);
 
