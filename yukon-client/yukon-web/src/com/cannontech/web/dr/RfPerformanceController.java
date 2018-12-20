@@ -209,7 +209,7 @@ public class RfPerformanceController {
     public String details(ModelMap model, @RequestParam(required=false) Instant from, @RequestParam(required=false) Instant to) {
         
         if (from == null) {
-            from =  new Instant().minus(Duration.standardDays(6));
+            from =  new Instant().minus(Duration.standardDays(7));
         }
         if (to == null) {
             to =  new Instant();

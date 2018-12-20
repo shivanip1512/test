@@ -60,18 +60,6 @@ yukon.dr.rf.broadcast.eventDetail = (function () {
             
             if (_initialized) return;
 
-            $('input[name=statuses]').each(function() {
-                var statusButton = $(this);
-                if (!statusButton.prop("checked")) {
-                    var legendItems = chart.highcharts().series[0].data;
-                    for (var i = 0; i < legendItems.length; i++) {
-                        if (statusButton.val() == legendItems[i].filter) {
-                            legendItems[i].setVisible(false, false);
-                        }
-                    }
-                }
-            });
-            
             $(document).on('click', '.js-filter-results', function () {
                 _filterResults(); 
             });
