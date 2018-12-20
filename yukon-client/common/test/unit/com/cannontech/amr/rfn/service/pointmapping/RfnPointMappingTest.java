@@ -209,26 +209,25 @@ public class RfnPointMappingTest {
         Map<Boolean,Set<PointMapping>> rpmMapped = rpmTypePoints.keySet().stream().collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
         Map<Boolean,Set<PointMapping>> icdMapped = icdTypePoints.keySet().stream().collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
         
-        final int MaxPointCount = 10;
-
         Set<PointMapping> rpmMappedPoints = rpmMapped.get(true);
         Set<PointMapping> icdMappedPoints = icdMapped.get(true);
         Set<PointMapping> rpmUnmappedPoints = rpmMapped.get(false);
         Set<PointMapping> icdUnmappedPoints = icdMapped.get(false);
         
-        verifyEmpty(type, rpmTypePoints, MaxPointCount, Sets.intersection(rpmUnmappedPoints, icdMappedPoints), "marked as unmapped in rfnPointMapping.xml, but exist in yukonPointMapping.yaml");
-        verifyEmpty(type, icdTypePoints, MaxPointCount, Sets.intersection(rpmMappedPoints, icdUnmappedPoints), "marked as unmapped in yukonPointMapping.yaml, but exist in rfnPointMapping.xml");
+        verifyEmpty(type, rpmTypePoints, Sets.intersection(rpmUnmappedPoints, icdMappedPoints), "marked as unmapped in rfnPointMapping.xml, but exist in yukonPointMapping.yaml");
+        verifyEmpty(type, icdTypePoints, Sets.intersection(rpmMappedPoints, icdUnmappedPoints), "marked as unmapped in yukonPointMapping.yaml, but exist in rfnPointMapping.xml");
 
-        verifyEmpty(type, rpmTypePoints, MaxPointCount, Sets.intersection(rpmUnmappedPoints, icdUnmappedPoints), "marked as unmapped in both rfnPointMapping.xml and yukonPointMapping.yaml");
+        verifyEmpty(type, rpmTypePoints, Sets.intersection(rpmUnmappedPoints, icdUnmappedPoints), "marked as unmapped in both rfnPointMapping.xml and yukonPointMapping.yaml");
 
-        verifyEmpty(type, rpmTypePoints, MaxPointCount, Sets.difference(rpmMappedPoints, icdMappedPoints), "not in yukonPointMappingIcd.yaml");
-        verifyEmpty(type, icdTypePoints, MaxPointCount, Sets.difference(icdMappedPoints, rpmMappedPoints), "not in rfnPointMapping.xml");
+        verifyEmpty(type, rpmTypePoints, Sets.difference(rpmMappedPoints, icdMappedPoints), "not in yukonPointMappingIcd.yaml");
+        verifyEmpty(type, icdTypePoints, Sets.difference(icdMappedPoints, rpmMappedPoints), "not in rfnPointMapping.xml");
         
         rfnPointMapping.remove(type);
     }
 
-    private void verifyEmpty(PaoType type, Map<PointMapping, NameScale> typePoints, final int MaxPointCount,
-            SetView<PointMapping> extraneous, String violation) {
+    private void verifyEmpty(PaoType type, Map<PointMapping, NameScale> typePoints, SetView<PointMapping> extraneous, String violation) {
+        final int MaxPointCount = 10;
+
         if (!extraneous.isEmpty()) {
             String complaint = type + " has " + extraneous.size() + " point(s) " + violation;
             if (extraneous.size() > MaxPointCount) {
