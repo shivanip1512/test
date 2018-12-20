@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/19/2018 10:39:34 AM                       */
+/* Created on:     12/20/2018 12:16:17 AM                       */
 /*==============================================================*/
 
 
@@ -8817,7 +8817,6 @@ create table ScheduledDataImportHistory (
    FailedFilePath       varchar(300)         null,
    SuccessCount         numeric              not null,
    FailureCount         numeric              not null,
-   TotalCount           numeric              not null,
    JobGroupId           int                  not null,
    constraint PK_ScheduledDataImportHistory primary key (EntryId)
 )

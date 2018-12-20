@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/19/2018 10:40:19 AM                       */
+/* Created on:     12/20/2018 12:14:21 AM                       */
 /*==============================================================*/
 
 
@@ -8294,7 +8294,6 @@ create table ScheduledDataImportHistory  (
    FailedFilePath       VARCHAR2(300),
    SuccessCount         NUMBER                          not null,
    FailureCount         NUMBER                          not null,
-   TotalCount           NUMBER                          not null,
    JobGroupId           INTEGER                         not null,
    constraint PK_ScheduledDataImportHistory primary key (EntryId)
 );

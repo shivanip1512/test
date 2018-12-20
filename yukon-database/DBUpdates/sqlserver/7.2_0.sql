@@ -373,6 +373,13 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WH
 INSERT INTO DBUpdates VALUES ('YUK-19189', '7.2.0', GETDATE());
 /* @end YUK-19189 */
 
+/* @start YUK-19162-1 if YUK-19162 */
+ALTER TABLE ScheduledDataImportHistory DROP COLUMN TotalCount;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-19162-1', '7.2.0', GETDATE());
+/* @end YUK-19162-1 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
