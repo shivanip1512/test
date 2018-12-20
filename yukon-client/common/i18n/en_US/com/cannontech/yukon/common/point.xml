@@ -519,6 +519,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_CABLE_CUT">Tamper - Cable Cut</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOW_BATTERY_VOLTAGE">Low Battery Voltage</entry>
     
+    <entry key="yukon.common.attribute.builtInAttribute.TAMPER_NO_USAGE_OVER_24_HOURS">Tamper - No Usage over 24 hours</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAMPER_REVERSE_WH_DETECTED">Tamper - Reverse Wh Detected</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAMPER_LARGE_INCREASE_AFTER_OUTAGE">Tamper - Large Increase After Outage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE">Tamper - Large Decrease After Outage</entry>
+    
     <entry key="yukon.common.attribute.builtInAttribute.THERMOSTAT_RELAY_STATE">Thermostat Relay State</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.ANALOG_INPUT_ONE">Analog Input 1</entry>

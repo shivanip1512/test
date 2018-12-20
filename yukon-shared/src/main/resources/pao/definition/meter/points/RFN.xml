@@ -2301,6 +2301,26 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
+        <point offset="92" type="Status">
+        <name>Vibration or Tilt or Insertion - Tamper Detect</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="93" type="Status">
+        <name>Tamper - No Usage over 24 hours</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+        <point offset="94" type="Status">
+        <name>Tamper - Large Increase After Outage</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+        <point offset="95" type="Status">
+        <name>Tamper - Large Decrease After Outage</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>

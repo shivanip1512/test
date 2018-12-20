@@ -87,6 +87,10 @@
         <pointInfo name="Sum kWh (Rate C kWh)" attributes="SUM_KWH_RATE_C"/>
         <pointInfo name="Sum kWh (Rate D kWh)" attributes="SUM_KWH_RATE_D"/>
         <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL"/>
+        <pointInfo name="Tamper - No Usage over 24 hours" attributes="TAMPER_NO_USAGE_OVER_24_HOURS"/>
+        <pointInfo name="Tamper - Reverse Wh Detected" attributes="TAMPER_REVERSE_WH_DETECTED"/>
+        <pointInfo name="Tamper - Large Increase After Outage" attributes="TAMPER_LARGE_INCREASE_AFTER_OUTAGE"/>
+        <pointInfo name="Tamper - Large Decrease After Outage" attributes="TAMPER_LARGE_DECREASE_AFTER_OUTAGE"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>

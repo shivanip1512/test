@@ -451,6 +451,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TAMPER_CABLE_CUT("Tamper - Cable Cut", AttributeGroup.RFN_HARDWARE_EVENT, false),
     LOW_BATTERY_VOLTAGE("Low Battery Voltage", AttributeGroup.RFN_HARDWARE_EVENT, false),
     
+    // RFN Tamper Alarm/Event
+    
+    TAMPER_NO_USAGE_OVER_24_HOURS("Tamper - No Usage over 24 hours", AttributeGroup.RFN_METERING_EVENT, false),
+    TAMPER_REVERSE_WH_DETECTED("Tamper - Reverse Wh Detected", AttributeGroup.RFN_METERING_EVENT, false),
+    TAMPER_LARGE_INCREASE_AFTER_OUTAGE("Tamper - Large Increase After Outage", AttributeGroup.RFN_METERING_EVENT, false),
+    TAMPER_LARGE_DECREASE_AFTER_OUTAGE("Tamper - Large Decrease After Outage", AttributeGroup.RFN_METERING_EVENT, false),
     //Gateway Statistics
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_ACTIVE_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
