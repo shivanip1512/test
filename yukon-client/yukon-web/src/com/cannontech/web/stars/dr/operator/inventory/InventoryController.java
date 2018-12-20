@@ -465,8 +465,6 @@ public class InventoryController {
             }
         } else if (type.isHoneywell()) {
             model.addAttribute("showDeviceVendorUserId", true);
-        } else if (type.isItron()) {
-            //question?
         }
 
         boolean showVoltage = !type.isZigbee() 
