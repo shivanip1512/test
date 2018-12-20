@@ -2302,12 +2302,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <stategroup value="Event Status"/>
     </point>
         <point offset="92" type="Status">
-        <name>Vibration or Tilt or Insertion - Tamper Detect</name>
+        <name>Tamper - No Usage over 24 hours</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
     <point offset="93" type="Status">
-        <name>Tamper - No Usage over 24 hours</name>
+        <name>Tamper - Reverse Wh Detected</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
