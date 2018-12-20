@@ -164,4 +164,19 @@ public class MockDeviceDao implements DeviceDao {
     public List<DisplayableDevice> getChildDevices(int parentId) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public void updateDeviceMacAddress(int deviceId, String macAddress) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public String getDeviceMacAddress(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public boolean isMacAddressExists(String macAddress) {
+        throw new MethodNotImplementedException();
+    }
 }

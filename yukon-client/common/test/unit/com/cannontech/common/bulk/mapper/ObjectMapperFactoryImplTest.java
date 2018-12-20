@@ -18,6 +18,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -503,6 +504,21 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         @Override
         public List<DisplayableDevice> getChildDevices(int parentId) {
             throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void updateDeviceMacAddress(int deviceId, String macAddress) {
+            throw new MethodNotImplementedException();
+        }
+
+        @Override
+        public String getDeviceMacAddress(int deviceId) {
+            throw new MethodNotImplementedException();
+        }
+
+        @Override
+        public boolean isMacAddressExists(String macAddress) {
+            throw new MethodNotImplementedException();
         }
     }
 }

@@ -698,15 +698,14 @@ public class OperatorHardwareController {
         HardwareClass clazz = type.getHardwareClass();
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
+        model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         if (type.isZigbee()) {
-            model.addAttribute("showMacAddress", true);
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
             } else {
                 model.addAttribute("showFirmwareVersion", true);
             }
         } else if (type.isHoneywell()) {
-            model.addAttribute("showMacAddress", true);
             model.addAttribute("showDeviceVendorUserId", true);
         }
 
@@ -740,7 +739,7 @@ public class OperatorHardwareController {
             model.addAttribute("macAddressEditable", true);
             model.addAttribute("deviceVendorUserIdEditable", true);
         }
-        if (type.isZigbee()) {
+        if (type.isZigbee() || type.isItron()) {
             model.addAttribute("macAddressEditable", true);
         }
     }

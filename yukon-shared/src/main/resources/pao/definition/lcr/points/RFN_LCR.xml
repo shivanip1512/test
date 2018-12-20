@@ -103,24 +103,6 @@
         <unitofmeasure value="SECONDS"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="342" type="Analog">
-        <name>Average Voltage</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="355" type="Analog">
-        <name>Minimum Voltage</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="356" type="Analog">
-        <name>Maximum Voltage</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
     
     <!-- Power Quality Response (GridBallast) Points -->
     <point offset="900" type="Analog">

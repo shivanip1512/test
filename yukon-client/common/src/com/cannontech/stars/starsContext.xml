@@ -258,6 +258,7 @@
     <bean class="com.cannontech.stars.dr.ecobee.EcobeeBuilder"/>
     <bean class="com.cannontech.stars.dr.honeywell.HoneywellBuilder"/>
     <bean class="com.cannontech.stars.dr.nest.NestBuilder"/>
+    <bean class="com.cannontech.stars.dr.itron.ItronBuilder"/>
 
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     

@@ -228,8 +228,8 @@ public class InventoryController {
         // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
+        model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         if (type.isZigbee()) {
-            model.addAttribute("showMacAddress", true);
             model.addAttribute("macAddressEditable", true);
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
@@ -237,10 +237,11 @@ public class InventoryController {
                 model.addAttribute("showFirmwareVersion", true);
             }
         } else if (type.isHoneywell()) {
-            model.addAttribute("showMacAddress", true);
             model.addAttribute("showDeviceVendorUserId", true);
             model.addAttribute("macAddressEditable", true);
             model.addAttribute("deviceVendorUserIdEditable", true);
+        } else if (type.isItron()) {
+            model.addAttribute("macAddressEditable", true);
         }
 
         boolean showVoltage = !type.isZigbee() 
@@ -455,16 +456,17 @@ public class InventoryController {
         // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
+        model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         if (type.isZigbee()) {
-            model.addAttribute("showMacAddress", true);
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
             } else {
                 model.addAttribute("showFirmwareVersion", true);
             }
         } else if (type.isHoneywell()) {
-            model.addAttribute("showMacAddress", true);
             model.addAttribute("showDeviceVendorUserId", true);
+        } else if (type.isItron()) {
+            //question?
         }
 
         boolean showVoltage = !type.isZigbee() 

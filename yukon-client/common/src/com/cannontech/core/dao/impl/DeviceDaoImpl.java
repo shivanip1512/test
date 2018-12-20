@@ -33,6 +33,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -44,6 +45,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -82,6 +85,54 @@ public final class DeviceDaoImpl implements DeviceDao {
         enableDisableDevice(device, YNBoolean.NO);
     }
 
+    @Override
+    public void updateDeviceMacAddress(int deviceId, String macAddress) {
+        if (!Validator.isMacAddress(macAddress)) {
+            throw new StarsInvalidArgumentException("MAC Address is invalid");
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM DeviceMacAddress");
+        sql.append("WHERE DeviceId").eq(deviceId);
+
+        SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
+        try {
+            jdbcTemplate.queryForInt(sql);
+            SqlParameterSink params = updateCreateSql.update("DeviceMacAddress");
+            params.addValue("MacAddress", macAddress);
+            updateCreateSql.append("WHERE DeviceId").eq(deviceId);
+        } catch (EmptyResultDataAccessException e) {
+            SqlParameterSink params = updateCreateSql.insertInto("DeviceMacAddress");
+            params.addValue("DeviceId", deviceId);
+            params.addValue("MacAddress", macAddress);
+        }
+        jdbcTemplate.update(updateCreateSql);
+    }
+    
+    @Override
+    public String getDeviceMacAddress(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT MacAddress");
+        sql.append("FROM DeviceMacAddress");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        return jdbcTemplate.queryForString(sql);
+    }
+    
+    @Override
+    public boolean isMacAddressExists(String macAddress) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT MacAddress");
+        sql.append("FROM DeviceMacAddress");
+        sql.append("WHERE MacAddress").eq(macAddress);
+        try {
+            jdbcTemplate.queryForString(sql);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+    
     private void enableDisableDevice(YukonDevice device, YNBoolean disableFlag) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE yukonpaobject SET disableflag").eq_k(disableFlag);

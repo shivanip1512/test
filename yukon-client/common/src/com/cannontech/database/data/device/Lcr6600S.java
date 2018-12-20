@@ -2,9 +2,9 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.common.pao.PaoType;
 
-public class Lcr6601S extends ItronBase {
+public class Lcr6600S extends ItronBase {
 
-    public Lcr6601S() {
-        super(PaoType.LCR6601S);
+    public Lcr6600S() {
+        super(PaoType.LCR6600S);
     }
 }

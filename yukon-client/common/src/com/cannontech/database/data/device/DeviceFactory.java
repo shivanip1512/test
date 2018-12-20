@@ -227,6 +227,9 @@ public final class DeviceFactory {
             break;
 
         //ITRON (SilverSpring) type devices
+        case LCR6600S:
+            returnDevice = new Lcr6600S();
+            break;
         case LCR6601S:
             returnDevice = new Lcr6601S();
             break;

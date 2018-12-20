@@ -153,6 +153,29 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return yukonDevice;
 
     }
+    
+    @Override
+    @Transactional
+    public SimpleDevice createDeviceByDeviceType(PaoType paoType, String name) throws DeviceCreationException {
+
+        if (StringUtils.isBlank(name)) {
+            throw new DeviceCreationException("Device name is blank.");
+        }
+        
+        if (!(PaoUtils.isValidPaoName(name))) {
+            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |");
+        }
+
+        // create
+        int newDeviceId = paoDao.getNextPaoId();
+        DeviceBase newDevice = DeviceFactory.createDevice(paoType);
+        newDevice.setDeviceID(newDeviceId);
+        newDevice.setPAOName(name);
+       
+        SimpleDevice yukonDevice = createNewDeviceByType(newDevice, true, paoType);
+        return yukonDevice;
+
+    }
 
     @Override
     @Transactional

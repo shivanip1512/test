@@ -29,6 +29,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -101,6 +102,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
+    @Autowired private DeviceDao deviceDao;
 
     @Override
     public Hardware getHardware(int inventoryId) {
@@ -254,6 +256,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                     honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId);
                 hardware.setMacAddress(honeywellWifiThermostat.getMacAddress());
                 hardware.setDeviceVendorUserId(honeywellWifiThermostat.getDeviceVendorUserId());
+            } else if (hardwareType.isItron()) {
+                hardware.setMacAddress(deviceDao.getDeviceMacAddress(deviceId));
             }
             hardwareTypeExtensionService.retrieveDevice(hardware);
             
@@ -411,7 +415,6 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         //Pass to the Service to handle any extensions for the hardwaretype
         hardwareTypeExtensionService.updateDevice(hardware);
-        
         // Log hardware update
         hardwareEventLogService.hardwareUpdated(user, hardware.getSerialNumber());
         dbChangeManager.processDbChange(hardware.getInventoryId(), DBChangeMsg.CHANGE_INVENTORY_DB,
@@ -517,6 +520,10 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 SimpleDevice device = createTwoWayDevice(user, inventoryId, hardware.getTwoWayDeviceName());
                 lmHardware.setDeviceID(device.getDeviceId());
                 inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, device.getDeviceId());
+            }
+            
+            if(hardwareType.isItron()) {
+                
             }
             
             if (VersionTools.staticLoadGroupMappingExists()) {

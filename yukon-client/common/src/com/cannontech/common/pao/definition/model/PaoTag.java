@@ -62,6 +62,7 @@ public enum PaoTag {
     RELAY_DETAIL_DISPLAYABLE("Relay Detail Displayable"),
     RTU_DETAIL_DISPLAYABLE("RTU Detail Displayable"),
     GATEWAY_DETAIL_DISPLAYABLE("Gateway Detail Displayable"),
+    ITRON_PROGRAM_ENROLLMENT("Itron Program Enrollment")
     ;
 
     private final String description;

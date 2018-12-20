@@ -64,4 +64,9 @@ public interface DeviceCreationService {
 
     SimpleDevice createIEDDeviceByDeviceType(PaoType paoType, String name, int portId, boolean createPoints)
             throws DeviceCreationException;
+
+    /**
+     * Creates device type by paoType and name
+     */
+    SimpleDevice createDeviceByDeviceType(PaoType paoType, String name) throws DeviceCreationException;
 }
