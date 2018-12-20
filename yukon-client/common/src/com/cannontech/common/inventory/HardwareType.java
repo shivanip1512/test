@@ -167,7 +167,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
                 UTILITY_PRO_G3);
         
         rfTypes = ImmutableSet.of(LCR_6200_RFN, LCR_6600_RFN, LCR_6700_RFN);
-        itronTypes = ImmutableSet.of(LCR_6601S);
+        itronTypes = ImmutableSet.of(LCR_6600S, LCR_6601S);
         
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
