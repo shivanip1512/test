@@ -718,7 +718,6 @@ public class DevEventLogCreationService {
             public void execute(DevEventLog devEventLog) {
                 int syncId = 1;
                 Instant start = new Instant();
-                String startTimeStr = start.toString();
                 Instant stop = new Instant();
                 Instant cancelTime = new Instant();
                 int autoCount = 5;
@@ -732,7 +731,7 @@ public class DevEventLogCreationService {
                 
                 nestEventLogService.syncStart(syncId, start);
                 nestEventLogService.syncResults(syncId, start, stop, autoCount, manualCount);
-                nestEventLogService.sendStartEvent(startTimeStr, duration, type);
+                nestEventLogService.sendStartEvent(start, duration, type);
                 nestEventLogService.responseStartEvent(start, stop, duration, type, sError);
                 nestEventLogService.sendCancelEvent(key, group, start);
                 nestEventLogService.responseCancelEvent(key, group, start, cancelTime, YNBoolean.YES.getBoolean());

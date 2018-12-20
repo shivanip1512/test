@@ -20,7 +20,7 @@ public interface NestEventLogService {
                             int manualCount);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.nest")
-    public void sendStartEvent(@Arg(ArgEnum.startTime) String string, 
+    public void sendStartEvent(@Arg(ArgEnum.startTime) Instant start, 
                           @Arg(ArgEnum.duration) String duration, 
                           @Arg(ArgEnum.type) String type);
 

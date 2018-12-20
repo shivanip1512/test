@@ -81,7 +81,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     public Optional<SchedulabilityError> sendEvent(ControlEvent event, RushHourEventType type) {
         log.debug("Sending {} event {}", type, event);
         String requestUrl = constructNestUrl(NestURL.CREATE_EVENT);
-        nestEventLogService.sendStartEvent(event.getStartTime(), event.getDuration(), type.name());
+        nestEventLogService.sendStartEvent(event.getStart(), event.getDuration(), type.name());
         String response = getNestResponse(requestUrl, event, type);
         try {
             EventId nestId = JsonUtils.fromJson(response, EventId.class);
