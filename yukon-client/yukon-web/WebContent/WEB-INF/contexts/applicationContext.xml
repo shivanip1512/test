@@ -640,12 +640,6 @@
         <aop:scoped-proxy/>
     </bean>
 
-    <bean id="hbcTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
-        <qualifier value="hbcTrendWidgetCachingWidgetParameterGrabber"/>
-        <property name="useCache" value="false"/>
-        <aop:scoped-proxy/>
-    </bean>
-
     <bean id="waterCsrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
         <qualifier value="waterCsrTrendWidgetCachingWidgetParameterGrabber"/>
         <property name="useCache" value="true"/>

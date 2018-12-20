@@ -96,7 +96,6 @@
 <entry key="yukon.web.widgets.operatorAccountSearchWidget">Account Search</entry>
 <entry key="yukon.web.widgets.electricTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.csrTrendWidget">Trend</entry>
-<entry key="yukon.web.widgets.hbcTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.waterTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.lcrInformationWidget">LCR Information</entry>
 
@@ -138,7 +137,6 @@
 <entry key="yukon.web.widgets.csrTrendWidget.widgetIdentity">Trend - {0}</entry>
 <!-- The help text for csrTrendWidget is loaded dynamically based of the graph type selected. -->
 <entry key="yukon.web.widgets.csrTrendWidget.helpText"><![CDATA[ ]]></entry>
-<entry key="yukon.web.widgets.hbcTrendWidget.widgetIdentity">Trend - {0}</entry>
 
 <entry key="yukon.web.widgets.outageMonitorsWidget.exception.notFound">Outage Monitor Does Not Exist.</entry>
 <entry key="yukon.web.widgets.statusPointMonitorsWidget.exception.notFound">Status Point Monitor not found.</entry>

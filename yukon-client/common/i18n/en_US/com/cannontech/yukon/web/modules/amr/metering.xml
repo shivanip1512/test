@@ -152,34 +152,6 @@
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.noTrendsAvailable">No trends available for device</entry>
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.dailyUsageData">Daily Usage Data</entry>
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.temperature">Temperature:</entry>
-    
-    <!-- hbcTrendWidget/render.jsp -->
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.prev24HourData">Previous 24 hours' data</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.prevWeeksData">Previous week's data</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.prev3MonthsData">Previous 3 months' data</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.oneDay">1D</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.oneWeek">1W</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.oneMonth">1M</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.threeMonths">3M</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.oneYear">1Y</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.custom">Custom</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.reloadUsingCustomDates.labelBusy">Reloading</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.line">Line</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.bar">Bar</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.barGraph">Bar Graph</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.tabularUsageData">Tabular Usage Data</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgetClasses.HbcTrendWidget.noTrendsAvailable">No trends available for device</entry>
 
    <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
