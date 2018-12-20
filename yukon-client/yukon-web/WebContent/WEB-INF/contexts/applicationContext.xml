@@ -1344,5 +1344,6 @@
      <bean class="com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory"/>
      
      <bean class="com.cannontech.web.common.schedule.ScheduleControllerHelper"/>
+     <bean class="com.cannontech.web.stars.scheduledDataImport.dao.impl.ScheduledDataImportDaoImpl"/>
      
 </beans>

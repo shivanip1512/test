@@ -70,7 +70,9 @@ public final class CtiUtilities {
     public static final String CURRENT_DIR = System.getProperty("user.dir")
                                              + System.getProperty("file.separator");
     public static final String EXPORT_ARCHIVE_DIR = "ExportArchive";
-    
+
+    public static final String IMPORT_ARCHIVE_DIR = "ImportArchive";
+
     public static final String COLLECTION_ACTION_DIR = "CollectionAction";
     public static final String NEST_DIR = "Nest";
 
@@ -345,6 +347,17 @@ public final class CtiUtilities {
     
     public final static String getArchiveDirPath() {
         String path = getYukonBase() + System.getProperty("file.separator") + EXPORT_ARCHIVE_DIR;
+        File dir = new File(path);
+        if (!dir.exists()) {
+            boolean success = dir.mkdirs();
+            if (!success) {
+                throw new FileCreationException("Error creating directory " + path);
+            }
+        }
+        return path;
+    }
+    public final static String getImportArchiveDirPath() {
+        String path = getYukonBase() + System.getProperty("file.separator") + IMPORT_ARCHIVE_DIR;
         File dir = new File(path);
         if (!dir.exists()) {
             boolean success = dir.mkdirs();

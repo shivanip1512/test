@@ -1,5 +1,7 @@
 package com.cannontech.web.scheduledDataImport.service.impl;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -12,12 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
+import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
@@ -30,6 +35,7 @@ import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTask
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
 import com.cannontech.web.scheduledDataImport.tasks.ScheduledDataImportTask;
 import com.cannontech.web.stars.scheduledDataImport.ScheduledDataImportController.Column;
+import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -41,6 +47,7 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledDataImportTaskJobWrapperFactory scheduledDataImportTaskJobWrapperFactory;
     @Autowired private ScheduleControllerHelper scheduleControllerHelper;
+    @Autowired private ScheduledDataImportDao scheduledDataImportDao;
     private Map<Column, Comparator<ScheduledDataImportTaskJobWrapper>> sorters;
     private static Logger log = YukonLogManager.getLogger(ScheduledDataImportServiceImpl.class);
 
@@ -146,5 +153,26 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
         }
         jobWrappers.sort(comparator);
         return SearchResults.pageBasedForWholeList(paging, jobWrappers);
+    }
+
+    @Override
+    public List<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId) {
+        return scheduledDataImportDao.getImportHistory(jobGroupId);
+    }
+
+    @Override
+    public File downloadArchivedFile(String fileName, boolean isSuccessFile, String failedFilePath)
+            throws FileNotFoundException, FileCreationException {
+        File file = null;
+        if (isSuccessFile) {
+            file = new File(CtiUtilities.getImportArchiveDirPath(), fileName);
+        } else {
+            file = new File(failedFilePath, fileName);
+        }
+        if (!file.exists()) {
+            String error = "Requested file \"" + fileName + "\" not found in ImportArchive directory.";
+            throw new FileNotFoundException(error);
+        }
+        return file;
     }
 }
