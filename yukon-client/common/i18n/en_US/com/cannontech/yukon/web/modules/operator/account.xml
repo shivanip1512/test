@@ -154,7 +154,6 @@
 	<entry key="yukon.web.modules.operator.accountImport.hardwareColumnHeader">Hardware Field</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountColumnDescription">Description</entry>
 	<entry key="yukon.web.modules.operator.accountImport.hardwareColumnDescription">Description</entry>
-	<entry key="yukon.web.modules.operator.accountImport.recent">Recent Imports</entry>
     <entry key="yukon.web.modules.operator.accountImport.createScheduledImport">Create Scheduled Import</entry>
     <entry key="yukon.web.modules.operator.accountImport.viewScheduledImport">View Scheduled Imports</entry>
     <entry key="yukon.web.modules.operator.accountImport.recentManualImport">Recent Manual Import</entry>
