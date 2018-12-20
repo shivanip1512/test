@@ -12,7 +12,7 @@ yukon.widget.rfBroadcast = (function () {
     
     var
     _initialized = false,
-    _updateInterval = 60000,
+    _updateInterval = 900000,
     
     _refreshWidget = function () {
         $.ajax({

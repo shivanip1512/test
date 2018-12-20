@@ -673,20 +673,9 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.rf.details.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.rf.details.results">Results</entry>
 <entry key="yukon.web.modules.dr.rf.details.detailsNotAvailable">Individual device details are not available beyond 180 days.</entry>
-<entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
-<entry key="yukon.web.modules.dr.rf.details.accountNo">Account No.</entry>
-<entry key="yukon.web.modules.dr.rf.details.unknownType">Current Status</entry>
-<entry key="yukon.web.modules.dr.rf.details.neverReported">Never Reported</entry>
-<entry key="yukon.web.modules.dr.rf.details.inventoryAction.label">Inventory Action</entry>
-<entry key="yukon.web.modules.dr.rf.details.collectionAction.label">Collection Action</entry>
-<entry key="yukon.web.modules.dr.rf.details.action.unreported.description">RF Performance (Unknown)</entry>
-<entry key="yukon.web.modules.dr.rf.details.action.missed.description">RF Performance (Missed)</entry>
-<entry key="yukon.web.modules.dr.rf.details.action.success.description">RF Performance (Successful)</entry>
-<entry key="yukon.web.modules.dr.rf.details.missed.popup.title">Confirmed Missed Devices ({0})</entry>
-<entry key="yukon.web.modules.dr.rf.details.unreported.popup.title">Unreported Devices ({0})</entry>
-<entry key="yukon.web.modules.dr.rf.details.success.popup.title">Confirmed Success Devices ({0})</entry>
 <entry key="yukon.web.modules.dr.rf.details.rfPerformanceResult">RF Broadcast Performance Result</entry>
 <entry key="yukon.web.modules.dr.rf.details.eventDetails">Event Details</entry>
+
 <!-- Recent Event Participation -->
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.title">Recent Event Participation</entry>
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>

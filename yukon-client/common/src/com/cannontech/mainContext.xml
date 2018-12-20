@@ -286,6 +286,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/watchdogWarnings</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dashboards/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/smartNotifications/root</value>
+                <value>classpath:com/cannontech/yukon/web/modules/dr/rfBroadcastEventDetail</value>
             </list>
         </constructor-arg>
     </bean>

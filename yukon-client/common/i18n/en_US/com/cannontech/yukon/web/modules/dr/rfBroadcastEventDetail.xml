@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.pageName">Event Details</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.deviceGroups">Device Group(s)</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.status">Status</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.eventTime">Event Time</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.results">Results</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.status.SUCCESS">Confirmed Success</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.status.FAILURE">Confirmed Missed</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.status.UNKNOWN">Unreported</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.helpTitle">RF Broadcast Event Result Help</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.helpText"><![CDATA[
+        You can apply the following filters to the report:
+        <ul>
+            <li><b>Confirmed Success (Green):</b> Success Content</li>
+            <li><b>Confirmed Missed (Orange):</b> Missed Content</li>
+            <li><b>Unreported (Gray):</b> Unreported Content</li>
+        </ul>
+        Click on the Filter button to filter the results.<br/>
+        The resulting devices will display in a table with the total count of filtered devices.<br/>
+        Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Map Devices, Download data and Inventory Action).<br/>
+        Click on the Gear Icon next to each device to view options you can do for the individual device (Collection Actions, Inventory Action and Map Devices). <br/>
+    ]]></entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.DEVICE_NAME">Device Name</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.DEVICE_TYPE">Device Type</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.ACCOUNT_NUMBER">Account Number</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.CURRENT_STATUS">Current Status</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.inventoryAction">Inventory Action</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.description">RF Performance</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastComm">Last Successful Communication: {0}</entry>
+</properties>

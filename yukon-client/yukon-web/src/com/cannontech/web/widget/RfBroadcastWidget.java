@@ -32,7 +32,7 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
 
     private final static String widgetKey = "yukon.web.widgets.";
-    private static final Duration SECONDS_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardSeconds(30);
+    private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(1);
 
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
@@ -56,11 +56,11 @@ public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("results", results);
             model.addAttribute("lastAttemptedRefresh", lastUpdateTime);
 
-            Instant nextRun = lastUpdateTime.plus(SECONDS_TO_WAIT_BEFORE_NEXT_REFRESH);
+            Instant nextRun = lastUpdateTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH);
             String nextRefreshDate =
                 dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
 
-            model.addAttribute("forceRefreshInterval", SECONDS_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis());
+            model.addAttribute("forceRefreshInterval", MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis());
             model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
             model.addAttribute("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         }

@@ -458,6 +458,11 @@
         <pages>
           <page name="rf.details" type="BASIC">
             <link>/dr/rf/details</link>
+            <pages>
+                <page name="rf.broadcast.eventDetail" type="BASIC">
+                    <link>/rf/broadcast/eventDetail/{eventId}</link>
+                </page>
+            </pages>
           </page>
           <page name="ecobee.details" type="BASIC">
             <link>/dr/ecobee/details</link>
