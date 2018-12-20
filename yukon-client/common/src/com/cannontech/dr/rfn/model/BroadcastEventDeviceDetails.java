@@ -45,11 +45,11 @@ public class BroadcastEventDeviceDetails {
         this.lastComm = lastComm;
     }
 
-    public DeviceStatus getDeviceStatus() {
+    public UnknownStatus getDeviceStatus() {
         return deviceStatus;
     }
 
-    public void setDeviceStatus(DeviceStatus deviceStatus) {
+    public void setDeviceStatus(UnknownStatus deviceStatus) {
         this.deviceStatus = deviceStatus;
     }
 }
