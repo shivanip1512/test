@@ -452,6 +452,11 @@ INIT_ATTRIBUTE( TamperCableCut,                                     "TAMPER_CABL
 INIT_ATTRIBUTE( LowBatteryVoltage,                                  "LOW_BATTERY_VOLTAGE" );
 INIT_ATTRIBUTE( DebugEvent,                                         "DEBUG_EVENT" );
 
+INIT_ATTRIBUTE( TamperNoUsageOver24Hours,                           "TAMPER_NO_USAGE_OVER_24_HOURS" );
+INIT_ATTRIBUTE( TamperReverseWhDetected,                            "TAMPER_REVERSE_WH_DETECTED" );
+INIT_ATTRIBUTE( TamperLargeIncreaseAfterOutage,                     "TAMPER_LARGE_INCREASE_AFTER_OUTAGE" );
+INIT_ATTRIBUTE( TamperLargeDecreaseAfterOutage,                     "TAMPER_LARGE_DECREASE_AFTER_OUTAGE" );
+
 INIT_ATTRIBUTE( StreamingCapableDeviceCount,                        "STREAMING_CAPABLE_DEVICE_COUNT" );
 INIT_ATTRIBUTE( StreamingActiveDeviceCount,                         "STREAMING_ACTIVE_DEVICE_COUNT" );
 INIT_ATTRIBUTE( DataStreamingLoad,                                  "DATA_STREAMING_LOAD" );

@@ -443,6 +443,11 @@ public:
     static const Attribute  LowBatteryVoltage;
     static const Attribute  DebugEvent;
 
+    static const Attribute  TamperNoUsageOver24Hours;
+    static const Attribute  TamperReverseWhDetected;
+    static const Attribute  TamperLargeIncreaseAfterOutage;
+    static const Attribute  TamperLargeDecreaseAfterOutage;
+
     static const Attribute  StreamingCapableDeviceCount;
     static const Attribute  StreamingActiveDeviceCount;
     static const Attribute  DataStreamingLoad;
