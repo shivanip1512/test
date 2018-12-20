@@ -521,11 +521,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 lmHardware.setDeviceID(device.getDeviceId());
                 inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, device.getDeviceId());
             }
-            
-            if(hardwareType.isItron()) {
-                
-            }
-            
+                        
             if (VersionTools.staticLoadGroupMappingExists()) {
                 starsInventoryBaseService.initStaticLoadGroup(lmHardware, energyCompany);
             }
