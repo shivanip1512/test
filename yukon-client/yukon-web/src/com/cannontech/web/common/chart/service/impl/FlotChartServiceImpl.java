@@ -34,9 +34,9 @@ public class FlotChartServiceImpl implements FlotChartService {
 
     @Override
     public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
-                                                 Double yMax, GraphType graphType, ChartInterval interval, YukonUserContext userContext) {
+                                                 Double yMax, GraphType graphType, YukonUserContext userContext) {
          List <Graph<ChartValue<Double>>> graphs = 
-                chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), interval, userContext, graphType);
+                chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), userContext, graphType);
 
         // datas
         List<Object> jsonDataContainer = new ArrayList<>();
@@ -50,15 +50,22 @@ public class FlotChartServiceImpl implements FlotChartService {
         }
 
         // options
-        int xAxisDataCount = chartService.getXAxisDataCount(start.toDate(), stop.toDate(), interval);
-        int barWidthForTime = getBarWidthForTime(start, stop, xAxisDataCount);
-
-        Map<String, ?> bars = Collections.singletonMap(FlotOptionKey.SERIES_BARS_BARWIDTH.getKey(), barWidthForTime);
-        Map<String, ?> series = Collections.singletonMap(FlotOptionKey.SERIES_BARS.getKey(), bars);
-
         Map<String, Object> options = Maps.newHashMapWithExpectedSize(3);
-        options.put(FlotOptionKey.SERIES.getKey(), series);
+        if (graphType == GraphType.COLUMN) {
+            // Get the chart interval where bar options is available.
+            ChartInterval interval = graphDetails.stream()
+                                                 .filter(e -> e.getBars() != null)
+                                                 .findFirst()
+                                                 .get()
+                                                 .getInterval();
+            int xAxisDataCount = chartService.getXAxisDataCount(start.toDate(), stop.toDate(), interval);
+            int barWidthForTime = getBarWidthForTime(start, stop, xAxisDataCount);
 
+            Map<String, ?> bars = Collections.singletonMap(FlotOptionKey.SERIES_BARS_BARWIDTH.getKey(), barWidthForTime);
+            Map<String, ?> series = Collections.singletonMap(FlotOptionKey.SERIES_BARS.getKey(), bars);
+
+            options.put(FlotOptionKey.SERIES.getKey(), series);
+        }
         List<Map<String, Object>> yaxesList = Lists.newArrayList();
         graphDetails.forEach(graphDetail -> {
             Map<String, Object> yAxes = new HashMap<>();

@@ -1,6 +1,7 @@
 package com.cannontech.web.common.chart.service.impl;
 
 import com.cannontech.common.chart.model.ChartColorsEnum;
+import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.FlotBarOptions;
 import com.cannontech.common.chart.model.FlotLineOptions;
@@ -18,8 +19,9 @@ public class GraphDetail {
     private FlotBarOptions bars;
     private FlotLineOptions lines;
     private FlotPointOptions points;
+    private ChartInterval interval;
 
-    public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors) {
+    public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors, ChartInterval interval) {
         super();
         this.pointId = pointId;
         this.yLabelUnits = yLabelUnits;
@@ -27,6 +29,15 @@ public class GraphDetail {
         this.yAxisPosition = yAxisPosition;
         this.isMin = isMax;
         this.chartColors = chartColors;
+        this.interval = interval;
+    }
+
+    public ChartInterval getInterval() {
+        return interval;
+    }
+
+    public void setInterval(ChartInterval interval) {
+        this.interval = interval;
     }
 
     public Double getyMin() {

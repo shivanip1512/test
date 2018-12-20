@@ -44,7 +44,7 @@ public class ChartServiceImpl implements ChartService {
 
     @Override
     public List<Graph<ChartValue<Double>>> getGraphs(List<GraphDetail> graphDetails, Date startDate, Date stopDate,
-            ChartInterval interval, YukonUserContext userContext, GraphType graphType) {
+            YukonUserContext userContext, GraphType graphType) {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
@@ -65,7 +65,7 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setGroupingUsed(false);
 
             LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
-            String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
+            String chartIntervalString = messageSourceAccessor.getMessage(graphDetail.getInterval().getIntervalString());
             String units =
                 messageSourceAccessor.getMessage(graphDetail.getConverterType().getFormattedUnits(unitMeasure, chartIntervalString));
 
@@ -92,18 +92,18 @@ public class ChartServiceImpl implements ChartService {
             
             Graph<ChartValue<Double>> graph = new Graph<>();
             if (pao.getPaoType() == PaoType.WEATHER_LOCATION) {
-                if (interval.getMillis() >= ChartInterval.DAY.getMillis()) {
-                    axisChartData = getXAxisMinMaxValues(interval, chartData, graphDetail.isMin());
+                if (graphDetail.getInterval().getMillis() >= ChartInterval.DAY.getMillis()) {
+                    axisChartData = getXAxisMinMaxValues(graphDetail.getInterval(), chartData, graphDetail.isMin());
                 } else {
                     axisChartData = chartData.stream().map(e -> adjustForFlotTimezone(e)).collect(Collectors.toList());
                 }
                 graph.setLines(graphDetail.getLines());
                 graph.setPoints(graphDetail.getPoints());
             } else {
-                axisChartData = getXAxisMinMaxValues(interval, chartData, graphDetail.isMin());
+                axisChartData = getXAxisMinMaxValues(graphDetail.getInterval(), chartData, graphDetail.isMin());
                 // Convert data to specified graph type
                 ChartDataConverter converter = graphDetail.getConverterType().getDataConverter();
-                axisChartData = converter.convertValues(axisChartData, interval);
+                axisChartData = converter.convertValues(axisChartData, graphDetail.getInterval());
                 if (graphType == GraphType.COLUMN) {
                     graph.setBars(graphDetail.getBars());
                 } else if (graphType == GraphType.LINE) {

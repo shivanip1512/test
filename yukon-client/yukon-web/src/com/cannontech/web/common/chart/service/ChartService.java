@@ -24,7 +24,7 @@ public interface ChartService {
      * @param userContext
      * @return A list containing one graph per point
      */
-    public List<Graph<ChartValue<Double>>> getGraphs(List<GraphDetail> graphDetails, Date startDate, Date stopDate, ChartInterval unit,
+    public List<Graph<ChartValue<Double>>> getGraphs(List<GraphDetail> graphDetails, Date startDate, Date stopDate,
                                   YukonUserContext userContext, GraphType graphType);
 
     /**

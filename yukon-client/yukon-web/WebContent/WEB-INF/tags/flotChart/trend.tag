@@ -10,6 +10,7 @@
 <%@ attribute name="converterType" required="true"  description="Either ConverterType.java object or the String representation"%>
 <%@ attribute name="graphType"  description="Either GraphType.java object or the String representation"%>
 <%@ attribute name="reloadInterval" description="The reload interval of the added chart (in seconds)"%>
+<%@ attribute name="temperatureChartInterval" description="Cahrt interval for temperature trend"%>
 <%@ attribute name="ymin"%>
 <%@ attribute name="ymax"%>
 
@@ -33,6 +34,9 @@
     <c:param name="interval" value="${interval}" />
     <c:param name="graphType" value="${pageScope.graphType}" />
     <c:param name="converterType" value="${converterType}" />
+    <c:if test="${not empty temperatureChartInterval}">
+        <c:param name="temperatureChartInterval" value="${temperatureChartInterval}" />
+    </c:if>
     <!-- to set the charts y min/max values -->
     <c:if test="${not empty pageScope.ymax}">
         <c:param name="yMax" value="${pageScope.ymax}" />

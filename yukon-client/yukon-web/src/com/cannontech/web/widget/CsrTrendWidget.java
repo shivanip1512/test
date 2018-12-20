@@ -162,7 +162,10 @@ public class CsrTrendWidget extends WidgetControllerBase {
         }
         Integer primaryWeatherLocationId = weatherDataService.getPrimaryWeatherLocationPaoId();
         Integer temperaturePointId = null;
+        ChartInterval temperatureChartInterval = null;
         if (primaryWeatherLocationId != null) {
+            //Chart Interval for temperature trend
+            temperatureChartInterval = chartPeriod.getChartUnit(dateRange.getImmutableRange(), null);
             LitePoint litePoint = attributeService.findPointForAttribute(
                 new PaoIdentifier(primaryWeatherLocationId, PaoType.WEATHER_LOCATION), BuiltInAttribute.TEMPERATURE);
             if (litePoint != null) {
@@ -175,6 +178,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", chartPeriod);
         mav.addObject("interval", chartInterval);
+        mav.addObject("temperatureChartInterval", temperatureChartInterval);
         mav.addObject("startDate", dateRange.getMin());
         mav.addObject("stopDate", dateRange.getMax());
         mav.addObject("stopDateAdjusted", stopDateAdjusted);

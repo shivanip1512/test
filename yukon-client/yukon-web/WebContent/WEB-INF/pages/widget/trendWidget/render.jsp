@@ -36,6 +36,7 @@ $(document).ready(function(){
             interval="${interval}"
             converterType="${attributeGraphType.converterType}"
             graphType="${graphType}"
+            temperatureChartInterval="${temperatureChartInterval}"
             ymin="0"/>
 
         <table class="compact-results-table trend-settings no-stripes js-trend">

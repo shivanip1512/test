@@ -55,7 +55,8 @@ public class ChartController {
                         Double yMin,
                         Double yMax,
                         @RequestParam(defaultValue = "LINE") GraphType graphType,
-                        @RequestParam(defaultValue = "RAW") ConverterType converterType) {
+                        @RequestParam(defaultValue = "RAW") ConverterType converterType,
+                        @RequestParam(required = false) ChartInterval temperatureChartInterval) {
         List<Integer> ids = Lists.newArrayList(StringUtils.parseIntStringForList(pointIds));
         Integer pointId = ids.get(0);
         LitePoint point = pointDao.getLitePoint(pointId);
@@ -65,7 +66,7 @@ public class ChartController {
         String leftYLabelUnits = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
         
         List<GraphDetail> graphDetails = new ArrayList<>();
-        GraphDetail graphDetail = new GraphDetail(pointId, leftYLabelUnits, 1, "left", false, ChartColorsEnum.GREEN);
+        GraphDetail graphDetail = new GraphDetail(pointId, leftYLabelUnits, 1, "left", false, ChartColorsEnum.GREEN, interval);
         // Set minimum value for Y-axis
         graphDetail.setyMin(yMin);
         graphDetail.setConverterType(converterType);
@@ -80,9 +81,10 @@ public class ChartController {
         flotPointOptions.setShow(true);
         graphDetail.setPoints(flotPointOptions);
         // Set details for bar type chart style
-        FlotBarOptions flotBarOptions = new FlotBarOptions(true, "center", true, ChartColorsEnum.GREEN_FILL.getRgb());
-        graphDetail.setBars(flotBarOptions);
-        
+        if (graphType == GraphType.COLUMN) {
+            FlotBarOptions flotBarOptions = new FlotBarOptions(true, "center", true, ChartColorsEnum.GREEN_FILL.getRgb());
+            graphDetail.setBars(flotBarOptions);
+        }
         graphDetails.add(graphDetail);
         
         if (isTemperatureChecked && temperaturePointId != null) {
@@ -92,13 +94,13 @@ public class ChartController {
             flotLineOptionsforTemp.setShow(true);
             
             // Add graph detail for min temperature trend
-            GraphDetail minTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", true, ChartColorsEnum.LIGHT_BLUE);
+            GraphDetail minTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", true, ChartColorsEnum.LIGHT_BLUE, temperatureChartInterval);
             minTemperatureGraphDetail.setLines(flotLineOptionsforTemp);
             graphDetails.add(minTemperatureGraphDetail);
 
-            if (interval.getMillis() >= ChartInterval.DAY.getMillis()) {
+            if (temperatureChartInterval.getMillis() >= ChartInterval.DAY.getMillis()) {
                 // Add graph detail for max temperature trend
-                GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", false, ChartColorsEnum.LIGHT_RED);
+                GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", false, ChartColorsEnum.LIGHT_RED, temperatureChartInterval);
                 maxTemperatureGraphDetail.setLines(flotLineOptionsforTemp);
                 graphDetails.add(maxTemperatureGraphDetail);
             }
@@ -107,7 +109,7 @@ public class ChartController {
         Instant stop = new DateTime(endDate).withTimeAtStartOfDay().plusDays(1).toInstant();
         
         Map<String, Object> graphAsJSON =
-                   flotChartService.getMeterGraphData(graphDetails, start, stop, yMin, yMax, graphType, interval, userContext);
+                   flotChartService.getMeterGraphData(graphDetails, start, stop, yMin, yMax, graphType, userContext);
         return graphAsJSON;
     }
 
