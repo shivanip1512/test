@@ -3,15 +3,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="operator" page="accountImport">
 
-    <cti:url var="recentResultsLink" value="/bulk/recentResults"/>
-    <div class="fr"><a href="${recentResultsLink}"><i:inline key="yukon.common.device.bulk.recentResults"/></a></div><br/>
-
     <cti:checkEnergyCompanyOperator showError="true">
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
-        
+
         <div class="column-12-12">
             <div class="column one">
                 <cti:url var="importUrl" value="/stars/operator/account/uploadImportFiles"/>
@@ -34,7 +32,6 @@
                     </tags:nameValueContainer2>
                     
                     <div class="action-area stacked">
-                        <a href="imports" class="fl"><i:inline key=".recent"/></a>
                         <cti:button nameKey="prescan" type="submit" classes="js-blocker action primary"/>
                     </div>
                 </form:form>
@@ -158,6 +155,34 @@
                 </div>
             </div>
         </div>
-        
+
+        <div id="page-actions" class="dn">
+            <!-- Create -->
+            <cti:url var="createUrl" value="/stars/scheduledDataImport/create" />
+            <cm:dropdownOption key=".createScheduledImport" 
+                               id="create-option" href="${createUrl}"/>
+            <li class="divider"></li>
+
+            <!--  View -->
+            <cti:url var="viewUrl" value="/stars/scheduledDataImport/list" />
+            <cm:dropdownOption key=".viewScheduledImport" 
+                               id="view-option" href="${viewUrl}"/>
+            <li class="divider"></li>
+
+            <!--  Notifications -->
+            <cm:dropdownOption key="yukon.web.menu.smartnotifications" 
+                               id="notifications" href="${viewUrl}"/>
+            <li class="divider"></li>
+
+            <!--  Recent Manual Imports -->
+            <cm:dropdownOption key=".recentManualImport" 
+                               id="recent-manual-imports" href="imports"/>
+
+            <!--  Recent Manual Imports Results -->
+            <cti:url var="recentManualResultsLink" value="/bulk/recentResults"/>
+            <cm:dropdownOption key=".recentManualImportResults" 
+                               id="recent-manual-results" href="${recentManualResultsLink}"/>
+        </div>
+
   </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

@@ -155,7 +155,11 @@
 	<entry key="yukon.web.modules.operator.accountImport.accountColumnDescription">Description</entry>
 	<entry key="yukon.web.modules.operator.accountImport.hardwareColumnDescription">Description</entry>
 	<entry key="yukon.web.modules.operator.accountImport.recent">Recent Imports</entry>
-    
+    <entry key="yukon.web.modules.operator.accountImport.createScheduledImport">Create Scheduled Import</entry>
+    <entry key="yukon.web.modules.operator.accountImport.viewScheduledImport">View Scheduled Imports</entry>
+    <entry key="yukon.web.modules.operator.accountImport.recentManualImport">Recent Manual Import</entry>
+    <entry key="yukon.web.modules.operator.accountImport.recentManualImportResults">Recent Manual Import Results</entry>
+
 	<!-- import errors -->
 	<entry key="yukon.web.modules.operator.accountImport.error.noFiles">You must supply an account file or a hardware file.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.error.invalidEmail">Not a valid email address.</entry>
