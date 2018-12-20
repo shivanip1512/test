@@ -35,6 +35,12 @@ public class WidgetHelper {
                 widget.setHelpText(accessor.getMessage(helpTextBaseKey + widget.getType().getBeanName() + ".helpText",
                     days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
                 break;
+            case PORTER_QUEUE_COUNTS:
+                String commChannelQueueCounts = accessor.getMessage(helpTextBaseKey + "minutes",
+                    globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH));
+                widget.setHelpText(accessor.getMessage(helpTextBaseKey + widget.getType().getBeanName() + ".helpText",
+                    commChannelQueueCounts));
+                break;
              case RF_BROADCAST:
                 String rfBroadcastWidgetDetail = accessor.getMessage("yukon.web.widgets.rfBroadcastWidget.widgetDetail");
                 String broadcastEventStatusDetail = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.infoText");

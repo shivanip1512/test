@@ -165,7 +165,7 @@
 <entry key="yukon.web.widgets.dataCollectionWidget.widgetIdentity">Data Collection - {0}</entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.helpText"><![CDATA[
         Select a Device Group to obtain data collection information for.  Check the include disabled checkbox to include any disabled devices in the calculations.  
-        Click on the pie chart to view detailed device information.
+        Click on the pie chart to view detailed device information. The data collection details are updated in every 6 seconds by default.
         The Refresh button will force an update of the data collected (if data has not been collected in the last 15 minutes).  
         The date/time displays the date/time that data collection was last updated.
         <ul>
@@ -182,7 +182,8 @@
 <entry key="yukon.web.widgets.assetAvailabilityWidget.helpText"><![CDATA[
         Select a Scenario, Control Area, or Program to obtain operational information for two-way Demand Response devices.
         Click on the pie chart to view detailed device information.
-        The Refresh button will force an update of the operational status.
+        The asset availability details update in every 30 minutes by default.
+        The Refresh button will allow force update of Asset Availability details after every 15 minutes.
         The date/time displays the date/time when operational status was last updated.
         <ul>
             <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
@@ -227,13 +228,15 @@
 <entry key="yukon.web.widgets.porterQueueCountsWidget.helpText"><![CDATA[
     The Comm Channel Queue Counts widget displays up to 3 (default) months of historical data for a maximum number of  5 (default) communication channels (not inclusive of RF Meters). The number of months and communication channel limits may be modified at a system level in the Yukon Configuration Settings.
 The communication channels are selected when the widget is created and are used to populate the graph each time the widget is loaded. Temporarily change the selected communication channels using the picker. To permanently change the default selected communication channels, edit the dashboard and select different communication channels, and click save.
+The Comm Channel Queue Counts details are updated in every 6 seconds. The refresh button will allow force an update in {0}. 
 ]]></entry>
 <entry key="yukon.web.widgets.days">{0,choice,0# | 1# {0} day | 1 &lt; {0} days}</entry>
 <entry key="yukon.web.widgets.hours">{0,choice,0# | 1# {0} hour | 1 &lt; {0} hours}</entry>
+<entry key="yukon.web.widgets.minutes">{0,choice, 1# {0} minute | 1 &lt; {0} minutes}</entry>
 <entry key="yukon.web.widgets.hours.withDays">{0,choice,0# | 1# and {0} hour | 1 &lt; and {0} hours}</entry>
 <entry key="yukon.web.widgets.rfBroadcastWidget">RF Broadcast Performance</entry>
 <entry key="yukon.web.widgets.rfBroadcastWidget.lastRun">Last Run</entry>
 <entry key="yukon.web.widgets.rfBroadcastWidget.viewDetails">View Details</entry>
-<entry key="yukon.web.widgets.rfBroadcastWidget.widgetDetail"><![CDATA[RF Broadcast Performance widget provides summary of expected RF LCR response performance from the previous 5 days of Demand Response test message events. The RF Broadcast performance widget is updated every 1 minute, by default. The Refresh button will force an update if data has not been updated in the last 30 seconds. The date/time next to the Refresh button displays the date/time when the performance was last updated.
+<entry key="yukon.web.widgets.rfBroadcastWidget.widgetDetail"><![CDATA[RF Broadcast Performance widget provides summary of expected RF LCR response performance from the previous 5 days of Demand Response test message events. The RF Broadcast performance widget is updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 1 minute. The date/time next to the Refresh button displays the date/time when the performance was last updated.
 <br><br>]]></entry>
 </properties>
