@@ -110,4 +110,7 @@ public class ScheduleImportHistoryEntry {
         this.failureCount = failureCount;
     }
 
+    public int getTotalCount() {
+        return failureCount + successCount;
+    }
 }

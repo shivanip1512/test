@@ -161,16 +161,14 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     }
 
     @Override
-    public File downloadArchivedFile(String fileName, boolean isSuccessFile, String failedFilePath)
+    public File downloadArchivedFile(String fileName, boolean isSuccessFile, String filePath)
             throws FileNotFoundException, FileCreationException {
-        File file = null;
         if (isSuccessFile) {
-            file = new File(CtiUtilities.getImportArchiveDirPath(), fileName);
-        } else {
-            file = new File(failedFilePath, fileName);
+            filePath = CtiUtilities.getImportArchiveDirPath();
         }
+        File file = new File(filePath, fileName);
         if (!file.exists()) {
-            String error = "Requested file \"" + fileName + "\" not found in ImportArchive directory.";
+            String error = "Requested file \"" + fileName + "\" not found in " + filePath + " directory.";
             throw new FileNotFoundException(error);
         }
         return file;
