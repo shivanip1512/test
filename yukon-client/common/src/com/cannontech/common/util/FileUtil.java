@@ -30,6 +30,7 @@ import org.joda.time.LocalDate;
 import org.springframework.util.Assert;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.FileCreationException;
 
 public final class FileUtil {
     private static Logger log = YukonLogManager.getLogger(FileUtil.class);
@@ -418,6 +419,24 @@ public final class FileUtil {
             return dateFormat.parse(fileName.replace(prefix, ""));
         } catch (ParseException e) {
             return null;
+        }
+    }
+
+    /**
+     * Verify the directory exist or not with specified path. If directory does not exist create a new
+     * directory.
+     * 
+     * @param path - Directory path.
+     * @throws FileCreationException : If unable to create a directory with specified path.
+     */
+
+    public final static void verifyDirectory(String path) {
+        File dir = new File(path);
+        if (!dir.exists()) {
+            boolean success = dir.mkdirs();
+            if (!success) {
+                throw new FileCreationException("Error creating directory " + path);
+            }
         }
     }
 }

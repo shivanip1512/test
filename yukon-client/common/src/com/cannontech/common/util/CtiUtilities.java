@@ -42,7 +42,6 @@ import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;
-import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -344,54 +343,34 @@ public final class CtiUtilities {
         final String sep = System.getProperty("file.separator");
         return "java -jar " + getYukonBase() + sep + "Client" + sep + "bin" + sep + "wrapper.jar";
     }
-    
-    public final static String getArchiveDirPath() {
-        String path = getYukonBase() + System.getProperty("file.separator") + EXPORT_ARCHIVE_DIR;
-        File dir = new File(path);
-        if (!dir.exists()) {
-            boolean success = dir.mkdirs();
-            if (!success) {
-                throw new FileCreationException("Error creating directory " + path);
-            }
-        }
-        return path;
-    }
-    public final static String getImportArchiveDirPath() {
-        String path = getYukonBase() + System.getProperty("file.separator") + IMPORT_ARCHIVE_DIR;
-        File dir = new File(path);
-        if (!dir.exists()) {
-            boolean success = dir.mkdirs();
-            if (!success) {
-                throw new FileCreationException("Error creating directory " + path);
-            }
-        }
-        return path;
-    }
-    
-    public final static String getCollectionActionDirPath() {
-        String path = getArchiveDirPath() + System.getProperty("file.separator") + COLLECTION_ACTION_DIR;
-        File dir = new File(path);
-        if (!dir.exists()) {
-            boolean success = dir.mkdirs();
-            if (!success) {
-                throw new FileCreationException("Error creating directory " + path);
-            }
-        }
-        return path;
-    }
-    
-    public final static String getNestDirPath() {
-        String path = getArchiveDirPath() + System.getProperty("file.separator") + NEST_DIR;
-        File dir = new File(path);
-        if (!dir.exists()) {
-            boolean success = dir.mkdirs();
-            if (!success) {
-                throw new FileCreationException("Error creating directory " + path);
-            }
-        }
+
+    public final static String getExportArchiveDirPath() {
+        String path = getArchiveDirPath(EXPORT_ARCHIVE_DIR);
+        FileUtil.verifyDirectory(path);
         return path;
     }
 
+    public final static String getImportArchiveDirPath() {
+        String path = getArchiveDirPath(IMPORT_ARCHIVE_DIR);
+        FileUtil.verifyDirectory(path);
+        return path;
+    }
+
+    public final static String getCollectionActionDirPath() {
+        String path = getArchiveDirPath(EXPORT_ARCHIVE_DIR) + System.getProperty("file.separator") + COLLECTION_ACTION_DIR;
+        FileUtil.verifyDirectory(path);
+        return path;
+    }
+
+    public final static String getNestDirPath() {
+        String path = getArchiveDirPath(EXPORT_ARCHIVE_DIR) + System.getProperty("file.separator") + NEST_DIR;
+        FileUtil.verifyDirectory(path);
+        return path;
+    }
+
+    public final static String getArchiveDirPath(String subDirectory) {
+        return getYukonBase() + System.getProperty("file.separator") + subDirectory;
+    }
 
     public final static Character getFalseCharacter() {
         return falseChar;
