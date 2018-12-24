@@ -388,8 +388,6 @@ public class SmartNotificationsController {
     
     private void setupEventType(ModelMap model) {
         model.addAttribute("eventTypeDDM", SmartNotificationEventType.DEVICE_DATA_MONITOR);
-        model.addAttribute("eventTypeInfrastructureWarning", SmartNotificationEventType.INFRASTRUCTURE_WARNING);
-        model.addAttribute("eventTypeYukonWatchDog", SmartNotificationEventType.YUKON_WATCHDOG);
         model.addAttribute("eventTypeAssetImport", SmartNotificationEventType.ASSET_IMPORT);
     }
 
