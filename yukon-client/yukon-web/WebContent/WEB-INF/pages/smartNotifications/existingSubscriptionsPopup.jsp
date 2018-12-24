@@ -21,8 +21,11 @@
                     <div class="scroll-md">
                         <table class="compact-results-table">
                             <tr>
-                                <c:if test="${type == 'DEVICE_DATA_MONITOR'}">
+                                <c:if test="${type == eventTypeDDM}">
                                     <th><i:inline key=".monitor"/></th>
+                                </c:if>
+                                <c:if test="${type == eventTypeAssetImport}">
+                                    <th><i:inline key=".importResult"/></th>
                                 </c:if>
                                 <th><i:inline key=".frequency"/></th>
                                 <th><i:inline key=".media"/></th>
@@ -35,10 +38,16 @@
                                     <c:set var="subId" value="${subscription.id}"/>
                                     <tr class="js-${subscription.frequency}">
                                         <c:set var="subDescription" value="${subType}"/>
-                                        <c:if test="${type == 'DEVICE_DATA_MONITOR'}">
+                                        <c:if test="${type == eventTypeDDM}">
                                             <c:set var="monitor" value="${deviceDataMonitors.get(subscription.parameters['monitorId'])}"/>
                                             <c:set var="subDescription" value="${subType} - ${monitor}"/>
                                             <td>${monitor}</td>
+                                        </c:if>
+                                        <c:if test="${type == eventTypeAssetImport}">
+                                            <cti:msg2 var="importResultType" 
+                                                      key="yukon.web.modules.operator.assetImportResultType.${subscription.parameters['assetImportResultType']}"/> 
+                                            <c:set var="subDescription" value="${subType} - ${importResultType}"/>
+                                            <td>${importResultType}</td>
                                         </c:if>
                                         <td>
                                             <i:inline key="${subscription.frequency.formatKey}"/>

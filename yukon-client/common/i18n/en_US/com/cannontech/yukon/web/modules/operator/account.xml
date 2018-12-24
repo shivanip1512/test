@@ -158,6 +158,8 @@
     <entry key="yukon.web.modules.operator.accountImport.viewScheduledImport">View Scheduled Imports</entry>
     <entry key="yukon.web.modules.operator.accountImport.recentManualImport">Recent Manual Import</entry>
     <entry key="yukon.web.modules.operator.accountImport.recentManualImportResults">Recent Manual Import Results</entry>
+    <entry key="yukon.web.modules.operator.assetImportResultType.ALL_IMPORTS">All Imports</entry>
+    <entry key="yukon.web.modules.operator.assetImportResultType.IMPORTS_WITH_ERRORS">Imports With Errors</entry>
 
 	<!-- import errors -->
 	<entry key="yukon.web.modules.operator.accountImport.error.noFiles">You must supply an account file or a hardware file.</entry>

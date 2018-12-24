@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-<cti:standardPage module="operator" page="accountImport">
+<cti:standardPage module="operator" page="accountImport" smartNotificationsEvent="ASSET_IMPORT">
 
     <cti:checkEnergyCompanyOperator showError="true">
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
@@ -59,7 +59,7 @@
             </div>
         </div>
             
-        <div class="column-12-12">    
+        <div class="column-12-12">
             <div class="column one">
                 <div class="box" style="background-color:#CDCDCD;padding:10px;">
                     <div class="fl"><cti:icon icon="icon-shape-handles"/></div>
@@ -158,20 +158,15 @@
 
         <div id="page-actions" class="dn">
             <!-- Create -->
-            <cti:url var="createUrl" value="/stars/scheduledDataImport/create" />
+            <cti:url var="createUrl" value="/stars/scheduledDataImport/create"/>
             <cm:dropdownOption key=".createScheduledImport" 
                                id="create-option" href="${createUrl}"/>
             <li class="divider"></li>
 
             <!--  View -->
-            <cti:url var="viewUrl" value="/stars/scheduledDataImport/list" />
+            <cti:url var="viewUrl" value="/stars/scheduledDataImport/list"/>
             <cm:dropdownOption key=".viewScheduledImport" 
                                id="view-option" href="${viewUrl}"/>
-            <li class="divider"></li>
-
-            <!--  Notifications -->
-            <cm:dropdownOption key="yukon.web.menu.smartnotifications" 
-                               id="notifications" href="${viewUrl}"/>
             <li class="divider"></li>
 
             <!--  Recent Manual Imports -->

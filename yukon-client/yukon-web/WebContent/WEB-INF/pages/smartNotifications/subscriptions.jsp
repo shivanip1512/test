@@ -54,7 +54,7 @@
                                     </c:if>
                                     <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
                                     <cm:dropdownOption id="unsubscribe-${subId}" key=".unsubscribe" icon="icon-email-delete"
-                                        data-subscription-id="${subId}" data-ok-event="yukon:notifications:remove"/>
+                                        data-subscription-id="${subId}" data-ok-event="yukon:notifications:remove" classes="js-hide-dropdown"/>
                                     <d:confirm on="#unsubscribe-${subId}" nameKey="unsubscribeConfirmation" argument="${subDescription}"/>
                                 </cm:dropdown>
                             </td>

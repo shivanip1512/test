@@ -71,6 +71,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.stars.dr.operator.AssetImportResultType;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebFileUtils;
@@ -292,6 +293,7 @@ public class SmartNotificationsController {
         model.addAttribute("existingSubscriptions", subscriptions);
         model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
         model.addAttribute("type", type);
+        setupEventType(model);
         return "existingSubscriptionsPopup.jsp";
     }
     
@@ -380,8 +382,17 @@ public class SmartNotificationsController {
         model.addAttribute("deviceDataMonitors", ddms);
         String sendTime = userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME);
         model.addAttribute("sendTime", sendTime);
+        model.addAttribute("assetImportResultTypes", AssetImportResultType.values());
+        setupEventType(model);
     }
     
+    private void setupEventType(ModelMap model) {
+        model.addAttribute("eventTypeDDM", SmartNotificationEventType.DEVICE_DATA_MONITOR);
+        model.addAttribute("eventTypeInfrastructureWarning", SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+        model.addAttribute("eventTypeYukonWatchDog", SmartNotificationEventType.YUKON_WATCHDOG);
+        model.addAttribute("eventTypeAssetImport", SmartNotificationEventType.ASSET_IMPORT);
+    }
+
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)
     public String saveDetails(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, 
                               @ModelAttribute("subscription") SmartNotificationSubscription subscription, BindingResult result) throws Exception {

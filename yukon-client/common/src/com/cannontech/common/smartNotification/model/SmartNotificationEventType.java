@@ -8,7 +8,8 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum SmartNotificationEventType implements DisplayableEnum {
     DEVICE_DATA_MONITOR("deviceDataMonitor"),
     INFRASTRUCTURE_WARNING("infrastructureWarnings"),
-    YUKON_WATCHDOG("watchdogWarnings")
+    YUKON_WATCHDOG("watchdogWarnings"),
+    ASSET_IMPORT("assetImport")
     ;
     
     private String urlPath;

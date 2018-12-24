@@ -53,6 +53,7 @@
     <entry key="yukon.web.modules.smartNotifications.sendTime">Send Time</entry>
     <entry key="yukon.web.modules.smartNotifications.media">Media</entry>
     <entry key="yukon.web.modules.smartNotifications.email">Email</entry>
+    <entry key="yukon.web.modules.smartNotifications.importResult">Import Result</entry>
     <entry key="yukon.web.modules.smartNotifications.recipient">Recipient</entry>
     <entry key="yukon.web.modules.smartNotifications.detail">Message Detail</entry>
     <entry key="yukon.web.modules.smartNotifications.saveSuccessful">Notification was successfully saved.</entry>
@@ -89,6 +90,7 @@
     <entry key="yukon.web.modules.smartNotifications.eventType.DEVICE_DATA_MONITOR">Device Data Monitor</entry>
     <entry key="yukon.web.modules.smartNotifications.eventType.INFRASTRUCTURE_WARNING">Infrastructure Warnings</entry>
     <entry key="yukon.web.modules.smartNotifications.eventType.YUKON_WATCHDOG">Yukon Watchdog</entry>
+    <entry key="yukon.web.modules.smartNotifications.eventType.ASSET_IMPORT">Asset Import</entry>
     
     <!-- Frequency -->
     <entry key="yukon.web.modules.smartNotifications.frequency.IMMEDIATE">Immediate</entry>

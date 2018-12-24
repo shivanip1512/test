@@ -6,12 +6,11 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="scheduledDataImportList">
+<cti:standardPage module="operator" page="scheduledDataImportList" smartNotificationsEvent="ASSET_IMPORT">
     <tags:sectionContainer2 nameKey="tableTitle">
         <div id="page-actions" class="dn">
             <cti:url var="createUrl" value="/stars/scheduledDataImport/create"/>
             <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="create-option" href= "${createUrl}"/>
-            <cm:dropdownOption icon="icon-email" key=".notification"/>
         </div>
         <cti:url var="listUrl" value="/stars/scheduledDataImport/list"/>
         <c:choose>

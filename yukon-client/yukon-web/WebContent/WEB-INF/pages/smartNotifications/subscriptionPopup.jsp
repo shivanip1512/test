@@ -5,9 +5,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="modules.smartNotifications">
+    
+    <input type="hidden" class="js-event-type-ddm" value="${eventTypeDDM}"/>
+    <input type="hidden" class="js-event-type-asset-import" value="${eventTypeAssetImport}"/>
 
     <cti:url var="action" value="/notifications/subscription/saveDetails"/>
-    <form:form id="notification-details" modelAttribute="subscription" action="${action}" method="POST">       
+    <form:form id="notification-details" modelAttribute="subscription" action="${action}" method="POST">
         <cti:csrfToken/>
         <form:hidden path="id"/>
         <span class="fr">
@@ -28,7 +31,7 @@
                 </c:choose>
             </tags:nameValue2>
             <c:set var="disableMonitor" value="${!empty subscription.type}"/>
-            <c:set var="monitorClass" value="${subscription.type != 'DEVICE_DATA_MONITOR' ? 'dn' : ''}"/>
+            <c:set var="monitorClass" value="${subscription.type != eventTypeDDM ? 'dn' : ''}"/>
             <tags:nameValue2 nameKey=".monitor" rowClass="js-monitor ${monitorClass}">
                 <c:choose>
                     <c:when test="${!empty subscription.parameters['monitorId']}">
@@ -38,6 +41,19 @@
                     <c:otherwise>
                         <tags:selectWithItems path="parameters['monitorId']" items="${deviceDataMonitors}" itemLabel="name" 
                             itemValue="id" disabled="${disableMonitor}" id="device-data-monitor"/>
+                    </c:otherwise>
+                </c:choose>
+            </tags:nameValue2>
+            <c:set var="displayAssetImportResultTypes" value="${subscription.type != eventTypeAssetImport ? 'dn' : ''}"/>
+            <tags:nameValue2 nameKey=".importResult" rowClass="js-import-result ${displayAssetImportResultTypes}">
+                <c:choose>
+                    <c:when test="${!empty subscription.parameters['assetImportResultType']}">
+                        <i:inline key="yukon.web.modules.operator.assetImportResultType.${subscription.parameters['assetImportResultType']}"/> 
+                        <form:hidden path="parameters['assetImportResultType']"/>
+                    </c:when>
+                    <c:otherwise>
+                        <tags:selectWithItems path="parameters['assetImportResultType']" items="${assetImportResultTypes}"
+                                              id="js-asset-import-result-type"/>
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>
