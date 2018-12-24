@@ -140,8 +140,6 @@ public class AssetAvailabilityController {
             days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS));
         model.addAttribute("helpText", helpText);
         
-        model.addAttribute("paoType", cache.getAllPaosMap().get(paobjectId).getPaoType());
-        
         return "dr/assetAvailability/detail.jsp";
     }
     
