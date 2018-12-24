@@ -36,6 +36,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.TimeUtil;
@@ -66,6 +67,7 @@ public class AssetAvailabilityController {
 
     private final static String widgetKey = "yukon.web.widgets.";
     private final static String baseKey = "yukon.web.modules.dr.assetAvailability.detail.";
+    private final static String menuKey = "yukon.web.menu.";
     
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -139,10 +141,47 @@ public class AssetAvailabilityController {
         String helpText = accessor.getMessage(baseKey + "helpText",
             days, hours, globalSettingDao.getString(GlobalSettingType.LAST_COMMUNICATION_HOURS));
         model.addAttribute("helpText", helpText);
-        
+        setPaoTypeAndBreadcumbUri(paobjectId, model, accessor);
+        model.addAttribute("home", accessor.getMessage(menuKey + "home"));
+        model.addAttribute("dr", accessor.getMessage(menuKey + "config.dr.home"));
+        model.addAttribute("assetAvailability", accessor.getMessage(baseKey + "crumbTitle"));
         return "dr/assetAvailability/detail.jsp";
     }
-    
+
+    private void setPaoTypeAndBreadcumbUri(Integer paobjectId, ModelMap model, MessageSourceAccessor accessor) {
+        PaoType paoType = cache.getAllPaosMap().get(paobjectId).getPaoType();
+        String paObjectType = "";
+        String paoListUri = "";
+        String paoDetailsUri = "";
+        switch (paoType.getPaoClass()) {
+        case LOADMANAGEMENT:
+            if (PaoType.LM_SCENARIO.getDbString().equals(paoType.getPaoTypeName())) {
+                paObjectType = accessor.getMessage(menuKey + "config.dr.home.scenarios");
+                paoListUri = "/dr/scenario/list";
+                paoDetailsUri = "/dr/scenario/detail?scenarioId=" + paobjectId;
+            } else if (PaoType.LM_CONTROL_AREA.getDbString().equals(paoType.getPaoTypeName())) {
+                paObjectType = accessor.getMessage(menuKey + "config.dr.home.controlareas");
+                paoListUri = "/dr/controlArea/list";
+                paoDetailsUri = "/dr/controlArea/detail?controlAreaId=" + paobjectId;
+            } else {
+                paObjectType = accessor.getMessage(menuKey + "config.dr.home.programs");
+                paoListUri = "/dr/program/list";
+                paoDetailsUri = "/dr/program/detail?programId=" + paobjectId;
+            }
+            break;
+        case GROUP:
+            paObjectType = accessor.getMessage(menuKey + "config.dr.home.loadgroups");
+            paoListUri = "/dr/loadGroup/list";
+            paoDetailsUri = "/dr/loadGroup/detail?loadGroupId=" + paobjectId;
+            break;
+        default:
+            break;
+        }
+        model.addAttribute("paObjectType", paObjectType);
+        model.addAttribute("paoListUri", paoListUri);
+        model.addAttribute("paoDetailsUri", paoDetailsUri);
+    }
+
     @GetMapping(value = "filterResults")
     public String filterResults(ModelMap model, Integer paobjectId, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,

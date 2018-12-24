@@ -7,6 +7,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="assetAvailability.detail">
+    <cti:breadCrumbs>
+        <cti:crumbLink url="/dashboard" title="${home}" />
+        <cti:crumbLink url="/dr/home" title="${dr}" />
+        <cti:crumbLink url="${paoListUri}" title="${paObjectType}" />
+        <cti:crumbLink url="${paoDetailsUri}" title="${paoName}" />
+        <cti:crumbLink title="${assetAvailability}" />
+    </cti:breadCrumbs>
     <cti:toJson id="js-asset-availability-summary" object="${summary}"/>
     <c:forEach var="status" items="${statusTypes}">
         <input type="hidden" class="js-asset-${status}" value="<cti:msg2 key=".assetDetails.status.${status}"/>"/>
