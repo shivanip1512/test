@@ -435,7 +435,7 @@ public final class FileUtil {
         if (!dir.exists()) {
             boolean success = dir.mkdirs();
             if (!success) {
-                throw new FileCreationException("Error creating directory " + path);
+                throw new FileCreationException("Error occurred while creating directory " + path);
             }
         }
     }
