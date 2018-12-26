@@ -37,6 +37,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.TimeUtil;
@@ -52,10 +53,12 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
 import com.cannontech.web.common.widgets.service.AssetAvailabilityWidgetService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.support.SiteMapPage;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -81,6 +84,7 @@ public class AssetAvailabilityController {
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
 
     @GetMapping(value = "updateChart")
     public @ResponseBody Map<String, Object> updateChart(Integer controlAreaOrProgramOrScenarioId, YukonUserContext userContext) throws Exception {
@@ -149,30 +153,27 @@ public class AssetAvailabilityController {
     }
 
     private void setPaoTypeAndBreadcumbUri(Integer paobjectId, ModelMap model, MessageSourceAccessor accessor) {
-        PaoType paoType = cache.getAllPaosMap().get(paobjectId).getPaoType();
+        YukonPao yukonPao = cache.getAllPaosMap().get(paobjectId);
+        PaoType paoType = yukonPao.getPaoIdentifier().getPaoType();
+        String paoDetailsUri = paoDetailUrlHelper.getUrlForPaoDetailPage(yukonPao);
         String paObjectType = "";
         String paoListUri = "";
-        String paoDetailsUri = "";
         switch (paoType.getPaoClass()) {
         case LOADMANAGEMENT:
             if (PaoType.LM_SCENARIO.getDbString().equals(paoType.getPaoTypeName())) {
                 paObjectType = accessor.getMessage(menuKey + "config.dr.home.scenarios");
-                paoListUri = "/dr/scenario/list";
-                paoDetailsUri = "/dr/scenario/detail?scenarioId=" + paobjectId;
+                paoListUri = SiteMapPage.SCENARIOS.getLink();
             } else if (PaoType.LM_CONTROL_AREA.getDbString().equals(paoType.getPaoTypeName())) {
                 paObjectType = accessor.getMessage(menuKey + "config.dr.home.controlareas");
-                paoListUri = "/dr/controlArea/list";
-                paoDetailsUri = "/dr/controlArea/detail?controlAreaId=" + paobjectId;
+                paoListUri = SiteMapPage.CONTROL_AREAS.getLink();
             } else {
                 paObjectType = accessor.getMessage(menuKey + "config.dr.home.programs");
-                paoListUri = "/dr/program/list";
-                paoDetailsUri = "/dr/program/detail?programId=" + paobjectId;
+                paoListUri = SiteMapPage.PROGRAMS.getLink();
             }
             break;
         case GROUP:
             paObjectType = accessor.getMessage(menuKey + "config.dr.home.loadgroups");
-            paoListUri = "/dr/loadGroup/list";
-            paoDetailsUri = "/dr/loadGroup/detail?loadGroupId=" + paobjectId;
+            paoListUri = SiteMapPage.LOAD_GROUPS.getLink();
             break;
         default:
             break;
