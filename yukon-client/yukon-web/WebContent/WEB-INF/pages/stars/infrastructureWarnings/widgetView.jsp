@@ -29,26 +29,26 @@
         <tr>
             <c:if test="${summary.totalGateways != 0}">
                 <td class="PT0">
-                    <span class="label label-success summaryNumbers">${summary.totalGateways - summary.warningGateways}</span>
-                    <span class="label label-warning summaryNumbers">${summary.warningGateways}</span>
+                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalGateways - summary.warningGateways}</span>
+                    <span class="label bg-color-orange summaryNumbers">${summary.warningGateways}</span>
                 </td>
             </c:if>
             <c:if test="${summary.totalRelays != 0}">
                 <td class="PT0">
-                    <span class="label label-success summaryNumbers">${summary.totalRelays - summary.warningRelays}</span>
-                    <span class="label label-warning summaryNumbers">${summary.warningRelays}</span>
+                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalRelays - summary.warningRelays}</span>
+                    <span class="label bg-color-orange summaryNumbers">${summary.warningRelays}</span>
                 </td>
             </c:if>
             <c:if test="${summary.totalCcus != 0}">
                 <td class="PT0">
-                    <span class="label label-success summaryNumbers">${summary.totalCcus - summary.warningCcus}</span>
-                    <span class="label label-warning summaryNumbers">${summary.warningCcus}</span>
+                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalCcus - summary.warningCcus}</span>
+                    <span class="label bg-color-orange summaryNumbers">${summary.warningCcus}</span>
                 </td>
             </c:if>
             <c:if test="${summary.totalRepeaters != 0}">
                 <td class="PT0">
-                    <span class="label label-success summaryNumbers">${summary.totalRepeaters - summary.warningRepeaters}</span>
-                    <span class="label label-warning summaryNumbers">${summary.warningRepeaters}</span>
+                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalRepeaters - summary.warningRepeaters}</span>
+                    <span class="label bg-color-orange summaryNumbers">${summary.warningRepeaters}</span>
                 </td>
             </c:if>
         </tr>

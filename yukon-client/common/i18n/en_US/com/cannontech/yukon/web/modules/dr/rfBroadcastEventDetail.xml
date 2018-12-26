@@ -13,15 +13,24 @@
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.helpTitle">RF Broadcast Event Result Help</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.helpText"><![CDATA[
         You can apply the following filters to the report:
-        <ul>
-            <li><b>Confirmed Success (Green):</b> Success Content</li>
-            <li><b>Confirmed Missed (Orange):</b> Missed Content</li>
-            <li><b>Unreported (Gray):</b> Unreported Content</li>
-        </ul>
+        <br>
+        <b>Device Group(s)</b>- Select one to many device groups to filter the results.
+        <br>
+        <b>Status</b>- Select any status options to filter the results of device group(s).
+        <br><br>
+        <span class="fwb bg-color-pie-green txt-color-white">Confirmed Success (Green)</span><br>
+        The devices in this category have confirmed receiving the unique RF Broadcast Performance test message for the selected day.
+        <br><br>
+        <span class="fwb bg-color-orange txt-color-white">Confirmed Missed (Orange)</span><br>
+        The devices in this category have reported all available data for the selected day and the analysis has determined the unique RF Broadcast Performance test message was not received by the device.
+        <br><br>
+        <span class="fwb bg-color-grey txt-color-white">Unreported (Grey)</span><br>
+        The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique RF Broadcast Performance test message for the device. When the data is received, the device will re-categorized appropriately.
+        <br><br>
         Click on the Filter button to filter the results.<br/>
         The resulting devices will display in a table with the total count of filtered devices.<br/>
         Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Map Devices, Download data and Inventory Action).<br/>
-        Click on the Gear Icon next to each device to view options you can do for the individual device (Collection Actions, Inventory Action and Map Devices). <br/>
+        Click on the Gear Icon next to each device to view options you can do for the individual device (Collection Actions, Inventory Action and Map Devices).<br/>
     ]]></entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.DEVICE_NAME">Device Name</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.DEVICE_TYPE">Device Type</entry>

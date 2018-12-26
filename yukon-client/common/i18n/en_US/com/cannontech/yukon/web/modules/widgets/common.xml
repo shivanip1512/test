@@ -168,29 +168,41 @@
         Click on the pie chart to view detailed device information. The data collection details are updated in every 6 seconds by default.
         The Refresh button will force an update of the data collected (if data has not been collected in the last 15 minutes).  
         The date/time displays the date/time that data collection was last updated.
-        <ul>
-            <li><b>Available (Green):</b> Data has been received for these devices within the desired number of days.</li>
-            <li><b>Expected (Blue):</b> Data has been received for these devices within 7 days.</li>
-            <li><b>Outdated (Orange):</b> Data has been received for these devices within 14 days.</li>
-            <li><b>Unavailable (Gray):</b> Data has not been received for these devices for over 14 days.</li>
-        </ul>
+        <br><br>
+        <span class="fwb bg-color-pie-green txt-color-white">Available (Green)</span><br>
+        Data has been received for these devices within the desired number of days.
+        <br><br>
+        <span class="fwb bg-color-pie-blue txt-color-white">Expected (Blue)</span><br>
+        Data has been received for these devices within 7 days.
+        <br><br>
+        <span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span><br>
+        Data has been received for these devices within 14 days.
+        <br><br>
+        <span class="fwb bg-color-grey txt-color-white">Unavailable (Grey)</span><br>
+        Data has not been received for these devices for over 14 days.
 ]]></entry>
 
 <entry key="yukon.web.widgets.assetAvailabilityWidget">Asset Availability</entry>
 <entry key="yukon.web.widgets.assetAvailabilityWidget.widgetIdentity">Asset Availability - {0}</entry>
 
 <entry key="yukon.web.widgets.assetAvailabilityWidget.helpText"><![CDATA[
-        Select a Scenario, Control Area, or Program to obtain operational information for two-way Demand Response devices.
+        Select a Scenario, Control Area, or Program to obtain operational information for Demand Response devices. Device Group filter is not supported by legacy devices.
         Click on the pie chart to view detailed device information.
         The asset availability details update in every 30 minutes by default.
         The Refresh button will allow force update of Asset Availability details after every 15 minutes.
         The date/time displays the date/time when operational status was last updated.
-        <ul>
-            <li><b>Active (Green):</b> Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
-            <li><b>Opted Out (Blue):</b> Devices have been taken out of service and are no longer responding to events.</li>
-            <li><b>Inactive (Orange):</b> Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.</li>
-            <li><b>Unavailable (Gray):</b> Devices have not provided any run time data in the previous {2} hours.</li>
-        </ul>
+        <br><br>
+        <span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span><br>
+        Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.
+        <br><br>
+        <span class="fwb bg-color-pie-blue txt-color-white">Opted Out (Blue)</span><br>
+        Devices have been taken out of service and are no longer responding to events.
+        <br><br>
+        <span class="fwb bg-color-orange txt-color-white">Inactive (Orange)</span><br>
+        Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.
+        <br><br>
+        <span class="fwb bg-color-grey txt-color-white"> Unavailable (Grey)</span><br>
+        Devices have not provided any run time data in the previous {2} hours.
 ]]></entry>
 
 <entry key="yukon.web.widgets.assetAvailabilityWidget.noDevicesFound">No devices were found.</entry>
@@ -220,6 +232,13 @@
         <br/>
         The infrastructure warnings are updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 5 minutes.
         The date/time next to the Refresh button displays the date/time that the warnings were last updated.
+        <br><br>
+        <span class="fwb bg-color-pie-green txt-color-white">Connected (Green)</span><br>
+        Device communication status is connected.
+        <br><br>
+        <span class="fwb bg-color-orange txt-color-white">Disconnected (Orange)</span><br>
+        Device communication status is disconnected.
+        <br>
 ]]></entry>
 
 <entry key="yukon.web.widgets.notAuthorized">You are not authorized to access this widget.</entry>

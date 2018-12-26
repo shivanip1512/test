@@ -55,5 +55,10 @@
                 <li>PLC CCU communication status – Warning condition produced when ten consecutive messages targeting the specified CCU fail to be delivered. This may indicate a bulk communication problem between the Yukon software and the device.</li>
                 <li>PLC Repeater communication status - Warning condition produced when ten consecutive messages targeting the specified Repeater fail to be delivered. This indicates a communication problem between the Yukon software and the device.</li>
             </ul>
+            <span class="fwb bg-color-pie-green txt-color-white">Connected (Green)</span><br>
+            Device communication status is connected.
+            <br><br>
+            <span class="fwb bg-color-orange txt-color-white">Disconnected (Orange)</span><br>
+            Device communication status is disconnected.<br>
     ]]></entry>
 </properties>

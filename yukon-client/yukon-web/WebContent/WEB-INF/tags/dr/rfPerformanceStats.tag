@@ -10,20 +10,22 @@
 <c:set var="failedWidth" value="${test.percentFailed * 100}"/>
 
 <div class="progress" style="width: 80px;float:left;">
-    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${test.percentSuccess}%"
-         aria-valuemin="0" aria-valuemax="100" style="width: ${successWidth}%"></div>
-    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="${failedWidth}%"
-         aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%"></div>
+    <div class="progress-bar bg-color-pie-green" role="progressbar" aria-valuenow="${test.percentSuccess}%"
+         aria-valuemin="0" aria-valuemax="100" style="width: ${successWidth}%">
+    </div>
+    <div class="progress-bar bg-color-orange" role="progressbar" aria-valuenow="${failedWidth}%"
+         aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%">
+    </div>
 </div>
 <div class="fl" style="margin-left: 5px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.successTooltip"/>">
     <span style="margin-right: 10px;width:48px;display: inline-block;">
         <fmt:formatNumber type="percent" maxFractionDigits="2" value="${test.percentSuccess}" />
     </span>
-    <span class="label label-success">${test.numSuccesses}</span>
+    <span class="label bg-color-pie-green">${test.numSuccesses}</span>
 </div>
 <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.missedTooltip"/>">
-    <span class="label label-warning">${test.numFailures}</span>
+    <span class="label bg-color-orange">${test.numFailures}</span>
 </div>
 <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.unreportedTooltip"/>">
-    <span class="label label-default">${test.numUnknowns}</span>
+    <span class="label bg-color-grey">${test.numUnknowns}</span>
 </div>

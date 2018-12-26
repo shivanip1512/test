@@ -38,7 +38,7 @@
             <div class="column two nogutter filter-container" style="margin-top:40px;">
                 <span class="fr cp"><cti:icon icon="icon-help" data-popup="#filter-results-help"/></span>
                 <cti:msg2 var="helpTitle" key=".detail.helpTitle"/>
-                <div id="filter-results-help" class="dn" data-title="${helpTitle}" style="max-width: 700px;">${helpText}</div>
+                <div id="filter-results-help" class="dn" data-title="${helpTitle}" data-width="600" data-height="400">${helpText}</div>
                 <br/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".deviceGroups">

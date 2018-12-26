@@ -15,7 +15,7 @@
             <tags:boxContainer2 nameKey="filters">
                 <span class="fr cp"><cti:icon icon="icon-help" data-popup="#results-help"/></span>
                 <cti:msg2 var="helpTitle" key=".detail.helpTitle"/>
-                <div id="results-help" class="dn" data-dialog data-title="${helpTitle}"><cti:msg2 key=".detail.helpText"/></div>
+                <div id="results-help" class="dn" data-width="600" data-height="400" data-title="${helpTitle}"><cti:msg2 key=".detail.helpText"/></div>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".deviceTypes">
                         <div class="button-group stacked">
