@@ -19,6 +19,7 @@
         </thead>
         <tbody>
             <c:forEach var="broadcastEventSearchResult" items="${searchResults.resultList}">
+            <input type="hidden" class="js-inventory-id" value="${broadcastEventSearchResult.hardware.identifier.inventoryId}"/>
                 <tr>
                     <td class="vam">
                         <c:if test="${broadcastEventSearchResult.messageStatus == 'SUCCESS'}">
@@ -55,8 +56,15 @@
                             <a href="${url}">${fn:escapeXml(broadcastEventSearchResult.hardware.accountNo)}</a>
                         </c:if>
                     </td>
-                    <cti:formatDate var="dateTime" type="FULL" value="${broadcastEventSearchResult.lastComm}"/>
-                    <cti:msg2 var="lastComm" key=".lastComm" argument="${dateTime}"/>
+                    <c:choose>
+                        <c:when test="${not empty broadcastEventSearchResult.lastComm}">
+                            <cti:formatDate var="dateTime" type="FULL" value="${broadcastEventSearchResult.lastComm}"/>
+                            <cti:msg2 var="lastComm" key=".lastComm" argument="${dateTime}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <cti:msg2 var="lastComm" key=".lastCommNotAvailable"/>
+                        </c:otherwise>
+                    </c:choose>
                     <td title="${lastComm}"><i:inline key="${broadcastEventSearchResult.deviceStatus}"/></td>
                     <td>
                         <c:if test="${broadcastEventSearchResult.hardware.deviceId != 0}">
@@ -73,7 +81,10 @@
                                 </cti:url>
                                 <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" href="${mapUrl}" newTab="true"/>
                                 <cti:checkRolesAndProperties value="INVENTORY">
-                                    <cti:url var="inventoryActionUrl" value="/dr/rf/eventDetail/${broadcastEventSearchResult.hardware.deviceId}/inventoryAction"/>
+                                    <cti:url var="inventoryActionUrl" value="/stars/operator/inventory/inventoryActions">
+                                        <cti:param name="collectionType" value="idList"/>
+                                        <cti:param name="idList.ids" value="${broadcastEventSearchResult.hardware.identifier.inventoryId}"/>
+                                    </cti:url>
                                     <cm:dropdownOption key=".inventoryAction" href="${inventoryActionUrl}"
                                                    icon="icon-cog-go" newTab="true"/>
                                 </cti:checkRolesAndProperties>

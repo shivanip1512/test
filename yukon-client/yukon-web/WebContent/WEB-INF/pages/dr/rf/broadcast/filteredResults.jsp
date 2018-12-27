@@ -25,16 +25,7 @@
 
                     <!-- Inventory Action -->
                     <cti:checkRolesAndProperties value="INVENTORY">
-                        <cti:url var="inventoryActionUrl" value="/dr/rf/broadcast/eventDetail/filteredResultInventoryAction">
-                            <cti:param name="eventId" value="${eventId}"/>
-                            <c:forEach var="subGroup" items="${deviceSubGroups}">
-                                <cti:param name="deviceSubGroups" value="${subGroup}"/>
-                            </c:forEach>
-                            <c:forEach var="status" items="${statuses}">
-                                <cti:param name="statuses" value="${status}"/>
-                            </c:forEach>
-                        </cti:url>
-                        <cm:dropdownOption icon="icon-cog-go" key=".inventoryAction" href="${inventoryActionUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-cog-go" key=".inventoryAction" classes="primary action js-inventory-actions" newTab="true"/>
                     </cti:checkRolesAndProperties>
                     <!-- Map Devices -->
                     <cti:url var="mapUrl" value="/tools/map">

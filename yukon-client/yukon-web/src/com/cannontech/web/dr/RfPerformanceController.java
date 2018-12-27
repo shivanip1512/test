@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -37,14 +36,11 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
@@ -61,7 +57,6 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
-import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -69,9 +64,7 @@ import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
@@ -82,10 +75,7 @@ public class RfPerformanceController {
     private static final Logger log = YukonLogManager.getLogger(RfPerformanceController.class);
 
     @Autowired private JobManager jobManager;
-    @Autowired private InventoryDao inventoryDao;
     @Autowired private PerformanceVerificationDao rfPerformanceDao;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DeviceGroupService deviceGroupService;
@@ -377,40 +367,6 @@ public class RfPerformanceController {
             hasStats = false;
         }
         model.addAttribute("hasStats", hasStats);
-    }
-
-    @GetMapping(value ="rf/eventDetail/{deviceId}/inventoryAction")
-    public String inventoryAction(ModelMap model, YukonUserContext userContext, @PathVariable int deviceId) {
-        InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(deviceId);
-
-        String description = resolver.getMessageSourceAccessor(userContext).getMessage(detailsKey + "description");
-        List<InventoryIdentifier> inventoryList = new ArrayList<>();
-        inventoryList.add(inventory);
-        InventoryCollection temporaryCollection =
-            memoryCollectionProducer.createCollection(inventoryList.iterator(), description);
-        model.addAttribute("inventoryCollection", temporaryCollection);
-        model.addAllAttributes(temporaryCollection.getCollectionParameters());
-
-        return "redirect:/stars/operator/inventory/inventoryActions";
-    }
-
-    @GetMapping(value = "/rf/broadcast/eventDetail/filteredResultInventoryAction")
-    public String filteredResultInventoryAction(ModelMap model, Integer eventId, String[] deviceSubGroups,
-            PerformanceVerificationMessageStatus[] statuses, YukonUserContext userContext) {
-        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
-        List<PaoIdentifier> paos = verificationService.getFilteredPaoForEvent(eventId, statuses, subGroups);
-        List<Integer> deviceIds = Lists.transform(paos, PaoUtils.getYukonPaoToPaoIdFunction());
-        List<InventoryIdentifier> inventory = inventoryDao.getYukonInventoryForDeviceIds(deviceIds);
-
-        String description = resolver.getMessageSourceAccessor(userContext).getMessage(detailsKey + "description");
-
-        InventoryCollection temporaryCollection =
-            memoryCollectionProducer.createCollection(inventory.iterator(), description);
-        model.addAttribute("inventoryCollection", temporaryCollection);
-        model.addAllAttributes(temporaryCollection.getCollectionParameters());
-
-        return "redirect:/stars/operator/inventory/inventoryActions";
-
     }
 
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {

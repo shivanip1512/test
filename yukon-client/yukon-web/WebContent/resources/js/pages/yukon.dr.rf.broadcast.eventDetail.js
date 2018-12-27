@@ -64,6 +64,15 @@ yukon.dr.rf.broadcast.eventDetail = (function () {
                 _filterResults(); 
             });
 
+            $(document).on('click', '.js-inventory-actions', function () {
+                var _inventoryIds = [];
+                $(".js-inventory-id").each(function (index, element) {
+                    _inventoryIds.push($(element).val());
+                });
+                var _inventoryActionUrl = yukon.url('/stars/operator/inventory/inventoryActions?collectionType=idList&idList.ids=' +_inventoryIds);
+                window.open(_inventoryActionUrl, '_blank'); 
+             });
+
             _filterResults();
 
             _initialized = true;
