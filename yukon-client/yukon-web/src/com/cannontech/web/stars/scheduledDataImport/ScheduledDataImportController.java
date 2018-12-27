@@ -36,6 +36,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.JobState;
@@ -54,9 +55,11 @@ import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("scheduledDataImport")
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT)
 public class ScheduledDataImportController {
 
     @Autowired private GlobalSettingDao globalSettingDao;

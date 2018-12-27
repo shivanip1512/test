@@ -8,7 +8,8 @@
 <cti:standardPage module="operator" page="scheduledDataImportDetail.${mode}">
 
     <tags:setFormEditMode mode="${mode}" />
-    
+    <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
+
     <cti:displayForPageEditModes modes="VIEW">
         <c:set var="disableJobEdit" value="${scheduledImportData.jobState eq 'RUNNING' or  scheduledImportData.jobState eq 'DELETED'}"/>
         <c:set var="disableJobCss" value=""/>

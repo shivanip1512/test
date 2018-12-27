@@ -7,6 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="scheduledDataImportList" smartNotificationsEvent="ASSET_IMPORT">
+    <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
     <tags:sectionContainer2 nameKey="tableTitle">
         <div id="page-actions" class="dn">
             <cti:url var="createUrl" value="/stars/scheduledDataImport/create"/>
