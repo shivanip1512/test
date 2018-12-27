@@ -12,7 +12,7 @@
         <br>
         <b>Device Group(s)</b>- Select one to many device groups to filter the results.
         <br>
-        <b>Recent Reading</b>- Select any data availability options to filter the results
+        <b>Recent Reading</b>- Select any data availability options to filter the results.
         <br><br>
         <span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span><br>
         Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.
