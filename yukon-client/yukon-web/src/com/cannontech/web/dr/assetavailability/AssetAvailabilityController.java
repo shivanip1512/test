@@ -160,13 +160,13 @@ public class AssetAvailabilityController {
         String paoListUri = "";
         switch (paoType.getPaoClass()) {
         case LOADMANAGEMENT:
-            if (PaoType.LM_SCENARIO.getDbString().equals(paoType.getPaoTypeName())) {
+            if (PaoType.LM_SCENARIO == paoType) {
                 paObjectType = accessor.getMessage(menuKey + "config.dr.home.scenarios");
                 paoListUri = SiteMapPage.SCENARIOS.getLink();
-            } else if (PaoType.LM_CONTROL_AREA.getDbString().equals(paoType.getPaoTypeName())) {
+            } else if (PaoType.LM_CONTROL_AREA == paoType) {
                 paObjectType = accessor.getMessage(menuKey + "config.dr.home.controlareas");
                 paoListUri = SiteMapPage.CONTROL_AREAS.getLink();
-            } else {
+            } else if (paoType.isLmProgram()) {
                 paObjectType = accessor.getMessage(menuKey + "config.dr.home.programs");
                 paoListUri = SiteMapPage.PROGRAMS.getLink();
             }
