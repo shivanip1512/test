@@ -4,11 +4,13 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:jms="http://www.springframework.org/schema/jms"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
        
     <context:annotation-config/>
     
@@ -630,7 +632,6 @@
     </bean>
 
     <bean id="csrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
-        <qualifier value="csrTrendWidgetCachingWidgetParameterGrabber"/>
         <property name="useCache" value="true"/>
         <property name="uniqueIdentifiers">
             <list>
@@ -641,7 +642,6 @@
     </bean>
 
     <bean id="waterCsrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
-        <qualifier value="waterCsrTrendWidgetCachingWidgetParameterGrabber"/>
         <property name="useCache" value="true"/>
         <property name="uniqueIdentifiers">
             <list>
@@ -652,7 +652,6 @@
     </bean>
 
     <bean id="gasCsrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
-        <qualifier value="gasCsrTrendWidgetCachingWidgetParameterGrabber"/>
         <property name="useCache" value="true"/>
         <property name="uniqueIdentifiers">
             <list>
@@ -661,6 +660,13 @@
         </property>
         <aop:scoped-proxy/>
     </bean>
+    
+    <util:map id="cachingWidgetParameterGrabbers" key-type="java.lang.String" 
+              value-type="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber">
+        <entry key="csrTrendWidgetCachingWidgetParameterGrabber" value-ref="csrTrendWidgetCachingWidgetParameterGrabber"/>
+        <entry key="waterCsrTrendWidgetCachingWidgetParameterGrabber" value-ref="waterCsrTrendWidgetCachingWidgetParameterGrabber"/>
+        <entry key="gasCsrTrendWidgetCachingWidgetParameterGrabber" value-ref="gasCsrTrendWidgetCachingWidgetParameterGrabber"/>
+    </util:map>
     
     <bean id="operationsSetupTagPrototype" class="com.cannontech.web.taglib.OperationsSetupTag"/>
 

@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,12 +48,10 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.user.service.UserPreferenceService;
-import com.cannontech.web.widget.TrendWidgetDisplayParams.TrendWidgetTypeEnum;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -69,21 +67,14 @@ public class CsrTrendWidget extends WidgetControllerBase {
     @Autowired private AttributeService attributeService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private WeatherDataService weatherDataService;
-    @Autowired private List<TrendWidgetDisplayParams> trendWidgetDisplayParams;
+    @Resource(name="cachingWidgetParameterGrabbers")
+    private Map<String, CachingWidgetParameterGrabber> cachingWidgetParameterGrabbers;
     
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber;
     private BuiltInAttribute defaultAttribute = null;
-    private static final Map<TrendWidgetTypeEnum, TrendWidgetDisplayParams> trendWidgetTypeDisplayParams = Maps.newHashMap();
     
     public CsrTrendWidget() {
-    }
-    
-    @PostConstruct
-    public void init() {
-        for(TrendWidgetDisplayParams trendWidgetDisplayParam : trendWidgetDisplayParams) {
-            trendWidgetTypeDisplayParams.put(trendWidgetDisplayParam.getType(), trendWidgetDisplayParam);
-        }
     }
     
     @Autowired
@@ -192,17 +183,17 @@ public class CsrTrendWidget extends WidgetControllerBase {
     }
 
     private void initialize(SimpleDevice device) {
-        TrendWidgetDisplayParams trendWidgetDisplayParams = null;
+        CsrTrendWidgetType trendWidgetDisplayParams = null;
         if (device.getPaoIdentifier().getPaoType().isWaterMeter()) {
-            trendWidgetDisplayParams = trendWidgetTypeDisplayParams.get(TrendWidgetTypeEnum.WATER_CSR_TREND_WIDGET);
+            trendWidgetDisplayParams = CsrTrendWidgetType.WATER_CSR_TREND;
         } else if (device.getPaoIdentifier().getPaoType().isGasMeter()) {
-            trendWidgetDisplayParams = trendWidgetTypeDisplayParams.get(TrendWidgetTypeEnum.GAS_CSR_TREND_WIDGET);
+            trendWidgetDisplayParams = CsrTrendWidgetType.GAS_CSR_TREND;
         } else {
-            trendWidgetDisplayParams = trendWidgetTypeDisplayParams.get(TrendWidgetTypeEnum.CSR_TREND_WIDGET);
+            trendWidgetDisplayParams = CsrTrendWidgetType.CSR_TREND;
         }
         this.supportedAttributeGraphMap = trendWidgetDisplayParams.getSupportedAttributeGraphMap();
         this.defaultAttribute = trendWidgetDisplayParams.getDefaultAttribute();
-        this.cachingWidgetParameterGrabber = trendWidgetDisplayParams.getCachingWidgetParameterGrabber();
+        this.cachingWidgetParameterGrabber = cachingWidgetParameterGrabbers.get(trendWidgetDisplayParams.getCachingWidgetParameterGrabberBeanRef());
     }
 
     private MutableRange<Date> getDateRange(ChartPeriod chartPeriod, YukonUserContext userContext, 
