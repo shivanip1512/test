@@ -86,6 +86,15 @@ yukon.dr.assetavailability.detail = (function () {
                 window.location.href = yukon.url('/dr/assetAvailability/downloadFilteredResults?paobjectId=' + filters.paobjectId + '&deviceSubGroups=' + filters.deviceSubGroups 
                         + '&statuses=' + filters.statuses);
              });
+            
+            $(document).on('click', '.js-inventory-actions', function () {
+                var _inventoryIds = [];
+                $(".js-inventory-id").each(function (index, element) {
+                    _inventoryIds.push($(element).val());
+                });
+                var _inventoryUrl = yukon.url('/stars/operator/inventory/inventoryActions?collectionType=idList&idList.ids=' +_inventoryIds);
+                window.open(_inventoryUrl, '_blank'); 
+             });
 
             _filterResults();
 

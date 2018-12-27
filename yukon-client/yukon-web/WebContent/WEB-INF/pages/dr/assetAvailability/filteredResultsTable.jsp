@@ -20,6 +20,7 @@
     <tbody>
         <c:forEach var="assetAvailabilitySearchResult" items="${searchResults.resultList}">
             <tr>
+                <input type="hidden" class="js-inventory-id" value="${assetAvailabilitySearchResult.inventoryId}"/>
                 <td class="vam">
                     <c:if test="${assetAvailabilitySearchResult.availability == 'ACTIVE'}">
                         <c:set var="circleColor" value="green-background"/>
@@ -61,8 +62,8 @@
                     ${lastRun}
                 </td>
                 <td>
-                    <c:if test="${assetAvailabilitySearchResult.deviceId != 0}">
-                        <cm:dropdown icon="icon-cog">
+                    <cm:dropdown icon="icon-cog">
+                        <c:if test="${assetAvailabilitySearchResult.deviceId != 0}"> 
                             <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
                                 <cti:param name="collectionType" value="idList"/>
                                 <cti:param name="idList.ids" value="${assetAvailabilitySearchResult.deviceId}"/>
@@ -79,19 +80,16 @@
                                     <cti:param name="collectionType" value="idList"/>
                                     <cti:param name="idList.ids" value="${assetAvailabilitySearchResult.deviceId}"/>
                                 </cti:url>
-                                <cm:dropdownOption icon="icon-read" key="yukon.common.readAttribute"
-                                                   href="${readUrl}" newTab="true"/>
-                                <cti:checkRolesAndProperties value="GROUP_COMMANDER">
-                                    <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
-                                        <cti:param name="collectionType" value="idList"/>
-                                        <cti:param name="idList.ids" value="${assetAvailabilitySearchResult.deviceId}"/>
-                                    </cti:url>
-                                    <cm:dropdownOption icon="icon-ping" key="yukon.common.sendCommand"
-                                                       href="${commandUrl}" newTab="true"/>
-                                </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
-                        </cm:dropdown>
-                    </c:if>
+                        </c:if>
+                        <cti:checkRolesAndProperties value="INVENTORY">
+                            <cti:url var="inventoryActionUrl" value="/stars/operator/inventory/inventoryActions">
+                                <cti:param name="collectionType" value="idList"/>
+                                <cti:param name="idList.ids" value="${assetAvailabilitySearchResult.inventoryId}"/>
+                            </cti:url>
+                            <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.assetDetails.inventoryAction" href="${inventoryActionUrl}" newTab="true"/>
+                        </cti:checkRolesAndProperties>
+                    </cm:dropdown>
                 </td>
             </tr>
         </c:forEach>

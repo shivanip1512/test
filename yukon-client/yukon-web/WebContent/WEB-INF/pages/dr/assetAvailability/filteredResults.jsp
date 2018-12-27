@@ -21,32 +21,16 @@
             
                 <!-- Download -->
                 <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="primary action js-download-filter-result"/>
-            
+                <!-- Inventory Action -->
+                <cti:checkRolesAndProperties value="INVENTORY">
+                    <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.assetDetails.inventoryAction" classes="primary action js-inventory-actions" newTab="true"/>
+                </cti:checkRolesAndProperties>
                 <!-- Map Devices -->
                 <cti:url var="mapUrl" value="/tools/map">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
                 <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" href="${mapUrl}" newTab="true"/>
-            
-                <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
-                    <!-- Read Attribute -->
-                    <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
-                        <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
-                            <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
-                        </c:forEach>
-                    </cti:url>
-                    <cm:dropdownOption icon="icon-read" key="yukon.common.readAttribute" href="${readUrl}" newTab="true"/>
-                    
-                    <!-- Send Command -->
-                    <cti:checkRolesAndProperties value="GROUP_COMMANDER">
-                        <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
-                            <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
-                                <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
-                            </c:forEach>
-                        </cti:url>
-                        <cm:dropdownOption icon="icon-ping" key="yukon.common.sendCommand" href="${commandUrl}" newTab="true"/>
-                    </cti:checkRolesAndProperties>
-                </cti:checkRolesAndProperties>
+                
             </cm:dropdown>
         </span>
         
