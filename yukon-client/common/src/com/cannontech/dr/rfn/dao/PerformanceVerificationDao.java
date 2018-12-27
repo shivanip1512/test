@@ -6,13 +6,15 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
-import com.cannontech.dr.rfn.model.UnknownDevices;
+import com.cannontech.dr.rfn.model.BroadcastEventDeviceDetails;
+import com.cannontech.dr.rfn.model.DeviceStatus;
 
 public interface PerformanceVerificationDao {
 
@@ -42,26 +44,33 @@ public interface PerformanceVerificationDao {
     void writeNewVerificationEventForEnrolledDevices(long messageId);
 
     /**
-     * @return list of all devices with status for rf broadcast message with id {@code messageId}.
+     * Return list of PAO participated in a event.
+     * This returns the list based on status passed, paging settings and subgroup passed.  
      */
-    List<PaoIdentifier> getAllDevicesWithStatus(long messageId, PerformanceVerificationMessageStatus status);
+    List<PaoIdentifier> getFilteredPaosWithStatus(long eventId, List<PerformanceVerificationMessageStatus> status, List<DeviceGroup> subGroups);
     
     /**
-     * @return list sorted by PaoName of devices withs tatus for rf broadcast message with id {@code messageId}.
+     * Return list of devices participated in a event.
+     * This returns the list based on status passed, paging settings and subgroup passed.  
      */
-    List<PaoIdentifier> getDevicesWithStatus(long messageId, PerformanceVerificationMessageStatus status, PagingParameters pagingParameters);
+    List<BroadcastEventDeviceDetails> getFilteredDevicesWithStatus(long eventId, List<PerformanceVerificationMessageStatus> status, PagingParameters pagingParameters, List<DeviceGroup> subGroups);
 
     /**
-     * @return list sorted by PaoName of devices which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
+     * Return list of devices participated in a event and have Unknown status.
+     * This returns the list based on status passed, paging settings and subgroup passed.  
      */
-    UnknownDevices getDevicesWithUnknownStatus(long messageId, PagingParameters pagingParameters);
+    List<BroadcastEventDeviceDetails> getFilteredDevicesWithUnknownStatus(long eventId, PagingParameters pagingParameters, List<DeviceGroup> subGroups);
     
     /**
-     * @return list of all devices which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
+     * Return list of PAO participated in a event and have Unknown status.
+     * This returns the list based on status passed, paging settings and subgroup passed.  
      */
-    UnknownDevices getAllDevicesWithUnknownStatus(long messageId);
+    List<PaoIdentifier> getFilteredPaoWithUnknownStatus(long eventId, List<DeviceGroup> subGroups);
     
-    int getNumberOfDevices(long messageId, PerformanceVerificationMessageStatus status);
+    /**
+     * Return total number of devices which participated in a event.
+     */
+    int getNumberOfDevices(long eventId);
     
     /**
 	 *Looks up all the event ids for this device and returns the ones that are valid.
@@ -87,11 +96,6 @@ public interface PerformanceVerificationDao {
 	 * This method marks device as failure
 	 */
 	void setEventResultStatusToFailure(int deviceId, Range<Instant> range);
-	
-	/**
-     * Returns the event time for an event (messageId)
-     */
-    Instant getEventTime(long messageId);
     
     /**
      * Archive event data older than 180 days from table RfnBroadcastEventDeviceStatus to RfnBroadcastEventSummary 
@@ -113,5 +117,26 @@ public interface PerformanceVerificationDao {
      * RfnBroadcastEventDeviceStatus that is older than 180 days
      */
     void archiveRfnBroadcastEvents(Long eventId, DateTime removeBeforeDate);
-
+    
+    PerformanceVerificationEventMessage getEventMessagesByEvent(long eventId); 
+    
+    /**
+     * Returns performance verification statistics for a single event
+     */
+    PerformanceVerificationEventMessageStats getReportForEvent(long eventId);
+    
+    /**
+     * Returns status wise device count for unknown devices
+     */
+    Map<DeviceStatus, Integer> getUnknownCounts(long eventId);
+    
+    /**
+     * Get all devices with the passed status
+     */
+    List<BroadcastEventDeviceDetails> getAllDevicesWithStatus(long eventId, List<PerformanceVerificationMessageStatus> statuses);
+    
+    /**
+     * Get all devices with unknown status
+     */
+    List<BroadcastEventDeviceDetails> getAllDevicesWithUnknownStatus(long eventId);
 }

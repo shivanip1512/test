@@ -37,7 +37,6 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
@@ -55,7 +54,7 @@ import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.model.BroadcastEventDeviceDetails;
-import com.cannontech.dr.rfn.model.UnknownStatus;
+import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -63,7 +62,6 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -96,6 +94,8 @@ public class RfPerformanceController {
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private RfnPerformanceVerificationService verificationService;
+    
     public static final String UNREPORTED = "unreported";
     @Autowired @Qualifier("rfnPerformanceVerification")
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
@@ -225,7 +225,7 @@ public class RfPerformanceController {
 
     @GetMapping("/rf/broadcast/eventDetail/{eventId}")
     public String broadcastEventDetail(ModelMap model, @PathVariable long eventId, YukonUserContext userContext) {
-        PerformanceVerificationEventMessageStats event = mockStats(eventId); // TODO : Need to be replaced with service layer call
+        PerformanceVerificationEventMessageStats event = verificationService.getReportForEvent(eventId); 
         model.addAttribute("event", event);
         model.addAttribute("eventId", eventId);
         List<PerformanceVerificationMessageStatus> statusTypes = getStatusTypes();
@@ -277,9 +277,9 @@ public class RfPerformanceController {
             model.addAttribute(column.name(), col);
         }
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
-        List<BroadcastEventDeviceDetails> broadcastEventDetails = mockBroadCastEventDetails();// TODO : Will be replaced with Service Layer call
+        List<BroadcastEventDeviceDetails> broadcastEventDetails = verificationService.getDevicesWithStatus(eventId, statuses, paging, subGroups);
         sortBroadcastEventDetails(broadcastEventDetails, dir, sortBy, userContext);
-        int totalEventCount = 4;//TODO : Will be replaced with Service call to get the total count;
+        int totalEventCount = verificationService.getTotalCount(eventId);
         SearchResults<BroadcastEventDeviceDetails> searchResults =
             SearchResults.pageBasedForSublist(broadcastEventDetails, paging, totalEventCount);
         model.addAttribute("searchResults", searchResults);
@@ -397,7 +397,8 @@ public class RfPerformanceController {
     @GetMapping(value = "/rf/broadcast/eventDetail/filteredResultInventoryAction")
     public String filteredResultInventoryAction(ModelMap model, Integer eventId, String[] deviceSubGroups,
             PerformanceVerificationMessageStatus[] statuses, YukonUserContext userContext) {
-        List<PaoIdentifier> paos = new ArrayList<>(); //TODO : Will be replaced by Service layer call to get the paos
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        List<PaoIdentifier> paos = verificationService.getFilteredPaoForEvent(eventId, statuses, subGroups);
         List<Integer> deviceIds = Lists.transform(paos, PaoUtils.getYukonPaoToPaoIdFunction());
         List<InventoryIdentifier> inventory = inventoryDao.getYukonInventoryForDeviceIds(deviceIds);
 
@@ -410,62 +411,6 @@ public class RfPerformanceController {
 
         return "redirect:/stars/operator/inventory/inventoryActions";
 
-    }
-
-    // TODO : Need to be removed after Service layer implementation
-    private PerformanceVerificationEventMessageStats mockStats(long eventId) {
-        PerformanceVerificationEventMessageStats stats = new PerformanceVerificationEventMessageStats(eventId, Instant.now(), false, 1, 1, 1);
-        return stats;
-    }
-
-    // TODO : Need to be removed after Service layer implementation
-    private List<BroadcastEventDeviceDetails> mockBroadCastEventDetails() {
-        List<BroadcastEventDeviceDetails> broadcastEventDetails = new ArrayList<>();
-        LiteLmHardware lm1 = new LiteLmHardware();
-        lm1.setAccountId(242);
-        lm1.setAccountNo("1010105");
-        lm1.setDeviceId(12725);
-        lm1.setEnergyCompanyId(93);
-        lm1.setLabel("9876");
-        lm1.setSerialNumber("9876");
-        InventoryIdentifier id1 = new InventoryIdentifier(602, HardwareType.LCR_6200_RFN);
-        lm1.setIdentifier(id1);
-        BroadcastEventDeviceDetails event1 = new BroadcastEventDeviceDetails(PerformanceVerificationMessageStatus.SUCCESS, lm1, new Instant().minus(Duration.standardDays(3)), UnknownStatus.COMMUNICATING);
-        LiteLmHardware lm2 = new LiteLmHardware();
-        lm2.setAccountId(242);
-        lm2.setAccountNo("1010105");
-        lm2.setDeviceId(16626);
-        lm2.setEnergyCompanyId(32);
-        lm2.setLabel("4567");
-        lm2.setSerialNumber("4567");
-        InventoryIdentifier id2 = new InventoryIdentifier(992, HardwareType.LCR_6200_RFN);
-        lm2.setIdentifier(id2);
-        BroadcastEventDeviceDetails event2 = new BroadcastEventDeviceDetails(PerformanceVerificationMessageStatus.FAILURE, lm2, new Instant().minus(Duration.standardDays(2)), UnknownStatus.COMMUNICATING);
-        LiteLmHardware lm3 = new LiteLmHardware();
-        lm3.setAccountId(242);
-        lm3.setAccountNo("1010105");
-        lm3.setDeviceId(16627);
-        lm3.setEnergyCompanyId(32);
-        lm3.setLabel("1596");
-        lm3.setSerialNumber("1596");
-        InventoryIdentifier id3 = new InventoryIdentifier(993, HardwareType.LCR_6200_RFN);
-        lm3.setIdentifier(id3);
-        BroadcastEventDeviceDetails event3 = new BroadcastEventDeviceDetails(PerformanceVerificationMessageStatus.UNKNOWN, lm3, new Instant().minus(Duration.standardDays(6)), UnknownStatus.NOT_COMMUNICATING);
-        LiteLmHardware lm4 = new LiteLmHardware();
-        lm4.setAccountId(242);
-        lm4.setAccountNo("1010105");
-        lm4.setDeviceId(16627);
-        lm4.setEnergyCompanyId(32);
-        lm4.setLabel("1596");
-        lm4.setSerialNumber("1596");
-        InventoryIdentifier id4 = new InventoryIdentifier(993, HardwareType.LCR_6200_RFN);
-        lm4.setIdentifier(id4);
-        BroadcastEventDeviceDetails event4 = new BroadcastEventDeviceDetails(PerformanceVerificationMessageStatus.UNKNOWN, lm4, new Instant().minus(Duration.standardDays(6)), UnknownStatus.NEW_INSTALL_NOT_COMMUNICATING);
-        broadcastEventDetails.add(event1);
-        broadcastEventDetails.add(event2);
-        broadcastEventDetails.add(event3);
-        broadcastEventDetails.add(event4);
-        return broadcastEventDetails;
     }
 
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {

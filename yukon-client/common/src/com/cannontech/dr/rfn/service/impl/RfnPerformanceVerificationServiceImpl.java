@@ -14,15 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.events.loggers.RfnPerformanceVerificationEventLogService;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
-import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.model.MutablePerformanceVerificationEventStats;
 import com.cannontech.dr.model.PerformanceVerificationAverageReports;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
+import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
+import com.cannontech.dr.rfn.model.BroadcastEventDeviceDetails;
+import com.cannontech.dr.rfn.model.DeviceStatus;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
@@ -31,6 +36,7 @@ import com.cannontech.stars.dr.hardware.service.impl.RfCommandStrategy;
 import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVerificationService {
@@ -38,7 +44,6 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     
     @Autowired private RfCommandStrategy rfCommandStrategy;
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
-    @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RfnPerformanceVerificationEventLogService performanceVerificationEventLog;
     
@@ -171,5 +176,81 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
         DateTime removeBeforeDate = new DateTime().plusDays(-180).withTimeAtStartOfDay();
         performanceVerificationDao.archiveRfnBroadcastEventStatus(removeBeforeDate);
         performanceVerificationEventLog.archivedRfnBroadcastEventStatus(removeBeforeDate.minusDays(1));
+    }
+    
+    @Autowired private PerformanceVerificationDao rfPerformanceDao;
+
+    @Override
+    public List<BroadcastEventDeviceDetails> getDevicesWithStatus(long eventId,
+            PerformanceVerificationMessageStatus[] statuses, PagingParameters pagingParameters,
+            List<DeviceGroup> subGroups) {
+        ArrayList<PerformanceVerificationMessageStatus> status = Lists.newArrayList(statuses);
+        boolean containsUnknown = status.contains(PerformanceVerificationMessageStatus.UNKNOWN);
+        
+        if (containsUnknown) {
+            status.remove(PerformanceVerificationMessageStatus.UNKNOWN);
+        }
+        
+        List<BroadcastEventDeviceDetails> deviceDetails = new ArrayList<>();
+        deviceDetails = rfPerformanceDao.getFilteredDevicesWithStatus(eventId, status, pagingParameters, subGroups);
+        
+        if (containsUnknown) {
+            List<BroadcastEventDeviceDetails> unknownDeviceDetails = new ArrayList<>();
+            unknownDeviceDetails = rfPerformanceDao.getFilteredDevicesWithUnknownStatus(eventId, pagingParameters, subGroups);
+            deviceDetails.addAll(unknownDeviceDetails);
+        }
+        return deviceDetails;
+    }
+
+    @Override
+    public List<BroadcastEventDeviceDetails> getAllDevicesWithStatus(long eventId) {
+        List<BroadcastEventDeviceDetails> details = new ArrayList<>();
+        
+        List<PerformanceVerificationMessageStatus> statuses = new ArrayList<>();
+        statuses.add(PerformanceVerificationMessageStatus.SUCCESS);
+        statuses.add(PerformanceVerificationMessageStatus.FAILURE);
+        
+        details = rfPerformanceDao.getAllDevicesWithStatus(eventId, statuses);
+        details.addAll(rfPerformanceDao.getAllDevicesWithUnknownStatus(eventId));
+        
+        
+        return details;
+    }
+
+    @Override
+    public List<PaoIdentifier> getFilteredPaoForEvent(long eventId,
+            PerformanceVerificationMessageStatus[] statuses, List<DeviceGroup> subGroups) {
+
+        ArrayList<PerformanceVerificationMessageStatus> status = Lists.newArrayList(statuses);
+        boolean containsUnknown = status.contains(PerformanceVerificationMessageStatus.UNKNOWN);
+        
+        if (containsUnknown) {
+            status.remove(PerformanceVerificationMessageStatus.UNKNOWN);
+        }
+        
+        List<PaoIdentifier> deviceDetails = new ArrayList<>();
+        deviceDetails = rfPerformanceDao.getFilteredPaosWithStatus(eventId, status, subGroups);
+        
+        if (containsUnknown) {
+            List<PaoIdentifier> unknownDeviceDetails = new ArrayList<>();
+            unknownDeviceDetails = rfPerformanceDao.getFilteredPaoWithUnknownStatus(eventId, subGroups);
+            deviceDetails.addAll(unknownDeviceDetails);
+        }
+        return deviceDetails;
+    }
+    
+    @Override
+    public PerformanceVerificationEventMessageStats getReportForEvent(long eventId) {
+        return rfPerformanceDao.getReportForEvent(eventId);
+    }
+    
+    @Override
+    public Map<DeviceStatus, Integer> getUnknownCounts(long eventId) {
+        return rfPerformanceDao.getUnknownCounts(eventId);
+    }
+
+    @Override
+    public int getTotalCount(long eventId) {
+        return rfPerformanceDao.getNumberOfDevices(eventId);
     }
 }

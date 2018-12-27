@@ -2,11 +2,11 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<!-- RF DR Broadcast Performance Unknown Status -->
-<entry key="yukon.common.rfPerformance.unknownStatus.COMMUNICATING">Communicating </entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.NOT_COMMUNICATING">Not Communicating</entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.NEW_INSTALL_NOT_COMMUNICATING">Recent Enrollment/New Install </entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.NEW_INSTALL_NOT_COMMUNICATING.title">Never Reported - In system less than 4 days</entry>
+<!-- RF DR Broadcast Performance Device Status -->
+<entry key="yukon.common.rfPerformance.deviceStatus.COMMUNICATING">Communicating </entry>
+<entry key="yukon.common.rfPerformance.deviceStatus.NOT_COMMUNICATING">Not Communicating</entry>
+<entry key="yukon.common.rfPerformance.deviceStatus.NEW_INSTALL_NOT_COMMUNICATING">Recent Enrollment/New Install </entry>
+<entry key="yukon.common.rfPerformance.deviceStatus.NEW_INSTALL_NOT_COMMUNICATING.title">Never Reported - In system less than 4 days</entry>
 
 <!-- Metering -->
 <entry key="yukon.web.standardFilterBy.address">Address/Serial</entry>

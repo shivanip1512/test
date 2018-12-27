@@ -2,7 +2,7 @@ package com.cannontech.dr.rfn.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum UnknownStatus implements DisplayableEnum {
+public enum DeviceStatus implements DisplayableEnum {
 
     COMMUNICATING,
     NOT_COMMUNICATING,
@@ -10,6 +10,6 @@ public enum UnknownStatus implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.common.rfPerformance.unknownStatus." + name();
+        return "yukon.common.rfPerformance.deviceStatus." + name();
     }
 }

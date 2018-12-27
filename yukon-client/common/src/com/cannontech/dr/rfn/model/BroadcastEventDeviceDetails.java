@@ -4,17 +4,17 @@ import org.joda.time.Instant;
 
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.stars.model.LiteLmHardware;
-import com.cannontech.dr.rfn.model.UnknownStatus;
+import com.cannontech.dr.rfn.model.DeviceStatus;
 
 public class BroadcastEventDeviceDetails {
 
     private PerformanceVerificationMessageStatus messageStatus;
     private LiteLmHardware hardware;
     private Instant lastComm;
-    private UnknownStatus deviceStatus;
+    private DeviceStatus deviceStatus;
     
     public BroadcastEventDeviceDetails(PerformanceVerificationMessageStatus messageStatus, LiteLmHardware hardware,
-            Instant lastComm, UnknownStatus deviceStatus) {
+            Instant lastComm, DeviceStatus deviceStatus) {
         this.messageStatus = messageStatus;
         this.hardware = hardware;
         this.lastComm = lastComm;
@@ -45,11 +45,11 @@ public class BroadcastEventDeviceDetails {
         this.lastComm = lastComm;
     }
 
-    public UnknownStatus getDeviceStatus() {
+    public DeviceStatus getDeviceStatus() {
         return deviceStatus;
     }
 
-    public void setDeviceStatus(UnknownStatus deviceStatus) {
+    public void setDeviceStatus(DeviceStatus deviceStatus) {
         this.deviceStatus = deviceStatus;
     }
 }
