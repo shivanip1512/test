@@ -94,9 +94,7 @@
 <entry key="yukon.web.widgets.schedules">Scheduled Requests</entry>
 <entry key="yukon.web.widgets.systemActionsMenuWidget">Actions</entry>
 <entry key="yukon.web.widgets.operatorAccountSearchWidget">Account Search</entry>
-<entry key="yukon.web.widgets.electricTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.csrTrendWidget">Trend</entry>
-<entry key="yukon.web.widgets.waterTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.lcrInformationWidget">LCR Information</entry>
 
 <entry key="yukon.web.widgets.validationMonitorsWidget.widgetIdentity">Validation Monitors {0}</entry>
@@ -132,8 +130,6 @@
 <entry key="yukon.web.widgets.schedules.widgetIdentity">Scheduled Requests {0}</entry>
 <entry key="yukon.web.widgets.systemActionsMenuWidget.widgetIdentity">Actions {0}</entry>
 <entry key="yukon.web.widgets.operatorAccountSearchWidget.widgetIdentity">Account Search {0}</entry>
-<entry key="yukon.web.widgets.electricTrendWidget.widgetIdentity">Trend - {0}</entry>
-<entry key="yukon.web.widgets.waterTrendWidget.widgetIdentity">Trend - {0}</entry>
 <entry key="yukon.web.widgets.csrTrendWidget.widgetIdentity">Trend - {0}</entry>
 <!-- The help text for csrTrendWidget is loaded dynamically based of the graph type selected. -->
 <entry key="yukon.web.widgets.csrTrendWidget.helpText"><![CDATA[ ]]></entry>
