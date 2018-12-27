@@ -65,14 +65,15 @@ public enum CsrTrendWidgetType {
     private BuiltInAttribute defaultAttribute;
     private List<BuiltInAttribute> builtInAttributes;
 
-    private CsrTrendWidgetType(String cachingWidgetParameterGrabberBeanRef, BuiltInAttribute defaultAttribute, BuiltInAttribute... builtInAttributes) {
+    private CsrTrendWidgetType(String cachingWidgetParameterGrabberBeanRef, BuiltInAttribute defaultAttribute,
+            BuiltInAttribute... builtInAttributes) {
         this.cachingWidgetParameterGrabberBeanRef = cachingWidgetParameterGrabberBeanRef;
         this.defaultAttribute = defaultAttribute;
         this.builtInAttributes = Arrays.asList(builtInAttributes);
     }
 
     public BuiltInAttribute getDefaultAttribute() {
-        return this.defaultAttribute;
+        return defaultAttribute;
     }
 
     public Map<String, AttributeGraphType> getSupportedAttributeGraphMap() {
@@ -80,11 +81,11 @@ public enum CsrTrendWidgetType {
     }
 
     public String getCachingWidgetParameterGrabberBeanRef() {
-        return this.cachingWidgetParameterGrabberBeanRef;
+        return cachingWidgetParameterGrabberBeanRef;
     }
 
     public List<BuiltInAttribute> getBuiltInAttributes() {
-        return this.builtInAttributes;
+        return builtInAttributes;
     }
 
 }
