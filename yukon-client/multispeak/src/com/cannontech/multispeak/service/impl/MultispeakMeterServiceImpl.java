@@ -1131,9 +1131,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             public void processingExceptionOccurred(String reason) {
                 log.warn("processingExceptionOccurred for cdEvent " + reason);
             }
-        };
-
-        commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
+            };
+        if (CollectionUtils.isNotEmpty(plcCommandRequests)) {
+            commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT,
+                yukonUserContext.getYukonUser());
+        }
     }
 
     /**

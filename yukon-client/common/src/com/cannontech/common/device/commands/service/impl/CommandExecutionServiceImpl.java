@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -363,18 +364,19 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
 
     private CommandRequestExecution createAndSaveExecution(ExecutionParameters params,
             List<? extends CommandRequestBase> commands) {
-        CommandRequestType commandRequestType = commands.get(0).getCommandRequestType();
-        LiteYukonUser user = params.getUser();
         CommandRequestExecution execution = new CommandRequestExecution();
-        execution.setContextId(params.getContextId());
-        execution.setStartTime(new Date());
-        execution.setRequestCount(commands.size());
-        execution.setCommandRequestExecutionType(params.getType());
-        execution.setUserName(user.getUsername());
-        execution.setCommandRequestType(commandRequestType);
-        execution.setCommandRequestExecutionStatus(STARTED);
-
-        commandRequestExecutionDao.saveOrUpdate(execution);
+        if (CollectionUtils.isNotEmpty(commands)) {
+            CommandRequestType commandRequestType = commands.get(0).getCommandRequestType();
+            LiteYukonUser user = params.getUser();
+            execution.setContextId(params.getContextId());
+            execution.setStartTime(new Date());
+            execution.setRequestCount(commands.size());
+            execution.setCommandRequestExecutionType(params.getType());
+            execution.setUserName(user.getUsername());
+            execution.setCommandRequestType(commandRequestType);
+            execution.setCommandRequestExecutionStatus(STARTED);
+            commandRequestExecutionDao.saveOrUpdate(execution);
+        }
         return execution;
     }
 
