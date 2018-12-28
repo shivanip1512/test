@@ -8,7 +8,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
@@ -42,15 +41,9 @@ public interface PerformanceVerificationDao {
      * @param messageId the unique message id of the event
      */
     void writeNewVerificationEventForEnrolledDevices(long messageId);
-
-    /**
-     * Return list of PAO participated in a event.
-     * This returns the list based on status passed, paging settings and subgroup passed.  
-     */
-    List<PaoIdentifier> getFilteredPaosWithStatus(long eventId, List<PerformanceVerificationMessageStatus> status, List<DeviceGroup> subGroups);
     
     /**
-     * Return list of devices participated in a event.
+     * Return list of devices participated in a event and have "Success" and "Failure". 
      * This returns the list based on status passed, paging settings and subgroup passed.  
      */
     List<BroadcastEventDeviceDetails> getFilteredDevicesWithStatus(long eventId, List<PerformanceVerificationMessageStatus> status, PagingParameters pagingParameters, List<DeviceGroup> subGroups);
@@ -62,16 +55,16 @@ public interface PerformanceVerificationDao {
     List<BroadcastEventDeviceDetails> getFilteredDevicesWithUnknownStatus(long eventId, PagingParameters pagingParameters, List<DeviceGroup> subGroups);
     
     /**
-     * Return list of PAO participated in a event and have Unknown status.
-     * This returns the list based on status passed, paging settings and subgroup passed.  
+     * Return count of filtered devices for status "Success" and "Failure".
      */
-    List<PaoIdentifier> getFilteredPaoWithUnknownStatus(long eventId, List<DeviceGroup> subGroups);
-    
+    int getFilteredCountForStatus(long eventId, List<PerformanceVerificationMessageStatus> status,
+            List<DeviceGroup> subGroups);
+
     /**
-     * Return total number of devices which participated in a event.
+     * Return count of devices for status "Unknown".
      */
-    int getNumberOfDevices(long eventId);
-    
+    int getFilteredCountForUnknownStatus(long eventId, List<DeviceGroup> subGroups);
+
     /**
 	 *Looks up all the event ids for this device and returns the ones that are valid.
 	 */

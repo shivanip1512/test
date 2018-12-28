@@ -269,7 +269,7 @@ public class RfPerformanceController {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         List<BroadcastEventDeviceDetails> broadcastEventDetails = verificationService.getDevicesWithStatus(eventId, statuses, paging, subGroups);
         sortBroadcastEventDetails(broadcastEventDetails, dir, sortBy, userContext);
-        int totalEventCount = verificationService.getTotalCount(eventId);
+        int totalEventCount = verificationService.getTotalCount(eventId, statuses, subGroups);
         SearchResults<BroadcastEventDeviceDetails> searchResults =
             SearchResults.pageBasedForSublist(broadcastEventDetails, paging, totalEventCount);
         model.addAttribute("searchResults", searchResults);

@@ -25,7 +25,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -120,20 +119,15 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
                 stats.put(rs.getEnum("Result", PerformanceVerificationMessageStatus.class), rs.getInt("Count"));
             }
         });
-        
-        
-        
         PerformanceVerificationEventMessage messageSent = getEventMessagesByEvent(eventId);
-        PerformanceVerificationEventMessageStats report = null;
-
-        report = new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
+        return new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
                                                          messageSent.getTimeMessageSent(),
                                                          Boolean.FALSE,
                                                          stats.containsKey(SUCCESS) ? stats.get(SUCCESS): 0,
                                                          stats.containsKey(FAILURE) ? stats.get(FAILURE): 0,
                                                          stats.containsKey(UNKNOWN) ? stats.get(UNKNOWN): 0
                                                          );
-        return report;
+        
     }
 
     @Override
@@ -224,8 +218,10 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append(",ROW_NUMBER() OVER (ORDER BY ib.DeviceId) AS RowNumber");
         sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
         sql.append("JOIN InventoryBase ib ON ib.DeviceID = rbed.DeviceId");
-        sql.append("JOIN DynamicLcrCommunications lcr ON ib.DeviceID = lcr.DeviceId");
-        addDeviceTables(sql);
+        sql.append("LEFT JOIN DynamicLcrCommunications lcr ON ib.DeviceID = lcr.DeviceId");
+        sql.append("JOIN LmHardwareBase lmhb ON lmhb.InventoryId = ib.InventoryId");
+        sql.append("JOIN EcToInventoryMapping ecim ON ecim.InventoryId = ib.InventoryId");
+        sql.append("JOIN CustomerAccount ca ON ca.AccountId = ib.AccountId");
         sql.append("WHERE rbed.RfnBroadcastEventId").eq(eventId);
         if (!CollectionUtils.isEmpty(subGroups)) {
             sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(subGroups, "ib.DeviceId"));
@@ -254,54 +250,25 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 
         return jdbcTemplate.query(sql, new DeviceDetailsRowMapper());
     }
-    
-    @Override
-    public List<PaoIdentifier> getFilteredPaosWithStatus(long eventId,
-            List<PerformanceVerificationMessageStatus> status, List<DeviceGroup> subGroups) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        addSelectPaos(sql, eventId, status, subGroups);
-        return jdbcTemplate.query(sql, new YukonRowMapper<PaoIdentifier>() {
-            @Override
-            public PaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
-                return rs.getPaoIdentifier("DeviceId", "Type");
-            }
-        });
-    }
-    
-    // Query to select PAO details
-    private void addSelectPaos(SqlStatementBuilder sql, long eventId,
-            List<PerformanceVerificationMessageStatus> messageStatus, List<DeviceGroup> subGroups) {
-        sql.append("SELECT rbed.DeviceId, ypo.Type, ypo.PaoName");
-        sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
-        sql.append("JOIN YukonPAObject ypo on ypo.PAObjectId = rbed.DeviceId");
-        sql.append("JOIN InventoryBase ib ON ib.DeviceID = rbed.DeviceId");
-        sql.append("WHERE rbed.RfnBroadcastEventId").eq(eventId);
-        if (!CollectionUtils.isEmpty(subGroups)) {
-            sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(subGroups, "ib.DeviceId"));
-        }
-        sql.append("AND Result").in_k(messageStatus);
-    }
-    
-    @Override
-    public List<PaoIdentifier> getFilteredPaoWithUnknownStatus(long messageId, List<DeviceGroup> subGroups) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        addSelectForUnknownStatus(sql, messageId, false, subGroups);
-        return jdbcTemplate.query(sql, new YukonRowMapper<PaoIdentifier>() {
-            @Override
-            public PaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
-                return rs.getPaoIdentifier("DeviceId", "Type");
-            }
-        });
-    }
 
     @Override
-    public int getNumberOfDevices(long eventId) {
+    public int getFilteredCountForStatus(long eventId, List<PerformanceVerificationMessageStatus> status, List<DeviceGroup> subGroups) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append("FROM RfnBroadcastEventDeviceStatus");
-        sql.append("WHERE RfnBroadcastEventId").eq(eventId);
+        sql.append("SELECT COUNT(*) FROM (");
+        addSelectDevices(sql, status, eventId, subGroups);
+        sql.append(") tbl");
         return jdbcTemplate.queryForInt(sql);
     }
+    
+    @Override
+    public int getFilteredCountForUnknownStatus(long eventId, List<DeviceGroup> subGroups) {
+        SqlStatementBuilder sqlUnknown = new SqlStatementBuilder();
+        sqlUnknown.append("SELECT COUNT(*) FROM (");
+        addSelectForUnknownStatus(sqlUnknown, eventId, false, subGroups);
+        sqlUnknown.append(") tbl");
+        return jdbcTemplate.queryForInt(sqlUnknown);
+    }
+   
 
     @Override
     public Map<DeviceStatus, Integer> getUnknownCounts(long eventId) {
@@ -321,18 +288,16 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         return unknownStatusCount;
     }
 
-    // Generates query to select devices(Hardware) or Pao for unknown status 
+    // Generates query to select devices(Hardware) for unknown status 
     private void addSelectForUnknownStatus(SqlStatementBuilder sql,
                                                    long messageId, boolean isPaged, List<DeviceGroup> subGroups) {
           Instant now = new Instant();
           Instant communicatingWindowEnd = getCommunicationWindowEnd(now);
           Instant newDeviceWindowEnd = now.minus(Duration.standardDays(4));
           
+          sql.append("SELECT Result, ib.DeviceId, ib.InventoryId, LMHardwareTypeId, ib.AccountId, AccountNumber, LastCommunication");
           if (isPaged) {
-              addDeviceSelectColumns(sql);
               sql.append(",ROW_NUMBER() OVER (ORDER BY IB.DeviceId) AS RowNumber");
-          } else {
-              addPaoSelectColumns(sql);
           }
           sql.append(",CASE");
           sql.append("    WHEN LastCommunication IS NOT NULL THEN");
@@ -353,11 +318,9 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
           sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
           sql.append("JOIN InventoryBase ib ON ib.DeviceID = rbed.DeviceId");
           sql.append("JOIN LmHardwareControlGroup lhcg on lhcg.InventoryID = ib.InventoryID");
-          if (isPaged) {
-            addDeviceTables(sql);
-          } else {
-            addPaoTables(sql);
-          }
+          sql.append("JOIN LmHardwareBase lmhb ON lmhb.InventoryId = ib.InventoryId");
+          sql.append("JOIN EcToInventoryMapping ecim ON ecim.InventoryId = ib.InventoryId");
+          sql.append("JOIN CustomerAccount ca ON ca.AccountId = ib.AccountId");
           sql.append("LEFT JOIN DynamicLcrCommunications dlc ON dlc.deviceId = rbed.DeviceId");
           sql.append("WHERE rbed.RfnBroadcastEventId").eq(messageId);
           sql.append("AND GroupEnrollStart = ");
@@ -369,25 +332,6 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
               sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(subGroups, "ib.DeviceId"));
           }
       }
-
-      private void addDeviceSelectColumns(SqlStatementBuilder sql) {
-          sql.append("SELECT Result, ib.DeviceId, ib.InventoryId, LMHardwareTypeId, ib.AccountId, AccountNumber, LastCommunication");
-      }
-      
-      private void addPaoSelectColumns(SqlStatementBuilder sql) {
-          sql.append("SELECT rbed.DeviceId, ypo.Type, ypo.PaoName");
-      }
-
-      private void addDeviceTables(SqlStatementBuilder sql) {
-          sql.append("JOIN LmHardwareBase lmhb ON lmhb.InventoryId = ib.InventoryId");
-          sql.append("JOIN EcToInventoryMapping ecim ON ecim.InventoryId = ib.InventoryId");
-          sql.append("JOIN CustomerAccount ca ON ca.AccountId = ib.AccountId");
-      }
-      
-      private void addPaoTables(SqlStatementBuilder sql) {
-          sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = rbed.DeviceId");
-      }
-    
     
     @Override
     public PerformanceVerificationEventMessage createVerificationEvent() {

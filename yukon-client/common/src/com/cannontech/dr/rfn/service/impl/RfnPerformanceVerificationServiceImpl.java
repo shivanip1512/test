@@ -17,7 +17,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.events.loggers.RfnPerformanceVerificationEventLogService;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.MutablePerformanceVerificationEventStats;
@@ -186,18 +185,15 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
             List<DeviceGroup> subGroups) {
         ArrayList<PerformanceVerificationMessageStatus> status = Lists.newArrayList(statuses);
         boolean containsUnknown = status.contains(PerformanceVerificationMessageStatus.UNKNOWN);
-        
+
+        List<BroadcastEventDeviceDetails> deviceDetails = new ArrayList<>();
         if (containsUnknown) {
             status.remove(PerformanceVerificationMessageStatus.UNKNOWN);
+            deviceDetails = rfPerformanceDao.getFilteredDevicesWithUnknownStatus(eventId, pagingParameters, subGroups);
         }
-        
-        List<BroadcastEventDeviceDetails> deviceDetails = new ArrayList<>();
-        deviceDetails = rfPerformanceDao.getFilteredDevicesWithStatus(eventId, status, pagingParameters, subGroups);
-        
-        if (containsUnknown) {
-            List<BroadcastEventDeviceDetails> unknownDeviceDetails = new ArrayList<>();
-            unknownDeviceDetails = rfPerformanceDao.getFilteredDevicesWithUnknownStatus(eventId, pagingParameters, subGroups);
-            deviceDetails.addAll(unknownDeviceDetails);
+
+        if (!status.isEmpty()) {
+            deviceDetails.addAll(rfPerformanceDao.getFilteredDevicesWithStatus(eventId, status, pagingParameters, subGroups));
         }
         return deviceDetails;
     }
@@ -216,28 +212,6 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
         
         return details;
     }
-
-    @Override
-    public List<PaoIdentifier> getFilteredPaoForEvent(long eventId,
-            PerformanceVerificationMessageStatus[] statuses, List<DeviceGroup> subGroups) {
-
-        ArrayList<PerformanceVerificationMessageStatus> status = Lists.newArrayList(statuses);
-        boolean containsUnknown = status.contains(PerformanceVerificationMessageStatus.UNKNOWN);
-        
-        if (containsUnknown) {
-            status.remove(PerformanceVerificationMessageStatus.UNKNOWN);
-        }
-        
-        List<PaoIdentifier> deviceDetails = new ArrayList<>();
-        deviceDetails = rfPerformanceDao.getFilteredPaosWithStatus(eventId, status, subGroups);
-        
-        if (containsUnknown) {
-            List<PaoIdentifier> unknownDeviceDetails = new ArrayList<>();
-            unknownDeviceDetails = rfPerformanceDao.getFilteredPaoWithUnknownStatus(eventId, subGroups);
-            deviceDetails.addAll(unknownDeviceDetails);
-        }
-        return deviceDetails;
-    }
     
     @Override
     public PerformanceVerificationEventMessageStats getReportForEvent(long eventId) {
@@ -250,7 +224,19 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     }
 
     @Override
-    public int getTotalCount(long eventId) {
-        return rfPerformanceDao.getNumberOfDevices(eventId);
+    public int getTotalCount(long eventId, PerformanceVerificationMessageStatus[] statuses, List<DeviceGroup> subGroups) {
+        ArrayList<PerformanceVerificationMessageStatus> status = Lists.newArrayList(statuses);
+        int statusCount = 0;
+        int unknownCount = 0;
+        
+        boolean containsUnknown = status.contains(PerformanceVerificationMessageStatus.UNKNOWN);
+        if (containsUnknown) {
+            status.remove(PerformanceVerificationMessageStatus.UNKNOWN);
+            unknownCount = rfPerformanceDao.getFilteredCountForUnknownStatus(eventId, subGroups);
+        }
+        if (!status.isEmpty()) {
+            statusCount = rfPerformanceDao.getFilteredCountForStatus(eventId, status, subGroups);
+        }
+        return statusCount + unknownCount;
     }
 }

@@ -7,7 +7,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationAverageReports;
@@ -50,16 +49,9 @@ public interface RfnPerformanceVerificationService {
     List<BroadcastEventDeviceDetails> getAllDevicesWithStatus(long eventId);
 
     /**
-     * Return list of PAO participated in a event.
-     * This returns the list based on status passed, paging settings and subgroup passed.
-     */
-    List<PaoIdentifier> getFilteredPaoForEvent(long eventId, PerformanceVerificationMessageStatus[] statuses,
-            List<DeviceGroup> subGroups);
-
-    /**
      * Return count of devices participated in a event
      */
-    int getTotalCount(long eventId);
+    int getTotalCount(long eventId, PerformanceVerificationMessageStatus[] statuses, List<DeviceGroup> subGroups);
 
     /**
      * Return performance verification statistics for a single event
