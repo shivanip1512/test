@@ -64,14 +64,15 @@ yukon.dr.rf.broadcast.eventDetail = (function () {
                 _filterResults(); 
             });
 
-            $(document).on('click', '.js-inventory-actions', function () {
-                var _inventoryIds = [];
-                $(".js-inventory-id").each(function (index, element) {
-                    _inventoryIds.push($(element).val());
-                });
-                var _inventoryActionUrl = yukon.url('/stars/operator/inventory/inventoryActions?collectionType=idList&idList.ids=' +_inventoryIds);
-                window.open(_inventoryActionUrl, '_blank'); 
-             });
+            $(document).on('click', '.js-collection-action', function () {
+                var filters = _getFilters();
+                var actionUrl = $(this).data('url');
+                var url = yukon.url('/dr/rf/broadcast/eventDetail/collectionAction?actionUrl='
+                                + actionUrl + '&eventId=' + filters.eventId
+                                + '&deviceSubGroups=' + filters.deviceSubGroups
+                                + '&statuses=' + filters.statuses);
+                window.open(url, '_blank');
+            });
 
             _filterResults();
 

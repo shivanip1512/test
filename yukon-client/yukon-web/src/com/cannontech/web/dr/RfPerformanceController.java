@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -36,6 +35,7 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
@@ -64,6 +64,7 @@ import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.google.common.collect.Iterables;
 
 @Controller
@@ -76,13 +77,13 @@ public class RfPerformanceController {
 
     @Autowired private JobManager jobManager;
     @Autowired private PerformanceVerificationDao rfPerformanceDao;
+    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private RfnPerformanceVerificationService verificationService;
     
@@ -267,7 +268,8 @@ public class RfPerformanceController {
             model.addAttribute(column.name(), col);
         }
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
-        List<BroadcastEventDeviceDetails> broadcastEventDetails = verificationService.getDevicesWithStatus(eventId, statuses, paging, subGroups);
+        List<BroadcastEventDeviceDetails> broadcastEventDetails =
+            verificationService.getDevicesWithStatus(eventId, statuses, paging, subGroups);
         sortBroadcastEventDetails(broadcastEventDetails, dir, sortBy, userContext);
         int totalEventCount = verificationService.getTotalCount(eventId, statuses, subGroups);
         SearchResults<BroadcastEventDeviceDetails> searchResults =
@@ -279,16 +281,51 @@ public class RfPerformanceController {
             rfBroadcastEventDetail -> rfBroadcastEventDetail.getHardware().getDeviceId() != 0).forEach(
                 rfBroadcastEventDetail -> devices.add(
                     deviceDao.getYukonDevice(rfBroadcastEventDetail.getHardware().getDeviceId())));
-        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
-        model.addAttribute("deviceCollection", deviceCollection);
 
         /* PAO Notes */
         List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(
             devices.stream().map(device -> device.getPaoIdentifier().getPaoId()).collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
 
+    }
+
+    @GetMapping(value = "/rf/broadcast/eventDetail/filteredResultInventoryAction")
+    public String filteredResultInventoryAction(ModelMap model, long eventId, String[] deviceSubGroups,
+            PerformanceVerificationMessageStatus[] statuses, YukonUserContext userContext) {
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        List<BroadcastEventDeviceDetails> broadcastEventDetails =
+            verificationService.getDevicesWithStatus(eventId, statuses, PagingParameters.EVERYTHING, subGroups);
+
+        String description =
+            messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(detailsKey + "description");
+        List<InventoryIdentifier> inventoryIdentifiers = new ArrayList<>();
+        broadcastEventDetails.stream().forEach(broadcastEventDetail -> inventoryIdentifiers.add(
+            broadcastEventDetail.getHardware().getInventoryIdentifier()));
+
+        InventoryCollection temporaryCollection =
+            memoryCollectionProducer.createCollection(inventoryIdentifiers.iterator(), description);
+        model.addAttribute("inventoryCollection", temporaryCollection);
+        model.addAllAttributes(temporaryCollection.getCollectionParameters());
+
+        return "redirect:/stars/operator/inventory/inventoryActions";
+
+    }
+
+    @GetMapping(value = "/rf/broadcast/eventDetail/collectionAction")
+    public String collectionAction(String actionUrl, ModelMap model, long eventId, String[] deviceSubGroups,
+            PerformanceVerificationMessageStatus[] statuses, YukonUserContext userContext) {
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        List<BroadcastEventDeviceDetails> broadcastEventDetails =
+            verificationService.getDevicesWithStatus(eventId, statuses, PagingParameters.EVERYTHING, subGroups);
+        List<SimpleDevice> devices = new ArrayList<>();
+        broadcastEventDetails.stream().filter(
+            rfBroadcastEventDetail -> rfBroadcastEventDetail.getHardware().getDeviceId() != 0).forEach(
+                rfBroadcastEventDetail -> devices.add(
+                    deviceDao.getYukonDevice(rfBroadcastEventDetail.getHardware().getDeviceId())));
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+
+        return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
 
     private void sortBroadcastEventDetails(List<BroadcastEventDeviceDetails> broadcastEventDetails, Direction dir,

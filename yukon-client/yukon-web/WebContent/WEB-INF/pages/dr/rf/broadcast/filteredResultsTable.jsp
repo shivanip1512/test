@@ -19,7 +19,9 @@
         </thead>
         <tbody>
             <c:forEach var="broadcastEventSearchResult" items="${searchResults.resultList}">
-            <input type="hidden" class="js-inventory-id" value="${broadcastEventSearchResult.hardware.identifier.inventoryId}"/>
+                <span>
+                    <input type="hidden" class="js-inventory-id" value="${broadcastEventSearchResult.hardware.identifier.inventoryId}"/>
+                </span>
                 <tr>
                     <td class="vam">
                         <c:if test="${broadcastEventSearchResult.messageStatus == 'SUCCESS'}">
