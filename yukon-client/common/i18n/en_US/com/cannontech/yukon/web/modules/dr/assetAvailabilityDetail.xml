@@ -39,4 +39,5 @@
     <entry key="yukon.web.modules.dr.assetAvailability.detail.LAST_COMM">Last Communication</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.LAST_RUN">Last Run</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.AVAILABILITY">Availability</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.description">Asset Availability Details</entry>
 </properties>

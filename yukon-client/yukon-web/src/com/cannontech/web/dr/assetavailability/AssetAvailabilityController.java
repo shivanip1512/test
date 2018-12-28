@@ -19,10 +19,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -31,6 +33,7 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
@@ -59,6 +62,7 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
 import com.cannontech.web.common.widgets.service.AssetAvailabilityWidgetService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.support.SiteMapPage;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -86,6 +90,7 @@ public class AssetAvailabilityController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
+    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
 
     @GetMapping(value = "updateChart")
     public @ResponseBody Map<String, Object> updateChart(Integer controlAreaOrProgramOrScenarioId, YukonUserContext userContext) throws Exception {
@@ -283,6 +288,28 @@ public class AssetAvailabilityController {
             getDownloadDataRows(liteYukonPAObject, userContext, retrieveSubGroups(deviceSubGroups), statuses);
 
         writeToCSV(headerRow, dataRows, liteYukonPAObject.getPaoName(), response, userContext);
+    }
+
+    @RequestMapping(value = "inventoryAction", method = RequestMethod.GET)
+    public String inventoryAction(ModelMap model, Integer paobjectId, String[] deviceSubGroups,
+            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
+        PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
+            subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
+            SortingParameters.of(AssetAvailabilitySortBy.SERIAL_NUM.toString(), Direction.asc), userContext);
+
+        List<InventoryIdentifier> inventoryIdentifieres = searchResults.getResultList().stream().map(
+            assetAvailabilityDetails -> new InventoryIdentifier(assetAvailabilityDetails.getInventoryId(),
+                assetAvailabilityDetails.getType())).collect(Collectors.toList());
+        String description =
+            messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(baseKey + "description");
+        InventoryCollection temporaryCollection =
+            memoryCollectionProducer.createCollection(inventoryIdentifieres.iterator(), description);
+        model.addAttribute("inventoryCollection", temporaryCollection);
+        model.addAllAttributes(temporaryCollection.getCollectionParameters());
+
+        return "redirect:/stars/operator/inventory/inventoryActions";
     }
 
     private String[] getDownloadHeaderRow(YukonUserContext userContext) {

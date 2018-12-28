@@ -88,13 +88,10 @@ yukon.dr.assetavailability.detail = (function () {
              });
             
             $(document).on('click', '.js-inventory-actions', function () {
-                var _inventoryIds = [];
-                $(".js-inventory-id").each(function (index, element) {
-                    _inventoryIds.push($(element).val());
-                });
-                var _inventoryUrl = yukon.url('/stars/operator/inventory/inventoryActions?collectionType=idList&idList.ids=' +_inventoryIds);
-                window.open(_inventoryUrl, '_blank'); 
-             });
+                var form = $('#js-asset-availability-filter-form'),
+                data = form.serialize();
+                window.open(yukon.url('/dr/assetAvailability/inventoryAction?' + data), '_blank');
+            });
 
             _filterResults();
 
