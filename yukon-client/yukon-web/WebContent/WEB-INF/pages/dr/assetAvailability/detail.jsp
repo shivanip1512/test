@@ -10,7 +10,7 @@
     <cti:breadCrumbs>
         <cti:crumbLink url="/dashboard" title="${home}" />
         <cti:crumbLink url="/dr/home" title="${dr}" />
-        <cti:crumbLink url="${paoListUri}" title="${paObjectType}" />
+        <cti:crumbLink url="${paoListUri}" title="${paoTypeName}" />
         <cti:crumbLink url="${paoDetailsUri}" title="${paoName}" />
         <cti:crumbLink title="${assetAvailability}" />
     </cti:breadCrumbs>

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,33 +153,33 @@ public class AssetAvailabilityController {
         return "dr/assetAvailability/detail.jsp";
     }
 
-    private void setPaoTypeAndBreadcumbUri(Integer paobjectId, ModelMap model, MessageSourceAccessor accessor) {
-        YukonPao yukonPao = cache.getAllPaosMap().get(paobjectId);
+    private void setPaoTypeAndBreadcumbUri(Integer paoId, ModelMap model, MessageSourceAccessor accessor) {
+        YukonPao yukonPao = cache.getAllPaosMap().get(paoId);
         PaoType paoType = yukonPao.getPaoIdentifier().getPaoType();
         String paoDetailsUri = paoDetailUrlHelper.getUrlForPaoDetailPage(yukonPao);
-        String paObjectType = "";
-        String paoListUri = "";
+        String paoTypeName = StringUtils.EMPTY;
+        String paoListUri = StringUtils.EMPTY;
         switch (paoType.getPaoClass()) {
         case LOADMANAGEMENT:
             if (PaoType.LM_SCENARIO == paoType) {
-                paObjectType = accessor.getMessage(menuKey + "config.dr.home.scenarios");
+                paoTypeName = accessor.getMessage(menuKey + "config.dr.home.scenarios");
                 paoListUri = SiteMapPage.SCENARIOS.getLink();
             } else if (PaoType.LM_CONTROL_AREA == paoType) {
-                paObjectType = accessor.getMessage(menuKey + "config.dr.home.controlareas");
+                paoTypeName = accessor.getMessage(menuKey + "config.dr.home.controlareas");
                 paoListUri = SiteMapPage.CONTROL_AREAS.getLink();
             } else if (paoType.isLmProgram()) {
-                paObjectType = accessor.getMessage(menuKey + "config.dr.home.programs");
+                paoTypeName = accessor.getMessage(menuKey + "config.dr.home.programs");
                 paoListUri = SiteMapPage.PROGRAMS.getLink();
             }
             break;
         case GROUP:
-            paObjectType = accessor.getMessage(menuKey + "config.dr.home.loadgroups");
+            paoTypeName = accessor.getMessage(menuKey + "config.dr.home.loadgroups");
             paoListUri = SiteMapPage.LOAD_GROUPS.getLink();
             break;
         default:
             break;
         }
-        model.addAttribute("paObjectType", paObjectType);
+        model.addAttribute("paoTypeName", paoTypeName);
         model.addAttribute("paoListUri", paoListUri);
         model.addAttribute("paoDetailsUri", paoDetailsUri);
     }
