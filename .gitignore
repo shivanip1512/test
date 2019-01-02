@@ -50,6 +50,8 @@ yukon-client/sensus-jms/build
 yukon-client/services/activemq-data
 yukon-client/services/bin
 yukon-client/services/build
+yukon-client/services/test/build
+yukon-client/services/test/testResults
 yukon-client/simulators/activemq-data
 yukon-client/simulators/bin
 yukon-client/simulators/build
@@ -70,6 +72,7 @@ yukon-client/yukon-message-broker/activemq-data
 yukon-client/yukon-message-broker/bin
 yukon-client/yukon-message-broker/build
 yukon-client/yukon-watchdog-service/bin
+yukon-client/yukon-watchdog-service/build
 yukon-client/yukon-web/.tomcatplugin
 yukon-client/yukon-web/WebContent/WEB-INF/classes
 yukon-client/yukon-web/WebContent/capcontrol/_notes
