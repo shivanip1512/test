@@ -378,6 +378,27 @@ ALTER TABLE ScheduledDataImportHistory DROP COLUMN TotalCount;
 INSERT INTO DBUpdates VALUES ('YUK-19162-1', '7.2.0', SYSDATE);
 /* @end YUK-19162-1 */
 
+/* @start YUK-19285 */
+CREATE TABLE DeviceMacAddress  (
+    DeviceId             NUMBER                          NOT NULL,
+    MacAddress           VARCHAR2(255)                   NOT NULL,
+    CONSTRAINT PK_DeviceMacAddress 
+        PRIMARY KEY (DeviceId)
+);
+
+ALTER TABLE DeviceMacAddress
+ADD CONSTRAINT AK_DeviceMacAddress_MacAddress 
+    UNIQUE (MacAddress);
+
+ALTER TABLE DeviceMacAddress
+ADD CONSTRAINT FK_DeviceMacAddress_Device 
+    FOREIGN KEY (DeviceId)
+    REFERENCES DEVICE (DEVICEID)
+    ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-19285', '7.2.0', SYSDATE);
+/* @end YUK-19285 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

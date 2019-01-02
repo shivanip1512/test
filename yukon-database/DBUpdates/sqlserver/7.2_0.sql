@@ -380,6 +380,28 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19162-1', '7.2.0', GETDATE());
 /* @end YUK-19162-1 */
 
+/* @start YUK-19285 */
+CREATE TABLE DeviceMacAddress (
+    DeviceId             NUMERIC              NOT NULL,
+    MacAddress           VARCHAR(255)         NOT NULL,
+    CONSTRAINT PK_DeviceMacAddress PRIMARY KEY (DeviceId)
+);
+GO
+
+ALTER TABLE DeviceMacAddress
+ADD CONSTRAINT AK_DeviceMacAddress_MacAddress 
+    UNIQUE (MacAddress);
+
+ALTER TABLE DeviceMacAddress
+ADD CONSTRAINT FK_DeviceMacAddress_Device 
+    FOREIGN KEY (DeviceId)
+    REFERENCES DEVICE (DEVICEID)
+    ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-19285', '7.2.0', GETDATE());
+/* @end YUK-19285 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

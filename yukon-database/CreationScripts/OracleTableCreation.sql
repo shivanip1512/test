@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/20/2018 12:14:21 AM                       */
+/* Created on:     1/2/2019 3:05:21 PM                          */
 /*==============================================================*/
 
 
@@ -3206,6 +3206,18 @@ create table DeviceMCT400Series  (
    TOUScheduleID        NUMBER                          not null,
    constraint PK_DEV400S primary key (DeviceID)
 );
+
+/*==============================================================*/
+/* Table: DeviceMacAddress                                      */
+/*==============================================================*/
+create table DeviceMacAddress  (
+   DeviceId             NUMBER                          not null,
+   MacAddress           VARCHAR2(255)                   not null,
+   constraint PK_DeviceMacAddress primary key (DeviceId)
+);
+
+alter table DeviceMacAddress
+   add constraint AK_DeviceMacAddress_MacAddress unique (MacAddress);
 
 /*==============================================================*/
 /* Table: DevicePagingReceiverSettings                          */
@@ -12141,6 +12153,11 @@ alter table DeviceMCT400Series
 alter table DeviceMCT400Series
    add constraint FK_Dev4_TOU foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
+
+alter table DeviceMacAddress
+   add constraint FK_DeviceMacAddress_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table DevicePagingReceiverSettings
    add constraint FK_DevPaRec_Dev foreign key (DeviceID)

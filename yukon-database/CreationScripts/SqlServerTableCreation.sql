@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/20/2018 12:16:17 AM                       */
+/* Created on:     1/2/2019 3:03:47 PM                          */
 /*==============================================================*/
 
 
@@ -3420,6 +3420,20 @@ create table DeviceMCT400Series (
    TOUScheduleID        numeric              not null,
    constraint PK_DEV400S primary key (DeviceID)
 )
+go
+
+/*==============================================================*/
+/* Table: DeviceMacAddress                                      */
+/*==============================================================*/
+create table DeviceMacAddress (
+   DeviceId             numeric              not null,
+   MacAddress           varchar(255)         not null,
+   constraint PK_DeviceMacAddress primary key (DeviceId)
+)
+go
+
+alter table DeviceMacAddress
+   add constraint AK_DeviceMacAddress_MacAddress unique (MacAddress)
 go
 
 /*==============================================================*/
@@ -13034,6 +13048,12 @@ go
 alter table DeviceMCT400Series
    add constraint FK_Dev4_TOU foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID)
+go
+
+alter table DeviceMacAddress
+   add constraint FK_DeviceMacAddress_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table DevicePagingReceiverSettings
