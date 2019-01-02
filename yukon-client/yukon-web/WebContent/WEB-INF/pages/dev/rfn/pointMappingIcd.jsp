@@ -15,15 +15,13 @@
                     <th>ICD Model string</th>
                     <th>RfnManufacturerModel</th>
                 </tr>
-            <c:forEach var="models" items="${meterModels}">
-                <c:forEach var="meterClass" items="${models.value}">
-                    <c:forEach var="model" items="${meterClass.value}">
-                        <tr>
-                            <td>${models.key.displayName} ${meterClass.key.displayName}</td>
-                            <td>${model.original}</td>
-                            <td>${model.manufacturerModel}</td>
-                        </tr>
-                    </c:forEach>
+            <c:forEach var="meterClass" items="${meterModels}">
+                <c:forEach var="model" items="${meterClass.value}">
+                    <tr>
+                        <td>${meterClass.key.displayName}</td>
+                        <td>${model.original}</td>
+                        <td>${model.manufacturerModel}</td>
+                    </tr>
                 </c:forEach>
             </c:forEach>
         </table>
