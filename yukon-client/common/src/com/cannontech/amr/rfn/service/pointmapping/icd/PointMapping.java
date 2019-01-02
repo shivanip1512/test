@@ -21,6 +21,9 @@ public class PointMapping {
     public BasePointDefinition getBasePoint() {
         return basePoint;
     }
+    public PointDefinition getPointDefinition() {
+        return pointDefinition;
+    }
     public boolean isMappedFor(PaoType type) {
         return pointDefinition.isMapped() && !excludedTypes.contains(type);
     }
@@ -59,5 +62,21 @@ public class PointMapping {
     @Override
     public String toString() {
         return "PointMapping [pointDefinition=" + pointDefinition + ", basePoint=" + basePoint + "]";
+    }
+    public int compareTo(PointMapping other) {
+        int pdCompare = pointDefinition.compareTo(other.pointDefinition);
+        if (pdCompare != 0) {
+            return pdCompare; 
+        }
+        if (basePoint == null && other.basePoint == null) {
+            return 0;
+        }
+        if (basePoint == null) {
+            return -1;
+        }
+        if (other.basePoint == null) {
+            return 1;
+        }
+        return basePoint.compareTo(other.basePoint);
     }
 }

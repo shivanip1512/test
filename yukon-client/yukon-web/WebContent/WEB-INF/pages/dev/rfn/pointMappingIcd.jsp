@@ -123,7 +123,8 @@
            <tbody>
                <c:forEach var="pointRow" items="${pointTable}">
                <tr>
-                   <td>${pointRow.point}</td>
+                   <td>${pointRow.pointMapping.pointDefinition}<c:if test="${pointRow.pointMapping.basePoint != null}"><br>${pointRow.pointMapping.basePoint}</c:if>
+                   </td>
                    <td>${pointRow.rfnPointMapping}</td>
                    <td>${pointRow.yukonPointMappingIcd}</td>
                </tr>

@@ -2,12 +2,10 @@ package com.cannontech.web.dev;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -23,16 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.service.pointmapping.icd.ManufacturerModel;
 import com.cannontech.amr.rfn.service.pointmapping.icd.ModelPointDefinition;
-import com.cannontech.amr.rfn.service.pointmapping.icd.Modifiers;
 import com.cannontech.amr.rfn.service.pointmapping.icd.NameScale;
 import com.cannontech.amr.rfn.service.pointmapping.icd.Named;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointDefinition;
+import com.cannontech.amr.rfn.service.pointmapping.icd.PointMapping;
+import com.cannontech.amr.rfn.service.pointmapping.icd.CoincidentGroupingCollector;
 import com.cannontech.amr.rfn.service.pointmapping.icd.ElsterA3PointDefinition;
-import com.cannontech.amr.rfn.service.pointmapping.icd.NameScaleCoincidents;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.amr.rfn.service.pointmapping.icd.RfnPointMappingParser;
 import com.cannontech.amr.rfn.service.pointmapping.icd.SentinelPointDefinition;
-import com.cannontech.amr.rfn.service.pointmapping.icd.Units;
 import com.cannontech.amr.rfn.service.pointmapping.icd.WaterNodePointDefinition;
 import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParser;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -45,7 +42,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -116,14 +112,14 @@ public class PointMappingIcdController {
     }
     
     public static class PointRow {
-        private String point;
+        private PointMapping pointMapping;
         private String rfnPointMapping;
         private String yukonPointMappingIcd;
-        public String getPoint() {
-            return point;
+        public PointMapping getPointMapping() {
+            return pointMapping;
         }
-        public void setPoint(String point) {
-            this.point = point;
+        public void setPoint(PointMapping pd) {
+            this.pointMapping = pd;
         }
         public String getRfnPointMapping() {
             return rfnPointMapping;
@@ -197,41 +193,25 @@ public class PointMappingIcdController {
         
         model.addAttribute("centronxPoints", centronxPoints);
         
-        Map<PointDefinition, NameScaleCoincidents> icdPoints = Maps.newHashMap();
-        NameScaleCoincidents bpi = null;
-        for (Named<ElsterA3PointDefinition> mpd : parsedIcd.elsterA3) {
-            if (mpd.value.models.stream().anyMatch(m -> m.getManufacturerModel() == RfnManufacturerModel.RFN_430A3K)) {
-                Units u = mpd.value.getUnit();
-                Set<Modifiers> modifiers = new HashSet<>(mpd.value.getModifiers());
-                
-                modifiers.removeIf(Modifiers::isSiPrefix);
-                
-                NameScale ns = new NameScale(mpd.name, 1.0);
-                PointDefinition pd = new PointDefinition(u, modifiers);
-                if (modifiers.removeIf(Modifiers::isCoincident)) {
-                    bpi.addCoincidentPoint(pd, ns);
-                } else {
-                    bpi = new NameScaleCoincidents(ns);
-                    icdPoints.put(pd, bpi);
-                }
-            }
-        }
+        Map<PointMapping, NameScale> icdPoints = parsedIcd.elsterA3.stream()
+                .filter(mpd -> mpd.value.models.stream().anyMatch(m -> m.getManufacturerModel() == RfnManufacturerModel.RFN_430A3K))
+                .collect(new CoincidentGroupingCollector());
 
         try {
-            Map<PaoType, Map<PointDefinition, NameScaleCoincidents>> rfnPointMapping = RfnPointMappingParser.getPaoTypePointsMappedToCoincidents(rfnPointMappingDao.getPointMappingFile());
+            Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping = RfnPointMappingParser.getPaoTypePoints(rfnPointMappingDao.getPointMappingFile());
             
-            Map<PointDefinition, NameScaleCoincidents> rpm_Rfn430A3k = rfnPointMapping.get(PaoType.RFN430A3K);
+            Map<PointMapping, NameScale> rpm_Rfn430A3k = rfnPointMapping.get(PaoType.RFN430A3K);
             
-            Function<NameScaleCoincidents, String> getPointName = pointInfo ->
-                Optional.ofNullable(pointInfo).map(NameScaleCoincidents::getNameScale).map(NameScale::toString).orElse("(missing)");
+            Function<NameScale, String> getPointName = pointInfo ->
+                Optional.ofNullable(pointInfo).map(NameScale::getName).orElse("(missing)");
             
             List<PointRow> pointTable = 
                     Sets.union(rpm_Rfn430A3k.keySet(), icdPoints.keySet()).stream()
-                        .sorted((pd1, pd2) -> pd1.compareTo(pd2))
+                        .sorted((pm1, pm2) -> pm1.compareTo(pm2))
                         .map(pd -> {
                             PointRow pr = new PointRow();
                             
-                            pr.setPoint(pd.toString());
+                            pr.setPoint(pd);
                             
                             pr.setRfnPointMapping(getPointName.apply(rpm_Rfn430A3k.get(pd)));
                             
@@ -250,11 +230,10 @@ public class PointMappingIcdController {
                                 e.getValue().entrySet().stream()
                                     .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
                                     .map(ee -> 
-                                        ee.getKey() + COLON + ee.getValue().getNameScale() 
-                                        + ee.getValue().getCoincidentPoints().entrySet().stream()
-                                                .map(cp -> cp.getKey() + COLON + cp.getValue())
-                                                .map(s -> NEWLINE_TAB + s)
-                                                .collect(Collectors.joining()))
+                                        ee.getKey().getPointDefinition() + COLON + ee.getValue() 
+                                        + Optional.ofNullable(ee.getKey().getBasePoint())
+                                                .map(bp -> NEWLINE_TAB + bp.getUnit() + COLON + bp.getModifiers())
+                                                .orElse(""))
                                     .collect(Collectors.joining(NEWLINE))) 
                         .map(s -> s.replace(NEWLINE, NEWLINE_TAB))
                         .collect(Collectors.joining(NEWLINE));

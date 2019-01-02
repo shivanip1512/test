@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,51 +19,9 @@ import org.jdom2.input.SAXBuilder;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.stream.Try;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class RfnPointMappingParser {
-    public static Map<PaoType, Map<PointDefinition, NameScaleCoincidents>> getPaoTypePointsMappedToCoincidents(InputStream rfnPointMappingFile) throws JDOMException, IOException {
-        
-        Element rootElement = getRootElement(rfnPointMappingFile);
-        
-        //  iterate through pointGroups
-        Map<PaoType, Map<BasePointDefinition, Map<PointDefinition, NameScale>>> paoTypePoints = 
-                rootElement.getChildren("pointGroup").stream()
-                    .flatMap(rfnPointGroup -> {
-                        Set<PaoType> paoTypes = getPaoTypes(rfnPointGroup);
-                        
-                        //  Get the map of points in the pointGroup
-                        Map<BasePointDefinition, Map<PointDefinition, NameScale>> points =
-                                rfnPointGroup.getChildren("point").stream()
-                                    .collect(Collectors.toMap(
-                                            //  Use the base point as the key, or null for non-coincident points.
-                                            RfnPointMappingParser::getBasePoint,
-                                            //  The value is a map of PointDefinition to NameScale
-                                            RfnPointMappingParser::getPointDefinitionToNameScale,
-                                            RfnPointMappingParser::combineMaps));
-                        
-                        //  Associate each paoType with its own copy of the points
-                        return paoTypes.stream()
-                                .map(paoType -> Pair.of(paoType, copyOf(points)));
-                    })
-                    .collect(Collectors.toMap(
-                              Pair::getLeft, 
-                              Pair::getRight, 
-                              RfnPointMappingParser::combineMapOfMaps));
-        
-        return Maps.transformValues(paoTypePoints, coincidentPointMapping -> 
-            //  Get the non-coincident points (those with a null baseUom)
-            coincidentPointMapping.get(null).entrySet().stream()
-                    .collect(Collectors.toMap(
-                        Entry::getKey,
-                        e -> new NameScaleCoincidents(
-                                e.getValue(), 
-                                //  Get the coincident points for the parent point
-                                coincidentPointMapping.getOrDefault(e.getKey(), Collections.emptyMap())))));
-    }
-
     public static Map<PaoType, Map<PointMapping, NameScale>> getPaoTypePoints(InputStream rfnPointMappingFile) throws JDOMException, IOException {
         
         Element rootElement = getRootElement(rfnPointMappingFile);
@@ -78,7 +35,7 @@ public class RfnPointMappingParser {
                         Map<PointMapping, NameScale> points =
                                 rfnPointGroup.getChildren("point").stream()
                                     .collect(Collectors.toMap(
-                                            RfnPointMappingParser::getNormalizedPoint,
+                                            RfnPointMappingParser::getPointMapping,
                                             RfnPointMappingParser::getNameScale));
                         
                         validateExcludedTypes(points, paoTypes);
@@ -103,37 +60,12 @@ public class RfnPointMappingParser {
             });
     }
 
-    private static <T, U, V> Map<T, Map<U, V>> copyOf(Map<T, Map<U, V>> original) {
-        return original.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            Entry::getKey, 
-                            e -> new HashMap<U, V>(e.getValue())));
-    }
-    
     private static <T, U> Map<T, U> combineMaps(Map<T, U> map1, Map<T, U> map2) {
-        HashMap<T, U> combined = new HashMap<T, U>(map1);
+        HashMap<T, U> combined = new HashMap<>(map1);
         combined.putAll(map2);
         return combined;
     }
     
-    private static <T, U, V> Map<T, Map<U, V>> combineMapOfMaps(Map<T, Map<U, V>> map1, Map<T, Map<U, V>> map2) {
-        Map<U, V> nullMap2 = map2.remove(null);
-        
-        map1.putAll(map2);
-        
-        if (nullMap2 != null) {
-            Map<U, V> nullMap1 = map1.get(null);
-            
-            if (nullMap1 != null) {
-                nullMap1.putAll(nullMap2);
-            } else {
-                map1.put(null, nullMap2);
-            }
-        }
-        
-        return map1;
-    }
-
     private static Element getRootElement(InputStream rfnPointMappingFile) throws JDOMException, IOException {
         SAXBuilder saxBuilder = new SAXBuilder();
         Document configDoc = saxBuilder.build(rfnPointMappingFile);
@@ -145,11 +77,6 @@ public class RfnPointMappingParser {
             .map(paoTypeElement -> paoTypeElement.getAttributeValue("value"))
             .map(PaoType::valueOf)
             .collect(Collectors.toSet());
-    }
-
-    private static Map<PointDefinition, NameScale> getPointDefinitionToNameScale(Element pointElement) {
-        return ImmutableMap.of(getPointDefinition(pointElement), 
-                               getNameScale(pointElement));
     }
 
     private static NameScale getNameScale(Element pointElement) {
@@ -169,7 +96,7 @@ public class RfnPointMappingParser {
         return pointElement.getChild("baseUom") != null;
     }
 
-    private static PointMapping getNormalizedPoint(Element pointElement) {
+    private static PointMapping getPointMapping(Element pointElement) {
         return new PointMapping(getPointDefinition(pointElement), 
                                    getBasePoint(pointElement),
                                    getExcludedTypes(pointElement));

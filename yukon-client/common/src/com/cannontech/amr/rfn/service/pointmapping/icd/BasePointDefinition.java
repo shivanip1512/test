@@ -39,7 +39,7 @@ public class BasePointDefinition {
         return modifiers.stream().sorted().collect(Collectors.toList());
     }
 
-    public int compareTo(PointDefinition other) {
+    public int compareTo(BasePointDefinition other) {
         if (getUnit() == null) {
             return other.getUnit() == null ? 0 : -1;
         }
@@ -57,7 +57,7 @@ public class BasePointDefinition {
         
         return modifierComparison;
     }
-    private int compareModifiers(PointDefinition other) {
+    private int compareModifiers(BasePointDefinition other) {
         Iterator<Modifiers> i1 = getModifiers().stream().sorted().iterator();
         Iterator<Modifiers> i2 = other.getModifiers().stream().sorted().iterator();
         
@@ -106,10 +106,10 @@ public class BasePointDefinition {
     @Override
     public String toString() {
         String unitString = Optional.ofNullable(getUnit())
-                .map(Object::toString)
+                .map(Units::getCommonName)
                 .orElse("NULL_UOM");
         if (getModifiers() != null && !getModifiers().isEmpty()) {
-            return unitString + getModifiers().stream().sorted().collect(Collectors.toList());
+            return unitString + getModifiers().stream().sorted().map(Modifiers::getCommonName).collect(Collectors.toList());
         }
         return unitString;
     }

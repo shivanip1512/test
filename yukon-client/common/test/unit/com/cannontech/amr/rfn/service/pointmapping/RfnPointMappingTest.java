@@ -50,15 +50,13 @@ public class RfnPointMappingTest {
         return icd;
     }
 
-    private InputStream getRfnXmlStream() throws IOException
-    {
+    private InputStream getRfnXmlStream() throws IOException {
         ClassPathResource rfnPointMappingXml = new ClassPathResource(mapping);
         return rfnPointMappingXml.getInputStream();
     }
     
     @Test
-    public void testOrdered() throws IOException, JDOMException
-    {
+    public void testOrdered() throws IOException, JDOMException {
         //  Duplicate mappings will cause a parser error in RfnPointMappingParser's stream code, so detect those first
         detectDuplicateMappings();
         
