@@ -23,18 +23,18 @@
         <pointInfo name="Relay 2 Run Time Data Log 30 Minutes" init="false" attributes="RELAY_2_RUN_TIME_DATA_LOG_30_MIN"/>
         <pointInfo name="Relay 2 Relay State" init="true" attributes="RELAY_2_RELAY_STATE"/>
         <pointInfo name="Relay 2 Shed Time Data Log" init="true" attributes="RELAY_2_SHED_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 3 Run Time Data Log" init="true" attributes="RELAY_4_RUN_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 3 Run Time Data Log 5 Minutes" init="false" attributes="RELAY_4_RUN_TIME_DATA_LOG_5_MIN"/>
-        <pointInfo name="Relay 3 Run Time Data Log 15 Minutes" init="true" attributes="RELAY_4_RUN_TIME_DATA_LOG_15_MIN"/>
-        <pointInfo name="Relay 3 Run Time Data Log 30 Minutes" init="false" attributes="RELAY_4_RUN_TIME_DATA_LOG_30_MIN"/>
-        <pointInfo name="Relay 3 Relay State" init="true" attributes="RELAY_4_RELAY_STATE"/>
-        <pointInfo name="Relay 3 Shed Time Data Log" init="true" attributes="RELAY_4_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 3 Run Time Data Log" init="true" attributes="RELAY_3_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 3 Run Time Data Log 5 Minutes" init="false" attributes="RELAY_3_RUN_TIME_DATA_LOG_5_MIN"/>
+        <pointInfo name="Relay 3 Run Time Data Log 15 Minutes" init="true" attributes="RELAY_3_RUN_TIME_DATA_LOG_15_MIN"/>
+        <pointInfo name="Relay 3 Run Time Data Log 30 Minutes" init="false" attributes="RELAY_3_RUN_TIME_DATA_LOG_30_MIN"/>
+        <pointInfo name="Relay 3 Relay State" init="true" attributes="RELAY_3_RELAY_STATE"/>
+        <pointInfo name="Relay 3 Shed Time Data Log" init="true" attributes="RELAY_3_SHED_TIME_DATA_LOG"/>
         <pointInfo name="Relay 4 Run Time Data Log" init="true" attributes="RELAY_4_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 4 Run Time Data Log 5 Minutes" init="false" attributes="RELAY_4_RUN_TIME_DATA_LOG_5_MIN"/>
         <pointInfo name="Relay 4 Run Time Data Log 15 Minutes" init="true" attributes="RELAY_4_RUN_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 4 Run Time Data Log 30 Minutes" init="false" attributes="RELAY_4_RUN_TIME_DATA_LOG_30_MIN"/>
-        <pointInfo name="Relay 4 Relay State" init="true" attributes="RELAY_3_RELAY_STATE"/>
-        <pointInfo name="Relay 4 Shed Time Data Log" init="true" attributes="RELAY_3_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 4 Relay State" init="true" attributes="RELAY_4_RELAY_STATE"/>
+        <pointInfo name="Relay 4 Shed Time Data Log" init="true" attributes="RELAY_4_SHED_TIME_DATA_LOG"/>
         <pointInfo name="Service Status" init="true" attributes="SERVICE_STATUS"/>
         <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
