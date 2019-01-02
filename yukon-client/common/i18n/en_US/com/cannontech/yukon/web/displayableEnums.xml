@@ -65,11 +65,11 @@
                             If gaps in data exist that are greater than the charted interval, then that interval will be
                             removed from the display.]]></entry>
 <entry key="yukon.web.attributeGraphType.LOAD_PROFILE.label">Load Profile</entry>
-<entry key="yukon.web.attributeGraphType.LOAD_PROFILE.description"><![CDATA[Graph of raw Load Profile data.]]></entry>
+<entry key="yukon.web.attributeGraphType.LOAD_PROFILE.description"><![CDATA[Graph of Load Profile data.]]></entry>
 <entry key="yukon.web.attributeGraphType.VOLTAGE_PROFILE.label">Voltage Profile</entry>
-<entry key="yukon.web.attributeGraphType.VOLTAGE_PROFILE.description"><![CDATA[Graph of raw Voltage Profile data.]]></entry>
+<entry key="yukon.web.attributeGraphType.VOLTAGE_PROFILE.description"><![CDATA[Graph of Voltage Profile data.]]></entry>
 <entry key="yukon.web.attributeGraphType.DEMAND.label">Demand</entry>
-<entry key="yukon.web.attributeGraphType.DEMAND.description"><![CDATA[Graph of raw Demand data.]]></entry>
+<entry key="yukon.web.attributeGraphType.DEMAND.description"><![CDATA[Graph of Demand data.]]></entry>
 <entry key="yukon.web.attributeGraphType.DAILY_USAGE.label">Daily Usage</entry>
 <entry key="yukon.web.attributeGraphType.DAILY_USAGE.description"><![CDATA[The <b>Daily Usage</b> graph is a normalized 
                             view of daily usage data.<br><br>Each point on the graph is generated using the midnight 
@@ -79,13 +79,13 @@
                             point on the graph is generated using the following formula: (reading - 
                             previousReading) / (days between readings)]]></entry>
 <entry key="yukon.web.attributeGraphType.DELIVERED_KWH_PER_INTERVAL.label">Delivered kWh per Interval</entry>
-<entry key="yukon.web.attributeGraphType.DELIVERED_KWH_PER_INTERVAL.description"><![CDATA[Graph of the delivered kWh difference at each interval.]]></entry>
+<entry key="yukon.web.attributeGraphType.DELIVERED_KWH_PER_INTERVAL.description"><![CDATA[Graph of Delivered kWh per Interval data.]]></entry>
 <entry key="yukon.web.attributeGraphType.DELIVERED_KW_LOAD_PROFILE.label">Delivered kW Load Profile</entry>
-<entry key="yukon.web.attributeGraphType.DELIVERED_KW_LOAD_PROFILE.description"><![CDATA[Graph of the delivered kWh load profile.]]></entry>
+<entry key="yukon.web.attributeGraphType.DELIVERED_KW_LOAD_PROFILE.description"><![CDATA[Graph of Delivered kW Load Profile data.]]></entry>
 <entry key="yukon.web.attributeGraphType.SUM_KWH_PER_INTERVAL.label">Sum kWh per Interval</entry>
-<entry key="yukon.web.attributeGraphType.SUM_KWH_PER_INTERVAL.description"><![CDATA[Graph of the sum kWh difference at each interval.]]></entry>
+<entry key="yukon.web.attributeGraphType.SUM_KWH_PER_INTERVAL.description"><![CDATA[Graph of Sum kWh per Interval data.]]></entry>
 <entry key="yukon.web.attributeGraphType.SUM_KW_LOAD_PROFILE.label">Sum kW Load Profile</entry>
-<entry key="yukon.web.attributeGraphType.SUM_KW_LOAD_PROFILE.description"><![CDATA[Graph of the Sum kWh load profile.]]></entry>
+<entry key="yukon.web.attributeGraphType.SUM_KW_LOAD_PROFILE.description"><![CDATA[Graph of Sum kW Load Profile data.]]></entry>
                 
 <!-- systemGroupEnum -->
     <entry key="yukon.common.systemGroupEnum.ROOT">/</entry>
