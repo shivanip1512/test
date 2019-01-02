@@ -95,8 +95,7 @@ yukon.dr.assetavailability.detail = (function () {
 
             $(document).on('click', '.js-collection-action', function () {
                 var actionUrl = $(this).data('url'),
-                    form = $('#js-asset-availability-filter-form'),
-                    data = form.serialize();
+                    data = $('#js-asset-availability-filter-form').serialize();
                 window.open(yukon.url('/dr/assetAvailability/collectionAction?actionUrl=' + actionUrl + '&' + data));
             });
 

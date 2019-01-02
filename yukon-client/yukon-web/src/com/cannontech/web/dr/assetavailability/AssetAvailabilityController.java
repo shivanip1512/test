@@ -250,11 +250,10 @@ public class AssetAvailabilityController {
 
         model.addAttribute("searchResults", searchResults);
         
+        /* PAO Notes */
         List<Integer> paoIds = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
                                                                      .map(AssetAvailabilityDetails::getDeviceId)
                                                                      .collect(Collectors.toList());
-
-        /* PAO Notes */
         List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(paoIds);
         model.addAttribute("notesList", notesList);
         
