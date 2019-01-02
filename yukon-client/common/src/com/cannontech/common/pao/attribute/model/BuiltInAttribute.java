@@ -465,7 +465,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     METER_READ_ERROR_READING_SERIAL_NUMBER("Meter Read - Error reading serial number", AttributeGroup.RFN_METERING_EVENT, false),
     METER_READ_CHECKSUM_ERROR("Meter Read - Checksum error", AttributeGroup.RFN_METERING_EVENT, false),
     TAMPER_CABLE_CUT("Tamper - Cable Cut", AttributeGroup.RFN_HARDWARE_EVENT, false),
-    LOW_BATTERY_VOLTAGE("Low Battery Voltage", AttributeGroup.RFN_HARDWARE_EVENT, false),
     
     // RFN Tamper Alarm/Event
     TAMPER_NO_USAGE_OVER_24_HOURS("Tamper - No Usage over 24 hours", AttributeGroup.RFN_METERING_EVENT, false),

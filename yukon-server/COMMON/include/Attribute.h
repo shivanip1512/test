@@ -456,7 +456,6 @@ public:
     static const Attribute  SerialNumberReadError;
     static const Attribute  ChecksumError;
     static const Attribute  TamperCableCut;
-    static const Attribute  LowBatteryVoltage;
     static const Attribute  DebugEvent;
 
     static const Attribute  TamperNoUsageOver24Hours;

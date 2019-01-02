@@ -465,7 +465,6 @@ INIT_ATTRIBUTE( FieldExceededMaximumDigits,                         "METER_READ_
 INIT_ATTRIBUTE( SerialNumberReadError,                              "METER_READ_ERROR_READING_SERIAL_NUMBER" );
 INIT_ATTRIBUTE( ChecksumError,                                      "METER_READ_CHECKSUM_ERROR" );
 INIT_ATTRIBUTE( TamperCableCut,                                     "TAMPER_CABLE_CUT" );
-INIT_ATTRIBUTE( LowBatteryVoltage,                                  "LOW_BATTERY_VOLTAGE" );
 INIT_ATTRIBUTE( DebugEvent,                                         "DEBUG_EVENT" );
 
 INIT_ATTRIBUTE( TamperNoUsageOver24Hours,                           "TAMPER_NO_USAGE_OVER_24_HOURS" );

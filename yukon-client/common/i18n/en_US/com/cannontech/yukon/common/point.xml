@@ -533,7 +533,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.METER_READ_ERROR_READING_SERIAL_NUMBER">Meter Read - Error reading serial number</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METER_READ_CHECKSUM_ERROR">Meter Read - Checksum error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_CABLE_CUT">Tamper - Cable Cut</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.LOW_BATTERY_VOLTAGE">Low Battery Voltage</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_NO_USAGE_OVER_24_HOURS">Tamper - No Usage over 24 hours</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_REVERSE_WH_DETECTED">Tamper - Reverse Wh Detected</entry>
