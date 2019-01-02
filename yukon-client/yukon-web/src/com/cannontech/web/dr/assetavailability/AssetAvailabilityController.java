@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -85,7 +83,6 @@ public class AssetAvailabilityController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -156,6 +153,23 @@ public class AssetAvailabilityController {
         model.addAttribute("dr", accessor.getMessage(menuKey + "config.dr.home"));
         model.addAttribute("assetAvailability", accessor.getMessage(baseKey + "crumbTitle"));
         return "dr/assetAvailability/detail.jsp";
+    }
+    
+    @GetMapping(value = "collectionAction")
+    public String collectionAction(String actionUrl, Integer paobjectId, String[] deviceSubGroups,
+            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
+        PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
+            subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
+            SortingParameters.of(AssetAvailabilitySortBy.SERIAL_NUM.toString(), Direction.asc), userContext);
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        List<SimpleDevice> devices = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
+                                                                           .map(assetAvailabilityDetail -> 
+                                                                                    deviceDao.getYukonDevice(assetAvailabilityDetail.getDeviceId()))
+                                                                           .collect(Collectors.toList());
+        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+        return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
 
     private void setPaoTypeAndBreadcumbUri(Integer paoId, ModelMap model, MessageSourceAccessor accessor) {
@@ -236,19 +250,12 @@ public class AssetAvailabilityController {
 
         model.addAttribute("searchResults", searchResults);
         
-        /* Build temporary collection for Collection Actions */
-        List<SimpleDevice> devices = new ArrayList<>();
-        searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
-                                              .forEach(assetAvailabilityDetail -> devices.add(deviceDao.getYukonDevice(assetAvailabilityDetail.getDeviceId())));
-        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
-        model.addAttribute("deviceCollection", deviceCollection);
-        
+        List<Integer> paoIds = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
+                                                                     .map(AssetAvailabilityDetails::getDeviceId)
+                                                                     .collect(Collectors.toList());
+
         /* PAO Notes */
-        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(devices.stream()
-                                                                            .map(device -> device.getPaoIdentifier().getPaoId())
-                                                                            .collect(Collectors.toList()));
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(paoIds);
         model.addAttribute("notesList", notesList);
         
     }

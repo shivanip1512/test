@@ -93,6 +93,13 @@ yukon.dr.assetavailability.detail = (function () {
                 window.open(yukon.url('/dr/assetAvailability/inventoryAction?' + data), '_blank');
             });
 
+            $(document).on('click', '.js-collection-action', function () {
+                var actionUrl = $(this).data('url'),
+                    form = $('#js-asset-availability-filter-form'),
+                    data = form.serialize();
+                window.open(yukon.url('/dr/assetAvailability/collectionAction?actionUrl=' + actionUrl + '&' + data));
+            });
+
             _filterResults();
 
             _initialized = true;

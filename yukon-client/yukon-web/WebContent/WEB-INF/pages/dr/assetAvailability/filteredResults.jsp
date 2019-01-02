@@ -12,13 +12,8 @@
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
                 <!-- Collection Actions -->
-                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                    <c:forEach items="${deviceCollection.collectionParameters}" var="collectionParameter">
-                        <cti:param name="${collectionParameter.key}" value="${collectionParameter.value}"/>
-                    </c:forEach>
-                </cti:url>
-                <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" newTab="true" href="${collectionActionsUrl}"/>
-            
+                <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go"
+                                   classes="js-collection-action" data-url="/bulk/collectionActions"/>
                 <!-- Download -->
                 <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="primary action js-download-filter-result"/>
                 <!-- Inventory Action -->
@@ -26,10 +21,8 @@
                     <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.assetDetails.inventoryAction" classes="primary action js-inventory-actions" />
                 </cti:checkRolesAndProperties>
                 <!-- Map Devices -->
-                <cti:url var="mapUrl" value="/tools/map">
-                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                </cti:url>
-                <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" href="${mapUrl}" newTab="true"/>
+                <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" classes="js-collection-action"
+                                   data-url="/tools/map"/>
                 
             </cm:dropdown>
         </span>
