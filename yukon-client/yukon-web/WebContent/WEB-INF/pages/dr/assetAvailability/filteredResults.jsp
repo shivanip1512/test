@@ -18,7 +18,7 @@
                 <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="primary action js-download-filter-result"/>
                 <!-- Inventory Action -->
                 <cti:checkRolesAndProperties value="INVENTORY">
-                    <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.assetDetails.inventoryAction" classes="primary action js-inventory-actions" />
+                    <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.inventoryAction" classes="primary action js-inventory-actions" />
                 </cti:checkRolesAndProperties>
                 <!-- Map Devices -->
                 <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" classes="js-collection-action"

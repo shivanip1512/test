@@ -43,7 +43,7 @@
 <entry key="yukon.web.modules.dr.assetAvailability.pingInProgress">In Progress</entry>
 <entry key="yukon.web.modules.dr.assetAvailability.progressLabel">Progress</entry>
 <entry key="yukon.web.modules.dr.assetAvailability.pingError.badRelay">Unable to read asset availability on relay {0}</entry>
-<entry key="yukon.web.modules.dr.assetDetails.inventoryAction">Inventory Action</entry>
+<entry key="yukon.web.modules.dr.inventoryAction">Inventory Action</entry>
 
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
 <entry key="yukon.web.modules.dr.blankField">N/A</entry>

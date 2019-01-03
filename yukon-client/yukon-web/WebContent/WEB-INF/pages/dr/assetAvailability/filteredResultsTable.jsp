@@ -87,7 +87,7 @@
                                 <cti:param name="collectionType" value="idList"/>
                                 <cti:param name="idList.ids" value="${assetAvailabilitySearchResult.inventoryId}"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.assetDetails.inventoryAction" href="${inventoryActionUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.inventoryAction" href="${inventoryActionUrl}" newTab="true"/>
                         </cti:checkRolesAndProperties>
                     </cm:dropdown>
                 </td>

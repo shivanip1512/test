@@ -296,7 +296,7 @@ public class AssetAvailabilityController {
         writeToCSV(headerRow, dataRows, liteYukonPAObject.getPaoName(), response, userContext);
     }
 
-    @RequestMapping(value = "inventoryAction", method = RequestMethod.GET)
+    @GetMapping("/inventoryAction")
     public String inventoryAction(ModelMap model, Integer paobjectId, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
