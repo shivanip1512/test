@@ -19,7 +19,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -164,10 +163,10 @@ public class AssetAvailabilityController {
             subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
             SortingParameters.of(AssetAvailabilitySortBy.SERIAL_NUM.toString(), Direction.asc), userContext);
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        List<SimpleDevice> devices = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
-                                                                           .map(assetAvailabilityDetail -> 
-                                                                                    deviceDao.getYukonDevice(assetAvailabilityDetail.getDeviceId()))
-                                                                           .collect(Collectors.toList());
+        List<Integer> deviceIds = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
+                                                                        .map(AssetAvailabilityDetails::getDeviceId)
+                                                                        .collect(Collectors.toList());
+        List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(deviceIds);
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
         return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
