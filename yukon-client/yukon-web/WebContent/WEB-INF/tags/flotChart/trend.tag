@@ -10,7 +10,7 @@
 <%@ attribute name="converterType" required="true"  description="Either ConverterType.java object or the String representation"%>
 <%@ attribute name="graphType"  description="Either GraphType.java object or the String representation"%>
 <%@ attribute name="reloadInterval" description="The reload interval of the added chart (in seconds)"%>
-<%@ attribute name="temperatureChartInterval" description="Cahrt interval for temperature trend"%>
+<%@ attribute name="temperatureChartInterval" description="Chart interval for temperature trend"%>
 <%@ attribute name="ymin"%>
 <%@ attribute name="ymax"%>
 
