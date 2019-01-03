@@ -198,19 +198,18 @@ public class RfPerformanceController {
     
     @RequestMapping(value="/rf/details", method=RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required=false) Instant from, @RequestParam(required=false) Instant to) {
-        
+
+        DateTime now = DateTime.now();
         if (from == null) {
-            from =  new Instant().minus(Duration.standardDays(7));
+            from =  now.withTimeAtStartOfDay().minusDays(5).toInstant();
         }
         if (to == null) {
-            to =  new Instant();
+            to =  now.toInstant();
         }
-        Instant toFullDay = to.plus(Duration.standardDays(1)).toDateTime().withTimeAtStartOfDay().toInstant();
-        
         model.addAttribute("from", from);
         model.addAttribute("to", to);
-        detailsModel(model, from, toFullDay);
-        
+        detailsModel(model, from, to);
+
         return "dr/rf/details.jsp";
     }
 
