@@ -214,10 +214,15 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     public CommandRequestExecutionIdentifier execute(List<? extends CommandRequestBase> commands,
             CommandCompletionCallback<? extends CommandRequestBase> callback, DeviceRequestType type,
             LiteYukonUser user) {
-        ExecutionParameters params = createExecParams(type, user, false);
-        CommandRequestExecution execution = createAndSaveExecution(params, commands);
-        sendToPorter(commands, callback, params, execution);
-        return new CommandRequestExecutionIdentifier(execution.getId());
+        if (CollectionUtils.isNotEmpty(commands)) {
+            ExecutionParameters params = createExecParams(type, user, false);
+            CommandRequestExecution execution = createAndSaveExecution(params, commands);
+            sendToPorter(commands, callback, params, execution);
+            return new CommandRequestExecutionIdentifier(execution.getId());
+        } else {
+            log.error("The requested operation is not supported as there is not commands to execute.");
+            throw new UnsupportedOperationException("Received no commands for execution");
+        }
     }
 
     @Override
@@ -364,19 +369,18 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
 
     private CommandRequestExecution createAndSaveExecution(ExecutionParameters params,
             List<? extends CommandRequestBase> commands) {
+        CommandRequestType commandRequestType = commands.get(0).getCommandRequestType();
+        LiteYukonUser user = params.getUser();
         CommandRequestExecution execution = new CommandRequestExecution();
-        if (CollectionUtils.isNotEmpty(commands)) {
-            CommandRequestType commandRequestType = commands.get(0).getCommandRequestType();
-            LiteYukonUser user = params.getUser();
-            execution.setContextId(params.getContextId());
-            execution.setStartTime(new Date());
-            execution.setRequestCount(commands.size());
-            execution.setCommandRequestExecutionType(params.getType());
-            execution.setUserName(user.getUsername());
-            execution.setCommandRequestType(commandRequestType);
-            execution.setCommandRequestExecutionStatus(STARTED);
-            commandRequestExecutionDao.saveOrUpdate(execution);
-        }
+        execution.setContextId(params.getContextId());
+        execution.setStartTime(new Date());
+        execution.setRequestCount(commands.size());
+        execution.setCommandRequestExecutionType(params.getType());
+        execution.setUserName(user.getUsername());
+        execution.setCommandRequestType(commandRequestType);
+        execution.setCommandRequestExecutionStatus(STARTED);
+
+        commandRequestExecutionDao.saveOrUpdate(execution);
         return execution;
     }
 
