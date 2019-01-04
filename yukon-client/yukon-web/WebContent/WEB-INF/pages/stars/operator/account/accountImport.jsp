@@ -5,10 +5,29 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
+<cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
     <cti:standardPage module="operator" page="accountImport" smartNotificationsEvent="ASSET_IMPORT">
 
         <cti:checkEnergyCompanyOperator showError="true">
-            <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
+
+            <div id="page-actions" class="dn">
+                <!-- Create -->
+                <li class="divider"></li>
+                <cti:url var="createUrl" value="/stars/scheduledDataImport/create"/>
+                <cm:dropdownOption key=".createScheduledImport" href="${createUrl}" icon="icon-calendar-add"/>
+
+                <!--  View -->
+                <cti:url var="viewUrl" value="/stars/scheduledDataImport/list"/>
+                <cm:dropdownOption key=".viewScheduledImport" href="${viewUrl}" icon="icon-calendar-view-month"/>
+                <li class="divider"></li>
+
+                <!--  Recent Manual Imports -->
+                <cm:dropdownOption key=".recentManualImport" href="imports" icon="icon-script"/>
+
+                <!--  Recent Manual Imports Results -->
+                <cti:url var="recentManualResultsLink" value="/bulk/recentResults"/>
+                <cm:dropdownOption key=".recentManualImportResults" href="${recentManualResultsLink}" icon="icon-script-link"/>
+            </div>
 
             <div class="column-12-12">
                 <div class="column one">
@@ -62,7 +81,7 @@
             <div class="column-12-12">
                 <div class="column one">
                     <div class="box" style="background-color:#CDCDCD;padding:10px;">
-                        <div class="fl"><cti:icon icon="icon-shape-handles"/></div>
+                        <div class="fl"></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importAccountTableHeader"/></h2>
                             <span class="detail"><i:inline key=".importAccountTableDescription"/></span>
@@ -106,7 +125,7 @@
                 
                 <div class="column two nogutter">
                     <div class="box" style="background-color:#CDCDCD;padding:10px;">
-                        <div class="fl"><cti:icon icon="icon-shape-handles"/></div>
+                        <div class="fl"></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importHardwareTableHeader"/></h2>
                             <span class="detail"><i:inline key=".importHardwareTableDescription"/></span>
@@ -156,28 +175,6 @@
                 </div>
             </div>
 
-            <div id="page-actions" class="dn">
-                <!-- Create -->
-                <cti:url var="createUrl" value="/stars/scheduledDataImport/create"/>
-                <cm:dropdownOption key=".createScheduledImport" 
-                                   id="create-option" href="${createUrl}"/>
-                <li class="divider"></li>
-
-                <!--  View -->
-                <cti:url var="viewUrl" value="/stars/scheduledDataImport/list"/>
-                <cm:dropdownOption key=".viewScheduledImport" 
-                                   id="view-option" href="${viewUrl}"/>
-                <li class="divider"></li>
-
-                <!--  Recent Manual Imports -->
-                <cm:dropdownOption key=".recentManualImport" 
-                                   id="recent-manual-imports" href="imports"/>
-
-                <!--  Recent Manual Imports Results -->
-                <cti:url var="recentManualResultsLink" value="/bulk/recentResults"/>
-                <cm:dropdownOption key=".recentManualImportResults" 
-                                   id="recent-manual-results" href="${recentManualResultsLink}"/>
-            </div>
-
         </cti:checkEnergyCompanyOperator>
     </cti:standardPage>
+</cti:checkRolesAndProperties>
