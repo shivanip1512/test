@@ -32,7 +32,7 @@
     <entry key="yukon.web.modules.support.support.ftpUpload.title">Upload Support Bundle</entry>
 
     <entry key="yukon.web.modules.support.yukon.manuals.title">Yukon Manuals</entry>
-    <entry key="yukon.web.modules.support.yukon.manuals.link">http://my.eaton.com/extranet/faces/myeaton/Tools/productDocumentation/YUKON</entry>
+    <entry key="yukon.web.modules.support.yukon.manuals.link">https://my.eaton.com/extranet/faces/myeaton/Tools/productDocumentation/productDocumentationDe/YUKON</entry>
     <entry key="yukon.web.modules.support.yukon.manuals.general.label">(Portal)</entry>
     
     <!-- info.jsp -->
