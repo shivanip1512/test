@@ -87,7 +87,7 @@
                                         <cti:param name="collectionType" value="idList"/>
                                         <cti:param name="idList.ids" value="${broadcastEventSearchResult.hardware.identifier.inventoryId}"/>
                                     </cti:url>
-                                    <cm:dropdownOption key=".inventoryAction" href="${inventoryActionUrl}"
+                                    <cm:dropdownOption key="yukon.web.modules.dr.inventoryAction" href="${inventoryActionUrl}"
                                                    icon="icon-cog-go" newTab="true"/>
                                 </cti:checkRolesAndProperties>
                             </cm:dropdown>

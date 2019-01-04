@@ -15,13 +15,12 @@ yukon.dr.rf.broadcast.eventDetail = (function () {
     
     _filterResults = function () {
         var filters = _getFilters();
-        yukon.ui.blockPage();
+        yukon.ui.busy('.js-filter-results');
         var url = yukon.url('/dr/rf/broadcast/eventDetail/filterResults?eventId=' + filters.eventId + '&deviceSubGroups=' + filters.deviceSubGroups + '&statuses=' + filters.statuses);
         $.get(url, function (data) {
             $("#js-filtered-results").html(data);
         }).always(function () {
             yukon.ui.unbusy($('.js-filter-results'));
-            yukon.ui.unblockPage();
         });
     },
     
@@ -71,7 +70,7 @@ yukon.dr.rf.broadcast.eventDetail = (function () {
                                 + actionUrl + '&eventId=' + filters.eventId
                                 + '&deviceSubGroups=' + filters.deviceSubGroups
                                 + '&statuses=' + filters.statuses);
-                window.open(url, '_blank');
+                window.open(url);
             });
 
             _filterResults();

@@ -27,7 +27,7 @@
                                 <cti:param name="statuses" value="${status}"/>
                             </c:forEach>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-cog-go" key=".inventoryAction" href="${inventoryActionUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-cog-go" key="yukon.web.modules.dr.inventoryAction" href="${inventoryActionUrl}" newTab="true"/>
                     </cti:checkRolesAndProperties>
                     <!-- Map Devices -->
                     <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" classes="js-collection-action" newTab="true" data-url="/tools/map"/>

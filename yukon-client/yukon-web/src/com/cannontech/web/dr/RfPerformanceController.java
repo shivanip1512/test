@@ -274,16 +274,10 @@ public class RfPerformanceController {
         SearchResults<BroadcastEventDeviceDetails> searchResults =
             SearchResults.pageBasedForSublist(broadcastEventDetails, paging, totalEventCount);
         model.addAttribute("searchResults", searchResults);
-        /* Build temporary collection for Collection Actions */
-        List<SimpleDevice> devices = new ArrayList<>();
-        searchResults.getResultList().stream().filter(
-            rfBroadcastEventDetail -> rfBroadcastEventDetail.getHardware().getDeviceId() != 0).forEach(
-                rfBroadcastEventDetail -> devices.add(
-                    deviceDao.getYukonDevice(rfBroadcastEventDetail.getHardware().getDeviceId())));
 
         /* PAO Notes */
-        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(
-            devices.stream().map(device -> device.getPaoIdentifier().getPaoId()).collect(Collectors.toList()));
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(searchResults.getResultList().stream().map(
+            rfBroadcastEventDetail -> rfBroadcastEventDetail.getHardware().getDeviceId()).collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
 
     }
@@ -316,11 +310,10 @@ public class RfPerformanceController {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         List<BroadcastEventDeviceDetails> broadcastEventDetails =
             verificationService.getDevicesWithStatus(eventId, statuses, PagingParameters.EVERYTHING, subGroups);
+        List<Integer> deviceIds = broadcastEventDetails.stream().map(rfBroadcastEventDetail -> rfBroadcastEventDetail.getHardware().getDeviceId())
+                                                                .collect(Collectors.toList());
         List<SimpleDevice> devices = new ArrayList<>();
-        broadcastEventDetails.stream().filter(
-            rfBroadcastEventDetail -> rfBroadcastEventDetail.getHardware().getDeviceId() != 0).forEach(
-                rfBroadcastEventDetail -> devices.add(
-                    deviceDao.getYukonDevice(rfBroadcastEventDetail.getHardware().getDeviceId())));
+        devices.addAll(deviceDao.getYukonDeviceObjectByIds(deviceIds));
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
 
