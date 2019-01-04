@@ -32,11 +32,13 @@
         Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Map Devices, Download data and Inventory Action).<br/>
         Click on the Gear Icon next to each device to view options you can do for the individual device (Collection Actions, Inventory Action and Map Devices).<br/>
     ]]></entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.download.hoverText">Download All</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.DEVICE_NAME">Device Name</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.DEVICE_TYPE">Device Type</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.ACCOUNT_NUMBER">Account Number</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.CURRENT_STATUS">Current Status</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.description">RF Performance</entry>
-    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastComm">Last Successful Communication: {0}</entry>
-    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastCommNotAvailable">Last Successful Communication Not Available</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.LAST_COMMUNICATION">Last Communication</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastComm">Last Successful Communication {0}</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastCommNotAvailable">Not Available</entry>
 </properties>

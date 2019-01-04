@@ -61,10 +61,11 @@
                     <c:choose>
                         <c:when test="${not empty broadcastEventSearchResult.lastComm}">
                             <cti:formatDate var="dateTime" type="FULL" value="${broadcastEventSearchResult.lastComm}"/>
-                            <cti:msg2 var="lastComm" key=".lastComm" argument="${dateTime}"/>
+                            <cti:msg2 var="lastComm" key=".lastComm" argument=": ${dateTime}"/>
                         </c:when>
                         <c:otherwise>
-                            <cti:msg2 var="lastComm" key=".lastCommNotAvailable"/>
+                            <cti:msg2 var = "notAvailable" key = ".lastCommNotAvailable"/>
+                            <cti:msg2 var="lastComm" key=".lastComm" argument="${notAvailable}"/>
                         </c:otherwise>
                     </c:choose>
                     <td title="${lastComm}"><i:inline key="${broadcastEventSearchResult.deviceStatus}"/></td>

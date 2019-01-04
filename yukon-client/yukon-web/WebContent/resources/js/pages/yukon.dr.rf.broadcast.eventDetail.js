@@ -63,6 +63,12 @@ yukon.dr.rf.broadcast.eventDetail = (function () {
                 _filterResults(); 
             });
 
+            $(document).on('click', '.js-download-filter-result', function () {
+                var filters = _getFilters();
+                window.location.href = yukon.url('/dr/rf/broadcast/downloadFilteredResults?eventId=' + filters.eventId + '&deviceSubGroups=' + filters.deviceSubGroups 
+                        + '&statuses=' + filters.statuses);
+             });
+
             $(document).on('click', '.js-collection-action', function () {
                 var filters = _getFilters();
                 var actionUrl = $(this).data('url');

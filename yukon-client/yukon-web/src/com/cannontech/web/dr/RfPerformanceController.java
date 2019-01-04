@@ -1,10 +1,13 @@
 package com.cannontech.web.dr;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -65,7 +68,9 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
@@ -406,6 +411,69 @@ public class RfPerformanceController {
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
         datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
+    }
+
+    @GetMapping("/rf/broadcast/eventDetail/{eventId}/downloadAll")
+    public void downloadAll(HttpServletResponse response, YukonUserContext userContext, @PathVariable int eventId)
+            throws IOException {
+        // get the header row
+        String[] headerRow = getDownloadHeaderRow(userContext);
+        // get the data rows
+        List<String[]> dataRows = getDownloadDataRows(userContext, eventId, null,
+            getStatusTypes().toArray(new PerformanceVerificationMessageStatus[getStatusTypes().size()]));
+        // write out the file
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "RfBroadcastPerformance_" + eventId + ".csv");
+    }
+
+    @GetMapping("/rf/broadcast/downloadFilteredResults")
+    public void downloadFilteredRF(HttpServletResponse response, YukonUserContext userContext, Integer eventId,
+            String[] deviceSubGroups, PerformanceVerificationMessageStatus[] statuses) throws IOException {
+        // get the header row
+        String[] headerRow = getDownloadHeaderRow(userContext);
+        // get the data rows
+        List<String[]> dataRows = getDownloadDataRows(userContext, eventId, deviceSubGroups, statuses);
+        // write out the file
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "RfBroadcastPerformance_" + eventId + ".csv");
+    }
+
+    private String[] getDownloadHeaderRow(YukonUserContext userContext) {
+        MessageSourceAccessor Accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        // header row
+        String[] headerRow = new String[5];
+        headerRow[0] = Accessor.getMessage(EventDetailSortBy.DEVICE_NAME);
+        headerRow[1] = Accessor.getMessage(EventDetailSortBy.DEVICE_TYPE);
+        headerRow[2] = Accessor.getMessage(EventDetailSortBy.ACCOUNT_NUMBER);
+        headerRow[3] = Accessor.getMessage(EventDetailSortBy.CURRENT_STATUS);
+        headerRow[4] = Accessor.getMessage(detailsKey + "LAST_COMMUNICATION");
+
+        return headerRow;
+    }
+
+    private List<String[]> getDownloadDataRows(YukonUserContext userContext, int eventId, String[] deviceSubGroups,
+            PerformanceVerificationMessageStatus[] statuses) {
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        List<BroadcastEventDeviceDetails> broadcastEventDetails =
+            verificationService.getDevicesWithStatus(eventId, statuses, PagingParameters.EVERYTHING, retrieveSubGroups(deviceSubGroups));
+        sortBroadcastEventDetails(broadcastEventDetails, null, EventDetailSortBy.DEVICE_NAME, userContext);
+        int totalEventCount = verificationService.getTotalCount(eventId, statuses, retrieveSubGroups(deviceSubGroups));
+        SearchResults<BroadcastEventDeviceDetails> searchResults =
+            SearchResults.pageBasedForSublist(broadcastEventDetails, PagingParameters.EVERYTHING, totalEventCount);
+
+        List<String[]> dataRows = Lists.newArrayList();
+        searchResults.getResultList().forEach(details -> {
+            String[] dataRow = new String[5];
+
+            dataRow[0] = deviceDao.getFormattedName(details.getHardware().getDeviceId());
+            dataRow[1] = accessor.getMessage(details.getHardware().getInventoryIdentifier().getHardwareType());
+            dataRow[2] = details.getHardware().getAccountNo();
+            dataRow[3] = accessor.getMessage(details.getDeviceStatus().getFormatKey());
+            dataRow[4] = details.getLastComm() != null ? details.getLastComm().toString()
+                : accessor.getMessage(detailsKey + "lastCommNotAvailable");
+            dataRows.add(dataRow);
+        });
+
+        return dataRows;
     }
 
     public enum EventDetailSortBy implements DisplayableEnum {

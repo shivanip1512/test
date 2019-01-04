@@ -676,6 +676,10 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.rf.details.detailsNotAvailable">Individual device details are not available beyond 180 days.</entry>
 <entry key="yukon.web.modules.dr.rf.details.rfPerformanceResult">RF Broadcast Performance Result</entry>
 <entry key="yukon.web.modules.dr.rf.details.eventDetails">Event Details</entry>
+<entry key="yukon.web.modules.dr.rf.details.DEVICE_NAME">Device Name</entry>
+<entry key="yukon.web.modules.dr.rf.details.DEVICE_TYPE">Device Type</entry>
+<entry key="yukon.web.modules.dr.rf.details.ACCOUNT_NUMBER">Account Number</entry>
+<entry key="yukon.web.modules.dr.rf.details.CURRENT_STATUS">Current Status</entry>
 
 <!-- Recent Event Participation -->
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.title">Recent Event Participation</entry>

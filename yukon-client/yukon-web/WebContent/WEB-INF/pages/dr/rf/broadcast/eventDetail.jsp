@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
@@ -13,7 +14,12 @@
             <div class="column one" style="margin-top:45px;">
                 <tags:nameValueContainer2 tableClass="name-collapse">
                     <tags:nameValue2 nameKey=".eventTime">
-                        <td><cti:formatDate type="FULL" value="${event.timeMessageSent}"/></td>
+                        <cti:url var="downloadAll" value="/dr/rf/broadcast/eventDetail/${eventId}/downloadAll"/>
+                            <span>
+                                <span class="fl">${fn:escapeXml(paoName)}</span>
+                                <td><span class="fl">&nbsp;<cti:formatDate type="FULL" value="${event.timeMessageSent}"/>&nbsp;</span>
+                                <cti:icon icon="icon-csv" nameKey="download" href = "${downloadAll}"/></td>
+                            </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".results">
                         <td><dr:rfPerformanceStats test="${event.eventStats}"/></td>
