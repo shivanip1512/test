@@ -1585,6 +1585,7 @@ public class PaoTypeTest {
                 PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                 PaoType.LM_SEP_PROGRAM,
                 PaoType.LM_ECOBEE_PROGRAM,
+                PaoType.LM_ITRON_PROGRAM,
                 PaoType.LM_HONEYWELL_PROGRAM,
                 PaoType.LM_NEST_PROGRAM,
                 PaoType.LM_CONTROL_AREA,
