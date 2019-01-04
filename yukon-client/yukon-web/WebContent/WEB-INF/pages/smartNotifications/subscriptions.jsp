@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="modules.smartNotifications">
 
@@ -28,7 +29,7 @@
                             <c:set var="subDescription" value="${subType} - ${deviceDataMonitors.get(subscription.parameters['monitorId'])}"/>
                         </c:if>
                         <tr class="js-${subscription.frequency}">
-                            <td>${subDescription}</td>
+                            <td>${fn:escapeXml(subDescription)}</td>
                             <td>
                                 <i:inline key="${subscription.frequency.formatKey}"/>
                                 <c:if test="${subscription.frequency == 'DAILY_DIGEST'}">

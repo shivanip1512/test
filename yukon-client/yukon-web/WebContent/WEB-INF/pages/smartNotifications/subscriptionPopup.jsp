@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="modules.smartNotifications">
     
@@ -30,17 +31,17 @@
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>
-            <c:set var="disableMonitor" value="${!empty subscription.type}"/>
+            
             <c:set var="monitorClass" value="${subscription.type != eventTypeDDM ? 'dn' : ''}"/>
             <tags:nameValue2 nameKey=".monitor" rowClass="js-monitor ${monitorClass}">
                 <c:choose>
                     <c:when test="${!empty subscription.parameters['monitorId']}">
-                        ${monitorName}
+                        ${fn:escapeXml(monitorName)}
                         <form:hidden path="parameters['monitorId']" id="device-data-monitor"/>
                     </c:when>
                     <c:otherwise>
                         <tags:selectWithItems path="parameters['monitorId']" items="${deviceDataMonitors}" itemLabel="name" 
-                            itemValue="id" disabled="${disableMonitor}" id="device-data-monitor"/>
+                            itemValue="id" id="device-data-monitor"/>
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>

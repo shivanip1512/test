@@ -18,10 +18,8 @@ yukon.smart.notifications = (function () {
         var type = popup.find('.js-type').val(),
             deviceDataMonitor = type === $(".js-event-type-ddm").val(),
             assetImport = type === $(".js-event-type-asset-import").val();
-        popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
-        popup.find('#device-data-monitor').prop("disabled", !deviceDataMonitor);
+        popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);      
         popup.find('.js-import-result').toggleClass('dn', !assetImport);
-        popup.find('#js-asset-import-result-type').prop("disabled", !assetImport);
    },
     
     initializeSmartNotificationsTable = function () {
