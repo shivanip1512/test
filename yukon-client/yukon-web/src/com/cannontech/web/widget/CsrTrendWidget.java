@@ -189,7 +189,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
         } else if (device.getPaoIdentifier().getPaoType().isGasMeter()) {
             trendWidgetDisplayParams = CsrTrendWidgetType.GAS_CSR_TREND;
         } else {
-            trendWidgetDisplayParams = CsrTrendWidgetType.CSR_TREND;
+            trendWidgetDisplayParams = CsrTrendWidgetType.ELECTRIC_CSR_TREND;
         }
         this.supportedAttributeGraphMap = trendWidgetDisplayParams.getSupportedAttributeGraphMap();
         this.defaultAttribute = trendWidgetDisplayParams.getDefaultAttribute();

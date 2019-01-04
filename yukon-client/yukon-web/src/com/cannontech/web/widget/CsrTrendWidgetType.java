@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum CsrTrendWidgetType {
 
-    CSR_TREND("csrTrendWidgetCachingWidgetParameterGrabber", BuiltInAttribute.SUM_KWH_PER_INTERVAL,
+    ELECTRIC_CSR_TREND("electricCsrTrendWidgetCachingWidgetParameterGrabber", BuiltInAttribute.USAGE, BuiltInAttribute.SUM_KWH_PER_INTERVAL,
                      BuiltInAttribute.SUM_KW_LOAD_PROFILE, BuiltInAttribute.DELIVERED_KWH_PER_INTERVAL,
                      BuiltInAttribute.DELIVERED_KW_LOAD_PROFILE, BuiltInAttribute.LOAD_PROFILE,
                      BuiltInAttribute.VOLTAGE_PROFILE, BuiltInAttribute.DEMAND, BuiltInAttribute.USAGE),
@@ -25,7 +25,7 @@ public enum CsrTrendWidgetType {
 
     static {
         Map<String, AttributeGraphType> csrSupportedAttributeGraphMap = new HashMap<>();
-        for (BuiltInAttribute attribute : CSR_TREND.getBuiltInAttributes()) {
+        for (BuiltInAttribute attribute : ELECTRIC_CSR_TREND.getBuiltInAttributes()) {
             AttributeGraphType attributeGraph = new AttributeGraphType();
             attributeGraph.setAttribute(attribute);
             attributeGraph.setGraphType((attribute == BuiltInAttribute.USAGE) ? GraphType.COLUMN : GraphType.LINE);
@@ -54,7 +54,7 @@ public enum CsrTrendWidgetType {
 
         Builder<CsrTrendWidgetType, Map<String, AttributeGraphType>> supportedAttributeGraphBuilder =
             new ImmutableMap.Builder<CsrTrendWidgetType, Map<String, AttributeGraphType>>()
-                .put(CSR_TREND, csrSupportedAttributeGraphMap)
+                .put(ELECTRIC_CSR_TREND, csrSupportedAttributeGraphMap)
                 .put(GAS_CSR_TREND, gasCsrSupportedAttributeGraphMap)
                 .put(WATER_CSR_TREND, waterCsrSupportedAttributeGraphMap);
         

@@ -631,11 +631,11 @@
         <property name="accessOrder" value="true"/>
     </bean>
 
-    <bean id="csrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
+    <bean id="electricCsrTrendWidgetCachingWidgetParameterGrabber" parent="trendWidgetCachingParameterGrabber" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber" scope="session">
         <property name="useCache" value="true"/>
         <property name="uniqueIdentifiers">
             <list>
-                <value>csrTrendWidget</value>
+                <value>electricCsrTrendWidget</value>
             </list>
         </property>
         <aop:scoped-proxy/>
@@ -663,7 +663,7 @@
     
     <util:map id="cachingWidgetParameterGrabbers" key-type="java.lang.String" 
               value-type="com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber">
-        <entry key="csrTrendWidgetCachingWidgetParameterGrabber" value-ref="csrTrendWidgetCachingWidgetParameterGrabber"/>
+        <entry key="electricCsrTrendWidgetCachingWidgetParameterGrabber" value-ref="electricCsrTrendWidgetCachingWidgetParameterGrabber"/>
         <entry key="waterCsrTrendWidgetCachingWidgetParameterGrabber" value-ref="waterCsrTrendWidgetCachingWidgetParameterGrabber"/>
         <entry key="gasCsrTrendWidgetCachingWidgetParameterGrabber" value-ref="gasCsrTrendWidgetCachingWidgetParameterGrabber"/>
     </util:map>
