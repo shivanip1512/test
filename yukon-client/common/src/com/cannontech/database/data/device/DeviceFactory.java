@@ -23,6 +23,7 @@ import com.cannontech.database.data.device.lm.LMGroupEcobee;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupGolay;
 import com.cannontech.database.data.device.lm.LMGroupHoneywell;
+import com.cannontech.database.data.device.lm.LMGroupItron;
 import com.cannontech.database.data.device.lm.LMGroupMCT;
 import com.cannontech.database.data.device.lm.LMGroupNest;
 import com.cannontech.database.data.device.lm.LMGroupPlcExpressCom;
@@ -380,6 +381,9 @@ public final class DeviceFactory {
             break;
         case LM_GROUP_HONEYWELL:
             returnDevice = new LMGroupHoneywell();
+            break;
+        case LM_GROUP_ITRON:
+            returnDevice = new LMGroupItron();
             break;
         case LM_GROUP_NEST:
             returnDevice = new LMGroupNest();

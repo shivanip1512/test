@@ -33,6 +33,7 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 			PaoType.LM_SEP_PROGRAM,
 			PaoType.LM_ECOBEE_PROGRAM,
 			PaoType.LM_HONEYWELL_PROGRAM,
+            PaoType.LM_ITRON_PROGRAM,
             PaoType.LM_NEST_PROGRAM,
 			PaoType.LM_ENERGY_EXCHANGE_PROGRAM },
 
@@ -43,19 +44,19 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 
 		//LMProgramDirectPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramControlWindowPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramListPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramDirectCustomerListPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramDirectMemberControlPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		
 		//LMProgramEnergyExchangePanel
 		{ PaoType.LM_ENERGY_EXCHANGE_PROGRAM},
@@ -71,9 +72,9 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
         public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == basePanel.getActionPasser())
 			{
-				if(basePanel.isTimedOperationalState())
-					controlWindowPanel.getWindowChangePasser().doClick();
-				else
+				if(basePanel.isTimedOperationalState()) {
+                    controlWindowPanel.getWindowChangePasser().doClick();
+                } else
 				{
 					controlWindowPanel.getWindowChangePasser().setSelected(true);
 					controlWindowPanel.getWindowChangePasser().doClick();
@@ -173,8 +174,9 @@ public Object[] createNewPanel(int panelIndex)
 @Override
 public DataInputPanel[] getInputPanels() {
 	//At least guarantee a non-null array if not a meaningful one
-	if( this.inputPanels == null )
-		this.inputPanels = new DataInputPanel[0];
+	if( this.inputPanels == null ) {
+        this.inputPanels = new DataInputPanel[0];
+    }
 		
 	return this.inputPanels;
 }
@@ -216,8 +218,9 @@ private javax.swing.JTabbedPane getStateEditorTabbedPane() {
  */
 @Override
 public String[] getTabNames() {
-	if( this.inputPanelTabNames == null )
-		this.inputPanelTabNames = new String[0];
+	if( this.inputPanelTabNames == null ) {
+        this.inputPanelTabNames = new String[0];
+    }
 		
 	return this.inputPanelTabNames;
 }
@@ -317,8 +320,8 @@ public boolean isInputValid()
 public void setValue(Object val) 
 {	
 	//Vector to hold the panels temporarily
-	Vector<DataInputPanel> panels = new Vector<DataInputPanel>(EDITOR_TYPES.length);
-	Vector<Object> tabs = new Vector<Object>(EDITOR_TYPES.length);
+	Vector<DataInputPanel> panels = new Vector<>(EDITOR_TYPES.length);
+	Vector<Object> tabs = new Vector<>(EDITOR_TYPES.length);
 	
 	DataInputPanel tempPanel;
 	PaoType paoType = ((LMProgramBase)val).getPaoType();

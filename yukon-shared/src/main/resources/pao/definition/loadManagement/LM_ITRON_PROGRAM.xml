@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LM_ITRON_PROGRAM" displayGroup="Demand Response" displayName="LM ITRON PROGRAM" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>LM.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="ITRON_PROGRAM_ENROLLMENT"/>
+        <tag name="LM_PROGRAM"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Available Load Reduction" attributes="AVAILABLE_LOAD_REDUCTION"/>
+        <pointInfo name="Connected Load" attributes="CONNECTED_LOAD"/>
+        <pointInfo name="Diversified Load" attributes="DIVERSIFIED_LOAD"/>
+        <pointInfo name="Max Load Reduction" attributes="MAX_LOAD_REDUCTION"/>
+        <pointInfo name="Status" init="true" attributes="CONTROL_STATUS"/>
+    </pointInfos>
+</pao>

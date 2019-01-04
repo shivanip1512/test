@@ -1044,6 +1044,7 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
                           || paoType == PaoType.LM_GROUP_DIGI_SEP
                           || paoType == PaoType.LM_GROUP_ECOBEE
                           || paoType == PaoType.LM_GROUP_HONEYWELL
+                          || paoType == PaoType.LM_GROUP_ITRON
                           || paoType == PaoType.LM_GROUP_NEST
                           || paoType == PaoType.LM_GROUP_RFN_EXPRESSCOMM));
 

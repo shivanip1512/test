@@ -23,6 +23,9 @@ public final class LMFactory {
         case LM_GROUP_HONEYWELL:
             retLm = new LMGroupHoneywell();
             break;
+        case LM_GROUP_ITRON:
+            retLm = new LMGroupItron();
+            break;
         case LM_GROUP_NEST:
             retLm = new LMGroupNest();
             break;
@@ -70,6 +73,9 @@ public final class LMFactory {
             break;
         case LM_HONEYWELL_PROGRAM:
             retLm = new LmProgramHoneywell();
+            break;
+        case LM_ITRON_PROGRAM:
+            retLm = new LmProgramItron();
             break;
         case LM_NEST_PROGRAM:
             retLm = new LmProgramNest();

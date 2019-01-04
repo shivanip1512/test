@@ -175,6 +175,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_GROUP_DIGI_SEP(DeviceTypes.LM_GROUP_DIGI_SEP, "DIGI SEP GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_ECOBEE(DeviceTypes.LM_GROUP_ECOBEE, "ECOBEE GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_HONEYWELL(DeviceTypes.LM_GROUP_HONEYWELL, "HONEYWELL GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_ITRON(DeviceTypes.LM_GROUP_ITRON, "ITRON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_NEST(DeviceTypes.LM_GROUP_NEST, "NEST GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON, "EMETCON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EXPRESSCOMM(DeviceTypes.LM_GROUP_EXPRESSCOMM, "EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
@@ -195,6 +196,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_SEP_PROGRAM(DeviceTypes.LM_SEP_PROGRAM, "LM SEP PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_ECOBEE_PROGRAM(DeviceTypes.LM_ECOBEE_PROGRAM, "ECOBEE PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_HONEYWELL_PROGRAM(DeviceTypes.LM_HONEYWELL_PROGRAM, "HONEYWELL PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_ITRON_PROGRAM(DeviceTypes.LM_ITRON_PROGRAM, "ITRON PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_NEST_PROGRAM(DeviceTypes.LM_NEST_PROGRAM, "NEST PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA, "LM CONTROL AREA", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SCENARIO(DeviceTypes.LM_SCENARIO, "LMSCENARIO", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
@@ -350,14 +352,18 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
             LM_HONEYWELL_PROGRAM,
-            LM_NEST_PROGRAM);
+            LM_NEST_PROGRAM,
+            LM_ITRON_PROGRAM
+            );
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
             LM_HONEYWELL_PROGRAM,
-            LM_NEST_PROGRAM);
+            LM_NEST_PROGRAM,
+            LM_ITRON_PROGRAM
+            );
         
         cbcTypes = ImmutableSet.of(
             CBC_EXPRESSCOM,

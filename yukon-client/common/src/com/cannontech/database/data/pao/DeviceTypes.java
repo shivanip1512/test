@@ -269,6 +269,8 @@ public interface DeviceTypes extends TypeBase
     
     public final static int LCR6601S = DEVICE_OFFSET + 204;
     public final static int LCR6600S = DEVICE_OFFSET + 205;
+    public final static int LM_GROUP_ITRON = DEVICE_OFFSET + 206;
+    public final static int LM_ITRON_PROGRAM = DEVICE_OFFSET + 207;
     
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -359,6 +361,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_DIGI_SEP_GROUP = {"DIGI SEP GROUP"};
     public static final String[] STRING_ECOBEE_GROUP = {"ECOBEE GROUP"};
     public static final String[] STRING_HONEYWELL_GROUP = {"HONEYWELL GROUP"};
+    public static final String[] STRING_ITRON_GROUP = {"ITRON GROUP"};
     public static final String[] STRING_NEST_GROUP = {"NEST GROUP"};
     public static final String[] STRING_POINT_GROUP = {"POINT GROUP"};
     public static final String[] STRING_RIPPLE_GROUP = {"RIPPLE GROUP"};
@@ -372,6 +375,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_LM_SEP_PROGRAM = {"LM SEP PROGRAM"};
     public static final String[] STRING_LM_ECOBEE_PROGRAM = {"LM ECOBEE PROGRAM"};
     public static final String[] STRING_LM_HONEYWELL_PROGRAM = {"LM HONEYWELL PROGRAM"};
+    public static final String[] STRING_LM_ITRON_PROGRAM = {"LM ITRON PROGRAM"};
     public static final String[] STRING_LM_NEST_PROGRAM = {"LM NEST PROGRAM"};
     public static final String[] STRING_LM_CURTAIL_PROGRAM = {"LM CURTAIL PROGRAM"};
     public static final String[] STRING_LM_CONTROL_AREA = {"LM CONTROL AREA"};

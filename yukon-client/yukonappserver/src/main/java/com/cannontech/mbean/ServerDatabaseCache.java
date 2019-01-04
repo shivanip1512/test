@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -439,19 +440,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized List<LiteYukonPAObject> getAllLMPrograms() {
         if (allLMPrograms == null) {
-            allLMPrograms = new ArrayList<>();
-
-            for (int i = 0; i < getAllLoadManagement().size(); i++) {
-                if (getAllLoadManagement().get(i).getPaoType() == PaoType.LM_CURTAIL_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_DIRECT_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_SEP_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_ECOBEE_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_ENERGY_EXCHANGE_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_HONEYWELL_PROGRAM
-                    || getAllLoadManagement().get(i).getPaoType() == PaoType.LM_NEST_PROGRAM) {
-                    allLMPrograms.add(getAllLoadManagement().get(i));
-                }
-            }
+            allLMPrograms = getAllLoadManagement().stream()
+                    .filter(pao -> pao.getPaoType().isLmProgram())
+                    .collect(Collectors.toList());
         }
         return allLMPrograms;
     }

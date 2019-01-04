@@ -33,6 +33,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
           PaoType.LM_GROUP_DIGI_SEP,
           PaoType.LM_GROUP_ECOBEE,
           PaoType.LM_GROUP_HONEYWELL,
+          PaoType.LM_GROUP_ITRON,
           PaoType.LM_GROUP_NEST},
 
         //com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupEmetconPanel
@@ -109,10 +110,11 @@ public Object[] createNewPanel(int panelIndex)
             break;
 
         case 3:
-            if((SPECIAL_RIPPLE & ClientRights.SHOW_SPECIAL_RIPPLE) != 0)
+            if((SPECIAL_RIPPLE & ClientRights.SHOW_SPECIAL_RIPPLE) != 0) {
                 objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.SpecialRippleMessagePanel();
-            else
+            } else {
                 objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.RippleMessageShedPanel();
+            }
             objs[1] = "Message";
             break;
 
@@ -171,8 +173,9 @@ public Object[] createNewPanel(int panelIndex)
 @Override
 public DataInputPanel[] getInputPanels() {
     //At least guarantee a non-null array if not a meaningful one
-    if( this.inputPanels == null )
+    if( this.inputPanels == null ) {
         this.inputPanels = new DataInputPanel[0];
+    }
         
     return this.inputPanels;
 }
@@ -214,8 +217,9 @@ private javax.swing.JTabbedPane getStateEditorTabbedPane() {
  */
 @Override
 public String[] getTabNames() {
-    if( this.inputPanelTabNames == null )
+    if( this.inputPanelTabNames == null ) {
         this.inputPanelTabNames = new String[0];
+    }
         
     return this.inputPanelTabNames;
 }
@@ -257,8 +261,8 @@ private void initialize() {
 public void setValue(Object val) 
 {
     //Vector to hold the panels temporarily
-    Vector<DataInputPanel> panels = new Vector<DataInputPanel>(EDITOR_TYPES.length);
-    Vector<Object> tabs = new Vector<Object>(EDITOR_TYPES.length);
+    Vector<DataInputPanel> panels = new Vector<>(EDITOR_TYPES.length);
+    Vector<Object> tabs = new Vector<>(EDITOR_TYPES.length);
     
     DataInputPanel tempPanel;
     PaoType type = ((LMGroup)val).getPaoType();

@@ -47,49 +47,56 @@ public class LMGroupWizardPanel extends WizardPanel {
     }
 
     public GolayEditorPanel getGolayEditorPanel() {
-        if (golayEditorPanel == null)
+        if (golayEditorPanel == null) {
             golayEditorPanel = new GolayEditorPanel();
+        }
 
         return golayEditorPanel;
     }
 
     public SA305EditorPanel getSA305EditorPanel() {
-        if (aSA305EditorPanel == null)
+        if (aSA305EditorPanel == null) {
             aSA305EditorPanel = new SA305EditorPanel();
+        }
 
         return aSA305EditorPanel;
     }
 
     public LMGroupDigiSepPanel getlmGroupDigiSepEditorPanel() {
-        if (lmGroupDigiSepEditorPanel == null)
+        if (lmGroupDigiSepEditorPanel == null) {
             lmGroupDigiSepEditorPanel = new LMGroupDigiSepPanel();
+        }
 
         return lmGroupDigiSepEditorPanel;
     }
 
     public SA205EditorPanel getSA205EditorPanel() {
-        if (aSA205EditorPanel == null)
+        if (aSA205EditorPanel == null) {
             aSA205EditorPanel = new SA205EditorPanel();
+        }
 
         return aSA205EditorPanel;
     }
 
     public SADigitalEditorPanel getSADigitalEditorPanel() {
-        if (aSADigitalEditorPanel == null)
+        if (aSADigitalEditorPanel == null) {
             aSADigitalEditorPanel = new SADigitalEditorPanel();
+        }
 
         return aSADigitalEditorPanel;
     }
 
     public GroupMacroLoadGroupsPanel getGroupMacroLoadGroupsPanel() {
-        if (groupMacroLoadGroupsPanel == null)
+        if (groupMacroLoadGroupsPanel == null) {
             groupMacroLoadGroupsPanel = new GroupMacroLoadGroupsPanel();
+        }
         return groupMacroLoadGroupsPanel;
     }
 
     public GroupTypePanel getGroupTypePanel() {
-        if (groupTypePanel == null)
+        if (groupTypePanel == null) {
             groupTypePanel = new GroupTypePanel();
+        }
         return groupTypePanel;
     }
 
@@ -99,43 +106,49 @@ public class LMGroupWizardPanel extends WizardPanel {
     }
 
     public LMGroupBaseWizardPanel getLMGroupBasePanel() {
-        if (lmGroupBasePanel == null)
+        if (lmGroupBasePanel == null) {
             lmGroupBasePanel = new LMGroupBaseWizardPanel(true);
+        }
 
         return lmGroupBasePanel;
     }
 
     public LMGroupEmetconPanel getLMGroupEmetconPanel() {
-        if (lmGroupEmetconPanel == null)
+        if (lmGroupEmetconPanel == null) {
             lmGroupEmetconPanel = new LMGroupEmetconPanel();
+        }
 
         return lmGroupEmetconPanel;
     }
 
     public LMGroupExpressComEditorPanel getLMGroupExpressComEditorPanel() {
-        if (lmGroupExpressComEditorPanel == null)
+        if (lmGroupExpressComEditorPanel == null) {
             lmGroupExpressComEditorPanel = new LMGroupExpressComEditorPanel();
+        }
 
         return lmGroupExpressComEditorPanel;
     }
 
     public LMGroupMCTEditorPanel getLMGroupMCTEditorPanel() {
-        if (lmGroupMCTEditorPanel == null)
+        if (lmGroupMCTEditorPanel == null) {
             lmGroupMCTEditorPanel = new LMGroupMCTEditorPanel();
+        }
 
         return lmGroupMCTEditorPanel;
     }
 
     public LMGroupPointEditorPanel getLmGroupPointEditorPanel() {
-        if (lmGroupPointEditorPanel == null)
+        if (lmGroupPointEditorPanel == null) {
             lmGroupPointEditorPanel = new LMGroupPointEditorPanel();
+        }
 
         return lmGroupPointEditorPanel;
     }
 
     public LMGroupVersacomEditorPanel getLmGroupVersacomEditorPanel() {
-        if (lmGroupVersacomEditorPanel == null)
+        if (lmGroupVersacomEditorPanel == null) {
             lmGroupVersacomEditorPanel = new LMGroupVersacomEditorPanel();
+        }
 
         return lmGroupVersacomEditorPanel;
     }
@@ -156,8 +169,9 @@ public class LMGroupWizardPanel extends WizardPanel {
                 getLMGroupBasePanel().setSwitchType(PaoType.MACRO_GROUP);
                 getLMGroupBasePanel().setFirstFocus();
                 return getLMGroupBasePanel();
-            } else
+            } else {
                 getSwitchTypePanel().setFirstFocus();
+            }
             return getSwitchTypePanel();
         } else if (currentInputPanel == getLMGroupBasePanel() && getGroupTypePanel().isGroupMacro()) {
             getGroupMacroLoadGroupsPanel().setFirstFocus();
@@ -280,6 +294,8 @@ public class LMGroupWizardPanel extends WizardPanel {
                 || (currentPanel == getLMGroupBasePanel()
                 && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_HONEYWELL)
                 || (currentPanel == getLMGroupBasePanel()
-                && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_NEST));
+                && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_NEST)
+                || (currentPanel == getLMGroupBasePanel()
+                && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_ITRON));
     }
 }

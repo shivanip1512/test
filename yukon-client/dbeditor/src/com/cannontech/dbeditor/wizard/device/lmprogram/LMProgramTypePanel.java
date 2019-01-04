@@ -9,7 +9,6 @@ import javax.swing.JRadioButton;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.spring.YukonSpringHook;
@@ -21,6 +20,7 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
     private JRadioButton ivjJRadioButtonEcobeeControl = null;
     private JRadioButton ivjJRadioButtonHoneywellControl = null;
     private JRadioButton ivjJRadioButtonNestControl = null;
+    private JRadioButton ivjJRadioButtonItronControl = null;
     /**
      * Constructor
      */
@@ -107,6 +107,21 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
         }
         return ivjJRadioButtonNestControl;
     }
+    
+    // itron program
+    private JRadioButton getJRadioButtonItronControl() {
+        if (ivjJRadioButtonItronControl == null) {
+            try {
+                ivjJRadioButtonItronControl = new JRadioButton();
+                ivjJRadioButtonItronControl.setName("ItronControlButton");
+                ivjJRadioButtonItronControl.setMnemonic('n');
+                ivjJRadioButtonItronControl.setText("Itron Control");
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJRadioButtonItronControl;
+    }
     /**
      * Insert the method's description here.
      * Creation date: (2/5/2001 10:32:24 AM)
@@ -132,8 +147,12 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
          {
              return PaoType.LM_NEST_PROGRAM;
          }
-         else
-             throw new Error(getClass() + "::getLMSelectedType() - No radio button is selected");
+         else if( getJRadioButtonItronControl().isSelected() )
+         {
+             return PaoType.LM_ITRON_PROGRAM;
+         } else {
+            throw new Error(getClass() + "::getLMSelectedType() - No radio button is selected");
+        }
     }
     /**
      * getValue method comment.
@@ -162,7 +181,8 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             setSize(350, 300);
     
             GridBagConstraints constraintsJRadioButtonDirectControl = new GridBagConstraints();
-            constraintsJRadioButtonDirectControl.gridx = 1; constraintsJRadioButtonDirectControl.gridy = 1;
+            constraintsJRadioButtonDirectControl.gridx = 1; 
+            constraintsJRadioButtonDirectControl.gridy = 1;
             constraintsJRadioButtonDirectControl.anchor = GridBagConstraints.WEST;
             constraintsJRadioButtonDirectControl.ipadx = 41;
             constraintsJRadioButtonDirectControl.insets = new Insets(100, 105, 8, 101);
@@ -170,7 +190,8 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
     
             
             GridBagConstraints constraintsJRadioButtonEnergyExchange = new GridBagConstraints();
-            constraintsJRadioButtonEnergyExchange.gridx = 1; constraintsJRadioButtonEnergyExchange.gridy = 2;
+            constraintsJRadioButtonEnergyExchange.gridx = 1; 
+            constraintsJRadioButtonEnergyExchange.gridy = 2;
             constraintsJRadioButtonEnergyExchange.anchor = GridBagConstraints.WEST;
             constraintsJRadioButtonEnergyExchange.ipadx = 21;
             constraintsJRadioButtonEnergyExchange.insets = new Insets(9, 105, 8, 101);
@@ -178,7 +199,8 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
     
             
             GridBagConstraints constraintsJRadioButtonEcobeeProgram = new GridBagConstraints();
-            constraintsJRadioButtonEcobeeProgram.gridx = 1; constraintsJRadioButtonEcobeeProgram.gridy = 3;
+            constraintsJRadioButtonEcobeeProgram.gridx = 1; 
+            constraintsJRadioButtonEcobeeProgram.gridy = 3;
             constraintsJRadioButtonEcobeeProgram.anchor = GridBagConstraints.WEST;
             constraintsJRadioButtonEcobeeProgram.ipadx = 1;
             constraintsJRadioButtonEcobeeProgram.insets = new Insets(9, 105, 8, 101);
@@ -193,6 +215,14 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             constraintsJRadioButtonNestProgram.insets = new Insets(9, 105, 10, 101);
             add(getJRadioButtonNestControl(), constraintsJRadioButtonNestProgram);
             
+            GridBagConstraints constraintsJRadioButtonItronProgram = new GridBagConstraints();
+            constraintsJRadioButtonItronProgram.gridx = 1; 
+            constraintsJRadioButtonItronProgram.gridy = 5;
+            constraintsJRadioButtonItronProgram.anchor = GridBagConstraints.WEST;
+            constraintsJRadioButtonItronProgram.ipadx = 1;
+            constraintsJRadioButtonItronProgram.insets = new Insets(9, 105, 10, 101);
+            add(getJRadioButtonItronControl(), constraintsJRadioButtonItronProgram);
+            
             ConfigurationSource masterConfigSource =
                 YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
             boolean honeywellEnabled =
@@ -200,7 +230,7 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             if (honeywellEnabled) {
                 GridBagConstraints constraintsJRadioButtonHoneywellProgram = new GridBagConstraints();
                 constraintsJRadioButtonHoneywellProgram.gridx = 1;
-                constraintsJRadioButtonHoneywellProgram.gridy = 5;
+                constraintsJRadioButtonHoneywellProgram.gridy = 6;
                 constraintsJRadioButtonHoneywellProgram.anchor = GridBagConstraints.WEST;
                 constraintsJRadioButtonHoneywellProgram.ipadx = 1;
                 constraintsJRadioButtonHoneywellProgram.insets = new Insets(9, 105, 151, 101);
@@ -215,7 +245,8 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
         buttonGroup.add( getJRadioButtonSepControl() );
         buttonGroup.add( getJRadioButtonEcobeeControl() );
         buttonGroup.add( getJRadioButtonHoneywellControl() );
-        buttonGroup.add( getJRadioButtonNestControl() );
+        buttonGroup.add( getJRadioButtonNestControl() ); 
+        buttonGroup.add( getJRadioButtonItronControl() );
     
         // default selected button
         getJRadioButtonDirectControl().setSelected(true);

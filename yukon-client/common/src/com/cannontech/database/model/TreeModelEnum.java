@@ -34,6 +34,7 @@ public enum TreeModelEnum
 	LMGROUPDIGISEP (LMGroupDigiSepModel.class, "Digi SEP Group"),
 	LMGROUPECOBEE (LMGroupEcobeeModel.class, "ecobee Group"),
 	LMGROUPHONEYWELL (LMGroupHoneywellModel.class, "Honeywell Group"),
+	LMGROUPITRON(LMGroupItronModel.class, "Itron Group"),
     LMGROUPNEST(LMGroupNestModel.class, "Nest Group"),
 	LMGROUPMACRO (LMGroupMacroModel.class, "Macro Group"),
 	GOLAY (LMGroupGolayModel.class, "Golay Group"),
@@ -127,7 +128,7 @@ public enum TreeModelEnum
 	    }
 	}
 	
-    private static final Set<Class<? extends LiteBaseTreeModel>> editableSerialClasses = new HashSet<Class<? extends LiteBaseTreeModel>>();
+    private static final Set<Class<? extends LiteBaseTreeModel>> editableSerialClasses = new HashSet<>();
 
     static {
         editableSerialClasses.add(EditableSA205Model.class);

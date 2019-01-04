@@ -84,7 +84,7 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
     }
 
     private List<Object> getArrayListFromListModel(ListModel<Object> listModel) {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         for (int i = 0; i < listModel.getSize(); i++) {
             list.add(listModel.getElementAt(i));
         }
@@ -151,7 +151,7 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
         synchronized (cache) {
             List<LiteYukonPAObject> groups = cache.getAllLoadManagement();
             
-            Vector<LiteYukonPAObject> newList = new Vector<LiteYukonPAObject>(getAddRemovePanel().leftListGetModel().getSize());
+            Vector<LiteYukonPAObject> newList = new Vector<>(getAddRemovePanel().leftListGetModel().getSize());
 
             for (LiteYukonPAObject group : groups) {
                 PaoType paoType = group.getPaoType();
@@ -161,6 +161,7 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     boolean isEcobeeProgram = programType == PaoType.LM_ECOBEE_PROGRAM;
                     boolean isHoneywellProgram = programType == PaoType.LM_HONEYWELL_PROGRAM;
                     boolean isNestProgram = programType == PaoType.LM_NEST_PROGRAM;
+                    boolean isItronProgram = programType == PaoType.LM_ITRON_PROGRAM;
                     // SEP compatible groups are shown for SEP programs and
                     // hidden for all others
                     // ecobee compatible groups are shown for ecobee programs
@@ -181,13 +182,15 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     } else if (isNestProgram && isGroupNestCompatible(paoType)) {
                         isNest = true;
                         newList.addElement(group);
+                    } else if (isItronProgram && isGroupItronCompatible(paoType)) {
+                        newList.addElement(group);
                     }
                 }
             }
 
             getAddRemovePanel().leftListSetListData(newList);
-            currentAvailableList = new ArrayList<Object>(newList);
-            currentSelectedList = new ArrayList<Object>();
+            currentAvailableList = new ArrayList<>(newList);
+            currentSelectedList = new ArrayList<>();
 
         }
     }
@@ -206,6 +209,10 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
     
     private boolean isGroupNestCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_NEST;
+    }
+    
+    private boolean isGroupItronCompatible(PaoType groupType) {
+        return groupType == PaoType.LM_GROUP_ITRON;
     }
 
     @Override
@@ -338,11 +345,12 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
         /**** END of special case for the LM_GROUP_POINT group type ****/
 
         // init storage that will contain all possible items
-        Vector<LiteYukonPAObject> allItems = new Vector<LiteYukonPAObject>(getAddRemovePanel().leftListGetModel().getSize());
-        for (int i = 0; i < getAddRemovePanel().leftListGetModel().getSize(); i++)
+        Vector<LiteYukonPAObject> allItems = new Vector<>(getAddRemovePanel().leftListGetModel().getSize());
+        for (int i = 0; i < getAddRemovePanel().leftListGetModel().getSize(); i++) {
             allItems.add((LiteYukonPAObject)getAddRemovePanel().leftListGetModel().getElementAt(i));
+        }
 
-        Vector<LiteYukonPAObject> usedItems = new Vector<LiteYukonPAObject>(getAddRemovePanel().leftListGetModel().getSize());
+        Vector<LiteYukonPAObject> usedItems = new Vector<>(getAddRemovePanel().leftListGetModel().getSize());
 
         for (int i = 0; i < dirProg.getLmProgramStorageVector().size(); i++) {
             LMProgramDirectGroup group = (LMProgramDirectGroup) dirProg.getLmProgramStorageVector().get(i);
@@ -358,10 +366,10 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
         }
 
         getAddRemovePanel().leftListSetListData(allItems);
-        currentAvailableList = new ArrayList<Object>(allItems);
+        currentAvailableList = new ArrayList<>(allItems);
 
         getAddRemovePanel().rightListSetListData(usedItems);
-        currentSelectedList = new ArrayList<Object>(usedItems);
+        currentSelectedList = new ArrayList<>(usedItems);
 
     }
 

@@ -87,22 +87,30 @@ public LMGroupBaseWizardPanel( boolean showHistory )
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getRouteComboBox()) 
-		connEtoC4(e);
-	if (e.getSource() == getJCheckBoxDisableControl()) 
-		connEtoC5(e);
-	if (e.getSource() == getJCheckBoxDisable()) 
-		connEtoC6(e);
-	if (e.getSource() == getJCheckBoxHistory()) 
-		connEtoC3(e);
-	if (e.getSource() == getJCheckBoxDaily()) 
-		connEtoC7(e);
-	if (e.getSource() == getJCheckBoxSeasonal()) 
-		connEtoC8(e);
-	if (e.getSource() == getJCheckBoxAnnual()) 
-		connEtoC9(e);
-	if (e.getSource() == getJCheckBoxMonthly()) 
-		connEtoC10(e);
+	if (e.getSource() == getRouteComboBox()) {
+        connEtoC4(e);
+    }
+	if (e.getSource() == getJCheckBoxDisableControl()) {
+        connEtoC5(e);
+    }
+	if (e.getSource() == getJCheckBoxDisable()) {
+        connEtoC6(e);
+    }
+	if (e.getSource() == getJCheckBoxHistory()) {
+        connEtoC3(e);
+    }
+	if (e.getSource() == getJCheckBoxDaily()) {
+        connEtoC7(e);
+    }
+	if (e.getSource() == getJCheckBoxSeasonal()) {
+        connEtoC8(e);
+    }
+	if (e.getSource() == getJCheckBoxAnnual()) {
+        connEtoC9(e);
+    }
+	if (e.getSource() == getJCheckBoxMonthly()) {
+        connEtoC10(e);
+    }
 	if (e.getSource() == getPriorityCombo()) {
 		this.fireInputUpdate();
 	}
@@ -118,11 +126,14 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJTextFieldName()) 
-		connEtoC1(e);
-	if (e.getSource() == getJTextFieldKWCapacity()) 
-		connEtoC2(e);
+	if (e.getSource() == getJTextFieldName()) {
+        connEtoC1(e);
+    }
+	if (e.getSource() == getJTextFieldKWCapacity())
+     {
+        connEtoC2(e);
 	// user code begin {2}
+    }
 
 	//if( e.getSource() instanceof com.cannontech.common.gui.util.JTextFieldComboEditor )
 		//fireInputUpdate();
@@ -545,7 +556,7 @@ private javax.swing.JPanel getIdentificationPanel() {
 
 	private JComboBox<Object> getPriorityCombo() {
 		if(priorityCombo == null) {
-			priorityCombo = new JComboBox<Object>(new Object[]{"Default", "Medium", "High", "Highest"});
+			priorityCombo = new JComboBox<>(new Object[]{"Default", "Medium", "High", "Highest"});
 			Dimension priorityDimension = new Dimension(210, 25);
 			priorityCombo.setPreferredSize(priorityDimension);
 			priorityCombo.setMinimumSize(priorityDimension);
@@ -993,7 +1004,7 @@ private javax.swing.JLabel getJTextFieldType() {
 private javax.swing.JComboBox<LiteYukonPAObject> getRouteComboBox() {
 	if (ivjRouteComboBox == null) {
 		try {
-			ivjRouteComboBox = new javax.swing.JComboBox<LiteYukonPAObject>();
+			ivjRouteComboBox = new javax.swing.JComboBox<>();
 			ivjRouteComboBox.setName("RouteComboBox");
 			ivjRouteComboBox.setPreferredSize(new java.awt.Dimension(210, 25));
 			ivjRouteComboBox.setMinimumSize(new java.awt.Dimension(210, 25));
@@ -1005,8 +1016,9 @@ private javax.swing.JComboBox<LiteYukonPAObject> getRouteComboBox() {
 			{
 				List<LiteYukonPAObject> routes = cache.getAllRoutes();
 
-				for( int i = 0 ; i < routes.size(); i++ )
-					getRouteComboBox().addItem( routes.get(i) );
+				for( int i = 0 ; i < routes.size(); i++ ) {
+                    getRouteComboBox().addItem( routes.get(i) );
+                }
 			}
 			
 			// user code end
@@ -1068,15 +1080,17 @@ public Object getValue(Object val)
 	lmGroup.setPAOName( getJTextFieldName().getText() );
 
 
-	if( getJCheckBoxDisable().isSelected() )
-		lmGroup.setDisableFlag( CtiUtilities.trueChar );
-	else
-		lmGroup.setDisableFlag( CtiUtilities.falseChar );
+	if( getJCheckBoxDisable().isSelected() ) {
+        lmGroup.setDisableFlag( CtiUtilities.trueChar );
+    } else {
+        lmGroup.setDisableFlag( CtiUtilities.falseChar );
+    }
 
-	if( getJCheckBoxDisableControl().isSelected() )
-		lmGroup.getDevice().setControlInhibit( CtiUtilities.trueChar );
-	else
-		lmGroup.getDevice().setControlInhibit( CtiUtilities.falseChar );
+	if( getJCheckBoxDisableControl().isSelected() ) {
+        lmGroup.getDevice().setControlInhibit( CtiUtilities.trueChar );
+    } else {
+        lmGroup.getDevice().setControlInhibit( CtiUtilities.falseChar );
+    }
 
 	if( getJTextFieldKWCapacity().getText() != null
 		 && getJTextFieldKWCapacity().getText().length() > 0 )
@@ -1096,10 +1110,9 @@ public Object getValue(Object val)
 		((LMGroupExpressCom) val).getLMGroupExpressComm().setProtocolPriority(getSelectedPriority());
 	}
 
-	if( val instanceof MacroGroup )
-			return val;  //Macros will not have record history capability
-	
-	else
+	if( val instanceof MacroGroup ) {
+        return val;  //Macros will not have record history capability
+    } else
 	{
 	
 		//some status points are needed for control history
@@ -1246,8 +1259,9 @@ public boolean isInputValid()
  */
 public void jCheckBoxHistory_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	for( int i = 0; i < getJPanelHistory().getComponentCount(); i++ )
-		getJPanelHistory().getComponent(i).setEnabled( getJCheckBoxHistory().isSelected() );
+	for( int i = 0; i < getJPanelHistory().getComponentCount(); i++ ) {
+        getJPanelHistory().getComponent(i).setEnabled( getJCheckBoxHistory().isSelected() );
+    }
 
 	fireInputUpdate();
 
@@ -1296,6 +1310,7 @@ public void setSwitchType(PaoType deviceType)
 	      deviceType == PaoType.LM_GROUP_DIGI_SEP ||
 	      deviceType == PaoType.LM_GROUP_ECOBEE ||
 	      deviceType == PaoType.LM_GROUP_HONEYWELL ||
+	      deviceType == PaoType.LM_GROUP_ITRON ||
           deviceType == PaoType.LM_GROUP_NEST ||
 	      deviceType == PaoType.LM_GROUP_RFN_EXPRESSCOMM) );
 	
@@ -1352,9 +1367,11 @@ public void setValue(Object val)
 			List<LiteYukonPAObject> routes = cache.getAllRoutes();
 			int assignedRouteID = ((IGroupRoute)lmGroup).getRouteID().intValue();
 
-			for( int i = 0 ; i < routes.size(); i++ )
-				if( routes.get(i).getYukonID() == assignedRouteID )
-					getRouteComboBox().setSelectedItem(routes.get(i));
+			for( int i = 0 ; i < routes.size(); i++ ) {
+                if( routes.get(i).getYukonID() == assignedRouteID ) {
+                    getRouteComboBox().setSelectedItem(routes.get(i));
+                }
+            }
       }
 	}
 	
