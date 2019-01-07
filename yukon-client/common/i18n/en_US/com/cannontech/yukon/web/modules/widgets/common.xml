@@ -160,22 +160,22 @@
 <entry key="yukon.web.widgets.dataCollectionWidget">Data Collection</entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.widgetIdentity">Data Collection - {0}</entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.helpText"><![CDATA[
-        Select a Device Group to obtain data collection information for.  Check the include disabled checkbox to include any disabled devices in the calculations.  
+        Select a Device Group to obtain data collection information for. Check the include disabled checkbox to include any disabled devices in the calculations.  
         Click on the pie chart to view detailed device information. The data collection details are updated every 6 seconds by default.
         The Refresh button will force an update of the data collected (if data has not been collected in the last 15 minutes).  
         The date/time displays the date/time that data collection was last updated.
         <br><br>
-        <span class="fwb bg-color-pie-green txt-color-white">Available (Green)</span><br>
-        Data has been received for these devices within the desired number of days.
-        <br><br>
-        <span class="fwb bg-color-pie-blue txt-color-white">Expected (Blue)</span><br>
-        Data has been received for these devices within 7 days.
-        <br><br>
-        <span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span><br>
-        Data has been received for these devices within 14 days.
-        <br><br>
-        <span class="fwb bg-color-grey txt-color-white">Unavailable (Grey)</span><br>
-        Data has not been received for these devices for over 14 days.
+        Below are the statuses:
+        <ul>
+            <li><span class="fwb bg-color-pie-green txt-color-white">Available (Green)</span> - 
+            Data has been received for these devices within the desired number of days.</li>
+            <li><span class="fwb bg-color-pie-blue txt-color-white">Expected (Blue)</span> - 
+            Data has been received for these devices within 7 days.</li>
+            <li><span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span> - 
+            Data has been received for these devices within 14 days.</li>
+            <li><span class="fwb bg-color-grey txt-color-white">Unavailable (Grey)</span> - 
+            Data has not been received for these devices for over 14 days.</li>
+        </ul>
 ]]></entry>
 
 <entry key="yukon.web.widgets.assetAvailabilityWidget">Asset Availability</entry>
@@ -188,17 +188,17 @@
         The Refresh button will force an update of the asset availability details (this is available every 15 minutes).
         The date/time displays the date/time when operational status was last updated.
         <br><br>
-        <span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span><br>
-        Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.
-        <br><br>
-        <span class="fwb bg-color-pie-blue txt-color-white">Opted Out (Blue)</span><br>
-        Devices have been taken out of service and are no longer responding to events.
-        <br><br>
-        <span class="fwb bg-color-orange txt-color-white">Inactive (Orange)</span><br>
-        Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.
-        <br><br>
-        <span class="fwb bg-color-grey txt-color-white"> Unavailable (Grey)</span><br>
-        Devices have not provided any run time data in the previous {2} hours.
+        Below are the statuses:
+        <ul>
+            <li><span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span> - 
+                Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
+            <li><span class="fwb bg-color-pie-blue txt-color-white">Opted Out (Blue)</span> - 
+                Devices have been taken out of service and are no longer responding to events.</li>
+            <li><span class="fwb bg-color-orange txt-color-white">Inactive (Orange)</span> - 
+                Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.</li>
+            <li><span class="fwb bg-color-grey txt-color-white"> Unavailable (Grey)</span> - 
+                Devices have not provided any run time data in the previous {2} hours.</li>
+        </ul>
 ]]></entry>
 
 <entry key="yukon.web.widgets.assetAvailabilityWidget.noDevicesFound">No devices were found.</entry>
@@ -213,28 +213,37 @@
 <entry key="yukon.web.widgets.infrastructureWarningsWidget">Infrastructure Warnings</entry>
 <entry key="yukon.web.widgets.infrastructureWarningsWidget.helpText"><![CDATA[
         The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
+        A summary of the devices with and without warnings will be displayed near the top of the widget with the device type being a link to more detail.
+        <ul>
+            <li>
+                <span class="fwb bg-color-pie-green txt-color-white">Devices without warnings (Green)</span> - 
+                Number of devices without any of the below mentioned warning types.
+            </li>
+            <li>
+                <span class="fwb bg-color-orange txt-color-white">Devices with warnings (Orange)</span> - 
+                Number of devices with warnings.
+            </li>
+        </ul>
+        Click on the "See All" link to view all current infrastructure warnings.
+        A list of the 10 most recent warnings will be displayed below.
+        The Duration indicates approximately how much time has passed since the warning first occurred. 
+        Hover over the Duration value to see the exact time that the warning first occurred.
+        <br/>
+        The infrastructure warnings are updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 5 minutes.
+        The date/time next to the Refresh button displays the date/time that the warnings were last updated.
+        <br><br>
+        The following is a list of the types of warnings that are being evaluated:
         <ul>
             <li>Gateway connection status – Warning condition produced if a gateway has not communicated with the Yukon software in a specified period of time. It may indicate a bulk communications issue with that particular gateway.</li>
             <li>Duplicate gateway color found - Warning condition produced when two gateways on the RF network have the same color setting. The condition indicates a misconfigured gateway.</li>
-            <li>Gateway is in failsafe mode – Warning condition produced when a gateway enters failsafe mode. A gateway enters this mode when it is unable to execute the gateway application code or the application is restarted in quick succession.  This can be caused by a series of outages, or by a problem with the gateway hardware or software. Note that gateways in failsafe mode will only communication with Yukon software and will not gather data from the RF nodes. After 24 hours in failsafe mode, the gateway will automatically attempt to boot back into normal mode.</li>
-            <li>Gateway total connected nodes – Condition produced when a gateway reaches a specified total node count that could affect the network’s ability to fully absorb a neighboring gateway’s nodes should it be needed.  A low-severity warning is issued for this condition.  A high-severity warning is issued when a gateway reaches the maximum total node count supported by the device.</li>
+            <li>Gateway is in failsafe mode – Warning condition produced when a gateway enters failsafe mode. A gateway enters this mode when it is unable to execute the gateway application code or the application is restarted in quick succession. This can be caused by a series of outages, or by a problem with the gateway hardware or software. Note that gateways in failsafe mode will only communication with Yukon software and will not gather data from the RF nodes. After 24 hours in failsafe mode, the gateway will automatically attempt to boot back into normal mode.</li>
+            <li>Gateway total connected nodes – Condition produced when a gateway reaches a specified total node count that could affect the network’s ability to fully absorb a neighboring gateway’s nodes should it be needed. A low-severity warning is issued for this condition. A high-severity warning is issued when a gateway reaches the maximum total node count supported by the device.</li>
             <li>Gateway data streaming capacity – Condition produced when a gateway is approaching or has surpassed the available bandwidth provided for the data streaming functionality. A low-severity warning is issued when a gateway reaches the defined data streaming capacity limits. This condition is primarily informational since a fully load gateway should not impact the performance of the network. A high-severity warning is issued when a gateway has significantly exceeded the defined data streaming capacity and intervention may be needed to reduce any impacts on network performance due to this condition.</li>
             <li>Gateway ready node count - Condition produced when a gateway drops below the expected minimum ready node count.</li>
             <li>Relay outage event – Warning condition produced when a ‘Last Gasp’ outage notification is received from a relay. This condition will automatically clear when the relay’s restoration notification is received.</li>
             <li>PLC CCU communication status – Warning condition produced when ten consecutive messages targeting the specified CCU fail to be delivered. This may indicate a bulk communication problem between the Yukon software and the device.</li>
             <li>PLC Repeater communication status - Warning condition produced when ten consecutive messages targeting the specified Repeater fail to be delivered. This indicates a communication problem between the Yukon software and the device.</li>
         </ul>
-        The Duration indicates approximately how much time has passed since the warning first occurred. Hover over the Duration value to see the exact time that the warning first occurred.
-        <br/>
-        The infrastructure warnings are updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 5 minutes.
-        The date/time next to the Refresh button displays the date/time that the warnings were last updated.
-        <br><br>
-        <span class="fwb bg-color-pie-green txt-color-white">Connected (Green)</span><br>
-        Device communication status is connected.
-        <br><br>
-        <span class="fwb bg-color-orange txt-color-white">Disconnected (Orange)</span><br>
-        Device communication status is disconnected.
-        <br>
 ]]></entry>
 
 <entry key="yukon.web.widgets.notAuthorized">You are not authorized to access this widget.</entry>
