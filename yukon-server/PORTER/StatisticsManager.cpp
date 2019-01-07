@@ -273,7 +273,7 @@ void StatisticsManager::runWriterThreads(unsigned max_threads, ThreadStatusKeepe
 
     unsigned records_distributed_to_threads = 0;
 
-    boost::this_thread::disable_interruption;
+    boost::this_thread::disable_interruption di;
 
     if( num_threads > 1 )
     {
