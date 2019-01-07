@@ -64,7 +64,7 @@
                             <cti:msg2 var="lastComm" key=".lastComm" argument=": ${dateTime}"/>
                         </c:when>
                         <c:otherwise>
-                            <cti:msg2 var = "notAvailable" key = ".lastCommNotAvailable"/>
+                            <cti:msg2 var="notAvailable" key=".lastCommNotAvailable"/>
                             <cti:msg2 var="lastComm" key=".lastComm" argument="${notAvailable}"/>
                         </c:otherwise>
                     </c:choose>

@@ -2,7 +2,6 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
@@ -16,8 +15,7 @@
                     <tags:nameValue2 nameKey=".eventTime">
                         <cti:url var="downloadAll" value="/dr/rf/broadcast/eventDetail/${eventId}/downloadAll"/>
                             <span>
-                                <span class="fl">${fn:escapeXml(paoName)}</span>
-                                <td><span class="fl">&nbsp;<cti:formatDate type="FULL" value="${event.timeMessageSent}"/>&nbsp;</span>
+                                <td><span class="fl"><cti:formatDate type="FULL" value="${event.timeMessageSent}"/></span>
                                 <cti:icon icon="icon-csv" nameKey="download" href = "${downloadAll}"/></td>
                             </span>
                     </tags:nameValue2>
