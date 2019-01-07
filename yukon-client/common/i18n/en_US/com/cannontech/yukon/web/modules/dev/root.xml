@@ -328,6 +328,10 @@
     <entry key="yukon.web.modules.dev.collectionActionsTesting.pageName">Collection Actions Testing</entry>
     <entry key="yukon.web.modules.dev.collectionActionsTesting.crumbTitle">Collection Actions Testing</entry>
     
+    <!-- Itron Simulator -->
+    <entry key="yukon.web.modules.dev.itronSimulator.pageName">Itron Simulator</entry>
+    <entry key="yukon.web.modules.dev.itronSimulator.crumbTitle">Itron Simulator</entry>
+    
     <!-- IVVC -->
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.pageName">IVVC Test</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.title">IVVC Simulator</entry>
