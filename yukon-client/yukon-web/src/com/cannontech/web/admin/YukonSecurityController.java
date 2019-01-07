@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
 import org.jdom2.JDOMException;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -66,6 +68,7 @@ import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.system.DREncryption;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
@@ -585,6 +588,38 @@ public class YukonSecurityController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".honeywellCertificate.downloadfailed"));
             return "redirect:view";
         }
+    }
+    
+    @GetMapping(value = "/config/security/downloadEcobeeKey")
+    @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
+    public void downloadEcobeeKey(HttpServletResponse response) {
+        //TODO: Get Key if exists or create new key, save to DB and return public key
+        String publicKey = "MWJFOIJW834739498JFOIEJIFWEOJIWEFJOIOJIWEF";
+        response.setContentType("text/plain");
+        response.setHeader("Content-Type", "application/force-download");
+        String fileName = ServletUtil.makeWindowsSafeFileName("ecobeePublicKey.txt");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        try {
+            OutputStream stream = response.getOutputStream();
+            stream.write(publicKey.getBytes());
+            stream.close();
+        } catch (IOException e) {
+            log.warn("Exception getting the ecobee Public Key", e);
+        }
+    }
+    
+
+    @GetMapping(value = "/config/security/generateEcobeeKey")
+    @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
+    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext) throws CryptoException {
+        Map<String, Object> json = new HashMap<>();
+        String dateGenerated = dateFormattingService.format(new Instant(), DateFormattingService.DateFormatEnum.DATEHM_12,
+                    userContext);
+        //TODO: Generate new keys and save to DB, return new date/time keys were generated
+        json.put("ecobeeKeyGeneratedDateTime", dateGenerated);
+
+        return json;
+
     }
 
 }

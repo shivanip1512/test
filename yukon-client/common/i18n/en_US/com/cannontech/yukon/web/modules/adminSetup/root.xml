@@ -146,6 +146,18 @@
     <entry key="yukon.web.modules.adminSetup.security.honeywellKeyBox.helpText"><![CDATA[Honeywell DR Encryption Keys allows a user to either import a 1024-bit private key or generate a new one.
     <br><br><b>Note:After generating a new key, you need to share it with Honeywell.  DR functionality in Yukon will only work after the key has been updated at their end.</b>
     ]]></entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyBox.title">ecobee Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyBox.helpText"><![CDATA[Encryption keys are used by ecobee to encrypt device data, and by Yukon to decrypt that device data. 
+    For Yukon to retrieve ecobee device data successfully, encryption keys must be generated and the public key must be provided to busidev@ecobee.com.
+    ]]></entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyGenerated">ecobee Encryption Keys were generated: </entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeNoKeyGenerated">No ecobee Encryption Keys have been generated.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.downloadEcobeeKey.label">Download Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.generateEcobeeKey.label">Generate New Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeKey.title">Confirm Generate ecobee Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeKey.message">Are you sure you want to generate new encryption keys? 
+    You will need to provide the new public key to busidev@ecobee.com in order for ecobee to properly encrypt any requested data. 
+    Yukon will not be able to unencrypt ecobee data until this process is complete.</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
     

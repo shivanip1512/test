@@ -1,13 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="adminSetup" page="security">
     <div id="honeywellPublicKeyDownloadStatus" style="display:none"></div>
+    <input type="hidden" class="js-show-dialog" value="${showDialog}"/>
 	
     <div class="clearfix box">
         <div class="category fl">
@@ -48,21 +49,26 @@
     
     <cti:msg2 key=".importHoneywellKeyFileDialog.title" var="importHoneywellKeyDialogTitle"/>
     <div class="dn" id="importHoneywellKeyDialog" data-dialog data-title="${importHoneywellKeyDialogTitle}" data-event="importHoneywellKeyFileFormSubmit">
-            <form:form method="POST" modelAttribute="honeywellFileImportBindingBean" action="importHoneywellKeyFile" autocomplete="off" enctype="multipart/form-data">
-                <tags:nameValueContainer2>
-                <cti:csrfToken/>
+        <form:form method="POST" modelAttribute="honeywellFileImportBindingBean" action="importHoneywellKeyFile" autocomplete="off" enctype="multipart/form-data">
+            <cti:csrfToken/>
+            <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".importKeyFile">
                     <tags:bind path="file">
                         <tags:file name="keyFile"/>
                     </tags:bind>
                 </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </form:form>
+            </tags:nameValueContainer2>
+        </form:form>
     </div>
         
     <cti:msg2 key=".viewPublicKeyDialog.title" var="viewPublicKeyDialogTitle"/>
     <div class="dn" id="viewPublicKeyDialog" data-dialog data-title="${viewPublicKeyDialogTitle}" data-event="generatePublicKey" data-ok-text="<cti:msg2 key=".generateKeyFileBtn.label"/>">
-        <div id="publicKeyStatus"></div>
+        <div id="publicKeyStatus">
+            <span class="js-no-key-exists dn"><i:inline key='.publicKey.noKeyExists'/></span>
+            <span class="js-key-expired dn"><i:inline key='.publicKey.keyExpired'/></span>
+            <span class="js-key-expires dn"><i:inline key='.security.expires'/><span class="js-expiration"></span></span>
+            <span class="js-key-generation-failed dn"><i:inline key='.publicKey.keyGenerationFailed'/></span>
+        </div>
         <div id="publicKeyExpiration"></div>
         <div id="publicKeyText">
             <p><i:inline key=".currentPublicKey" /></p>
@@ -86,19 +92,13 @@
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="route" items="${encryptedRoutes}">
-                            <cti:url var="actionUrl" value="add"/>
-                            <c:if test="${route.encrypted}">
-                                <cti:url var="actionUrl" value="remove"/>
-                            </c:if>
+                            <cti:url var="actionUrl" value="${route.encrypted ? 'remove' : 'add'}"/>
                             <tr>
                                 <td>${fn:escapeXml(route.paoName)}</td>
                                 <td>${fn:escapeXml(route.type.paoTypeName)}</td>
                                 <form:form id="routes_${route.paobjectId}" modelAttribute="encryptedRoute" method="POST" autocomplete="off" action="${actionUrl}">
                                     <cti:csrfToken/>
-                                    <c:set var="btnAction" value="add" />
-                                    <c:if test="${route.encrypted}">
-                                        <c:set var="btnAction" value="remove" />
-                                    </c:if>
+                                    <c:set var="btnAction" value="${route.encrypted ? 'remove' : 'add'}"/>
                                     <td>
                                         <form:input path="paoName" type="hidden" value="${route.paoName}" /> 
                                         <form:input path="type" type="hidden" value="${route.type}" /> 
@@ -126,7 +126,8 @@
                                         </c:if>
                                     </td>
                                     <td>
-                                        <cti:button id="${btnAction}_EncryptionBtn_${route.paobjectId}" nameKey="${btnAction}" href="javascript:submitForm('routes_${route.paobjectId}')" disabled="${fn:length(encryptionKeys) <= 0}" />
+                                        <cti:button id="${btnAction}_EncryptionBtn_${route.paobjectId}" nameKey="${btnAction}" 
+                                            data-ok-event="yukon:admin:security:submitForm" data-form-id="routes_${route.paobjectId}" disabled="${fn:length(encryptionKeys) <= 0}" />
                                     </td>
                                 </form:form>
                             </tr>
@@ -158,7 +159,6 @@
                         <tfoot></tfoot>
                         <tbody>
                             <c:forEach items="${encryptionKeys}" var="key">
-                                <d:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}" />
                                 <form:form id="keys_${key.encryptionKeyId}" method="POST" action="deleteKey" autocomplete="off">
                                     <cti:csrfToken/>
                                     <tr>
@@ -189,11 +189,12 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                     <cti:msg2 key=".deleteKeyBtnTitle" var="title"/>
-                                                    <cti:button renderMode="buttonImage" id="deleteKeyBtn_${key.encryptionKeyId}"
-                                                        onclick="submitForm('keys_${key.encryptionKeyId}')"
-                                                        title="${title}" icon="icon-cross"/>
+                                                    <cti:button renderMode="buttonImage" id="deleteKeyBtn_${key.encryptionKeyId}" title="${title}" 
+                                                        icon="icon-cross" data-ok-event="yukon:admin:security:submitForm" data-form-id="keys_${key.encryptionKeyId}"/>
+                                                    <d:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}"/>
                                                 </c:otherwise>
                                             </c:choose>
+                                        </td>
                                     </tr>
                                 </form:form>
                             </c:forEach>
@@ -203,7 +204,7 @@
                 <div class="page-action-area">
                     <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" data-popup="#addNewKeyDialog" />
                     <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" data-popup="#importKeyDialog"/>
-                    <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="js-blocker2" data-popup="#viewPublicKeyDialog"/>
+                    <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn" classes="js-blocker2" data-popup="#viewPublicKeyDialog"/>
                 </div>
             </tags:boxContainer2>
             <cti:checkRolesAndProperties value="HONEYWELL_SUPPORT_ENABLED">
@@ -234,103 +235,29 @@
                   </div>
               </tags:boxContainer2>
            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="SHOW_ECOBEE">
+                <tags:boxContainer2 nameKey="ecobeeKeyBox">
+                    <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? '' : 'dn'}"/>
+                    <span class="js-ecobee-key-generated ${keyGeneratedClass}">
+                        <i:inline key=".ecobeeKeyGenerated"/><span class="js-ecobee-key-date-time">${ecobeeKeyGeneratedDateTime}</span>
+                    </span>
+                    <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? 'dn' : ''}"/>
+                    <span class="js-ecobee-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeNoKeyGenerated"/></span>
+                    <div class="page-action-area">
+                        <form:form method="GET" action="downloadEcobeeKey">
+                            <cti:csrfToken />
+                            <cti:button nameKey="downloadEcobeeKey" type="submit" />
+                        </form:form>
+                        <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
+                            <cti:button id="generateEcobeeKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeKey"/>
+                            <d:confirm on="#generateEcobeeKey" nameKey="confirmGenerateEcobeeKey" />
+                        </cti:checkRolesAndProperties>
+                    </div>
+                </tags:boxContainer2>
+            </cti:checkRolesAndProperties>
         </div>
     </div>
-    
-    <script type="text/javascript">
-    $(function(){
-        if ("${showDialog}" == "addKey") {
-            $('#honeywellPublicKeyDownloadStatus').hide();
-            $('#addNewKeyBtn').trigger($.Event("click")); // Opens up addKey Dialog
-        } else if ("${showDialog}" == "importKey") {
-            $('#importKeyFileBtn').trigger($.Event("click")); // Opens up importKey Dialog
-        }
-    });
-    
-    function submitForm(formId) {
-        $(".ui-dialog").css("display","none");
-        yukon.ui.blockPage();
-        $("#"+formId).submit();
-    }
-    
-    $("#viewPublicKeyBtn").click(function() {
-        $('#honeywellPublicKeyDownloadStatus').hide();
-        loadPublicKey(false);
-    });
-    
-    $(document).on("table.routesBoxTable button" , "click", function () {
-    	$('#honeywellPublicKeyDownloadStatus').hide();
-    });
-    
-    $(document).on('generatePublicKey', function(event) {
-        loadPublicKey(true);
-    });
-    
-    function loadPublicKey(generateNewKey) {
-        $('#honeywellPublicKeyDownloadStatus').hide();
-        yukon.ui.blockPage();
-        $.ajax({ 
-            url: "getPublicKey", 
-            type: "POST",
-            data: { "generateNewKey": generateNewKey},
-            cache: false,
-            dataType: "json" 
-        }).done(function(publicKeyObj) {
-            if(!publicKeyObj.doesExist) {
-                // No public Key exists
-                $("#publicKeyText").hide();
-                $("#publicKeyStatus").html("<i:inline key='.publicKey.noKeyExists'/>").show('fade',{},200);
-            } else if (publicKeyObj.isExpired) {
-                // A key exists but it's expired
-                $("#publicKeyText").hide();
-                $("#publicKeyStatus").html("<i:inline key='.publicKey.keyExpired'/>").show('fade',{},200);
-            } else {
-                // A valid key is found
-                $("#publicKeyStatus").html("<i:inline key='.security.expires'/>"+publicKeyObj.expiration);
-                $("#publicKeyTextArea").val(publicKeyObj.publicKey);
-                $("#publicKeyText").show('fade',{},200);
-            }
-            yukon.ui.unblockPage();
-        }).fail(function() {
-            $("#publicKeyText").hide();
-            $("#publicKeyStatus").html("<i:inline key='.publicKey.keyGenerationFailed'/>").show('fade',{},200);
-            yukon.ui.unblockPage();
-        });
-    }
-    
-    $(document).on("yukon.dialog.confirm.ok", function(event) {
-        $('#honeywellPublicKeyDownloadStatus').hide();
-    	$.ajax({ 
-            url: "getHoneywellPublicKey", 
-            type: "GET",
-        }).done(function(data) {
-        	if ( $( "#honeywellPublicKeyTextArea" ).length ){
-        		$("#honeywellPublicKeyTextArea").val(data.honeywellPublicKey);
-        	}else{
-        		location.reload(true);
-        	}
-        }).fail(function(data) {
-        	$('#honeywellPublicKeyStatus').show();
-    	});
-    });
-    
-    $(document).on('addKeyFormSubmit', function(event) {
-        yukon.ui.blockPage();
-        $('#encryptionKey').submit();
-    });
-    
-    $(document).on('importKeyFileFormSubmit', function(event) {
-        $('#fileImportBindingBean').ajaxSubmit({
-            error: function (xhr, status, error, $form) {
-                $('#importKeyDialog').html(xhr.responseText);
-            }
-        });
-    });
-    
-    $(document).on('importHoneywellKeyFileFormSubmit', function(event) {
-        yukon.ui.blockPage();
-        $('#honeywellFileImportBindingBean').submit();
-    });
-    
-    </script>
+
+    <cti:includeScript link="/resources/js/pages/yukon.admin.security.js"/>
+
 </cti:standardPage>
