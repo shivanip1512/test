@@ -414,7 +414,7 @@ public class RfPerformanceController {
     }
 
     @GetMapping("/rf/broadcast/eventDetail/{eventId}/downloadAll")
-    public void downloadAll(HttpServletResponse response, YukonUserContext userContext, @PathVariable int eventId)
+    public void downloadAll(HttpServletResponse response, YukonUserContext userContext, @PathVariable long eventId)
             throws IOException {
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
@@ -426,7 +426,7 @@ public class RfPerformanceController {
     }
 
     @GetMapping("/rf/broadcast/downloadFilteredResults")
-    public void downloadFilteredRF(HttpServletResponse response, YukonUserContext userContext, Integer eventId,
+    public void downloadFilteredRF(HttpServletResponse response, YukonUserContext userContext, long eventId,
             String[] deviceSubGroups, PerformanceVerificationMessageStatus[] statuses) throws IOException {
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
@@ -440,16 +440,16 @@ public class RfPerformanceController {
         MessageSourceAccessor Accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // header row
         String[] headerRow = new String[5];
-        headerRow[0] = Accessor.getMessage(EventDetailSortBy.DEVICE_NAME);
-        headerRow[1] = Accessor.getMessage(EventDetailSortBy.DEVICE_TYPE);
-        headerRow[2] = Accessor.getMessage(EventDetailSortBy.ACCOUNT_NUMBER);
-        headerRow[3] = Accessor.getMessage(EventDetailSortBy.CURRENT_STATUS);
+        headerRow[0] = Accessor.getMessage(detailsKey + "DEVICE_NAME");
+        headerRow[1] = Accessor.getMessage(detailsKey + "DEVICE_TYPE");
+        headerRow[2] = Accessor.getMessage(detailsKey + "ACCOUNT_NUMBER");
+        headerRow[3] = Accessor.getMessage(detailsKey + "CURRENT_STATUS");
         headerRow[4] = Accessor.getMessage(detailsKey + "LAST_COMMUNICATION");
 
         return headerRow;
     }
 
-    private List<String[]> getDownloadDataRows(YukonUserContext userContext, int eventId, String[] deviceSubGroups,
+    private List<String[]> getDownloadDataRows(YukonUserContext userContext, long eventId, String[] deviceSubGroups,
             PerformanceVerificationMessageStatus[] statuses) {
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
