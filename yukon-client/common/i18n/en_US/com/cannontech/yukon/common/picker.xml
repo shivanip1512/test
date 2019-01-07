@@ -209,4 +209,9 @@
 <!-- DNP RTU Picker -->
 <entry key="yukon.web.picker.deviceActionsRoleUserPicker.dialogTitle">Select User</entry>
 
+<!-- Trend Picker -->
+<entry key="yukon.web.picker.trendPicker.dialogTitle">Select Trend</entry>
+<entry key="yukon.web.picker.trendPicker.name">Name</entry>
+<entry key="yukon.web.picker.trendPicker.graphDefinitionId">Trend Id</entry>
+
 </properties>

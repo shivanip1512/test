@@ -219,6 +219,7 @@
     <bean name="unassignedGearPicker" class="com.cannontech.web.picker.UnassignedGearPicker"/>
     <bean name="appCatFormulaPicker" class="com.cannontech.web.picker.AppCatFormulaPicker"/>
     <bean name="gearFormulaPicker" class="com.cannontech.web.picker.GearFormulaPicker"/>
+    <bean name="trendPicker" class="com.cannontech.web.picker.TrendPicker"/>
 
     <bean class="com.cannontech.web.picker.service.impl.LmProgramForEnergyCompanyIdFilterFactoryImpl"/>
     
