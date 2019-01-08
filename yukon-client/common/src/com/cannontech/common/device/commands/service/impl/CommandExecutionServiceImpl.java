@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -213,6 +214,10 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     public CommandRequestExecutionIdentifier execute(List<? extends CommandRequestBase> commands,
             CommandCompletionCallback<? extends CommandRequestBase> callback, DeviceRequestType type,
             LiteYukonUser user) {
+        if (CollectionUtils.isEmpty(commands)) {
+            log.error("The requested operation is not supported as there is not commands to execute.");
+            throw new UnsupportedOperationException("Received no commands for execution");
+        }
         ExecutionParameters params = createExecParams(type, user, false);
         CommandRequestExecution execution = createAndSaveExecution(params, commands);
         sendToPorter(commands, callback, params, execution);
