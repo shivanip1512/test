@@ -15,7 +15,7 @@
         You can apply the following filters to the report:
         <ul>
             <li><b>Device Group(s)</b> - Select one to many device groups to filter the results.</li>
-            <li><b>Status</b> - select any test event status to filter the results.</li>
+            <li><b>Status</b> - Select any test event status to filter the results.</li>
                 <ul>
                     <li><span class="fwb bg-color-pie-green txt-color-white">Confirmed Success (Green)</span> - 
                     Device received the unique RF Broadcast Performance test message.</li>

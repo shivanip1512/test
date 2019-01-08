@@ -165,7 +165,7 @@
         The Refresh button will force an update of the data collected (if data has not been collected in the last 15 minutes).  
         The date/time displays the date/time that data collection was last updated.
         <br><br>
-        Below are the statuses:
+        Data Availability Status:
         <ul>
             <li><span class="fwb bg-color-pie-green txt-color-white">Available (Green)</span> - 
             Data has been received for these devices within the desired number of days.</li>
@@ -188,7 +188,7 @@
         The Refresh button will force an update of the asset availability details (this is available every 15 minutes).
         The date/time displays the date/time when operational status was last updated.
         <br><br>
-        Below are the statuses:
+        Asset Availability Status:
         <ul>
             <li><span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span> - 
                 Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
