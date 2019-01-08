@@ -340,6 +340,9 @@
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\ItronControlInterface.h" />
+    <ClInclude Include="include\ItronCycleGear.h" />
+    <ClInclude Include="include\lmgroupitron.h" />
     <ClInclude Include="include\lmgroupnest.h" />
     <ClInclude Include="include\NestControlinterface.h" />
     <ClInclude Include="include\SmartGroupBase.h" />
@@ -361,7 +364,9 @@
     <ClCompile Include="executor.cpp">
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
+    <ClCompile Include="ItronCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
+    <ClCompile Include="lmgroupitron.cpp" />
     <ClCompile Include="lmgroupnest.cpp" />
     <ClCompile Include="LMScheduledMessageHolder.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">

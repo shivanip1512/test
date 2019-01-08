@@ -697,6 +697,7 @@ const string CtiLMProgramDirectGear::EcobeeCycleMethod = "EcobeeCycle";
 const string CtiLMProgramDirectGear::HoneywellCycleMethod = "HoneywellCycle";
 const string CtiLMProgramDirectGear::NestCriticalCycleMethod = "NestCriticalCycle";
 const string CtiLMProgramDirectGear::NestStandardCycleMethod = "NestStandardCycle";
+const string CtiLMProgramDirectGear::ItronCycleMethod = "ItronCycle";
 const string CtiLMProgramDirectGear::BeatThePeakMethod = "BeatThePeak";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 

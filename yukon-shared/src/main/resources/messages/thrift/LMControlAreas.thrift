@@ -180,6 +180,11 @@ struct LMGroupNest
     1: required     LMGroupBase                     _baseMessage;
 }
 
+struct LMGroupItron
+{
+    1: required     LMGroupBase                     _baseMessage;
+}
+
 struct LMGroupEmetcon
 {
     1: required     LMGroupBase                     _baseMessage;

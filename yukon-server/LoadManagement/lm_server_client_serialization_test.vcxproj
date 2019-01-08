@@ -360,7 +360,9 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="executor.cpp">
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
+    <ClCompile Include="ItronCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
+    <ClCompile Include="lmgroupitron.cpp" />
     <ClCompile Include="lmgroupnest.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">
     </ClCompile>
@@ -470,7 +472,10 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\honeywellControlInterface.h" />
     <ClInclude Include="include\honeywellCycleGear.h" />
     <ClInclude Include="include\id_loadmanagement.h" />
+    <ClInclude Include="include\ItronControlInterface.h" />
+    <ClInclude Include="include\ItronCycleGear.h" />
     <ClInclude Include="include\lmgrouphoneywell.h" />
+    <ClInclude Include="include\lmgroupitron.h" />
     <ClInclude Include="include\lmgroupnest.h" />
     <ClInclude Include="include\lm_group_serialization.h" />
     <ClInclude Include="include\lm_message_serialization.h" />

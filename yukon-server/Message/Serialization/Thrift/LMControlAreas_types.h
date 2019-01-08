@@ -47,6 +47,8 @@ class LMGroupHoneywell;
 
 class LMGroupNest;
 
+class LMGroupItron;
+
 class LMGroupEmetcon;
 
 class LMGroupExpresscom;
@@ -1112,6 +1114,42 @@ class LMGroupNest : public virtual ::apache::thrift::TBase {
 void swap(LMGroupNest &a, LMGroupNest &b);
 
 std::ostream& operator<<(std::ostream& out, const LMGroupNest& obj);
+
+
+class LMGroupItron : public virtual ::apache::thrift::TBase {
+ public:
+
+  LMGroupItron(const LMGroupItron&);
+  LMGroupItron& operator=(const LMGroupItron&);
+  LMGroupItron() {
+  }
+
+  virtual ~LMGroupItron() throw();
+  LMGroupBase _baseMessage;
+
+  void __set__baseMessage(const LMGroupBase& val);
+
+  bool operator == (const LMGroupItron & rhs) const
+  {
+    if (!(_baseMessage == rhs._baseMessage))
+      return false;
+    return true;
+  }
+  bool operator != (const LMGroupItron &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const LMGroupItron & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(LMGroupItron &a, LMGroupItron &b);
+
+std::ostream& operator<<(std::ostream& out, const LMGroupItron& obj);
 
 
 class LMGroupEmetcon : public virtual ::apache::thrift::TBase {

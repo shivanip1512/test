@@ -21,6 +21,7 @@ struct LMGroupFactoryRegister
         g_lmGroupFactory.registerSerializer <::LMGroupEcobee,        Thrift::LMGroupEcobee>     ( &populateThrift, NULL, "LMGroupEcobee" );
         g_lmGroupFactory.registerSerializer <::LMGroupHoneywell,     Thrift::LMGroupHoneywell>  ( &populateThrift, NULL, "LMGroupHoneywell" );
         g_lmGroupFactory.registerSerializer <::LMGroupNest,          Thrift::LMGroupNest>       ( &populateThrift, NULL, "LMGroupNest" );
+        g_lmGroupFactory.registerSerializer <::LMGroupItron,         Thrift::LMGroupItron>      ( &populateThrift, NULL, "LMGroupItron" );
         g_lmGroupFactory.registerSerializer <::CtiLMGroupEmetcon,    Thrift::LMGroupEmetcon>    ( &populateThrift, NULL, "LMGroupEmetcon" );
         g_lmGroupFactory.registerSerializer <::CtiLMGroupExpresscom, Thrift::LMGroupExpresscom> ( &populateThrift, NULL, "LMGroupExpresscom" );
         g_lmGroupFactory.registerSerializer <::CtiLMGroupGolay,      Thrift::LMGroupGolay>      ( &populateThrift, NULL, "LMGroupGolay" );
@@ -125,6 +126,19 @@ MessagePtr<Thrift::LMGroupHoneywell>::type populateThrift(const ::LMGroupHoneywe
 MessagePtr<Thrift::LMGroupNest>::type populateThrift(const ::LMGroupNest& imsg)
 {
     MessagePtr<Thrift::LMGroupNest>::type omsg( new Thrift::LMGroupNest );
+
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+
+    return omsg;
+}
+
+//=============================================================================
+//  LMGroupItron
+//=============================================================================
+
+MessagePtr<Thrift::LMGroupItron>::type populateThrift(const ::LMGroupItron& imsg)
+{
+    MessagePtr<Thrift::LMGroupItron>::type omsg( new Thrift::LMGroupItron );
 
     omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 

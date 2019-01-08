@@ -16,7 +16,7 @@ SmartGroupBase::SmartGroupBase( const std::string & typeName, Cti::RowReader & r
     // if the group name starts with a vowel we change the article to "an"
 
     std::smatch m;  // ignored
-    if ( std::regex_match( _groupTypeName, m, std::regex( "^[aeiou]", std::regex::icase ) ) )
+    if ( std::regex_match( _groupTypeName, m, std::regex( "^[aeiou].*", std::regex::icase ) ) )
     {
         _groupArticle += "n";
     }

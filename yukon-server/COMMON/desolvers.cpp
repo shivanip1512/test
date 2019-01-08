@@ -213,6 +213,7 @@ string desolveDeviceType( int aType )
         case TYPE_LMGROUP_ECOBEE:         Ret = "ecobee group";         break;
         case TYPE_LMGROUP_HONEYWELL:      Ret = "honeywell group";      break;
         case TYPE_LMGROUP_NEST:           Ret = "nest group";           break;
+        case TYPE_LMGROUP_ITRON:          Ret = "itron group";          break;
         case TYPE_LMGROUP_MCT:            Ret = "mct group";            break;
         case TYPE_LMGROUP_GOLAY:          Ret = "golay group";          break;
         case TYPE_LMGROUP_SADIGITAL:      Ret = "sa-digital group";     break;

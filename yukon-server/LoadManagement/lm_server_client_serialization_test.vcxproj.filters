@@ -188,6 +188,12 @@
     <ClCompile Include="NestStandardCycleGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ItronCycleGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lmgroupitron.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h">
@@ -383,6 +389,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\NestStandardCycleGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ItronControlInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ItronCycleGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lmgroupitron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
