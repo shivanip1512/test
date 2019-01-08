@@ -1,3 +1,5 @@
+SET MODE MSSQLServer;
+
 /*==============================================================*/
 /* Table: YukonPAObject                                         */
 /*==============================================================*/
@@ -146,3 +148,80 @@ create table EnergyCompanySetting (
 alter table EnergyCompanySetting
    add constraint AK_ECSetting_ECId_Name unique (EnergyCompanyId, Name);
 
+create table RfnBroadcastEventDeviceStatus (
+   DeviceId             numeric              not null,
+   RfnBroadcastEventId  numeric              not null,
+   Result               varchar(30)          not null,
+   DeviceReceivedTime   datetime             null,
+   constraint PK_RfnBroadcastEventDevStatus primary key (DeviceId, RfnBroadcastEventId)
+);
+
+create table InventoryBase (
+   InventoryID          numeric              not null,
+   AccountID            numeric              null,
+   InstallationCompanyID numeric              null,
+   CategoryID           numeric              not null,
+   ReceiveDate          datetime             null,
+   InstallDate          datetime             null,
+   RemoveDate           datetime             null,
+   AlternateTrackingNumber varchar(40)          null,
+   VoltageID            numeric              null,
+   Notes                varchar(500)         null,
+   DeviceID             numeric              null,
+   DeviceLabel          varchar(60)          null,
+   CurrentStateID       numeric              not null,
+   constraint PK_INVENTORYBASE primary key (InventoryID)
+);
+
+create table LMHardwareBase (
+   InventoryID          numeric              not null,
+   ManufacturerSerialNumber varchar(30)          null,
+   LMHardwareTypeID     numeric              not null,
+   RouteID              numeric              not null,
+   ConfigurationID      numeric              not null,
+   constraint PK_LMHARDWAREBASE primary key (InventoryID)
+);
+
+create table ECToInventoryMapping (
+   EnergyCompanyID      numeric              not null,
+   InventoryID          numeric              not null,
+   constraint PK_ECTOINVENTORYMAPPING primary key (EnergyCompanyID, InventoryID)
+);
+
+create table CustomerAccount (
+   AccountID            numeric              not null,
+   AccountSiteID        numeric              null,
+   AccountNumber        varchar(40)          null,
+   CustomerID           numeric              not null,
+   BillingAddressID     numeric              null,
+   AccountNotes         varchar(200)         null,
+   constraint PK_CUSTOMERACCOUNT primary key (AccountID)
+);
+
+create table DynamicLcrCommunications (
+   DeviceId             numeric              not null,
+   LastCommunication    datetime             null,
+   LastNonZeroRuntime   datetime             null,
+   Relay1Runtime        datetime             null,
+   Relay2Runtime        datetime             null,
+   Relay3Runtime        datetime             null,
+   Relay4Runtime        datetime             null,
+   constraint PK_DynamicLcrCommunications primary key (DeviceId)
+);
+
+create table LMHardwareControlGroup (
+   ControlEntryID       int                  not null,
+   InventoryID          int                  not null,
+   LMGroupID            int                  not null,
+   AccountID            int                  not null,
+   GroupEnrollStart     datetime             null,
+   GroupEnrollStop      datetime             null,
+   OptOutStart          datetime             null,
+   OptOutStop           datetime             null,
+   Type                 int                  not null,
+   Relay                int                  not null,
+   UserIDFirstAction    int                  not null,
+   UserIDSecondAction   int                  not null,
+   ProgramId            int                  not null,
+   constraint PK_LMHARDWARECONTROLGROUP primary key (ControlEntryID)
+);
