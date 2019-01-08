@@ -10,7 +10,7 @@
     <form id="js-broadcast-event-detail-filter-form" action="${formAction}" method="GET">
         <input type="hidden" name="eventId" value="${eventId}"/>
         <div class="column-12-12 clearfix">
-            <div class="column one" style="margin-top:45px;">
+            <div class="column one MT30">
                 <tags:nameValueContainer2 tableClass="name-collapse">
                     <tags:nameValue2 nameKey=".eventTime">
                         <cti:url var="downloadAll" value="/dr/rf/broadcast/eventDetail/${eventId}/downloadAll"/>
@@ -24,7 +24,7 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
-            <div class="column two nogutter filter-container MT20">
+            <div class="column two nogutter filter-container">
                 <span class="fr cp"><cti:icon icon="icon-help" data-popup="#filter-results-help"/></span>
                 <cti:msg2 var="helpTitle" key=".helpTitle"/>
                 <div id="filter-results-help" class="dn" data-width="600" data-height="360" data-title="${helpTitle}">${helpText}</div>
