@@ -214,15 +214,14 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     public CommandRequestExecutionIdentifier execute(List<? extends CommandRequestBase> commands,
             CommandCompletionCallback<? extends CommandRequestBase> callback, DeviceRequestType type,
             LiteYukonUser user) {
-        if (CollectionUtils.isNotEmpty(commands)) {
-            ExecutionParameters params = createExecParams(type, user, false);
-            CommandRequestExecution execution = createAndSaveExecution(params, commands);
-            sendToPorter(commands, callback, params, execution);
-            return new CommandRequestExecutionIdentifier(execution.getId());
-        } else {
+        if (CollectionUtils.isEmpty(commands)) {
             log.error("The requested operation is not supported as there is not commands to execute.");
             throw new UnsupportedOperationException("Received no commands for execution");
         }
+        ExecutionParameters params = createExecParams(type, user, false);
+        CommandRequestExecution execution = createAndSaveExecution(params, commands);
+        sendToPorter(commands, callback, params, execution);
+        return new CommandRequestExecutionIdentifier(execution.getId());
     }
 
     @Override
