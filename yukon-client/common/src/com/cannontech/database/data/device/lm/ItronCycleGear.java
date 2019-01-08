@@ -10,14 +10,6 @@ public class ItronCycleGear extends com.cannontech.database.db.device.lm.LMProgr
         setControlMethod(GearControlMethod.ItronCycle);
     }
 
-    public Integer getControlPercent() {
-        return getMethodRate();
-    }
-
-    public void setControlPercent(Integer seconds) {
-        setMethodRate(seconds);
-    }
-
     public boolean isFrontRampEnabled() {
         return RAMP_RANDOM.equals(getFrontRampOption());
     }
@@ -43,18 +35,26 @@ public class ItronCycleGear extends com.cannontech.database.db.device.lm.LMProgr
     }
 
     public Integer getCriticality() {
-        return getMethodPeriod();
+        return Integer.parseInt(getMethodOptionType());
     }
 
     public void setCriticality(Integer criticality) {
-        setMethodPeriod(criticality);
+        this.setMethodOptionType(criticality.toString());
     }
 
-    public void setCyclePeriod(Integer cyclePeriod) {
-        setMethodRateCount(cyclePeriod);
+    public Integer getControlPercent() {
+        return getMethodRate();
     }
 
     public Integer getCyclePeriod() {
-        return getMethodRateCount();
+        return getMethodPeriod() / 60;
+    }
+
+    public void setControlPercent(Integer percent) {
+        setMethodRate(percent);
+    }
+
+    public void setCyclePeriod(Integer period) {
+        setMethodPeriod(period * 60);
     }
 }

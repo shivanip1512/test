@@ -57,9 +57,10 @@ public class ItronCycleGearPanel extends GenericGearPanel {
     private JLabel criticalityLabel;
     private JTextField changeTriggerOffsetTextField;
     private JTextField kwReductionTextField;
-    private JCheckBox checkBoxRampInOut;
-    private javax.swing.JLabel ivjJLabelCyclePeriod = null;
-    private javax.swing.JComboBox<Integer> ivjJComboBoxCyclePeriod = null;
+    private JCheckBox checkBoxRampIn;
+    private JCheckBox checkBoxRampOut;
+    private javax.swing.JLabel labelCyclePeriod = null;
+    private javax.swing.JComboBox<Integer> comboBoxCyclePeriod = null;
 
     public ItronCycleGearPanel() {
         initialize();
@@ -71,7 +72,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
             jComboBoxWhenChange_ActionPerformed(e);
         }
         if (e.getSource() == getJComboBoxCyclePeriod()) {
-            connEtoC6(e);
+            fireInputUpdate(e);
         } else {
             fireInputUpdate();
         }
@@ -82,30 +83,40 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         fireInputUpdate();
     }
 
-    private JCheckBox getCheckBoxRampInOut() {
-        if (checkBoxRampInOut == null) {
-            checkBoxRampInOut = new JCheckBox();
-            checkBoxRampInOut.setText("Ramp In/Out");
-            checkBoxRampInOut.setPreferredSize(new Dimension(165, 23));
-            checkBoxRampInOut.setSelected(true);
+    private JCheckBox getCheckBoxRampIn() {
+        if (checkBoxRampIn == null) {
+            checkBoxRampIn = new JCheckBox();
+            checkBoxRampIn.setText("Ramp In");
+            checkBoxRampIn.setPreferredSize(new Dimension(165, 23));
+            checkBoxRampIn.setSelected(true);
         }
-        return checkBoxRampInOut;
+        return checkBoxRampIn;
+    }
+    
+    private JCheckBox getCheckBoxRampOut() {
+        if (checkBoxRampOut == null) {
+            checkBoxRampOut = new JCheckBox();
+            checkBoxRampOut.setText("Ramp Out");
+            checkBoxRampOut.setPreferredSize(new Dimension(165, 23));
+            checkBoxRampOut.setSelected(true);
+        }
+        return checkBoxRampOut;
     }
 
     private javax.swing.JComboBox<Integer> getJComboBoxCyclePeriod() {
-        if (ivjJComboBoxCyclePeriod == null) {
+        if (comboBoxCyclePeriod == null) {
             try {
-                ivjJComboBoxCyclePeriod = new javax.swing.JComboBox<>();
-                ivjJComboBoxCyclePeriod.setName("JComboBoxPeriodCount");
-                ivjJComboBoxCyclePeriod.setPreferredSize(new java.awt.Dimension(136, 23));
-                ivjJComboBoxCyclePeriod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-                ivjJComboBoxCyclePeriod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                comboBoxCyclePeriod = new javax.swing.JComboBox<>();
+                comboBoxCyclePeriod.setName("JComboBoxPeriodCount");
+                comboBoxCyclePeriod.setPreferredSize(new java.awt.Dimension(136, 23));
+                comboBoxCyclePeriod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                comboBoxCyclePeriod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
                 // user code begin {1}
-                ivjJComboBoxCyclePeriod.addItem(new Integer(30));
-                ivjJComboBoxCyclePeriod.addItem(new Integer(60));
+                comboBoxCyclePeriod.addItem(new Integer(30));
+                comboBoxCyclePeriod.addItem(new Integer(60));
 
                 // default value
-                ivjJComboBoxCyclePeriod.setSelectedItem(new Integer(30));
+                comboBoxCyclePeriod.setSelectedItem(new Integer(30));
                 // user code end
             } catch (java.lang.Throwable ivjExc) {
                 // user code begin {2}
@@ -113,7 +124,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
                 handleException(ivjExc);
             }
         }
-        return ivjJComboBoxCyclePeriod;
+        return comboBoxCyclePeriod;
     }
 
     private JComboBox<String> getJComboBoxHowToStop() {
@@ -241,7 +252,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
                         false, null, 50),
                     new MutableValueModel(Integer.class, 0),
                     new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255), new Color(255, 255, 255, 255))));
-
+                controlPercentSpinField.setValue(50);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -264,7 +275,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
                         false, null, 0),
                     new MutableValueModel(Integer.class, 0),
                     new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255), new Color(255, 255, 255, 255))));
-
+                criticalitySpinField.setValue(100);
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -391,17 +402,17 @@ public class ItronCycleGearPanel extends GenericGearPanel {
     }
 
     private javax.swing.JLabel getJLabelCyclePeriod() {
-        if (ivjJLabelCyclePeriod == null) {
+        if (labelCyclePeriod == null) {
             try {
-                ivjJLabelCyclePeriod = new javax.swing.JLabel();
-                ivjJLabelCyclePeriod.setName("JLabelCyclePeriod");
-                ivjJLabelCyclePeriod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-                ivjJLabelCyclePeriod.setText("Duty Cycle Period:");
-                ivjJLabelCyclePeriod.setMaximumSize(new java.awt.Dimension(112, 14));
-                ivjJLabelCyclePeriod.setPreferredSize(new java.awt.Dimension(112, 14));
-                ivjJLabelCyclePeriod.setFont(new java.awt.Font("dialog", 0, 12));
-                ivjJLabelCyclePeriod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-                ivjJLabelCyclePeriod.setMinimumSize(new java.awt.Dimension(112, 14));
+                labelCyclePeriod = new javax.swing.JLabel();
+                labelCyclePeriod.setName("JLabelCyclePeriod");
+                labelCyclePeriod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                labelCyclePeriod.setText("Duty Cycle Period:");
+                labelCyclePeriod.setMaximumSize(new java.awt.Dimension(112, 14));
+                labelCyclePeriod.setPreferredSize(new java.awt.Dimension(112, 14));
+                labelCyclePeriod.setFont(new java.awt.Font("dialog", 0, 12));
+                labelCyclePeriod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                labelCyclePeriod.setMinimumSize(new java.awt.Dimension(112, 14));
                 // user code begin {1}
                 // user code end
             } catch (java.lang.Throwable ivjExc) {
@@ -410,7 +421,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
                 handleException(ivjExc);
             }
         }
-        return ivjJLabelCyclePeriod;
+        return labelCyclePeriod;
     }
 
     private JLabel getJLabelHowToStop() {
@@ -651,7 +662,8 @@ public class ItronCycleGearPanel extends GenericGearPanel {
             gear.setChangeTriggerOffset(Double.valueOf(getJTextFieldChangeTriggerOffset().getText()));
         }
         gear.setControlPercent(toInteger(getJCSpinFieldControlPercent().getValue()));
-        gear.setFrontRampEnabled(getCheckBoxRampInOut().isSelected());
+        gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
+        gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
         gear.setCriticality(toInteger(getJCSpinFieldCriticality().getValue()));
         com.cannontech.database.data.device.lm.ItronCycleGear sGear = gear;
         sGear.setCyclePeriod((Integer) getJComboBoxCyclePeriod().getSelectedItem());
@@ -679,7 +691,8 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         getJComboBoxHowToStop().addActionListener(this);
         getJTextFieldChangeTriggerOffset().addCaretListener(this);
         getJTextFieldKWReduction().addCaretListener(this);
-        getCheckBoxRampInOut().addActionListener(this);
+        getCheckBoxRampIn().addActionListener(this);
+        getCheckBoxRampOut().addActionListener(this);
         getJComboBoxCyclePeriod().addActionListener(this);
     }
 
@@ -716,7 +729,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
             constraintJCheckBoxRampOut.anchor = GridBagConstraints.WEST;
             constraintJCheckBoxRampOut.gridy = 2;
             constraintJCheckBoxRampOut.gridx = 1;
-
+            
             constraintJLabelDutyCyclePercent.insets = new Insets(0, 0, 5, 5);
             constraintJLabelDutyCyclePercent.anchor = GridBagConstraints.WEST;
             constraintJLabelDutyCyclePercent.gridy = 3;
@@ -776,7 +789,8 @@ public class ItronCycleGearPanel extends GenericGearPanel {
             constraintJCSpinFieldCriticality.gridx = 2;
 
             setLayout(new GridBagLayout());
-            this.add(getCheckBoxRampInOut(), constraintJCheckBoxRampIn);
+            this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
+            this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
             this.add(getJLabelControlPercent(), constraintJLabelDutyCyclePercent);
             this.add(getJCSpinFieldControlPercent(), constraintJCSpinFieldDutyCyclePercent);
             this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
@@ -847,16 +861,10 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         return;
     }
 
-    private void connEtoC6(java.awt.event.ActionEvent arg1) {
+    private void fireInputUpdate(java.awt.event.ActionEvent arg1) {
         try {
-            // user code begin {1}
-            // user code end
             this.fireInputUpdate();
-            // user code begin {2}
-            // user code end
         } catch (java.lang.Throwable ivjExc) {
-            // user code begin {3}
-            // user code end
             handleException(ivjExc);
         }
     }
@@ -898,7 +906,8 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         final DecimalFormat format = new DecimalFormat("#####.####");
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
         getJCSpinFieldControlPercent().setValue(gear.getControlPercent());
-        getCheckBoxRampInOut().setSelected(gear.isFrontRampEnabled());
+        getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
+        getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
         getJCSpinFieldCriticality().setValue(gear.getCriticality());
         com.cannontech.database.data.device.lm.ItronCycleGear hGear = gear;
         getJComboBoxCyclePeriod().setSelectedItem(hGear.getCyclePeriod());
