@@ -1,6 +1,7 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
 <%@ attribute name="test" required="true" type="com.cannontech.dr.model.PerformanceVerificationEventStats" %>
+<%@ attribute name="unReportedDeviceText" description="Unreported devices count and status" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -26,6 +27,15 @@
 <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.missedTooltip"/>">
     <span class="label bg-color-orange">${test.numFailures}</span>
 </div>
-<div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.unreportedTooltip"/>">
-    <span class="label bg-color-grey">${test.numUnknowns}</span>
-</div>
+<c:choose>
+    <c:when test="${not empty unReportedDeviceText}">
+        <div class="fl" style="margin-left: 10px;" title="${unReportedDeviceText}">
+            <span class="label bg-color-grey">${test.numUnknowns}</span>
+        </div>
+    </c:when>
+    <c:otherwise>
+        <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.unreportedTooltip"/>">
+            <span class="label bg-color-grey">${test.numUnknowns}</span>
+        </div>
+    </c:otherwise>
+</c:choose>

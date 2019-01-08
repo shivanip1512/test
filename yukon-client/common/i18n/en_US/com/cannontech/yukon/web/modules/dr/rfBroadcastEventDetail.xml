@@ -39,4 +39,11 @@
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.LAST_COMMUNICATION">Last Communication</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastComm">Last Successful Communication {0}</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastCommNotAvailable">Not Available</entry>
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.unReportedDeviceCountText"><![CDATA[
+Unreported
+
+{0}
+{1}
+{2}
+    ]]></entry>
 </properties>

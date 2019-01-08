@@ -20,7 +20,7 @@
                             </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".results">
-                        <td><dr:rfPerformanceStats test="${event.eventStats}"/></td>
+                        <td><dr:rfPerformanceStats test="${event.eventStats}" unReportedDeviceText="${unReportedDeviceText}"/></td>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>

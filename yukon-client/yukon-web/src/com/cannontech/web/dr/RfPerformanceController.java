@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,6 +55,7 @@ import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.model.BroadcastEventDeviceDetails;
+import com.cannontech.dr.rfn.model.DeviceStatus;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -231,6 +234,7 @@ public class RfPerformanceController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String helpText = accessor.getMessage(detailsKey + "helpText");
         model.addAttribute("helpText", helpText);
+        unReportedDeviceText(model, eventId, accessor);
         return "dr/rf/broadcast/eventDetail.jsp";
     }
 
@@ -474,6 +478,23 @@ public class RfPerformanceController {
         });
 
         return dataRows;
+    }
+
+    /**
+     * This method populate the device count and status for Unreported devices to be displayed on event detail
+     * page on Results Unreported grey box tool tip.
+     */
+    private void unReportedDeviceText(ModelMap model, long eventId, MessageSourceAccessor accessor) {
+        Map<DeviceStatus, Integer> unReportedCountWithStatus = verificationService.getUnknownCounts(eventId);
+        List<String> args = new ArrayList<>();
+        Stream.of(DeviceStatus.values()).forEach(deviceStatus -> {
+            Integer count =
+                    unReportedCountWithStatus.get(deviceStatus) != null ? unReportedCountWithStatus.get(deviceStatus) : 0;
+            String status = accessor.getMessage(deviceStatus.getFormatKey());
+            args.add(status + " : " + count.toString());
+        });
+        String unReportedDeviceText = accessor.getMessage(detailsKey + "unReportedDeviceCountText", args.toArray());
+        model.put("unReportedDeviceText", unReportedDeviceText);
     }
 
     public enum EventDetailSortBy implements DisplayableEnum {
