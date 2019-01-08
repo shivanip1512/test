@@ -385,7 +385,7 @@ public class RfPerformanceController {
             tests.addAll(report);
         }
         Collections.sort(tests,
-                         (t1, t2) -> t1.getTimeMessageSent().compareTo(t2.getTimeMessageSent()));
+                         (t1, t2) -> t2.getTimeMessageSent().compareTo(t1.getTimeMessageSent()));
         model.addAttribute("tests", tests);
         
         int totalSuccess = 0;
