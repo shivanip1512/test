@@ -16,7 +16,7 @@
                         <cti:url var="downloadAll" value="/dr/rf/broadcast/eventDetail/${eventId}/downloadAll"/>
                             <span>
                                 <td><span class="fl"><cti:formatDate type="FULL" value="${event.timeMessageSent}"/></span>
-                                <cti:icon icon="icon-csv" nameKey="download" href = "${downloadAll}"/></td>
+                                <cti:icon icon="icon-csv" nameKey="download" href="${downloadAll}"/></td>
                             </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".results">

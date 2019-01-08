@@ -440,10 +440,10 @@ public class RfPerformanceController {
         MessageSourceAccessor Accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // header row
         String[] headerRow = new String[5];
-        headerRow[0] = Accessor.getMessage(detailsKey + "DEVICE_NAME");
-        headerRow[1] = Accessor.getMessage(detailsKey + "DEVICE_TYPE");
-        headerRow[2] = Accessor.getMessage(detailsKey + "ACCOUNT_NUMBER");
-        headerRow[3] = Accessor.getMessage(detailsKey + "CURRENT_STATUS");
+        headerRow[0] = Accessor.getMessage(EventDetailSortBy.DEVICE_NAME);
+        headerRow[1] = Accessor.getMessage(EventDetailSortBy.DEVICE_TYPE);
+        headerRow[2] = Accessor.getMessage(EventDetailSortBy.ACCOUNT_NUMBER);
+        headerRow[3] = Accessor.getMessage(EventDetailSortBy.CURRENT_STATUS);
         headerRow[4] = Accessor.getMessage(detailsKey + "LAST_COMMUNICATION");
 
         return headerRow;
