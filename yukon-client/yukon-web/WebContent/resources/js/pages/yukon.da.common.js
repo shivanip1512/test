@@ -564,12 +564,9 @@ yukon.da.common = (function () {
         showAlertMessage: function (message, success) {
             
             var contents = $('#alert-message-contents');
+            contents.toggleClass('error', !success);
+            contents.toggleClass('success', success);
             
-            if (success) {
-                contents.addClass('success').removeClass('error');
-            } else {
-                contents.removeClass('success').addClass('error');
-            }
             var userMessage = $("<span/>").text(message);
             contents.html(userMessage.html());
             $('#alert-message-container').show();

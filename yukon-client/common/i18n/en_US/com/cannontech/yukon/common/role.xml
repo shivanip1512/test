@@ -74,11 +74,11 @@
     <entry key="yukon.common.roleproperty.CapControlCommandsAccessLevel.helpText">
         <![CDATA[
             <ul style="list-style-type:none;padding-left:10px;">
-                <li><b>All Device Commands with Yukon Actions</b> - All field device commands and internal Yukon Actions are available to the user.</li>
-                <li><b>All Device Commands without Yukon Actions</b> - Only Non-Operational Commands and Field Operation Commands categories are allowed.</li>
-                <li><b>Non-Operational Device Commands with Yukon Actions</b> - Only Non-Operational Commands and Actions are allowed.</li>
-                <li><b>Non-Operational Device Commands without Yukon Actions</b> - Only Non-Operational Commands are allowed.</li>
-                <li><b>Yukon Actions only</b> - Only internal Yukon actions are available to the user.</li>
+                <li><b>All Device Commands with Yukon Actions</b> - All field device commands and internal Yukon actions (e.g. enabling, disabling or moving objects) are available to the user.</li>
+                <li><b>All Device Commands without Yukon Actions</b> - Only Non-Operational Commands (e.g. scans) and Field Operation Commands (e.g. Trip/Close commands) are allowed.</li>
+                <li><b>Non-Operational Device Commands with Yukon Actions</b> - Only Non-Operational Commands (e.g. scans) and internal Yukon actions (e.g. enabling, disabling or moving objects) are allowed.</li>
+                <li><b>Non-Operational Device Commands without Yukon Actions</b> - Only Non-Operational Commands (e.g. scans) are allowed.</li>
+                <li><b>Yukon Actions only</b> - Only internal Yukon actions (e.g. enabling, disabling or moving objects) are available to the user.</li>
                 <li><b>None</b> - The user is not allowed to send any commands or make internal Yukon changes.</li>
             </ul>
         ]]>

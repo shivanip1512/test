@@ -244,9 +244,15 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
                 //VerifyNotOperatedIn command is special.  It has a time value associated
                 //with it that must be parsed from the command string.
                 long secondsNotOperatedIn = ScheduleCommand.DEFAULT_INACTIVITY_TIME;
-                secondsNotOperatedIn = parseSecondsNotOperatedIn(assignment);
-                command = CommandHelper.buildVerifyInactiveBanks(user, CommandType.VERIFY_INACTIVE_BANKS, 
-                        assignment.getPaoId(), false, secondsNotOperatedIn);
+                try {
+                    secondsNotOperatedIn = parseSecondsNotOperatedIn(assignment);
+                    command = CommandHelper.buildVerifyInactiveBanks(user, CommandType.VERIFY_INACTIVE_BANKS, 
+                                                                     assignment.getPaoId(), false, secondsNotOperatedIn);
+                } catch (Exception e) {
+                    log.error("There was a problem parsing the time period for a 'Verify Capbanks Not Operated in' command");
+                   return false;
+                }
+
             } else if (ScheduleCommand.getVerifyCommandsList().contains(schedCommand)) {
                 command = CommandHelper.buildVerifyBanks(user, CommandType.getForId(schedCommand.getCapControlCommand()), 
                         assignment.getPaoId(), false);

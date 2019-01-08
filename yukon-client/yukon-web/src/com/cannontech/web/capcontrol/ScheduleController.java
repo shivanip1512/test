@@ -42,6 +42,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
@@ -223,31 +224,35 @@ public class ScheduleController {
         String startSchedule, 
         YukonUserContext context) {
         
-        startCommand = getCommandName(startCommand);
-        setUpModel(startCommand, startSchedule, context.getYukonUser(), map);
-        
-        List<PaoScheduleAssignment> assignments = scheduleService.getAssignmentsByFilter(startCommand, startSchedule);
-        
-        int numberFailed = 0;
-        String result = "";
-        
-        assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
-        
-        for (PaoScheduleAssignment assignment : assignments) {
-            boolean success = scheduleService.sendStartCommand(assignment, context.getYukonUser());
-            if (!success) numberFailed++;
-        }
-        
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        result = accessor.getMessage(baseKey + ".startedSchedules", assignments.size() - numberFailed, numberFailed);
-        
         Map<String, Object> json = new HashMap<>();
-        //if at least one command succeeded, consider it a success
-        boolean success = (assignments.size() - numberFailed) > 0;
-        json.put("success", success);
-        json.put("resultText" , result);
+        startCommand = getCommandName(startCommand);
+        LiteYukonUser user = context.getYukonUser();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         json.put("schedule", startSchedule);
-        json.put("command", startCommand);
+        boolean authorized = checkForCommandAuthorization(user, json, startCommand, accessor);
+        if (authorized) {
+            setUpModel(startCommand, startSchedule, context.getYukonUser(), map);
+            
+            List<PaoScheduleAssignment> assignments = scheduleService.getAssignmentsByFilter(startCommand, startSchedule);
+            
+            int numberFailed = 0;
+            String result = "";
+            
+            assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
+            
+            for (PaoScheduleAssignment assignment : assignments) {
+                boolean success = scheduleService.sendStartCommand(assignment, context.getYukonUser());
+                if (!success) numberFailed++;
+            }
+            
+            result = accessor.getMessage(baseKey + ".startedSchedules", assignments.size() - numberFailed, numberFailed);
+            
+            //if at least one command succeeded, consider it a success
+            boolean success = (assignments.size() - numberFailed) > 0;
+            json.put("success", success);
+            json.put("resultText" , result);
+            json.put("command", startCommand);
+        }
         
         return json;
     }
@@ -259,19 +264,22 @@ public class ScheduleController {
      */
     @RequestMapping("stop-multiple")
     public  @ResponseBody Map<String, Object> stopMultiple(String stopCommand, String stopSchedule, YukonUserContext context) {
-        stopCommand = getCommandName(stopCommand);
-        int commandsSentCount = scheduleService.sendStopCommands(stopCommand, stopSchedule, context.getYukonUser());
-        
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        String result = accessor.getMessage(baseKey + ".stoppedSchedules", commandsSentCount);
-        
-        //if at least one command went out, consider it a success
         Map<String, Object> json = new HashMap<>();
-        boolean success = commandsSentCount > 0;
-        json.put("success", success);
-        json.put("resultText" , result);
+        stopCommand = getCommandName(stopCommand);
+        LiteYukonUser user = context.getYukonUser();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         json.put("schedule", stopSchedule);
-        json.put("command", stopCommand);
+        boolean authorized = checkForCommandAuthorization(user, json, stopCommand, accessor);
+        if (authorized) {
+            int commandsSentCount = scheduleService.sendStopCommands(stopCommand, stopSchedule, context.getYukonUser());
+            String result = accessor.getMessage(baseKey + ".stoppedSchedules", commandsSentCount);
+            
+            //if at least one command went out, consider it a success
+            boolean success = commandsSentCount > 0;
+            json.put("success", success);
+            json.put("resultText", result);
+            json.put("command", stopCommand);
+        }
         
         return json;
     }
@@ -281,23 +289,24 @@ public class ScheduleController {
      */
     @RequestMapping("start")
     public @ResponseBody Map<String, Object> startSchedule(Integer eventId, String deviceName, YukonUserContext context) {
-        
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        
-        PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
-        
-        boolean success = scheduleService.sendStartCommand(assignment, context.getYukonUser());
-        String result;
-        if (success) {
-            result = accessor.getMessage(baseKey + ".startedScheduleSuccess", deviceName, assignment.getCommandName());
-        } else {
-            result = accessor.getMessage(baseKey + ".startedScheduleFailed", assignment.getCommandName());
-        }
-
         Map<String, Object> json = new HashMap<>();
-        json.put("sentCommand", assignment.getCommandName());
-        json.put("success", success);
-        json.put("resultText" , result);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
+        LiteYukonUser user = context.getYukonUser();
+        boolean authorized = checkForCommandAuthorization(user, json, assignment.getCommandName(), accessor);
+        if (authorized) {
+            boolean success = scheduleService.sendStartCommand(assignment, context.getYukonUser());
+            String result;
+            if (success) {
+                result = accessor.getMessage(baseKey + ".startedScheduleSuccess", deviceName, assignment.getCommandName());
+            } else {
+                result = accessor.getMessage(baseKey + ".startedScheduleFailed", assignment.getCommandName());
+            }
+    
+            json.put("sentCommand", assignment.getCommandName());
+            json.put("success", success);
+            json.put("resultText" , result);
+        }
 
         return json;
     }
@@ -307,18 +316,34 @@ public class ScheduleController {
      */
     @RequestMapping("stop")
     public @ResponseBody Map<String, Object> stopSchedule(Integer deviceId, String deviceName, YukonUserContext context) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-
-        String result = accessor.getMessage(baseKey + ".stopVerify", deviceName);
         Map<String, Object> json = new HashMap<>();
-        json.put("resultText" , result);
-        
-        boolean success = scheduleService.sendStop(deviceId, context.getYukonUser());
-        json.put("success", success);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        LiteYukonUser user = context.getYukonUser();
+        boolean authorized = checkForCommandAuthorization(user, json, CommandType.STOP_VERIFICATION.name(), accessor);
+        if (authorized) {
+            String result = accessor.getMessage(baseKey + ".stopVerify", deviceName);
+            json.put("resultText" , result);
+            
+            boolean success = scheduleService.sendStop(deviceId, context.getYukonUser());
+            json.put("success", success);
+        }
 
         return json;
     }
     
+    private boolean checkForCommandAuthorization(LiteYukonUser user, Map<String, Object> json, String commandName, MessageSourceAccessor accessor) {
+        boolean hasCapBankRole = rolePropertyDao.checkAnyLevel(YukonRoleProperty.CAPBANK_COMMANDS_AND_ACTIONS, CapControlCommandsAccessLevel.getFieldOperationLevels(), user);
+        boolean hasSubbusRole = rolePropertyDao.checkAnyLevel(YukonRoleProperty.SUBBUS_COMMANDS_AND_ACTIONS, CapControlCommandsAccessLevel.getFieldOperationLevels(), user);
+        if (!hasCapBankRole || !hasSubbusRole) {
+            String notAuthorized = accessor.getMessage("yukon.web.modules.capcontrol.command.notAuthorized", user.getUsername(), commandName);
+            json.put("success",  false);
+            json.put("resultText",  notAuthorized);
+            return false;
+        }
+        return true;
+    }
+    
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     @RequestMapping(value="remove-assignment", method=RequestMethod.POST)
     public String removePao(Integer eventId, FlashScope flash) {
         
@@ -338,23 +363,43 @@ public class ScheduleController {
     public @ResponseBody Map<String, Object> setOvUv(Integer eventId, Integer ovuv, YukonUserContext context) {
         boolean success = false;
         Map<String, Object> json = new HashMap<>();
-        try {
-            PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
-            assignment.setDisableOvUv(ovuv == 0 ? "Y" : "N");
-            success = paoScheduleDao.updateAssignment(assignment);
-        } catch (EmptyResultDataAccessException e) {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-            String resultText = accessor.getMessage(baseKey + ".setOvUvFailed");
-            json.put("resultText" , resultText);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        String resultText = accessor.getMessage(baseKey + ".setOvUvSuccess");
+        LiteYukonUser user = context.getYukonUser();
+        String commandName = ovuv == 0 ? CommandType.SEND_DISABLE_OVUV.name() : CommandType.SEND_ENABLE_OVUV.name();
+        boolean authorized = checkForCommandAuthorization(user, json, commandName, accessor);
+
+        if (authorized) {
+            try {
+                PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
+                assignment.setDisableOvUv(ovuv == 0 ? "Y" : "N");
+                success = paoScheduleDao.updateAssignment(assignment);
+                if (!success) {
+                    resultText = accessor.getMessage(baseKey + ".setOvUvFailed");
+                }
+                json.put("resultText" , resultText);
+            } catch (EmptyResultDataAccessException e) {
+                resultText = accessor.getMessage(baseKey + ".setOvUvFailed");
+                json.put("resultText" , resultText);
+            }
+            json.put("id", eventId);
+            json.put("success", success);
         }
-        json.put("id", eventId);
-        json.put("success", success);
         return json;
     }
 
     @RequestMapping(value = "addPao")
-    public String addPao(ModelMap map, String schedule, String command, int scheduleId, ScheduleCommand cmd,
+    public String addPao(ModelMap map, String schedule, String command, int scheduleId, ScheduleCommand cmd, YukonUserContext context,
             String paoIdList, String cmdInput, Integer dmvTestId, FlashScope flash, HttpServletResponse response) {
+        LiteYukonUser user = context.getYukonUser();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        Map<String, Object> json = new HashMap<>();
+
+        boolean authorized = checkForCommandAuthorization(user, json, "", accessor);
+        if (!authorized) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".notAuthorized", user.getUsername()));
+            return createAssignmentErrorResponse(map, schedule, command, response);
+        }
 
         List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
 
@@ -363,34 +408,29 @@ public class ScheduleController {
         switch (result) {
         case DUPLICATE:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".duplicate"));
-            setDMVTestCommand(map);
-            setScheduleAssignmentPop(map, schedule, command);
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            return "schedule/newScheduleAssignmentPopup.jsp";
+            return createAssignmentErrorResponse(map, schedule, command, response);
         case NO_DEVICES:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".noDeviceSelected"));
-            setDMVTestCommand(map);
-            setScheduleAssignmentPop(map, schedule, command);
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            return "schedule/newScheduleAssignmentPopup.jsp";
+            return createAssignmentErrorResponse(map, schedule, command, response);
         case SUCCESS:
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".addSuccessful", paoIds.size()));
             break;
         case INVALID:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".noScheduleOrCommand"));
-            setDMVTestCommand(map);
-            setScheduleAssignmentPop(map, schedule, command);
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            return "schedule/newScheduleAssignmentPopup.jsp";
+            return createAssignmentErrorResponse(map, schedule, command, response);
         case NO_DMVTEST:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".noDmvTestCommand"));
-            setDMVTestCommand(map);
-            setScheduleAssignmentPop(map, schedule, command);
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            return "schedule/newScheduleAssignmentPopup.jsp";
+            return createAssignmentErrorResponse(map, schedule, command, response);
         }
 
         return null;
+    }
+    
+    private String createAssignmentErrorResponse(ModelMap map, String schedule, String command, HttpServletResponse response) {
+        setDMVTestCommand(map);
+        setScheduleAssignmentPop(map, schedule, command);
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        return "schedule/newScheduleAssignmentPopup.jsp";
     }
     
     /**
