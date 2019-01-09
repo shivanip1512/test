@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
@@ -487,7 +488,12 @@ public class HighBillController {
             msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
-            msgData.put("physAddress", device.getAddress());
+            if (device.getPaoType().isRfMeter()) {
+                RfnMeter rfMeter = meterDao.getRfnMeterForId(deviceId);
+                msgData.put("physAddress/serialNumber", rfMeter.getRfnIdentifier().getSensorSerialNumber());
+            } else {
+                msgData.put("physAddress/serialNumber", device.getAddress());
+            }
             msgData.put("startDate", startDate);
             msgData.put("stopDate", stopDate);
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
