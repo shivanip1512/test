@@ -326,7 +326,7 @@ public class AssetAvailabilityController {
         headerRow[0] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.SERIAL_NUM);
         headerRow[1] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.TYPE);
         headerRow[2] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_COMM);
-        headerRow[3] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_RUNTIME);
+        headerRow[3] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_RUN);
         headerRow[4] = messageSourceAccessor.getMessage(baseKey + "AVAILABILITY");
 
         return headerRow;
@@ -369,7 +369,7 @@ public class AssetAvailabilityController {
         SERIAL_NUM, 
         TYPE, 
         LAST_COMM, 
-        LAST_RUNTIME;
+        LAST_RUN;
 
         @Override
         public String getFormatKey() {

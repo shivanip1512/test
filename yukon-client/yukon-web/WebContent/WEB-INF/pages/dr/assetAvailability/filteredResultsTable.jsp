@@ -14,7 +14,7 @@
         <tags:sort column="${SERIAL_NUM}"/>
         <tags:sort column="${TYPE}"/>
         <tags:sort column="${LAST_COMM}"/>
-        <tags:sort column="${LAST_RUNTIME}"/>
+        <tags:sort column="${LAST_RUN}"/>
         <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
     </thead>
     <tbody>
