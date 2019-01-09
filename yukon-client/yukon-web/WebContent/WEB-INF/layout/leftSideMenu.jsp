@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -171,7 +172,9 @@ function hideRevealSectionSetup(showElement, hideElement, clickableElement,
             <td colspan="2">
                 <div id="CopyRight">
                     <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>&nbsp;|&nbsp;
-                    <cti:msg key="yukon.web.layout.standard.copyright"/>&nbsp;|&nbsp;Generated at&nbsp;
+                    <jsp:useBean id="now" class="java.util.Date"/>
+                    <fmt:formatDate var="year" value="${now}" pattern="yyyy"/>
+                    <cti:msg key="yukon.web.layout.standard.copyright" arguments="${year}"/>&nbsp;|&nbsp;Generated at&nbsp;
                     <cti:formatDate type="FULL" value="${currentTime}"/>
                 </div>
             </td>

@@ -4,6 +4,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -218,7 +219,9 @@
                         <div class="left">
                             <div class="legal">
                                 <p class="copyright">
-                                    <cti:msg2 key=".copyright"/>
+                                    <jsp:useBean id="now" class="java.util.Date"/>
+                                    <fmt:formatDate var="year" value="${now}" pattern="yyyy"/>
+                                    <cti:msg2 key=".copyright" arguments="${year}"/>
                                 </p>
                                 <ul>
                                     <li><cti:msg2 key=".yukonVersion" arguments="${yukonVersion}"/></li>

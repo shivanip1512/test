@@ -4,8 +4,8 @@
 <entry key="yukon.web.layout.standard.upperrightlogo">/WebConfig/yukon/YukonBW.gif</entry>
 <entry key="yukon.web.layout.standard.yukonVersion">Yukon Version {0}</entry>
 <entry key="yukon.web.layout.standard.buildInfo">Build {0}</entry>
-<entry key="yukon.web.layout.standard.copyright">Copyright © 2002-2018 Eaton. All rights reserved.</entry>
-<entry key="yukon.web.layout.standard.copyrightFull">Copyright © 2002-2018 Eaton.  Yukon is a valuable trademark of Eaton Corporation in the U.S. and other countries. You are not permitted to use Eaton trademarks without the prior written consent of Eaton. All other trademarks are property of their respective owners.</entry>
+<entry key="yukon.web.layout.standard.copyright">Copyright © 2002-{0} Eaton. All rights reserved.</entry>
+<entry key="yukon.web.layout.standard.copyrightFull">Copyright © 2002-{0} Eaton.  Yukon is a valuable trademark of Eaton Corporation in the U.S. and other countries. You are not permitted to use Eaton trademarks without the prior written consent of Eaton. All other trademarks are property of their respective owners.</entry>
 <entry key="yukon.web.layout.standard.energyCompany">{0}</entry>
 <entry key="yukon.web.layout.standard.username">{0}</entry>
 <entry key="yukon.web.layout.standard.pageName">page={0}</entry>

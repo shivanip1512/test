@@ -5,6 +5,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -109,7 +110,9 @@
           <div class="left">
             <div class="legal">
               <p class="copyright" style="margin-top: 16px;">
-                <cti:msg2 key="yukon.web.layout.standard.copyrightFull"/>
+                <jsp:useBean id="now" class="java.util.Date"/>
+                <fmt:formatDate var="year" value="${now}" pattern="yyyy"/>
+                <cti:msg2 key="yukon.web.layout.standard.copyrightFull" arguments="${year}"/>
               </p>
             </div>
           </div>
