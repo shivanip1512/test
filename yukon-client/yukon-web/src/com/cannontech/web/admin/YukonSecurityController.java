@@ -599,10 +599,8 @@ public class YukonSecurityController {
         response.setHeader("Content-Type", "application/force-download");
         String fileName = ServletUtil.makeWindowsSafeFileName("ecobeePublicKey.txt");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        try {
-            OutputStream stream = response.getOutputStream();
+        try (OutputStream stream = response.getOutputStream()) {
             stream.write(publicKey.getBytes());
-            stream.close();
         } catch (IOException e) {
             log.warn("Exception getting the ecobee Public Key", e);
         }
