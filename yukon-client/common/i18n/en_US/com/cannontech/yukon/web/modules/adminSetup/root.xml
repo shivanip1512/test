@@ -150,7 +150,7 @@
     <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyBox.helpText"><![CDATA[Encryption keys are used by ecobee to encrypt device data, and by Yukon to decrypt that device data. 
     For Yukon to retrieve ecobee device data successfully, encryption keys must be generated and the public key must be provided to busidev@ecobee.com.
     ]]></entry>
-    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyGenerated">ecobee Encryption Keys were generated: </entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyGenerated">ecobee Encryption Keys were generated:</entry>
     <entry key="yukon.web.modules.adminSetup.security.ecobeeNoKeyGenerated">No ecobee Encryption Keys have been generated.</entry>
     <entry key="yukon.web.modules.adminSetup.security.downloadEcobeeKey.label">Download Public Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.generateEcobeeKey.label">Generate New Key</entry>

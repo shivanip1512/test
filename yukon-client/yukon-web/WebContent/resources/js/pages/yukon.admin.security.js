@@ -54,9 +54,8 @@ yukon.admin.security = (function () {
     },
     
     _submitForm = function(formId) {
-        $(".ui-dialog").css("display","none");
         yukon.ui.blockPage();
-        $("#"+formId).submit();
+        $("#" + formId).submit();
     },
     
     mod = {
@@ -68,10 +67,10 @@ yukon.admin.security = (function () {
             
             var showDialog = $('.js-show-dialog').val();
             
-            if (showDialog == "addKey") {
+            if (showDialog === "addKey") {
                 $('#honeywellPublicKeyDownloadStatus').hide();
                 $('#addNewKeyBtn').trigger($.Event("click")); // Opens up addKey Dialog
-            } else if (showDialog == "importKey") {
+            } else if (showDialog === "importKey") {
                 $('#importKeyFileBtn').trigger($.Event("click")); // Opens up importKey Dialog
             }
             
@@ -138,7 +137,6 @@ yukon.admin.security = (function () {
                         $('.js-ecobee-key-date-time').html(data.ecobeeKeyGeneratedDateTime);
                         $('.js-ecobee-key-generated').show();
                     }
-                }).fail(function(data) {
                 });
             });
             

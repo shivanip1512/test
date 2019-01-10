@@ -239,13 +239,12 @@
                 <tags:boxContainer2 nameKey="ecobeeKeyBox">
                     <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? '' : 'dn'}"/>
                     <span class="js-ecobee-key-generated ${keyGeneratedClass}">
-                        <i:inline key=".ecobeeKeyGenerated"/><span class="js-ecobee-key-date-time">${ecobeeKeyGeneratedDateTime}</span>
+                        <i:inline key=".ecobeeKeyGenerated"/>&nbsp;<span class="js-ecobee-key-date-time">${ecobeeKeyGeneratedDateTime}</span>
                     </span>
                     <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? 'dn' : ''}"/>
                     <span class="js-ecobee-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeNoKeyGenerated"/></span>
                     <div class="page-action-area">
                         <form:form method="GET" action="downloadEcobeeKey">
-                            <cti:csrfToken />
                             <cti:button nameKey="downloadEcobeeKey" type="submit" />
                         </form:form>
                         <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
