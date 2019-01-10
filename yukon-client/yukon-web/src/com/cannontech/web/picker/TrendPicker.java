@@ -20,8 +20,8 @@ public class TrendPicker extends DatabasePicker<Map<String, Object>> {
     static {
         List<OutputColumn> columns = Lists.newArrayList();
         String titleKeyPrefix = "yukon.web.picker.trendPicker.";
-        columns.add(new OutputColumn("name", titleKeyPrefix + "name"));
-        columns.add(new OutputColumn("graphDefinitionId", titleKeyPrefix + "graphDefinitionId"));
+        columns.add(new OutputColumn("Name", titleKeyPrefix + "name"));
+        columns.add(new OutputColumn("GraphDefinitionId", titleKeyPrefix + "graphDefinitionId"));
         outputColumns = Collections.unmodifiableList(columns);
     }
 
@@ -31,9 +31,9 @@ public class TrendPicker extends DatabasePicker<Map<String, Object>> {
 
     @Override
     public String getIdFieldName() {
-        return "Name";
+        return "GraphDefinitionId";
     }
-
+    
     @Override
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
@@ -62,8 +62,8 @@ public class TrendPicker extends DatabasePicker<Map<String, Object>> {
             Map<String, Object> map = new HashMap<>();
             int graphDefinitionId = rs.getInt("GraphDefinitionId");
             String name = rs.getString("Name");
-            map.put("name", name);
-            map.put("graphDefinitionId", graphDefinitionId);
+            map.put("Name", name);
+            map.put("GraphDefinitionId", graphDefinitionId);
             return map;
         }
     }
