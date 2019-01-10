@@ -31,7 +31,7 @@ import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
-import com.cannontech.common.events.loggers.ToolsEventLogService;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
@@ -46,9 +46,9 @@ public class ImportController {
 
     @Autowired private BulkImportService bulkImportService;
     @Autowired private List<BulkImportMethod> importMethods;
-    @Autowired private ToolsEventLogService toolsEventLogService;
-    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
-    
+    @Autowired private SystemEventLogService systemEventLogService;
+    @Resource(name = "recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new ConcurrentHashMap<>();
     
     @PostConstruct
@@ -102,6 +102,8 @@ public class ImportController {
         // init file info
         FileSystemResource fileResource = new FileSystemResource(bulkFileUpload.getFile());
         BulkImportFileInfo bulkImportFileInfo = new BulkImportFileInfo(fileResource, ignoreInvalidCols);
+        bulkImportFileInfo.setOriginalFilename(bulkFileUpload.getName());
+        bulkImportFileInfo.setImportType(importTypeSelector);
         
         // save file info
         String fileInfoId = bulkImportFileInfo.getId();
@@ -157,7 +159,8 @@ public class ImportController {
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         ParsedBulkImportFileInfo parsedResult = 
                 bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
-        toolsEventLogService.importStarted(userContext.getYukonUser(), bulkImportType.name());
+        systemEventLogService.importStarted(userContext.getYukonUser(), bulkImportType.name(),
+            bulkImportFileInfo.getOriginalFilename());
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
         model.addAttribute("resultsId", resultsId);

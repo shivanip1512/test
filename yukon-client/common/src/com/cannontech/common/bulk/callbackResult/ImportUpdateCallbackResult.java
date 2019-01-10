@@ -10,6 +10,8 @@ import com.cannontech.common.bulk.service.BulkFileInfo;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.spring.YukonSpringHook;
 
 public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCallback<String[]>
         implements BulkFieldBackgroupProcessResultHolder {
@@ -19,6 +21,8 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
     private StoredDeviceGroup successGroup;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    private SystemEventLogService systemEventLogService;
+    private boolean isEventLogged;
 
     public ImportUpdateCallbackResult(BackgroundProcessTypeEnum backgroundProcessType,
             List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkFileInfo bulkFileInfo, String resultsId,
@@ -32,6 +36,7 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
         this.successGroup = successGroup;
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+        systemEventLogService = YukonSpringHook.getBean("systemEventLogService", SystemEventLogService.class);
     }
 
     public BulkFileInfo getBulkFileInfo() {
@@ -84,5 +89,22 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
     @Override
     public List<BulkFieldColumnHeader> getBulkFieldColumnHeaders() {
         return bulkFieldColumnHeaders;
+    }
+
+    public boolean isEventLogged() {
+        return isEventLogged;
+    }
+
+    public void setEventLogged(boolean isEventLogged) {
+        this.isEventLogged = isEventLogged;
+    }
+
+    @Override
+    public void logEvent() {
+        if (!isEventLogged && isComplete()) {
+            isEventLogged = true;
+            systemEventLogService.importCompleted(bulkFileInfo.getImportType(), bulkFileInfo.getOriginalFilename(),
+                getSuccessCount(), getTotalItems() - getSuccessCount());
+        }
     }
 }

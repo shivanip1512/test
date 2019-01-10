@@ -894,6 +894,10 @@ public class DevEventLogCreationService {
                 systemEventLogService.maintenanceTaskDisabled(user, taskName);
                 systemEventLogService.maintenanceTaskEnabled(user, taskName);
                 systemEventLogService.maintenanceTaskSettingsUpdated(user, taskName);
+                
+                String fileName = "MCT_Import.csv";
+                systemEventLogService.importStarted(user, BulkImportType.MCT.name(), fileName);
+                systemEventLogService.importCompleted(BulkImportType.MCT.name(), fileName, 10, 0);
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -939,7 +943,6 @@ public class DevEventLogCreationService {
                 toolsEventLogService.macsScriptUpdated(user, formatName);
                 toolsEventLogService.macsScriptDeleted(user, formatName);
                 
-                toolsEventLogService.importStarted(user, BulkImportType.MCT.name());
             }
         });
         executables.put(LogType.VALIDATION, new DevEventLogExecutable() {

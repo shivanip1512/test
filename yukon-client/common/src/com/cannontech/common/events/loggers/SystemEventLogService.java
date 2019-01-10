@@ -154,6 +154,11 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void certificateGenerationFailed(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
-    
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.bulkOperations")
+    public void importStarted(@Arg(ArgEnum.username) LiteYukonUser user, String importType, String fileName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.bulkOperations")
+    public void importCompleted(String importType, String fileName, int successCount, int failureCount);
 
 }

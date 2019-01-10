@@ -5,13 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.annotation.Resource;
+
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
 import com.google.common.base.Joiner;
@@ -24,6 +30,7 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
 
     private Map<DataType, ? extends UpdateBackingService> backs;
     private Map<DataType, ? extends BulkUpdateBackingService> bulkBacks;
+    @Resource(name = "recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
 
     @Override
     public UpdateResponse getUpdates(Set<String> requests, long afterDate, YukonUserContext userContext) {
@@ -62,6 +69,13 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
                     UpdateValue updateValue = null;
                     try {
                         updateValue = getValue(back, identifier, afterDate, userContext, true);
+                        if (identifier.getRemainder().endsWith("STATUS_TEXT")
+                            && "Complete".equals(updateValue.getValue())) {
+                            String resultId = StringUtils.split(identifier.getRemainder(), "/")[0];
+                            BackgroundProcessResultHolder backgroundProcessResultHolder =
+                                recentResultsCache.getResult(resultId);
+                            backgroundProcessResultHolder.logEvent();
+                        }
                     } catch (CacheManagementException e) {
                         log.debug("Unable to get the identifierValue");
                     }

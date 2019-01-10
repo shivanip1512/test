@@ -12,6 +12,8 @@ public abstract class BulkFileInfo {
     private boolean ignoreInvalidCols;
     private int lineCount = 0;
     private String id = null;
+    private String originalFilename;
+    private String importType;
     
     // PUBLIC GETTERS
     //----------------------------------------------------------------------------------------------
@@ -52,5 +54,21 @@ public abstract class BulkFileInfo {
 
     public void setLineCount(int lineCount) {
         this.lineCount = lineCount;
+    }
+
+    public String getOriginalFilename() {
+        return originalFilename;
+    }
+
+    public void setOriginalFilename(String originalFilename) {
+        this.originalFilename = originalFilename;
+    }
+
+    public String getImportType() {
+        return importType;
+    }
+
+    public void setImportType(String importType) {
+        this.importType = importType;
     }
 }

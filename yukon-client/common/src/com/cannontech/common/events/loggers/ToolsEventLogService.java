@@ -83,7 +83,5 @@ public interface ToolsEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.billing")
     public void billingFormatDeleted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.name) String name);
     
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.bulkOperations")
-    public void importStarted(@Arg(ArgEnum.username) LiteYukonUser user, String importType);
 
 }
