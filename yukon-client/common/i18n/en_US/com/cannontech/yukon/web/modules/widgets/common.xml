@@ -173,7 +173,7 @@
             Data has been received for these devices within 7 days.</li>
             <li><span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span> - 
             Data has been received for these devices within 14 days.</li>
-            <li><span class="fwb bg-color-grey txt-color-white">Unavailable (Grey)</span> - 
+            <li><span class="fwb bg-color-grey txt-color-white">Unreported (Grey)</span> - 
             Data has not been received for these devices for over 14 days.</li>
         </ul>
 ]]></entry>
@@ -182,7 +182,7 @@
 <entry key="yukon.web.widgets.assetAvailabilityWidget.widgetIdentity">Asset Availability - {0}</entry>
 
 <entry key="yukon.web.widgets.assetAvailabilityWidget.helpText"><![CDATA[
-        Select a Scenario, Control Area, or Program to obtain operational information for Demand Response devices. Device Group filter is not supported by legacy devices.
+        Select a Scenario, Control Area, or Program to obtain operational information for Demand Response devices.
         Click on the pie chart to view detailed device information.
         The asset availability details are updated every 30 minutes by default. 
         The Refresh button will force an update of the asset availability details (this is available every 15 minutes).

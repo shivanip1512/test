@@ -10,7 +10,7 @@
     <entry key="yukon.web.modules.dr.assetAvailability.detail.helpText"><![CDATA[
         You can apply the following filters to the report:
         <ul>
-            <li><b>Device Group(s)</b> - Select one to many device groups to filter the results.</li>
+            <li><b>Device Group(s)</b> - Select one to many device groups to filter the results. Device Group filter is not supported by legacy devices.</li>
             <li><b>Recent Reading</b> - Select any data availability options to filter the results.</li>
             <ul>
                 <li><span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span> - 

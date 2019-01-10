@@ -48,7 +48,7 @@
                 Data has been received for these devices within 7 days.</li>
                 <li><span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span> - 
                 Data has been received for these devices within 14 days.</li>
-                <li><span class="fwb bg-color-grey txt-color-white">Unavailable (Grey)</span> - 
+                <li><span class="fwb bg-color-grey txt-color-white">Unreported (Grey)</span> - 
                 Data has not been received for these devices for over 14 days.</li>
             </ul>
         </ul>
