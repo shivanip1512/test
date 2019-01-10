@@ -948,7 +948,7 @@ bool Conductor::issueTwoWayScans( const std::vector<CtiCCMonitorPointPtr> & poin
     {
         CtiCCExecutorFactory::createExecutor(
             new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
-                             bank->getControlDeviceId() ) )->execute();
+                             bank->getPaoId() ) )->execute();
 
         CTILOG_INFO( dout, "Requesting a 2-way scan for " << bank->getPaoName() );
     }

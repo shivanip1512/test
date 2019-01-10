@@ -1947,7 +1947,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
                     if ( sendScan )
                     {
                         CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
-                                                                                bank->getControlDeviceId() ) )->execute();
+                                                                                bank->getPaoId() ) )->execute();
                     }
                 }
             }
@@ -4689,7 +4689,7 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
                     if ( sendScan )
                     {
                         CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
-                                                                                bank->getControlDeviceId() ) )->execute();
+                                                                                bank->getPaoId() ) )->execute();
                     }
                 }
             }

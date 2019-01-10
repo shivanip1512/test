@@ -1360,10 +1360,7 @@ void CtiCCCommandExecutor::SendTimeSync()
 void CtiCCCommandExecutor::SendAllCapBankCommands()
 {
     long paoId = _itemId;
-    long controlID = 0;
-    bool found = false;
     string actionText = "";
-    long action = CapControlCommand::UNDEFINED;
 
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multi->getData();
@@ -1375,7 +1372,6 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     CTILOCKGUARD( CtiCriticalSection, guard, store->getMux() );
 
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
-    CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas();
     const auto& ccStations = store->getCCSubstations();
 
     //Find the object type
@@ -1400,7 +1396,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
     if (type == Cti::CapControl::Undefined)
     {
-        //Error
+        CTILOG_ERROR( dout, "Trying to execute an unsupported PaoType with ID: " << paoId );
         return;
     }
 
@@ -1410,10 +1406,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     std::vector<CtiRequestMsg*> requests;
 
     CapBankList banks = store->getCapBanksByPaoIdAndType(paoId,type);
-    for each(CtiCCCapBankPtr bank in banks)
+    for ( CtiCCCapBankPtr bank : banks )
     {
-        CtiCCFeederPtr feeder = store->findFeederByPAObjectID(bank->getParentId());
-        CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(feeder->getParentId());
         long bankId = bank->getPaoId();
 
         //Execute per capbank
