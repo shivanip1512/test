@@ -234,7 +234,7 @@ public class RfPerformanceController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String helpText = accessor.getMessage(detailsKey + "helpText");
         model.addAttribute("helpText", helpText);
-        unReportedDeviceText(model, eventId, accessor);
+        populateModelWithUnreportedTooltip(model, eventId, accessor);
         return "dr/rf/broadcast/eventDetail.jsp";
     }
 
@@ -484,17 +484,17 @@ public class RfPerformanceController {
      * This method populate the device count and status for Unreported devices to be displayed on event detail
      * page on Results Unreported grey box tool tip.
      */
-    private void unReportedDeviceText(ModelMap model, long eventId, MessageSourceAccessor accessor) {
+    private void populateModelWithUnreportedTooltip(ModelMap model, long eventId, MessageSourceAccessor accessor) {
         Map<DeviceStatus, Integer> unReportedCountWithStatus = verificationService.getUnknownCounts(eventId);
         List<String> args = new ArrayList<>();
         Stream.of(DeviceStatus.values()).forEach(deviceStatus -> {
             Integer count =
                     unReportedCountWithStatus.get(deviceStatus) != null ? unReportedCountWithStatus.get(deviceStatus) : 0;
             String status = accessor.getMessage(deviceStatus.getFormatKey());
-            args.add(status + " : " + count.toString());
+            args.add(status + ": " + count.toString());
         });
-        String unReportedDeviceText = accessor.getMessage(detailsKey + "unReportedDeviceCountText", args.toArray());
-        model.put("unReportedDeviceText", unReportedDeviceText);
+        String unreportedTooltip = accessor.getMessage(detailsKey + "unreportedTooltip", args.toArray());
+        model.put("unreportedTooltip", unreportedTooltip);
     }
 
     public enum EventDetailSortBy implements DisplayableEnum {

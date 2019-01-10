@@ -39,11 +39,10 @@
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.LAST_COMMUNICATION">Last Communication</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastComm">Last Successful Communication {0}</entry>
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastCommNotAvailable">Not Available</entry>
-    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.unReportedDeviceCountText"><![CDATA[
-Unreported
-
-{0}
-{1}
-{2}
-    ]]></entry>
+    <!-- For Unreported Tooltip we have used below structure, as HTML list item didn't work well with standard title tooltip.-->
+    <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.unreportedTooltip"><![CDATA[Unreported
+&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;{0}
+&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;{1}
+&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;{2}
+]]></entry>
 </properties>

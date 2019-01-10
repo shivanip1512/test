@@ -3,9 +3,9 @@
 <properties>
 
 <!-- RF DR Broadcast Performance Device Status -->
-<entry key="yukon.common.rfPerformance.deviceStatus.COMMUNICATING">Communicating </entry>
+<entry key="yukon.common.rfPerformance.deviceStatus.COMMUNICATING">Communicating</entry>
 <entry key="yukon.common.rfPerformance.deviceStatus.NOT_COMMUNICATING">Not Communicating</entry>
-<entry key="yukon.common.rfPerformance.deviceStatus.NEW_INSTALL_NOT_COMMUNICATING">Recent Enrollment/New Install </entry>
+<entry key="yukon.common.rfPerformance.deviceStatus.NEW_INSTALL_NOT_COMMUNICATING">Recent Enrollment/New Install</entry>
 <entry key="yukon.common.rfPerformance.deviceStatus.NEW_INSTALL_NOT_COMMUNICATING.title">Never Reported - In system less than 4 days</entry>
 
 <!-- Metering -->
