@@ -249,7 +249,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
                     command = CommandHelper.buildVerifyInactiveBanks(user, CommandType.VERIFY_INACTIVE_BANKS, 
                                                                      assignment.getPaoId(), false, secondsNotOperatedIn);
                 } catch (Exception e) {
-                    log.error("There was a problem parsing the time period for a 'Verify Capbanks Not Operated in' command");
+                    log.error("There was a problem parsing the time period for a 'Verify Capbanks Not Operated in' command", e);
                    return false;
                 }
 
