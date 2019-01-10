@@ -18,8 +18,6 @@ public class YukonPointMappingIcdParser {
         
         ObjectMapper jsonFormatter = new ObjectMapper();
         
-        jsonFormatter.enable(SerializationFeature.INDENT_OUTPUT);
-        
         byte[] jsonBytes = jsonFormatter.writeValueAsBytes(yamlObject);
         
         PointMappingIcd parsedIcd = jsonFormatter.readValue(jsonBytes, PointMappingIcd.class);
