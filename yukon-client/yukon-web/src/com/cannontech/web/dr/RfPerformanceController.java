@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,6 +52,8 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
@@ -92,6 +95,7 @@ public class RfPerformanceController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private RfnPerformanceVerificationService verificationService;
     
@@ -426,7 +430,7 @@ public class RfPerformanceController {
         List<String[]> dataRows = getDownloadDataRows(userContext, eventId, null,
             getStatusTypes().toArray(new PerformanceVerificationMessageStatus[getStatusTypes().size()]));
         // write out the file
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "RfBroadcastPerformance_" + eventId + ".csv");
+        writeToCSV(headerRow, dataRows, eventId, response, userContext);
     }
 
     @GetMapping("/rf/broadcast/downloadFilteredResults")
@@ -437,7 +441,7 @@ public class RfPerformanceController {
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(userContext, eventId, deviceSubGroups, statuses);
         // write out the file
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "RfBroadcastPerformance_" + eventId + ".csv");
+        writeToCSV(headerRow, dataRows, eventId, response, userContext);
     }
 
     private String[] getDownloadHeaderRow(YukonUserContext userContext) {
@@ -457,8 +461,8 @@ public class RfPerformanceController {
             PerformanceVerificationMessageStatus[] statuses) {
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        List<BroadcastEventDeviceDetails> broadcastEventDetails =
-            verificationService.getDevicesWithStatus(eventId, statuses, PagingParameters.EVERYTHING, retrieveSubGroups(deviceSubGroups));
+        List<BroadcastEventDeviceDetails> broadcastEventDetails = verificationService.getDevicesWithStatus(eventId,
+            statuses, PagingParameters.EVERYTHING, retrieveSubGroups(deviceSubGroups));
         sortBroadcastEventDetails(broadcastEventDetails, null, EventDetailSortBy.DEVICE_NAME, userContext);
         int totalEventCount = verificationService.getTotalCount(eventId, statuses, retrieveSubGroups(deviceSubGroups));
         SearchResults<BroadcastEventDeviceDetails> searchResults =
@@ -472,12 +476,21 @@ public class RfPerformanceController {
             dataRow[1] = accessor.getMessage(details.getHardware().getInventoryIdentifier().getHardwareType());
             dataRow[2] = details.getHardware().getAccountNo();
             dataRow[3] = accessor.getMessage(details.getDeviceStatus().getFormatKey());
-            dataRow[4] = details.getLastComm() != null ? details.getLastComm().toString()
+            dataRow[4] = (details.getLastComm() != null)
+                ? dateFormattingService.format(details.getLastComm(), DateFormatEnum.FULL, userContext)
                 : accessor.getMessage(detailsKey + "lastCommNotAvailable");
             dataRows.add(dataRow);
         });
 
         return dataRows;
+    }
+    
+    private void writeToCSV(String[] headerRow, List<String[]> dataRows, long eventId, HttpServletResponse response,
+            YukonUserContext userContext) throws IOException {
+        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
+            DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = "rfEventDetail" + "_" + eventId + "_" + dateStr + ".csv";
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
     }
 
     /**
