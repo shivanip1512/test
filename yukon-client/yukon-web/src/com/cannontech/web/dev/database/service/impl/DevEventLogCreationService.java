@@ -1136,8 +1136,8 @@ public class DevEventLogCreationService {
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 35),
-        TOOLS(ToolsEventLogService.class, 22),
+        SYSTEM(SystemEventLogService.class, 37),
+        TOOLS(ToolsEventLogService.class, 21),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
         ;

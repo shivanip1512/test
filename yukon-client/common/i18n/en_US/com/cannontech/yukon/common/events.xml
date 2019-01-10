@@ -597,7 +597,14 @@
     <entry key="yukon.common.events.system.tools.billing.billingFormatUpdated.3">Billing Format</entry>
     <entry key="yukon.common.events.system.tools.billing.billingFormatDeleted">Billing export schedule {2} deleted by {1}.</entry>
     <entry key="yukon.common.events.system.bulkOperations.importStarted">Bulk Import started for ImportType={2}, File Name: {3} by {1}.</entry>
-    <entry key="yukon.common.events.system.bulkOperations.importCompleted">Bulk Import completed for ImportType={1}, File Name: {2} (Success:{7} Failure:{8}).</entry>    
+    <entry key="yukon.common.events.system.bulkOperations.importCompleted">Bulk Import completed for ImportType={1}, File Name: {2} (Success:{7} Failure:{8}).</entry>
+    <entry key="yukon.common.events.system.bulkOperations.importStarted.1">Username</entry>
+    <entry key="yukon.common.events.system.bulkOperations.importStarted.2">Import Type</entry>
+    <entry key="yukon.common.events.system.bulkOperations.importStarted.3">File Name</entry>
+    <entry key="yukon.common.events.system.bulkOperations.importCompleted.1">Import Type</entry>
+    <entry key="yukon.common.events.system.bulkOperations.importCompleted.2">File Name</entry>
+    <entry key="yukon.common.events.system.bulkOperations.importCompleted.7">Success</entry>
+    <entry key="yukon.common.events.system.bulkOperations.importCompleted.8">Failure</entry>    
     <!--  System Administration -->
     <!-- Maintenance -->
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
