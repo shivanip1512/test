@@ -35,6 +35,8 @@
                                 <c:forEach var="jobWrapper" items="${filterResult.resultList}">
                                     <c:set var="jobId" value="${jobWrapper.job.id}"/>
                                     <cti:msg2 var="rowTitle" key=".jobID" argument="${jobId}"/>
+                                    <c:set var="jobGroupId" value="${jobWrapper.job.jobGroupId}"/>
+                                    <cti:url var ="historyUrl" value= "/stars/scheduledDataImport/${jobGroupId}/viewHistory"/>
                                     <tr id="tr_${jobId}" title="${rowTitle}" data-job-id="${jobId}">
                                         <%-- Schedule Name --%>
                                             <td>
@@ -62,7 +64,7 @@
                                         <td class="tar">
                                             <cm:dropdown icon="icon-cog">
                                                 <cm:dropdownOption id="start-schedule-${jobId}" classes="js-schedule-start-now" key=".start" data-job-id="${jobId}" icon="icon-bullet-go"/>
-                                                <cm:dropdownOption id="view-history-${jobId}" key="yukon.web.components.button.history.label" icon="icon-script" />
+                                                <cm:dropdownOption id="view-history-${jobId}" key="yukon.web.components.button.history.label" href="${historyUrl}" icon="icon-script"/>
                                                 <cm:dropdownOption id="disable-schedule-${jobId}" key="yukon.common.disable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-delete"/>
                                                 <cm:dropdownOption id="enable-schedule-${jobId}" key="yukon.common.enable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-accept"/>
                                                 <cm:dropdownOption id="delete-schedule-btn-${jobId}" data-ok-event="yukon:schedule:delete" data-job-id="${jobId}" key=".delete" icon="icon-cross" classes="js-hide-dropdown"/>

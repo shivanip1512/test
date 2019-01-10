@@ -1,11 +1,17 @@
 package com.cannontech.web.stars.scheduledDataImport;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -30,6 +36,7 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.search.result.SearchResults;
@@ -45,6 +52,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
@@ -203,6 +211,36 @@ public class ScheduledDataImportController {
             cronExpression = cronExpressionTagService.build(Integer.toString(jobId), request, userContext);
         } catch (CronException e) {}
         return scheduleControllerHelper.startJob(jobId, cronExpression, userContext);
+    }
+
+    @GetMapping("{jobGroupId}/viewHistory")
+    public String viewHistory(ModelMap model, @PathVariable int jobGroupId) throws ServletException {
+        List<ScheduleImportHistoryEntry> results = scheduledDataImportService.getImportHistory(jobGroupId);
+        model.addAttribute("results", results);
+        model.addAttribute("jobGroupId", jobGroupId);
+        return "/scheduledDataImport/history.jsp";
+    }
+
+    @GetMapping("downloadArchivedFile")
+    public String downloadArchivedFile(HttpServletResponse response, FlashScope flashScope, String originalFileName,
+            String fileName, boolean isSuccessFile, String failedFilePath, int jobGroupId) {
+        String baseKey = "yukon.web.modules.operator.fileImportHistory.";
+        try (InputStream input = new FileInputStream(scheduledDataImportService.downloadArchivedFile(fileName, isSuccessFile, failedFilePath));
+             OutputStream output = response.getOutputStream();) {
+            // set up the response
+            response.setContentType("text/csv csv CSV");
+            String safeFileName = ServletUtil.makeWindowsSafeFileName(originalFileName != null ? originalFileName : fileName);
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + safeFileName + "\"");
+            // pull data from the file and push it to the browser
+            IOUtils.copy(input, output);
+        } catch (FileNotFoundException e) {
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "fileNotFound"));
+            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory";
+        } catch (Exception e) {
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "ioError"));
+            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory";
+        }
+        return null;
     }
 
     private void setupModel(ModelMap model, ScheduledDataImport scheduledDataImport,

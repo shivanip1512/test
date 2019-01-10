@@ -45,5 +45,22 @@
     <entry key="yukon.web.modules.operator.scheduledDataImportList.SCHEDULE">Schedule</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.NEXT_RUN">Next Run</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.STATUS">Status</entry>
+    
+    <entry key="yukon.web.modules.operator.fileImportHistory.pageName">File Import History</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.history.title">File Imports</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.fileName">File Name</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.dateTime">Import Date/Time</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.success">Success</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.failure">Failure</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.total">Total</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.failedFileName">Failed File Name</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.downloadMouseover">Click to download a copy of imported file.</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.downloadErrFileMouseover">Click to download a copy of error file.</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.doesNotExist">File does not exist.</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.deletedFileMouseover">The archived file has been deleted.</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.noImports">No import history found</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.fileNotFound">There is no archived copy of the specified file.</entry>
+    <entry key="yukon.web.modules.operator.fileImportHistory.ioError">An error caused the archived file download to fail.</entry>
+    
 
 </properties>

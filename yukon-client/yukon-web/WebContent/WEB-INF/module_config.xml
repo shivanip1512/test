@@ -1214,6 +1214,7 @@
             <page name="scheduledDataImportList" type="BASIC" hideSearch="true">
                 <link>/stars/scheduledDataImport/list</link>
                 <pages>
+                    <page name="fileImportHistory" type="BASIC" hideSearch="true"/>
                     <page name="scheduledDataImportDetail.CREATE" type="BASIC"/>
                     <page name="scheduledDataImportDetail.VIEW" type="DETAIL">
                         <link>/stars/scheduledDataImport/${scheduledImportData.jobId}/view</link>
