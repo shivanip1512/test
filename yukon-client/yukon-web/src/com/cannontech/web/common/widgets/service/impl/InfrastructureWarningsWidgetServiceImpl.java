@@ -1,5 +1,6 @@
 package com.cannontech.web.common.widgets.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -70,24 +71,24 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
     }
 
     @Override
-    public InfrastructureWarningSummary getWarningsSummary() {
+    public synchronized InfrastructureWarningSummary getWarningsSummary() {
         if(refreshSummary) {
             refreshSummary = false;
             cachedSummary = infrastructureWarningsDao.getWarningsSummary();
             cachedSummary.setLastRun(lastRunTime);
             log.debug("Summary is refreshed." );
         }
-        return cachedSummary;
+        return cachedSummary.copy();
     }
 
     @Override
-    public List<InfrastructureWarning> getWarnings() {
+    public synchronized List<InfrastructureWarning> getWarnings() {
         if(refreshWarnings) {
             refreshWarnings = false;
             cachedWarnings = infrastructureWarningsDao.getWarnings();
             log.debug("Warnings are refreshed." );
         }
-        return cachedWarnings;
+        return new ArrayList<>(cachedWarnings);
     }
     
     @Override
