@@ -1,6 +1,6 @@
 package com.cannontech.services.infrastructure.service.impl;
 
-import static org.joda.time.Instant.now;
+import static org.joda.time.Instant.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +69,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     /**
      * The thread where the calculation is done.
      */
-    private final Runnable calculationThread = () -> calculateWarnings();
+    private final Runnable calculationThread = this::calculateWarnings;
     
     /**
      * Schedule the calculation thread to run periodically.
@@ -186,7 +186,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     private List<PaoType> getCurrentWarnableTypes() {
         return serverDatabaseCache.getAllPaoTypes()
                                   .stream()
-                                  .filter(type -> warnableTypes.contains(type))
+                                  .filter(warnableTypes::contains)
                                   .collect(Collectors.toList());
     }
     

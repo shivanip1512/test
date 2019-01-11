@@ -191,7 +191,7 @@ public class InfrastructureWarning implements Displayable, Serializable {
                                                                            .stream()
                                                                            .map(Object::toString)
                                                                            .collect(Collectors.toSet())
-                                                                           .equals(Sets.newHashSet((this.getArguments())));
+                                                                           .equals(Sets.newHashSet((getArguments())));
     }
 
 }
