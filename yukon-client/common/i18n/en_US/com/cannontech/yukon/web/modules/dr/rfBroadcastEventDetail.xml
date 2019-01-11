@@ -41,8 +41,8 @@
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.lastCommNotAvailable">Not Available</entry>
     <!-- For Unreported Tooltip we have used below structure, as HTML list item didn't work well with standard title tooltip.-->
     <entry key="yukon.web.modules.dr.rf.broadcast.eventDetail.unreportedTooltip"><![CDATA[Unreported
-&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;{0}
-&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;{1}
-&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;{2}
+&nbsp;*&nbsp;{0}
+&nbsp;*&nbsp;{1}
+&nbsp;*&nbsp;{2}
 ]]></entry>
 </properties>
