@@ -1,7 +1,6 @@
 package com.cannontech.system;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,14 +22,9 @@ public class ThirdPartyLibrary {
     public String mavenUrl;
     public String md5;
     public String sha1;
-    public LocalDate updated;
+    public Date updated;
     public String jira;
     public String notes;
-    
-    public void setUpdated(String updatedString) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        updated = LocalDate.parse(updatedString, dtf);
-    }
     
     public void setLicense(String licenseString) {
         licenses = Arrays.stream(licenseString.split(", *"))
