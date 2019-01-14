@@ -895,9 +895,6 @@ public class DevEventLogCreationService {
                 systemEventLogService.maintenanceTaskEnabled(user, taskName);
                 systemEventLogService.maintenanceTaskSettingsUpdated(user, taskName);
                 
-                String fileName = "MCT_Import.csv";
-                systemEventLogService.importStarted(user, BulkImportType.MCT.name(), fileName);
-                systemEventLogService.importCompleted(BulkImportType.MCT.name(), fileName, 10, 0);
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -942,6 +939,10 @@ public class DevEventLogCreationService {
                 toolsEventLogService.macsScriptCreated(user, formatName);
                 toolsEventLogService.macsScriptUpdated(user, formatName);
                 toolsEventLogService.macsScriptDeleted(user, formatName);
+                
+                String fileName = "MCT_Import.csv";
+                toolsEventLogService.importStarted(user, BulkImportType.MCT.name(), fileName);
+                toolsEventLogService.importCompleted(BulkImportType.MCT.name(), fileName, 10, 0);
                 
             }
         });
@@ -1136,8 +1137,8 @@ public class DevEventLogCreationService {
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 37),
-        TOOLS(ToolsEventLogService.class, 21),
+        SYSTEM(SystemEventLogService.class, 35),
+        TOOLS(ToolsEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
         ;

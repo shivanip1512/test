@@ -31,7 +31,7 @@ import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
-import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
@@ -46,7 +46,7 @@ public class ImportController {
 
     @Autowired private BulkImportService bulkImportService;
     @Autowired private List<BulkImportMethod> importMethods;
-    @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     @Resource(name = "recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
 
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new ConcurrentHashMap<>();
@@ -159,7 +159,7 @@ public class ImportController {
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         ParsedBulkImportFileInfo parsedResult = 
                 bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
-        systemEventLogService.importStarted(userContext.getYukonUser(), bulkImportType.name(),
+        toolsEventLogService.importStarted(userContext.getYukonUser(), bulkImportType.name(),
             bulkImportFileInfo.getOriginalFilename());
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
