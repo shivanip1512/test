@@ -196,6 +196,18 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             sql.append("DESC");
         }
     }
+    
+    private static void appendOrderByClause(SqlBuilder sql, Order order, OrderBy orderBy, String table) {
+        sql.append("ORDER BY");
+        if (orderBy == OrderBy.TIMESTAMP) {
+            sql.append(table + ".timestamp");
+        }else if (orderBy == OrderBy.VALUE) {
+            sql.append(table + ".value");
+        }
+        if (order == Order.REVERSE) {
+            sql.append("DESC");
+        }
+    }
 
     private List<PointValueHolder> executeQuery(SqlFragmentSource sql) {
         List<PointValueHolder> result = yukonTemplate.query(sql, new LiteRphRowMapper());
@@ -330,38 +342,40 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
-                        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
                         
-                        if (databaseVendor.isOracle()) {
-                            sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
-                        }
-                        else 
-                        {
-                            // Microsoft SQL
-                            sql.append("SELECT DISTINCT TOP ");
-                            sql.append(maxRows);
-                            sql.append(" yp.paobjectid, rph.pointid, rph.timestamp,");
-                        }
-                        sql.append("rph.value, rph.quality, p.pointtype");
-                        sql.append("FROM rawpointhistory rph");
-                        sql.append("JOIN point p ON rph.pointId = p.pointId");
-                        sql.append("JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
-                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
-                        sql.append("AND p.PointType").eq_k(pointIdentifier.getPointType());
+                        sql.append("SELECT");
+                        sql.append("    limited.paobjectid, limited.pointid, limited.timestamp,");
+                        sql.append("    limited.value, limited.quality, limited.pointtype");
+                        sql.append("FROM (");
+                        sql.append("    SELECT");
+                        sql.append("        cleaned.paobjectid, cleaned.pointid, cleaned.timestamp,");
+                        sql.append("        cleaned.value, cleaned.quality, cleaned.pointtype,");
+                        sql.append("        ROW_NUMBER() OVER (PARTITION BY cleaned.pointid"); 
+                        appendOrderByClause(sql, order, orderBy, "cleaned");
+                        sql.append("        ) rownumber");
+                        sql.append("    FROM (");
+                        sql.append("        SELECT DISTINCT");
+                        sql.append("            yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append("            rph.value, rph.quality, p.pointtype");
+                        sql.append("        FROM rawpointhistory rph");
+                        sql.append("        JOIN point p ON rph.pointId = p.pointId");
+                        sql.append("        JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("        WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append("        AND p.PointType").eq_k(pointIdentifier.getPointType());
                         if (excludeQualities != null && !excludeQualities.isEmpty()) {
-                            sql.append("AND rph.Quality").notIn(excludeQualities);
+                            sql.append("    AND rph.Quality").notIn(excludeQualities);
                         }
                         appendChangeIdClause(sql, changeIdRange);
                         appendTimeStampClause(sql, dateRange);
-                        sql.append("AND yp.PAObjectID").in(subList);
+                        sql.append("        AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
-                            sql.append("AND yp.DisableFlag").eq(YNBoolean.NO);
+                            sql.append("    AND yp.DisableFlag").eq(YNBoolean.NO);
                         }
-                        if (databaseVendor.isOracle()) {
-                            sql.append("AND ROWNUM <= ");
-                            sql.append(maxRows);
-                        }
-                        appendOrderByClause(sql, order, orderBy);
+                        sql.append("    ) cleaned");
+                        sql.append(") limited");        
+                        sql.append("WHERE limited.rownumber <= ");
+                        sql.append(maxRows);
+                        appendOrderByClause(sql, order, orderBy, "limited");
 
                         return sql;
                     }
