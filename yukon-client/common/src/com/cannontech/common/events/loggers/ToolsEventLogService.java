@@ -84,11 +84,11 @@ public interface ToolsEventLogService {
     public void billingFormatDeleted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.name) String name);
     
 
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.bulkOperations")
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.bulkOperations")
     public void importStarted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.type) String importType,
             @Arg(ArgEnum.fileName) String fileName);
 
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.bulkOperations")
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.bulkOperations")
     public void importCompleted(@Arg(ArgEnum.type) String importType, @Arg(ArgEnum.fileName) String fileName,
             @Arg(ArgEnum.successCount) int successCount, @Arg(ArgEnum.failureCount) int failureCount);
 
