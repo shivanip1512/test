@@ -5,9 +5,8 @@
 #include "ItronControlInterface.h"
 #include "std_helper.h"
 
-using namespace Cti::LoadManagement;
 
-
+namespace Cti::LoadManagement {
 
 ItronCycleGear::ItronCycleGear( Cti::RowReader & rdr )
     :   CtiLMProgramDirectGear( rdr )
@@ -23,8 +22,8 @@ CtiLMProgramDirectGear * ItronCycleGear::replicate() const
 
 
 bool ItronCycleGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
-                                            long           controlSeconds,
-                                            DOUBLE       & expectedLoadReduced )
+                                     long           controlSeconds,
+                                     double       & expectedLoadReduced )
 {
     if ( ItronControlInterfacePtr itronGroup = boost::dynamic_pointer_cast<ItronControlInterface>( currentLMGroup ) )
     {
@@ -57,5 +56,7 @@ bool ItronCycleGear::stopControl( CtiLMGroupPtr currentLMGroup )
 unsigned long ItronCycleGear::estimateOffTime( long controlSeconds )
 {
     return controlSeconds;
+}
+
 }
 

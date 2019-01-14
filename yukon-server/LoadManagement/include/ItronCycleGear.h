@@ -5,6 +5,8 @@
 
 
 
+namespace Cti::LoadManagement {
+
 class ItronCycleGear : public SmartGearBase,
                        public CtiLMProgramDirectGear
 {
@@ -16,10 +18,12 @@ public:
 
     bool attemptControl( CtiLMGroupPtr  currentLMGroup,
                          long           controlSeconds,
-                         DOUBLE       & expectedLoadReduced ) override;
+                         double       & expectedLoadReduced ) override;
 
     bool stopControl( CtiLMGroupPtr currentLMGroup ) override;
 
     unsigned long estimateOffTime( long controlSeconds ) override;
 };
+
+}
 

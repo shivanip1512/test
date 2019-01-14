@@ -15,8 +15,6 @@ public:
 
     LMGroupItron( Cti::RowReader & rdr );
 
-    virtual ~LMGroupItron();
-
     virtual CtiLMGroupBase* replicate() const;
 
     virtual bool sendStopControl( bool stopImmediately ) override;

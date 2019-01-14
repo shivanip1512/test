@@ -965,7 +965,7 @@ void CtiLMControlAreaStore::reset()
                     }
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::ItronCycleMethod) )
                     {
-                        newDirectGear = CTIDBG_new ItronCycleGear(rdr);
+                        newDirectGear = CTIDBG_new Cti::LoadManagement::ItronCycleGear(rdr);
                     }
                     else if (rdr["settings"].isNull())
                     {

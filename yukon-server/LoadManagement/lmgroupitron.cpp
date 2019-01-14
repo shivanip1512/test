@@ -19,11 +19,6 @@ LMGroupItron::LMGroupItron( Cti::RowReader &rdr )
     // empty
 }
 
-LMGroupItron::~LMGroupItron()
-{
-    // empty
-}
-
 CtiLMGroupBase* LMGroupItron::replicate() const
 {
     return new LMGroupItron( *this );
