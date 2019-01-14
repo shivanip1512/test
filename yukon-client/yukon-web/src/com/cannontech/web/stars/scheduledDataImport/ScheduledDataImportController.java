@@ -228,7 +228,7 @@ public class ScheduledDataImportController {
         try (InputStream input = new FileInputStream(scheduledDataImportService.downloadArchivedFile(fileName, isSuccessFile, failedFilePath));
              OutputStream output = response.getOutputStream();) {
             // set up the response
-            response.setContentType("text/csv csv CSV");
+            response.setContentType("text/csv");
             String safeFileName = ServletUtil.makeWindowsSafeFileName(originalFileName != null ? originalFileName : fileName);
             response.setHeader("Content-Disposition", "attachment; filename=\"" + safeFileName + "\"");
             // pull data from the file and push it to the browser
