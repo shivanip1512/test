@@ -186,15 +186,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     private static void appendOrderByClause(SqlBuilder sql, Order order, OrderBy orderBy) {
-        sql.append("ORDER BY");
-        if (orderBy == OrderBy.TIMESTAMP) {
-            sql.append("rph.timestamp");
-        }else if (orderBy == OrderBy.VALUE) {
-            sql.append("rph.value");
-        }
-        if (order == Order.REVERSE) {
-            sql.append("DESC");
-        }
+        appendOrderByClause(sql, order, orderBy, "rph");
     }
     
     private static void appendOrderByClause(SqlBuilder sql, Order order, OrderBy orderBy, String table) {
@@ -345,7 +337,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         
                         sql.append("SELECT");
                         sql.append("    limited.paobjectid, limited.pointid, limited.timestamp,");
-                        sql.append("    limited.value, limited.quality, limited.pointtype");
+                        sql.append("    limited.value, limited.quality, limited.pointtype, limited.rownumber AS rn");
                         sql.append("FROM (");
                         sql.append("    SELECT");
                         sql.append("        cleaned.paobjectid, cleaned.pointid, cleaned.timestamp,");
@@ -373,9 +365,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         }
                         sql.append("    ) cleaned");
                         sql.append(") limited");        
-                        sql.append("WHERE limited.rownumber <= ");
-                        sql.append(maxRows);
-                        appendOrderByClause(sql, order, orderBy, "limited");
+                        sql.append("WHERE limited.rownumber").lte(maxRows);
+                        sql.append("ORDER BY limited.pointid, limited.rownumber");
 
                         return sql;
                     }
