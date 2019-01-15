@@ -204,7 +204,7 @@ public class AccountServiceImpl implements AccountService {
             }
 
             userDao.save(user);
-            usersEventLogService.userCreated(user.getUsername(), accountDto.getUserGroup(), ec.getName(), user.getLoginStatus() , user);
+            usersEventLogService.userCreated(user.getUsername(), accountDto.getUserGroup(), ec.getName(), user.getLoginStatus() , operator);
             String password = accountDto.getPassword();
             if (!StringUtils.isBlank(password)) {
                 authenticationService.setPassword(user, authenticationService.getDefaultAuthenticationCategory(),

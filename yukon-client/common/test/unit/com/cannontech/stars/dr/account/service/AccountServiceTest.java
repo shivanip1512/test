@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.easymock.IMockBuilder;
 import org.junit.Before;
@@ -14,6 +15,8 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
@@ -104,6 +107,7 @@ public class AccountServiceTest extends EasyMockSupport {
     private EnergyCompanyDao ecServiceMock;
     private ContactService contactServiceMock;
     private StarsDatabaseCache starsDatabaseCacheMock;
+    private UsersEventLogService usersEventLogServiceMock;
 
     @Before
     public void setUp() throws SecurityException {
@@ -131,6 +135,7 @@ public class AccountServiceTest extends EasyMockSupport {
         starsCustAccountInformationDaoMock = createMock(StarsCustAccountInformationDao.class);
         dbChangeManager = createNiceMock(DbChangeManager.class);
         accountEventLogServiceMock = createMock(AccountEventLogService.class);
+        usersEventLogServiceMock = createMock(UsersEventLogService.class);
         
         EnergyCompanyDao yecServiceMock = new EnergyCompanyDaoAdapter() {
             @Override
@@ -199,6 +204,7 @@ public class AccountServiceTest extends EasyMockSupport {
         ReflectionTestUtils.setField(accountService, "accountEventLogService", accountEventLogServiceMock);
         ReflectionTestUtils.setField(accountService, "starsDatabaseCache", starsDatabaseCacheMock);
         ReflectionTestUtils.setField(accountService, "userGroupDao", userGroupDaoMock);
+        ReflectionTestUtils.setField(accountService, "usersEventLogService", usersEventLogServiceMock);
 
     }
     
@@ -334,6 +340,9 @@ public class AccountServiceTest extends EasyMockSupport {
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDaoMock.addECToAccountMapping(ecToAccountMapping);
         accountEventLogServiceMock.accountAdded(operatorUser, updatableAccount.getAccountDto().getAccountNumber());
+        usersEventLogServiceMock.userCreated(updatableAccount.getAccountDto().getUserName(),
+            updatableAccount.getAccountDto().getUserGroup(), ecMock1.getName(),
+            LoginStatusEnum.ENABLED, operatorUser);
         
         replayAll();
         
