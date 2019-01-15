@@ -49,12 +49,5 @@ public interface BackgroundProcessResultHolder extends Completable {
     
     // failure file
     public boolean isFailureFileSupported();
-
-    /**
-     * This method is used for logging an event. Override this method wherever logging is required.
-     */
-    default void logEvent() {
-
-    }
-
+    
 }

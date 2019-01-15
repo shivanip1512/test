@@ -51,6 +51,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -76,6 +77,7 @@ public abstract class BaseBulkService {
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
 
     protected boolean checkForDuplicates(List<BulkFieldColumnHeader> headerColumnSet, ParsedBulkFileInfo result) {
         boolean foundDuplicate = false;
@@ -309,13 +311,9 @@ public abstract class BaseBulkService {
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
         
-        ImportUpdateCallbackResult callbackResult = new ImportUpdateCallbackResult(backgroundProcessType,
-																        		updateBulkFieldColumnHeaders,
-																        		bulkFileInfo,
-																        		resultsId,
-																        		successGroup,
-																        		deviceGroupMemberEditorDao,
-																        		deviceGroupCollectionHelper);
+        ImportUpdateCallbackResult callbackResult =
+            new ImportUpdateCallbackResult(backgroundProcessType, updateBulkFieldColumnHeaders, bulkFileInfo, resultsId,
+                successGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, toolsEventLogService);
 
         BulkProcessorCallback<String[], UpdateableDevice> translatingCallback = new TranslatingBulkProcessorCallback<String[], UpdateableDevice, SimpleDevice>(callbackResult, new UpdateableDeviceMapper());
 

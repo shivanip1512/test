@@ -11,7 +11,6 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
-import com.cannontech.spring.YukonSpringHook;
 
 public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCallback<String[]>
         implements BulkFieldBackgroupProcessResultHolder {
@@ -22,12 +21,11 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private ToolsEventLogService toolsEventLogService;
-    private boolean isEventLogged;
 
     public ImportUpdateCallbackResult(BackgroundProcessTypeEnum backgroundProcessType,
             List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkFileInfo bulkFileInfo, String resultsId,
             StoredDeviceGroup successGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao,
-            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
+            DeviceGroupCollectionHelper deviceGroupCollectionHelper, ToolsEventLogService toolsEventLogService) {
 
         super(backgroundProcessType, resultsId, bulkFileInfo.getDataCount());
 
@@ -36,7 +34,7 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
         this.successGroup = successGroup;
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-        toolsEventLogService = YukonSpringHook.getBean("toolsEventLogService", ToolsEventLogService.class);
+        this.toolsEventLogService = toolsEventLogService;
     }
 
     public BulkFileInfo getBulkFileInfo() {
@@ -91,20 +89,17 @@ public class ImportUpdateCallbackResult extends BackgroundProcessBulkProcessorCa
         return bulkFieldColumnHeaders;
     }
 
-    public boolean isEventLogged() {
-        return isEventLogged;
-    }
-
-    public void setEventLogged(boolean isEventLogged) {
-        this.isEventLogged = isEventLogged;
+    @Override
+    public void processingSucceeded() {
+        super.processingSucceeded();
+        toolsEventLogService.importCompleted(bulkFileInfo.getImportType(), bulkFileInfo.getOriginalFilename(),
+            getSuccessCount(), getTotalItems() - getSuccessCount());
     }
 
     @Override
-    public void logEvent() {
-        if (!isEventLogged && isComplete()) {
-            isEventLogged = true;
-            toolsEventLogService.importCompleted(bulkFileInfo.getImportType(), bulkFileInfo.getOriginalFilename(),
-                getSuccessCount(), getTotalItems() - getSuccessCount());
-        }
+    public void processingFailed(Exception e) {
+        super.processingFailed(e);
+        toolsEventLogService.importCompleted(bulkFileInfo.getImportType(), bulkFileInfo.getOriginalFilename(),
+            getSuccessCount(), getTotalItems() - getSuccessCount());
     }
 }
