@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.naming.ConfigurationException;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
@@ -48,7 +48,6 @@ import com.cannontech.web.admin.userGroupEditor.model.UserGroupValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -65,7 +64,7 @@ public class UserGroupEditorController {
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private UserGroupValidator userGroupValidator;
-    @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private UsersEventLogService usersEventLogService;
     
     private static final String groupKey = "yukon.web.modules.adminSetup.auth.user.group.";
     private static final String userKey = "yukon.web.modules.adminSetup.auth.user.";
@@ -115,7 +114,7 @@ public class UserGroupEditorController {
         }
         
         userGroupDao.update(userGroup);
-        
+        usersEventLogService.userGroupUpdated(userGroup.getUserGroupName(), user);
         flash.setConfirm(new YukonMessageSourceResolvable(groupKey + "updateSuccessful"));
         int userGroupId = userGroup.getLiteUserGroup().getUserGroupId();
         model.addAttribute("userGroupId", userGroupId);
@@ -125,7 +124,7 @@ public class UserGroupEditorController {
     
     /* DELETE */
     @RequestMapping(value="user-groups/{userGroupId}", method=RequestMethod.POST, params="delete")
-    public String delete(ModelMap model, FlashScope flash, @PathVariable int userGroupId) {
+    public String delete(ModelMap model, FlashScope flash, @PathVariable int userGroupId, LiteYukonUser user) {
         
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
         
@@ -137,6 +136,7 @@ public class UserGroupEditorController {
         }
         
         userGroupDao.delete(userGroupId);
+        usersEventLogService.userGroupDeleted(userGroup.getUserGroupName(), user);
         flash.setConfirm(new YukonMessageSourceResolvable(groupKey + "deletedSuccessful", userGroup.getUserGroupName()));
         
         return "userGroupEditor/home.jsp";
@@ -160,10 +160,13 @@ public class UserGroupEditorController {
     /* ADD USERS */
     @RequestMapping(value="user-groups/{userGroupId}/add-users", method=RequestMethod.POST)
     public void addUsers(ModelMap model, FlashScope flash, HttpServletResponse resp, 
-            @PathVariable int userGroupId, @RequestParam("users[]") int[] users) {
-        
+            @PathVariable int userGroupId, @RequestParam("users[]") int[] users,
+            LiteYukonUser user) {
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
         for (int userId : users) {
             yukonUserDao.updateUserGroupId(userId, userGroupId);
+            LiteYukonUser addedUser = yukonUserDao.getLiteYukonUser(userId);
+            usersEventLogService.userAdded(addedUser.getUsername(), userGroup.getUserGroupName(), user);
         }
         
         flash.setConfirm(new YukonMessageSourceResolvable(roleKey + "updateSuccessful"));
@@ -173,9 +176,12 @@ public class UserGroupEditorController {
     
     /* REMOVE USER */
     @RequestMapping(value="user-groups/{userGroupId}/remove-user", method=RequestMethod.POST, params="remove")
-    public String removeUser(ModelMap model, FlashScope flash, @PathVariable int userGroupId, int remove) {
-        
+    public String removeUser(ModelMap model, FlashScope flash, @PathVariable int userGroupId, int remove,
+            LiteYukonUser user) {
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
+        LiteYukonUser removedUser = yukonUserDao.getLiteYukonUser(remove);
         yukonUserDao.removeUserFromUserGroup(remove);
+        usersEventLogService.userRemoved(removedUser.getUsername(), userGroup.getUserGroupName(), user);
         flash.setConfirm(new YukonMessageSourceResolvable(roleKey + "updateSuccessful"));
         
         return "redirect:/admin/user-groups/" + userGroupId;
@@ -184,7 +190,8 @@ public class UserGroupEditorController {
     /* ADD ROLE GROUPS */
     @RequestMapping(value="user-groups/{userGroupId}/add-role-groups", method=RequestMethod.POST)
     public void addRoleGroups(ModelMap model, FlashScope flash, 
-            @PathVariable int userGroupId, @RequestParam("groups[]") int[] groups)
+            @PathVariable int userGroupId, @RequestParam("groups[]") int[] groups,
+            LiteYukonUser user)
     throws SQLException {
         
         UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
@@ -196,6 +203,8 @@ public class UserGroupEditorController {
         for (LiteYukonGroup liteYukonGroup : liteYukonGroups) {
             try {
                 userGroup.addRoleGroups(liteYukonGroup);
+                usersEventLogService.roleGroupAdded(userGroup.getUserGroup().getUserGroupName(),
+                    liteYukonGroup.getGroupName(), user);
             } catch (ConfigurationException e) {
                 conflictingRoleGroupNames.add(liteYukonGroup.getGroupName());
             }
@@ -212,9 +221,12 @@ public class UserGroupEditorController {
     
     /* REMOVE ROLE GROUP */
     @RequestMapping(value="user-groups/{userGroupId}/remove-role-group", method=RequestMethod.POST)
-    public String removeRoleGroup(ModelMap model, FlashScope flash, @PathVariable int userGroupId, int remove) {
-        
+    public String removeRoleGroup(ModelMap model, FlashScope flash, @PathVariable int userGroupId, int remove,
+            LiteYukonUser user) {
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
+        LiteYukonGroup roleGroup = yukonGroupDao.getLiteYukonGroup(remove);
         userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);
+        usersEventLogService.roleGroupRemoved(userGroup.getUserGroupName(), roleGroup.getGroupName(), user);
         flash.setConfirm(new YukonMessageSourceResolvable(groupKey + "updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);
         

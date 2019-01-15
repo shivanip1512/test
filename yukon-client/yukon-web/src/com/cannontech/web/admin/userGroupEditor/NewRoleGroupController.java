@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -15,10 +14,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -27,6 +28,7 @@ public class NewRoleGroupController {
     
     @Autowired private YukonGroupDao roleGroupDao;
     @Autowired private RoleGroupValidator validator;
+    @Autowired private UsersEventLogService usersEventLogService;
     
     @RequestMapping("new-role-group-dialog")
     public String newGroup(ModelMap model) {
@@ -39,7 +41,7 @@ public class NewRoleGroupController {
     
     @RequestMapping(value="role-groups", method=RequestMethod.POST)
     public String create(HttpServletResponse resp, 
-            @ModelAttribute("group") LiteYukonGroup group, BindingResult binding) throws Exception {
+            @ModelAttribute("group") LiteYukonGroup group, BindingResult binding, LiteYukonUser user) throws Exception {
 
         validator.validate(group, binding);
         
@@ -49,7 +51,7 @@ public class NewRoleGroupController {
         }
         
         roleGroupDao.save(group);
-        
+        usersEventLogService.roleGroupCreated(group.getGroupName(), user);
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         result.put("groupId", group.getGroupID());

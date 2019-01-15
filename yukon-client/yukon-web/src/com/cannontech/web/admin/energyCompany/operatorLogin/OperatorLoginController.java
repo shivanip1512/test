@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
@@ -68,7 +69,7 @@ public class OperatorLoginController {
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private UsersEventLogService usersEventLogService; 
     
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                                                ModelMap modelMap,
@@ -190,6 +191,7 @@ public class OperatorLoginController {
         UserGroup userGroup = userGroupDao.getDBUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         ecMappingDao.addEnergyCompanyOperatorLoginListMapping(operatorLogin.getUserId(), ecId);
         yukonUserDao.updateUserGroupId(operatorLogin.getUserId(), userGroup.getUserGroupId());
+        usersEventLogService.userAdded(operatorLogin.getUsername(), userGroup.getUserGroupName(), userContext.getYukonUser());
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginAdded"));
         
@@ -225,7 +227,7 @@ public class OperatorLoginController {
         UserGroup userGroup = userGroupDao.getDBUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         StarsAdminUtil.createOperatorLogin(operatorLogin.getUsername(), operatorLogin.getPassword1(), 
-                                            operatorLogin.getLoginStatus(), userGroup, energyCompany);
+                                            operatorLogin.getLoginStatus(), userGroup, energyCompany, userContext.getYukonUser());
         
         // Add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated"));
@@ -294,7 +296,7 @@ public class OperatorLoginController {
         LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
         LiteUserGroup userGroup = userGroupDao.findLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         StarsAdminUtil.updateLogin(liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(),
-            operatorLogin.getLoginStatus(), userGroup);
+            operatorLogin.getLoginStatus(), userGroup, userContext.getYukonUser());
         
         // Add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated"));
@@ -332,7 +334,7 @@ public class OperatorLoginController {
             LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(liteUser.getLiteID());
             
             // null here ensures password doesn't change
-            StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup);
+            StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup, userContext.getYukonUser());
         }
         jsonResponse.put("loginStatus", liteUser.getLoginStatus().name());
         jsonResponse.put("icon", liteUser.getLoginStatus() == LoginStatusEnum.DISABLED ? "icon-delete" : "icon-accept");
@@ -352,6 +354,7 @@ public class OperatorLoginController {
         
         // Delete user
         yukonUserDao.deleteUser(operatorLogin.getUserId());
+        usersEventLogService.userDeleted(operatorLogin.getUsername(), userContext.getYukonUser());
         
         // Add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted"));

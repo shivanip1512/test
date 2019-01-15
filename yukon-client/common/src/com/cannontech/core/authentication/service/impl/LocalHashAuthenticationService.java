@@ -7,6 +7,7 @@ import java.util.Formatter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
@@ -22,6 +23,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class LocalHashAuthenticationService implements AuthenticationProvider, PasswordSetProvider {
     @Autowired protected YukonUserPasswordDao yukonUserPasswordDao;
+    @Autowired private UsersEventLogService usersEventLogService; 
 
     private final MessageDigest messageDigest;
     // the following value must never, ever, ever be changed
@@ -62,6 +64,7 @@ public class LocalHashAuthenticationService implements AuthenticationProvider, P
     public void setPassword(LiteYukonUser user, String newPassword) {
         String newHash = hashPassword(newPassword);
         yukonUserPasswordDao.setPassword(user, AuthType.HASH_SHA, newHash);
+        usersEventLogService.passwordUpdated(user); 
     }
 
     @Override

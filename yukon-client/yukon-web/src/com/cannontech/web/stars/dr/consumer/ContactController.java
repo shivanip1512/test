@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -68,6 +69,8 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private AccountCheckerService accountCheckerService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private UsersEventLogService usersEventLogService; 
+    
     private final Logger log = YukonLogManager.getLogger(ContactController.class);
     
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
@@ -221,6 +224,8 @@ public class ContactController extends AbstractConsumerController {
                 && contact.getLoginID() == UserUtils.USER_NONE_ID) {
             List<LiteUserGroup> custUserGroups =  ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
             LiteYukonUser login = yukonUserDao.createLoginForAdditionalContact(contact.getContFirstName(), contact.getContLastName(), custUserGroups.get(0));
+            usersEventLogService.userCreated(login.getUsername(), custUserGroups.get(0).getUserGroupName(), energyCompany.getName(), login.getLoginStatus(), user.getYukonUser());
+            usersEventLogService.userAdded(login.getUsername(), custUserGroups.get(0).getUserGroupName(), user.getYukonUser());
             contact.setLoginID(login.getUserID());
         }
         
@@ -249,7 +254,9 @@ public class ContactController extends AbstractConsumerController {
         contactDao.deleteContact(contact);
         //clean-up user login, if exists
         if (contact.getLoginID() > 0) {
+            LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(contact.getLoginID()); 
             yukonUserDao.deleteUser(contact.getLoginID());
+            usersEventLogService.userDeleted(liteUser.getUsername(), user.getYukonUser());
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
         return "redirect:/stars/consumer/contacts";

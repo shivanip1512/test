@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -129,6 +130,7 @@ public class OperatorAccountController {
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonUserDao userDao;
+    @Autowired private UsersEventLogService usersEventLogService;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -804,6 +806,7 @@ public class OperatorAccountController {
         LoginModeEnum loginModeEnum = LoginModeEnum.valueOf(loginMode);
         if (LoginModeEnum.EDIT.equals(loginModeEnum)) {
             userDao.deleteUser(custYukonUser.getUserID());
+            usersEventLogService.userDeleted(custYukonUser.getUsername(), userContext.getYukonUser());
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "account.userDeleted"));
         

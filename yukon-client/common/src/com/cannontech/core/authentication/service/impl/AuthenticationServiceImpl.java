@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.user.UserAuthenticationInfo;
@@ -50,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
+    @Autowired private UsersEventLogService usersEventLogService; 
 
     @Override
     public AuthType getDefaultAuthType() {
@@ -123,6 +125,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             PasswordEncrypter passwordEncrypter = (PasswordEncrypter) providerMap.get(supportingAuthType);
             String newDigest = passwordEncrypter.encryptPassword(password);
             yukonUserPasswordDao.setPassword(user, supportingAuthType, newDigest);
+            usersEventLogService.passwordUpdated(user); 
         } else {
             isPasswordMatched = provider.login(user, password);
             checkExpirationAndAuthentication(isPasswordMatched, user, username);
@@ -266,6 +269,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         PasswordEncrypter provider = (PasswordEncrypter) providerMap.get(encryptedAuthType);
         String newDigest = provider.encryptPassword(password);
         yukonUserPasswordDao.setPasswordWithoutHistory(user, encryptedAuthType, newDigest);
+        usersEventLogService.passwordUpdated(user);
     }
     
     private boolean verifyPasswordWithOldAuthType(LiteYukonUser user, String password, AuthType historicAuthType) {

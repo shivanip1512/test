@@ -17,6 +17,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
@@ -132,6 +133,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
     @Autowired private NestService nestService;
     @Autowired private HardwareService hardwareService;
+    @Autowired private UsersEventLogService usersEventLogService;
     
     @Override
     @Transactional
@@ -202,6 +204,7 @@ public class AccountServiceImpl implements AccountService {
             }
 
             userDao.save(user);
+            usersEventLogService.userCreated(user.getUsername(), accountDto.getUserGroup(), ec.getName(), user.getLoginStatus() , user);
             String password = accountDto.getPassword();
             if (!StringUtils.isBlank(password)) {
                 authenticationService.setPassword(user, authenticationService.getDefaultAuthenticationCategory(),
@@ -512,7 +515,9 @@ public class AccountServiceImpl implements AccountService {
         // Delete login
         if (!UserUtils.isReservedUserId(userId)) {
             log.info("Deleting login and removing from starsDatabaseCache id# " + userId);
+            LiteYukonUser liteUser = userDao.getLiteYukonUser(userId);
             userDao.deleteUser(userId);
+            usersEventLogService.userDeleted(liteUser.getUsername(), user);
             starsDatabaseCache.deleteStarsYukonUser(userId);
         }
 
@@ -639,13 +644,23 @@ public class AccountServiceImpl implements AccountService {
             LiteYukonUser login = userDao.getLiteYukonUser(primaryContact.getLoginID());
             if (login != null && login.getUserID() != UserUtils.USER_NONE_ID) {
                 // Update their login info.
-
+                int userGroupId = login.getUserGroupId();
                 if (accountDto.getUserGroup() != null) {
                     updateUserGroup(login, accountDto.getUserGroup(), accountNumber);
                 }
-
-                login.setUsername(username);
+                
+                    login.setUsername(username);
+                String userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
                 userDao.update(login);
+                usersEventLogService.userUpdated(username, userGroupName, energyCompanyOfAccount.getName(), login.getLoginStatus(), user);
+                if (userGroupId != login.getUserGroupId()) {
+                    usersEventLogService.userRemoved(user.getUsername(), userGroupName, user);
+                    if (login.getUserGroupId() != null) {
+                        LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+                        usersEventLogService.userAdded(user.getUsername(),
+                            addedToUserGroup.getUserGroupName(), user);
+                    }
+                }
 
                 String password = accountDto.getPassword();
                 if (password != null) {
@@ -675,6 +690,7 @@ public class AccountServiceImpl implements AccountService {
                 }
 
                 userDao.save(newUser);
+                usersEventLogService.userCreated(user.getUsername(), accountDto.getUserGroup(), energyCompanyOfAccount.getName(), newUser.getLoginStatus() , user);
                 String password = accountDto.getPassword();
                 if (!StringUtils.isBlank(password)) {
                     authenticationService.setPassword(newUser, defaultAuthenticationCategory, password);

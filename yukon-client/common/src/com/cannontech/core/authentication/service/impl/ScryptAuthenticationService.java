@@ -11,6 +11,7 @@ import org.bouncycastle.crypto.general.KDF.ScryptParameters;
 import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
@@ -20,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class ScryptAuthenticationService implements AuthenticationProvider, PasswordSetProvider, PasswordEncrypter {
     @Autowired private YukonUserPasswordDao userPasswordDao;
+    @Autowired private UsersEventLogService usersEventLogService; 
 
     private static SCryptFactory scryptFactory;
     private final static int derivedKeyLength = 32;
@@ -40,6 +42,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
     public void setPassword(LiteYukonUser user, String newPassword) {
         String digest = encryptPassword(newPassword, cpuCostParam, memoryCostParam, parallelParam);
         userPasswordDao.setPassword(user, AuthType.SCRYPT, digest);
+        usersEventLogService.passwordUpdated(user); 
     }
 
     @Override

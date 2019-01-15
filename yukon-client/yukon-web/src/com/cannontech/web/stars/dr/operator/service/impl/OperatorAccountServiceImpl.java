@@ -254,12 +254,12 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     
     @Override
     @Transactional
-    public void saveContactDto(ContactDto contactDto, LiteCustomer customer) {
+    public void saveContactDto(ContactDto contactDto, LiteCustomer customer, LiteYukonUser user) {
 
         // save contact
         LiteContact contact;
         if (contactDto.getContactId() <= 0) {
-            contact = contactService.createAdditionalContact(contactDto.getFirstName(), contactDto.getLastName(), customer);
+            contact = contactService.createAdditionalContact(contactDto.getFirstName(), contactDto.getLastName(), customer, user);
         } else {
             contact = contactDao.getContact(contactDto.getContactId());
         }

@@ -156,7 +156,7 @@ public class OperatorContactsController {
         String oldContactName = (oldContactDto == null) ? "" : StarsUtils.formatName(oldContactDto.getFirstName(), oldContactDto.getLastName());
         
         if (!bindingResult.hasErrors()) {
-            operatorAccountService.saveContactDto(contactDto, customer);
+            operatorAccountService.saveContactDto(contactDto, customer, userContext.getYukonUser());
         }
         
         setupContactModel(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);

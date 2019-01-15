@@ -22,7 +22,7 @@ public interface ContactService {
 	 * @param customer The customer this additional contact is being created for.
 	 * @return newly created LiteContact
 	 */
-	public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer);
+	public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer, LiteYukonUser createdByUser);
 	
 	/**
 	 * Updates an existing contact, saves it, process db change update

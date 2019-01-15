@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.search.result.UltraLightYukonUser;
 import com.cannontech.common.user.NewUser;
@@ -48,6 +49,7 @@ public class NewUserController {
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private UserLuceneSearcher userLuceneSearcher;
     @Autowired private PasswordPolicyService passwordService;
+    @Autowired private UsersEventLogService usersEventLogService;
     
     private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
@@ -74,7 +76,7 @@ public class NewUserController {
     
     @RequestMapping(value="users", method=RequestMethod.POST)
     public String create(ModelMap model, HttpServletResponse resp, 
-            @ModelAttribute("user") NewUser user, BindingResult binding) throws Exception {
+            @ModelAttribute("user") NewUser user, BindingResult binding, LiteYukonUser createdBy) throws Exception {
 
         userValidator.validate(user, binding);
         
@@ -108,6 +110,13 @@ public class NewUserController {
         // Force reset only when Yukon is managing the password
         boolean forceReset = user.getAuthCategory() == AuthenticationCategory.ENCRYPTED;
         LiteYukonUser lyu = userDao.create(user, forceReset);
+
+        String groupName = userGroupDao.getUserGroup(lyu.getUserGroupId()).getUserGroup().getUserGroupName();
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(user.getEnergyCompanyId());
+        usersEventLogService.userCreated(user.getUsername(), groupName, energyCompany.getName(),
+             user.getLoginStatus(), createdBy);
+        usersEventLogService.userAdded(user.getUsername(), groupName, createdBy);
+        
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         result.put("userId", lyu.getUserID());

@@ -15,6 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
@@ -663,10 +664,11 @@ public class StarsAdminUtil {
     }
 
     public static com.cannontech.database.db.user.UserGroup createOperatorAdminUserGroup(final String userGroupName,
-            int primaryOperatorUserGroupId, final boolean topLevelEc) throws TransactionException,
+            int primaryOperatorUserGroupId, final boolean topLevelEc, LiteYukonUser user) throws TransactionException,
             ConfigurationException, SQLException {
         RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
+        UsersEventLogService usersEventLogService = YukonSpringHook.getBean("usersEventLogService", UsersEventLogService.class);
 
         // Creating the admin role group for the new energy company
         com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
@@ -693,6 +695,8 @@ public class StarsAdminUtil {
         }
 
         adminGrp = Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();
+        usersEventLogService.roleGroupCreated(adminGrp.getYukonGroup().getGroupName(), user);
+        
         LiteYukonGroup ecAdminGroup =
             new LiteYukonGroup(adminGrp.getGroupID(), adminGrp.getYukonGroup().getGroupName());
 
@@ -707,17 +711,22 @@ public class StarsAdminUtil {
         UserGroup primaryOperatorUserGroup = userGroupDao.getUserGroup(primaryOperatorUserGroupId);
         userGroup.putAllRolesToGroupMap(primaryOperatorUserGroup.getRolesToGroupMap());
         userGroup.add();
+        usersEventLogService.userGroupCreated(userGroup.getUserGroup().getUserGroupName(), user);
+        usersEventLogService.roleGroupAdded(userGroup.getUserGroup().getUserGroupName(),
+            ecAdminGroup.getGroupName(), user);
 
         handleDBChange(ecAdminGroup, DbChangeType.ADD);
         return userGroup.getUserGroup();
     }
 
     public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status,
-            com.cannontech.database.db.user.UserGroup liteUserGroup, LiteStarsEnergyCompany energyCompany)
+            com.cannontech.database.db.user.UserGroup liteUserGroup, LiteStarsEnergyCompany energyCompany,
+            LiteYukonUser user)
             throws TransactionException, CommandExecutionException {
         AuthenticationService authenticationService = YukonSpringHook.getBean(AuthenticationService.class);
         ECMappingDao ecMappingDao = YukonSpringHook.getBean(ECMappingDao.class);
-
+        UsersEventLogService usersEventLogService = YukonSpringHook.getBean("usersEventLogService", UsersEventLogService.class);
+        
         com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser userDB = yukonUser.getYukonUser();
 
@@ -727,7 +736,7 @@ public class StarsAdminUtil {
         userDB.setUserGroupId(liteUserGroup.getUserGroupId());
 
         yukonUser = Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
-
+        usersEventLogService.userCreated(username, liteUserGroup.getUserGroupName(), energyCompany!=null ? energyCompany.getName(): StringUtils.EMPTY,  status, user);
         if (energyCompany != null) {
             ecMappingDao.addEnergyCompanyOperatorLoginListMapping(userDB.getUserID(),
                 energyCompany.getEnergyCompanyId());
@@ -750,11 +759,13 @@ public class StarsAdminUtil {
     }
 
     public static void updateLogin(LiteYukonUser liteUser, String username, String password, LoginStatusEnum status,
-            LiteUserGroup userGroup) throws WebClientException, TransactionException {
+            LiteUserGroup userGroup, LiteYukonUser createdByUser) throws WebClientException, TransactionException {
         AuthenticationService authenticationService = YukonSpringHook.getBean(AuthenticationService.class);
         YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(liteUser.getUserID());
-
+        UsersEventLogService usersEventLogService = YukonSpringHook.getBean("usersEventLogService", UsersEventLogService.class);
+        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("EnergyCompanyDao", EnergyCompanyDao.class);
+        
         if (!liteUser.getUsername().equalsIgnoreCase(username) && yukonUserDao.findUserByUsername(username) != null) {
             throw new WebClientException("Username '" + username + "' already exists");
         }
@@ -780,6 +791,8 @@ public class StarsAdminUtil {
         }
 
         Transaction.createTransaction(Transaction.UPDATE, dbUser).execute();
+        String ecName = energyCompanyDao.getEnergyCompany(createdByUser).getName();
+        usersEventLogService.userUpdated(username, userGroup.getUserGroupName(), ecName, status, createdByUser);
         handleDBChange(liteUser, DbChangeType.UPDATE);
         // only update try to update the password if specified
         if (StringUtils.isNotEmpty(password)) {

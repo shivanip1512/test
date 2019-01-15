@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.user.Password;
 import com.cannontech.common.user.User;
 import com.cannontech.common.user.UserAuthenticationInfo;
@@ -74,6 +75,7 @@ public class UserEditorController {
     @Autowired private PasswordResetService passwordResetService;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private UsersEventLogService usersEventLogService; 
     
     private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
@@ -121,10 +123,11 @@ public class UserEditorController {
     
     /* Unlock User */
     @RequestMapping("users/{userId}/unlock")
-    public String unlock(ModelMap model, FlashScope flash, @PathVariable int userId) {
+    public String unlock(ModelMap model, FlashScope flash, @PathVariable int userId, LiteYukonUser loggedUser) {
         
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         authService.removeAuthenticationThrottle(user.getUsername());
+        usersEventLogService.userUnlocked(user.getUsername(), loggedUser);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "userUnlocked"));
         
         return redirectToView(model, userId);
@@ -136,6 +139,7 @@ public class UserEditorController {
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
 
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
+        int userGroupId = yukonUser.getUserGroupId();
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserId());
         user.updateForSave(yukonUser, userAuthenticationInfo);
         boolean requiresPasswordChanged = user.isAuthenticationChanged()
@@ -160,8 +164,17 @@ public class UserEditorController {
             setupModelMap(model, user, PageEditMode.EDIT, userContext);
             return "userGroupEditor/user.jsp";
         }
-        
+        String userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
+        String ecName = ecDao.getEnergyCompany(user.getEnergyCompanyId()).getName();
         yukonUserDao.save(yukonUser);
+        usersEventLogService.userUpdated(user.getUsername(), userGroupName, ecName, user.getLoginStatus(), userContext.getYukonUser());
+        if (userGroupId != yukonUser.getUserGroupId()) {
+            usersEventLogService.userRemoved(user.getUsername(), userGroupName, userContext.getYukonUser());
+            if (yukonUser.getUserGroupId() != null) {
+                LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(yukonUser.getUserGroupId());
+                usersEventLogService.userAdded(user.getUsername(), addedToUserGroup.getUserGroupName(), userContext.getYukonUser());
+            }
+        }
         
         
         boolean ecMappingExists = ecDao.isEnergyCompanyOperator(yukonUser);
@@ -200,6 +213,7 @@ public class UserEditorController {
         }
         
         yukonUserDao.deleteUser(user.getUserId());
+        usersEventLogService.userDeleted(user.getUsername(), userContext.getYukonUser());
         flash.setConfirm(new YukonMessageSourceResolvable(key + "delete.success", user.getUsername()));
         
         return "redirect:/admin/users-groups/home";

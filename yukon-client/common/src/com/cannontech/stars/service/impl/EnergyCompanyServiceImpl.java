@@ -18,6 +18,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
@@ -111,6 +112,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private EnergyCompanySettingDaoImpl ecSettingDao;
     @Autowired private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private UsersEventLogService usersEventLogService;
 
     @Override
     @Transactional(rollbackFor={ConfigurationException.class, RuntimeException.class})
@@ -126,11 +128,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         // Create a privilege group with Administrator role
         UserGroup ecAdminUserGrp = StarsAdminUtil.createOperatorAdminUserGroup(energyCompanyDto.getName(),
-                energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
+                energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc, user);
         
         // Create the primary operator login
         LiteYukonUser ecUser =  StarsAdminUtil.createOperatorLogin(energyCompanyDto.getAdminUsername(),
-            energyCompanyDto.getAdminPassword1(), LoginStatusEnum.ENABLED, ecAdminUserGrp, null);
+            energyCompanyDto.getAdminPassword1(), LoginStatusEnum.ENABLED, ecAdminUserGrp, null, user);
 
         // Create Contact
         LiteContact contact = new LiteContact(-1, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE);
@@ -385,10 +387,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private void deletePrivilegeGroupsAndDefaultOperatorLogin(YukonEnergyCompany energyCompany) {
         // Delete the default operator login
         int defaultUserId = energyCompany.getEnergyCompanyUser().getUserID();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(defaultUserId);
         if (defaultUserId != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
                 defaultUserId != com.cannontech.user.UserUtils.USER_NONE_ID) {
             
             YukonUser.deleteOperatorLogin(defaultUserId);
+            usersEventLogService.userDeleted(user.getUsername(), user);
+            
             dbChangeManager.processDbChange(defaultUserId,
                                             DBChangeMsg.CHANGE_YUKON_USER_DB,
                                             DBChangeMsg.CAT_YUKON_USER,
@@ -404,6 +409,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
             log.info("Deleting role group id# " + dftGroup.getGroupID());
             dbPersistentDao.performDBChange(dftGroup, TransactionType.DELETE);
+            usersEventLogService.roleGroupDeleted(liteGroup.getGroupName(), user);
         }
         //Find and delete a privilege user group
         LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(energyCompany.getName() + " " + StarsAdminUtil.USER_GROUP_EXTENSION);
@@ -411,11 +417,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             
             log.info("Removing users from user group id# " + liteUserGroup.getUserGroupId());
             yukonUserDao.removeUsersFromUserGroup(liteUserGroup.getUserGroupId());
+            usersEventLogService.userRemoved(user.getUsername(), liteUserGroup.getUserGroupName(), user);
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupId(liteUserGroup.getUserGroupId());
             
             log.info("Deleting user group id# " + liteUserGroup.getUserGroupId());
             dbPersistentDao.performDBChange(userGroup, TransactionType.DELETE);
+            usersEventLogService.userGroupDeleted(liteUserGroup.getUserGroupName(), user);
         }
     }
 

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -28,6 +29,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -35,7 +37,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -49,7 +50,7 @@ public class RolePropertyController {
     @Autowired private RolePropertyEditorDao rpEditorDao;
     @Autowired private YukonGroupDao roleGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private UsersEventLogService usersEventLogService;
     
     private static final String key = "yukon.web.modules.adminSetup.auth.role.";
     private RolePropertyValidator validator = new RolePropertyValidator();
@@ -147,10 +148,18 @@ public class RolePropertyController {
         }
         
         GroupRolePropertyValueCollection propertyValues = rpEditorDao.getForGroupAndRole(liteYukonGroup, role, true);
+        GroupRolePropertyValueCollection beforeUpdatePropertyValues = rpEditorDao.getForGroupAndRole(liteYukonGroup, role, true);
         
         propertyValues.putAll(command.getValues());
         
         rpEditorDao.save(propertyValues);
+
+        beforeUpdatePropertyValues.getValueMap().entrySet().stream()
+        .filter( e -> propertyValues.getValueMap().get(e.getKey()) != null &&
+            !propertyValues.getValueMap().get(e.getKey()).equals(e.getValue()))
+        .forEach(e -> usersEventLogService.rolePropertyUpdated(liteYukonGroup.getGroupName(), role, e.getKey(),
+                        e.getValue().toString(), propertyValues.getValueMap().get(e.getKey()).toString(),
+                        context.getYukonUser()));
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(context);
         String roleName = accessor.getMessage(role);
@@ -162,9 +171,11 @@ public class RolePropertyController {
     /* DELETE */
     @RequestMapping(value="role-groups/{roleGroupId}/roles/{roleId}", method=RequestMethod.POST, params="delete")
     public String delete(ModelMap model, FlashScope flash, 
-            @PathVariable int roleGroupId, @PathVariable int roleId) {
-        
+            @PathVariable int roleGroupId, @PathVariable int roleId, LiteYukonUser user) {
+        LiteYukonGroup liteYukonGroup = roleGroupDao.getLiteYukonGroup(roleGroupId);
+        YukonRole role = YukonRole.getForId(roleId);
         rpEditorDao.removeRoleFromGroup(roleGroupId, roleId);
+        usersEventLogService.roleRemoved(liteYukonGroup.getGroupName(), role, user);
         flash.setConfirm(new YukonMessageSourceResolvable(key + "group.updateSuccessful"));
         
         return "redirect:/admin/role-groups/" + roleGroupId;

@@ -8,7 +8,7 @@ import com.cannontech.stars.dr.general.service.ContactService;
 public class ContactServiceAdapter implements ContactService {
 
     @Override
-    public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer) {
+    public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer, LiteYukonUser user) {
         throw new UnsupportedOperationException("not implemented");
     }
 

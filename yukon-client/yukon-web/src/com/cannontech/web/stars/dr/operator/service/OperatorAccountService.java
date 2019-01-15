@@ -43,7 +43,7 @@ public interface OperatorAccountService {
 	 * Add/Update contact.
 	 * Add/Updates/Delete contact notifications.
 	 */
-	public void saveContactDto(ContactDto contactDto, LiteCustomer customer);
+	public void saveContactDto(ContactDto contactDto, LiteCustomer customer, LiteYukonUser user);
 	/**
 	 * Creates the new primary contact (if not exists), or updates the existing.. first? contact.
 	 * @param contactDto

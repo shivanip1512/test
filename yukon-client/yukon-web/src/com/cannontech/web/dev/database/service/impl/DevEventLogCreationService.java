@@ -47,6 +47,7 @@ import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.events.loggers.ValidationEventLogService;
 import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -56,6 +57,10 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
@@ -100,6 +105,7 @@ public class DevEventLogCreationService {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private UsersEventLogService usersEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
 
@@ -946,6 +952,45 @@ public class DevEventLogCreationService {
                 
             }
         });
+        executables.put(LogType.USERS, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
+
+                String userName = devEventLog.getIndicatorString() + "UserName";
+                String userGroup = devEventLog.getIndicatorString() + "UserGroup";
+                String energyCompany = devEventLog.getIndicatorString() + "EnergyCompany";
+                String allowDeny = devEventLog.getIndicatorString() + "ALLOW";
+                String paoName = devEventLog.getIndicatorString() + "PaoName";
+                String roleGroup = devEventLog.getIndicatorString() + "RoleGroup";
+
+                usersEventLogService.userCreated(userName, userGroup, energyCompany, LoginStatusEnum.ENABLED, user);
+                usersEventLogService.userUpdated(userName, userGroup, energyCompany, LoginStatusEnum.DISABLED, user);
+                usersEventLogService.userDeleted(userName, user);
+                usersEventLogService.passwordUpdated(user);
+                usersEventLogService.userUnlocked(userName, user);
+                usersEventLogService.permissionAdded(user, allowDeny, userGroup, paoName, Permission.LM_VISIBLE);
+                usersEventLogService.permissionRemoved(user, allowDeny, userGroup, paoName, Permission.LM_VISIBLE);
+                usersEventLogService.userGroupCreated(userGroup, user);
+                usersEventLogService.userGroupUpdated(userGroup, user);
+                usersEventLogService.userGroupDeleted(userGroup, user);
+                usersEventLogService.roleGroupAdded(userGroup, roleGroup, user);
+                usersEventLogService.roleGroupRemoved(userGroup, roleGroup, user);
+                usersEventLogService.userAdded(userName, userGroup, user);
+                usersEventLogService.userRemoved(userName, userGroup, user);
+                usersEventLogService.permissionAdded(allowDeny, userName, paoName, Permission.LM_VISIBLE, user);
+                usersEventLogService.permissionRemoved(allowDeny, userName, paoName, Permission.LM_VISIBLE, user);
+                usersEventLogService.roleGroupCreated(roleGroup, user);
+                usersEventLogService.roleGroupUpdated(roleGroup, user);
+                usersEventLogService.roleGroupDeleted(roleGroup, user);
+                usersEventLogService.roleAdded(roleGroup, YukonRole.APPLICATION_BILLING, user);
+                usersEventLogService.rolePropertyUpdated(roleGroup, YukonRole.APPLICATION_BILLING, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, "true", "false", user);
+                usersEventLogService.roleRemoved(roleGroup, YukonRole.APPLICATION_BILLING, user);
+                usersEventLogService.roleGroupExpirePasswords(roleGroup, user);
+                
+                
+            }
+        });
         executables.put(LogType.VALIDATION, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
@@ -1139,6 +1184,7 @@ public class DevEventLogCreationService {
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 35),
         TOOLS(ToolsEventLogService.class, 23),
+        USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
         ;

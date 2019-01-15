@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -21,6 +22,7 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.login.model.Login;
 import com.cannontech.web.stars.dr.operator.service.ResidentialLoginService;
@@ -29,10 +31,12 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     @Autowired private AuthenticationService authenticationService;
     @Autowired private ContactDao contactDao;
     @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private TransactionOperations transactionTemplate;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private UsersEventLogService usersEventLogService;
 
     @Override
     public Integer createResidentialLogin(final Login loginBackingBean, final LiteYukonUser user,
@@ -55,9 +59,13 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 if (residentialUserGroup != null) {
                     newUser.setUserGroupId(residentialUserGroup.getUserGroupId());
                 }
-
+                String energyCompanyName = ecDao.getEnergyCompany(energyCompanyId).getName();
                 yukonUserDao.save(newUser);
-
+                usersEventLogService.userCreated(newUser.getUsername(), residentialUserGroup.getUserGroupName(), energyCompanyName, newUser.getLoginStatus() , user);
+                if (residentialUserGroup != null) {
+                    usersEventLogService.userAdded(newUser.getUsername(), residentialUserGroup.getUserGroupName(), user);
+                }
+                
                 // We need to use the AuthenticationService so the password gets encoded properly.
                 AuthenticationCategory authenticationCategory = authenticationService.getDefaultAuthenticationCategory();
                 String password = loginBackingBean.getPassword1();
@@ -96,8 +104,10 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 if (newUserGroup != null) {
                     residentialUser.setUserGroupId(newUserGroup.getUserGroupId());
                     yukonUserDao.updateUserGroupId(residentialUser.getUserID(), newUserGroup.getUserGroupId());
+                    usersEventLogService.userAdded(residentialUser.getUsername(), newUserGroup.getUserGroupName(), userContext.getYukonUser());
                 } else {
                     yukonUserDao.updateUserGroupId(residentialUser.getUserID(), null);
+                    usersEventLogService.userAdded(residentialUser.getUsername(), null, userContext.getYukonUser());
                 }
 
                 updateLoginStatus(loginBackingBean, residentialUser);

@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.users.model.LiteUserGroup;
@@ -27,6 +28,7 @@ public class ContactServiceImpl implements ContactService {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private UsersEventLogService usersEventLogService; 
 
 	@Override
     public LiteContact createContact(String firstName, String lastName, LiteYukonUser contactUser) {
@@ -39,7 +41,7 @@ public class ContactServiceImpl implements ContactService {
 	
 	@Override
 	@Transactional
-	public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer) {
+	public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer, LiteYukonUser createdByUser) {
 	    LiteYukonUser user = null;
         LiteStarsEnergyCompany energyCompany =  starsDatabaseCache.getEnergyCompany(customer.getEnergyCompanyID());
 	    boolean autoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
@@ -47,6 +49,9 @@ public class ContactServiceImpl implements ContactService {
 	    if(autoCreateLogin) {
 	        List<LiteUserGroup> custUserGroups = ecMappingDao.getResidentialUserGroups(customer.getEnergyCompanyID());
 	        user = yukonUserDao.createLoginForAdditionalContact(firstName, lastName, custUserGroups.get(0));
+            usersEventLogService.userCreated(user.getUsername(), custUserGroups.get(0).getUserGroupName(),
+                energyCompany.getName(), user.getLoginStatus(), createdByUser);
+            usersEventLogService.userAdded(user.getUsername(), custUserGroups.get(0).getUserGroupName(), createdByUser);
 	    }
 		LiteContact liteContact =  createContact(firstName, lastName, user);
 	    contactDao.associateAdditionalContact(customer.getCustomerID(), liteContact.getContactID());

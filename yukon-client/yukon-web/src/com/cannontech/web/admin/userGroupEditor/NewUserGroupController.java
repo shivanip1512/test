@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -24,6 +25,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.db.user.UserGroup;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -31,6 +33,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class NewUserGroupController {
     
     @Autowired private UserGroupDao userGroupDao;
+    @Autowired private UsersEventLogService userEventLogService;
     
     private static final String key = "yukon.web.modules.adminSetup.auth.user.group.";
     
@@ -65,7 +68,8 @@ public class NewUserGroupController {
     
     @RequestMapping(value="user-groups", method=RequestMethod.POST)
     public String create(ModelMap model, HttpServletRequest req, HttpServletResponse resp, 
-            @ModelAttribute("group") UserGroup group, BindingResult binding) throws Exception {
+            @ModelAttribute("group") UserGroup group, BindingResult binding,
+            YukonUserContext userContext) throws Exception {
 
         validator.validate(group, binding);
         
@@ -75,6 +79,7 @@ public class NewUserGroupController {
         }
         
         userGroupDao.create(group);
+        userEventLogService.userGroupCreated(group.getUserGroupName(), userContext.getYukonUser());
         
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
