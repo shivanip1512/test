@@ -108,6 +108,13 @@
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.widgetType">Widget Type</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
+    <entry key="yukon.common.events.roleGroup">Role Group</entry>
+    <entry key="yukon.common.events.role">Role</entry>
+    <entry key="yukon.common.events.roleProperty">Role Property</entry>
+    <entry key="yukon.common.events.userGroup">User Group</entry>
+    <entry key="yukon.common.events.changedByUser">Changed By User</entry>
+    <entry key="yukon.common.events.userStatus">Login Status</entry>
+
 <!-- Event log message text and column names -->
 
     <entry key="yukon.common.events.commander.executeOnPao">Command ''{2}'' executed on device {3} by {1}.</entry>
@@ -873,6 +880,43 @@
     <entry key="yukon.common.events.dr.nest.sendRetrieveCustomers">Retrieving customers with State: {1}</entry>
     <entry key="yukon.common.events.dr.nest.responseRetrieveCustomers">{7} customers were found.</entry>
     
-        
+    <!-- User, User Group, Role Group, Role Property Changes -->
+    <entry key="yukon.common.events.system.usersAndGroups.user.userCreated">User {1} created with user group: {2}, energy company: {3}, status: {4} by {5}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.userUpdated">User {1} updated with user group: {2}, energy company: {3}, status: {4} by {5}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.userDeleted">User {1} deleted by {2}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.passwordUpdated">Password updated for user {1}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.userUnlocked">User {1} unlocked by {2}.</entry>
+    
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.userGroupCreated">User group {1} created by {2}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.userGroupUpdated">User group {1} updated by {2}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.userGroupDeleted">User group {1} deleted by {2}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.roleGroupAdded">User group {1} added to role group {2} by {3}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.roleGroupRemoved">User group {1} removed from role group {2} by {3}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.userAdded">User {1} added to user group {2} by {3}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.userRemoved">User {1} removed from user group {2} by {3}.</entry>
+    
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.roleGroupCreated">Role group {1} created by {2}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.roleGroupUpdated">Role group {1} updated by {2}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.roleGroupDeleted">Role group {1} deleted by {2}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.roleAdded">Role {2} added to role group {1} by {3}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.roleRemoved">Role {2} removed from role group {1} by {3}.</entry>
+    
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.rolePropertyUpdated">Role group {1} updated; {2} property {3} changed from {4} to {5} by {6}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.rolePropertyUpdated.4">Old Value</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.rolePropertyUpdated.5">New Value</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.roleGroup.roleGroupExpirePasswords">All passwords expired for role group {1} by {2}.</entry>
+    
+    <entry key="yukon.common.events.system.usersAndGroups.user.permissionAdded">{4} - {1} access added to user {2} for {3} by {5}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.permissionAdded.1">Allow/Deny</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.permissionAdded.4">Pao Permission</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved">{4} - {1} access removed to user {2} for {3} by {5}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved.1">Allow/Deny</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved.4">Pao Permission</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionAdded">{5} - {2} access added to user group {3} for {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionAdded.2">Allow/Deny</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionAdded.5">Pao Permission</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved">{5} - {2} access removed to user group {3} for {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved.2">Allow/Deny</entry>
+    <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved.5">Pao Permission</entry>
 </properties>
 
