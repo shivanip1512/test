@@ -1,0 +1,575 @@
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager.xsd"
+        xmlns:basic="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+        targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager.xsd"
+        elementFormDefault="qualified">
+
+    <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" schemaLocation="BasicTypes_v1_1.xsd"/>
+
+    <!-- global element definitions that correspond to the message documents -->
+
+    <xsd:element name="AddBlockRatePlanRequest" type="AddBlockRatePlanRequestType"/>
+    <xsd:element name="AddBlockRatePlanResponse" type="AddBlockRatePlanResponseType"/>
+    <xsd:element name="AddTOURatePlanRequest" type="AddTOURatePlanRequestType"/>
+    <xsd:element name="AddTOURatePlanResponse" type="AddTOURatePlanResponseType"/>
+    <xsd:element name="EditBlockRatePlanRequest" type="EditBlockRatePlanRequestType"/>
+    <xsd:element name="EditBlockRatePlanResponse" type="EditBlockRatePlanResponseType"/>
+    <xsd:element name="EditTOURatePlanRequest" type="EditTOURatePlanRequestType"/>
+    <xsd:element name="EditTOURatePlanResponse" type="EditTOURatePlanResponseType"/>
+    <xsd:element name="EnrollServicePointRequest" type="EnrollServicePointRequestType"/>
+    <xsd:element name="EnrollServicePointResponse" type="EnrollServicePointResponseType"/>
+    <xsd:element name="GetPublishRatePlanStatusRequest" type="GetPublishRatePlanStatusRequestType"/>
+    <xsd:element name="GetPublishRatePlanStatusResponse" type="GetPublishRatePlanStatusResponseType"/>
+    <xsd:element name="PublishRatePlanRequest" type="PublishRatePlanRequestType"/>
+    <xsd:element name="PublishRatePlanResponse" type="PublishRatePlanResponseType"/>
+    <xsd:element name="SetServicePointLoadedRatePlanRequest" type="SetServicePointLoadedRatePlanRequestType"/>
+    <xsd:element name="SetServicePointLoadedRatePlanResponse" type="SetServicePointLoadedRatePlanResponseType"/>
+    
+    <!-- Complex Types in alphabetical order -->
+
+    <xsd:complexType name="AddBlockRatePlanRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                 Possible ErrorCode values if you receive a BasicFaultType:
+                     generic
+                     fatal_error
+                     authorization_failure
+                     Unique.ratePlan.ratePlanName
+                     Size.ratePlan.ratePlanName
+                     NotEmpty.ratePlan.ratePlanName
+                     Size.ratePlan.ratePlanDescription
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="BlockRatePlan" type="BaseBlockRatePlanType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddBlockRatePlanResponseType">
+        <xsd:sequence>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddTOURatePlanRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                 Possible ErrorCode values if you receive a BasicFaultType:
+                     generic
+                     fatal_error
+                     authorization_failure
+                     Unique.ratePlan.ratePlanName
+                     Size.ratePlan.ratePlanName
+                     NotEmpty.ratePlan.ratePlanName
+                     Size.ratePlan.ratePlanDescription
+                     com.ssn.dr.rateplan.entity.RatePlan.weekdayTiersStartAtMidnight
+                     com.ssn.dr.rateplan.entity.RatePlan.saturdayTiersStartAtMidnight
+                     com.ssn.dr.rateplan.entity.RatePlan.sundayTiersStartAtMidnight
+                     com.ssn.dr.rateplan.entity.RatePlan.holidayTiersStartAtMidnight
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="TOURatePlan" type="BaseTOURatePlanType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddTOURatePlanResponseType">
+        <xsd:sequence>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="BaseBlockRatePlanType">
+        <xsd:complexContent>
+            <xsd:extension base="RatePlanType">
+                <xsd:sequence>
+                    <xsd:element name="IncludeCurrentPeriod" type="xsd:boolean"/>
+                    <xsd:element name="InitialBlockRate" type="BlockRatePricingTierType">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Threshold will be set to 0 kWh
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="BlockRate" minOccurs="0" maxOccurs="4" type="BlockRateType"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="BaseTOURatePlanType">
+        <xsd:complexContent>
+            <xsd:extension base="RatePlanType">
+                <xsd:sequence>
+                    <xsd:element name="WeekdayPricingTiers" type="WeekdayPricingTiersType"/>
+                    <xsd:element name="SaturdayPricingTiers" type="SaturdayPricingTiersType"/>
+                    <xsd:element name="SundayPricingTiers" type="SundayPricingTiersType"/>
+                    <xsd:element name="HolidayPricingTierGroups" minOccurs="0" type="HolidayPricingTierGroupsType"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="BlockRateType">
+        <xsd:complexContent>
+            <xsd:extension base="BlockRatePricingTierType">
+                <xsd:sequence>
+                    <xsd:element name="kWhThreshold" type="xsd:double"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- represents the block rate pricing tier type.  the price tier number is PriceTierType -->
+    <xsd:complexType name="BlockRatePricingTierType">
+        <xsd:sequence>
+            <xsd:element name="PriceTier" type="PriceTierType" default="0"/>
+            <xsd:element name="Price" type="xsd:decimal"/>
+            <xsd:element name="MeterTier" type="BlockRateMeterTierType" default="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Meter tier can only be set to 0
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditBlockRatePlanRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Unlike most SSN SOAP edit operations, this one requires you to supply
+                every element of the rate plan, even those that you don't need to change.
+                The rate plan provided by this edit operation will completely replace the
+                existing rate plan.
+
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    Unique.ratePlan.ratePlanName
+                    Size.ratePlan.ratePlanName
+                    NotEmpty.ratePlan.ratePlanName
+                    Size.ratePlan.ratePlanDescription
+                    InvalidCurrency.ratePlan
+                    InvalidID.ratePlan.ratePlanIdentifier
+                    Size.ratePlan.holidaysPerRatePlan
+                    edit.ratePlan.touToBlockRate.error
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="BlockRatePlan" type="EditBlockRatePlanType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditTOURatePlanRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Unlike most SSN SOAP edit operations, this one requires you to supply
+                every element of the rate plan, even those that you don't need to change.
+                The rate plan provided by this edit operation will completely replace the
+                existing rate plan.
+
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    Unique.ratePlan.ratePlanName
+                    Size.ratePlan.ratePlanName
+                    NotEmpty.ratePlan.ratePlanName
+                    Size.ratePlan.ratePlanDescription
+                    InvalidCurrency.ratePlan
+                    InvalidID.ratePlan.ratePlanIdentifier
+                    Size.ratePlan.holidaysPerRatePlan
+                    com.ssn.dr.rateplan.entity.RatePlan.weekdayTiersStartAtMidnight
+                    com.ssn.dr.rateplan.entity.RatePlan.saturdayTiersStartAtMidnight
+                    com.ssn.dr.rateplan.entity.RatePlan.sundayTiersStartAtMidnight
+                    com.ssn.dr.rateplan.entity.RatePlan.holidayTiersStartAtMidnight
+                    edit.ratePlan.blockRateToTou.error
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="TOURatePlan" type="EditTOURatePlanType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditBlockRatePlanResponseType">
+        <xsd:sequence>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditTOURatePlanResponseType">
+        <xsd:sequence>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EmptyType"/>
+
+    <xsd:complexType name="EnrollServicePointRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                 Note that these bulk enrollment changes aren't processed immediately but
+                     will be picked up by the nightly rate plan enrollment cron job.
+                 Possible ErrorCode values if you receive a BasicFaultType:
+                     generic
+                     fatal_error
+                     authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Enroll" type="EnrollServicePointType" minOccurs="1" maxOccurs="1000"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EnrollServicePointResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                use ServicePointManager getServicePointEnrollment to check enrollment status
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:complexType>
+
+    <xsd:complexType name="EnrollServicePointType">
+        <xsd:sequence>
+            <xsd:element name="UtilServicePointID" type="xsd:string"/>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetPublishRatePlanStatusRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                 Possible ErrorCode values if you receive a BasicFaultType:
+                     generic
+                     fatal_error
+                     authorization_failure
+                     InvalidID.ratePlan.publishJobID
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="JobIdentifier" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetPublishRatePlanStatusResponseType">
+        <xsd:sequence>
+            <xsd:element name="Status" type="basic:JobStatusType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="HolidayPricingTierGroupsType">
+        <xsd:sequence>
+            <xsd:element name="HolidayPricingTierGroup" type="HolidayPricingTierGroupType" minOccurs="1" maxOccurs="5"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="HolidayPricingTierGroupType">
+        <xsd:sequence>
+            <xsd:element name="TOUHoliday" type="xsd:date" minOccurs="1" maxOccurs="32">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        There can only be a maximum of 32 *total* TOUHoliday elements defined in a single TOURatePlan.
+                        These 32 available dates can be shared among the HolidayPricingTierGroup elements defined in the TOURatePlan.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="TOUPricingTier" type="TOUPricingTierType" minOccurs="1" maxOccurs="24"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadedRatePlanErrorPairType">
+        <xsd:sequence>
+            <xsd:element name="ErrorCode" type="xsd:string"/>
+            <xsd:element name="ErrorMessage" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadedRatePlanErrorType">
+        <xsd:sequence>
+            <xsd:element name="RatePlanName" type="xsd:string"/>
+            <xsd:element name="RatePlanError" type="LoadedRatePlanErrorPairType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If there were errors adding/editing the rate plan there will be one of these elements for each error
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="ServicePointError" type="ServicePointErrorType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadedRatePlanType">
+        <xsd:complexContent>
+            <xsd:extension base="BaseTOURatePlanType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadedBlockRatePlanType">
+        <xsd:complexContent>
+            <xsd:extension base="BaseBlockRatePlanType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+     <xsd:complexType name="NullableGenerationPriceType">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="GenerationPrice" type="xsd:double"/>
+        </xsd:sequence>
+        <xsd:attribute default="false" name="Null" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="NullableGHGFactorType">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="GHGFactor" type="xsd:double"/>
+        </xsd:sequence>
+        <xsd:attribute default="false" name="Null" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    
+    <!-- represents the base pricing tier type.  the price tier number is PriceTierType -->
+    <xsd:complexType name="PricingTierType">
+        <xsd:sequence>
+            <xsd:element name="PriceTier" type="PriceTierType" default="1"/>
+            <xsd:element name="Price" type="xsd:decimal"/>
+            <xsd:element name="MeterTier" type="MeterTierType" default="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PublishRatePlanRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                 Possible ErrorCode values if you receive a BasicFaultType:
+                     generic
+                     fatal_error
+                     authorization_failure
+                     InvalidID.ratePlan.ratePlanIdentifier
+                     InvalidType.ratePlan.ratePlanType
+                     rateplan.publish.error
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+            <xsd:element name="PublishToAll" type="xsd:boolean" minOccurs="0" default="true">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If this element is omitted the rate plan will be published to all devices instead of only those that need an update.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PublishRatePlanResponseType">
+        <xsd:sequence>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+            <xsd:element name="JobIdentifier" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="RatePlanType">
+        <xsd:sequence>
+            <xsd:element name="Name" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This will be unique across all rate plans.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Currency" type="RatePlanCurrencyEnumeration" default="USD"/>
+            <xsd:element name="PriceTierZeroLabel" type="PriceTierLabelType" minOccurs="0"/>
+            <xsd:element name="PriceTierOneLabel" type="PriceTierLabelType" minOccurs="0"/>
+            <xsd:element name="PriceTierTwoLabel" type="PriceTierLabelType" minOccurs="0"/>
+            <xsd:element name="PriceTierThreeLabel" type="PriceTierLabelType" minOccurs="0"/>
+            <xsd:element name="PriceTierFourLabel" type="PriceTierLabelType" minOccurs="0"/>
+            <xsd:element name="PriceTierFiveLabel" type="PriceTierLabelType" minOccurs="0"/>
+            <xsd:element name="PriceTierSixLabel" type="PriceTierLabelType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SaturdayPricingTiersType">
+        <xsd:sequence>
+            <xsd:element name="TOUPricingTier" type="TOUPricingTierType" minOccurs="1" maxOccurs="24"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ServicePointLoadedRatePlanType">
+        <xsd:sequence>
+            <xsd:element name="UtilServicePointID" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:choice>
+                <xsd:element name="LoadedRatePlan" type="LoadedRatePlanType" />
+                <xsd:element name="LoadedBlockRatePlan" type="LoadedBlockRatePlanType" />
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ServicePointErrorType">
+        <xsd:sequence>
+            <xsd:element name="UtilServicePointID" type="xsd:string"/>
+            <xsd:element name="ErrorCode" type="LoadedRatePlanServicePointErrorEnumeration"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SetServicePointLoadedRatePlanRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Creates or updates a Loaded rate plan based on the rate plan name.  Also associates one or more
+                service points with the loaded rate plan.
+                Assumes the service points are already in DRM, probably through a base rate plan enrollment.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    Size.ratePlan.ratePlanName
+                    NotEmpty.ratePlan.ratePlanName
+                    Size.ratePlan.ratePlanDescription
+                    InvalidCurrency.ratePlan
+                    InvalidID.ratePlan.ratePlanIdentifier
+                    Size.ratePlan.holidaysPerRatePlan
+                    com.ssn.dr.rateplan.entity.RatePlan.weekdayTiersStartAtMidnight
+                    com.ssn.dr.rateplan.entity.RatePlan.saturdayTiersStartAtMidnight
+                    com.ssn.dr.rateplan.entity.RatePlan.sundayTiersStartAtMidnight
+                    com.ssn.dr.rateplan.entity.RatePlan.holidayTiersStartAtMidnight
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ServicePointLoadedRatePlan" type="ServicePointLoadedRatePlanType" minOccurs="1" maxOccurs="1000"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SetServicePointLoadedRatePlanResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Only errors will be returned
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="RatePlanID" type="xsd:long"/>
+            <xsd:element name="LoadedRatePlanError" type="LoadedRatePlanErrorType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SundayPricingTiersType">
+        <xsd:sequence>
+            <xsd:element name="TOUPricingTier" type="TOUPricingTierType" minOccurs="1" maxOccurs="24"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="TOUPricingTierType">
+        <xsd:complexContent>
+            <xsd:extension base="PricingTierType">
+                <xsd:sequence>
+                    <xsd:element name="StartTime" type="basic:DRMTimeType" default="00:00:00">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The first pricing tier from each group must start at midnight (00:00:00)
+
+                                Only hour and minute are used though seconds are required (but discarded).
+                                The end time is calculated to be either just before the next StartTime
+                                or at the end of the day if there is no later StartTime.
+
+                                NOTE:  DRM doesn't handle time values of 24:00:00 and they don't make sense as a start time in this case.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="GenerationPrice" type="NullableGenerationPriceType" minOccurs="0" />
+                    <xsd:element name="GHGFactor" type="NullableGHGFactorType" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditBlockRatePlanType">
+        <xsd:complexContent>
+            <xsd:extension base="BaseBlockRatePlanType">
+                <xsd:sequence>
+                    <xsd:element name="RatePlanID" type="xsd:long">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Used to identify the RatePlan you wish to edit.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditTOURatePlanType">
+        <xsd:complexContent>
+            <xsd:extension base="BaseTOURatePlanType">
+                <xsd:sequence>
+                    <xsd:element name="RatePlanID" type="xsd:long">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Used to identify the RatePlan you wish to edit.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="WeekdayPricingTiersType">
+        <xsd:sequence>
+            <xsd:element name="TOUPricingTier" type="TOUPricingTierType" minOccurs="1" maxOccurs="24"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Simple Types in alphabetical order -->
+    
+    <xsd:simpleType name="BlockRateMeterTierType">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="LoadedRatePlanServicePointErrorEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ERROR_SPID_NOT_FOUND"/>
+            <xsd:enumeration value="ERROR_SPID_NOT_ENROLLED_IN_BASE_RATE_PLAN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="MeterTierType">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="PriceTierLabelType">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="12"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- the price tier number.  see PricingTierType for the entire pricing tier type -->
+    <xsd:simpleType name="PriceTierType">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="RatePlanCurrencyEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ARS"/>
+            <xsd:enumeration value="AUD"/>
+            <xsd:enumeration value="BRL"/>
+            <xsd:enumeration value="CAD"/>
+            <xsd:enumeration value="CNY"/>
+            <xsd:enumeration value="EUR"/>
+            <xsd:enumeration value="GBP"/>
+            <xsd:enumeration value="INR"/>
+            <xsd:enumeration value="JPY"/>
+            <xsd:enumeration value="MXN"/>
+            <xsd:enumeration value="RUB"/>
+            <xsd:enumeration value="USD"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+</xsd:schema>

@@ -1,0 +1,390 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd"
+            xmlns:basic="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+            targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd"
+            elementFormDefault="qualified">
+
+    <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" schemaLocation="BasicTypes_v1_1.xsd"/>
+
+    <!--
+    Complex types in alphabetical order
+    -->
+    <xsd:element name="GetReportGenerationStatusRequest" type="GetReportGenerationStatusRequestType"/>
+    <xsd:element name="GetReportGenerationStatusResponse" type="GetReportGenerationStatusResponseType"/>
+    <xsd:element name="ListProgramEventsByDateRequest" type="ListProgramEventsByDateRequestType"/>
+    <xsd:element name="ListProgramEventsByDateResponse" type="ListProgramEventsByDateResponseType"/>
+    <xsd:element name="ListProgramEventsByProgramIDRequest" type="ListProgramEventsByProgramIDRequestType"/>
+    <xsd:element name="ListProgramEventsByProgramIDResponse" type="ListProgramEventsByProgramIDResponseType"/>
+    <xsd:element name="ListProgramEventsRequest" type="ListProgramEventsRequestType"/>
+    <xsd:element name="ListProgramEventsResponse" type="ListProgramEventsResponseType"/>
+    <xsd:element name="ExportDeviceLogRequest" type="ExportDeviceLogRequestType"/>
+    <xsd:element name="CommandIDResponse" type="CommandIDResponseType"/>
+
+
+    <xsd:complexType name="GetReportGenerationStatusRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A request to get the status of a report generation request.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    reportManager.commandIDInvalid
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="CommandID" type="xsd:long">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        CommandID comes from the result of the report operations.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetReportGenerationStatusResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Shows if report generation has completed or not and, if it has, the path to the report file.
+                Also shows if the generation failed or not (once it's complete) and if it did, provides a string that my have some details about the error.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Completed" type="xsd:boolean"/>
+            <xsd:element name="Failed" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="FailureMessage" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ReportFileName" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Available when Completed is true.
+                        Report file's name follows this pattern: drm-report-&lt;event type&gt;-&lt;event type specifics&gt;-&lt;UUID&gt;.csv where &lt;event type specifics&gt; varies based on the report event type.
+
+                        Example of a full path to the report:
+
+                        /users/tomcat/.drm/reports/drm-report-critical-peak-price-event-03062011-03072011-e8c43823-642a-4834-9fec-bc4e2c65bffb.csv
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!--
+    Definition of ListProgramEventsByDateRequestType
+    -->
+    <xsd:complexType name="ListProgramEventsByDateRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A request to obtain a list of program events withing a given date range.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:sequence>
+                <xsd:element name="StartDate" type="xsd:dateTime">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            A mandatory time stamp to start looking for events at.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="EndDate" type="xsd:dateTime">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            A mandatory time stamp to finish looking for events at.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:element name="Pagination" type="basic:PaginationType">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Pagination parameters.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!--
+    Definition of ListProgramEventsByDateResponseType
+    -->
+    <xsd:complexType name="ListProgramEventsByDateResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A response returned by ListProgramEventsByDateRequest.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="programEvents" type="ProgramEventType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A list of program events.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!--
+    Definition of ListProgramEventsByProgramIDRequestType
+    -->
+    <xsd:complexType name="ListProgramEventsByProgramIDRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A request to obtains a list of program events for a program identified by a given program ID.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramID" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A mandatory ID of a program.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Pagination" type="basic:PaginationType">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Pagination data for the request.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!--
+    Definition of ListProgramEventsByProgramIDResponseType
+    -->
+    <xsd:complexType name="ListProgramEventsByProgramIDResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A response returned by ListProgramEventsByProgramIDRequest.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramEvents" type="ProgramEventType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A list of program events.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!--
+    Definition of ListProgramEventsRequestType
+    -->
+    <xsd:complexType name="ListProgramEventsRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A request to list program events for a given program ID and an event date range.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramID" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A program ID.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:sequence>
+                <xsd:element name="StartDate" type="xsd:dateTime">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            A mandatory time stamp to start looking for events at.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="EndDate" type="xsd:dateTime">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            A mandatory time stamp to finish looking for events at.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:element name="Pagination" type="basic:PaginationType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!--
+    Definition of ListProgramEventsResponseType
+    -->
+    <xsd:complexType name="ListProgramEventsResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A response returned by ListProgramEventsRequest.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramEvents" type="ProgramEventType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A list of program events.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!--
+    Definition of ExportDeviceLogRequestType
+    -->
+    <xsd:complexType name="ExportDeviceLogRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A request to export a range of device event logs for a set of devices.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="DeviceGroupID" type="xsd:long" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If provided, only events associated with devices in the groups will be exported.
+                        This can leave gaps in the HCM Event ID sequence of the exported files.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="RecordIDRangeStart" type="xsd:long">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The ID of the first HCM Event to be included in the export.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="RecordIDRangeEnd" type="xsd:long" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The ID of the last HCM Event to be included in the export. If this value is not
+                        provided, all events after the range start will be included in the export.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="ResultAction" type="ResultActionEnumeration" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The set of actions to take at the end of the export. If no actions are specified, the exported
+                        files will be available at the local report file path, as defined in the system's properties.
+                        For each action specified, the files will be processed accordingly.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!--
+    Definition of CommandIDResponseType
+    -->
+    <xsd:complexType name="CommandIDResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                CommandID can be used with getReportGenerationStatus to poll for the status of the report generation and the generated file path(s).
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="CommandID" type="xsd:long">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Used with getReportGenerationStatus to poll for the status of the report generation and the generated file path(s).
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!--
+    Definition of ProgramEventType
+    -->
+    <xsd:complexType name="ProgramEventType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A program event.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramID" type="xsd:long">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        An ID of a program.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="EventID" type="xsd:long">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        An event ID.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Type" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A type of the event.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Name" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        An event name.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="StartDate" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Time the event started. Note that batched events do not have a start date until they've been
+                        scheduled for deployment.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DurationMinutes" type="xsd:int" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Duration of the event in minutes. Note that batched events do not have a duration.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!--
+    Definition of EmptyType
+    -->
+    <xsd:complexType name="EmptyType"/>
+
+    <xsd:simpleType name="ResultActionEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SCP"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

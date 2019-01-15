@@ -1,0 +1,588 @@
+<?xml version="1.0"?>
+<!-- root element wsdl:definitions defines set of related services -->
+<wsdl:definitions name="DeviceManager"
+    targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager"
+    xmlns:basicxsd="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+    xmlns:dm="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager"
+    xmlns:dmxsd="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.wsdl" 
+            targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.wsdl"
+            elementFormDefault="qualified">
+
+            <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" schemaLocation="./DeviceManagerTypes_v1_8.xsd"/>
+       </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ActivateESIHANRadioRequest">
+        <wsdl:part name="body" element="dmxsd:ActivateESIHANRadioRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="ActivateESIHANRadioResponse">
+        <wsdl:part name="body" element="dmxsd:ActivateESIHANRadioResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddESIGroupRequest">
+        <wsdl:part name="body" element="dmxsd:AddESIGroupRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddESIGroupResponse">
+        <wsdl:part name="body" element="dmxsd:AddESIGroupResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddHANDeviceRequest">
+        <wsdl:part name="body" element="dmxsd:AddHANDeviceRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddHANDeviceResponse">
+        <wsdl:part name="body" element="dmxsd:AddHANDeviceResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditESIGroupRequest">
+        <wsdl:part name="body" element="dmxsd:EditESIGroupRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="EditESIGroupResponse">
+        <wsdl:part name="body" element="dmxsd:EditESIGroupResponse"/>
+    </wsdl:message>
+     
+    <wsdl:message name="EditHANDeviceRequest">
+        <wsdl:part name="body" element="dmxsd:EditHANDeviceRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditHANDeviceResponse">
+        <wsdl:part name="body" element="dmxsd:EditHANDeviceResponse"/>
+    </wsdl:message>
+           
+    <wsdl:message name="ErrorFault">
+        <wsdl:part name="fault" element="basicxsd:ErrorFault"/>
+    </wsdl:message>
+    
+    <wsdl:message name="FindESIRequest">
+        <wsdl:part name="body" element="dmxsd:FindESIRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="FindESIResponse">
+        <wsdl:part name="body" element="dmxsd:FindESIResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="FindHANDeviceRequest">
+        <wsdl:part name="body" element="dmxsd:FindHANDeviceRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="FindHANDeviceResponse">
+        <wsdl:part name="body" element="dmxsd:FindHANDeviceResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetActivateESIHANRadioCommandStatusRequest">
+        <wsdl:part name="body" element="dmxsd:GetActivateESIHANRadioCommandStatusRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetActivateESIHANRadioCommandStatusResponse">
+        <wsdl:part name="body" element="dmxsd:GetActivateESIHANRadioCommandStatusResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetESIGroupMembersRequest">
+        <wsdl:part name="body" element="dmxsd:GetESIGroupMembersRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetESIGroupMembersResponse">
+        <wsdl:part name="body" element="dmxsd:GetESIGroupMembersResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetESISyncStatusRequest">
+        <wsdl:part name="body" element="dmxsd:GetESISyncStatusRequest"/>
+    </wsdl:message>    
+    
+    <wsdl:message name="GetESISyncStatusResponse">
+        <wsdl:part name="body" element="dmxsd:GetESISyncStatusResponse"/>
+    </wsdl:message> 
+        
+    <wsdl:message name="GetJobStatusRequest">
+        <wsdl:part name="body" element="dmxsd:GetJobStatusRequest"/>
+    </wsdl:message>    
+    
+    <wsdl:message name="GetJobStatusResponse">
+        <wsdl:part name="body" element="dmxsd:GetJobStatusResponse"/>
+    </wsdl:message> 
+        
+    <wsdl:message name="GetPCTStateRequest">
+        <wsdl:part name="body" element="dmxsd:GetPCTStateRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetPCTStateResponse">
+        <wsdl:part name="body" element="dmxsd:GetPCTStateResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetPingHANDeviceStatusRequest">
+        <wsdl:part name="body" element="dmxsd:GetPingHANDeviceStatusRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetPingHANDeviceStatusResponse">
+        <wsdl:part name="body" element="dmxsd:GetPingHANDeviceStatusResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetProvisionHANDeviceCommandStatusRequest">
+        <wsdl:part name="body" element="dmxsd:GetProvisionHANDeviceCommandStatusRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetProvisionHANDeviceCommandStatusResponse">
+        <wsdl:part name="body" element="dmxsd:GetProvisionHANDeviceCommandStatusResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="ListHANDevicesRequest">
+        <wsdl:part name="body" element="dmxsd:ListHANDevicesRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="ListHANDevicesResponse">
+        <wsdl:part name="body" element="dmxsd:ListHANDevicesResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="PingHANDeviceRequest">
+        <wsdl:part name="body" element="dmxsd:PingHANDeviceRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="PingHANDeviceResponse">
+        <wsdl:part name="body" element="dmxsd:PingHANDeviceResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="ProvisionHANDeviceRequest">
+        <wsdl:part name="body" element="dmxsd:ProvisionHANDeviceRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="ProvisionHANDeviceResponse">
+        <wsdl:part name="body" element="dmxsd:ProvisionHANDeviceResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SetPCTStateRequest">
+        <wsdl:part name="body" element="dmxsd:SetPCTStateRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="SetILCORequest">
+        <wsdl:part name="body" element="dmxsd:SetILCORequest"/>
+    </wsdl:message>
+        
+    <wsdl:message name="SetILCOResponse">
+        <wsdl:part name="body" element="dmxsd:SetILCOResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="SetPCTStateResponse">
+        <wsdl:part name="body" element="dmxsd:SetPCTStateResponse"/>
+    </wsdl:message>
+        
+    <wsdl:message name="SyncESIRequest">
+        <wsdl:part name="body" element="dmxsd:SyncESIRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="SyncESIResponse">
+        <wsdl:part name="body" element="dmxsd:SyncESIResponse"/>
+    </wsdl:message>
+        
+    <wsdl:message name="UnprovisionHANDeviceRequest">
+        <wsdl:part name="body" element="dmxsd:UnprovisionHANDeviceRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="UpdateDeviceEventLogsRequest">
+        <wsdl:part name="body" element="dmxsd:UpdateDeviceEventLogsRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="UpdateDeviceEventLogsResponse">
+        <wsdl:part name="body" element="dmxsd:UpdateDeviceEventLogsResponse"/>
+    </wsdl:message>
+    
+    <wsdl:portType name="DeviceManagerPortType">    
+        <wsdl:operation name="activateESIHANRadio">           
+            <wsdl:input message="dm:ActivateESIHANRadioRequest"/>
+            <wsdl:output message="dm:ActivateESIHANRadioResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>  
+        <wsdl:operation name="addESIGroup">           
+            <wsdl:input message="dm:AddESIGroupRequest"/>
+            <wsdl:output message="dm:AddESIGroupResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation> 
+        <wsdl:operation name="addHANDevice">           
+            <wsdl:input message="dm:AddHANDeviceRequest"/>
+            <wsdl:output message="dm:AddHANDeviceResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>  
+        <wsdl:operation name="editESIGroup">           
+            <wsdl:input message="dm:EditESIGroupRequest"/>
+            <wsdl:output message="dm:EditESIGroupResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="editHANDevice">           
+            <wsdl:input message="dm:EditHANDeviceRequest"/>
+            <wsdl:output message="dm:EditHANDeviceResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation> 
+        <wsdl:operation name="findESI">           
+            <wsdl:input message="dm:FindESIRequest"/>
+            <wsdl:output message="dm:FindESIResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="findHANDevice">           
+            <wsdl:input message="dm:FindHANDeviceRequest"/>
+            <wsdl:output message="dm:FindHANDeviceResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>  
+        <wsdl:operation name="getActivateESIHANRadioCommandStatus">           
+            <wsdl:input message="dm:GetActivateESIHANRadioCommandStatusRequest"/>
+            <wsdl:output message="dm:GetActivateESIHANRadioCommandStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getESIGroupMembers">           
+            <wsdl:input message="dm:GetESIGroupMembersRequest"/>
+            <wsdl:output message="dm:GetESIGroupMembersResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getJobStatus">           
+            <wsdl:input message="dm:GetJobStatusRequest"/>
+            <wsdl:output message="dm:GetJobStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPCTState">           
+            <wsdl:input message="dm:GetPCTStateRequest"/>
+            <wsdl:output message="dm:GetPCTStateResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPingHANDeviceStatus">           
+            <wsdl:input message="dm:GetPingHANDeviceStatusRequest"/>
+            <wsdl:output message="dm:GetPingHANDeviceStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getProvisionHANDeviceCommandStatus">           
+            <wsdl:input message="dm:GetProvisionHANDeviceCommandStatusRequest"/>
+            <wsdl:output message="dm:GetProvisionHANDeviceCommandStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getESISyncStatus">
+            <wsdl:input message="dm:GetESISyncStatusRequest"/>
+            <wsdl:output message="dm:GetESISyncStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>                
+        <wsdl:operation name="listHANDevices">           
+            <wsdl:input message="dm:ListHANDevicesRequest"/>
+            <wsdl:output message="dm:ListHANDevicesResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="pingHANDevice">           
+            <wsdl:input message="dm:PingHANDeviceRequest"/>
+            <wsdl:output message="dm:PingHANDeviceResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="provisionHANDevice">           
+            <wsdl:input message="dm:ProvisionHANDeviceRequest"/>
+            <wsdl:output message="dm:ProvisionHANDeviceResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="setILCO">           
+            <wsdl:input message="dm:SetILCORequest"/>
+            <wsdl:output message="dm:SetILCOResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="setPCTState">
+            <wsdl:input message="dm:SetPCTStateRequest"/>
+            <wsdl:output message="dm:SetPCTStateResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="syncESI">
+            <wsdl:input message="dm:SyncESIRequest"/>
+            <wsdl:output message="dm:SyncESIResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="unprovisionHANDevice">           
+            <wsdl:input message="dm:UnprovisionHANDeviceRequest"/>
+            <wsdl:output message="dm:ProvisionHANDeviceResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="updateDeviceEventLogs">           
+            <wsdl:input message="dm:UpdateDeviceEventLogsRequest"/>
+            <wsdl:output message="dm:UpdateDeviceEventLogsResponse"/>
+            <wsdl:fault name="ErrorFault" message="dm:ErrorFault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+
+    <wsdl:binding name="DeviceManagerSoapBinding" type="dm:DeviceManagerPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>       
+        <wsdl:operation name="activateESIHANRadio">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="addESIGroup">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="addHANDevice">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>       
+        <wsdl:operation name="editESIGroup">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="editHANDevice">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="findESI">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="findHANDevice">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="getActivateESIHANRadioCommandStatus">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="getESIGroupMembers">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="getESISyncStatus">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="getJobStatus">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="getPCTState">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="getPingHANDeviceStatus">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="getProvisionHANDeviceCommandStatus">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="listHANDevices">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="pingHANDevice">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="provisionHANDevice">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="setILCO">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="setPCTState">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation> 
+        <wsdl:operation name="syncESI">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="unprovisionHANDevice">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+        <wsdl:operation name="updateDeviceEventLogs">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation> 
+    </wsdl:binding>                                                     
+
+
+    <wsdl:service name="DeviceManagerService">
+        <wsdl:documentation>Itron Device Manager Service</wsdl:documentation> 
+        <wsdl:port name="DeviceManagerPort" binding="dm:DeviceManagerSoapBinding">
+            <soap:address location="https://localhost:8080/drm/services/v1_8/DeviceManagerPort"/>
+        </wsdl:port>
+    </wsdl:service>
+    
+ </wsdl:definitions>

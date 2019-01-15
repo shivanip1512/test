@@ -1,0 +1,78 @@
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManager.xsd"
+        xmlns:basic="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+        targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManager.xsd"
+        elementFormDefault="qualified">
+
+    <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" schemaLocation="BasicTypes_v1_1.xsd"/>
+
+    <!-- global element definitions that correspond to the message documents -->
+
+    <xsd:element name="AddProgramRequest" type="AddProgramRequestType"/>
+    <xsd:element name="AddProgramResponse" type="AddProgramResponseType"/>
+    <xsd:element name="SetServicePointEnrollmentRequest" type="SetServicePointEnrollmentRequestType"/>
+    <xsd:element name="SetServicePointEnrollmentResponse" type="SetServicePointEnrollmentResponseType"/>
+    
+    <!-- Complex Types in alphabetical order -->
+
+    <xsd:complexType name="AddProgramRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    Unique.program.programName
+                    Size.program.programName
+                    NotBlank.program.programName
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramName" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddProgramResponseType">
+        <xsd:sequence>
+            <xsd:element name="ProgramName" type="xsd:string"/>
+            <xsd:element name="ProgramID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EmptyType"/>
+
+    <xsd:complexType name="SetServicePointEnrollmentRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                 Set all of the programs a service point is enrolled in.  Will replace all previous enrollments if they exist.  Use ServicePointManager getServicePointEnrollment if you want to see what programs a service point was enrolled in before calling this (e.g. to just add to the enrolled programs).
+                 Possible ErrorCode values if you receive a BasicFaultType:
+                     generic
+                     fatal_error
+                     authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Enroll" type="ServicePointEnrollmentType" minOccurs="1" maxOccurs="1000"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SetServicePointEnrollmentResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                use ServicePointManager getServicePointEnrollment to check enrollment status
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:complexType>
+
+    <xsd:complexType name="ServicePointEnrollmentType">
+        <xsd:sequence>
+            <xsd:element name="UtilServicePointID" type="xsd:string"/>
+            <xsd:element name="ProgramID" type="xsd:long" maxOccurs="unbounded" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <!-- Simple Types in alphabetical order -->
+
+</xsd:schema>

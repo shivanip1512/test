@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!-- root element wsdl:definitions defines set of related services -->
+<wsdl:definitions name="ProgramManager"
+        targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManager"
+        xmlns:basicxsd="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+        xmlns:pm="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManager"
+        xmlns:pmxsd="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManager.xsd" 
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManagerWrapper.xsd" 
+            targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManagerWrapper.xsd"
+            elementFormDefault="qualified">
+
+            <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManager.xsd" schemaLocation="./ProgramManagerTypes_v1_1.xsd"/>
+                
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ErrorFault">
+        <wsdl:part name="fault" element="basicxsd:ErrorFault"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddProgramRequest">
+        <wsdl:part name="body" element="pmxsd:AddProgramRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddProgramResponse">
+        <wsdl:part name="body" element="pmxsd:AddProgramResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="SetServicePointEnrollmentRequest">
+        <wsdl:part name="body" element="pmxsd:SetServicePointEnrollmentRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="SetServicePointEnrollmentResponse">
+        <wsdl:part name="body" element="pmxsd:SetServicePointEnrollmentResponse"/>
+    </wsdl:message>
+    
+    
+    
+    <wsdl:portType name="ProgramManagerPortType">    
+        <wsdl:operation name="addProgram">           
+            <wsdl:input message="pm:AddProgramRequest"/>
+            <wsdl:output message="pm:AddProgramResponse"/>
+            <wsdl:fault name="ErrorFault" message="pm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="setServicePointEnrollment">           
+            <wsdl:input message="pm:SetServicePointEnrollmentRequest"/>
+            <wsdl:output message="pm:SetServicePointEnrollmentResponse"/>
+            <wsdl:fault name="ErrorFault" message="pm:ErrorFault"/>
+        </wsdl:operation>       
+    </wsdl:portType>
+
+    <wsdl:binding name="ProgramManagerSoapBinding" type="pm:ProgramManagerPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>       
+        <wsdl:operation name="addProgram">
+            <soap:operation soapAction=""/>
+                <wsdl:input>
+                    <soap:body use="literal"/>
+                </wsdl:input>
+                <wsdl:output>
+                    <soap:body use="literal"/>
+                </wsdl:output>
+                <wsdl:fault name="ErrorFault">
+                    <soap:fault name="ErrorFault" use="literal"/>
+                </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="setServicePointEnrollment">
+            <soap:operation soapAction=""/>
+                <wsdl:input>
+                    <soap:body use="literal"/>
+                </wsdl:input>
+                <wsdl:output>
+                    <soap:body use="literal"/>
+                </wsdl:output>
+                <wsdl:fault name="ErrorFault">
+                    <soap:fault name="ErrorFault" use="literal"/>
+                </wsdl:fault>   
+        </wsdl:operation>   
+    </wsdl:binding>                                                     
+        
+
+    <wsdl:service name="ProgramManagerService">
+        <wsdl:documentation>Itron Program Manager Service</wsdl:documentation> 
+        <wsdl:port name="ProgramManagerPort" binding="pm:ProgramManagerSoapBinding">
+            <soap:address location="https://localhost:8080/drm/services/v1_1/ProgramManagerPort"/>
+        </wsdl:port>
+    </wsdl:service>
+    
+    
+ </wsdl:definitions>

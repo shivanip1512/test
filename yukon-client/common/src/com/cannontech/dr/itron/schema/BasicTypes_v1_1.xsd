@@ -1,0 +1,154 @@
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+        targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+        elementFormDefault="qualified">
+
+    <!-- global element definitions that correspond to the message documents -->
+
+    <xsd:element name="ErrorFault" type="ErrorFaultType"/>
+
+    <!-- Complex Types in alphabetical order -->
+
+    <xsd:complexType name="ErrorFaultType">
+        <xsd:sequence>
+            <xsd:element name="Error" type="ErrorType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ErrorType">
+        <xsd:sequence>
+            <xsd:element name="ErrorCode" type="xsd:string"/>
+            <xsd:element name="ErrorMessage" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+     <xsd:complexType name="NullableKiloWattType">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="KiloWatts" type="KiloWattType"/>
+        </xsd:sequence>
+        <xsd:attribute default="false" name="Null" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="PaginationType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A reusable encapsulation of a page number and a page size.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="PageNumber" type="PageNumber">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        An page number, should be greater or equal 1.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="PageSize" type="PageSize">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A page size, should be greater or equal 1 and smaller or equal 1000.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+     <xsd:complexType name="JobStatusType">
+        <xsd:sequence>
+            <xsd:element name="JobID" type="xsd:long"/>
+            <xsd:element name="ExecutionStatus" type="JobExecutionStatusType"/>
+            <xsd:element name="ExecutionStatusDetail" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="StartTime" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="FinishTime" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="Canceled" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="CanceledTime" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="Duration" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="TotalPending" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="TotalCanceled" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="TotalCompleted" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="TotalTimeout" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="TotalFailure" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="NullableSEPVersionType">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="SEPVersion" type="SEPVersionEnumeration"/>
+        </xsd:sequence>
+        <xsd:attribute default="false" name="Null" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    
+    <!-- Simple types, in alphabetical order -->
+
+    <xsd:simpleType name="DRMTimeType">
+        <xsd:annotation>
+            <xsd:documentation>
+                DRM doesn't handle time values of 24:00:00.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:time">
+            <xsd:maxInclusive value="23:59:59.99999"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="KiloWattType">
+        <xsd:restriction base="xsd:float">
+            <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="PageNumber">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="PageSize">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="1000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="JobExecutionStatusType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PENDING">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Used when the job execution status is not yet available.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="COMPLETE"/>
+            <xsd:enumeration value="FAILURE"/>
+            <xsd:enumeration value="RUNNING"/>
+            <xsd:enumeration value="CANCELLED"/>
+            <xsd:enumeration value="CANCELLATION_IN_PROGRESS"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="SEPVersionEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="1.0"/>
+            <xsd:enumeration value="1.1"/>
+        </xsd:restriction>
+   </xsd:simpleType>
+   
+    <xsd:simpleType name="ZeroToFiftyNineInt">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="59"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ZeroToTwentyThreeInt">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="23"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+</xsd:schema>
+

@@ -1,0 +1,152 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd"
+	xmlns:basic="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+	xmlns:location="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd"
+	targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd"
+	elementFormDefault="qualified">
+
+	<xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" schemaLocation="BasicTypes_v1_1.xsd" />
+	<xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd" schemaLocation="LocationTypes_v1_0.xsd" />
+
+	<!-- global element definitions that correspond to the message documents -->
+
+	<xsd:element name="AddServicePointRequest" type="AddServicePointRequestType" />
+	<xsd:element name="AddServicePointResponse" type="AddServicePointResponseType" />
+	<xsd:element name="EditServicePointRequest" type="EditServicePointRequestType" />
+	<xsd:element name="EditServicePointResponse" type="EditServicePointResponseType" />
+	<xsd:element name="GetServicePointEnrollmentRequest" type="GetServicePointEnrollmentRequestType" />
+	<xsd:element name="GetServicePointEnrollmentResponse" type="GetServicePointEnrollmentResponseType" />
+ 
+
+	<!-- Complex Types in alphabetical order -->
+
+	<xsd:complexType name="GetServicePointEnrollmentRequestType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Possible ErrorCode values if you receive a BasicFaultType:
+				generic
+				fatal_error
+				authorization_failure
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ServicePointID" type="xsd:string"
+				minOccurs="1" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="GetServicePointEnrollmentResponseType">
+		<xsd:sequence>
+			<xsd:element name="ServicePointEnrollment" type="ServicePointEnrollmentType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="UnknownSPID" type="xsd:string"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ServicePointEnrollmentType">
+		<xsd:sequence>
+			<xsd:element name="ServicePointID" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						This is the Utility-defined service point ID, as opposed to the ID
+						internal to DRM.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ServicePointName" type="xsd:string" minOccurs="0" />
+			<xsd:element name="BaseRatePlan" type="EnrollmentInfoType" minOccurs="0" />
+			<xsd:element name="LoadedRatePlan" type="EnrollmentInfoType" minOccurs="0" />
+			<xsd:element name="Program" type="EnrollmentInfoType" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="EnrollmentInfoType">
+		<xsd:sequence>
+			<xsd:element name="ID" type="xsd:long" />
+			<xsd:element name="Name" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="AddServicePointRequestType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Possible ErrorCode values if you receive a BasicFaultType:
+				generic
+				fatal_error
+				authorization_failure
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ServicePoint" type="AddServicePointType" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="AddServicePointResponseType">
+		<xsd:sequence> 
+            <xsd:element name="UtilServicePointID" type="xsd:string"/>  
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+	<xsd:complexType name="EditServicePointRequestType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Possible ErrorCode values if you receive a BasicFaultType:
+				generic
+				fatal_error
+				authorization_failure
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ServicePoint" type="EditServicePointType" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="EditServicePointResponseType">
+		<xsd:sequence> 
+           <xsd:element name="UtilServicePointID" type="xsd:string"/>  
+		</xsd:sequence>
+	</xsd:complexType> 
+	
+	
+   <xsd:complexType name="AddServicePointType">
+   	<xsd:complexContent>  
+		<xsd:extension base="BasicServicePointType">  
+        <xsd:sequence>  
+			<xsd:element name="Account" type="location:AccountType" /> 
+           <xsd:element name="Location" type="location:LocationType"/>  
+        </xsd:sequence>
+       </xsd:extension>
+       </xsd:complexContent>
+    </xsd:complexType>   
+    
+   <xsd:complexType name="EditServicePointType">
+   	<xsd:complexContent>  
+		<xsd:extension base="BasicServicePointType">  
+        <xsd:sequence>  
+			<xsd:element name="Account" type="location:AccountType" minOccurs="0" /> 
+           <xsd:element name="Location" type="location:LocationType" minOccurs="0"/>  
+        </xsd:sequence>
+        </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>   
+    
+    <xsd:complexType name="BasicServicePointType">
+        <xsd:sequence>   
+           <xsd:element name="UtilServicePointID" type="xsd:string"/>  
+           <xsd:element name="FeederDistNetUtilID" type="xsd:string" minOccurs="0"/>
+           <xsd:element name="SubstationDistNetUtilID" type="xsd:string" minOccurs="0"/>
+           <xsd:element name="TransformerDistNetUtilID" type="xsd:string" minOccurs="0"/>
+           <xsd:element name="TransmissionDistNetUtilID" type="xsd:string" minOccurs="0"/>
+           <xsd:element name="Attribute1" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute2" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute3" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute4" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute5" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>   
+
+
+</xsd:schema>
+    

@@ -1,0 +1,528 @@
+<?xml version="1.0"?>
+<!-- root element wsdl:definitions defines set of related services -->
+<wsdl:definitions name="ProgramEventManager"
+    targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager"
+    xmlns:basicxsd="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+    xmlns:pem="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager"
+    xmlns:pemxsd="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.wsdl" 
+            targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.wsdl"
+            elementFormDefault="qualified">
+
+            <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd" schemaLocation="./ProgramEventManagerTypes_v1_6.xsd"/>
+       </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ErrorFault">
+        <wsdl:part name="fault" element="basicxsd:ErrorFault"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddBatchMessageRequest">
+        <wsdl:part name="body" element="pemxsd:AddBatchMessageRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddBatchMessageResponse">
+        <wsdl:part name="body" element="pemxsd:AddBatchMessageResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddBatchMessageProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:AddBatchMessageProgramEventRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddMessageProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:AddMessageProgramEventRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddCriticalPeakPriceProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:AddCriticalPeakPriceProgramEventRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddHANLoadControlProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:AddHANLoadControlProgramEventRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="AddProgramEventResponse">
+        <wsdl:part name="body" element="pemxsd:AddProgramEventResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="CancelAllHANLoadControlProgramEventOnDevicesRequest">
+        <wsdl:part name="body" element="pemxsd:CancelAllHANLoadControlProgramEventOnDevicesRequest"/>
+    </wsdl:message> 
+
+    <wsdl:message name="CancelAllHANLoadControlProgramEventOnDevicesResponse">
+        <wsdl:part name="body" element="pemxsd:CancelAllHANLoadControlProgramEventOnDevicesResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="CancelHANLoadControlProgramEventOnDevicesRequest">
+        <wsdl:part name="body" element="pemxsd:CancelHANLoadControlProgramEventOnDevicesRequest"/>
+    </wsdl:message> 
+
+    <wsdl:message name="CancelHANLoadControlProgramEventOnDevicesResponse">
+        <wsdl:part name="body" element="pemxsd:CancelHANLoadControlProgramEventOnDevicesResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="CancelCriticalPeakPriceProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:CancelCriticalPeakPriceProgramEventRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="CancelCriticalPeakPriceProgramEventResponse">
+        <wsdl:part name="body" element="pemxsd:CancelCriticalPeakPriceProgramEventResponse"/>
+    </wsdl:message> 
+
+    <wsdl:message name="CancelHANLoadControlProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:CancelHANLoadControlProgramEventRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="CancelHANLoadControlProgramEventResponse">
+        <wsdl:part name="body" element="pemxsd:CancelHANLoadControlProgramEventResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="CancelMessageProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:CancelMessageProgramEventRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="CancelMessageProgramEventResponse">
+        <wsdl:part name="body" element="pemxsd:CancelMessageProgramEventResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditInProgressD2GHANLoadControlProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:EditInProgressD2GHANLoadControlProgramEventRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditInProgressD2GHANLoadControlProgramEventResponse">
+        <wsdl:part name="body" element="pemxsd:EditInProgressD2GHANLoadControlProgramEventResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="DeployBatchProgramEventRequest">
+        <wsdl:part name="body" element="pemxsd:DeployBatchProgramEventRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="DeployBatchProgramEventResponse">
+        <wsdl:part name="body" element="pemxsd:DeployBatchProgramEventResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="FindBatchMessagesRequest">
+        <wsdl:part name="body" element="pemxsd:FindBatchMessagesRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="FindBatchMessagesResponse">
+        <wsdl:part name="body" element="pemxsd:FindBatchMessagesResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetBatchMessageProgramEventResultsRequest">
+        <wsdl:part name="body" element="pemxsd:GetBatchMessageProgramEventResultsRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetBatchMessageProgramEventResultsResponse">
+        <wsdl:part name="body" element="pemxsd:GetBatchMessageProgramEventResultsResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetCriticalPeakPriceProgramEventResultsRequest">
+        <wsdl:part name="body" element="pemxsd:GetCriticalPeakPriceProgramEventResultsRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetCriticalPeakPriceProgramEventResultsResponse">
+        <wsdl:part name="body" element="pemxsd:GetCriticalPeakPriceProgramEventResultsResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetLoadControlProgramEventResultsRequest">
+        <wsdl:part name="body" element="pemxsd:GetLoadControlProgramEventResultsRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetLoadControlProgramEventResultsResponse">
+        <wsdl:part name="body" element="pemxsd:GetLoadControlProgramEventResultsResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetMessageProgramEventResultsRequest">
+        <wsdl:part name="body" element="pemxsd:GetMessageProgramEventResultsRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetMessageProgramEventResultsResponse">
+        <wsdl:part name="body" element="pemxsd:GetMessageProgramEventResultsResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetProgramEventStatusRequest">
+        <wsdl:part name="body" element="pemxsd:GetProgramEventStatusRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetProgramEventStatusResponse">
+        <wsdl:part name="body" element="pemxsd:GetProgramEventStatusResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="OptOutDeviceRequest">
+        <wsdl:part name="body" element="pemxsd:OptOutDeviceRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="OptOutDeviceResponse">
+        <wsdl:part name="body" element="pemxsd:OptOutDeviceResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="RemoveUnsentBatchMessageForProgramRequest">
+        <wsdl:part name="body" element="pemxsd:RemoveUnsentBatchMessageForProgramRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="RemoveUnsentBatchMessageForProgramResponse">
+        <wsdl:part name="body" element="pemxsd:RemoveUnsentBatchMessageForProgramResponse"/>
+    </wsdl:message>
+
+    <wsdl:portType name="ProgramEventManagerPortType">
+        <wsdl:operation name="addBatchMessage">
+            <wsdl:input message="pem:AddBatchMessageRequest"/>
+            <wsdl:output message="pem:AddBatchMessageResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="addBatchMessageProgramEvent">
+            <wsdl:input message="pem:AddBatchMessageProgramEventRequest"/>
+            <wsdl:output message="pem:AddProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="addMessageProgramEvent">
+            <wsdl:input message="pem:AddMessageProgramEventRequest"/>
+            <wsdl:output message="pem:AddProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="addCriticalPeakPriceProgramEvent">
+            <wsdl:input message="pem:AddCriticalPeakPriceProgramEventRequest"/>
+            <wsdl:output message="pem:AddProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="addHANLoadControlProgramEvent">
+            <wsdl:input message="pem:AddHANLoadControlProgramEventRequest"/>
+            <wsdl:output message="pem:AddProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="cancelAllHANLoadControlProgramEventOnDevices">
+            <wsdl:input message="pem:CancelAllHANLoadControlProgramEventOnDevicesRequest"/>
+            <wsdl:output message="pem:CancelAllHANLoadControlProgramEventOnDevicesResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="cancelCriticalPeakPriceProgramEvent">
+            <wsdl:input message="pem:CancelCriticalPeakPriceProgramEventRequest"/>
+            <wsdl:output message="pem:CancelCriticalPeakPriceProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="cancelHANLoadControlProgramEvent">
+            <wsdl:input message="pem:CancelHANLoadControlProgramEventRequest"/>
+            <wsdl:output message="pem:CancelHANLoadControlProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="cancelHANLoadControlProgramEventOnDevices">
+            <wsdl:input message="pem:CancelHANLoadControlProgramEventOnDevicesRequest"/>
+            <wsdl:output message="pem:CancelHANLoadControlProgramEventOnDevicesResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="cancelMessageProgramEvent">
+            <wsdl:input message="pem:CancelMessageProgramEventRequest"/>
+            <wsdl:output message="pem:CancelMessageProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="editInProgressD2GHANLoadControlProgramEvent">
+            <wsdl:input message="pem:EditInProgressD2GHANLoadControlProgramEventRequest"/>
+            <wsdl:output message="pem:EditInProgressD2GHANLoadControlProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="deployBatchProgramEvent">
+            <wsdl:input message="pem:DeployBatchProgramEventRequest"/>
+            <wsdl:output message="pem:DeployBatchProgramEventResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="findBatchMessages">
+            <wsdl:input message="pem:FindBatchMessagesRequest"/>
+            <wsdl:output message="pem:FindBatchMessagesResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getBatchMessageProgramEventResults">
+            <wsdl:input message="pem:GetBatchMessageProgramEventResultsRequest"/>
+            <wsdl:output message="pem:GetBatchMessageProgramEventResultsResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getCriticalPeakPriceProgramEventResults">
+            <wsdl:input message="pem:GetCriticalPeakPriceProgramEventResultsRequest"/>
+            <wsdl:output message="pem:GetCriticalPeakPriceProgramEventResultsResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getLoadControlProgramEventResults">
+            <wsdl:input message="pem:GetLoadControlProgramEventResultsRequest"/>
+            <wsdl:output message="pem:GetLoadControlProgramEventResultsResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getMessageProgramEventResult">
+            <wsdl:input message="pem:GetMessageProgramEventResultsRequest"/>
+            <wsdl:output message="pem:GetMessageProgramEventResultsResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="getProgramEventStatus">
+            <wsdl:input message="pem:GetProgramEventStatusRequest"/>
+            <wsdl:output message="pem:GetProgramEventStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="optOutDevice">
+            <wsdl:input message="pem:OptOutDeviceRequest"/>
+            <wsdl:output message="pem:OptOutDeviceResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="removeUnsentBatchMessageForProgram">
+            <wsdl:input message="pem:RemoveUnsentBatchMessageForProgramRequest"/>
+            <wsdl:output message="pem:RemoveUnsentBatchMessageForProgramResponse"/>
+            <wsdl:fault name="ErrorFault" message="pem:ErrorFault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="ProgramEventManagerSoapBinding" type="pem:ProgramEventManagerPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="addBatchMessage">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addBatchMessageProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addMessageProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addCriticalPeakPriceProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addHANLoadControlProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="cancelAllHANLoadControlProgramEventOnDevices">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="cancelCriticalPeakPriceProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation> 
+        <wsdl:operation name="cancelHANLoadControlProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="cancelHANLoadControlProgramEventOnDevices">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="cancelMessageProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="deployBatchProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="editInProgressD2GHANLoadControlProgramEvent">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="findBatchMessages">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getBatchMessageProgramEventResults">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getCriticalPeakPriceProgramEventResults">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getLoadControlProgramEventResults">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getMessageProgramEventResult">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProgramEventStatus">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="optOutDevice">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>
+        <wsdl:operation name="removeUnsentBatchMessageForProgram">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+        
+    <wsdl:service name="ProgramEventManagerService">
+        <wsdl:documentation>Itron Program Event Manager Service</wsdl:documentation> 
+        <wsdl:port name="ProgramEventManagerPort" binding="pem:ProgramEventManagerSoapBinding">
+            <soap:address location="https://localhost:8080/drm/services/v1_6/ProgramEventManagerPort"/>
+        </wsdl:port>
+    </wsdl:service>
+    
+ </wsdl:definitions>

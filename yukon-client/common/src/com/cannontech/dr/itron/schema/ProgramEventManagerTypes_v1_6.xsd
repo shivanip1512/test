@@ -1,0 +1,1302 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd"
+	xmlns:basic="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+	targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd"
+	elementFormDefault="qualified">
+    
+    <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" schemaLocation="BasicTypes_v1_1.xsd"/>
+    
+    <!-- Complex Types in alphabetical order -->
+
+    <xsd:element name="AddBatchMessageProgramEventRequest" type="AddBatchMessageProgramEventRequestType"/>
+    <xsd:element name="AddBatchMessageProgramEventResponse" type="AddProgramEventResponseType"/>
+    <xsd:element name="AddCriticalPeakPriceProgramEventRequest" type="AddCriticalPeakPriceProgramEventRequestType"/>
+    <xsd:element name="AddHANLoadControlProgramEventRequest" type="AddHANLoadControlProgramEventRequestType"/>
+    <xsd:element name="AddMessageProgramEventRequest" type="AddMessageProgramEventRequestType"/>
+    <xsd:element name="AddBatchMessageRequest" type="AddBatchMessageRequestType"/>
+    <xsd:element name="AddBatchMessageResponse" type="AddBatchMessageResponseType"/>
+    <xsd:element name="AddProgramEventResponse" type="AddProgramEventResponseType"/>
+    <xsd:element name="CancelAllHANLoadControlProgramEventOnDevicesRequest" type="CancelAllHANLoadControlProgramEventOnDevicesRequestType"/>
+    <xsd:element name="CancelAllHANLoadControlProgramEventOnDevicesResponse" type="CancelAllHANLoadControlProgramEventOnDevicesResponseType"/> 
+  	<xsd:element name="CancelCriticalPeakPriceProgramEventRequest" type="CancelCriticalPeakPriceProgramEventRequestType"/>
+    <xsd:element name="CancelCriticalPeakPriceProgramEventResponse" type="CancelCriticalPeakPriceProgramEventResponseType"/> 
+    <xsd:element name="CancelHANLoadControlProgramEventRequest" type="CancelHANLoadControlProgramEventRequestType"/>
+    <xsd:element name="CancelHANLoadControlProgramEventResponse" type="CancelHANLoadControlProgramEventResponseType"/> 
+    <xsd:element name="CancelHANLoadControlProgramEventOnDevicesRequest" type="CancelHANLoadControlProgramEventOnDevicesRequestType"/>
+    <xsd:element name="CancelHANLoadControlProgramEventOnDevicesResponse" type="CancelHANLoadControlProgramEventOnDevicesResponseType"/> 
+    <xsd:element name="CancelMessageProgramEventRequest" type="CancelMessageProgramEventRequestType"/>
+    <xsd:element name="CancelMessageProgramEventResponse" type="CancelMessageProgramEventResponseType"/>
+    <xsd:element name="DeployBatchProgramEventRequest" type="DeployBatchProgramEventRequestType"/>
+    <xsd:element name="DeployBatchProgramEventResponse" type="EmptyType"/>
+    <xsd:element name="EditInProgressD2GHANLoadControlProgramEventRequest" type="EditInProgressD2GHANLoadControlProgramEventRequestType"/>
+    <xsd:element name="EditInProgressD2GHANLoadControlProgramEventResponse" type="EditInProgressD2GHANLoadControlProgramEventResponseType"/>
+    <xsd:element name="GetBatchMessageProgramEventResultsRequest" type="GetProgramEventResultRequestType"/>
+    <xsd:element name="GetBatchMessageProgramEventResultsResponse" type="GetBatchMessageProgramEventResultsResponseType"/>
+    <xsd:element name="GetCriticalPeakPriceProgramEventResultsRequest" type="GetProgramEventResultRequestType"/>
+    <xsd:element name="GetCriticalPeakPriceProgramEventResultsResponse" type="GetCriticalPeakPriceProgramEventResultsResponseType"/>
+    <xsd:element name="GetLoadControlProgramEventResultsRequest" type="GetProgramEventResultRequestType"/>
+    <xsd:element name="GetLoadControlProgramEventResultsResponse" type="GetLoadControlProgramEventResultsResponseType"/>
+    <xsd:element name="GetMessageProgramEventResultsRequest" type="GetProgramEventResultRequestType"/>
+    <xsd:element name="GetMessageProgramEventResultsResponse" type="GetMessageProgramEventResultsResponseType"/>
+    <xsd:element name="GetProgramEventStatusRequest" type="GetProgramEventStatusRequestType"/>
+    <xsd:element name="GetProgramEventStatusResponse" type="GetProgramEventStatusResponseType"/>
+    <xsd:element name="FindBatchMessagesRequest" type="FindBatchMessagesRequestType" />
+    <xsd:element name="FindBatchMessagesResponse" type="FindBatchMessagesResponseType" />
+    <xsd:element name="OptOutDeviceRequest" type="OptOutDeviceRequestType"/>
+    <xsd:element name="OptOutDeviceResponse" type="OptOutDeviceResponseType"/>
+    <xsd:element name="RemoveUnsentBatchMessageForProgramRequest" type="RemoveUnsentBatchMessageForProgramRequestType"/>
+    <xsd:element name="RemoveUnsentBatchMessageForProgramResponse" type="RemoveUnsentBatchMessageForProgramResponseType"/>
+
+    <xsd:complexType name="AddBatchMessageProgramEventRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                generic
+                fatal_error
+                authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="BatchMessageProgramEvent" type="AddBatchMessageProgramEventType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddBatchMessageType">
+        <xsd:sequence>
+            <xsd:element name="ProgramID" type="xsd:long" />
+            <xsd:element name="ProgramEventID" type="xsd:long" />
+            <xsd:element name="ESIMacID" type="xsd:string" />
+            <xsd:element name="Message" type="xsd:string" />
+            <xsd:element name="Priority" type="MessagePriorityEnumeration" />
+            <xsd:element name="Duration" type="MessageDurationType" />
+            <xsd:element name="StartDate" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Omitting the start date will cause the message event to start when it's deployed. When
+                        using Batch Messages, we strongly recommend providing a specific start date in case several
+                        messages are batched for the same ESI and arrive at the same time.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+     <xsd:complexType name="AddBatchProgramEventType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventType">
+                <xsd:sequence>
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            When sending batch events, the event is created first without any deployment information and then data is added. 
+                            to the event with a call such as AddBatchMessage. Once you have added data to the event, call
+                            DeployBatchProgramEvent to schedule the event for deployment.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AddBatchMessageProgramEventType">
+        <xsd:complexContent>
+            <xsd:extension base="AddBatchProgramEventType">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="BatchEventPublicationType">
+        <xsd:sequence>
+            <xsd:element name="DeploymentDate" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Omitting the deployment date will deploy the event immediately.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddBatchMessageResultType">
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="BatchMessageID" type="xsd:long"/>
+                <xsd:element name="Error" type="basic:ErrorType" maxOccurs="unbounded"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddCriticalPeakPriceProgramEventRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="CriticalPeakPriceProgramEvent" type="AddCriticalPeakPriceProgramEventType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddCriticalPeakPriceProgramEventType">
+        <xsd:complexContent>
+            <xsd:extension base="UnbatchedProgramEventType">
+                <xsd:sequence>
+                    <xsd:element name="CPPValue" type="CriticalPriceType" />
+                    <xsd:element name="CPPOperation" type="CriticalPriceOperationType" />
+                    <xsd:element name="PriceTier" type="CriticalPriceTierType" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                In UtilOS versions 3.6.4 and earlier, as well as UtilOS version 3.8.0, this value is
+                                required.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="MeterTier" type="CriticalPriceMeterTierType" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                In UtilOS versions 3.6.4 and earlier, as well as UtilOS version 3.8.0, this value is
+                                required.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="CPPLabel" type="xsd:string" minOccurs="0" />
+                    <xsd:element name="Duration" type="CriticalPriceDurationType" />
+                    <xsd:element name="SetRTPMode" type="xsd:boolean" />
+                    <xsd:element name="Message" type="ProgramEventOptionalMessageType" minOccurs="0" />
+                    <xsd:element name="RandomizedStartPreRollTime" type="RandomizedPrePostRollType" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Omitting this will not randomize the start time.  Including it will randomize the start
+                                time by up to the number of minutes specified in this element.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="RandomizedEndPostRollTime" type="RandomizedPrePostRollType" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Omitting this will not randomize the end time.  Including it will randomize the end time
+                                by up to the number of minutes specified in this element.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddHANLoadControlProgramEventRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="HANLoadControlProgramEvent" type="AddHANLoadControlProgramEventType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AddHANLoadControlProgramEventType">
+        <xsd:complexContent>
+            <xsd:extension base="UnbatchedProgramEventType">
+                <xsd:sequence>
+		            <xsd:element name="RandomizeStartTime" type="xsd:boolean" />
+		            <xsd:element name="RandomizeEndTime" type="xsd:boolean" />
+		            <xsd:element name="DutyCyclePercentage" type="LoadControlDutyCyclePercentageType"  minOccurs="0">
+	                    <xsd:annotation>
+	                        <xsd:documentation>
+	                            DutyCyclePercentage is required for D2G HAN devices to be targeted; it is optional
+	                            for ZigBee HAN devices if at least one other load control option is specified (see
+	                            LoadControlProgramEventZigBeeParamsType for details).
+	                        </xsd:documentation>
+	                    </xsd:annotation>
+		            </xsd:element>
+                    <xsd:choice>
+                        <xsd:element name="ZigBeeParams" type="LoadControlProgramEventZigBeeParamsType">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    Parameters specific to ZigBee HAN Devices targeted by this Load Control Event.
+                                    
+					                ZigBee specific load control options include AverageLoadAdjustmentPercentage, CoolingAdjustment,
+					                and HeatingAdjustment (DutyCyclePercentage, found in AddHANLoadControlProgramEventType, is also
+					                supported and is shared with D2G devices). At least one ZigBee supported load control option must
+					                be specified for Zigbee HAN devices to be targeted by an event. 
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="D2GParams" type="LoadControlProgramEventD2GParamsType">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    Parameters specific to D2G HAN Devices targeted by this Load Control Event
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="CombinedParams" type="LoadControlProgramEventCombinedParamsType">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    Parameters for events that target both ZigBee and D2G HAN Devices
+                                    
+                                    ZigBee specific load control options include AverageLoadAdjustmentPercentage, CoolingAdjustment,
+                                    and HeatingAdjustment (DutyCyclePercentage, found in AddHANLoadControlProgramEventType, is also
+                                    supported and is shared with D2G devices). At least one ZigBee supported load control option must
+                                    be specified for Zigbee HAN devices to be targeted by an event. 
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddMessageProgramEventRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="MessageProgramEvent" type="AddMessageProgramEventType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AddMessageProgramEventType">
+        <xsd:complexContent>
+            <xsd:extension base="UnbatchedProgramEventType">
+                <xsd:sequence>
+                    <xsd:element name="Message" type="xsd:string" />
+                    <xsd:element name="Priority" type="MessagePriorityEnumeration" />
+                    <xsd:element name="AcknowledgementRequired" type="xsd:boolean" />
+                    <xsd:element name="Duration" type="MessageDurationType" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddBatchMessageResponseType">
+        <xsd:sequence>
+            <xsd:element name="BatchMessageResultResult" type="AddBatchMessageResultType" minOccurs="0" maxOccurs="1000"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddBatchMessageRequestType">
+        <xsd:sequence>
+            <xsd:element name="BatchMessage" type="AddBatchMessageType" maxOccurs="1000" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddProgramEventResponseType">
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="BatchMessageType">
+        <xsd:complexContent>
+            <xsd:extension base="AddBatchMessageType">
+                <xsd:sequence>
+                    <xsd:element name="BatchMessageID" type="xsd:long" />
+                    <xsd:element name="Status" type="BatchMessageStatusEnumeration" />
+                    <xsd:element name="DateAdded" type="xsd:dateTime" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="BatchMessageProgramEventResultsType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventResultsType">
+                <xsd:sequence>
+                    <xsd:element name="BatchMessageID" type="xsd:long"/>
+                    <xsd:element name="StartDate" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="PublicationStatus" type="BatchMessageStatusEnumeration"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="BatchMessageEventStatusType">
+        <xsd:complexContent>
+            <xsd:extension base="CommonEventStatusType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="CancelAllHANLoadControlProgramEventOnDevicesRequestType">
+     <xsd:annotation>
+            <xsd:documentation> 
+			Cancel all event (message, load control event and cpp event) on the target devices.
+			At least one of device group id or nic mac id are required but any combination (other than zero of both) is acceptable.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="EnableDRLCRandomization" type="xsd:boolean" minOccurs="1">
+	            <xsd:annotation>
+	                <xsd:documentation>
+	                    Only applies to DRLC events that might be running on the devices. A value of "true" will cause the
+	                    cancel event to use the randomization setting of DRLC event(s) running on the device. A value of 
+	                    false means cancel at the effective time (generally immediately), overriding event randomization
+	                    settings.
+	                </xsd:documentation>
+	            </xsd:annotation>
+			</xsd:element>
+            <xsd:element name="DeviceGroupID" type="xsd:long" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                           Target device group ID list
+                        </xsd:documentation>
+                    </xsd:annotation>  
+            </xsd:element>  
+             <xsd:element name="NicMacID" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+             <xsd:annotation>
+                        <xsd:documentation>
+                            Target NIC device list
+                        </xsd:documentation>
+                    </xsd:annotation>  
+            </xsd:element> 
+        </xsd:sequence> 
+    </xsd:complexType>
+    
+    <xsd:complexType name="CancelAllHANLoadControlProgramEventOnDevicesResponseType">
+        <xsd:sequence> 
+            <xsd:element name="JobID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CancelCriticalPeakPriceProgramEventRequestType">
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CancelCriticalPeakPriceProgramEventResponseType">
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>   
+    
+    <xsd:complexType name="CancelHANLoadControlProgramEventRequestType">
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CancelHANLoadControlProgramEventResponseType">
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType> 
+    
+    <xsd:complexType name="CancelHANLoadControlProgramEventOnDevicesRequestType">  
+        <xsd:annotation>
+            <xsd:documentation>
+              Cancel the DRLC event in all the target devices. 
+			  If caller input the value to DeviceGroupID and/or NicMacID, it will cancel the DRLC event on those specific target devices.
+			  If caller won't input any value to DeviceGroupID and NicMacID, it will cancel the DRLC event on all of this event's target devices.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="EventID" type="xsd:long"  minOccurs="1"/>
+            <xsd:element name="EnableRandomization" type="xsd:boolean" minOccurs="1"/> 
+            <xsd:element name="DeviceGroupID" type="xsd:long" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                           target device group ID list
+                        </xsd:documentation>
+                    </xsd:annotation>  
+            </xsd:element>  
+             <xsd:element name="NicMacID" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+             <xsd:annotation>
+                        <xsd:documentation>
+                            target Nic device list
+                        </xsd:documentation>
+                    </xsd:annotation>  
+            </xsd:element> 
+        </xsd:sequence> 
+    </xsd:complexType>
+    
+    <xsd:complexType name="CancelHANLoadControlProgramEventOnDevicesResponseType">
+        <xsd:sequence> 
+            <xsd:element name="JobID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CancelMessageProgramEventRequestType">
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CancelMessageProgramEventResponseType">
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CommonEventStatusType">
+        <xsd:sequence>
+            <xsd:element name="TargetedESICount" type="ProgramEventStatusType" />
+            <xsd:element name="UnreachableESICount" type="ProgramEventStatusType" />
+            <xsd:element name="CancelledESICount" type="ProgramEventStatusType" minOccurs="0"/>
+            <xsd:element name="NotCancelledESICount" type="ProgramEventStatusType" minOccurs="0"/>
+            <xsd:element name="ReceivedESICount" type="ProgramEventStatusType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CPPEventStatusType">
+        <xsd:complexContent>
+            <xsd:extension base="CommonEventStatusType"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="CriticalPeakPriceProgramEventResultsType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventResultsType">
+                <xsd:sequence>
+                    <xsd:element name="StartTime" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="EndTime" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="RTPEnableStatus" type="RealTimePriceStatusEnumeration" minOccurs="0"/>
+                    <xsd:element name="RTPEnableTime" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="RTPDisableStatus" type="RealTimePriceStatusEnumeration" minOccurs="0"/>
+                    <xsd:element name="RTPDisableTime" type="xsd:dateTime" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="DeployBatchProgramEventRequestType">
+        <xsd:complexContent>
+            <xsd:extension base="BatchEventPublicationType">
+                <xsd:sequence>
+                    <xsd:element name="ProgramEventID" type="xsd:long"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditInProgressD2GHANLoadControlProgramEventRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    editInProgressD2GHANLoadControlProgramEvent.eventNotFound
+                    editInProgressD2GHANLoadControlProgramEvent.eventNotLoadControl
+                    editInProgressD2GHANLoadControlProgramEvent.eventDurationTooShort
+                    editInProgressD2GHANLoadControlProgramEvent.eventNotInProgress
+                    editInProgressD2GHANLoadControlProgramEvent.eventNotEnoughProgress
+                    editInProgressD2GHANLoadControlProgramEvent.eventHasNoValidTargetDevices
+                    editInProgressD2GHANLoadControlProgramEvent.eventTargetsZigBeeDevice
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ExistingProgramEventID" type="xsd:long"/>
+            <xsd:element name="DutyCyclePercentage" type="LoadControlDutyCyclePercentageType"  minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If DutyCyclePercentage is not provided the value from the original program event will be used.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DutyCycleCount" type="ByteType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If DutyCycleCount is not provided the value from the original program event will be used.
+                        Changing this is a way to extend or shorten the length of the event given that the start
+                        time is the same as the original event.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EditInProgressD2GHANLoadControlProgramEventResponseType">
+        <xsd:sequence>
+            <xsd:element name="NewProgramEventID" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EmptyType" />
+
+    <xsd:complexType name="FindBatchMessagesRequestType">
+        <xsd:sequence>
+            <xsd:element name="ProgramID" type="xsd:long" />
+            <xsd:element name="ESIMacID" type="xsd:string" minOccurs="0" />
+            <xsd:element name="ProgramEventID" type="xsd:long" minOccurs="0" />
+            <xsd:element name="Status" type="BatchMessageStatusEnumeration" minOccurs="0" />
+            <xsd:element name="DateAddedRangeStart" type="xsd:dateTime" minOccurs="0" />
+            <xsd:element name="DateAddedRangeEnd" type="xsd:dateTime" minOccurs="0" />
+            <xsd:element name="Pagination" type="basic:PaginationType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="FindBatchMessagesResponseType">
+        <xsd:sequence>
+            <xsd:element name="BatchMessageCount" type="xsd:long" minOccurs="0" />
+            <xsd:element name="BatchMessage" type="BatchMessageType" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetProgramEventResultRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                generic
+                fatal_error
+                programEvent.notFound
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long"/>
+            <xsd:element name="Pagination" type="basic:PaginationType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetBatchMessageProgramEventResultsResponseType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventResultsResponseType">
+                <xsd:sequence>
+                    <xsd:element name="Results" type="BatchMessageProgramEventResultsType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetCriticalPeakPriceProgramEventResultsResponseType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventWithOptionalMessageResultsResponseType">
+                <xsd:sequence>
+                    <xsd:element name="Results" type="CriticalPeakPriceProgramEventResultsType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetMessageProgramEventResultsResponseType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventResultsResponseType">
+                <xsd:sequence>
+                    <xsd:element name="Results" type="MessageProgramEventResultsType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetLoadControlProgramEventResultsResponseType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventWithOptionalMessageResultsResponseType">
+                <xsd:sequence>
+                    <xsd:element name="Results" type="LoadControlProgramEventResultsType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetProgramEventStatusRequestType">
+       <xsd:annotation>
+         <xsd:documentation>
+               Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    programEvent.notFound
+        </xsd:documentation>
+       </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProgramEventID" type="xsd:long" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetProgramEventStatusResponseType">
+        <xsd:sequence>
+            <xsd:element name="EventStatus" type="SingleEventStatusType" maxOccurs="unbounded"/>     
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadControlEventStatusType">
+        <xsd:complexContent>
+            <xsd:extension base="CommonEventStatusType">
+                <xsd:sequence>
+                    <xsd:element name="TargetedHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="StartedHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="CompletedHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="OverriddenHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="SupersededHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="ReceivedLateHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="CancelledHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="NotCancelledHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                    <xsd:element name="UnknownHANCount" type="ProgramEventStatusType" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadControlProgramEventCombinedParamsType">
+        <xsd:sequence>
+            <xsd:element name="ZigBeeParams" type="LoadControlProgramEventZigBeeParamsType"/>
+            <xsd:element name="D2GParams" type="LoadControlProgramEventD2GParamsType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadControlProgramEventD2GParamsType">
+        <xsd:sequence>
+            <xsd:element name="Criticality" type="CriticalityType" />
+            <xsd:element name="DutyCyclePeriod" type="ByteType" />
+            <xsd:element name="DutyCycleCount" type="ByteType" />
+            <xsd:element name="VirtualRelayAddress" type="VirtualRelayAddressType" />
+            <xsd:element name="EventControl" type="EventControlType" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadControlProgramEventResultsType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventResultsType">
+                <xsd:sequence>
+                    <xsd:element name="Overridden" type="xsd:boolean"/>
+                    <xsd:element name="OverrideTime" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="StartTime" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="EndTime" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="HANDeviceReceivedTime" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="TargetDeviceClass" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="LoadControlStatus" type="LoadControlStatusEnumeration" minOccurs="0"/>
+                    <xsd:element name="LoadControlStatusTime" type="xsd:dateTime" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadControlProgramEventZigBeeParamsType">
+        <xsd:annotation>
+            <xsd:documentation>
+                ZigBee specific load control options include AverageLoadAdjustmentPercentage, CoolingAdjustment,
+                and HeatingAdjustment (DutyCyclePercentage, found in AddHANLoadControlProgramEventType, is also
+                supported and is shared with D2G devices). At least one ZigBee supported load control option must
+                be specified for Zigbee HAN devices to be targeted by an event. 
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Duration" type="LoadControlDurationType" />
+            <xsd:element name="Priority" type="LoadControlPriorityEnumeration" />
+            <xsd:element name="EnrollmentGroup" type="xsd:int" minOccurs="0" />
+            <xsd:element name="DeviceClass" type="HANDeviceClassEnumeration" minOccurs="0" />
+            <xsd:element name="CoolingAdjustment" type="LoadControlTemperatureAdjustmentType" minOccurs="0" />
+            <xsd:element name="HeatingAdjustment" type="LoadControlTemperatureAdjustmentType" minOccurs="0" />
+            <xsd:element name="AverageLoadAdjustmentPercentage" type="LoadControlAverageLoadAdjustmentPercentageType" minOccurs="0" />
+            <xsd:element name="Message" type="ProgramEventOptionalMessageType" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LoadControlTemperatureAdjustmentType">
+        <xsd:sequence>
+            <xsd:element name="Value" type="xsd:double" />
+            <xsd:element name="Type" type="LoadControlTemperatureTypeEnumeration" />
+            <xsd:element name="Units" type="LoadControlTemperatureUnitsEnumeration" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MessageEventStatusType">
+        <xsd:complexContent>
+            <xsd:extension base="CommonEventStatusType">
+                <xsd:sequence>
+                    <xsd:element name="AcknowledgedESICount" type="ProgramEventStatusType" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="MessageProgramEventResultsType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventResultsType">
+                <xsd:sequence>
+                    <xsd:element name="MessageAcknowledgeTime" type="xsd:dateTime" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="OptOutDeviceRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="OptOutDevice" type="OptOutDeviceType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="OptOutDeviceResponseType">
+        <xsd:sequence>
+            <xsd:element name="OptOutDeviceResponse" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="OptOutDeviceType">
+        <xsd:sequence>
+            <xsd:element name="DeploymentTime" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Omitting the deployment time will deploy the command immediately.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="StartTime" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Omitting the start time will execute the command when it's deployed.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Duration" type="OptOutDurationType" />
+            <xsd:element minOccurs="1" maxOccurs="100" name="LCSMacID" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProgramEventOptionalMessageType">
+        <xsd:sequence>
+            <xsd:element name="Message" type="xsd:string" />
+            <xsd:element name="Priority" type="MessagePriorityEnumeration" />
+            <xsd:element name="AcknowledgementRequired" type="xsd:boolean" />
+            <xsd:element name="Duration" type="MessageDurationType" />
+            <xsd:element name="StartTime" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Omitting the start time will deploy the event immediately.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProgramEventResultsResponseType">
+        <xsd:sequence>
+            <xsd:element name="ResultCount" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProgramEventWithOptionalMessageResultsResponseType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventResultsResponseType">
+                <xsd:sequence>
+                    <xsd:element name="OptionalMessageResults" type="MessageProgramEventResultsType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProgramEventResultsType">
+        <xsd:sequence>
+            <xsd:element name="ESIMacID" type="xsd:string"/>
+            <xsd:element name="MacID" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="PublicationTime" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="ReceivedTime" type="xsd:dateTime"/>
+            <xsd:element name="DeviceStatus" type="ProgramEventDeviceStatusEnumeration"/>
+            <xsd:element name="CommandStatus" type="ESICommandStatusEnumeration"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProgramEventStatusType">
+        <xsd:sequence>
+            <xsd:element name="CurrentValue" type="xsd:int"/>
+            <xsd:element name="TotalValue" type="xsd:int"/>
+            <xsd:element name="PercentCompleted" type="xsd:double" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProgramEventType">
+        <xsd:sequence>
+            <xsd:element name="ProgramID" type="xsd:long" />
+            <xsd:element name="Name" type="xsd:string" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="RemoveUnsentBatchMessageForProgramRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                This method will remove unsent batch messages. Callers may filter the messages to be removed by
+                Program ID or ESI Mac ID, or both Program ID and ESI Mac ID; if neither ProgramID or ESIMacID are
+                provided, all unsent messages will be removed. Alternatively, callers may choose to remove up to
+                1000 specific unsent messages using their specific IDs.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:sequence>
+                <xsd:element name="ProgramID" type="xsd:long" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            If the ProgramID is specified, only unsent messages for that program will be removed.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="ESIMacID" type="xsd:string" minOccurs="0" maxOccurs="1000">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            If the ESIMacID is specified, only unsent messages for that ESI will be removed.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:sequence>
+                <xsd:element name="BatchMessageID" type="xsd:long" minOccurs="0" maxOccurs="1000" />
+            </xsd:sequence>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="RemoveUnsentBatchMessageForProgramResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                When removing unsent messages by ProgramID and/or ESIMacID (or all unsent messages) there are no
+                error conditions; if no messages are eligible for removal under those conditions, the request is always
+                considered a success.
+
+                However, when trying to remove specific messages by message ID, error conditions may be returned for
+                individual messages if they could not be deleted (not found, not eligible to be deleted, etc.).
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="RemovalError" type="RemoveUnsentBatchMessageErrorType" minOccurs="0" maxOccurs="1000" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="RemoveUnsentBatchMessageErrorType">
+        <xsd:sequence>
+            <xsd:element name="BatchMessageID" type="xsd:long" />
+            <xsd:element name="MessageRemovalError" type="basic:ErrorType" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SingleEventStatusType">
+        <xsd:sequence>
+            <xsd:element name="EventID" type="xsd:long"/>
+            <xsd:element name="EventType" type="ProgramEventEnumType"/>
+            <xsd:element name="Status" type="ProgramEventRunStatusType"/>
+            <xsd:element name="CanceledBeforeDeployment" type="xsd:boolean"/>
+            <xsd:element name="BatchMessageEventStatus" type="BatchMessageEventStatusType" minOccurs="0"/>
+            <xsd:element name="CPPEventStatus" type="CPPEventStatusType" minOccurs="0"/>
+            <xsd:element name="LoadControlEventStatus" type="LoadControlEventStatusType" minOccurs="0"/>
+            <xsd:element name="MessageEventStatus" type="MessageEventStatusType" minOccurs="0"/>
+            <xsd:element name="OptionalMessageEventStatus" type="MessageEventStatusType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="UnbatchedProgramEventType">
+        <xsd:complexContent>
+            <xsd:extension base="ProgramEventType">
+                <xsd:sequence>
+                    <xsd:element name="DeploymentDate" type="xsd:dateTime" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Omitting the deployment date will deploy the event immediately.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="StartDate" type="xsd:dateTime" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Omitting the start date will start the event when it's deployed.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="EventOptions" type="UnbatchedProgramEventOptionsType" minOccurs="0"/>
+                    <xsd:choice>
+                        <xsd:element name="TargetESIMacID" type="xsd:string" />
+                        <xsd:element name="DeviceGroupID" type="xsd:long" minOccurs="0" maxOccurs="unbounded">
+                                <xsd:annotation>
+                                    <xsd:documentation>
+                                        If no device group IDs are provided, all devices on the program are eligible to
+                                        receive the event. When device group IDs are provided, the definition of each
+                                        device group is copied and the event's program is added as an additional
+                                        restriction to the new group, if it is not already present. Editing the
+                                        definition of a device group after an event using it has been created will have
+                                        no effect on the device groups used by the event.
+                                    </xsd:documentation>
+                                </xsd:annotation>
+                        </xsd:element>
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="UnbatchedProgramEventOptionsType">
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="FilterNotReadyDevices" type="xsd:boolean">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Setting this value to true will cause the event to determine, at deployment time, which
+                            devices are in the "Ready" state. Any device that is considered to be "Not Ready" will
+                            be filtered out of the recipient list at that time and HCM will make no attempt to send
+                            the event to those devices.
+
+                            If the element is false or not present, the "Not Ready" devices will be included in the
+                            event, though they may not be reachable. Note that some devices may be filtered out for
+                            other reasons (such as the HAN radio being off).
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="UseRapidEventDispatch" type="xsd:boolean">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Setting this value to true will cause the event to determine, at deployment time, which
+                            Access Points (APs) will communicate the command to the event's target devices. The event
+                            will then be distributed to all devices under those APs. This means that some devices not
+                            explicitly in the DeviceGroupID list, and more devices than the single TargetESIMacID, may
+                            receive and participate in the event.
+
+                            This option may only be used for events created on a program that supports Rapid Event
+                            Dispatch.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    
+<!-- Simple Types in alphabetical order -->
+
+    <xsd:simpleType name="BatchMessageStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="UNSENT"/>
+            <xsd:enumeration value="PENDING"/>
+            <xsd:enumeration value="SENT"/>
+            <xsd:enumeration value="FAILED"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ByteType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="255"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="CriticalityType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="255"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="CriticalPriceDurationType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="32767"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CriticalPriceMeterTierType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CriticalPriceTierType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CriticalPriceType">
+        <xsd:restriction base="xsd:double">
+            <xsd:minInclusive value="0.000001"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="CriticalPriceOperationType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="REPLACEMENT" />
+            <xsd:enumeration value="ADDITIVE" />
+            <xsd:enumeration value="MULTIPLICATIVE" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ESICommandStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="FAILED"/>
+            <xsd:enumeration value="ZIGBEE_VRAM_FAILURE"/>
+            <xsd:enumeration value="ZIGBEE_TIMEOUT"/>
+            <xsd:enumeration value="ZIGBEE_ROUTE_FAILURE"/>
+            <xsd:enumeration value="ZIGBEE_OUT_OF_MEMORY"/>
+            <xsd:enumeration value="ZIGBEE_UNSUPPORTED_COMMAND"/>
+            <xsd:enumeration value="ZIGBEE_INVALID_ADDRESSING_MODE"/>
+            <xsd:enumeration value="ZIGBEE_INVALID_COMMAND"/>
+            <xsd:enumeration value="ZIGBEE_EVENT_TABLE_FULL"/>
+            <xsd:enumeration value="ZIGBEE_EVENT_PAST"/>
+            <xsd:enumeration value="ZIGBEE_DUPLICATE_EVENT"/>
+            <xsd:enumeration value="ESI_TIME_NOT_SET"/>
+            <xsd:enumeration value="HAN_DISABLED"/>
+            <xsd:enumeration value="ZIGBEE_DATA_IN_USE"/>
+            <xsd:enumeration value="ZIGBEE_DATA_NOT_FOUND"/>
+            <xsd:enumeration value="ZIGBEE_SUPERSEDED"/>
+            <xsd:enumeration value="ZIGBEE_DEADLINE_PAST"/>
+            <xsd:enumeration value="ESI_NUMBER_OVERFLOW"/>
+            <xsd:enumeration value="SUCCESS"/>
+
+            <xsd:enumeration value="NOT_APPLICABLE_ASYNC_RESULT"/>
+            <xsd:enumeration value="GENERAL_FAILURE"/>
+            <xsd:enumeration value="APPLICATION_FAILURE"/>
+            <xsd:enumeration value="TIMEOUT"/>
+            <xsd:enumeration value="ERROR_SCHEDULE"/>
+            <xsd:enumeration value="ERROR_CANCEL"/>
+            <xsd:enumeration value="ERROR_EXPIRE"/>
+            <xsd:enumeration value="ERROR_NIC_FAILURE"/>
+            <xsd:enumeration value="ERROR_SECURITY_SEQUENCE"/>
+            <xsd:enumeration value="ERROR_SECURITY_ASSOCIATION"/>
+            <xsd:enumeration value="ERROR_SECURITY_VERIFY"/>
+            <xsd:enumeration value="ERROR_SECURITY_FAILURE"/>
+            <xsd:enumeration value="ERROR_SECURITY_NO_CERT"/>
+            <xsd:enumeration value="ERROR_SECURITY_NO_PRIVILEGE"/>
+            <xsd:enumeration value="ERROR_ASSOCIATION_TIMEOUT"/>
+            <xsd:enumeration value="ERROR_SECURITY_NIC_IS_MISSING_EPHEMERAL_BLOB"/>
+            <xsd:enumeration value="ERROR_SECURITY_NIC_HAS_NO_TIME"/>
+            <xsd:enumeration value="ERROR_SECURITY_RATE_LIMIT_EXCEEDED"/>
+            <xsd:enumeration value="ERROR_UNKNOWN"/>
+            <xsd:enumeration value="NO_ROUTE_TO_DEVICE"/>
+            <xsd:enumeration value="COMMAND_BUILD_FAILURE"/>
+            <xsd:enumeration value="ERROR_EXCEPTION"/>
+            <xsd:enumeration value="NOT_APPLICABLE"/>
+            <xsd:enumeration value="CANCEL_SUCCESS"/>
+
+            <xsd:enumeration value="UNKNOWN_STATUS"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="EventControlType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="STANDARD"/>
+            <xsd:enumeration value="ADVANCED_OPTION_1"/>
+            <xsd:enumeration value="ADVANCED_OPTION_2"/>
+            <xsd:enumeration value="ADVANCED_OPTION_3"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="HANDeviceClassEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="HVAC"/>
+            <xsd:enumeration value="STRIP_HEATER"/>
+            <xsd:enumeration value="WATER_HEATER"/>
+            <xsd:enumeration value="POOL_PUMP"/>
+            <xsd:enumeration value="SMART_APPLIANCE"/>
+            <xsd:enumeration value="IRRIGATION_PUMP"/>
+            <xsd:enumeration value="CI_LOAD"/>
+            <xsd:enumeration value="SIMPLE_LOAD"/>
+            <xsd:enumeration value="EXT_LIGHTING"/>
+            <xsd:enumeration value="INT_LIGHTING"/>
+            <xsd:enumeration value="ELECTRIC_VEHICLE"/>
+            <xsd:enumeration value="GENERATION_SYSTEM"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LoadControlAverageLoadAdjustmentPercentageType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="-100"/>
+            <xsd:maxInclusive value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LoadControlDurationType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="1440"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LoadControlDutyCyclePercentageType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LoadControlPriorityEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="GREEN"/>
+            <xsd:enumeration value="ONE"/>
+            <xsd:enumeration value="TWO"/>
+            <xsd:enumeration value="THREE"/>
+            <xsd:enumeration value="FOUR"/>
+            <xsd:enumeration value="FIVE"/>
+            <xsd:enumeration value="EMERGENCY"/>
+            <xsd:enumeration value="PLANNED_OUTAGE"/>
+            <xsd:enumeration value="SERVICE_DISCONNECT"/>
+            <xsd:enumeration value="UTILITY_DEFINED_1"/>
+            <xsd:enumeration value="UTILITY_DEFINED_2"/>
+            <xsd:enumeration value="UTILITY_DEFINED_3"/>
+            <xsd:enumeration value="UTILITY_DEFINED_4"/>
+            <xsd:enumeration value="UTILITY_DEFINED_5"/>
+            <xsd:enumeration value="UTILITY_DEFINED_6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LoadControlStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="COMMAND_RECEIVED"/>
+            <xsd:enumeration value="EVENT_STARTED"/>
+            <xsd:enumeration value="EVENT_COMPLETED"/>
+            <xsd:enumeration value="USER_OPT_OUT"/>
+            <xsd:enumeration value="USER_OPT_IN"/>
+            <xsd:enumeration value="EVENT_CANCELLED"/>
+            <xsd:enumeration value="EVENT_SUPERSEDED"/>
+            <xsd:enumeration value="EVENT_PARTIALLY_COMPLETED_WITH_USER_OPT_OUT"/>
+            <xsd:enumeration value="EVENT_PARTIALLY_COMPLETED_DUE_TO_USER_OPT_IN"/>
+            <xsd:enumeration value="EVENT_COMPLETED_NO_USER_PARTICIPATION"/>
+            <xsd:enumeration value="EVENT_SUSPENDED_DEVICE_HAS_NO_TIME"/>
+            <xsd:enumeration value="EVENT_REJECTED_INVALID_CANCEL_COMMAND"/>
+            <xsd:enumeration value="EVENT_REJECTED_INVALID_CANCEL_COMMAND_INVALID_EFF_TIME"/>
+            <xsd:enumeration value="EVENT_REJECTED_RECEIVED_AFTER_EXPIRY"/>
+            <xsd:enumeration value="EVENT_REJECTED_INVALID_CANCEL_COMMAND_UNDEFINED_EVENT"/>
+            <xsd:enumeration value="EVENT_REJECTED"/>
+            <xsd:enumeration value="UNKNOWN_EVENT_STATE"/>
+            <xsd:enumeration value="INSUFFICIENT_COMMAND_PARAMETERS"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LoadControlTemperatureTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OFFSET"/>
+            <xsd:enumeration value="SET_POINT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LoadControlTemperatureUnitsEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="FARENHEIT"/>
+            <xsd:enumeration value="CELSIUS"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="MessageDurationType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="32767"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="MessagePriorityEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="LOW"/>
+            <xsd:enumeration value="MEDIUM"/>
+            <xsd:enumeration value="HIGH"/>
+            <xsd:enumeration value="CRITICAL"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="OptOutDurationType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="32767"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ProgramEventEnumType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MESSAGE"/>
+            <xsd:enumeration value="CRITICAL_PEAK_PRICE"/>
+            <xsd:enumeration value="LOAD_CONTROL"/>
+            <xsd:enumeration value="BATCH_MESSAGE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ProgramEventDeviceStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="EVENT_CPP_SENT"/>
+            <xsd:enumeration value="EVENT_CPP_CANCELED"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_SUCCESS"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_UNSUPPORTED"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_NIC"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_METER"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_TIMEOUT"/>
+
+            <xsd:enumeration value="EVENT_MESSAGE_SENT"/>
+            <xsd:enumeration value="EVENT_MESSAGE_CANCELLED"/>
+            <xsd:enumeration value="EVENT_MESSAGE_ACKED"/>
+
+            <xsd:enumeration value="EVENT_LC_SENT"/>
+            <xsd:enumeration value="EVENT_LC_RECEIVED"/>
+            <xsd:enumeration value="EVENT_LC_STARTED"/>
+            <xsd:enumeration value="EVENT_LC_COMPLETED"/>
+            <xsd:enumeration value="EVENT_LC_USER_OPT_OUT"/>
+            <xsd:enumeration value="EVENT_LC_USER_OPT_IN"/>
+            <xsd:enumeration value="EVENT_LC_CANCELLED"/>
+            <xsd:enumeration value="EVENT_LC_SUPERSEDED"/>
+            <xsd:enumeration value="EVENT_LC_PARTIALLY_COMPLETED_WITH_USER_OPT_OUT"/>
+            <xsd:enumeration value="EVENT_LC_PARTIALLY_COMPLETED_DUE_TO_USER_OPT_IN"/>
+            <xsd:enumeration value="EVENT_LC_COMPLETED_NO_USER_PARTICIPATION"/>
+            <xsd:enumeration value="EVENT_LC_REJECTED_RECEIVED_AFTER_EXPIRY"/>
+            <xsd:enumeration value="EVENT_LC_REJECTED"/>
+
+            <xsd:enumeration value="EVENT_BATCH_DATA_SUCCESS"/>
+            <xsd:enumeration value="EVENT_BATCH_DATA_FAILURE"/>
+
+            <xsd:enumeration value="EVENT_PENDING_CANCELLATION"/>
+            <xsd:enumeration value="EVENT_DEVICE_PENDING_CANCELLATION"/>
+            <xsd:enumeration value="EVENT_DEVICE_CANCELLED"/>
+
+            <xsd:enumeration value="DONE_NO_PROCESSING_EXPECTED"/>
+            <xsd:enumeration value="APPLICATION_FAILURE"/>
+            <xsd:enumeration value="AWAITING_ASYNC_RESPONSE"/>
+            <xsd:enumeration value="RETRIES_EXHAUSTED"/>
+            <xsd:enumeration value="NO_SUCCESSFUL_COMMUNICATION"/>
+
+            <xsd:enumeration value="UNKNOWN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ProgramEventRunStatusType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PENDING"/>
+            <xsd:enumeration value="DEPLOYED"/>
+            <xsd:enumeration value="IN_PROGRESS"/>
+            <xsd:enumeration value="COMPLETED"/>
+            <xsd:enumeration value="CANCELED"/>
+            <xsd:enumeration value="FAILED"/>
+
+            <xsd:enumeration value="UNKNOWN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:simpleType name="RandomizedPrePostRollType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="5"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="RealTimePriceStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="EVENT_CPP_RTP_SUCCESS"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_UNSUPPORTED"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_NIC"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_METER"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_FAIL_TIMEOUT"/>
+            <xsd:enumeration value="EVENT_CPP_RTP_UNKNOWN"/>
+
+            <xsd:enumeration value="AWAITING_ASYNC_RESPONSE"/>
+
+            <xsd:enumeration value="UNKNOWN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="VirtualRelayAddressType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="255"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

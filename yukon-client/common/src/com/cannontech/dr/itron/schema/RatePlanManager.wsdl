@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<!-- root element wsdl:definitions defines set of related services -->
+<wsdl:definitions name="RatePlanManager"
+    targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager"
+    xmlns:basicxsd="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+    xmlns:rpm="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager"
+    xmlns:rpmxsd="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager.xsd" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager.wsdl" 
+            targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager.wsdl"
+            elementFormDefault="qualified">
+
+            <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager.xsd" schemaLocation="./RatePlanManagerTypes_v1_4.xsd"/>
+                
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ErrorFault">
+        <wsdl:part name="fault" element="basicxsd:ErrorFault"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddBlockRatePlanRequest">
+        <wsdl:part name="body" element="rpmxsd:AddBlockRatePlanRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddBlockRatePlanResponse">
+        <wsdl:part name="body" element="rpmxsd:AddBlockRatePlanResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddTOURatePlanRequest">
+        <wsdl:part name="body" element="rpmxsd:AddTOURatePlanRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AddTOURatePlanResponse">
+        <wsdl:part name="body" element="rpmxsd:AddTOURatePlanResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditBlockRatePlanRequest">
+        <wsdl:part name="body" element="rpmxsd:EditBlockRatePlanRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditBlockRatePlanResponse">
+        <wsdl:part name="body" element="rpmxsd:EditBlockRatePlanResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditTOURatePlanRequest">
+        <wsdl:part name="body" element="rpmxsd:EditTOURatePlanRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EditTOURatePlanResponse">
+        <wsdl:part name="body" element="rpmxsd:EditTOURatePlanResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EnrollServicePointRequest">
+        <wsdl:part name="body" element="rpmxsd:EnrollServicePointRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="EnrollServicePointResponse">
+        <wsdl:part name="body" element="rpmxsd:EnrollServicePointResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetPublishRatePlanStatusRequest">
+        <wsdl:part name="body" element="rpmxsd:GetPublishRatePlanStatusRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetPublishRatePlanStatusResponse">
+        <wsdl:part name="body" element="rpmxsd:GetPublishRatePlanStatusResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="PublishRatePlanRequest">
+        <wsdl:part name="body" element="rpmxsd:PublishRatePlanRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="PublishRatePlanResponse">
+        <wsdl:part name="body" element="rpmxsd:PublishRatePlanResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="SetServicePointLoadedRatePlanRequest">
+        <wsdl:part name="body" element="rpmxsd:SetServicePointLoadedRatePlanRequest"/>
+    </wsdl:message>
+    
+    <wsdl:message name="SetServicePointLoadedRatePlanResponse">
+        <wsdl:part name="body" element="rpmxsd:SetServicePointLoadedRatePlanResponse"/>
+    </wsdl:message>
+    
+    
+    
+    <wsdl:portType name="RatePlanManagerPortType">    
+        <wsdl:operation name="addBlockRatePlan">           
+            <wsdl:input message="rpm:AddBlockRatePlanRequest"/>
+            <wsdl:output message="rpm:AddBlockRatePlanResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="addTOURatePlan">           
+            <wsdl:input message="rpm:AddTOURatePlanRequest"/>
+            <wsdl:output message="rpm:AddTOURatePlanResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="editBlockRatePlan">           
+            <wsdl:input message="rpm:EditBlockRatePlanRequest"/>
+            <wsdl:output message="rpm:EditBlockRatePlanResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="editTOURatePlan">           
+            <wsdl:input message="rpm:EditTOURatePlanRequest"/>
+            <wsdl:output message="rpm:EditTOURatePlanResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="enrollServicePoint">           
+            <wsdl:input message="rpm:EnrollServicePointRequest"/>
+            <wsdl:output message="rpm:EnrollServicePointResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="getPublishRatePlanStatus">           
+            <wsdl:input message="rpm:GetPublishRatePlanStatusRequest"/>
+            <wsdl:output message="rpm:GetPublishRatePlanStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="publishRatePlan">           
+            <wsdl:input message="rpm:PublishRatePlanRequest"/>
+            <wsdl:output message="rpm:PublishRatePlanResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+        <wsdl:operation name="setServicePointLoadedRatePlan">           
+            <wsdl:input message="rpm:SetServicePointLoadedRatePlanRequest"/>
+            <wsdl:output message="rpm:SetServicePointLoadedRatePlanResponse"/>
+            <wsdl:fault name="ErrorFault" message="rpm:ErrorFault"/>
+        </wsdl:operation>       
+    </wsdl:portType>
+
+    <wsdl:binding name="RatePlanManagerSoapBinding" type="rpm:RatePlanManagerPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>       
+        <wsdl:operation name="addBlockRatePlan">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="addTOURatePlan">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="editBlockRatePlan">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="editTOURatePlan">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="enrollServicePoint">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="getPublishRatePlanStatus">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="publishRatePlan">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+        <wsdl:operation name="setServicePointLoadedRatePlan">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>   
+        </wsdl:operation>   
+    </wsdl:binding>                                                     
+        
+
+    <wsdl:service name="RatePlanManagerService">
+        <wsdl:documentation>Itron Rate PlanManager Service</wsdl:documentation> 
+        <wsdl:port name="RatePlanManagerPort" binding="rpm:RatePlanManagerSoapBinding">
+            <soap:address location="https://localhost:8080/drm/services/v1_4/RatePlanManagerPort"/>
+        </wsdl:port>
+    </wsdl:service>
+    
+    
+ </wsdl:definitions>

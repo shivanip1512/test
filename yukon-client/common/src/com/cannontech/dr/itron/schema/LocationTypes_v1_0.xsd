@@ -1,0 +1,46 @@
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd"
+        targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd"
+        elementFormDefault="qualified">
+
+    <xsd:complexType name="AccountType">
+        <xsd:sequence>
+            <xsd:element name="UtilAccountID" type="xsd:string"/>
+            <xsd:element name="CustomerName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Email" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="PhoneNumber" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="LocationType">
+        <xsd:sequence>
+            <xsd:element name="Address1" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Address2" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="City" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="County" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="State" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="PostCode" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="CrossStreet" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Country" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="LocationType" type="LocationTypeEnumeration"/>
+            <xsd:element name="PremiseUtilId" type="xsd:string"/>
+            <xsd:element name="TZID" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Longitude" type="xsd:double" minOccurs="0"/>
+            <xsd:element name="Latitude" type="xsd:double" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="LocationTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="LOCATION_TYPE_PREMISE"/>
+            <xsd:enumeration value="LOCATION_TYPE_NETWORK"/>
+            <xsd:enumeration value="LOCATION_TYPE_POLE"/>
+            <xsd:enumeration value="LOCATION_TYPE_TRANSFORM"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+</xsd:schema>

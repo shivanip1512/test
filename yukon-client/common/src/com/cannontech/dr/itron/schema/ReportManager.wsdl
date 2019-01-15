@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<wsdl:definitions name="ReportManager"
+                  targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd"
+                  xmlns:basicxsd="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+                  xmlns:rm="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                    xmlns="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManagerWrapper.xsd"
+                    targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManagerWrapper.xsd"
+                    elementFormDefault="qualified">
+
+            <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd" schemaLocation="ReportManagerTypes_v1_2.xsd"/>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ErrorFault">
+        <wsdl:part name="fault" element="basicxsd:ErrorFault"/>
+    </wsdl:message>
+    
+    <wsdl:message name="GetReportGenerationStatusRequest">
+        <wsdl:part name="body" element="rm:GetReportGenerationStatusRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetReportGenerationStatusResponse">
+        <wsdl:part name="body" element="rm:GetReportGenerationStatusResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="ListProgramEventsByDateRequest">
+        <wsdl:part name="body" element="rm:ListProgramEventsByDateRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="ListProgramEventsByDateResponse">
+        <wsdl:part name="body" element="rm:ListProgramEventsByDateResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="ListProgramEventsByProgramIDRequest">
+        <wsdl:part name="body" element="rm:ListProgramEventsByProgramIDRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="ListProgramEventsByProgramIDResponse">
+        <wsdl:part name="body" element="rm:ListProgramEventsByProgramIDResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="ListProgramEventsRequest">
+        <wsdl:part name="body" element="rm:ListProgramEventsRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="ListProgramEventsResponse">
+        <wsdl:part name="body" element="rm:ListProgramEventsResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="ExportDeviceLogRequest">
+        <wsdl:part name="body" element="rm:ExportDeviceLogRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="CommandIDResponse">
+        <wsdl:part name="body" element="rm:CommandIDResponse"/>
+    </wsdl:message>
+
+
+    <wsdl:portType name="ReportManagerPortType">
+
+        <wsdl:operation name="getReportGenerationStatus">
+            <wsdl:documentation>
+                Will return the status of a report request and, when complete, the path to the report file.
+            </wsdl:documentation>
+            <wsdl:input message="rm:GetReportGenerationStatusRequest"/>
+            <wsdl:output message="rm:GetReportGenerationStatusResponse"/>
+            <wsdl:fault name="ErrorFault" message="rm:ErrorFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="listProgramEventsByDate">
+            <wsdl:documentation>
+                Returns a list of program events withing a given date range. The returned events can later be used to
+                execute reports based on the event IDs.
+            </wsdl:documentation>
+            <wsdl:input message="rm:ListProgramEventsByDateRequest"/>
+            <wsdl:output message="rm:ListProgramEventsByDateResponse"/>
+            <wsdl:fault name="ErrorFault" message="rm:ErrorFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="listProgramEventsByProgramID">
+            <wsdl:documentation>
+                Returns a list of program events for a given program ID. The returned events can later be used to
+                execute reports based on the event IDs.
+            </wsdl:documentation>
+            <wsdl:input message="rm:ListProgramEventsByProgramIDRequest"/>
+            <wsdl:output message="rm:ListProgramEventsByProgramIDResponse"/>
+            <wsdl:fault name="ErrorFault" message="rm:ErrorFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="listProgramEvents">
+            <wsdl:documentation>
+                Returns a list of program events for a given program ID and a date range. The returned events can later
+                be used to execute reports based on the event IDs.
+            </wsdl:documentation>
+            <wsdl:input message="rm:ListProgramEventsRequest"/>
+            <wsdl:output message="rm:ListProgramEventsResponse"/>
+            <wsdl:fault name="ErrorFault" message="rm:ErrorFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="exportDeviceLog">
+            <wsdl:documentation>
+                Adds a request for device logs to be added to the export queue. The status of the export, and the list
+                of files generated, can be found by calling getReportGenerationStatus.
+            </wsdl:documentation>
+            <wsdl:input message="rm:ExportDeviceLogRequest"/>
+            <wsdl:output message="rm:CommandIDResponse"/>
+            <wsdl:fault name="ErrorFault" message="rm:ErrorFault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+
+    <wsdl:binding name="ReportManagerSoapBinding" type="rm:ReportManagerPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="getReportGenerationStatus">
+            <wsdl:documentation>Will return the status of a report request and, when complete, the path to the report file.</wsdl:documentation>
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="listProgramEventsByDate">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="listProgramEventsByProgramID">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="listProgramEvents">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="exportDeviceLog">
+            <soap:operation soapAction=""/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ErrorFault">
+                <soap:fault name="ErrorFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+
+    <wsdl:service name="ReportManagerService">
+        <wsdl:documentation>Itron DRM Report Manager Service</wsdl:documentation>
+        <wsdl:port name="ReportManagerPort" binding="rm:ReportManagerSoapBinding">
+            <soap:address location="https://localhost:8080/drm/services/v1_2/ReportManagerPort"/>
+        </wsdl:port>
+    </wsdl:service>
+
+
+</wsdl:definitions>

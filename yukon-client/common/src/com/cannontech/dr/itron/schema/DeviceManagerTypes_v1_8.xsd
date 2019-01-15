@@ -1,0 +1,1400 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd"
+    xmlns:basic="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd"
+    xmlns:location="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd"
+    targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd"
+    elementFormDefault="qualified">
+
+    <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" schemaLocation="BasicTypes_v1_1.xsd"/>
+    <xsd:import namespace="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd" schemaLocation="LocationTypes_v1_0.xsd"/>
+
+    <!-- global element definitions that correspond to the message documents -->
+
+    <xsd:element name="ActivateESIHANRadioRequest" type="ActivateESIHANRadioRequestType"/>
+    <xsd:element name="ActivateESIHANRadioResponse" type="ActivateESIHANRadioResponseType"/>
+    <xsd:element name="AddESIGroupRequest" type="ESIGroupRequestType"/>
+    <xsd:element name="AddESIGroupResponse" type="ESIGroupResponseType"/>
+    <xsd:element name="AddHANDeviceRequest" type="AddHANDeviceRequestType"/>
+    <xsd:element name="AddHANDeviceResponse" type="AddHANDeviceResponseType"/>
+    <xsd:element name="EditESIGroupRequest" type="ESIGroupRequestType"/>
+    <xsd:element name="EditESIGroupResponse" type="ESIGroupResponseType"/>
+    <xsd:element name="EditHANDeviceRequest" type="EditHANDeviceRequestType"/>
+    <xsd:element name="EditHANDeviceResponse" type="EditHANDeviceResponseType"/>
+    <xsd:element name="FindESIRequest" type="FindESIRequestType"/>
+    <xsd:element name="FindESIResponse" type="FindDeviceResponseType"/>
+    <xsd:element name="FindHANDeviceRequest" type="FindHANDeviceRequestType"/>
+    <xsd:element name="FindHANDeviceResponse" type="FindDeviceResponseType"/>
+    <xsd:element name="GetActivateESIHANRadioCommandStatusRequest" type="GetActivateESIHANRadioCommandStatusRequestType"/>
+    <xsd:element name="GetActivateESIHANRadioCommandStatusResponse" type="GetActivateESIHANRadioCommandStatusResponseType"/>
+    <xsd:element name="GetESIGroupMembersRequest" type="GetESIGroupMembersRequestType"/>
+    <xsd:element name="GetESIGroupMembersResponse" type="GetESIGroupMembersResponseType"/>
+    <xsd:element name="GetESISyncStatusRequest" type="GetESISyncStatusRequestType"/>
+    <xsd:element name="GetESISyncStatusResponse" type="GetESISyncStatusResponseType"/>
+    <xsd:element name="GetJobStatusRequest" type="GetJobStatusRequestType"/>
+    <xsd:element name="GetJobStatusResponse" type="GetJobStatusResponseType"/>
+    <xsd:element name="GetPCTStateRequest" type="GetPCTStateRequestType"/>
+    <xsd:element name="GetPCTStateResponse" type="GetPCTStateResponseType"/>
+    <xsd:element name="GetPingHANDeviceStatusRequest" type="GetPingHANDeviceStatusRequestType"/>
+    <xsd:element name="GetPingHANDeviceStatusResponse" type="GetPingHANDeviceStatusResponseType"/>
+    <xsd:element name="GetProvisionHANDeviceCommandStatusRequest" type="GetProvisionHANDeviceCommandStatusRequestType"/>
+    <xsd:element name="GetProvisionHANDeviceCommandStatusResponse" type="GetProvisionHANDeviceCommandStatusResponseType"/>
+    <xsd:element name="ListHANDevicesRequest" type="ListHANDevicesRequestType"/>
+    <xsd:element name="ListHANDevicesResponse" type="ListHANDevicesResponseType"/>
+    <xsd:element name="PingHANDeviceRequest" type="PingHANDeviceRequestType"/>
+    <xsd:element name="PingHANDeviceResponse" type="PingHANDeviceResponseType"/>
+    <xsd:element name="ProvisionHANDeviceRequest" type="ProvisionHANDeviceRequestType"/>
+    <xsd:element name="ProvisionHANDeviceResponse" type="ProvisionHANDeviceResponseType"/>
+    <xsd:element name="SetILCORequest" type="SetILCORequestType"/>
+    <xsd:element name="SetILCOResponse" type="SetILCOResponseType"/>
+    <xsd:element name="SetPCTStateRequest" type="SetPCTStateRequestType"/>
+    <xsd:element name="SetPCTStateResponse" type="SetPCTStateResponseType"/>
+    <xsd:element name="SyncESIRequest" type="SyncESIRequestType"/>
+    <xsd:element name="SyncESIResponse" type="SyncESIResponseType"/>
+    <xsd:element name="UnprovisionHANDeviceRequest" type="UnprovisionHANDeviceRequestType"/>
+    <xsd:element name="UpdateDeviceEventLogsRequest" type="UpdateDeviceEventLogsRequestType"/>
+    <xsd:element name="UpdateDeviceEventLogsResponse" type="UpdateDeviceEventLogsResponseType"/>
+    
+    <!-- Complex Types in alphabetical order -->
+
+    <xsd:complexType name="ActivateESIHANRadioRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    macID.Pattern.message
+                    MACAddress.deviceManager.addressIsNotESI
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ESIMacID" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ActivateESIHANRadioResponseType">
+        <xsd:sequence>
+            <xsd:element name="ActivateESIHANRadioCommandID" type="xsd:long" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddD2GAttributeType">
+        <xsd:sequence>
+            <xsd:element name="ESI" type="ESIType" />
+            <xsd:element name="ServicePointUtilID" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AddHANDeviceRequestType">
+        <xsd:complexContent>
+            <xsd:extension base="HANDeviceType">
+                <xsd:sequence>
+                    <xsd:choice>
+                        <xsd:element name="ZigbeeAttributes"   type="AddZigbeeAttributeType" />
+                        <xsd:element name="D2GAttributes"   type="AddD2GAttributeType" />        
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+        
+    <xsd:complexType name="AddHANDeviceResponseType">
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string"/>
+             <xsd:element name="Error" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AddZigbeeAttributeType">
+        <xsd:complexContent>
+            <xsd:extension base="ZigbeeAttributeType">
+            <xsd:sequence>
+                <xsd:choice>
+                    <xsd:element name="InstallCode" type="xsd:string"/>
+                    <xsd:element name="PreConfiguredLinkKey" type="xsd:string"/>    
+                </xsd:choice>
+                <xsd:element name="UtilityEnrollmentGroup" type="UtilityEnrollmentGroupNumberType" minOccurs="0"/>
+            </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="AssociatedHANDeviceType">
+        <xsd:complexContent>
+             <xsd:extension base="FindHANDeviceBaseType">
+                <xsd:sequence>
+                    <xsd:element name="ZigbeeUtilityEnrollmentGroupNumber" type="UtilityEnrollmentGroupNumberType" minOccurs="0"/>
+                    <xsd:element name="ZigbeeConnectivityStatus" type="ConnectivityStatusEnumeration" minOccurs="0"/>
+                    <xsd:element name="D2GCLPSupported" type="xsd:boolean" minOccurs="0" />
+                    <xsd:element name="TransportType" type="TransportTypeEnumeration" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+       </xsd:complexContent>
+    </xsd:complexType>
+        
+    <xsd:complexType name="BillingCycleMonthType" >
+        <xsd:sequence>
+              <xsd:element name="BillingYear" type="xsd:int" minOccurs="0" />
+               <xsd:element name="BillingMonth" type="xsd:int" minOccurs="0" />
+               <xsd:element name="StartTime" type="xsd:date" minOccurs="0" />
+               <xsd:element name="EndTime" type="xsd:date" minOccurs="0" />
+               <xsd:element name="BillingTime" type="xsd:date" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="BillingCycleType" >
+        <xsd:sequence>
+            <xsd:element name="BillingCycleNumber" type="xsd:string" minOccurs="0" />
+            <xsd:element name="BillingCycleMonth" type="BillingCycleMonthType" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+ 
+    <xsd:complexType name="DeviceIdentifierAttributeType">
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string"/>
+            <xsd:element name="DeviceName" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType> 
+    
+    <xsd:complexType name="DeviceType">
+        <xsd:sequence>
+             <xsd:element name="ESIMacID" type="xsd:string" minOccurs="0"/>
+             <xsd:element name="ESICommandStatus" type="ESICommandStatusType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>    
+    
+    <xsd:complexType name="DistributionNodeType" >
+        <xsd:sequence>
+             <xsd:element name="AmpCapacity" type="xsd:double" minOccurs="0" />
+            <xsd:element name="DistNetUtilID" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+        
+    <xsd:complexType name="EditD2GAttributeType">
+        <xsd:sequence>
+            <xsd:element name="PrimaryAttributes" type="EditPrimaryHANDeviceType" minOccurs="0"/>
+            <xsd:element name="ESI" type="EditESIType" minOccurs="0"/>
+            <xsd:element name="ServicePointUtilID" type="NullableString" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>  
+    
+    <xsd:complexType name="EditESIType">
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string" />
+            <xsd:element name="DeviceName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Notes" type="NullableString" minOccurs="0"/>
+            <xsd:element name="OwnedBy" type="NullableOwnerTypeEnumeration" minOccurs="0" />
+            <xsd:element name="SerialNumber" type="NullableString" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType> 
+    
+    <xsd:complexType name="EditHANDeviceRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    ESIMacID.Pattern.message
+                    esiAssociate.hanDevice.notFound
+                    esiAssociate.hanDevice.unmodifiable.deviceState
+                    esiAssociate.hanDevice.provisioning.inProgress
+                    esiAssociate.hanDevice.esiNotFound
+                    esiAssociate.hanDevice.esiNotValid
+                    esiAssociate.hanDevice.notESI
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="ZigbeeAttributes"   type="EditZigbeeAttributeType" />
+                <xsd:element name="D2GAttributes"   type="EditD2GAttributeType" />        
+            </xsd:choice>
+
+
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="EditHANDeviceResponseType">
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string"/>
+            <xsd:element name="Error" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="EditPrimaryHANDeviceType">
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string"/>
+             <xsd:element name="DeviceName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Notes" type="NullableString" minOccurs="0"/>
+            <xsd:element name="OwnedBy" type="NullableOwnerTypeEnumeration" minOccurs="0" />
+            <xsd:element name="BatteryPowered" type="NullableBoolean" minOccurs="0"/>
+             <xsd:element name="LoadShedPotential" type="basic:NullableKiloWattType" minOccurs="0"/>
+            <xsd:element name="NullableInputCapacity" type = "NullableInputCapacityType" minOccurs = "0"/>
+            <xsd:element name="InputSeerRating" type = "NullableInt" minOccurs = "0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="EditZigbeeAttributeType">
+        <xsd:sequence>
+            <xsd:element name="PrimaryAttributes" type="EditPrimaryHANDeviceType"/>
+             <xsd:element name="ManufacturerName" type="NullableString" minOccurs="0"/>
+            <xsd:element name="ManufacturerModel" type="NullableString" minOccurs="0"/>
+            <xsd:element name="HardwareVersion" type="NullableString" minOccurs="0"/>
+            <xsd:element name="Firmware1Version" type="NullableString" minOccurs="0"/>
+            <xsd:element name="Firmware1Type" type="NullableInt" minOccurs="0"/>
+            <xsd:element name="Firmware2Version" type="NullableString" minOccurs="0"/>
+            <xsd:element name="Firmware2Type" type="NullableInt" minOccurs="0"/>
+            <xsd:element name="SerialNumber" type="NullableString" minOccurs="0"/>
+            <xsd:element name="DeviceType" type="DeviceTypeEnumeration" minOccurs="0"/>
+            <xsd:element name="ESIMacID" type="NullableString" minOccurs="0" />
+            <xsd:element name="UtilityEnrollmentGroup" type="NullableUtilityEnrollmentGroupType" minOccurs="0"/>
+            <xsd:element name="SEPVersion" type="basic:NullableSEPVersionType" minOccurs="0"/>
+            <xsd:element name="InstallCode" type="NullableString" minOccurs="0"/>
+            <xsd:element name="PreConfiguredLinkKey" type="NullableString" minOccurs="0">
+                 <xsd:annotation>
+                    <xsd:documentation>
+                        This should either be left null or kept in sync with InstallCode since it is usually generated from InstallCode
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="HANDeviceClass" type="NullableHANDeviceClassEnumeration" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="EmptyType"/>
+    
+    <xsd:complexType name="ESICommandStatusType"> 
+        <xsd:sequence>
+             <xsd:element name="CommandName" type="xsd:string" minOccurs="0"/>
+             <xsd:element name="CommandStatus" type="xsd:string" minOccurs="0"/> 
+             <xsd:element name="CommandDisplayStatus" type="xsd:string" minOccurs="0"/>
+             <xsd:element name="CommandRunTime" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>     
+    </xsd:complexType>
+       
+    <xsd:complexType name="ESIGroupErrorType">
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string"/>
+            <xsd:element name="Error" type="HANDevicesErrorEnumeration"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ESIGroupRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    Unique.deviceGroup.groupName
+                    group.import.error.groupType
+                    group.import.error.groupEmpty
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="GroupName" type="xsd:string"/>
+            <xsd:element name="GroupDescription" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="GroupType" type="DeviceGroupType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        defaults to Dynamic if omitted
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="StaticGroupMemberList" type="StaticGroupMemberListType" minOccurs="0"/>
+            <xsd:element name="ESISearchRequest" type="ESISearchRequestType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ESIGroupResponseType">
+        <xsd:sequence>
+            <xsd:element name="GroupID" type="xsd:long"/>
+            <xsd:element name="Errors" type="ESIGroupErrorType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ESIPrimaryDeviceExtType">
+        <xsd:sequence>
+            <xsd:element name="ManufacturerName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ManufacturerModel" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="HardwareVersion" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="FirmwareVersion" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType> 
+
+    <xsd:complexType name="ESISearchRequestType">
+        <xsd:complexContent>
+             <xsd:extension base="FindDeviceBaseType">
+                <xsd:sequence>
+                    <xsd:element name="Readiness" type="ESIReadinessType" minOccurs="0"/>
+                    <xsd:element name="FindDeviceCommonAttributes" type="FindDeviceCommonAttributeType" minOccurs="0"/>
+                    <xsd:element name="RatePlanID" type="xsd:long" minOccurs="0"/>
+                    <xsd:element name="AssociatedDevice" type="AssociatedHANDeviceType" minOccurs="0"/>
+                    <xsd:element name="AssociatedToServicePoint" type="xsd:boolean" minOccurs="0"/>
+                    <xsd:element name="HANRadioState" type="ESIHANRadioStateEnumeration" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ESIReadinessType">
+        <xsd:sequence>
+            <xsd:element name="EnrolledInProgram" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="Provisioned" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="Connected" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="Retired" type="xsd:boolean" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ESIType">
+        <xsd:complexContent>
+            <xsd:extension base="PrimaryDeviceBaseWithIdentifiersType">
+                <xsd:sequence>
+                    <xsd:element name="SerialNumber" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="FeederType" >
+        <xsd:complexContent>
+            <xsd:extension base="DistributionNodeType">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FindD2GAttributeType">
+        <xsd:sequence>
+            <xsd:element name="TransportTypeD2G" type="TransportTypeD2GEnumeration" minOccurs="1"/>
+            <xsd:element name="CLPSupported" type="xsd:boolean" minOccurs="0" />
+            <xsd:element name="Configured" type="xsd:boolean" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+        
+    <xsd:complexType name="FindDeviceBaseType">
+        <xsd:sequence>
+            <xsd:element name="Manufacturer" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Model" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="DeviceState" type="DeviceStateEnumeration" minOccurs="0"/>
+         </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="FindDeviceCommonAttributeType">
+        <xsd:sequence>
+            <xsd:element name="SerialNumber" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="MacID" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServicePointID" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ProgramID" type="ProgramIDType" minOccurs="0"/>
+            <xsd:element name="BillingLocationType" type="BillingLocationTypeEnumeration" minOccurs="0"/>
+            <xsd:element name="GridNode" type="GridNodeType" minOccurs="0"/>
+            <xsd:element name="HardwareVersion" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="FirmwareVersion" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="City" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="State" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="PostalCode" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServicePointCustomAttribute1" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServicePointCustomAttribute2" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServicePointCustomAttribute3" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServicePointCustomAttribute4" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServicePointCustomAttribute5" type="xsd:string" minOccurs="0"/>
+         </xsd:sequence>
+    </xsd:complexType>  
+ 
+    <xsd:complexType name="FindDeviceResponseType">
+        <xsd:sequence>
+            <xsd:element name="DeviceCount" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="MacID" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="FindESIRequestType">
+        <xsd:complexContent>
+             <xsd:extension base="ESISearchRequestType">
+                <xsd:sequence>
+                    <xsd:element name="Pagination" type="basic:PaginationType"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+               
+    <xsd:complexType name="FindHANDeviceBaseType">
+        <xsd:complexContent>
+            <xsd:extension base="FindDeviceBaseType">
+                <xsd:sequence>
+                    <xsd:element name="HANDeviceType" type="DeviceTypeEnumeration" minOccurs="0"/>
+                 </xsd:sequence>
+             </xsd:extension>
+           </xsd:complexContent>
+    </xsd:complexType>   
+    
+    <xsd:complexType name="FindHANDeviceRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="FindHANDeviceBaseType">
+                <xsd:sequence>
+                    <xsd:element name="FindDeviceCommonAttributes" type="FindDeviceCommonAttributeType" minOccurs="0"/>
+                    <xsd:element name="HANDeviceName" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="ESIMacID" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="ESIDeviceState" type="DeviceStateEnumeration" minOccurs="0"/>
+                    <xsd:element name="ESIReadiness" type="ESIReadinessType" minOccurs="0" />
+                    <xsd:choice minOccurs="0">
+                        <xsd:element name="ZigbeeAttributes"   type="FindZigbeeAttributeType" />
+                        <xsd:element name="D2GAttributes"   type="FindD2GAttributeType" />        
+                    </xsd:choice>
+                    <xsd:element name="Pagination" type="basic:PaginationType"/>
+                </xsd:sequence>
+             </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FindZigbeeAttributeType">
+        <xsd:sequence>
+            <xsd:element name="TransportTypeZigbee" type="TransportTypeZigbeeEnumeration" minOccurs="1"/>
+            <xsd:element name="UtilityEnrollmentGroupNumber" type="UtilityEnrollmentGroupNumberType" minOccurs="0"/>
+            <xsd:element name="SupportedSEPCluster" type="HANDeviceSEPClusterEnumeration" minOccurs="0"/>
+            <xsd:element name="ConnectivityStatus" type="ConnectivityStatusEnumeration" minOccurs="0"/>
+            <xsd:element name="SEPVersion" type="basic:SEPVersionEnumeration" minOccurs="0"/>
+            <xsd:element name="HANDeviceClass" type="HANDeviceClassEnumeration" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetActivateESIHANRadioCommandStatusRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    InvalidID.activateHANRadioStatus.activateCommandNotFound
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ActivateESIHANRadioCommandID" type="xsd:long" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetActivateESIHANRadioCommandStatusResponseType">
+        <xsd:sequence>
+            <xsd:element name="ESIMacID" type="xsd:string" />
+            <xsd:element name="Status" type="SignalStatusEnumeration" />
+            <xsd:element name="UserHandle" type="xsd:string" />
+            <xsd:element name="Completed" type="xsd:boolean" />
+            <xsd:element name="Successful" type="xsd:boolean" />
+            <xsd:element name="RequestTime" type="xsd:dateTime" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetESIGroupMembersRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    Invalid.group.groupIdentifier
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ESIGroupID" type="xsd:long"/>
+            <xsd:element name="Pagination" type="basic:PaginationType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetESIGroupMembersResponseType">
+        <xsd:sequence>
+             <xsd:element name="MacID" type="xsd:string" maxOccurs="unbounded"/>   
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetESISyncStatusRequestType">
+        <xsd:sequence>
+             <xsd:element name="JobID" type="xsd:long"/>   
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetESISyncStatusResponseType">
+        <xsd:sequence>
+             <xsd:element name="SyncStatus" type="xsd:string" minOccurs="0"/>
+             <xsd:element name="Device" type="DeviceType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetJobStatusRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                 Possible ErrorCode values if you receive a BasicFaultType:
+                     generic
+                     fatal_error
+                     authorization_failure
+                     InvalidID.Job.ID
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="JobIdentifier" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetJobStatusResponseType">
+        <xsd:sequence>
+            <xsd:element name="Status" type="basic:JobStatusType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetPCTStateRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                The results of the get are only delivered over the JMS queue configured at instlall time.  You can use the returned JobIdentifier to poll the status of the get job via the getJobStatus operation or you can wait for the JMS queue message which will include the status.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="PCTMacID" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetPCTStateResponseType">
+        <xsd:annotation>
+        	<xsd:documentation>
+                The results of the get are only delivered over the JMS queue configured at instlall time.  You can use the returned JobIdentifier to poll the status of the get job via the getJobStatus operation or you can wait for the JMS queue message which will include the status.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="JobIdentifier" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GetPingHANDeviceStatusRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="PingHANDeviceCommandID" type="xsd:long" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetPingHANDeviceStatusResponseType">
+        <xsd:sequence>
+            <xsd:element name="Status" type="PingStatusEnumeration" />
+            <xsd:element name="RoundTripTime" type="xsd:long" />
+            <xsd:element name="RunTime" type="xsd:dateTime" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetProvisionHANDeviceCommandStatusRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Used to get status for both provision and unprovision HAN Device.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    InvalidID.provisionStatus.provisionCommandNotFound
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="ProvisionHANDeviceCommandID" type="xsd:long" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GetProvisionHANDeviceCommandStatusResponseType">
+        <xsd:sequence>
+            <xsd:element name="HANMacID" type="xsd:string" />
+            <xsd:element name="ESIMacID" type="xsd:string" />
+            <xsd:element name="Status" type="SignalStatusEnumeration" />
+            <xsd:element name="UserHandle" type="xsd:string" />
+            <xsd:element name="Completed" type="xsd:boolean" />
+            <xsd:element name="Successful" type="xsd:boolean" />
+            <xsd:element name="RequestTime" type="xsd:dateTime" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GridNodeType">
+        <xsd:sequence>
+              <xsd:element name="GridNodeType" type="GridNodeTypeEnumeration"/>
+              <xsd:element name="GridNodeNumber" type="xsd:long"/>
+          </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="HANDeviceDetailsType">
+        <xsd:sequence>
+            <xsd:element name="HANDevice" type="ListHANDeviceType" minOccurs="0"/>
+            <xsd:element name="ErrorCode" type="HANDevicesErrorEnumeration" minOccurs="0"/>
+            <xsd:element name="MacID" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="HANDeviceType">
+        <xsd:complexContent>
+            <xsd:extension base="PrimaryDeviceBaseType">
+                <xsd:sequence>
+                    <xsd:element name="DeviceIdentifiers" type="DeviceIdentifierAttributeType" minOccurs="0"/>
+                    <xsd:element name="BatteryPowered" type="xsd:boolean" minOccurs="0"/>
+                    <xsd:element name="LoadShedPotential" type="basic:KiloWattType" minOccurs="0"/>
+                    <xsd:element name="NullableInputCapacity" type="NullableInputCapacityType" minOccurs = "0"/>
+                    <xsd:element name="InputSeerRating" type="xsd:int" minOccurs = "0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType> 
+
+    <xsd:complexType name="InputCapacityType">
+        <xsd:sequence>
+            <xsd:element name="InputCapacityValue" type = "xsd:double" minOccurs = "1"/>
+            <xsd:element name="InputCapacityUnit" type = "InputCapacityUnitEnumeration" minOccurs = "1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ListD2GAttributeType">
+       <xsd:sequence>
+           <xsd:element name="ESIAdditionalInfo" type="ESIPrimaryDeviceExtType" minOccurs="0"/>
+           <xsd:element name="HANDeviceAdditionalInfo" type="PrimaryDeviceExtType" minOccurs="0"/>
+           <xsd:element name="DeviceSerialNumber" type="xsd:string" minOccurs="0"/>
+           <xsd:element name="DeviceType" type="DeviceTypeEnumeration"/>
+           <xsd:element name="CLPSupported" type="xsd:boolean" minOccurs="0" />
+           <xsd:element name="ILCSupportedType" type="ILCSupportedTypeEnumeration" minOccurs="0" maxOccurs="3"/>
+           <xsd:element name="VirtualRelay" type="VirtualRelayType" minOccurs="0" maxOccurs="unbounded"/>
+           <xsd:element name="ConfigHash" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Configured" type="xsd:boolean" minOccurs="0" />
+           <xsd:element name="ESI" type="ListESIType"/>
+       </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ListESIType">
+        <xsd:complexContent>
+            <xsd:extension base="ESIType">
+                <xsd:sequence>
+                    <xsd:element name="SupportsZigbee" type="xsd:boolean" minOccurs="0" />
+                    <xsd:element name="SupportsD2GLCS" type="xsd:boolean" minOccurs="0" />
+                    <xsd:element name="SupportsEVSE" type="xsd:boolean" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+            
+    <xsd:complexType name="ListHANDevicesRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string" maxOccurs="100"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ListHANDevicesResponseType">
+        <xsd:sequence>
+             <xsd:element name="HANDeviceDetail" type="HANDeviceDetailsType" maxOccurs="100"/>   
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ListHANDeviceType">
+        <xsd:complexContent>
+            <xsd:extension base="HANDeviceType">
+                <xsd:sequence>
+                    <xsd:element name="ServicePoint" type="ServicePointType" minOccurs="0"/>
+                    <xsd:element name="DeviceState" type="DeviceStateEnumeration" minOccurs="0"/>
+                    <xsd:element name="ESIDeviceState" type="DeviceStateEnumeration" minOccurs="0" />
+                    <xsd:element name="ESIIsRetired" type="xsd:boolean" minOccurs="0" />
+                    <xsd:element name="ESIIsProvisioned" type="xsd:boolean" minOccurs="0" />
+                    <xsd:element name="ESIIsConnected" type="xsd:boolean" minOccurs="0" />
+                    <xsd:element name="InputLoad" type="xsd:double" minOccurs="0" />
+                    <xsd:choice>
+                        <xsd:element name="ZigbeeAttributes"   type="ListZigbeeAttributeType" />
+                        <xsd:element name="D2GAttributes"   type="ListD2GAttributeType" />        
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ListZigbeeAttributeType">
+        <xsd:complexContent>
+            <xsd:extension base="ZigbeeAttributeType">
+                <xsd:sequence>
+                    <xsd:element name="InstallCode" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="PreConfiguredLinkKey" type="xsd:string" minOccurs="0"/>    
+                    <xsd:element name="UtilityEnrollmentGroup" type="UtilityEnrollmentGroupType" minOccurs="0"/>
+                    <xsd:element name="LinkQualityIndicator" type="xsd:int" minOccurs="0" />  
+                    <xsd:element name="ConnectivityStatus" type="ConnectivityStatusEnumeration" minOccurs="0"/>
+                    <xsd:element name="SupportedSEPCluster" type="HANDeviceSEPClusterEnumeration" minOccurs="0" maxOccurs="unbounded"/>  
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="NullableBase64Binary">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:base64Binary">
+                <xsd:attribute name="Null" type="xsd:boolean" use="optional" default="false"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="NullableBoolean">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:boolean">
+                <xsd:attribute name="Null" type="xsd:boolean" use="optional" default="false"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="NullableDouble">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:double">
+                <xsd:attribute name="Null" type="xsd:boolean" use="optional" default="false"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="NullableHANDeviceClassEnumeration">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="HANDeviceClass" type="HANDeviceClassEnumeration"/>
+        </xsd:sequence>
+        <xsd:attribute default="false" name="Null" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="NullableInputCapacityType">
+        <xsd:sequence>
+            <xsd:element name="InputCapacity" type = "InputCapacityType" minOccurs = "0"/>
+        </xsd:sequence>
+        <xsd:attribute name="Null" type="xsd:boolean" use="optional" default="false"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="NullableInt">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:int">
+                <xsd:attribute name="Null" type="xsd:boolean" use="optional" default="false"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="NullableLong">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:long">
+                <xsd:attribute name="Null" type="xsd:boolean" use="optional" default="false"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="NullableOwnerTypeEnumeration">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="OwnerType" type="OwnerTypeEnumeration"/>
+        </xsd:sequence>
+        <xsd:attribute default="false" name="Null" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+ 
+    <xsd:complexType name="NullableString">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="Null" type="xsd:boolean" use="optional" default="false"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="NullableUtilityEnrollmentGroupType">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="UtilityEnrollmentGroup" type="UtilityEnrollmentGroupNumberType"/>
+        </xsd:sequence>
+        <xsd:attribute default="false" name="Null" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+ 
+    
+    <xsd:complexType name="PhysicalRelayType">
+        <xsd:sequence>
+            <xsd:element name="PhysicalRelayID" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="PingHANDeviceRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    macID.Pattern.message
+                    MACAddress.deviceManager.addressIsNotHANDevice
+                    MACAddress.deviceManager.HANDeviceIsNotAssociatedToESI
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PingHANDeviceResponseType">
+        <xsd:sequence>
+            <xsd:element name="PingHANDeviceCommandID" type="xsd:long" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="PrimaryDeviceBaseType">
+        <xsd:sequence>
+            <xsd:element name="Notes" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="OwnedBy" type="OwnerTypeEnumeration" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType> 
+
+    <xsd:complexType name="PrimaryDeviceBaseWithIdentifiersType">
+        <xsd:complexContent>
+            <xsd:extension base="PrimaryDeviceBaseType">
+                <xsd:sequence>
+                    <xsd:element name="DeviceIdentifiers" type="DeviceIdentifierAttributeType"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType> 
+    
+    <xsd:complexType name="PrimaryDeviceExtType">
+        <xsd:sequence>
+            <xsd:element name="ManufacturerName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ManufacturerModel" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="HardwareVersion" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Firmware1Version" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Firmware1Type" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="Firmware2Version" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Firmware2Type" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="SoftwareVersion" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType> 
+    
+    <xsd:complexType name="ProvisionHANDeviceRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    NotFound.deviceManager.esiNotFound
+                    MACAddress.deviceManager.addressIsNotESI
+                    NotFound.deviceManager.hanDeviceNotFound
+                    MACAddress.deviceManager.addressIsNotHANDevice
+                    macID.Pattern.message
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="HANMacID" type="xsd:string"/>
+            <xsd:element name="ESIMacID" type="xsd:string"/>
+            <xsd:element name="JoinDurationSeconds" type="JoinDurationSecondsType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProvisionHANDeviceResponseType">
+        <xsd:sequence>
+            <xsd:element name="ProvisionHANDeviceCommandID" type="xsd:long" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ServicePointType">
+        <xsd:sequence>
+           <xsd:element name="DRMProgramID" type="xsd:long" minOccurs="0" maxOccurs="unbounded" />
+           <xsd:element name="DRMRatePlanID" type="xsd:long" minOccurs="0" />
+           <xsd:element name="BillingCycle" type="BillingCycleType" minOccurs="0" />
+           <xsd:element name="Location" type="location:LocationType"/>
+           <xsd:element name="UtilServicePointID" type="xsd:string"/>
+           <xsd:element name="ServiceType" type="ServiceTypeEnumeration" minOccurs="0" />
+           <xsd:element name="Account" type="location:AccountType" minOccurs="0" />
+           <xsd:element name="Transformer" type="TransformerType" minOccurs="0" />
+           <xsd:element name="Substation" type="SubstationType" minOccurs="0" />
+           <xsd:element name="Feeder" type="FeederType" minOccurs="0" />
+           <xsd:element name="TransmissionCircuit" type="TransmissionCircuitType" minOccurs="0" />
+           <xsd:element name="MeterPhase" type="xsd:string" minOccurs="0" />
+           <xsd:element name="MeterLocationCode" type="xsd:string" minOccurs="0" />
+           <xsd:element name="ServicePhaseCode" type="xsd:string" minOccurs="0" />
+           <xsd:element name="ServiceVoltLevelCode" type="xsd:string" minOccurs="0" />
+           <xsd:element name="CurrentTransformerRatio" type="xsd:string" minOccurs="0" />
+           <xsd:element name="VoltageTransformerRatio" type="xsd:string" minOccurs="0" />
+           <xsd:element name="LineFrequency" type="xsd:string" minOccurs="0" />
+           <xsd:element name="GroundLevelEstHeight" type="xsd:int" minOccurs="0" />
+           <xsd:element name="DRMManaged" type="xsd:boolean" minOccurs="0" />
+           <xsd:element name="Attribute1" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute2" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute3" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute4" type="xsd:string" minOccurs="0" />
+           <xsd:element name="Attribute5" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>   
+
+
+    <xsd:complexType name="SetILCORequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Enter zero to 1000 LCS DTG Mac IDs or device group ids.
+                Dynamic device groups must include the Direct To Grid transport type filter.
+                Static device groups should inlude only Direct to Grid LCS devices.
+                
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    errorMsg.group.includes.non.d2glcs
+                    errorMsg.group.subject.not.d2glcs
+                    errorMsg.macIDTypeNotValid
+                    errorMsg.macIDInvalid
+                    errorMsg.macIDNotFound                
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="LCSMacID" type="xsd:string" maxOccurs="1000"/>
+                <xsd:element name="GroupID" type="xsd:long" maxOccurs="1000"/>
+            </xsd:choice>
+            <xsd:choice>
+                <xsd:element name="Reset" type="EmptyType"/>
+                <xsd:element name="DaysInThePastToUseForOptimization" type="ILCODaysInThePastToUseForOptimizationType" />
+            </xsd:choice>
+            <xsd:choice>
+                <xsd:element name="DeviceWideTarget" type="EmptyType"/>
+                <xsd:element name="TargetVirtualRelayID" type="xsd:int"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SetILCOResponseType">
+        <xsd:sequence>
+            <xsd:element name="JobIdentifier" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SetPCTStateRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                You can use the returned JobIdentifier to poll the status of the set job via the getJobStatus operation or you can wait for the JMS queue message which will include the status.
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="PCTMacID" type="xsd:string"/>
+            <xsd:element name="HeatSetpoint" type="PCTTemperatureType" minOccurs="0"/>
+            <xsd:element name="CoolSetpoint" type="PCTTemperatureType" minOccurs="0"/>
+            <xsd:element name="HoldType" type="PCTHoldTypeEnumeration" minOccurs="0"/>
+            <xsd:element name="HoldUntilTime" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="FanMode" type="PCTFanModeEnumeration" minOccurs="0"/>
+            <xsd:element name="Mode" type="PCTModeTypeEnumeration" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SetPCTStateResponseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                You can use the returned JobIdentifier to poll the status of the set job via the getJobStatus operation or you can wait for the JMS queue message which will include the status.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="JobIdentifier" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="StaticGroupMemberListType">
+        <xsd:sequence>
+            <xsd:element name="MacID" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+     
+     <xsd:complexType name="SubstationType" >
+        <xsd:complexContent>
+            <xsd:extension base="DistributionNodeType">
+                <xsd:sequence>
+                    <xsd:element name="SubstationBankCode" type="xsd:string" minOccurs="0" />
+                    <xsd:element name="SubstationFeederCode" type="xsd:string" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+       
+    <xsd:complexType name="SyncESIRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Enter either a Macid String(Maximum of 1000 devices) or 
+                a Group Id String(Can be multiple group Ids).
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="ESIMacID" type="xsd:string" maxOccurs="1000"/>
+                <xsd:element name="GroupID" type="xsd:long" maxOccurs="unbounded"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>  
+    
+    <xsd:complexType name="SyncESIResponseType">
+        <xsd:sequence>
+            <xsd:element name="JobID" type="xsd:long" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TransformerType" >
+        <xsd:complexContent>
+            <xsd:extension base="DistributionNodeType">
+                <xsd:sequence>
+                    <xsd:element name="TransTransDist" type="xsd:string" minOccurs="0" />
+                    <xsd:element name="TransInstCode" type="xsd:int" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TransmissionCircuitType" >
+        <xsd:complexContent>
+            <xsd:extension base="DistributionNodeType">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="UnprovisionHANDeviceRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Possible ErrorCode values if you receive a BasicFaultType:
+                    generic
+                    fatal_error
+                    authorization_failure
+                    macID.Pattern.message
+                    NotFound.deviceManager.hanDeviceNotFound
+                    MACAddress.deviceManager.addressIsNotHANDevice
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="HANMacID" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="UtilityEnrollmentGroupType">
+        <xsd:sequence>
+            <xsd:element name="Name" type="xsd:string" />
+            <xsd:element name="Number" type="UtilityEnrollmentGroupNumberType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="VirtualRelayType">
+        <xsd:sequence>
+            <xsd:element name="VirtualRelayID" type="xsd:int"/>
+            <xsd:element name="PhysicalRelay" type="PhysicalRelayType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ZigbeeAttributeType">
+        <xsd:sequence>
+            <xsd:element name="HANDeviceAdditionalInfo" type="PrimaryDeviceExtType" minOccurs="0"/>
+            <xsd:element name="DeviceSerialNumber" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="DeviceType" type="DeviceTypeEnumeration"/>
+            <xsd:element name="ESIMacID" type="xsd:string" minOccurs="0" />
+            <xsd:element name="SEPVersion" type="basic:SEPVersionEnumeration" minOccurs="0"/>
+            <xsd:element name="HANDeviceClass" type="HANDeviceClassEnumeration" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="UpdateDeviceEventLogsRequestType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Enter either a list of MacIDs (up to 1000 devices) or 
+                a list of Group Ids.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="ESIMacID" type="xsd:string" maxOccurs="1000"/>
+                <xsd:element name="GroupID" type="xsd:long" maxOccurs="unbounded"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>  
+    
+    <xsd:complexType name="UpdateDeviceEventLogsResponseType">
+        <xsd:sequence>
+            <xsd:element name="updateRequested" type="xsd:boolean" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    
+    <!-- Simple Types in alphabetical order -->
+    
+    <xsd:simpleType name="BillingLocationTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="RESIDENTIAL"/>
+            <xsd:enumeration value="COMMERCIAL"/>
+            <xsd:enumeration value="INDUSTRIAL"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="ConnectivityStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="JOINED"/>
+            <xsd:enumeration value="UNJOINED"/>
+            <xsd:enumeration value="UNASSOCIATED"/>
+            <xsd:enumeration value="ASSOCIATED"/>
+            <xsd:enumeration value="UNREACHABLE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="DeviceGroupType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DYNAMIC_GROUP"/>
+            <xsd:enumeration value="STATIC_GROUP"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="DeviceStateEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="READY"/>
+            <xsd:enumeration value="NOT_READY"/>
+        </xsd:restriction>
+    </xsd:simpleType> 
+     
+    <xsd:simpleType name="DeviceTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Range Extender"/>
+            <xsd:enumeration value="Metering Device"/>
+            <xsd:enumeration value="In-Premise Display"/>
+            <xsd:enumeration value="Load Control Device"/>
+            <xsd:enumeration value="Smart Appliance"/>
+            <xsd:enumeration value="PCT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ESIHANRadioStateEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ENABLED"/>
+            <xsd:enumeration value="DISABLED"/>
+            <xsd:enumeration value="UNKNOWN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="GridNodeTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Transmission"/>
+            <xsd:enumeration value="Substation"/>
+            <xsd:enumeration value="Feeder"/>
+            <xsd:enumeration value="Transformer"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="HANDeviceClassEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="HVAC"/>
+            <xsd:enumeration value="StripHeater"/>
+            <xsd:enumeration value="WaterHeater"/>
+            <xsd:enumeration value="PoolPump"/>
+            <xsd:enumeration value="SmartAppliance"/>
+            <xsd:enumeration value="IrrigationPump"/>
+            <xsd:enumeration value="CommercialIndustrialLoad"/>
+            <xsd:enumeration value="SimpleLoad"/>
+            <xsd:enumeration value="ExteriorLighting"/>
+            <xsd:enumeration value="InteriorLighting"/>
+            <xsd:enumeration value="ElectricVehicle"/>
+            <xsd:enumeration value="GenerationSystem"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="HANDeviceSEPClusterEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PRICE_CLIENT"/>
+            <xsd:enumeration value="PRICE_SERVER"/>
+            <xsd:enumeration value="DRLC_CLIENT"/>
+            <xsd:enumeration value="DRLC_SERVER"/>
+            <xsd:enumeration value="MESSAGE_CLIENT"/>
+            <xsd:enumeration value="MESSAGE_SERVER"/>
+            <xsd:enumeration value="SIMPLE_METERING_CLIENT"/>
+            <xsd:enumeration value="SIMPLE_METERING_SERVER"/>
+            <xsd:enumeration value="SMART_ENERGY_TUNNELING_CLIENT"/>
+            <xsd:enumeration value="SMART_ENERGY_TUNNELING_SERVER"/>
+            <xsd:enumeration value="KEY_ESTABLISHMENT_CLIENT"/>
+            <xsd:enumeration value="KEY_ESTABLISHMENT_SERVER"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="HANDevicesErrorEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ERROR_MACID_NOT_FOUND"/>
+            <xsd:enumeration value="ERROR_MACID_INVALID"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ILCSupportedTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ADVANCED_OPTION_1"/>
+            <xsd:enumeration value="ADVANCED_OPTION_2"/>
+            <xsd:enumeration value="ADVANCED_OPTION_3"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="InputCapacityUnitEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="KW"/>
+            <xsd:enumeration value="TON"/>
+            <xsd:enumeration value="BTU"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    
+    <xsd:simpleType name="ILCODaysInThePastToUseForOptimizationType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A value of zero means today.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+        
+    <!-- The Join Duration allowed for HAN Devices -->
+    <xsd:simpleType name="JoinDurationSecondsType">
+        <xsd:restriction base="xsd:short">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="255"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="NetworkTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ENABLED"/>
+            <xsd:enumeration value="DISABLED"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+ 
+    <xsd:simpleType name="OwnerTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="UTILITY"/>
+            <xsd:enumeration value="CUSTOMER"/>
+            <xsd:enumeration value="OTHER"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+       
+    <xsd:simpleType name="PCTFanModeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="AUTO"/>
+            <xsd:enumeration value="ON"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="PCTHoldTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OFF"/>
+            <xsd:enumeration value="PERMANENT"/>
+            <xsd:enumeration value="TEMPORARY"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="PCTModeTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OFF"/>
+            <xsd:enumeration value="AUTO"/>
+            <xsd:enumeration value="HEAT"/>
+            <xsd:enumeration value="COOL"/>
+            <xsd:enumeration value="EMERGENCY_HEAT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="PCTTemperatureType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A PCT temperature value in Fahrenheit
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:double">
+            <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="PingStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="RESULT_SUCCESS"/>
+            <xsd:enumeration value="RESULT_TIMEOUT"/>
+            <xsd:enumeration value="RESULT_UNREACHABLE"/>
+            <xsd:enumeration value="RESULT_ESI_REACHED"/>
+            <xsd:enumeration value="RESULT_ESI_NOT_FOUND"/>
+            <xsd:enumeration value="RESULT_ESI_UNREACHABLE"/>
+            <xsd:enumeration value="RESULT_PING_NO_RESULTS"/>
+            <xsd:enumeration value="JOB_NOT_STARTED"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="ProgramIDType">
+        <xsd:restriction base="xsd:long">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="9223372036854775807"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ServiceTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ELECTRIC"/>
+            <xsd:enumeration value="GAS"/>
+            <xsd:enumeration value="WATER"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+        
+    <xsd:simpleType name="SignalStatusEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Queued"/>
+            <xsd:enumeration value="InProgress"/>
+            <xsd:enumeration value="ErrorUnknown"/>
+            <xsd:enumeration value="ErrorESIUnknown"/>
+            <xsd:enumeration value="ErrorESIUnreachable"/>
+            <xsd:enumeration value="ESINoData"/>
+            <xsd:enumeration value="ErrorTimeout"/>
+            <xsd:enumeration value="ESIRadioStatusUnknown"/>
+            <xsd:enumeration value="ConfigurationError"/>
+            <xsd:enumeration value="InstallCodeValidationError"/>
+            <xsd:enumeration value="ProvisionInProgress"/>
+            <xsd:enumeration value="InvalidState"/>
+            <xsd:enumeration value="Success"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TransportTypeD2GEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="D2G"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+   
+    <xsd:simpleType name="TransportTypeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ZIGBEE"/>
+            <xsd:enumeration value="D2G"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+   
+    <xsd:simpleType name="TransportTypeZigbeeEnumeration">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ZIGBEE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+   
+    <xsd:simpleType name="UtilityEnrollmentGroupNumberType">
+        <xsd:annotation>
+            <xsd:documentation>
+                A value of zero means no UEG
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="255"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
