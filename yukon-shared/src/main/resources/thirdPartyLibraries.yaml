@@ -1,5 +1,5 @@
 - filename : activation.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : JavaBeans(TM) Activation Framework
   version : 1.1.0
   project URL : "https://www.oracle.com/technetwork/java/javase/overview/index-135046.html"
@@ -13,7 +13,7 @@
   notes : This JAR version is not stored in Maven
 
 - filename : activemq-broker-5.13.4.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : Apache ActiveMQ
   version : 5.13.4
   project URL : "http://activemq.apache.org/"
@@ -27,7 +27,7 @@
   notes : 
 
 - filename : activemq-client-5.13.4.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : Apache ActiveMQ
   version : 5.13.4
   project URL : "http://activemq.apache.org/"
@@ -41,7 +41,7 @@
   notes : 
 
 - filename : activemq-kahadb-store-5.13.4.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : Apache ActiveMQ
   version : 5.13.4
   project URL : "http://activemq.apache.org/"
@@ -55,7 +55,7 @@
   notes : 
 
 - filename : activemq-openwire-legacy-5.13.4.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : Apache ActiveMQ
   version : 5.13.4
   project URL : "http://activemq.apache.org/"
@@ -69,7 +69,7 @@
   notes : 
 
 - filename : activemq-protobuf-1.1.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : Apache ActiveMQ
   version : 5.13.4
   project URL : "http://activemq.apache.org/"
@@ -83,7 +83,7 @@
   notes : 
 
 - filename : ahessian.jar
-  group : Yet Another Java Service Wrapper
+  yukon group : Yet Another Java Service Wrapper
   project : YAJSW
   version : 12.12
   project URL : "http://yajsw.sourceforge.net/"
@@ -97,7 +97,7 @@
   notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 12.12
 
 - filename : annotation-detector-3.0.4.jar
-  group : Azure
+  yukon group : Azure
   project : Infomas ASL
   version : 3.0.4
   project URL : "https://github.com/rmuller/infomas-asl"
@@ -111,7 +111,7 @@
   notes : 
 
 - filename : annotations-api.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -125,7 +125,7 @@
   notes : 
 
 - filename : aopalliance-1.0.jar
-  group : Spring
+  yukon group : Spring
   project : AOP Alliance
   version : 1.0
   project URL : "http://aopalliance.sourceforge.net/"
@@ -139,7 +139,7 @@
   notes : 
 
 - filename : apache-log4j-extras-1.0.jar
-  group : Log4j
+  yukon group : Log4j
   project : Apache log4j 1.2
   version : 1.2
   project URL : "https://logging.apache.org/log4j/1.2/"
@@ -153,7 +153,7 @@
   notes : Can probably be removed now that we're on log4j2
 
 - filename : applicationinsights-core-1.0.2.jar
-  group : Azure
+  yukon group : Azure
   project : Azure Monitor - Application Insights SDK
   version : 1.0.2
   project URL : "https://azure.microsoft.com/en-us/services/monitor/"
@@ -167,7 +167,7 @@
   notes : 
 
 - filename : applicationinsights-web-1.0.2.jar
-  group : Azure
+  yukon group : Azure
   project : Azure Monitor - Application Insights SDK
   version : 1.0.2
   project URL : "https://azure.microsoft.com/en-us/services/monitor/"
@@ -181,7 +181,7 @@
   notes : 
 
 - filename : asm.jar
-  group : Hibernate
+  yukon group : Hibernate
   project : ASM
   version : 1.5.3
   project URL : "https://asm.ow2.io/"
@@ -195,7 +195,7 @@
   notes : 
 
 - filename : axiom-api-1.2.15.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Apache Axiom
   version : 1.2.15
   project URL : "https://ws.apache.org/axiom/release-notes/1.2.15.html"
@@ -209,7 +209,7 @@
   notes : 
 
 - filename : axiom-impl-1.2.15.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Apache Axiom
   version : 1.2.15
   project URL : "https://ws.apache.org/axiom/release-notes/1.2.15.html"
@@ -223,7 +223,7 @@
   notes : 
 
 - filename : azure-core-0.9.7.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.7
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -237,7 +237,7 @@
   notes : Microsoft Azure SDK Core
 
 - filename : azure-media-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -251,7 +251,7 @@
   notes : Microsoft Azure SDK for Media Services
 
 - filename : azure-servicebus-0.9.7.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.7
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -265,7 +265,7 @@
   notes : Microsoft Azure Service Bus
 
 - filename : azure-serviceruntime-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -279,7 +279,7 @@
   notes : Microsoft Azure SDK For Service Runtime
 
 - filename : azure-storage-4.0.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure Storage Library for Java
   version : 4.0.0
   project URL : "https://github.com/Azure/azure-storage-java"
@@ -293,7 +293,7 @@
   notes : 
 
 - filename : azure-svc-mgmt-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -307,7 +307,7 @@
   notes : Microsoft Azure Management SDK
 
 - filename : azure-svc-mgmt-compute-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -321,7 +321,7 @@
   notes : Microsoft Azure SDK for Compute Management
 
 - filename : azure-svc-mgmt-media-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -335,7 +335,7 @@
   notes : Microsoft Azure SDK for Media Services Management
 
 - filename : azure-svc-mgmt-network-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -349,7 +349,7 @@
   notes : Microsoft Azure SDK for Network Management
 
 - filename : azure-svc-mgmt-scheduler-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -363,7 +363,7 @@
   notes : Microsoft Azure SDK for Scheduler Management
 
 - filename : azure-svc-mgmt-sql-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -377,7 +377,7 @@
   notes : Microsoft Azure SDK for SQL Management
 
 - filename : azure-svc-mgmt-storage-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -391,7 +391,7 @@
   notes : Microsoft Azure SDK for Storage Management
 
 - filename : azure-svc-mgmt-websites-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -405,7 +405,7 @@
   notes : Microsoft Azure SDK for Website Management
 
 - filename : azure-tracing-util-0.9.0.jar
-  group : Azure
+  yukon group : Azure
   project : Microsoft Azure SDK
   version : 0.9.0
   project URL : "https://github.com/Azure/azure-sdk-for-java"
@@ -419,7 +419,7 @@
   notes : Microsoft Azure SDK Tracing Logger Utility
 
 - filename : bc-fips-1.0.0.jar
-  group : Bouncy Castle
+  yukon group : Bouncy Castle
   project : Bouncy Castle FIPS
   version : 1.0.0
   project URL : "https://www.bouncycastle.org/fips-java/"
@@ -433,7 +433,7 @@
   notes : Open source, but supported via donation or purchase
 
 - filename : bcpkix-fips-1.0.0.jar
-  group : Bouncy Castle
+  yukon group : Bouncy Castle
   project : Bouncy Castle FIPS
   version : 1.0.0
   project URL : "https://www.bouncycastle.org/fips-java/"
@@ -447,7 +447,7 @@
   notes : Open source, but supported via donation or purchase
 
 - filename : bsf-2.3.0.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : Apache Commons Bean Scripting Framework
   version : 2.3.0
   project URL : "https://commons.apache.org/proper/commons-bsf/"
@@ -461,7 +461,7 @@
   notes : 
 
 - filename : bsh.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : BeanShell
   version : 1.3.0
   project URL : "http://www.beanshell.org/"
@@ -475,7 +475,7 @@
   notes : 
 
 - filename : catalina.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -489,7 +489,7 @@
   notes : 
 
 - filename : catalina-ant.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -503,7 +503,7 @@
   notes : 
 
 - filename : catalina-ha.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -517,7 +517,7 @@
   notes : 
 
 - filename : catalina-storeconfig.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -531,7 +531,7 @@
   notes : 
 
 - filename : catalina-tribes.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -545,7 +545,7 @@
   notes : 
 
 - filename : cglib-2.1.3.jar
-  group : Hibernate
+  yukon group : Hibernate
   project : CGLib
   version : 2.1.3
   project URL : "https://github.com/cglib/cglib"
@@ -559,7 +559,7 @@
   notes : 
 
 - filename : commons-beanutils-1.9.3.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons BeanUtils
   version : 1.9.3
   project URL : "https://commons.apache.org/proper/commons-beanutils/"
@@ -573,7 +573,7 @@
   notes : 
 
 - filename : commons-cli-1.3.1.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Command Line Interface
   version : 1.3.1
   project URL : "https://commons.apache.org/proper/commons-cli/"
@@ -587,7 +587,7 @@
   notes : 
 
 - filename : commons-codec-1.10.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Codec
   version : 1.10
   project URL : "https://commons.apache.org/proper/commons-codec/"
@@ -601,7 +601,7 @@
   notes : 
 
 - filename : commons-collections-3.2.2.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Collections 3
   version : 3.2.2
   project URL : "https://commons.apache.org/proper/commons-collections/"
@@ -615,7 +615,7 @@
   notes : 3.2.2 version needed for wrapper.jar
 
 - filename : commons-collections4-4.1.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Collections 4
   version : 4.1
   project URL : "https://commons.apache.org/proper/commons-collections/"
@@ -629,7 +629,7 @@
   notes : 
 
 - filename : commons-configuration2-2.1.1.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Configuration 2
   version : 2.1.1
   project URL : "https://commons.apache.org/proper/commons-configuration/"
@@ -643,7 +643,7 @@
   notes : 
 
 - filename : commons-dbcp2-2.0.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Database Connection Pooling
   version : 2.0
   project URL : "https://commons.apache.org/proper/commons-dbcp/"
@@ -657,7 +657,7 @@
   notes : 
 
 - filename : commons-discovery-0.5.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Discovery
   version : 0.5
   project URL : "https://commons.apache.org/dormant/commons-discovery/"
@@ -671,7 +671,7 @@
   notes : 
 
 - filename : commons-fileupload-1.3.3.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons File Upload
   version : 1.3.3
   project URL : "https://commons.apache.org/proper/commons-fileupload/"
@@ -685,7 +685,7 @@
   notes : 
 
 - filename : commons-io-2.4.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons IO
   version : 2.4
   project URL : "https://commons.apache.org/proper/commons-io/"
@@ -699,7 +699,7 @@
   notes : 
 
 - filename : commons-lang-2.6.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Lang 2
   version : 2.6
   project URL : "https://commons.apache.org/proper/commons-lang/"
@@ -713,7 +713,7 @@
   notes : 
 
 - filename : commons-lang3-3.4.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Lang 3
   version : 3.4
   project URL : "https://commons.apache.org/proper/commons-lang/"
@@ -727,7 +727,7 @@
   notes : 
 
 - filename : commons-logging-1.1.3.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Logging
   version : 1.1.3
   project URL : "https://commons.apache.org/proper/commons-logging/"
@@ -741,7 +741,7 @@
   notes : 
 
 - filename : commons-pool2-2.2.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Object Pooling
   version : 2.2
   project URL : "https://commons.apache.org/proper/commons-pool/"
@@ -755,7 +755,7 @@
   notes : 
 
 - filename : commons-validator-1.4.0.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Validator
   version : 1.4.0
   project URL : "https://commons.apache.org/proper/commons-validator/"
@@ -769,7 +769,7 @@
   notes : 
 
 - filename : commons-vfs2-2.0.jar
-  group : Apache Commons
+  yukon group : Apache Commons
   project : Apache Commons Virtual File System
   version : 2.0
   project URL : "https://commons.apache.org/proper/commons-vfs/"
@@ -783,7 +783,7 @@
   notes : YAJSW and Support Bundle dependency
 
 - filename : dom4j-1.6.1.jar
-  group : XML parsing
+  yukon group : XML parsing
   project : dom4j
   version : 1.6.1
   project URL : "https://dom4j.github.io/"
@@ -797,7 +797,7 @@
   notes : 
 
 - filename : easymock-3.0.jar
-  group : Unit Tests
+  yukon group : Unit Tests
   project : EasyMock
   version : 3.0
   project URL : "http://easymock.org/"
@@ -811,7 +811,7 @@
   notes : 
 
 - filename : ecj-4.7.3a.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Eclipse JDT Core Batch Compiler
   version : 4.7.3a
   project URL : "http://www.eclipse.org/jdt/"
@@ -825,7 +825,7 @@
   notes : Included in Tomcat install, not typically available or installed from Maven
 
 - filename : ecs-1.4.2.jar
-  group : ZZZ Retired
+  yukon group : ZZZ Retired
   project : Jakarta Element Construction Set
   version : 1.4.2
   project URL : "https://jakarta.apache.org/ecs/"
@@ -839,7 +839,7 @@
   notes : Retired, should be removed
 
 - filename : el-api.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -853,7 +853,7 @@
   notes : 
 
 - filename : geojson-jackson-1.1.jar
-  group : Jackson
+  yukon group : Jackson
   project : GeoJson
   version : 1.1
   project URL : "https://github.com/opendatalab-de/geojson-jackson"
@@ -867,7 +867,7 @@
   notes : 
 
 - filename : geronimo-j2ee-management_1.1_spec-1.0.1.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : Geronimo
   version : 1.0.1
   project URL : "http://geronimo.apache.org/"
@@ -881,7 +881,7 @@
   notes : Geronimo J2EE Management 1.1
 
 - filename : geronimo-jms_1.1_spec-1.1.1.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : Geronimo
   version : 1.1.1
   project URL : "http://geronimo.apache.org/"
@@ -895,7 +895,7 @@
   notes : Geronimo JMS 1.1
 
 - filename : gson-1.7.2.jar
-  group : Azure
+  yukon group : Azure
   project : Google GSON
   version : 1.7.2
   project URL : "https://github.com/google/gson"
@@ -909,7 +909,7 @@
   notes : 
 
 - filename : guava-18.0.jar
-  group : Google Guava
+  yukon group : Google Guava
   project : Google Guava
   version : 18.0
   project URL : "https://github.com/google/guava"
@@ -923,7 +923,7 @@
   notes : 
 
 - filename : h2-1.4.178.jar
-  group : Unit Tests
+  yukon group : Unit Tests
   project : H2 Database Engine
   version : 1.4.178
   project URL : "http://www.h2database.com/html/main.html"
@@ -937,7 +937,7 @@
   notes : 
 
 - filename : hamcrest-core-1.3.jar
-  group : Unit Tests
+  yukon group : Unit Tests
   project : Hamcrest
   version : 1.3
   project URL : "http://hamcrest.org/JavaHamcrest/"
@@ -951,7 +951,7 @@
   notes : "Deprecated, migrate to https://mvnrepository.com/artifact/org.hamcrest/hamcrest/"
 
 - filename : hawtbuf-1.11.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : HawtBuf
   version : 1.11
   project URL : "https://www.openhub.net/p/hawtbuf"
@@ -965,7 +965,7 @@
   notes : 
 
 - filename : httpclient-4.5.6.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Apache HttpComponents HTTP Client
   version : 4.5.6
   project URL : "http://hc.apache.org/httpcomponents-client-4.5.x/index.html"
@@ -979,7 +979,7 @@
   notes : 
 
 - filename : httpcore-4.4.10.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Apache HttpComponents Core
   version : 4.4.10
   project URL : "http://hc.apache.org/httpcomponents-core-ga/"
@@ -993,7 +993,7 @@
   notes : 
 
 - filename : itext.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : iText
   version : 1.2.3
   project URL : "https://www.lowagie.com/iText/"
@@ -1007,7 +1007,7 @@
   notes : Discontinued in 2012, should no longer to be used for legal reasons
 
 - filename : jackson-annotations-2.9.6.jar
-  group : Jackson
+  yukon group : Jackson
   project : Jackson
   version : 2.9.6
   project URL : "http://github.com/FasterXML/jackson"
@@ -1021,7 +1021,7 @@
   notes : Jackson Annotations
 
 - filename : jackson-core-2.9.6.jar
-  group : Jackson
+  yukon group : Jackson
   project : Jackson
   version : 2.9.6
   project URL : "http://github.com/FasterXML/jackson"
@@ -1035,7 +1035,7 @@
   notes : Jackson Core
 
 - filename : jackson-core-asl-1.9.2.jar
-  group : Azure
+  yukon group : Azure
   project : Jackson
   version : 1.9.2
   project URL : "http://jackson.codehaus.org/"
@@ -1049,7 +1049,7 @@
   notes : ASL is Apache Software License (vs the 1.9.2 LGPL release)
 
 - filename : jackson-databind-2.9.6.jar
-  group : Jackson
+  yukon group : Jackson
   project : Jackson
   version : 2.9.6
   project URL : "http://github.com/FasterXML/jackson"
@@ -1063,7 +1063,7 @@
   notes : Jackson Databind
 
 - filename : jackson-dataformat-csv-2.9.6.jar
-  group : Jackson
+  yukon group : Jackson
   project : Jackson
   version : 2.9.6
   project URL : "http://github.com/FasterXML/jackson"
@@ -1077,7 +1077,7 @@
   notes : Jackson Dataformat CSV
 
 - filename : jackson-jaxrs-1.9.2.jar
-  group : Azure
+  yukon group : Azure
   project : Jackson
   version : 1.9.2
   project URL : "http://jackson.codehaus.org/"
@@ -1091,7 +1091,7 @@
   notes : Jackson JAX-RS provider for JSON
 
 - filename : jackson-mapper-asl-1.9.2.jar
-  group : Azure
+  yukon group : Azure
   project : Jackson
   version : 1.9.2
   project URL : "http://jackson.codehaus.org/"
@@ -1105,7 +1105,7 @@
   notes : Jackson Data Mapper
 
 - filename : jackson-xc-1.9.2.jar
-  group : Azure
+  yukon group : Azure
   project : Jackson
   version : 1.9.2
   project URL : "http://jackson.codehaus.org/"
@@ -1119,7 +1119,7 @@
   notes : Jackson XML Compatibility Extensions
 
 - filename : jasper-el.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -1133,7 +1133,7 @@
   notes : 
 
 - filename : jasper.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -1147,7 +1147,7 @@
   notes : 
 
 - filename : jaspic-api.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -1161,7 +1161,7 @@
   notes : 
 
 - filename : jasypt-1.9.2.jar
-  group : Passwords
+  yukon group : Passwords
   project : Java Simplified Encryption
   version : 1.9.2
   project URL : "http://www.jasypt.org/"
@@ -1175,7 +1175,7 @@
   notes : 
 
 - filename : javax.inject-1.jar
-  group : Azure
+  yukon group : Azure
   project : Javax Inject
   version : 1
   project URL : "https://code.google.com/archive/p/atinject/"
@@ -1189,7 +1189,7 @@
   notes : 
 
 - filename : javax.jms-api-2.0.1.jar
-  group : Spring
+  yukon group : Spring
   project : JMS API
   version : 2.0.1
   project URL : "https://javaee.github.io/jms-spec/"
@@ -1203,7 +1203,7 @@
   notes : 
 
 - filename : jaxb2-basics-ant-0.6.3.jar
-  group : JAXB
+  yukon group : JAXB
   project : JAXB2 Basics Ant Task
   version : 0.6.3
   project URL : "https://github.com/javaee/jaxb-v2"
@@ -1217,7 +1217,7 @@
   notes : 
 
 - filename : jaxb2-default-value-1.1.jar
-  group : JAXB
+  yukon group : JAXB
   project : JAXB2 Commons Default Value Plugin
   version : 1.1
   project URL : "http://java.net/projects/jaxb2-commons/pages/default-value"
@@ -1231,7 +1231,7 @@
   notes : 
 
 - filename : jaxb-api.jar
-  group : JAXB
+  yukon group : JAXB
   project : JAXB
   version : 2.2.6
   project URL : "http://jaxb.java.net/"
@@ -1245,7 +1245,7 @@
   notes : JAXB API
 
 - filename : jaxb-impl.jar
-  group : JAXB
+  yukon group : JAXB
   project : JAXB
   version : 2.2.5
   project URL : "http://jaxb.java.net/"
@@ -1259,7 +1259,7 @@
   notes : JAXB Runtime
 
 - filename : jaxb-impl-2.2.3-1.jar
-  group : Azure
+  yukon group : Azure
   project : JAXB
   version : 2.2.3-1
   project URL : "http://jaxb.java.net/"
@@ -1273,7 +1273,7 @@
   notes : JAXB Runtime
 
 - filename : jaxb-xjc.jar
-  group : JAXB
+  yukon group : JAXB
   project : JAXB
   version : 2.2.5
   project URL : "http://jaxb.java.net/"
@@ -1287,7 +1287,7 @@
   notes : JAXB Binding Compiler.  MD5 does not match Maven artifact
 
 - filename : jaxm-api.jar
-  group : Java API for XML Messaging
+  yukon group : Java API for XML Messaging
   project : Java API for XML Messaging
   version : 1.1.2
   project URL : "https://github.com/eclipse-ee4j/metro-saaj"
@@ -1301,7 +1301,7 @@
   notes : 
 
 - filename : jaxm-runtime.jar
-  group : Java API for XML Messaging
+  yukon group : Java API for XML Messaging
   project : Java API For XML Messaging
   version : 1.1.2
   project URL : "https://github.com/eclipse-ee4j/metro-saaj"
@@ -1315,7 +1315,7 @@
   notes : Java API For XML Messaging Runtime
 
 - filename : jaxrpc.jar
-  group : AXIS
+  yukon group : AXIS
   project : Java API for XML-based RPC
   version : 1.2
   project URL : "http://axis.apache.org/axis/java/index.html"
@@ -1329,7 +1329,7 @@
   notes : 
 
 - filename : jcfield401K.jar
-  group : Swing events
+  yukon group : Swing events
   project : JClass Field
   version : 4.0.1???
   project URL : "??? https://www.quest.com/ ???"
@@ -1343,7 +1343,7 @@
   notes : 
 
 - filename : jcommon.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : JFree Common Library
   version : 1.0.0
   project URL : "http://www.jfree.org/jcommon/"
@@ -1357,7 +1357,7 @@
   notes : 
 
 - filename : jcpagelayout450K.jar
-  group : Swing events
+  yukon group : Swing events
   project : JClass Page Layout
   version : 4.5.0???
   project URL : "??? https://www.quest.com/ ???"
@@ -1371,7 +1371,7 @@
   notes : JCValueListener used in older Swing client code
 
 - filename : jdom-2.0.2.jar
-  group : XML parsing
+  yukon group : XML parsing
   project : JDOM
   version : 2.0.2
   project URL : "http://www.jdom.org/"
@@ -1385,7 +1385,7 @@
   notes : 
 
 - filename : jersey-client-1.13.jar
-  group : Azure
+  yukon group : Azure
   project : Jersey
   version : 1.13
   project URL : "https://jersey.github.io/"
@@ -1399,7 +1399,7 @@
   notes : Jersey Client
 
 - filename : jersey-core-1.13.jar
-  group : Azure
+  yukon group : Azure
   project : Jersey
   version : 1.13
   project URL : "https://jersey.github.io/"
@@ -1413,7 +1413,7 @@
   notes : Jersey Core
 
 - filename : jersey-json-1.13.jar
-  group : Azure
+  yukon group : Azure
   project : Jersey
   version : 1.13
   project URL : "https://jersey.github.io/"
@@ -1427,7 +1427,7 @@
   notes : Jersey JSON
 
 - filename : jettison-1.1.jar
-  group : Azure
+  yukon group : Azure
   project : Jettison - StAX for JSON
   version : 1.1
   project URL : "https://github.com/jettison-json/jettison"
@@ -1441,7 +1441,7 @@
   notes : 
 
 - filename : jfreechart.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : jfreechart
   version : 1.0.0-rc1?
   project URL : "http://www.jfree.org/jfreechart/"
@@ -1455,7 +1455,7 @@
   notes : Commit comment says rc1, but md5 does not match
 
 - filename : jfreereport.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : jfreereport
   version : 0.8.6-4
   project URL : "https://sourceforge.net/projects/jfreereport/"
@@ -1469,7 +1469,7 @@
   notes : 
 
 - filename : jjwt-0.5.1.jar
-  group : Azure
+  yukon group : Azure
   project : JSON Web Token
   version : 0.5.1
   project URL : "https://github.com/jwtk/jjwt"
@@ -1483,7 +1483,7 @@
   notes : 
 
 - filename : jna-4.5.0.jar
-  group : Yet Another Java Service Wrapper
+  yukon group : Yet Another Java Service Wrapper
   project : Java Native Access
   version : 4.5.0
   project URL : "https://github.com/java-native-access/jna"
@@ -1497,7 +1497,7 @@
   notes : 
 
 - filename : jna-platform-4.5.0.jar
-  group : Yet Another Java Service Wrapper
+  yukon group : Yet Another Java Service Wrapper
   project : Java Native Access
   version : 4.5.0
   project URL : "https://github.com/java-native-access/jna"
@@ -1511,7 +1511,7 @@
   notes : Java Native Access Platform
 
 - filename : joda-time-2.3.jar
-  group : Common
+  yukon group : Common
   project : Joda Time
   version : 2.3
   project URL : "https://www.joda.org/joda-time/"
@@ -1525,7 +1525,7 @@
   notes : Should migrate to java.time in JDK 8.0+
 
 - filename : jopcbridge.jar
-  group : OPC
+  yukon group : OPC
   project : JOPC-Bridge
   version : 4.6
   project URL : "https://www.opcconnect.com/java.php, http://www.netmodule.com/dms/support/java/jopc-bridge/doc/UserManualJOPC-BridgeV4/document/UserManualJOPC-BridgeV4.pdf"
@@ -1539,7 +1539,7 @@
   notes : NetModule's OPC library appears to be discontinued.
 
 - filename : jradius-client.jar
-  group : Radius
+  yukon group : Radius
   project : jradius-client
   version : 2.0.0
   project URL : "https://sourceforge.net/projects/jradius-client/"
@@ -1553,7 +1553,7 @@
   notes : Built from source
 
 - filename : js.jar
-  group : JavaScript
+  yukon group : JavaScript
   project : Mozilla Rhino
   version : 1.7R4
   project URL : "https://developer.mozilla.org/en/Rhino"
@@ -1567,7 +1567,7 @@
   notes : 
 
 - filename : jsch-0.1.54.jar
-  group : Support bundle
+  yukon group : Support bundle
   project : Java Secure Channel
   version : 0.1.54
   project URL : "http://www.jcraft.com/jsch/"
@@ -1581,7 +1581,7 @@
   notes : 
 
 - filename : jsoup-1.10.3.jar
-  group : UI
+  yukon group : UI
   project : JSoup Java HTML Parser
   version : 1.10.3
   project URL : "https://jsoup.org/"
@@ -1595,7 +1595,7 @@
   notes : 
 
 - filename : jsp-api.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -1609,7 +1609,7 @@
   notes : Tomcat JSP API
 
 - filename : jsr305-1.3.9.jar
-  group : Azure
+  yukon group : Azure
   project : JSR305 annontations for FindBugs
   version : 1.3.9
   project URL : "http://findbugs.sourceforge.net/"
@@ -1623,7 +1623,7 @@
   notes : 
 
 - filename : jtds-1.3.1.jar
-  group : Database - Microsoft SQL Server
+  yukon group : Database - Microsoft SQL Server
   project : jTDS
   version : 1.3.1
   project URL : "http://jtds.sourceforge.net/"
@@ -1637,7 +1637,7 @@
   notes : MD5 does not match Maven
 
 - filename : junit-4.12.jar
-  group : Unit Tests
+  yukon group : Unit Tests
   project : Junit
   version : 4.12
   project URL : "http://junit.org/"
@@ -1651,7 +1651,7 @@
   notes : 
 
 - filename : lesscss-engine-1.4.2.jar
-  group : UI
+  yukon group : UI
   project : LESS Engine
   version : 1.4.2
   project URL : "http://www.asual.com/lesscss"
@@ -1665,7 +1665,7 @@
   notes : 
 
 - filename : libfonts-0.1.0.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : jfreereport
   version : 0.1.0
   project URL : "https://sourceforge.net/projects/jfreereport/"
@@ -1679,7 +1679,7 @@
   notes : jfreereport libfonts
 
 - filename : libthrift-0.11.0.jar
-  group : Thrift
+  yukon group : Thrift
   project : Thrift
   version : 0.11.0
   project URL : "http://thrift.apache.org/"
@@ -1693,7 +1693,7 @@
   notes : 
 
 - filename : log4j-api-2.9.1.jar
-  group : Log4j
+  yukon group : Log4j
   project : Apache Log4j
   version : 2.9.1
   project URL : "https://logging.apache.org/log4j/2.x/"
@@ -1707,7 +1707,7 @@
   notes : Apache Log4j API
 
 - filename : log4j-core-2.9.1.jar
-  group : Log4j
+  yukon group : Log4j
   project : Apache Log4j
   version : 2.9.1
   project URL : "https://logging.apache.org/log4j/2.x/"
@@ -1721,7 +1721,7 @@
   notes : Apache Log4j Core
 
 - filename : log4j-jcl-2.9.1.jar
-  group : Log4j
+  yukon group : Log4j
   project : Apache Log4j
   version : 2.9.1
   project URL : "https://logging.apache.org/log4j/2.x/"
@@ -1735,7 +1735,7 @@
   notes : Apache Commons Logging Bridge for Log4j
 
 - filename : log4j-slf4j-impl-2.9.1.jar
-  group : Log4j
+  yukon group : Log4j
   project : Apache Log4j
   version : 2.9.1
   project URL : "https://logging.apache.org/log4j/2.x/"
@@ -1749,7 +1749,7 @@
   notes : Apache Log4j 2 SLF4J Binding
 
 - filename : lucene-analyzers-common-6.0.0.jar
-  group : Lucene
+  yukon group : Lucene
   project : Apache Lucene
   version : 6.0.0
   project URL : "http://lucene.apache.org/"
@@ -1763,7 +1763,7 @@
   notes : Apache Lucene Additional Analyzers
 
 - filename : lucene-core-6.0.0.jar
-  group : Lucene
+  yukon group : Lucene
   project : Apache Lucene
   version : 6.0.0
   project URL : "http://lucene.apache.org/"
@@ -1777,7 +1777,7 @@
   notes : Apache Lucene Core
 
 - filename : lucene-queryparser-6.0.0.jar
-  group : Lucene
+  yukon group : Lucene
   project : Apache Lucene
   version : 6.0.0
   project URL : "http://lucene.apache.org/"
@@ -1791,7 +1791,7 @@
   notes : Apache Lucene Query Parser
 
 - filename : mail-1.4.5.jar
-  group : Azure
+  yukon group : Azure
   project : JavaMail API (compat)
   version : 1.4.5
   project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
@@ -1805,7 +1805,7 @@
   notes : 
 
 - filename : mail-1.4.5-sources.jar
-  group : Azure
+  yukon group : Azure
   project : JavaMail API (compat)
   version : 1.4.5
   project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
@@ -1819,7 +1819,7 @@
   notes : Source, should move to sources folder
 
 - filename : mailapi-1.5.1.jar
-  group : JavaMail
+  yukon group : JavaMail
   project : JavaMail API
   version : 1.5.1
   project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
@@ -1833,7 +1833,7 @@
   notes : 
 
 - filename : micrometer-core-1.0.7.jar
-  group : Spring
+  yukon group : Spring
   project : Micrometer application monitoring
   version : 1.0.7
   project URL : "https://github.com/micrometer-metrics/micrometer"
@@ -1847,7 +1847,7 @@
   notes : 
 
 - filename : mx4j.jar
-  group : JMX
+  yukon group : JMX
   project : MX4J
   version : 3.0.1
   project URL : "http://mx4j.sourceforge.net/"
@@ -1861,7 +1861,7 @@
   notes : 
 
 - filename : mx4j-impl.jar
-  group : JMX
+  yukon group : JMX
   project : MX4J
   version : 3.0.1
   project URL : "http://mx4j.sourceforge.net/"
@@ -1875,7 +1875,7 @@
   notes : 3.0.1 not in Maven
 
 - filename : mx4j-jmx.jar
-  group : JMX
+  yukon group : JMX
   project : MX4J
   version : 3.0.1
   project URL : "http://mx4j.sourceforge.net/"
@@ -1889,7 +1889,7 @@
   notes : 
 
 - filename : mx4j-remote.jar
-  group : JMX
+  yukon group : JMX
   project : MX4J
   version : 3.0.1
   project URL : "http://mx4j.sourceforge.net/"
@@ -1903,7 +1903,7 @@
   notes : 
 
 - filename : mx4j-rimpl.jar
-  group : JMX
+  yukon group : JMX
   project : MX4J
   version : 3.0.1
   project URL : "http://mx4j.sourceforge.net/"
@@ -1917,7 +1917,7 @@
   notes : 3.0.1 not in Maven
 
 - filename : mx4j-rjmx.jar
-  group : JMX
+  yukon group : JMX
   project : MX4J
   version : 3.0.1
   project URL : "http://mx4j.sourceforge.net/"
@@ -1931,7 +1931,7 @@
   notes : 3.0.1 not in Maven
 
 - filename : mx4j-tools.jar
-  group : JMX
+  yukon group : JMX
   project : MX4J
   version : 3.0.1
   project URL : "http://mx4j.sourceforge.net/"
@@ -1945,7 +1945,7 @@
   notes : 
 
 - filename : nagasena.jar
-  group : OpenEXI
+  yukon group : OpenEXI
   project : Nagasena
   version : ???
   project URL : "http://openexi.sourceforge.net/"
@@ -1959,7 +1959,7 @@
   notes : 
 
 - filename : netty-all-4.0.47.Final.jar
-  group : Yet Another Java Service Wrapper
+  yukon group : Yet Another Java Service Wrapper
   project : Netty
   version : 4.0.47
   project URL : "https://github.com/netty"
@@ -1973,7 +1973,7 @@
   notes : 
 
 - filename : objenesis-1.2.jar
-  group : Unit Tests
+  yukon group : Unit Tests
   project : Objenesis
   version : 1.2
   project URL : "http://objenesis.org/"
@@ -1987,7 +1987,7 @@
   notes : EasyMock dependency
 
 - filename : ojdbc6.jar
-  group : Database - Oracle
+  yukon group : Database - Oracle
   project : Oracle JDBC Thin driver
   version : 12.1.0.1
   project URL : "https://www.oracle.com/database/technologies/appdev/jdbc.html"
@@ -2001,7 +2001,7 @@
   notes : ojdbc6 for Java 6+
 
 - filename : org.osgi.core-4.1.0.jar
-  group : ActiveMQ
+  yukon group : ActiveMQ
   project : OSGI core
   version : 4.1.0
   project URL : "https://www.osgi.org/"
@@ -2015,7 +2015,7 @@
   notes : 
 
 - filename : poi.jar
-  group : jfreereport
+  yukon group : jfreereport
   project : Apache POI - Java API To Access Microsoft Format Files
   version : 2.5.1-final-20040804
   project URL : "https://poi.apache.org/"
@@ -2029,7 +2029,7 @@
   notes : 
 
 - filename : quartz-2.2.1.jar
-  group : Scheduling
+  yukon group : Scheduling
   project : Quartz
   version : 2.2.1
   project URL : "http://www.quartz-scheduler.org/"
@@ -2043,7 +2043,7 @@
   notes : 
 
 - filename : reactive-streams-1.0.2.jar
-  group : Spring
+  yukon group : Spring
   project : Reactive Streams
   version : 1.0.2
   project URL : "http://www.reactive-streams.org/"
@@ -2057,7 +2057,7 @@
   notes : 
 
 - filename : reactor-core-3.2.1.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Reactor - Non-Blocking Reactive Foundation for the JVM
   version : 3.2.1
   project URL : "https://github.com/reactor/reactor-core"
@@ -2071,7 +2071,7 @@
   notes : 
 
 - filename : saaj.jar
-  group : Java API for XML Messaging
+  yukon group : Java API for XML Messaging
   project : Java API for XML Messaging
   version : 1.2
   project URL : "https://github.com/eclipse-ee4j/metro-saaj"
@@ -2085,7 +2085,7 @@
   notes : SOAP with Attachments API for Java
 
 - filename : servlet-api.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2099,7 +2099,7 @@
   notes : Tomcat Servlet API
 
 - filename : slf4j-api-1.7.25.jar
-  group : Log4j
+  yukon group : Log4j
   project : Simple Logging Facade for Java API
   version : 1.7.25
   project URL : "https://www.slf4j.org/"
@@ -2113,7 +2113,7 @@
   notes : 
 
 - filename : smtp-1.5.1.jar
-  group : JavaMail
+  yukon group : JavaMail
   project : JavaMail API
   version : 1.5.1
   project URL : "https://projects.eclipse.org/projects/ee4j.javamail"
@@ -2127,7 +2127,7 @@
   notes : JavaMail API SMTP Provider
 
 - filename : snakeyaml-1.18.2.jar
-  group : Jackson
+  yukon group : Jackson
   project : SnakeYAML
   version : 1.18.2
   project URL : "https://github.com/DroidsOnRoids/snakeyaml"
@@ -2141,7 +2141,7 @@
   notes : 
 
 - filename : spring-aop-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2155,7 +2155,7 @@
   notes : Spring AOP
 
 - filename : spring-aspects-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2169,7 +2169,7 @@
   notes : Spring Aspects
 
 - filename : spring-beans-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2183,7 +2183,7 @@
   notes : Spring Beans
 
 - filename : spring-context-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2197,7 +2197,7 @@
   notes : Spring Context
 
 - filename : spring-context-indexer-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2211,7 +2211,7 @@
   notes : Spring Context Indexer
 
 - filename : spring-context-support-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2225,7 +2225,7 @@
   notes : Spring Context Support
 
 - filename : spring-core-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2239,7 +2239,7 @@
   notes : Spring Core
 
 - filename : spring-expression-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2253,7 +2253,7 @@
   notes : Spring Expression Language (SpEL)
 
 - filename : spring-instrument-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2267,7 +2267,7 @@
   notes : Spring Instrument
 
 - filename : spring-integration-core-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2281,7 +2281,7 @@
   notes : Spring Integration Core
 
 - filename : spring-integration-jms-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2295,7 +2295,7 @@
   notes : Spring Integration JMS Support
 
 - filename : spring-jcl-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2309,7 +2309,7 @@
   notes : Spring Commons Logging Bridge
 
 - filename : spring-jdbc-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2323,7 +2323,7 @@
   notes : Spring JDBC
 
 - filename : spring-jms-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2337,7 +2337,7 @@
   notes : Spring JMS
 
 - filename : spring-messaging-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2351,7 +2351,7 @@
   notes : Spring Messaging
 
 - filename : spring-orm-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2365,7 +2365,7 @@
   notes : Spring Object/Relational Mapping
 
 - filename : spring-oxm-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2379,7 +2379,7 @@
   notes : Spring Object/XML Marshalling
 
 - filename : spring-test-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2393,7 +2393,7 @@
   notes : Spring TestContext Framework
 
 - filename : spring-tx-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2407,7 +2407,7 @@
   notes : Spring Transaction
 
 - filename : spring-web-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2421,7 +2421,7 @@
   notes : Spring Web
 
 - filename : spring-webflux-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2435,7 +2435,7 @@
   notes : Spring WebFlux
 
 - filename : spring-webmvc-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2449,7 +2449,7 @@
   notes : Spring Web MVC
 
 - filename : spring-websocket-5.0.2.RELEASE.jar
-  group : Spring
+  yukon group : Spring
   project : Spring
   version : 5.0.2
   project URL : "https://github.com/spring-projects/spring-framework"
@@ -2463,7 +2463,7 @@
   notes : Spring WebSocket
 
 - filename : spring-ws-core-3.0.4.RELEASE.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Spring Web Services
   version : 3.0.4
   project URL : "https://spring.io/projects/spring-ws"
@@ -2477,7 +2477,7 @@
   notes : Spring Web Services Core
 
 - filename : spring-xml-2.3.0.RELEASE.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Spring Web Services
   version : 2.3.0
   project URL : "https://spring.io/projects/spring-ws"
@@ -2491,7 +2491,7 @@
   notes : Spring XML
 
 - filename : sqljdbc42.jar
-  group : SQL
+  yukon group : SQL
   project : Microsoft SQL JDBC 4.2 driver
   version : 6.0
   project URL : "https://docs.microsoft.com/en-us/sql/connect/jdbc/microsoft-jdbc-driver-for-sql-server?view=sql-server-2017"
@@ -2505,7 +2505,7 @@
   notes : 
 
 - filename : stax2-api-3.1.4.jar
-  group : XML parsing
+  yukon group : XML parsing
   project : Stax2 API
   version : 3.1.4
   project URL : "http://wiki.fasterxml.com/WoodstoxStax2"
@@ -2519,7 +2519,7 @@
   notes : 
 
 - filename : tomcat-api.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2533,7 +2533,7 @@
   notes : Tomcat API
 
 - filename : tomcat-coyote.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2547,7 +2547,7 @@
   notes : 
 
 - filename : tomcat-dbcp.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2561,7 +2561,7 @@
   notes : 
 
 - filename : tomcat-i18n-es.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2575,7 +2575,7 @@
   notes : 
 
 - filename : tomcat-i18n-fr.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2589,7 +2589,7 @@
   notes : 
 
 - filename : tomcat-i18n-ja.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2603,7 +2603,7 @@
   notes : 
 
 - filename : tomcat-i18n-ru.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2617,7 +2617,7 @@
   notes : 
 
 - filename : tomcat-jdbc.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2631,7 +2631,7 @@
   notes : 
 
 - filename : tomcat-jni.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat 
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2645,7 +2645,7 @@
   notes : 
 
 - filename : tomcat-util.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2659,7 +2659,7 @@
   notes : 
 
 - filename : tomcat-util-scan.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2673,7 +2673,7 @@
   notes : 
 
 - filename : tomcat-websocket.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2687,7 +2687,7 @@
   notes : 
 
 - filename : websocket-api.jar
-  group : Tomcat
+  yukon group : Tomcat
   project : Apache Tomcat
   version : 9.0.12
   project URL : "https://tomcat.apache.org/"
@@ -2701,7 +2701,7 @@
   notes : 
 
 - filename : wrapper.jar
-  group : Yet Another Java Service Wrapper
+  yukon group : Yet Another Java Service Wrapper
   project : YAJSW
   version : 12.12
   project URL : "http://yajsw.sourceforge.net/"
@@ -2715,7 +2715,7 @@
   notes : YAJSW Wrapper.  Maven version is 11.11, not 12.12
 
 - filename : wrapperApp.jar
-  group : Yet Another Java Service Wrapper
+  yukon group : Yet Another Java Service Wrapper
   project : YAJSW
   version : 12.12
   project URL : "http://yajsw.sourceforge.net/"
@@ -2729,7 +2729,7 @@
   notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.12
 
 - filename : wro4j-core-1.6.3.jar
-  group : UI
+  yukon group : UI
   project : Web Resource Optimizer
   version : 1.6.3
   project URL : "https://github.com/wro4j/wro4j"
@@ -2743,7 +2743,7 @@
   notes : 
 
 - filename : wro4j-extensions-1.6.3.jar
-  group : UI
+  yukon group : UI
   project : Web Resource Optimizer
   version : 1.6.3
   project URL : "https://github.com/wro4j/wro4j"
@@ -2757,7 +2757,7 @@
   notes : Web Resource Optimizer Extensions.  Used in Yukon theme builder
 
 - filename : wsdl4j-1.6.3.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Java stub generator for WSDL
   version : 1.6.3
   project URL : "http://sf.net/projects/wsdl4j"
@@ -2771,7 +2771,7 @@
   notes : 
 
 - filename : xbean-spring-4.5.jar
-  group : Spring
+  yukon group : Spring
   project : Apache Xbean
   version : 4.5
   project URL : "http://geronimo.apache.org/maven/xbean/xbean-spring/index.html"
@@ -2785,7 +2785,7 @@
   notes : 
 
 - filename : xercesImpl-2.11.0.jar
-  group : XML parsing
+  yukon group : XML parsing
   project : Apache Xerces2 XML parser
   version : 2.11.0
   project URL : "https://xerces.apache.org/xerces2-j/"
@@ -2799,7 +2799,7 @@
   notes : 
 
 - filename : xml-apis-1.4.01.jar
-  group : XML parsing
+  yukon group : XML parsing
   project : Apache-hosted standards - DOM, SAX, JAXP
   version : 1.4.01
   project URL : "http://xerces.apache.org/xml-commons/components/external/"
@@ -2813,7 +2813,7 @@
   notes : 
 
 - filename : xmlschema-core-2.1.0.jar
-  group : Spring Web Services
+  yukon group : Spring Web Services
   project : Apache Web Services
   version : 2.1.0
   project URL : "http://ws.apache.org/xmlschema/xmlschema-core/index.html"
@@ -2827,7 +2827,7 @@
   notes : 
 
 - filename : yuicompressor-2.4.8.jar
-  group : UI
+  yukon group : UI
   project : Yahoo UI Compressor
   version : 2.4.8
   project URL : "http://yui.github.io/yuicompressor/"

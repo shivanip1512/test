@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 public class ThirdPartyLibrary {
 
     public String filename;
+    @JsonAlias("yukon group")
     public LibraryGroup group;
     public String project;
     public String version;
@@ -31,6 +32,7 @@ public class ThirdPartyLibrary {
                        .map(LibraryLicenseType::getByLicenseName)
                        .collect(Collectors.toList());
     }
+    
     @JsonSetter("license URLs")
     public void setLicenseUrls(String licenseUrlString) {
         licenseUrls = Arrays.asList(licenseUrlString.split(", *"));
