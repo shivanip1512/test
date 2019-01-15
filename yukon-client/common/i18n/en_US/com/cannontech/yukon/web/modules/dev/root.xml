@@ -431,7 +431,7 @@
     <ul>
     <li>Sync button: Sync Yukon and Nest. </li>
     <li>Download existing file: Download file from nest/yukon. Value of Global Setting -> Demand Response -> Nest API URL decide from where the file will be downloaded.
-    To use yukon instead of nest, set the URL as: http://localhost:8080/yukon/dev/nestApi</li>
+    To use yukon instead of nest, set the URL as: http://localhost:8080/yukon/dev/nestApi. If you are not using the /yukon application context (like QA), it should be set to http://localhost:8080/dev/nestApi.</li>
     </ul>
      ]]></entry>
      
