@@ -402,6 +402,20 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19285', '7.2.0', GETDATE());
 /* @end YUK-19285 */
 
+/* @start YUK-19190 */
+UPDATE YukonRoleProperty 
+SET DefaultValue = 'false' 
+WHERE RolePropertyId = -10008;
+GO
+
+UPDATE YukonGroupRole 
+SET Value = 'false' 
+WHERE RolePropertyId = -10008;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-19190', '7.2.0', GETDATE());
+/* @end YUK-19190 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

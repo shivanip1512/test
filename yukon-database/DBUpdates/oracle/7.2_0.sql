@@ -399,6 +399,18 @@ ADD CONSTRAINT FK_DeviceMacAddress_Device
 INSERT INTO DBUpdates VALUES ('YUK-19285', '7.2.0', SYSDATE);
 /* @end YUK-19285 */
 
+/* @start YUK-19190 */
+UPDATE YukonRoleProperty 
+SET DefaultValue = 'false' 
+WHERE RolePropertyId = -10008;
+
+UPDATE YukonGroupRole 
+SET Value = 'false' 
+WHERE RolePropertyId = -10008;
+
+INSERT INTO DBUpdates VALUES ('YUK-19190', '7.2.0', SYSDATE);
+/* @end YUK-19190 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

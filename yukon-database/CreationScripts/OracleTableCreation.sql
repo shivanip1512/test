@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/2/2019 3:05:21 PM                          */
+/* Created on:     1/15/2019 2:18:36 AM                         */
 /*==============================================================*/
 
 
@@ -10133,7 +10133,7 @@ INSERT INTO YukonRoleProperty VALUES(-10002,-100,'Load Management View Enabled',
 INSERT INTO YukonRoleProperty VALUES(-10004,-100,'System View Enabled','true','Controls whether the System menu item in the View menu is displayed');
 INSERT INTO YukonRoleProperty VALUES(-10005,-100,'Versacom Utility Range','1-254','<description>');
 INSERT INTO YukonRoleProperty VALUES(-10007,-100,'Transmission Exclusion Enabled','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
-INSERT INTO YukonRoleProperty VALUES(-10008,-100,'Manage Users','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
+INSERT INTO YukonRoleProperty VALUES(-10008,-100,'Manage Users','false','Closes off all access to logins and login groups for non-administrators in the dbeditor');
 INSERT INTO YukonRoleProperty VALUES(-10010,-100,'Optional Protocols','00000000','This feature is for development purposes only');
 INSERT INTO YukonRoleProperty VALUES(-10011,-100,'Program Member Management','false','Allows member management of LM Direct Programs through the DBEditor');
 
