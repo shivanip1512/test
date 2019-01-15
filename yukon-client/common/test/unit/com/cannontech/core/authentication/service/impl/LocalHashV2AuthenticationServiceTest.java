@@ -1,11 +1,13 @@
 package com.cannontech.core.authentication.service.impl;
 
+import static org.easymock.EasyMock.createNiceMock;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -20,8 +22,10 @@ public class LocalHashV2AuthenticationServiceTest {
     @Before
     public void setUp() throws Exception {
         service = new LocalHashV2AuthenticationService();
+        UsersEventLogService usersEventLogService = createNiceMock(UsersEventLogService.class);
         singleUserPasswordDao = new MockYukonUserPasswordDao(INITIAL_PASSWORD_ENCRYPTED);
         ReflectionTestUtils.setField(service, "yukonUserPasswordDao", singleUserPasswordDao);
+        ReflectionTestUtils.setField(service, "usersEventLogService", usersEventLogService);
         someUser = new LiteYukonUser(100, "testuser", LoginStatusEnum.ENABLED);
     }
 

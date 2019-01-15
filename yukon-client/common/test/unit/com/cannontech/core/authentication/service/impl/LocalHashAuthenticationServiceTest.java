@@ -1,5 +1,6 @@
 package com.cannontech.core.authentication.service.impl;
 
+import static org.easymock.EasyMock.createNiceMock;
 import static org.junit.Assert.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -27,8 +30,10 @@ public class LocalHashAuthenticationServiceTest {
     @Before
     public void setUp() throws Exception {
         service = new LocalHashAuthenticationService();
+        UsersEventLogService usersEventLogService = createNiceMock(UsersEventLogService.class);
         singleUserPasswordDao = new MockYukonUserPasswordDao(INITIAL_PASSWORD_ENCRYPTED);
         ReflectionTestUtils.setField(service, "yukonUserPasswordDao", singleUserPasswordDao);
+        ReflectionTestUtils.setField(service, "usersEventLogService", usersEventLogService);
         someUser = new LiteYukonUser(100, "testuser", LoginStatusEnum.ENABLED);
     }
 
