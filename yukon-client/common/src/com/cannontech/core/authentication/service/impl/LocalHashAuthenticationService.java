@@ -61,10 +61,10 @@ public class LocalHashAuthenticationService implements AuthenticationProvider, P
     }
 
     @Override
-    public void setPassword(LiteYukonUser user, String newPassword) {
+    public void setPassword(LiteYukonUser user, String newPassword, LiteYukonUser createdBy) {
         String newHash = hashPassword(newPassword);
         yukonUserPasswordDao.setPassword(user, AuthType.HASH_SHA, newHash);
-        usersEventLogService.passwordUpdated(user); 
+        usersEventLogService.passwordUpdated(user, createdBy); 
     }
 
     @Override

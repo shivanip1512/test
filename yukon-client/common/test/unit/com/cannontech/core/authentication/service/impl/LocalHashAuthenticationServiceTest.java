@@ -46,7 +46,7 @@ public class LocalHashAuthenticationServiceTest {
         assertFalse("Login succeeded when it should have failed", b);
 
         // change password
-        service.setPassword(someUser, "new pass");
+        service.setPassword(someUser, "new pass", someUser);
         b = service.login(someUser, "not the right password");
         assertFalse("Login succeeded when it should have failed", b);
         b = service.login(someUser, "new pass");
@@ -57,7 +57,7 @@ public class LocalHashAuthenticationServiceTest {
     public void testSetPassword() {
         String before = singleUserPasswordDao.getDigest(null);
         // attempt change with correct password
-        service.setPassword(someUser, "deadman");
+        service.setPassword(someUser, "deadman", someUser);
         String after = singleUserPasswordDao.getDigest(null);
         assertNotSame("Password didn't change", before, after);
 
@@ -67,7 +67,7 @@ public class LocalHashAuthenticationServiceTest {
 
     @Test
     public void testSHAPassword() throws NoSuchAlgorithmException {
-        service.setPassword(someUser, "Algebra Geometry Banana");
+        service.setPassword(someUser, "Algebra Geometry Banana", someUser);
         String hashed = singleUserPasswordDao.getDigest(null);
         Assert.assertEquals("Hash doesn't match precomputed value", "fe6335916832f16b198396e8b27f743bd81ff", hashed);
     }

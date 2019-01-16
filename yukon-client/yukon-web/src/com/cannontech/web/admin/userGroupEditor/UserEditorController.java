@@ -193,7 +193,7 @@ public class UserEditorController {
         
         
         if (requiresPasswordChanged) {
-            authService.setPassword(yukonUser, user.getAuthCategory(), user.getPassword().getPassword());
+            authService.setPassword(yukonUser, user.getAuthCategory(), user.getPassword().getPassword(), userContext.getYukonUser());
         } else if (user.isAuthenticationChanged()) {
             authService.setAuthenticationCategory(yukonUser, user.getAuthCategory());
         }
@@ -252,7 +252,7 @@ public class UserEditorController {
             return "userGroupEditor/userChangePasswordPopup.jsp";
         }
         
-        authService.setPassword(yukonUser, password.getPassword());
+        authService.setPassword(yukonUser, password.getPassword(), userContext.getYukonUser());
         if (!isOldPasswordRequired) {
             authService.setForceResetForUser(yukonUser, YNBoolean.YES);
         }

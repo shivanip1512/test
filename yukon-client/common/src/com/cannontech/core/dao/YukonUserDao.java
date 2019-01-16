@@ -175,7 +175,7 @@ public interface YukonUserDao {
     void updateForceResetByRoleGroupId(int roleGroupId, boolean forceReset);
 
     /** Create a new user */
-    LiteYukonUser create(NewUser user, boolean forceReset);
+    LiteYukonUser create(NewUser user, boolean forceReset, LiteYukonUser createdBy);
     
     List<Integer> getUserIdsForUserGroup(int userGroupId);
     

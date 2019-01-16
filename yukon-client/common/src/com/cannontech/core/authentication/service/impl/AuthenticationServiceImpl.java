@@ -125,7 +125,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             PasswordEncrypter passwordEncrypter = (PasswordEncrypter) providerMap.get(supportingAuthType);
             String newDigest = passwordEncrypter.encryptPassword(password);
             yukonUserPasswordDao.setPassword(user, supportingAuthType, newDigest);
-            usersEventLogService.passwordUpdated(user); 
+            usersEventLogService.passwordUpdated(user, user); 
         } else {
             isPasswordMatched = provider.login(user, password);
             checkExpirationAndAuthentication(isPasswordMatched, user, username);
@@ -200,7 +200,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword) {
+    public void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword, LiteYukonUser changedByUser) {
         AuthType authType = authenticationCategory.getSupportingAuthType();
 
         boolean supportsSetPassword = supportsPasswordSet(authType);
@@ -209,14 +209,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         PasswordSetProvider provider = (PasswordSetProvider) providerMap.get(authType);
-        provider.setPassword(user, newPassword);
+        provider.setPassword(user, newPassword, changedByUser);
     }
 
     @Override
-    public void setPassword(LiteYukonUser user, String newPassword) {
+    public void setPassword(LiteYukonUser user, String newPassword, LiteYukonUser changedByUser) {
         // Update to the current authentication type when password is changed.
         AuthenticationCategory authenticationCategory = getDefaultAuthenticationCategory();
-        setPassword(user, authenticationCategory, newPassword);
+        setPassword(user, authenticationCategory, newPassword, changedByUser);
     }
 
     @Override
@@ -269,7 +269,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         PasswordEncrypter provider = (PasswordEncrypter) providerMap.get(encryptedAuthType);
         String newDigest = provider.encryptPassword(password);
         yukonUserPasswordDao.setPasswordWithoutHistory(user, encryptedAuthType, newDigest);
-        usersEventLogService.passwordUpdated(user);
+        usersEventLogService.passwordUpdated(user, user);
     }
     
     private boolean verifyPasswordWithOldAuthType(LiteYukonUser user, String password, AuthType historicAuthType) {

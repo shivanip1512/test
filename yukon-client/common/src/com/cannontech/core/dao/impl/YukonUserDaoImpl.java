@@ -432,7 +432,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     
     @Override
     @Transactional
-    public LiteYukonUser create(NewUser user, boolean forceReset) {
+    public LiteYukonUser create(NewUser user, boolean forceReset, LiteYukonUser createdBy) {
         
         int userId = nextValueHelper.getNextValue("YukonUser");
         
@@ -452,7 +452,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         // Set encrypted password and expire if necessary.
         LiteYukonUser lyu = new LiteYukonUser(userId, user.getUsername(), status, forceReset, user.getUserGroupId());
         if (authService.supportsPasswordSet(user.getAuthCategory())) {
-            authService.setPassword(lyu, user.getPassword().getPassword());
+            authService.setPassword(lyu, user.getPassword().getPassword(), createdBy);
             // Setting password unexpires it.
             if (forceReset) {
                 sql = new SqlStatementBuilder();

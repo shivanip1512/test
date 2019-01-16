@@ -47,7 +47,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -151,7 +150,6 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.createForEnum(DREncryption.class));
         builder.add(ArgumentMapper.createForEnum(YukonRole.class));
         builder.add(ArgumentMapper.createForEnum(LoginStatusEnum.class));
-        builder.add(ArgumentMapper.createForEnum(Permission.class));
         builder.add(ArgumentMapper.createForEnum(YukonRoleProperty.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             @Override

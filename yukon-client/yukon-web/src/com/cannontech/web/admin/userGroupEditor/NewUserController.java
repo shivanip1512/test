@@ -109,7 +109,7 @@ public class NewUserController {
         }
         // Force reset only when Yukon is managing the password
         boolean forceReset = user.getAuthCategory() == AuthenticationCategory.ENCRYPTED;
-        LiteYukonUser lyu = userDao.create(user, forceReset);
+        LiteYukonUser lyu = userDao.create(user, forceReset, createdBy);
 
         String groupName = userGroupDao.getUserGroup(lyu.getUserGroupId()).getUserGroup().getUserGroupName();
         EnergyCompany energyCompany = ecDao.getEnergyCompany(user.getEnergyCompanyId());

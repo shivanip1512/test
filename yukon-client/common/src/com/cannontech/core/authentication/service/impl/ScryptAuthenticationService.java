@@ -39,10 +39,10 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
     }
 
     @Override
-    public void setPassword(LiteYukonUser user, String newPassword) {
+    public void setPassword(LiteYukonUser user, String newPassword, LiteYukonUser createdBy) {
         String digest = encryptPassword(newPassword, cpuCostParam, memoryCostParam, parallelParam);
         userPasswordDao.setPassword(user, AuthType.SCRYPT, digest);
-        usersEventLogService.passwordUpdated(user); 
+        usersEventLogService.passwordUpdated(user, createdBy); 
     }
 
     @Override
@@ -120,7 +120,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
                     storedCpuCostParam, storedMemoryCostParam, storedParallelParam, password);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
                 if (isPasswordMatched && isSetPasswordRequired) {
-                    setPassword(user, password);
+                    setPassword(user, password, user);
                 }
             }
         } catch (UnsupportedEncodingException e) {

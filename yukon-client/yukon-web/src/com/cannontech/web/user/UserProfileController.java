@@ -241,7 +241,7 @@ public class UserProfileController {
 
         if (!bindingResult.hasErrors()) {
             try {
-                authenticationService.setPassword(user, changePassword.getNewPassword()); // This cannot fail?
+                authenticationService.setPassword(user, changePassword.getNewPassword(), context.getYukonUser()); // This cannot fail?
                 Map<String, Object> json = new HashMap<>();
                 json.put("success", true);
                 json.put("message", accessor.getMessage(new YukonMessageSourceResolvable(baseKey +"changePassword.success")));

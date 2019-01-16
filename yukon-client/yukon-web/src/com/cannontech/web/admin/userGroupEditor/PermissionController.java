@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.service.PaoPermissionEditorService;
 import com.cannontech.core.authorization.support.Permission;
@@ -100,7 +101,8 @@ public class PermissionController {
         LiteYukonUser user = userDao.getLiteYukonUser(userId);
         String type = permission == Permission.PAO_VISIBLE ? "DENY" : "ALLOW";
         userPermissions.removePermission(user, pao, permission);
-        usersEventLogService.permissionRemoved(type, user.getUsername(), pao.getPaoName(), permission, me);
+        usersEventLogService.permissionRemoved(type, user.getUsername(), (PaoType) pao.getPaoType(), pao.getPaoName(),
+            me);
         log.info(me.getUsername() + " removed permission " + permission + ": " + type
                 + " for " + pao
                 + " from " + user.getUsername());
@@ -125,6 +127,7 @@ public class PermissionController {
             pao.put("id", paoId);
             pao.put("name", lyp.getPaoName());
             pao.put("type", accessor.getMessage(lyp.getPaoType()));
+            pao.put("paoType", lyp.getPaoType());
             paos.add(pao);
         }
         LiteYukonUser me = userContext.getYukonUser();
@@ -135,7 +138,7 @@ public class PermissionController {
             log.info(me.getUsername() + " added permission " + permission + ": " + (allow ? "ALLOW" : "DENY")
                     + " for " + pao.get("name")
                     + " to " + user.getUsername());
-            usersEventLogService.permissionAdded(allow ? "ALLOW" : "DENY", user.getUsername(), pao.get("name").toString(), permission, me);
+            usersEventLogService.permissionAdded(allow ? "ALLOW" : "DENY", user.getUsername(), (PaoType) pao.get("paoType"), pao.get("name").toString(), me);
         }
         
         return paos;
@@ -184,7 +187,7 @@ public class PermissionController {
         log.info(me.getUsername() + " removed permission " + permission + ": " + type
                 + " for " + pao
                 + " from " + group.getUserGroupName());
-        usersEventLogService.permissionRemoved(me, type, group.getUserGroupName(), pao.getPaoName(), permission);
+        usersEventLogService.permissionRemoved(me, type, group.getUserGroupName(), pao.getPaoType(), pao.getPaoName());
         
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
@@ -206,6 +209,7 @@ public class PermissionController {
             pao.put("id", paoId);
             pao.put("name", lyp.getPaoName());
             pao.put("type", accessor.getMessage(lyp.getPaoType()));
+            pao.put("paoType", lyp.getPaoType());
             paos.add(pao);
         }
         LiteYukonUser me = userContext.getYukonUser();
@@ -216,7 +220,7 @@ public class PermissionController {
             log.info(me.getUsername() + " added permission " + permission + ": " + (allow ? "ALLOW" : "DENY")
                     + " for " + pao.get("name")
                     + " to " + group.getUserGroupName());
-            usersEventLogService.permissionAdded(me, allow ? "ALLOW" : "DENY", group.getUserGroupName(), pao.get("name").toString(), permission);
+            usersEventLogService.permissionAdded(me, allow ? "ALLOW" : "DENY", group.getUserGroupName(), (PaoType) pao.get("paoType"), pao.get("name").toString());
         }
         return paos;
     }

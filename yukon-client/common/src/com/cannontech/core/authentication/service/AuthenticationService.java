@@ -94,7 +94,7 @@ public interface AuthenticationService {
      * @throws UnsupportedOperationException If the specified authentication category does not
      *             support password sets via Yukon.
      */
-    void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword);
+    void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword, LiteYukonUser changedByUser);
 
     /**
      * Encrypts the password according to the specified authentication category and updates the database.
@@ -104,7 +104,7 @@ public interface AuthenticationService {
      * @throws UnsupportedOperationException If the authentication category specified by the global setting does not
      *             support password sets via Yukon.
      */
-    void setPassword(LiteYukonUser user, String newPassword);
+    void setPassword(LiteYukonUser user, String newPassword, LiteYukonUser createdBy);
 
     /**
      * Get AuthenticationThrottleDto data for the username.

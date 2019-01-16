@@ -570,7 +570,7 @@ public class UserLoginBasePanel extends DataInputPanel {
             // change password
             boolean supportsSetPassword = authenticationService.supportsPasswordSet(authCategory);
             if (supportsSetPassword) {
-                authenticationService.setPassword(user, authCategory, newPasswordValue);
+                authenticationService.setPassword(user, authCategory, newPasswordValue, user);
             }
 
             newPasswordValue = null;

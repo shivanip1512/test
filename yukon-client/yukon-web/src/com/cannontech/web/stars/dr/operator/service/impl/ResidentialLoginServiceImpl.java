@@ -73,7 +73,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     if (StringUtils.isBlank(password)) {
                         throw new RuntimeException("password required for authentication category " + authenticationCategory);
                     }
-                    authenticationService.setPassword(newUser, loginBackingBean.getPassword1());
+                    authenticationService.setPassword(newUser, loginBackingBean.getPassword1(), user);
                 } else {
                     authenticationService.setAuthenticationCategory(newUser, authenticationCategory);
                 }
@@ -140,7 +140,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     }
                     
                     /* Update the password */
-                    authenticationService.setPassword(residentialUser, loginBackingBean.getPassword1());
+                    authenticationService.setPassword(residentialUser, loginBackingBean.getPassword1(), userContext.getYukonUser());
                 }
                 return null;
             }

@@ -967,10 +967,10 @@ public class DevEventLogCreationService {
                 usersEventLogService.userCreated(userName, userGroup, energyCompany, LoginStatusEnum.ENABLED, user);
                 usersEventLogService.userUpdated(userName, userGroup, energyCompany, LoginStatusEnum.DISABLED, user);
                 usersEventLogService.userDeleted(userName, user);
-                usersEventLogService.passwordUpdated(user);
+                usersEventLogService.passwordUpdated(user, user);
                 usersEventLogService.userUnlocked(userName, user);
-                usersEventLogService.permissionAdded(user, allowDeny, userGroup, paoName, Permission.LM_VISIBLE);
-                usersEventLogService.permissionRemoved(user, allowDeny, userGroup, paoName, Permission.LM_VISIBLE);
+                usersEventLogService.permissionAdded(user, allowDeny, userGroup, PaoType.MCT210, paoName);
+                usersEventLogService.permissionRemoved(user, allowDeny, userGroup, PaoType.MCT210, paoName);
                 usersEventLogService.userGroupCreated(userGroup, user);
                 usersEventLogService.userGroupUpdated(userGroup, user);
                 usersEventLogService.userGroupDeleted(userGroup, user);
@@ -978,8 +978,8 @@ public class DevEventLogCreationService {
                 usersEventLogService.roleGroupRemoved(userGroup, roleGroup, user);
                 usersEventLogService.userAdded(userName, userGroup, user);
                 usersEventLogService.userRemoved(userName, userGroup, user);
-                usersEventLogService.permissionAdded(allowDeny, userName, paoName, Permission.LM_VISIBLE, user);
-                usersEventLogService.permissionRemoved(allowDeny, userName, paoName, Permission.LM_VISIBLE, user);
+                usersEventLogService.permissionAdded(allowDeny, userName, PaoType.MCT210, paoName, user);
+                usersEventLogService.permissionRemoved(allowDeny, userName, PaoType.MCT210, paoName, user);
                 usersEventLogService.roleGroupCreated(roleGroup, user);
                 usersEventLogService.roleGroupUpdated(roleGroup, user);
                 usersEventLogService.roleGroupDeleted(roleGroup, user);

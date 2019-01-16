@@ -288,7 +288,7 @@ public class AccountServiceTest extends EasyMockSupport {
         expect(userGroupDaoMock.getLiteUserGroupByUserGroupName(updatableAccount.getAccountDto().getUserGroup())).andReturn(new LiteUserGroup());
 
         userDaoMock.save(newuser);
-        authenticationServiceMock.setPassword(newuser, updatableAccount.getAccountDto().getPassword());
+        authenticationServiceMock.setPassword(newuser, updatableAccount.getAccountDto().getPassword(), newuser);
         
         dbChangeManager.processDbChange(newuser.getLiteID(),
                                         DBChangeMsg.CHANGE_YUKON_USER_DB,

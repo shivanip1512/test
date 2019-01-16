@@ -208,7 +208,7 @@ public class AccountServiceImpl implements AccountService {
             String password = accountDto.getPassword();
             if (!StringUtils.isBlank(password)) {
                 authenticationService.setPassword(user, authenticationService.getDefaultAuthenticationCategory(),
-                    password);
+                    password, operator);
                 /*
                  * This is to force password reset if the user is created during the account creation from
                  * Account Importer in Bulk Operations
@@ -666,7 +666,7 @@ public class AccountServiceImpl implements AccountService {
                 if (password != null) {
                     if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory)) {
                         authenticationService.setPassword(login, defaultAuthenticationCategory,
-                            SqlUtils.convertStringToDbValue(password));
+                            SqlUtils.convertStringToDbValue(password), user);
                         /*
                          * This is to force password reset if the user is updated during the account update from
                          * Account Importer in Bulk Operations
@@ -693,7 +693,7 @@ public class AccountServiceImpl implements AccountService {
                 usersEventLogService.userCreated(user.getUsername(), accountDto.getUserGroup(), energyCompanyOfAccount.getName(), newUser.getLoginStatus() , user);
                 String password = accountDto.getPassword();
                 if (!StringUtils.isBlank(password)) {
-                    authenticationService.setPassword(newUser, defaultAuthenticationCategory, password);
+                    authenticationService.setPassword(newUser, defaultAuthenticationCategory, password, user);
                 }
 
                 newLoginId = newUser.getUserID();

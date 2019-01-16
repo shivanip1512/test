@@ -752,7 +752,7 @@ public class StarsAdminUtil {
             if (StringUtils.isBlank(password)) {
                 throw new IllegalArgumentException("password cannot be blank");
             }
-            authenticationService.setPassword(liteUser, password);
+            authenticationService.setPassword(liteUser, password, user);
         }
 
         return liteUser;
@@ -796,7 +796,7 @@ public class StarsAdminUtil {
         handleDBChange(liteUser, DbChangeType.UPDATE);
         // only update try to update the password if specified
         if (StringUtils.isNotEmpty(password)) {
-            authenticationService.setPassword(liteUser, password);
+            authenticationService.setPassword(liteUser, password, createdByUser);
         }
     }
 

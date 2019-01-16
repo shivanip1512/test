@@ -23,10 +23,10 @@ public class LocalHashV2AuthenticationService implements AuthenticationProvider,
     }
 
     @Override
-    public void setPassword(LiteYukonUser user, String newPassword) {
+    public void setPassword(LiteYukonUser user, String newPassword, LiteYukonUser createdBy) {
         String digest = digester.encryptPassword(newPassword);
         yukonUserPasswordDao.setPassword(user, AuthType.HASH_SHA_V2, digest);
-        usersEventLogService.passwordUpdated(user); 
+        usersEventLogService.passwordUpdated(user, createdBy); 
     }
 
     @Override

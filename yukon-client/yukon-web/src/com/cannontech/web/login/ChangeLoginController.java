@@ -87,7 +87,7 @@ public class ChangeLoginController {
         ChangeLoginMessage loginMsg = validatePassword(newPassword, confirm, user, authenticationCategory, isValidPassword);
         
         if (loginMsg.equals(ChangeLoginMessage.LOGIN_PASSWORD_CHANGED)) {
-            authenticationService.setPassword(user, newPassword);
+            authenticationService.setPassword(user, newPassword, user);
             success = true;
         }
         

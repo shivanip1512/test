@@ -35,7 +35,7 @@ public class LocalHashV2AuthenticationServiceTest {
         assertFalse("Login succeeded when it should have failed", service.login(someUser, "not the right password"));
 
         // change password
-        service.setPassword(someUser, "new pass");
+        service.setPassword(someUser, "new pass", someUser);
         assertFalse("Login succeeded when it should have failed", service.login(someUser, "not the right password"));
         assertTrue("Login failed when it should have succeeded", service.login(someUser, "new pass"));
     }
@@ -43,12 +43,12 @@ public class LocalHashV2AuthenticationServiceTest {
     @Test
     public void testSetPassword() {
         // attempt change with correct password
-        service.setPassword(someUser, "deadman");
+        service.setPassword(someUser, "deadman", someUser);
 
         assertFalse("Login succeeded when it should have failed", service.login(someUser, "wrong password"));
         assertTrue("Login failed when it should have succeeded", service.login(someUser, "deadman"));
 
-        service.setPassword(someUser, "Algebra Geometry Banana");
+        service.setPassword(someUser, "Algebra Geometry Banana", someUser);
 
         assertFalse("Login succeeded when it should have failed", service.login(someUser, "deadman"));
         assertTrue("Login failed when it should have succeeded", service.login(someUser, "Algebra Geometry Banana"));
