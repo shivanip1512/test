@@ -34,7 +34,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService{
         identifier.setDeviceName("Device");
         identifier.setMacID("1");
         request.setDeviceIdentifiers(identifier);
-        url = "http://localhost:8080/yukon/dev/itron/AddHANDeviceRequest";
+        url = "http://localhost:8080/yukon/dev/itron/addHANDevice";
         Object response =  wsDeviceManager.marshalSendAndReceive(url, request);
         return new AddHANDeviceResponse();
     }

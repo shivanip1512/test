@@ -1,7 +1,5 @@
 package com.cannontech.dr.itron.service.impl;
 
-import javax.xml.bind.Element;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -15,9 +13,10 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRe
 @RequestMapping("/dev/itron/")
 public class ItronSimulatorServiceEndpoint {
 
-    @PayloadRoot(localPart = "AddHANDeviceRequest", namespace="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd")
+    //classpath:com/cannontech/dr/itron/schema/DeviceManager.wsdl
+    @PayloadRoot(localPart = "addHANDevice", namespace="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager")
     public @ResponsePayload
-    Element AddHANDeviceRequest(@RequestPayload Element element) {
+    AddHANDeviceResponse addHANDevice(@RequestPayload AddHANDeviceRequest request) {
         return null;
     }
 }
