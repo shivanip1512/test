@@ -25,7 +25,8 @@ public class ItronSimulatorController {
     
     @GetMapping("test")
     public String test() {
-        communicationService.addHANDeviceRequest();
+        simulatorService.startSimulator();
+        communicationService.addHANDevice();
         return "redirect:itronSimulator";
     }
 }
