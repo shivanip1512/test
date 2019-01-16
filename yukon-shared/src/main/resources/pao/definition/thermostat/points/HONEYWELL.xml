@@ -38,7 +38,7 @@
     <point offset="2" type="Status">
         <name>Thermostat Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="ThermostatRelayState"/>
+        <stategroup value="RelayState"/>
     </point>
     <point offset="2000" type="Status">
         <name>Comm Status</name>

@@ -411,6 +411,15 @@ WHERE RolePropertyId = -10008;
 INSERT INTO DBUpdates VALUES ('YUK-19190', '7.2.0', SYSDATE);
 /* @end YUK-19190 */
 
+/* @start YUK-19316 */
+UPDATE StateGroup
+SET NAME = 'RelayState'
+WHERE STATEGROUPID = -28
+AND NAME = 'ThermostatRelayState';
+
+INSERT INTO DBUpdates VALUES ('YUK-19316', '7.2.0', SYSDATE);
+/* @end YUK-19316 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

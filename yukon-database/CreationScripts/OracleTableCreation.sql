@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/15/2019 2:18:36 AM                         */
+/* Created on:     1/15/2019 3:38:09 PM                         */
 /*==============================================================*/
 
 
@@ -8665,7 +8665,7 @@ create table StateGroup  (
    constraint PK_StateGroup primary key (StateGroupId)
 );
 
-INSERT INTO StateGroup VALUES(-28, 'ThermostatRelayState', 'Status');
+INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
 INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
 INSERT INTO StateGroup VALUES(-26, 'SCADA Override Type', 'Status');
 INSERT INTO StateGroup VALUES(-25, 'YesNo', 'Status');

@@ -170,22 +170,22 @@
     <point offset="3" type="Status">
         <name>Relay 1 Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="ThermostatRelayState"/>
+        <stategroup value="RelayState"/>
     </point>
     <point offset="4" type="Status">
         <name>Relay 2 Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="ThermostatRelayState"/>
+        <stategroup value="RelayState"/>
     </point>
     <point offset="5" type="Status">
         <name>Relay 3 Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="ThermostatRelayState"/>
+        <stategroup value="RelayState"/>
     </point>
     <point offset="6" type="Status">
         <name>Relay 4 Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="ThermostatRelayState"/>
+        <stategroup value="RelayState"/>
     </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>

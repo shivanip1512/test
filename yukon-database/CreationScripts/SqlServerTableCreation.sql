@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/15/2019 2:20:17 AM                         */
+/* Created on:     1/15/2019 3:37:24 PM                         */
 /*==============================================================*/
 
 
@@ -9208,7 +9208,7 @@ create table StateGroup (
 )
 go
 
-INSERT INTO StateGroup VALUES(-28, 'ThermostatRelayState', 'Status');
+INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
 INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
 INSERT INTO StateGroup VALUES(-26, 'SCADA Override Type', 'Status');
 INSERT INTO StateGroup VALUES(-25, 'YesNo', 'Status');
