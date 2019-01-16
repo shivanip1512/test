@@ -30,7 +30,10 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
         JmsApiDirectory.SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT.getQueue().getName(),
         
         SmartNotificationEventType.YUKON_WATCHDOG,
-        JmsApiDirectory.SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT.getQueue().getName()
+        JmsApiDirectory.SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT.getQueue().getName(),
+        
+        SmartNotificationEventType.ASSET_IMPORT,
+        JmsApiDirectory.SMART_NOTIFICATION_DATA_IMPORT_EVENT.getQueue().getName()
     );
     
     private Executor executor = Executors.newCachedThreadPool();

@@ -975,6 +975,20 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    //Used by SmartNotificationDataImportDecider (smartNotificationContext.xml)
+    public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DATA_IMPORT_EVENT= 
+            JmsApi.builder(SmartNotificationEventMulti.class)
+                  .name("Smart Notifications Data Import Event")
+                  .description("Sent by the ScheduledDataImportTask and AccountImportService, to the Smart Notification Data Import "
+                          + "decider, when data import is completed, import can be either scheduled or manual. The decider "
+                          + "then determines when to send a notification, who to send it to, and what form it should take.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.dataImport"))
+                  .requestMessage(SmartNotificationEventMulti.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+
     // Used by SmartNotificationsTestingController && SmartNotificationDailyDigestService (smartNotificationContext.xml)
     public static JmsApi<DailyDigestTestParams,?,?> SMART_NOTIFICATION_DAILY_DIGEST_TEST = 
             JmsApi.builder(DailyDigestTestParams.class)
@@ -1089,6 +1103,7 @@ public final class JmsApiDirectory {
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_MESSAGE_PARAMETERS)
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DAILY_DIGEST_TEST)
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DATA_IMPORT_EVENT)
             
             .put(WIDGET_REFRESH, DATA_COLLECTION)
             .put(WIDGET_REFRESH, DATA_COLLECTION_RECALCULATION)

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import javax.mail.internet.InternetAddress;
 
@@ -34,6 +35,12 @@ import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.scheduledFileImport.DataImportWarning;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
+import com.cannontech.common.smartNotification.model.DataImportAssembler;
+import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
@@ -74,6 +81,7 @@ import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.dataImport.DataImportHelper;
 import com.cannontech.web.stars.dr.operator.AccountImportFields;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.google.common.collect.Lists;
@@ -102,6 +110,7 @@ public class AccountImportService {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
+    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private PrintWriter importLog;
@@ -1053,6 +1062,11 @@ public class AccountImportService {
             } catch (Exception e) {
                 log.error("Failed to send the import log by email");
             }
+            List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning("Manual Customer/Hardware Import", ScheduledImportType.ASSET_IMPORT.getImportType(), result);
+            List<SmartNotificationEvent> smartNotificationEvent =
+                    dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
+                                              .collect(Collectors.toList());
+            smartNotificationEventCreationService.send(SmartNotificationEventType.ASSET_IMPORT, smartNotificationEvent);
         }
     }
     

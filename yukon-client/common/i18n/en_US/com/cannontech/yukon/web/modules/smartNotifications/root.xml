@@ -166,4 +166,26 @@ See {3}]]></entry>
 {2}
 See {3}]]></entry>
 
+    <!-- Data Import Warnings (single event) -->
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.single.subject"><![CDATA[[yukon] {0}{1,choice, 0# completed|1# completed with error|1< completed with errors}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.single.SUMMARY.text"><![CDATA[The {0},{1} {2,choice, 0# completed.|1# completed with error.|1< completed with errors.}
+
+See {3}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.single.EXPANDED.text"><![CDATA[The {0},{1} {2,choice, 0# completed.|1# completed with error.|1< completed with errors.}
+
+{3}
+
+See {4}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.EXPANDED.body.text"><![CDATA[    File "{0}" processed with errors.]]></entry>
+<!-- Data Import Warnings (multiple event) -->
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.multi.subject">[yukon] Imports - {0} Events</entry>
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.multi.SUMMARY.text"><![CDATA[{0} imports have occurred{1,choice, 0#.|1# in the last minute.|1< in the last {1} minutes.}
+
+See {3}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.multi.EXPANDED.text"><![CDATA[{0} imports have occurred{1,choice, 0#.|1# in the last minute.|1< in the last {1} minutes.}
+
+{2}
+See {3}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.multi.EXPANDED.body.text"><![CDATA[{0} {1,choice, 0#(No error)|1#(1 error)|1< ({1} errors)}
+{2}]]></entry>
 </properties>
