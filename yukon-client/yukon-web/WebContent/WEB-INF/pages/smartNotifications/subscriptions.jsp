@@ -28,6 +28,10 @@
                         <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">
                             <c:set var="subDescription" value="${subType} - ${deviceDataMonitors.get(subscription.parameters['monitorId'])}"/>
                         </c:if>
+                        <c:if test="${subscription.type == 'ASSET_IMPORT'}">
+                            <cti:msg2 var="assetImportResultType" key="yukon.web.modules.operator.assetImportResultType.${subscription.parameters['assetImportResultType']}"/>
+                            <c:set var="subDescription" value="${subType} - ${assetImportResultType}"/>
+                        </c:if>
                         <tr class="js-${subscription.frequency}">
                             <td>${fn:escapeXml(subDescription)}</td>
                             <td>
