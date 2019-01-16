@@ -44,11 +44,7 @@ int main(int argc, char* argv[])
 
    InitYukonBaseGlobals();
 
-   doutManager.setOwnerInfo     ( CompileInfo );
-   doutManager.setOutputPath    ( gLogDirectory );
-   doutManager.setRetentionDays ( gLogRetention );
-   doutManager.setOutputFile    ( "porter" );
-   doutManager.setToStdOut      ( true );
+   doutManager.setDefaultOptions( CompileInfo, "porter" );
    doutManager.start(); // fire up the logger thread
 
    string dbglogdir(gLogDirectory + "\\Debug");

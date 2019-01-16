@@ -166,6 +166,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     PRODUCER_WINDOW_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1024),
     MAX_INACTIVITY_DURATION(GlobalSettingSubCategory.MISC, integerType(), 30),
     ERROR_REPORTING(GlobalSettingSubCategory.MISC, booleanType(), false),
+    MAX_LOG_FILE_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1),
 
     // Misc. > Web Graph
     HOME_DIRECTORY(GlobalSettingSubCategory.MISC, stringType(), "c:\\yukon\\client\\webgraphs\\"),

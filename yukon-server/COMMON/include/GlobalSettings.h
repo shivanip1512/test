@@ -16,7 +16,8 @@ public:
 
     enum class Integers {
         ProducerWindowSize,
-        MaxInactivityDuration
+        MaxInactivityDuration,
+        MaxLogFileSize,
     };
 
     enum class Booleans {

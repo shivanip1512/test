@@ -34,11 +34,7 @@ int main(int argc, char* argv[])
    // Catch and clean SEH Exceptions and make sure we get a minidump
    SetUnhandledExceptionFilter(MinidumpExceptionFilter);
 
-   doutManager.setOwnerInfo(CompileInfo);
-   doutManager.setOutputPath    ( gLogDirectory );
-   doutManager.setRetentionDays ( gLogRetention );
-   doutManager.setOutputFile    ( "scanner" );
-   doutManager.setToStdOut      ( true );
+   doutManager.setDefaultOptions(CompileInfo, "scanner");
    doutManager.start(); // fire up the logger thread
 
    ThreadMonitor.start(CtiThreadMonitor::Scanner);

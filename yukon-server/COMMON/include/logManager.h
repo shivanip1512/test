@@ -6,8 +6,7 @@
 
 #include <string>
 
-namespace Cti {
-namespace Logging {
+namespace Cti::Logging {
 
 struct IM_EX_CTIBASE AutoShutdownLoggers
 {
@@ -27,7 +26,7 @@ struct IM_EX_CTIBASE FileInfo
     std::string path;
     std::string baseFileName;
 
-    size_t        maxFileSize;
+    uint64_t      maxFileSize;
     unsigned long maxOpenRetries;
     unsigned long openRetryMillis;
     unsigned long logRetentionDays;
@@ -38,7 +37,7 @@ struct IM_EX_CTIBASE FileInfo
     FileInfo();
 
     bool        shouldDeleteFile (const std::string& fileToDelete, const CtiDate& cutOffDate) const;
-    void        setMaxFileSize   (const size_t maxFileSize);
+    void        setMaxFileSize   (const uint64_t maxFileSize);
 };
 
 enum LogFormats
@@ -64,13 +63,15 @@ protected:
 public:
     LogManager(const std::string &baseLoggerName);
 
+    void setDefaultOptions(const compileinfo_t& ownerinfo, const std::string& basefilename);
+
     void setOutputPath    (const std::string &path);
     void setOutputFile    (const std::string &basefilename);
     void setOwnerInfo     (const compileinfo_t &ownerinfo);
     void setToStdOut      (const bool toStdout);
     void setRetentionDays (const unsigned long days);
     void setOutputFormat  (const LogFormats format);
-    void setMaxFileSize   (const size_t maxFileSize);
+    void setMaxFileSize   (const uint64_t maxFileSize);
     void start();
 
     static void refresh();
@@ -84,7 +85,6 @@ public:
 };
 
 }
-} // namespace Cti::Logging
 
 IM_EX_CTIBASE extern Cti::Logging::LogManager doutManager;
 IM_EX_CTIBASE extern Cti::Logging::LogManager slogManager;

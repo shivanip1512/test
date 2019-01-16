@@ -76,12 +76,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            doutManager.setOwnerInfo     (CompileInfo);
-            doutManager.setOutputPath    (gLogDirectory);
-            doutManager.setRetentionDays (gLogRetention);
-            doutManager.setOutputFile    ("fdr");
-            doutManager.setToStdOut      (true);
-
+            doutManager.setDefaultOptions(CompileInfo, "fdr");
             doutManager.start();     // fire up the logger thread
 
             Cti::identifyExecutable(CompileInfo);
@@ -96,12 +91,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        doutManager.setOwnerInfo     (CompileInfo);
-        doutManager.setOutputPath    (gLogDirectory);
-        doutManager.setRetentionDays (gLogRetention);
-        doutManager.setOutputFile    ("fdr");
-        doutManager.setToStdOut      (false);
-
+        doutManager.setDefaultOptions(CompileInfo, "fdr");
         doutManager.start();     // fire up the logger thread
 
         Cti::identifyExecutable(CompileInfo);

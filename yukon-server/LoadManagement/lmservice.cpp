@@ -82,11 +82,7 @@ void CtiLMService::Init()
 {
     SetStatus(SERVICE_START_PENDING, 1, 5000 );
 
-    doutManager.setOwnerInfo    (CompileInfo);
-    doutManager.setOutputPath   (gLogDirectory);
-    doutManager.setOutputFile   (gConfigParms.getValueAsString("LOAD_MANAGEMENT_LOG_FILE", "loadmanagement"));
-    doutManager.setRetentionDays(gLogRetention);
-    doutManager.setToStdOut     (true);
+    doutManager.setDefaultOptions(CompileInfo, gConfigParms.getValueAsString("LOAD_MANAGEMENT_LOG_FILE", "loadmanagement"));
     doutManager.start();     // fire up the logger thread
 
     string str;

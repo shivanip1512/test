@@ -89,8 +89,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
             InitYukonBaseGlobals(); // Load up the config file.
 
-            InitLog4CXX();
-
             InitSSL();
 
             // Set default database connection params
@@ -449,38 +447,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             if( id = atol(id_str.c_str()) )
             {
                 ForeignCCUPorts.insert(id);
-            }
-        }
-    }
-}
-
-
-/**
-  * Initialize the log4CXX logger.  
-  */
-void InitLog4CXX(void)
-{
-    /* Grab the maxFileSize from serverLogging.props */
-    using namespace std::experimental::filesystem::v1;
-    using namespace log4cxx;
-
-    path propertiesPath(getYukonBase());
-    propertiesPath.append("Server").append("Config").append("serverLogging.props");
-
-    if( exists(propertiesPath) )
-    {
-        PropertyConfigurator::configure(propertiesPath.string());
-
-        LoggerPtr root = Logger::getRootLogger();
-
-        if( AppenderPtr appender = root->getAppender(L"serverFileAppender") )
-        {
-            log4cxx::helpers::ObjectPtrT<ServerFileAppender> sfa = appender;
-            size_t maxFileSize = sfa->getMaxFileSize();
-            if (maxFileSize > 0)
-            {
-                doutManager.setMaxFileSize(maxFileSize);
-                slogManager.setMaxFileSize(maxFileSize);
             }
         }
     }

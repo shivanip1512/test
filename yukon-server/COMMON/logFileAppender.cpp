@@ -17,8 +17,11 @@
 
 #include <apr_time.h>
 
-namespace Cti {
-namespace Logging {
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+namespace Cti::Logging {
 
 using log4cxx::helpers::LogLog;
 using namespace std::string_literals;
@@ -111,8 +114,8 @@ bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpe
 
     _nextResumeAttempt = apr_time_now() + 5 * 1000 * 1000;  //  try every 5 seconds
 
-    log4cxx::File outFile { getFile() };
-    if( ! outFile.exists(p) || outFile.length(p) < _fileInfo.maxFileSize )
+    fs::path filepath { getFile() };
+    if( ! fs::exists(filepath) || fs::file_size(filepath) < _fileInfo.maxFileSize )
     {
         try
         {
@@ -169,15 +172,25 @@ void LogFileAppender::subAppend(
     {
         log4cxx::helpers::synchronized sync(mutex);
 
-        if( getFileLength() >= _fileInfo.maxFileSize )
+        if( fs::file_size(getFile()) >= _fileInfo.maxFileSize )
         {
             if( ! _maxFileSizeLogged )
             {
-                StreamBuffer sb;
+                auto maxSizeReached = "Maximum file size reached: " + std::to_string(_fileInfo.maxFileSize) + " bytes";
 
-                sb << "Maximum file size reached: "<< _fileInfo.maxFileSize <<" bytes";
+                LogLog::error(toLogStr(maxSizeReached));
 
-                LogLog::error(toLogStr(sb.extractToString()));
+                if( _writer != NULL )
+                {
+                    const log4cxx::spi::LoggingEventPtr maxSizeEvent =
+                        new log4cxx::spi::LoggingEvent(
+                            getName(),
+                            log4cxx::Level::getError(),
+                            toLogStr(maxSizeReached),
+                            log4cxx::spi::LocationInfo(__FILE__, __FUNCTION__, __LINE__));
+
+                    FileAppender::subAppend(maxSizeEvent, p);
+                }
 
                 _maxFileSizeLogged = true;
             }
@@ -245,53 +258,4 @@ void LogFileAppender::cleanupOldFiles() const
     }
 }
 
-}
-} // namespace Cti::Logging
-
-/**
- *  Dummy class to register an appender for log4cxx.
- */
-
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-
-// Register this class with log4cxx
-IMPLEMENT_LOG4CXX_OBJECT(ServerFileAppender)
-
-ServerFileAppender::ServerFileAppender() {}
-ServerFileAppender::~ServerFileAppender() {}
-
-/** 
-  * This is where our logging will happen, eventually.
-  */
-void ServerFileAppender::append(const spi::LoggingEventPtr& event, Pool& p)
-{}
-
-void ServerFileAppender::close()
-{
-    if (this->closed)
-    {
-        return;
-    }
-    this->closed = true;
-}
-
-/**
-  *  Capture the maxfilesizestring from the config file.
-  */
-void ServerFileAppender::setOption(const LogString &option, const LogString &value)
-{
-    if (log4cxx::helpers::StringHelper::equalsIgnoreCase(option,
-        LOG4CXX_STR("MAXFILESIZESTRING"),
-        LOG4CXX_STR("maxfilesizestring"))) {
-        maxFileSize = log4cxx::helpers::OptionConverter::toFileSize(value, 1024 * 1024 * 1024);
-    }
-}
-
-/**
-  *  Getter for the maxfilesizestring from the config file.
-  */
-size_t ServerFileAppender::getMaxFileSize()
-{
-    return maxFileSize;
 }

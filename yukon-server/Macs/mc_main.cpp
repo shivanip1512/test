@@ -50,12 +50,7 @@ int main(int argc, char* argv[])
     }
 
     // Initialize the global logger
-    doutManager.setOwnerInfo     ( CompileInfo );
-    doutManager.setOutputFile    ( "macs" );
-    doutManager.setOutputPath    ( gLogDirectory );
-    doutManager.setRetentionDays ( gLogRetention );
-    doutManager.setToStdOut      ( true );
-
+    doutManager.setDefaultOptions( CompileInfo, "macs" );
     doutManager.start();
 
     // Hack to detect whether we are running as a service

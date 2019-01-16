@@ -125,12 +125,7 @@ void CtiCalcLogicService::Init( )
         // in case
         loadConfigParameters();
 
-        //defaults
-        doutManager.setOwnerInfo     (CompileInfo);
-        doutManager.setOutputFile    (_logFile);
-        doutManager.setOutputPath    (gLogDirectory);
-        doutManager.setRetentionDays (gLogRetention);
-        doutManager.setToStdOut      (true);
+        doutManager.setDefaultOptions(CompileInfo, _logFile);
         doutManager.start();     // fire up the logger thread
     }
     catch(...)

@@ -70,7 +70,6 @@ IM_EX_CTIBASE extern std::set<long> gScanForceDevices;
 IM_EX_CTIBASE extern unsigned long  gMemoryReportIntervalSeconds;
 
 IM_EX_CTIBASE void         InitYukonBaseGlobals(void);
-IM_EX_CTIBASE void         InitLog4CXX(void);                       // Initialize the log4CXX logger.
 IM_EX_CTIBASE void         InitSSL(void);                           // Initialize SSL. 
 
 IM_EX_CTIBASE INT          getDebugLevel(void);

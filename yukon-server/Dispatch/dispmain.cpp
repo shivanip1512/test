@@ -54,11 +54,7 @@ int main(int argc, char* argv[])
 
    InitDispatchGlobals();
 
-   doutManager.setOwnerInfo     ( CompileInfo );
-   doutManager.setOutputPath    ( gLogDirectory );
-   doutManager.setRetentionDays ( gLogRetention );
-   doutManager.setOutputFile    ( "dispatch" );
-   doutManager.setToStdOut      ( true );
+   doutManager.setDefaultOptions( CompileInfo, "dispatch" );
    doutManager.start();     // fire up the logger thread
 
    Cti::identifyExecutable(CompileInfo);

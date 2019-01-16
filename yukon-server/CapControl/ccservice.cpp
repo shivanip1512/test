@@ -90,11 +90,7 @@ void CtiCCService::Init()
 {
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
-    doutManager.setOwnerInfo    (CompileInfo);
-    doutManager.setOutputFile   (gConfigParms.getValueAsString("CAP_CONTROL_LOG_FILE", "capcontrol"));
-    doutManager.setOutputPath   (gLogDirectory);
-    doutManager.setRetentionDays(gLogRetention);
-    doutManager.setToStdOut     (true);
+    doutManager.setDefaultOptions(CompileInfo, gConfigParms.getValueAsString("CAP_CONTROL_LOG_FILE", "capcontrol"));
     doutManager.start();     // fire up the logger thread
 
     ThreadMonitor.start(CtiThreadMonitor::CapControl);

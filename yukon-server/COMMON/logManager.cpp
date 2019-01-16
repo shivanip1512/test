@@ -5,14 +5,15 @@
 #include "truncatingConsoleAppender.h"
 #include "logManager.h"
 #include "cparms.h"
+#include "GlobalSettings.h"
+#include "dllbase.h"
 
 #include "log4cxx/logmanager.h"
 #include "log4cxx/asyncappender.h"
 #include "log4cxx/helpers/loglog.h"
 #include "log4cxx/helpers/transcoder.h"
 
-namespace Cti {
-namespace Logging {
+namespace Cti::Logging {
 
 namespace {
 
@@ -98,7 +99,7 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
     return fileDate < cutOffDate;
 }
 
-void FileInfo::setMaxFileSize(const size_t maxFileSize) {
+void FileInfo::setMaxFileSize(const uint64_t maxFileSize) {
     this->maxFileSize = maxFileSize;
 }
 
@@ -113,6 +114,20 @@ LogManager::LogManager(const std::string &baseLoggerName)
 {
 }
 
+void LogManager::setDefaultOptions(const compileinfo_t& ownerinfo, const std::string& basefilename)
+{
+    if( const uint64_t maxFileSizeGb = GlobalSettings::getInteger(GlobalSettings::Integers::MaxLogFileSize, 1) )
+    {
+        setMaxFileSize(maxFileSizeGb * 1024 * 1024 * 1024);
+    }
+
+    setOwnerInfo(ownerinfo);
+    setOutputPath(gLogDirectory);
+    setRetentionDays(gLogRetention);
+    setOutputFile(basefilename);
+    setToStdOut(true);
+}
+
 void LogManager::setOutputPath(const std::string& path)
 {
     _fileInfo.path = path;
@@ -120,10 +135,12 @@ void LogManager::setOutputPath(const std::string& path)
 
 void LogManager::setOutputFile(const std::string& baseFileName)
 {
-    _fileInfo.baseFileName.swap(scrub(baseFileName));
+    auto scrubbed = scrub(baseFileName);
+
+    _fileInfo.baseFileName.swap(scrubbed);
 }
 
-void LogManager::setMaxFileSize(const size_t maxFileSize)
+void LogManager::setMaxFileSize(const uint64_t maxFileSize)
 {
     _fileInfo.setMaxFileSize(maxFileSize);
 }
@@ -220,7 +237,7 @@ void LogManager::refresh()
     std::string logLevelString = gConfigParms.getValueAsString("LOG_LEVEL", "DEBUG");
     log4cxx::LevelPtr level = log4cxx::Level::toLevel(logLevelString);
 
-    // Set overall logging level in root logger, which propigates to all children 
+    // Set overall logging level in root logger, which propagates to all children 
     // unless overriden in the child.
     log4cxx::LoggerPtr rootLogger = log4cxx::LogManager::getRootLogger();
     rootLogger->setLevel(level);
@@ -252,7 +269,6 @@ LoggerPtr LogManager::getLogger(const std::string &loggerName) const
 }
 
 }
-} // namespace Cti::Logging
 
 IM_EX_CTIBASE Cti::Logging::LogManager doutManager("dout");
 IM_EX_CTIBASE Cti::Logging::LogManager slogManager("slog");
