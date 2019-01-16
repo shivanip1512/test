@@ -46,43 +46,6 @@ void deleteOldFile(const std::string &fileToDelete)
 
 } // namespace anonymous
 
-/**
- * Wrapper for OutputStream that will report all write
- * operations back to the LogFileAppender class for file length calculations.
- */
-class LogFileAppender::CountingOutputStream : public log4cxx::helpers::OutputStream
-{
-    log4cxx::helpers::OutputStreamPtr os;
-    LogFileAppender* appender;
-
-public:
-    CountingOutputStream(log4cxx::helpers::OutputStreamPtr& os_, LogFileAppender* appender_) :
-        os(os_), appender(appender_)
-    {}
-
-    void close(log4cxx::helpers::Pool& p) override
-    {
-        os->close(p);
-        appender = NULL;
-    }
-
-    void flush(log4cxx::helpers::Pool& p) override
-    {
-        os->flush(p);
-    }
-
-    void write(log4cxx::helpers::ByteBuffer& buf, log4cxx::helpers::Pool& p) override
-    {
-        os->write(buf, p);
-        if( appender )
-        {
-            appender->_fileSize += buf.limit();
-        }
-    }
-};
-
-/// class LogFileAppender ///
-
 LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInfo& fileInfo)
     :   _fileInfo(fileInfo),
         _maxFileSizeLogged(false),
@@ -105,6 +68,13 @@ LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInf
     activateOptions(p);
 }
 
+std::atomic<uintmax_t> LogFileAppender::_maxFileSize = 1024 * 1024 * 1024;  //  1 GB default
+
+void LogFileAppender::setMaxFileSize(uintmax_t maxFileSize)
+{
+    _maxFileSize = maxFileSize;
+}
+
 bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpers::Pool &p)
 {
     if( timestamp < _nextResumeAttempt )
@@ -115,11 +85,23 @@ bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpe
     _nextResumeAttempt = apr_time_now() + 5 * 1000 * 1000;  //  try every 5 seconds
 
     fs::path filepath { getFile() };
-    if( ! fs::exists(filepath) || fs::file_size(filepath) < _fileInfo.maxFileSize )
+    const auto fileSize = fs::file_size(filepath);
+    const auto maxSize = _maxFileSize.load();
+
+    if( ! fs::exists(filepath) || fileSize < maxSize )
     {
         try
         {
             activateOptions(p);
+
+            const log4cxx::spi::LoggingEventPtr maxSizeEvent =
+                new log4cxx::spi::LoggingEvent(
+                    getName(),
+                    log4cxx::Level::getError(),
+                    toLogStr("Logging resuming - current file size " + std::to_string(fileSize) + ", max file size " + std::to_string(maxSize)),
+                    log4cxx::spi::LocationInfo(__FILE__, __FUNCTION__, __LINE__));
+
+            FileAppender::subAppend(maxSizeEvent, p);
 
             return true;
         }
@@ -136,8 +118,6 @@ extern const log4cxx::spi::LoggingEventPtr PokeEvent;
 
 log4cxx::helpers::WriterPtr LogFileAppender::createWriter(log4cxx::helpers::OutputStreamPtr& os)
 {
-    _maxFileSizeLogged = false;
-
     cleanupOldFiles();
 
     //  Grab a copy of the writer for us to flush on demand
@@ -172,36 +152,40 @@ void LogFileAppender::subAppend(
     {
         log4cxx::helpers::synchronized sync(mutex);
 
-        if( fs::file_size(getFile()) >= _fileInfo.maxFileSize )
+        if( _maxFileSizeLogged )
         {
-            if( ! _maxFileSizeLogged )
-            {
-                auto maxSizeReached = "Maximum file size reached: " + std::to_string(_fileInfo.maxFileSize) + " bytes";
-
-                LogLog::error(toLogStr(maxSizeReached));
-
-                if( _writer != NULL )
-                {
-                    const log4cxx::spi::LoggingEventPtr maxSizeEvent =
-                        new log4cxx::spi::LoggingEvent(
-                            getName(),
-                            log4cxx::Level::getError(),
-                            toLogStr(maxSizeReached),
-                            log4cxx::spi::LocationInfo(__FILE__, __FUNCTION__, __LINE__));
-
-                    FileAppender::subAppend(maxSizeEvent, p);
-                }
-
-                _maxFileSizeLogged = true;
-            }
-
-            //  try to resume writing if the file has been removed or is smaller
             if( ! tryResumeWriting(timestamp, p) )
             {
                 return;
             }
+
+            _maxFileSizeLogged = false;
         }
 
+        if( const auto maxFileSize = _maxFileSize.load(); 
+            fs::file_size(getFile()) >= maxFileSize )
+        {
+            auto maxSizeReached = "Maximum file size reached: " + std::to_string(maxFileSize) + " bytes";
+
+            LogLog::error(toLogStr(maxSizeReached));
+
+            if( _writer != NULL )
+            {
+                const log4cxx::spi::LoggingEventPtr maxSizeEvent =
+                    new log4cxx::spi::LoggingEvent(
+                        getName(),
+                        log4cxx::Level::getError(),
+                        toLogStr(maxSizeReached),
+                        log4cxx::spi::LocationInfo(__FILE__, __FUNCTION__, __LINE__));
+
+                FileAppender::subAppend(maxSizeEvent, p);
+            }
+
+            _maxFileSizeLogged = true;
+
+            return;
+        }
+        
         if( _writer != NULL )
         {
             if( event != PokeEvent )

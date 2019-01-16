@@ -49,7 +49,6 @@ AutoShutdownLoggers::~AutoShutdownLoggers()
 
 FileInfo::FileInfo() :
     path             ("..\\log"),
-    maxFileSize      (1024 * 1024 * 1024), // 1 GB
     maxOpenRetries   (0),
     openRetryMillis  (1000),
     logRetentionDays (0),
@@ -99,10 +98,6 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
     return fileDate < cutOffDate;
 }
 
-void FileInfo::setMaxFileSize(const uint64_t maxFileSize) {
-    this->maxFileSize = maxFileSize;
-}
-
 /// class LogManager ///
 
 std::atomic<bool>  LogManager::inShutdown { false };
@@ -116,10 +111,7 @@ LogManager::LogManager(const std::string &baseLoggerName)
 
 void LogManager::setDefaultOptions(const compileinfo_t& ownerinfo, const std::string& basefilename)
 {
-    if( const uint64_t maxFileSizeGb = GlobalSettings::getInteger(GlobalSettings::Integers::MaxLogFileSize, 1) )
-    {
-        setMaxFileSize(maxFileSizeGb * 1024 * 1024 * 1024);
-    }
+    reloadMaxFileSize();
 
     setOwnerInfo(ownerinfo);
     setOutputPath(gLogDirectory);
@@ -140,9 +132,12 @@ void LogManager::setOutputFile(const std::string& baseFileName)
     _fileInfo.baseFileName.swap(scrubbed);
 }
 
-void LogManager::setMaxFileSize(const uint64_t maxFileSize)
+void LogManager::reloadMaxFileSize()
 {
-    _fileInfo.setMaxFileSize(maxFileSize);
+    if( const uint64_t maxFileSizeGb = GlobalSettings::getInteger(GlobalSettings::Integers::MaxLogFileSize, 1) )
+    {
+        LogFileAppender::setMaxFileSize(maxFileSizeGb * 1024 * 1024 * 1024);
+    }
 }
 
 std::string LogManager::scrub(std::string fileName)

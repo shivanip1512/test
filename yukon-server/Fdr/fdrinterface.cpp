@@ -17,6 +17,7 @@
 
 #include "GlobalSettings.h"
 #include "logger.h"
+#include "logManager.h"
 #include "guard.h"
 #include "fdrpointlist.h"
 
@@ -854,6 +855,8 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     if (resolveDBCategory(dBChangeMsg->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
                         GlobalSettings::reload();
+
+                        doutManager.reloadMaxFileSize();
                     }
                     break;
 

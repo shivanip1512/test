@@ -111,6 +111,8 @@ void DispatchMsgHandlerThread()
                         if (dbCategory == CtiDBChangeCategory::GlobalSetting)
                         {
                             GlobalSettings::reload();
+
+                            doutManager.reloadMaxFileSize();
                         }
 
                         break;

@@ -659,6 +659,8 @@ void CtiCalcLogicService::handleDbChangeMsg( const CtiDBChangeMsg &dbChgMsg, Cti
     if (resolveDBCategory(dbChgMsg.getCategory()) == CtiDBChangeCategory::GlobalSetting)
     {
         GlobalSettings::reload();
+
+        doutManager.reloadMaxFileSize();
     }
 
     // only reload on if a database change was made to a point

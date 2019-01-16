@@ -26,7 +26,6 @@ struct IM_EX_CTIBASE FileInfo
     std::string path;
     std::string baseFileName;
 
-    uint64_t      maxFileSize;
     unsigned long maxOpenRetries;
     unsigned long openRetryMillis;
     unsigned long logRetentionDays;
@@ -37,7 +36,6 @@ struct IM_EX_CTIBASE FileInfo
     FileInfo();
 
     bool        shouldDeleteFile (const std::string& fileToDelete, const CtiDate& cutOffDate) const;
-    void        setMaxFileSize   (const uint64_t maxFileSize);
 };
 
 enum LogFormats
@@ -71,7 +69,7 @@ public:
     void setToStdOut      (const bool toStdout);
     void setRetentionDays (const unsigned long days);
     void setOutputFormat  (const LogFormats format);
-    void setMaxFileSize   (const uint64_t maxFileSize);
+    void reloadMaxFileSize();
     void start();
 
     static void refresh();

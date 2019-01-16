@@ -14,12 +14,11 @@ namespace Cti::Logging {
     
 class IM_EX_CTIBASE LogFileAppender : public log4cxx::rolling::RollingFileAppender
 {
-    class CountingOutputStream; // forward declaration
+    static std::atomic<uintmax_t> _maxFileSize;
 
     const FileInfo  _fileInfo;
     long long       _nextResumeAttempt;
     bool            _maxFileSizeLogged;
-    size_t          _fileSize;
 
     log4cxx::helpers::WriterPtr _writer;
     long long         _nextFlush;
@@ -42,6 +41,8 @@ public:
 
     LogFileAppender(const log4cxx::LayoutPtr& layout,
                     const FileInfo& fileInfo);
+
+    static void setMaxFileSize(uintmax_t fileSize);
 };
 
 }

@@ -31,6 +31,7 @@
 #include "amq_constants.h"
 #include "thread_monitor.h"
 #include "GlobalSettings.h"
+#include "logManager.h"
 #include "ServiceMetricReporter.h"
 #include "MessageCounter.h"
 #include "LMScheduledMessageHolder.h"
@@ -945,6 +946,8 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
             if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
             {
                 GlobalSettings::reload();
+
+                doutManager.reloadMaxFileSize();
             }
         }
         break;

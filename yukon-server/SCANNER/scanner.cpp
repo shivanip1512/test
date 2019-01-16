@@ -24,6 +24,7 @@
 #include "dev_welco.h"
 
 #include "logger.h"
+#include "logManager.h"
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_dbchg.h"
@@ -1227,6 +1228,8 @@ void DispatchMsgHandlerThread(void *Arg)
                     if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
                         GlobalSettings::reload();
+
+                        doutManager.reloadMaxFileSize();
                     }
                     break;
                 }

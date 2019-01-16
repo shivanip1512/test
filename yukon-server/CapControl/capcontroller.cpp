@@ -37,6 +37,7 @@
 #include "millisecond_timer.h"
 #include "module_util.h"
 #include "GlobalSettings.h"
+#include "logManager.h"
 #include "mgr_config.h"
 #include "mgr_holiday.h"
 #include "mgr_paosched.h"
@@ -1898,6 +1899,8 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
                         GlobalSettings::reload();
+
+                        doutManager.reloadMaxFileSize();
                     }
                 }
                 break;

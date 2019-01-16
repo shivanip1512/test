@@ -28,6 +28,7 @@
 #include "millisecond_timer.h"
 
 #include "GlobalSettings.h"
+#include "logManager.h"
 #include "std_helper.h"
 #include "win_helper.h"
 #include "amq_constants.h"
@@ -1756,6 +1757,8 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 if (resolveDBCategory(aChg.getCategory()) == CtiDBChangeCategory::GlobalSetting)
                 {
                     GlobalSettings::reload();
+
+                    doutManager.reloadMaxFileSize();
                 }
                 break;
             }
