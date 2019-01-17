@@ -155,23 +155,4 @@
     <bean class="com.cannontech.dr.nest.dao.impl.NestDaoImpl"/>
 
     <bean class="com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationServiceImpl"/>
-    
-    <bean class="com.cannontech.dr.itron.service.impl.ItronSimulatorServiceImpl"/>
-    <bean class="com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl"/>
-    <bean id="soap11MessageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
-    <bean id="deviceManagerTypes_v1_8_Marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-        <property name="contextPaths" value="com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8" />
-        <property name="marshallerProperties">
-            <map>
-                <entry key="jaxb.formatted.output"><value type="boolean">true</value></entry>
-            </map>
-        </property>
-    </bean>
-    <bean class="org.springframework.ws.client.core.WebServiceTemplate">
-        <qualifier value="wsTemplateItronDeviceManagerTypes_v1_8" />
-        <constructor-arg ref="soap11MessageFactory" />
-        <property name="marshaller" ref="deviceManagerTypes_v1_8_Marshaller" />
-        <property name="unmarshaller" ref="deviceManagerTypes_v1_8_Marshaller" />
-    </bean>
-    <bean class="com.cannontech.dr.itron.simulator.model.SimulatedItronSettings"/>
 </beans>
