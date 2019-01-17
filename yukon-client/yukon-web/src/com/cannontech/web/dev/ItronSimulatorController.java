@@ -2,12 +2,19 @@ package com.cannontech.web.dev;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronSimulatorService;
+import com.cannontech.dr.itron.simulator.model.AddProgramError;
+import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
+import com.cannontech.dr.itron.simulator.model.ItronBasicError;
+import com.cannontech.dr.itron.simulator.model.SimulatedItronSettings;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
@@ -16,10 +23,18 @@ import com.cannontech.web.security.annotation.CheckCparm;
 public class ItronSimulatorController {
     @Autowired ItronSimulatorService simulatorService;
     @Autowired ItronCommunicationService communicationService;
+    @Autowired private SimulatedItronSettings itronSimulatorSettings;
     
 
     @GetMapping("itronSimulator")
-    public String itronSimulator() {
+    public String itronSimulator(ModelMap model) {
+        boolean simulatorRunning = simulatorService.isSimulatorRunning();
+        model.addAttribute("simulatorRunning", simulatorRunning);
+        SimulatedItronSettings settings = itronSimulatorSettings;
+        model.addAttribute("settings", settings);
+        model.addAttribute("editHANDeviceErrorTypes", EditHANDeviceError.values());
+        model.addAttribute("basicErrorTypes", ItronBasicError.values());
+        model.addAttribute("addProgramErrorTypes", AddProgramError.values());
         return "itronSimulator.jsp";
     }
     
@@ -27,6 +42,24 @@ public class ItronSimulatorController {
     public String test() {
         simulatorService.startSimulator();
         communicationService.addHANDevice();
+        return "redirect:itronSimulator";
+    }
+    
+    @PostMapping("saveSettings")
+    public String saveSettings(@ModelAttribute("settings") SimulatedItronSettings settings) {
+        itronSimulatorSettings = settings;
+        return "redirect:itronSimulator";
+    }
+    
+    @GetMapping("start")
+    public String start() {
+        simulatorService.startSimulator();
+        return "redirect:itronSimulator";
+    }
+    
+    @GetMapping("stop")
+    public String stop() {
+        simulatorService.stopSimulator();
         return "redirect:itronSimulator";
     }
 }

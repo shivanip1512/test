@@ -670,6 +670,27 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.nest.schedulabilityError.TOO_MANY_EVENTS_SAME_SEASON">There are too many events scheduled for the same season.</entry>
 <entry key="yukon.web.modules.dr.nest.schedulabilityError.LOAD_SHAPING_OPTION_NOT_ALLOWED">The selected Load Shaping Option is not allowed.</entry>
 
+<!-- Itron -->
+<entry key="yukon.web.modules.dr.itron.basicError.GENERIC">An unknown error has occurred.</entry>
+<entry key="yukon.web.modules.dr.itron.basicError.FATAL_ERROR">A fatal error has occurred.</entry>
+<entry key="yukon.web.modules.dr.itron.basicError.AUTHORIZATION_FAILURE">You are not authorized to perform this action.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.GENERIC">An unknown error has occurred.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.FATAL_ERROR">A fatal error has occurred.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.AUTHORIZATION_FAILURE">You are not authorized to perform this action.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.ESIMACID_PATTERN_MESSAGE">The Mac ID does not meet the required pattern.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.ESIASSOCIATE_HANDEVICE_NOTFOUND">The device was not found.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.ESIASSOCIATE_HANDEVICE_UNMODIFIABLE_DEVICESTATE">The device state cannot be modified.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.ESIASSOCIATE_HANDEVICE_PROVISIONING_INPROGRESS">Provisioning is in progress for the device.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.ESIASSOCIATE_HANDEVICE_ESINOTFOUND">ESI was not found for the device.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.ESIASSOCIATE_HANDEVICE_ESINOTVALID">ESI is not valid for the device.</entry>
+<entry key="yukon.web.modules.dr.itron.editHANDeviceError.ESIASSOCIATE_HANDEVICE_NOTESI">The device is not ESI.</entry>
+<entry key="yukon.web.modules.dr.itron.addProgramError.GENERIC">An unknown error has occurred.</entry>
+<entry key="yukon.web.modules.dr.itron.addProgramError.FATAL_ERROR">A fatal error has occurred.</entry>
+<entry key="yukon.web.modules.dr.itron.addProgramError.AUTHORIZATION_FAILURE">You are not authorized to perform this action.</entry>
+<entry key="yukon.web.modules.dr.itron.addProgramError.UNIQUE_PROGRAM_PROGRAMNAME">Program name must be unique.</entry>
+<entry key="yukon.web.modules.dr.itron.addProgramError.SIZE_PROGRAM_PROGRAMNAME">Program name does not meet the size requirement.</entry>
+<entry key="yukon.web.modules.dr.itron.addProgramError.NOTBLANK_PROGRAM_PROGRAMNAME">Program name must not be blank.</entry>
+
 <entry key="yukon.web.modules.dr.rf.details.pageName">RF Broadcast Performance Details</entry>
 <entry key="yukon.web.modules.dr.rf.details.dateRange">Date Range</entry>
 <entry key="yukon.web.modules.dr.rf.details.numTests">Tests Found</entry>

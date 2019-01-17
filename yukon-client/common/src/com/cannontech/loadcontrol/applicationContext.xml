@@ -172,5 +172,6 @@
         <constructor-arg ref="soap11MessageFactory" />
         <property name="marshaller" ref="deviceManagerTypes_v1_8_Marshaller" />
         <property name="unmarshaller" ref="deviceManagerTypes_v1_8_Marshaller" />
-    </bean>  
+    </bean>
+    <bean class="com.cannontech.dr.itron.simulator.model.SimulatedItronSettings"/>
 </beans>
