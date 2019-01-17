@@ -51,6 +51,7 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm/partition.hpp>
+#include <boost/algorithm/cxx11/none_of.hpp>
 
 extern void refreshGlobalCParms();
 
@@ -1301,7 +1302,10 @@ void CtiCapController::writeEventLogsToDatabase()
 
     if (_CC_DEBUG & CC_DEBUG_CCEVENTINSERT)
     {
-        CTILOG_DEBUG(dout, "Processed " << entries << " CC Event Log entries in " << timer.elapsed() / 1000 << " seconds.");
+        if ( entries > 0 )
+        {
+            CTILOG_DEBUG(dout, "Processed " << entries << " CC Event Log entries in " << timer.elapsed() / 1000 << " seconds.");
+        }
     }
 }
 
@@ -4012,7 +4016,8 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
             EntryPoint,
             PostControlWait,
             PostOpScanWait,
-            PreOpScanWait
+            PreOpScanWait,
+            SkipAScan
         };
 
         enum class Control
@@ -4134,6 +4139,20 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                     states[ busID ].expirationTime = currentDateTime;
                     states[ busID ].expirationTime.addMinutes( _SCAN_WAIT_EXPIRE );
 
+                    // if all the banks are done then we can skip this next pre-scan
+
+                    if ( boost::algorithm::none_of( currentSubstationBus->getAllSwitchedCapBanks(),
+                                                    [ ]( CtiCCCapBankPtr bank ) -> bool
+                                                    {
+                                                        return bank->getVerificationFlag()
+                                                                && ! bank->getVerificationDoneFlag();
+                                                    } ) )
+                    {
+                        states[ busID ].state = LocalScanState::State::SkipAScan;
+
+                        break;
+                    }
+
                     CTILOG_DEBUG( dout, "Performing VERIFICATION Pre-Op Scan on bus: " << currentSubstationBus->getPaoName() );
 
                     currentSubstationBus->scanAllMonitorPoints();
@@ -4150,6 +4169,10 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
 
                     currentSubstationBus->clearMonitorPointsScanInProgress();
 
+                    states[ busID ].state = LocalScanState::State::SkipAScan;
+                }
+                case LocalScanState::State::SkipAScan:
+                {
                     try
                     {
                         if ( states[ busID ].next == LocalScanState::Control::ThisBank )
