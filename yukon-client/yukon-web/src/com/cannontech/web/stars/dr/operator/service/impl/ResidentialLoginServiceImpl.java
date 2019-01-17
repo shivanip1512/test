@@ -61,7 +61,9 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 }
                 String energyCompanyName = ecDao.getEnergyCompany(energyCompanyId).getName();
                 yukonUserDao.save(newUser);
-                usersEventLogService.userCreated(newUser.getUsername(), residentialUserGroup.getUserGroupName(), energyCompanyName, newUser.getLoginStatus() , user);
+                usersEventLogService.userCreated(newUser.getUsername(),
+                    residentialUserGroup != null ? residentialUserGroup.getUserGroupName() : StringUtils.EMPTY,
+                    energyCompanyName, newUser.getLoginStatus(), user);
                 if (residentialUserGroup != null) {
                     usersEventLogService.userAdded(newUser.getUsername(), residentialUserGroup.getUserGroupName(), user);
                 }

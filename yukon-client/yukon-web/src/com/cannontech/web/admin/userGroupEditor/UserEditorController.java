@@ -165,7 +165,10 @@ public class UserEditorController {
             return "userGroupEditor/user.jsp";
         }
         String userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
-        String ecName = ecDao.getEnergyCompany(user.getEnergyCompanyId()).getName();
+        String ecName = StringUtils.EMPTY;
+        if (user.getEnergyCompanyId() != null) {
+            ecName = ecDao.getEnergyCompany(user.getEnergyCompanyId()).getName();
+        }
         yukonUserDao.save(yukonUser);
         usersEventLogService.userUpdated(user.getUsername(), userGroupName, ecName, user.getLoginStatus(), userContext.getYukonUser());
         if (userGroupId != yukonUser.getUserGroupId()) {

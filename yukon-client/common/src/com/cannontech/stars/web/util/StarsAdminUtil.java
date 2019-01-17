@@ -792,7 +792,10 @@ public class StarsAdminUtil {
 
         Transaction.createTransaction(Transaction.UPDATE, dbUser).execute();
         String ecName = energyCompanyDao.getEnergyCompany(createdByUser).getName();
-        usersEventLogService.userUpdated(username, userGroup.getUserGroupName(), ecName, status, createdByUser);
+        
+        usersEventLogService.userUpdated(username,
+            userGroup != null ? userGroup.getUserGroupName() : StringUtils.EMPTY, ecName, status,
+            createdByUser);
         handleDBChange(liteUser, DbChangeType.UPDATE);
         // only update try to update the password if specified
         if (StringUtils.isNotEmpty(password)) {
