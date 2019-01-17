@@ -3581,6 +3581,16 @@
                 <modifier>Quadrant 2</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of 2 quadrant metering -->
+        <point name="Delivered kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Received kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>Varh</uom>
             <multiplier value=".001"/>
