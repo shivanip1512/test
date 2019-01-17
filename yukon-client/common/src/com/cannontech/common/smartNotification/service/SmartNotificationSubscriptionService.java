@@ -32,7 +32,7 @@ public interface SmartNotificationSubscriptionService {
     void deleteSubscriptions(SmartNotificationEventType type, String identifier, String name, YukonUserContext userContext);
 
     /**
-     * Fetch Subscription Type and Name. Return only Type for Subscription other than Device Data monitor.
+     * Fetch Subscription Type and Name in case of Device Data Monitor and Asset Import. Otherwise return only Type for Subscription.
      */
     static String getSubscriptionTypeAndName(SmartNotificationSubscription subscription, List<DeviceDataMonitor> deviceDataMonitorList) {
         if (subscription.getType() == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
@@ -43,6 +43,8 @@ public interface SmartNotificationSubscriptionService {
                 return subscription.getType().toString() + deviceDataMonitor.get().getName();
             }
             return subscription.getType().toString();
+        } else if (subscription.getType() == SmartNotificationEventType.ASSET_IMPORT) {
+            return subscription.getType().toString() + subscription.getParameters().get("assetImportResultType");
         }
         return subscription.getType().toString();
     }
