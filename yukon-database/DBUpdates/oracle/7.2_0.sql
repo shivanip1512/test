@@ -420,6 +420,22 @@ AND NAME = 'ThermostatRelayState';
 INSERT INTO DBUpdates VALUES ('YUK-19316', '7.2.0', SYSDATE);
 /* @end YUK-19316 */
 
+/* @start YUK-19270 */
+UPDATE POINT 
+SET POINTNAME = 'Peak kVAr (Quadrants 1 4)'
+WHERE POINTID IN (
+    SELECT POINTID 
+    FROM POINT P 
+    JOIN YukonPAObject Y ON P.PAObjectID = Y.PAObjectID
+    WHERE Y.Type IN ('RFN-430A3K', 'RFN-430A3R', 'RFN-430KV') 
+    AND P.POINTTYPE = 'Analog'
+    AND P.POINTOFFSET = 262
+    AND P.POINTNAME = 'Max kVAr'
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-19270', '7.2.0', SYSDATE);
+/* @end YUK-19270 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
