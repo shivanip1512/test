@@ -5,56 +5,58 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
 
-<style>
-.summaryNumbers {
-    font-size:85%;
-    margin-right:3px;
-}
-</style>
-
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
-    <table class="compact-results-table">
-        <c:if test="${summary.totalGateways != 0}">
-            <th class="fwn PB0"><a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><cti:msg2 key=".gateways"/></a></th>
+    <table class="compact-results-table no-stripes infrastructure-warnings-summary">
+        <c:if test="${summary.totalGateways != 0 || summary.totalRelays != 0}">
+            <tr>
+                <c:if test="${summary.totalGateways != 0}">
+                    <td>
+                        <a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><cti:msg2 key=".gateways"/></a>:
+                    </td>
+                    <td>
+                        <span class="label bg-color-pie-green">${summary.totalGateways - summary.warningGateways}</span>
+                        <span class="label bg-color-orange">${summary.warningGateways}</span>
+                    </td>
+                </c:if>
+                <c:if test="${summary.totalRelays != 0}">
+                    <td width="10%">
+                    </td>
+                    <td>
+                        <a href="${allWarningsUrl}?types=RELAY" target="_blank"><cti:msg2 key=".relays"/></a>:
+                    </td>
+                    <td>
+                        <span class="label bg-color-pie-green">${summary.totalRelays - summary.warningRelays}</span>
+                        <span class="label bg-color-orange">${summary.warningRelays}</span>
+                    </td>
+                </c:if>
+            </tr>            
         </c:if>
-        <c:if test="${summary.totalRelays != 0}">
-            <th class="fwn PB0"><a href="${allWarningsUrl}?types=RELAY" target="_blank"><cti:msg2 key=".relays"/></a></th>
+        <c:if test="${summary.totalCcus != 0 || summary.totalRepeaters != 0}">
+            <tr>
+                <c:if test="${summary.totalCcus != 0}">
+                    <td>
+                        <a href="${allWarningsUrl}?types=CCU" target="_blank"><cti:msg2 key=".CCUs"/></a>:
+                    </td>
+                    <td>
+                        <span class="label bg-color-pie-green">${summary.totalCcus - summary.warningCcus}</span>
+                        <span class="label bg-color-orange">${summary.warningCcus}</span>
+                    </td>
+                </c:if>
+                <c:if test="${summary.totalRepeaters != 0}">
+                    <td width="10%">
+                    </td>
+                    <td>
+                        <a href="${allWarningsUrl}?types=REPEATER" target="_blank"><cti:msg2 key=".repeaters"/></a>:
+                    </td>
+                    <td>
+                        <span class="label bg-color-pie-green">${summary.totalRepeaters - summary.warningRepeaters}</span>
+                        <span class="label bg-color-orange">${summary.warningRepeaters}</span>
+                    </td>
+                </c:if>
+            </tr>
         </c:if>
-        <c:if test="${summary.totalCcus != 0}">
-            <th class="fwn PB0"><a href="${allWarningsUrl}?types=CCU" target="_blank"><cti:msg2 key=".CCUs"/></a></th>
-        </c:if>
-        <c:if test="${summary.totalRepeaters != 0}">
-            <th class="fwn PB0"><a href="${allWarningsUrl}?types=REPEATER" target="_blank"><cti:msg2 key=".repeaters"/></a></th>
-        </c:if>
-        <tr>
-            <c:if test="${summary.totalGateways != 0}">
-                <td class="PT0">
-                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalGateways - summary.warningGateways}</span>
-                    <span class="label bg-color-orange summaryNumbers">${summary.warningGateways}</span>
-                </td>
-            </c:if>
-            <c:if test="${summary.totalRelays != 0}">
-                <td class="PT0">
-                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalRelays - summary.warningRelays}</span>
-                    <span class="label bg-color-orange summaryNumbers">${summary.warningRelays}</span>
-                </td>
-            </c:if>
-            <c:if test="${summary.totalCcus != 0}">
-                <td class="PT0">
-                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalCcus - summary.warningCcus}</span>
-                    <span class="label bg-color-orange summaryNumbers">${summary.warningCcus}</span>
-                </td>
-            </c:if>
-            <c:if test="${summary.totalRepeaters != 0}">
-                <td class="PT0">
-                    <span class="label bg-color-pie-green summaryNumbers">${summary.totalRepeaters - summary.warningRepeaters}</span>
-                    <span class="label bg-color-orange summaryNumbers">${summary.warningRepeaters}</span>
-                </td>
-            </c:if>
-        </tr>
     </table>  
     <span class="fr"><a href="${allWarningsUrl}" target="_blank"><cti:msg2 key=".seeAll"/></a></span>
-    <br/>  
         
     <tags:sectionContainer2 nameKey="recentIssues">
         <table class="compact-results-table" width="100%">

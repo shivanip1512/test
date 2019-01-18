@@ -1,34 +1,42 @@
 package com.cannontech.web.stars.infrastructureWarnings;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.joda.time.DateTime;
+import javax.servlet.http.HttpServletResponse;
+
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
@@ -37,6 +45,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.service.InfrastructureWarningsWidgetService;
+import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -50,12 +59,14 @@ public class InfrastructureWarningsController {
     @Autowired private IDatabaseCache cache;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
     private final static String widgetKey = "yukon.web.widgets.";
     private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
 
-    @RequestMapping("forceUpdate")
+    @GetMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
         Map<String, Object> json = new HashMap<>();
         widgetService.initiateRecalculation();
@@ -63,7 +74,7 @@ public class InfrastructureWarningsController {
         return json;
     }
     
-    @RequestMapping(value="updateWidget", method=RequestMethod.GET)
+    @GetMapping("updateWidget")
     public String updateWidget(ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
@@ -99,9 +110,25 @@ public class InfrastructureWarningsController {
                      .toArray(InfrastructureWarningDeviceCategory[]::new);
     }
     
-    @RequestMapping("detail")
+    @GetMapping("detail")
     public String detail(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
                          InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
+        InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
+        model.addAttribute("summary", summary);
+
+        getFilteredResults(types, model, paging, sorting, userContext);
+        return "infrastructureWarnings/detail.jsp";
+    }
+    
+    @GetMapping("filteredResults")
+    public String filteredResults(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
+                         InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
+        getFilteredResults(types, model, paging, sorting, userContext);
+        return "infrastructureWarnings/filteredTable.jsp";
+    }
+    
+    private void getFilteredResults(InfrastructureWarningDeviceCategory[] types, ModelMap model, PagingParameters paging, 
+                                    SortingParameters sorting, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         types = types != null ? types : getTypesInSystem();
@@ -155,8 +182,71 @@ public class InfrastructureWarningsController {
                                                                              .map(warning -> warning.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
+    }
+    
+    @GetMapping(value = "collectionAction")
+    public String collectionAction(InfrastructureWarningDeviceCategory[] types, String actionUrl) {
+        types = types != null ? types : getTypesInSystem();
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        List<YukonPao> devices = warnings.stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
+        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+        return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
+    }
+    
+    @GetMapping("download")
+    public String download(InfrastructureWarningDeviceCategory[] types, YukonUserContext userContext, HttpServletResponse response) throws IOException {
+        types = types != null ? types : getTypesInSystem();
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
         
-        return "infrastructureWarnings/detail.jsp";
+        String[] headerRow = getHeaderRows(userContext);
+        List<String[]> dataRows = getDataRows(warnings, userContext);
+
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "infrastructureWarnings_" + now + ".csv");
+        return null;
+      }
+    
+    @GetMapping("downloadAll")
+    public String downloadAll(YukonUserContext userContext, HttpServletResponse response) throws IOException {
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(getTypesInSystem());
+
+        String[] headerRow = getHeaderRows(userContext);
+        List<String[]> dataRows = getDataRows(warnings, userContext);
+
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "infrastructureWarnings_" + now + ".csv");
+        return null;
+      }
+    
+    private String[] getHeaderRows(YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = new String[4];
+
+        headerRow[0] = accessor.getMessage(DetailSortBy.name);
+        headerRow[1] = accessor.getMessage(DetailSortBy.type);
+        headerRow[2] = accessor.getMessage(DetailSortBy.status);
+        headerRow[3] = accessor.getMessage(DetailSortBy.timestamp);
+        
+        return headerRow;
+    }
+    
+    private List<String[]> getDataRows(List<InfrastructureWarning> warnings, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        List<String[]> dataRows = Lists.newArrayList();
+        for (InfrastructureWarning warning: warnings) {
+            String[] dataRow = new String[4];
+            dataRow[0] = cache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName();
+            dataRow[1] = warning.getPaoIdentifier().getPaoType().getPaoTypeName();
+            dataRow[2] = accessor.getMessage(warning.getWarningType().getFormatKey() + "." + warning.getSeverity().name(), warning.getArguments());
+            if (warning.getTimestamp().isBefore(epoch1990)) {
+                dataRow[3] = accessor.getMessage("yukon.common.dashes");
+            } else {
+                dataRow[3] = (warning.getTimestamp() == null) ? "" : dateFormattingService.format(warning.getTimestamp(), DateFormatEnum.BOTH, userContext);
+            }
+            dataRows.add(dataRow);
+        }
+        return dataRows;
     }
     
     public enum DetailSortBy implements DisplayableEnum {

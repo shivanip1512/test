@@ -39,11 +39,27 @@
     
     <entry key="yukon.web.widgets.infrastructureWarnings.filters.title">Filters</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.deviceTypes">Device Types</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warnings">Warnings</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.totalWarnings">Total</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.downloadAll.hoverText">DownloadAll</entry>
    
     <entry key="yukon.web.widgets.infrastructureWarnings.detail.helpTitle">Infrastructure Warnings Detail Help</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.detail.helpText"><![CDATA[
-            Select any device types to filter the list.<br/>
-            The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
+        The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
+        A summary of the devices with and without warnings will be displayed in the top left corner of the page, along with an option to download all infrastructure warnings.
+        <ul>
+            <li>
+                <span class="fwb bg-color-pie-green txt-color-white">Devices without warnings (Green)</span> - 
+                Number of devices without any of the below mentioned warning types.
+            </li>
+            <li>
+                <span class="fwb bg-color-orange txt-color-white">Devices with warnings (Orange)</span> - 
+                Number of devices with warnings.
+            </li>
+        </ul>
+        In the top right corner, select any device types to filter the list and click on the Filter button. A table will display with the device, type, warning message and warning time. 
+        Click on the filtered cog dropdown to perform collection actions, download or map the filtered results.<br/><br/>
+        The following is a list of the types of warnings that are being evaluated:
             <ul>
                 <li>Gateway connection status – Warning condition produced if a gateway has not communicated with the Yukon software in a specified period of time. It may indicate a bulk communications issue with that particular gateway.</li>
                 <li>Duplicate gateway color found - Warning condition produced when two gateways on the RF network have the same color setting. The condition indicates a misconfigured gateway.</li>
