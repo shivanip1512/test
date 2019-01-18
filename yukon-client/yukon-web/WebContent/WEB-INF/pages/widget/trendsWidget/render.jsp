@@ -2,9 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<style>
-input.highcharts-range-selector:focus { background-color: red;}
-</style>
+
 <div class="js-trends-widget-container js-block-this">
     <cti:uniqueIdentifier var="id" />
     <div class="label-json dn">${fn:escapeXml(labels)}</div>
@@ -30,9 +28,7 @@ input.highcharts-range-selector:focus { background-color: red;}
         <a href="${trendsUrl}" class="js-details-link"><i:inline key="yukon.common.details"/></a>
         <span class="fr">
             <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedLbl"/>
-            <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedLbl}">
-                <cti:formatDate value="${lastAttemptedRefresh}" type="DATEHMS_12"/>
-            </span>
+            <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedLbl}"></span>
             <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-trends-update"/>
         </span>
     </div>
