@@ -12,7 +12,7 @@ yukon.widget.trends = (function () {
     
     var
     _initialized = false,
-    _updateInterval = 1800000,
+    _updateInterval = 1800000, // 30 minutes
     _updateTimeout = null,
     
     _updateChart = function (widgetContainer, animateSeriesPloting) {
@@ -53,6 +53,7 @@ yukon.widget.trends = (function () {
                     animateSeriesPloting: animateSeriesPloting
             };
             if (widgetContainer.exists()) {
+                // disable editing the date fields. 
                 Highcharts.wrap(Highcharts.RangeSelector.prototype, 'drawInput', function (proceed, name) {
                     proceed.call(this, name);
                     this[name + 'DateBox'].attr("fill", "#f7f7f7");

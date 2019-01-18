@@ -61,7 +61,7 @@ yukon.tools.trends = (function () {
                 url: yukon.url('/tools/trends/getZoom'),
                 type: 'get'
             }).done(function (data) {
-            	selectedZoomOption=data.prefZoom;
+                selectedZoomOption=data.prefZoom;
             });
             $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function (trend) {
                 var trendChartOptions = {
@@ -88,11 +88,11 @@ yukon.tools.trends = (function () {
             }
             $(document).on('click', '.js-print', function (ev) {
                 var chart = trendChartContainer.highcharts(),
-                    w = chart.chartWidth,
-                    h = chart.chartHeight;
+                    width = chart.chartWidth,
+                    height = chart.chartHeight;
                 chart.print();
                 setTimeout(function() {
-                    chart.setSize(w, h, false);
+                    chart.setSize(width, height, false);
                 }, 100);
             });
             $(document).on('click', '.js-dl-png', function (ev) {
