@@ -16,10 +16,8 @@ public class ItronSimulatorServiceImpl implements ItronSimulatorService{
 
     @Override
     public void startSimulator() {
-        if(!isSimulatorRunning()) {
-            endPoint = Endpoint.create(new ItronSimulatorServiceImpl());
-            endPoint.publish("http://localhost:8083/itronSimulatorServer");      
-        }
+        endPoint = Endpoint.create(new ItronSimulatorServiceImpl());
+        endPoint.publish("http://localhost:8080/itronSimulatorServer");        
     }
     
     @Override
