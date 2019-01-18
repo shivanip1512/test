@@ -12,6 +12,9 @@
             <div class="column one">
                 <tags:sectionContainer title="Settings">
                     <tags:nameValueContainer>
+                        <tags:nameValue name="AddHANDevice">
+                            <tags:input path="addHANDeviceError"/>
+                        </tags:nameValue>
                         <tags:nameValue name="EditHANDevice">
                             <form:select path="editHANDeviceError">
                             <option label="SUCCESS"></option>
@@ -32,6 +35,22 @@
                             <form:select path="editServicePointError">
                             <option label="SUCCESS"></option>
                                   <c:forEach var="errorType" items="${basicErrorTypes}">
+                                    <form:option value="${errorType}"></form:option>
+                                  </c:forEach>
+                            </form:select>
+                        </tags:nameValue>
+                        <tags:nameValue name="AddESIGroup">
+                            <form:select path="addESIGroupError">
+                            <option label="SUCCESS"></option>
+                                  <c:forEach var="errorType" items="${esiGroupErrorTypes}">
+                                    <form:option value="${errorType}"></form:option>
+                                  </c:forEach>
+                            </form:select>
+                        </tags:nameValue>
+                        <tags:nameValue name="EditESIGroup">
+                            <form:select path="editESIGroupError">
+                            <option label="SUCCESS"></option>
+                                  <c:forEach var="errorType" items="${esiGroupErrorTypes}">
                                     <form:option value="${errorType}"></form:option>
                                   </c:forEach>
                             </form:select>

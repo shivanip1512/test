@@ -12,6 +12,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronSimulatorService;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
+import com.cannontech.dr.itron.simulator.model.ESIGroupError;
 import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
 import com.cannontech.dr.itron.simulator.model.ItronBasicError;
 import com.cannontech.dr.itron.simulator.model.SimulatedItronSettings;
@@ -35,6 +36,7 @@ public class ItronSimulatorController {
         model.addAttribute("editHANDeviceErrorTypes", EditHANDeviceError.values());
         model.addAttribute("basicErrorTypes", ItronBasicError.values());
         model.addAttribute("addProgramErrorTypes", AddProgramError.values());
+        model.addAttribute("esiGroupErrorTypes", ESIGroupError.values());
         return "itronSimulator.jsp";
     }
     

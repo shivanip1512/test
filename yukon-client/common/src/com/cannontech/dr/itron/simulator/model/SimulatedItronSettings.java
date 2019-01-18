@@ -15,6 +15,9 @@ public class SimulatedItronSettings implements Serializable {
     private ItronBasicError servicePointEnrollmentSetError;
     private ItronBasicError servicePointEnrollmentGetError;
     private ItronBasicError addHANLoadControlProgramEventError;
+    private ESIGroupError addESIGroupError;
+    private ESIGroupError editESIGroupError;
+    private String addHANDeviceError;
     
     public EditHANDeviceError getEditHANDeviceError() {
         return editHANDeviceError;
@@ -57,6 +60,24 @@ public class SimulatedItronSettings implements Serializable {
     }
     public void setServicePointEnrollmentGetError(ItronBasicError servicePointEnrollmentGetError) {
         this.servicePointEnrollmentGetError = servicePointEnrollmentGetError;
+    }
+    public ESIGroupError getAddESIGroupError() {
+        return addESIGroupError;
+    }
+    public void setAddESIGroupError(ESIGroupError addESIGroupError) {
+        this.addESIGroupError = addESIGroupError;
+    }
+    public ESIGroupError getEditESIGroupError() {
+        return editESIGroupError;
+    }
+    public void setEditESIGroupError(ESIGroupError editESIGroupError) {
+        this.editESIGroupError = editESIGroupError;
+    }
+    public String getAddHANDeviceError() {
+        return addHANDeviceError;
+    }
+    public void setAddHANDeviceError(String addHANDeviceError) {
+        this.addHANDeviceError = addHANDeviceError;
     }
 
 }

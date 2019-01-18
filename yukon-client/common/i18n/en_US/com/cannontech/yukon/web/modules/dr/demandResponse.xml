@@ -690,6 +690,8 @@ Examples of discrepancies that will be displayed:
 <entry key="yukon.web.modules.dr.itron.addProgramError.UNIQUE_PROGRAM_PROGRAMNAME">Program name must be unique.</entry>
 <entry key="yukon.web.modules.dr.itron.addProgramError.SIZE_PROGRAM_PROGRAMNAME">Program name does not meet the size requirement.</entry>
 <entry key="yukon.web.modules.dr.itron.addProgramError.NOTBLANK_PROGRAM_PROGRAMNAME">Program name must not be blank.</entry>
+<entry key="yukon.web.modules.dr.itron.esiGroupError.ERROR_MACID_NOT_FOUND">Mac ID was not found.</entry>
+<entry key="yukon.web.modules.dr.itron.esiGroupError.ERROR_MACID_INVALID">Mac ID is invalid.</entry>
 
 <entry key="yukon.web.modules.dr.rf.details.pageName">RF Broadcast Performance Details</entry>
 <entry key="yukon.web.modules.dr.rf.details.dateRange">Date Range</entry>
