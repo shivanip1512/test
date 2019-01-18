@@ -1,8 +1,8 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <cti:uniqueIdentifier var="id" />
 

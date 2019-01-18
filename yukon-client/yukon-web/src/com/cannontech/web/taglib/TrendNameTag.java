@@ -42,7 +42,7 @@ public class TrendNameTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
 
         if (trendId == null) {
-            throw new JspException("trend should not both be set");
+            throw new JspException("trendId is not set");
         }
 
         LiteGraphDefinition liteGraphDefinition = graphDao.getLiteGraphDefinition(trendId);

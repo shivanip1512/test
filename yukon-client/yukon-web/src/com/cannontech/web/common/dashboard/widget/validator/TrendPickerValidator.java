@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.WidgetInputType;
 
@@ -23,7 +22,7 @@ public class TrendPickerValidator implements WidgetInputValidator {
 
     @Override
     public void validate(String inputName, Object inputValue, WidgetInputType type)
-            throws WidgetParameterValidationException, WidgetMissingParameterException {
+            throws WidgetParameterValidationException {
         String message = "Valid trend selection is required.";
         if (!StringUtils.isNumeric((String) inputValue)) {
             throw new WidgetParameterValidationException(message, inputName, "trendId.required", inputName);

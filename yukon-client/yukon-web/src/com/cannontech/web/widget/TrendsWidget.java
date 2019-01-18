@@ -9,8 +9,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.tools.trends.TrendUtils;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -19,15 +21,16 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 @Controller
 @RequestMapping("/trendsWidget")
 public class TrendsWidget extends AdvancedWidgetControllerBase {
-    
+
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public TrendsWidget(@Qualifier("widgetInput.trendId") SimpleWidgetInput simpleWidgetInput) {
         addInput(simpleWidgetInput);
         setIdentityPath("common/trendIdentity.jsp");
     }
-    
+
     @GetMapping("render")
+    @CheckRole(YukonRole.TRENDING)
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws Exception {
         Integer trendId = WidgetParameterHelper.getIntParameter(request, "trendId");
         model.addAttribute("trendId", trendId);

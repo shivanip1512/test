@@ -902,7 +902,7 @@
     </attribute>
     <attribute>
       <name>trendId</name>
-      <required>false</required>
+      <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>

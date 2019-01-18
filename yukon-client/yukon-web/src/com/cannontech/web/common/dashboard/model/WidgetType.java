@@ -80,8 +80,7 @@ public enum WidgetType implements DisplayableEnum {
             .putAll(TRENDS, baseJSPath + "yukon.widget.trends.js",
                             "/resources/js/common/yukon.trends.js",
                                          "HIGH_STOCK",
-                                         "HIGH_STOCK_NO_DATA",
-                                         "HIGH_STOCK_EXPORTING");
+                                         "HIGH_STOCK_NO_DATA");
         widgetSpecificJavascript = javascriptBuilder.build();
         
         widgetSpecificCss = ImmutableListMultimap.of(
