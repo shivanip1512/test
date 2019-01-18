@@ -1428,11 +1428,13 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 // Configuration Error
                 // Disable the bus so we don't try to run again. User Intervention required.
-                subbus->setDisableFlag(true);
-                subbus->setBusUpdatedFlag(true);
 
                 CTILOG_ERROR(dout, "IVVC Configuration Error: Algorithm cannot execute. Disabling bus: " << subbus->getPaoName());
 
+                sendDisableRemoteControl( subbus );
+
+                CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::DISABLE_SUBSTATION_BUS,
+                                                                       subbus->getPaoId() ) )->execute();
                 return;
             }
 
