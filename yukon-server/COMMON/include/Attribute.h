@@ -371,6 +371,7 @@ public:
     static const Attribute  AlternateModeEntry;
     static const Attribute  ANSISecurityFailed;
     static const Attribute  BadUpgradeSecurityParameter;
+    static const Attribute  BatteryEndOfLife;
     static const Attribute  ConfigurationError;
     static const Attribute  ClockError;
     static const Attribute  CrystalOscillatorError;
@@ -382,9 +383,12 @@ public:
     static const Attribute  DNP3AddressChanged;
     static const Attribute  DisplayLockedByWarning;
     static const Attribute  EepromAccessError;
+    static const Attribute  EmptyPipe;
+    static const Attribute  Encoder;
     static const Attribute  EncryptionKeyTableCrcError;
     static const Attribute  EndOfCalendarWarning;
     static const Attribute  EnergyAccumulatedWhileInStandbyMode;
+    static const Attribute  ExceedingMaximumFlow;
     static const Attribute  FailedUpgradeSignatureVerification;
     static const Attribute  ImproperMeterEngineOperationWarning;
     static const Attribute  InactivePhaseCurrentDiagnosticError;
@@ -400,6 +404,7 @@ public:
     static const Attribute  LowLossPotential;
     static const Attribute  MassMemoryError;
     static const Attribute  MeasurementError;
+    static const Attribute  MeterFunctioningCorrectly;
     static const Attribute  MeterReconfigure;
     static const Attribute  MetrologyCommunicationFailure;
     static const Attribute  NonVolatileMemFailure;
@@ -413,6 +418,7 @@ public:
     static const Attribute  PqmTestFailureWarning;
     static const Attribute  RamError;
     static const Attribute  RegisterFullScaleExceeded;
+    static const Attribute  ReverseFlow;
     static const Attribute  ReversedAggregate;
     static const Attribute  ReversedPhaseA;
     static const Attribute  ReversedPhaseC;
@@ -425,14 +431,19 @@ public:
     static const Attribute  SeasonChange;
     static const Attribute  SecurityConfigurationError;
     static const Attribute  SelfCheckError;
+    static const Attribute  SensorError;
     static const Attribute  ServiceCurrentTestFailureWarning;
     static const Attribute  ServiceDisconnectSwitchError;
     static const Attribute  ServiceDisconnectSwitchOpen;
     static const Attribute  ServiceDisconnectSwitchSensorError;
     static const Attribute  SiteScanError;
+    static const Attribute  StorageMode;
     static const Attribute  StuckSwitch;
+    static const Attribute  SuspectedLeak;
     static const Attribute  TableCrcError;
+    static const Attribute  TemperatureOutOfRange;
     static const Attribute  THDVorTDDIError;
+    static const Attribute  ThirtyDaysNoUsage;
     static const Attribute  TimeAdjustment;
     static const Attribute  TimeSyncFailed;
     static const Attribute  TOUScheduleChange;

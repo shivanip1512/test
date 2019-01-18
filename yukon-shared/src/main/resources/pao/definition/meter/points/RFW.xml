@@ -58,4 +58,48 @@
         <name>Tamper - Cable Cut</name>
         <stategroup value="TrueFalse"/>
     </point>
+    <point offset="90" type="Status">
+        <name>Battery End Of Life</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="91" type="Status">
+        <name>Empty Pipe</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="92" type="Status">
+        <name>Encoder</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="93" type="Status">
+        <name>Exceeding Maximum Flow</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="94" type="Status">
+        <name>Meter Functioning Correctly</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="95" type="Status">
+        <name>Reverse Flow</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="96" type="Status">
+        <name>Sensor Error</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="97" type="Status">
+        <name>Storage Mode</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="98" type="Status">
+        <name>Suspected Leak</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="99" type="Status">
+        <name>Temperature Out Of Range</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="100" type="Status">
+        <name>Thirty Days No Usage</name>
+        <stategroup value="TrueFalse"/>
+    </point>
 </points>

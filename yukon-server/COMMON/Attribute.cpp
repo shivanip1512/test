@@ -380,6 +380,7 @@ INIT_ATTRIBUTE( NetReceivedkVArhRateD,                              "NET_RECEIVE
 INIT_ATTRIBUTE( AlternateModeEntry,                                 "ALTERNATE_MODE_ENTRY" );
 INIT_ATTRIBUTE( ANSISecurityFailed,                                 "ANSI_SECURITY_FAILED" );
 INIT_ATTRIBUTE( BadUpgradeSecurityParameter,                        "BAD_UPGRADE_SECURITY_PARAM" );
+INIT_ATTRIBUTE( BatteryEndOfLife,                                   "BATTERY_END_OF_LIFE" );
 INIT_ATTRIBUTE( ConfigurationError,                                 "CONFIGURATION_ERROR" );
 INIT_ATTRIBUTE( ClockError,                                         "CLOCK_ERROR" );
 INIT_ATTRIBUTE( CrystalOscillatorError,                             "CRYSTAL_OSCILLATOR_ERROR" );
@@ -391,9 +392,12 @@ INIT_ATTRIBUTE( DemandThresholdExceededWarning,                     "DEMAND_THRE
 INIT_ATTRIBUTE( DNP3AddressChanged,                                 "DNP3_ADDRESS_CHANGED" );
 INIT_ATTRIBUTE( DisplayLockedByWarning,                             "DISPLAY_LOCKED_BY_WARNING" );
 INIT_ATTRIBUTE( EepromAccessError,                                  "EEPROM_ACCESS_ERROR" );
+INIT_ATTRIBUTE( EmptyPipe,                                          "EMPTY_PIPE" );
+INIT_ATTRIBUTE( Encoder,                                            "ENCODER" );
 INIT_ATTRIBUTE( EncryptionKeyTableCrcError,                         "ENCRYPTION_KEY_TABLE_CRC_ERROR" );
 INIT_ATTRIBUTE( EndOfCalendarWarning,                               "END_OF_CALENDAR_WARNING" );
 INIT_ATTRIBUTE( EnergyAccumulatedWhileInStandbyMode,                "ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE" );
+INIT_ATTRIBUTE( ExceedingMaximumFlow,                               "EXCEEDING_MAXIMUM_FLOW" );
 INIT_ATTRIBUTE( FailedUpgradeSignatureVerification,                 "FAILED_UPGRADE_SIGNATURE_VERIF" );
 INIT_ATTRIBUTE( ImproperMeterEngineOperationWarning,                "IMPROPER_METER_ENGINE_OPERATION_WARNING" );
 INIT_ATTRIBUTE( InactivePhaseCurrentDiagnosticError,                "INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR" );
@@ -409,6 +413,7 @@ INIT_ATTRIBUTE( LowBatteryWarning,                                  "LOW_BATTERY
 INIT_ATTRIBUTE( LowLossPotential,                                   "LOW_LOSS_POTENTIAL" );
 INIT_ATTRIBUTE( MassMemoryError,                                    "MASS_MEMORY_ERROR" );
 INIT_ATTRIBUTE( MeasurementError,                                   "MEASUREMENT_ERROR" );
+INIT_ATTRIBUTE( MeterFunctioningCorrectly,                          "METER_FUNCTIONING_CORRECTLY" );
 INIT_ATTRIBUTE( MeterReconfigure,                                   "METER_RECONFIGURE" );
 INIT_ATTRIBUTE( MetrologyCommunicationFailure,                      "METROLOGY_COMM_FAILURE" );
 INIT_ATTRIBUTE( NonVolatileMemFailure,                              "NON_VOLATILE_MEM_FAILURE" );
@@ -422,6 +427,7 @@ INIT_ATTRIBUTE( PowerFailDataSaveError,                             "POWER_FAIL_
 INIT_ATTRIBUTE( PqmTestFailureWarning,                              "PQM_TEST_FAILURE_WARNING" );
 INIT_ATTRIBUTE( RamError,                                           "RAM_ERROR" );
 INIT_ATTRIBUTE( RegisterFullScaleExceeded,                          "REGISTER_FULL_SCALE_EXCEEDED" );
+INIT_ATTRIBUTE( ReverseFlow,                                        "REVERSE_FLOW" );
 INIT_ATTRIBUTE( ReversedAggregate,                                  "REVERSED_AGGREGATE" );
 INIT_ATTRIBUTE( ReversedPhaseA,                                     "REVERSED_PHASE_A" );
 INIT_ATTRIBUTE( ReversedPhaseC,                                     "REVERSED_PHASE_C" );
@@ -434,14 +440,19 @@ INIT_ATTRIBUTE( RomError,                                           "ROM_ERROR" 
 INIT_ATTRIBUTE( SeasonChange,                                       "SEASON_CHANGE" );
 INIT_ATTRIBUTE( SecurityConfigurationError,                         "SECURITY_CONFIGURATION_ERROR" );
 INIT_ATTRIBUTE( SelfCheckError,                                     "SELF_CHECK_ERROR" );
+INIT_ATTRIBUTE( SensorError,                                        "SENSOR_ERROR" );
 INIT_ATTRIBUTE( ServiceCurrentTestFailureWarning,                   "SERVICE_CURRENT_TEST_FAILURE_WARNING" );
 INIT_ATTRIBUTE( ServiceDisconnectSwitchError,                       "SERVICE_DISCONNECT_SWITCH_ERROR" );
 INIT_ATTRIBUTE( ServiceDisconnectSwitchOpen,                        "SERVICE_DISCONNECT_SWITCH_OPEN" );
 INIT_ATTRIBUTE( ServiceDisconnectSwitchSensorError,                 "SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR" );
 INIT_ATTRIBUTE( SiteScanError,                                      "SITESCAN_ERROR" );
+INIT_ATTRIBUTE( StorageMode,                                        "STORAGE_MODE" );
 INIT_ATTRIBUTE( StuckSwitch,                                        "STUCK_SWITCH" );
+INIT_ATTRIBUTE( SuspectedLeak,                                      "SUSPECTED_LEAK" );
 INIT_ATTRIBUTE( TableCrcError,                                      "TABLE_CRC_ERROR" );
+INIT_ATTRIBUTE( TemperatureOutOfRange,                              "TEMPERATURE_OUT_OF_RANGE" );
 INIT_ATTRIBUTE( THDVorTDDIError,                                    "THD_V_OR_TDD_I_ERROR" );
+INIT_ATTRIBUTE( ThirtyDaysNoUsage,                                  "THIRTY_DAYS_NO_USAGE" );
 INIT_ATTRIBUTE( TimeAdjustment,                                     "TIME_ADJUSTMENT" );
 INIT_ATTRIBUTE( TimeSyncFailed,                                     "TIME_SYNC_FAILED" );
 INIT_ATTRIBUTE( TOUScheduleChange,                                  "TOU_SCHEDULE_CHANGE" );
