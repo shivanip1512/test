@@ -1346,7 +1346,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Watt-hours Received:                  { Unit: *Wh,     Modifiers: [ *Q2, *Q3                         ], Models: *AX-RX-23 }
     - Watt-hours Total:                     { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *AX-RX-23 }
     - Watt-hours Net:                       { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *AX-RX-23 }
-    - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1                              ], Models: *__-RX-23 }
+    - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1                              ], Models: *__-RX-23 } # Alternative Delivered kVArh definition for 2-quadrant metering
     - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1, *Q2                         ], Models: *__-RX-23 }
     - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *__-RX-23 }
     - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
