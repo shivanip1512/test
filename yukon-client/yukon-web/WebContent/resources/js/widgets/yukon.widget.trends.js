@@ -101,7 +101,9 @@ yukon.widget.trends = (function () {
             
             $(document).on("yukon:trends:selection", function (event, items, picker) {
                 var trendId = $(picker.inputAreaDiv).find("input[name=js-trend-id]").val(),
-                    widgetContainer = $(picker.inputAreaDiv).closest('.widgetWrapper').find('.js-trends-widget-container');
+                    widgetContainer = $(picker.inputAreaDiv).closest('.widgetWrapper').find('.js-trends-widget-container'),
+                    detailsUrl = yukon.url("/tools/trends/" + trendId);
+                widgetContainer.find(".js-details-link").attr("href", detailsUrl);
                 widgetContainer.find(".js-trends-chart").data("trend", trendId);
                 widgetContainer.find(".js-trends-chart").empty();
                 _updateChart(widgetContainer, true);
