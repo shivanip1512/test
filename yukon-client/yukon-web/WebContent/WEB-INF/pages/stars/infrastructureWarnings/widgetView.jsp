@@ -1,7 +1,7 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
 
@@ -11,7 +11,7 @@
             <tr>
                 <c:if test="${summary.totalGateways != 0}">
                     <td>
-                        <a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><cti:msg2 key=".gateways"/></a>:
+                        <a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><i:inline key=".gateways"/></a>:
                     </td>
                     <td>
                         <span class="label bg-color-pie-green">${summary.totalGateways - summary.warningGateways}</span>
@@ -22,7 +22,7 @@
                     <td width="10%">
                     </td>
                     <td>
-                        <a href="${allWarningsUrl}?types=RELAY" target="_blank"><cti:msg2 key=".relays"/></a>:
+                        <a href="${allWarningsUrl}?types=RELAY" target="_blank"><i:inline key=".relays"/></a>:
                     </td>
                     <td>
                         <span class="label bg-color-pie-green">${summary.totalRelays - summary.warningRelays}</span>
@@ -35,7 +35,7 @@
             <tr>
                 <c:if test="${summary.totalCcus != 0}">
                     <td>
-                        <a href="${allWarningsUrl}?types=CCU" target="_blank"><cti:msg2 key=".CCUs"/></a>:
+                        <a href="${allWarningsUrl}?types=CCU" target="_blank"><i:inline key=".CCUs"/></a>:
                     </td>
                     <td>
                         <span class="label bg-color-pie-green">${summary.totalCcus - summary.warningCcus}</span>
@@ -46,7 +46,7 @@
                     <td width="10%">
                     </td>
                     <td>
-                        <a href="${allWarningsUrl}?types=REPEATER" target="_blank"><cti:msg2 key=".repeaters"/></a>:
+                        <a href="${allWarningsUrl}?types=REPEATER" target="_blank"><i:inline key=".repeaters"/></a>:
                     </td>
                     <td>
                         <span class="label bg-color-pie-green">${summary.totalRepeaters - summary.warningRepeaters}</span>
@@ -56,13 +56,13 @@
             </tr>
         </c:if>
     </table>  
-    <span class="fr"><a href="${allWarningsUrl}" target="_blank"><cti:msg2 key=".seeAll"/></a></span>
+    <span class="fr"><a href="${allWarningsUrl}" target="_blank"><i:inline key=".seeAll"/></a></span>
         
     <tags:sectionContainer2 nameKey="recentIssues">
         <table class="compact-results-table" width="100%">
-            <th width="20%"><cti:msg2 key=".name"/></th>
-            <th width="60%"><cti:msg2 key=".status"/></th>
-            <th width="20%"><cti:msg2 key="yukon.common.duration"/></th>
+            <th width="20%"><i:inline key=".name"/></th>
+            <th width="60%"><i:inline key=".status"/></th>
+            <th width="20%"><i:inline key="yukon.common.duration"/></th>
         
             <c:choose>
                 <c:when test="${warnings.size() > 0}">
@@ -79,7 +79,7 @@
                                     <c:set var="warningColor" value="error"/>
                                 </c:if>
                                 <span class="${warningColor}">
-                                    <cti:msg2 key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/>
+                                    <i:inline key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/>
                                 </span>
                             </td>
                             <td>

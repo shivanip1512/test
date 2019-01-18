@@ -1,5 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -28,7 +27,7 @@
                         <tr>
                             <c:if test="${summary.totalGateways != 0}">
                                 <td>                
-                                    <span class="fl"><i:inline key=".gateways"/>:
+                                    <span><i:inline key=".gateways"/>:
                                 </td>
                                 <td>
                                     <span class="label bg-color-pie-green">${summary.totalGateways - summary.warningGateways}</span></span>
@@ -39,7 +38,7 @@
                                 <td width="10%">
                                 </td>
                                 <td>
-                                    <span class="fl"><i:inline key=".relays"/>:
+                                    <span><i:inline key=".relays"/>:
                                 </td>
                                 <td>
                                     <span class="label bg-color-pie-green">${summary.totalRelays - summary.warningRelays}</span></span>
@@ -52,7 +51,7 @@
                         <tr>
                             <c:if test="${summary.totalCcus != 0}">     
                                 <td>
-                                    <span class="fl"><i:inline key=".CCUs"/>:
+                                    <span><i:inline key=".CCUs"/>:
                                 </td>
                                 <td>
                                     <span class="label bg-color-pie-green">${summary.totalCcus - summary.warningCcus}</span></span>
@@ -63,7 +62,7 @@
                                 <td width="10%">
                                 </td>
                                 <td>
-                                    <span class="fl"><i:inline key=".repeaters"/>:
+                                    <span><i:inline key=".repeaters"/>:
                                 </td>
                                 <td>
                                     <span class="label bg-color-pie-green">${summary.totalRepeaters - summary.warningRepeaters}</span></span>

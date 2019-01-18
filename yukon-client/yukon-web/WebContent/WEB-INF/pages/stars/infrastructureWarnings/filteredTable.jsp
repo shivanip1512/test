@@ -1,12 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
-
     
     <cti:url var="dataUrl" value="/stars/infrastructureWarnings/filteredResults">
         <c:forEach var="type" items="${selectedTypes}">
@@ -56,7 +54,7 @@
                                 <c:if test="${warning.severity == 'HIGH'}">
                                     <c:set var="warningColor" value="error"/>
                                 </c:if>
-                                <span class="${warningColor}"><cti:msg2 key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/></td>
+                                <span class="${warningColor}"><i:inline key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/></td>
                             </td>
                             <td>
                                 <c:choose>
