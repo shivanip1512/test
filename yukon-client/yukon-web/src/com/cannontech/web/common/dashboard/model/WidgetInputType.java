@@ -10,8 +10,8 @@ public enum WidgetInputType {
     CHECKBOX(Boolean.class, "checkbox"),
     MONITOR_PICKER(String.class, "monitorPicker"),
     PORT_PICKER(String.class, "portPicker"),
-    CONTROL_AREA_OR_PROGRAM_OR_SCENARIO_PICKER(Integer.class, "controlAreaOrProgramOrScenarioPicker");
-    ;
+    CONTROL_AREA_OR_PROGRAM_OR_SCENARIO_PICKER(Integer.class, "controlAreaOrProgramOrScenarioPicker"),
+    TREND_PIKCER(Integer.class, "trendPicker");
     
     private final Class<?> inputClass;
     private String jspName;

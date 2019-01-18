@@ -13,6 +13,7 @@ import com.cannontech.web.common.dashboard.widget.validator.ControlAreaOrProgram
 import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.MonitorPickerValidator;
+import com.cannontech.web.common.dashboard.widget.validator.TrendPickerValidator;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
@@ -29,7 +30,8 @@ public enum WidgetType implements DisplayableEnum {
     INFRASTRUCTURE_WARNINGS(DashboardScope.GENERAL, WidgetCategory.OTHER, "infrastructureWarningsWidget", "image-infrastructure-warnings"),
     PAO_NOTES_SEARCH(DashboardScope.GENERAL, WidgetCategory.OTHER, "paoNotesSearchWidget", "image-notes-search"),
 
-    TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-trends"), 
+    TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-csr-trend"),
+    TRENDS(DashboardScope.GENERAL, WidgetCategory.OTHER, "trendsWidget", "image-trends"),
     PORTER_QUEUE_COUNTS(DashboardScope.GENERAL, WidgetCategory.AMI, "porterQueueCountsWidget", "image-porter-queue-counts"),
 
     //AMI Dashboard
@@ -74,7 +76,12 @@ public enum WidgetType implements DisplayableEnum {
             .put(INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js")
             .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js",
                                          "HIGH_STOCK",
-                                         "HIGH_STOCK_NO_DATA");
+                                         "HIGH_STOCK_NO_DATA")
+            .putAll(TRENDS, baseJSPath + "yukon.widget.trends.js",
+                            "/resources/js/common/yukon.trends.js",
+                                         "HIGH_STOCK",
+                                         "HIGH_STOCK_NO_DATA",
+                                         "HIGH_STOCK_EXPORTING");
         widgetSpecificJavascript = javascriptBuilder.build();
         
         widgetSpecificCss = ImmutableListMultimap.of(
@@ -83,6 +90,7 @@ public enum WidgetType implements DisplayableEnum {
 
         Builder<WidgetType, WidgetParameter> builder = new ImmutableListMultimap.Builder<WidgetType, WidgetParameter>()
             .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()))
+            .put(TRENDS, new WidgetParameter("trendId", WidgetInputType.TREND_PIKCER, TrendPickerValidator.get()))
             .put(WidgetType.ASSET_AVAILABILITY,
                 new WidgetParameter("controlAreaOrProgramOrScenarioId",
                     WidgetInputType.CONTROL_AREA_OR_PROGRAM_OR_SCENARIO_PICKER,

@@ -892,6 +892,22 @@
   </tag>
   
   <tag>
+    <name>trendName</name>
+    <tag-class>com.cannontech.web.taglib.TrendNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>trendId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>deviceGroupName</name>
     <tag-class>com.cannontech.web.amr.taglib.DeviceGroupNameTag</tag-class>
     <body-content>empty</body-content>

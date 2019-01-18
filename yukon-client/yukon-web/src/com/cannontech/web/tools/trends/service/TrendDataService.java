@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.util.Range;
@@ -129,5 +130,19 @@ public interface TrendDataService {
      * @return <code>List<Object[]></code>
      */
     List<Object[]> graphDataProvider(List<PointValueHolder> data);
+    
+    /**
+     * Gets the next available refresh time.
+     * @param Instant value indicating the most recent time the data was loaded for trend chart
+     * @return Instant the next refresh time
+     */
+    Instant getNextRefreshTime(Instant lastUpdateTime);
+    
+
+    /**
+     * Gets the milliseconds for refresh time.
+     * @return long the refresh time
+     */
+    long getRefreshMilliseconds();
 }
 

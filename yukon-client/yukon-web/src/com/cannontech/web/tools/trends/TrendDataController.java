@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -59,6 +60,24 @@ public class TrendDataController {
     
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
 
+    @RequestMapping("/trends/{id}/data")
+    public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
+        return getTrendJson(userContext,id);
+    }
+    
+    @RequestMapping("/trends/widgetDisplay/{id}/data")
+    public @ResponseBody Map<String, Object> getTrendForWidgetDeisplay(YukonUserContext userContext, @PathVariable int id) {
+        Map<String, Object> json = getTrendJson(userContext,id);
+        Instant lastUpdateTime = new Instant();
+        json.put("lastAttemptedRefresh", lastUpdateTime);
+        json.put("refreshMillis", trendDataService.getRefreshMilliseconds());
+        Instant nextRun = trendDataService.getNextRefreshTime(lastUpdateTime);
+        json.put("nextRun", nextRun);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        json.put("updateTooltip", accessor.getMessage("yukon.web.widgets.forceUpdate"));
+        return json;
+    }
+
     /**
      * trend Get the trend data payload for the chart display
      * <p>
@@ -81,8 +100,7 @@ public class TrendDataController {
      * @param id - the graphDefinition id
      * @return {@link ResponseBody} json serialized data.
      */
-    @RequestMapping("/trends/{id}/data")
-    public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
+    private Map<String, Object> getTrendJson(YukonUserContext userContext, int id) {
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
         List<GraphDataSeries> graphDataSeriesList = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
         List<GraphDataSeries> dateGraphDataSeriesList = new ArrayList<>();
@@ -94,6 +112,7 @@ public class TrendDataController {
         boolean hasCurrentDateBoundary = false;
         boolean showRightAxis = false;
         boolean isTruncated = false;
+        boolean isDataAvaliableForAnySeries = false;
         for (GraphDataSeries seriesItem : graphDataSeriesList) {
             TrendType itemType = TrendType.of(seriesItem.getType());
             log.info("TrendType:" + itemType.getGraphType() + " Graph Type:" + GDSTypesFuncs.getType(seriesItem.getType()));
@@ -137,6 +156,8 @@ public class TrendDataController {
             }
             if (seriesData.isEmpty()) {
                 seriesProperties.put("error", graphDataStateMessage(GraphDataError.NO_TREND_DATA_AVAILABLE, userContext));
+            } else {
+                isDataAvaliableForAnySeries = true;
             }
             seriesProperties.put("data", seriesData);
             if (seriesItem.isRight()) {
@@ -203,6 +224,8 @@ public class TrendDataController {
             
             if (seriesData.isEmpty()) {
                 seriesProperties.put("error", graphDataStateMessage(GraphDataError.NO_TREND_DATA_AVAILABLE, userContext));
+            } else {
+                isDataAvaliableForAnySeries = true;
             }
             seriesProperties.put("data", seriesData);
             if (seriesItem.isRight()) {
@@ -239,6 +262,7 @@ public class TrendDataController {
             addRightAxis(userContext, seriesList, yAxis, labels);
         }
         json.put("yAxis", yAxis);
+        json.put("isDataAvaliableForAnySeries", isDataAvaliableForAnySeries);
         return json;
     }
 

@@ -64,6 +64,7 @@
     <entry key="yukon.web.modules.dashboard.exception.deviceGroup.required">Valid Device Group selection is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.controlAreaOrProgramOrScenarioId.required">Valid Scenario, Control Area, or Program selection is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.meter.required">Meter is required.</entry>
+    <entry key="yukon.web.modules.dashboard.exception.trendId.required">Valid trend selection is required.</entry>
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>
     <entry key="yukon.web.modules.dashboard.addWidgets.addWidget.label">Add Widget</entry>
@@ -82,8 +83,9 @@
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.description">Displays links to any pages that you mark as your favorite.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.name">Monitor Subscriptions</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.description">Displays the Monitors you have subscribed to and the # of Violations, Monitoring. </entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.TREND.name">Trends</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.TREND.description">Displays trends for a specific device.</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.TREND.name">Meter Trends</entry>
+    <!-- TODO: This description needs to be more accurate. -->
+    <entry key="yukon.web.modules.dashboard.widgetType.TREND.description">Displays trends for a specific meter.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITORS.name">Monitors</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITORS.description">Displays the Monitors you have set up in your system and the # of Violations, Monitoring.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.METER_SEARCH.name">Meter Search</entry>
@@ -104,6 +106,11 @@
     <entry key="yukon.web.modules.dashboard.widgetType.PAO_NOTES_SEARCH.description">Displays all Notes matching the filter values selected.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.name">Comm Channel Queue Counts</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description">Displays an interactive trend data graph of the queue counts for each of the communication channels selected (not inclusive of RF Meters).</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.TRENDS.name">Trends</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.TRENDS.description">
+        <!-- TODO Add text here -->
+        This is Trends widget description.
+    </entry>
 
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.controlAreaOrProgramOrScenarioId">Target Level</entry>
@@ -118,6 +125,7 @@
     <entry key="yukon.web.modules.dashboard.widgetParameter.showRfGatewayData">Show Gateway Data Queue</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.selectMonitors">Select Monitors</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.selectPorts">Select Comm Channels</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.trendId">Trends</entry>
     
     <!-- Visibility -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>

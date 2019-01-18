@@ -14,6 +14,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Months;
 import org.joda.time.ReadableInstant;
@@ -39,6 +40,7 @@ public class TrendDataServiceImpl implements TrendDataService {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
 
+    private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(15);
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
 
     @Override
@@ -200,6 +202,16 @@ public class TrendDataServiceImpl implements TrendDataService {
     private DateTime getEarliestStartDate() {
         Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.TRENDS_HISTORICAL_MONTHS));
         return new DateTime().withTimeAtStartOfDay().minus(months);
+    }
+
+    @Override
+    public Instant getNextRefreshTime(Instant lastUpdateTime) {
+        return lastUpdateTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH);
+    }
+    
+    @Override
+    public long getRefreshMilliseconds() {
+        return MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis();
     }
 }
 

@@ -152,6 +152,13 @@
         <property name="description" value="Control area, control scenario or program id."/>
         <property name="required" value="true"/>
     </bean>
+    
+    <bean id="widgetInput.trendId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <qualifier value="widgetInput.trendId"/>
+        <property name="name" value="widgetInput.trendId"/>
+        <property name="description" value="Trend id."/>
+        <property name="required" value="true"/>
+    </bean>
 
     <bean id="widgetInput.accountId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="accountId"/>
@@ -567,6 +574,8 @@
     <bean id="getBooleanConfigParamTagPrototype" class="com.cannontech.web.taglib.GetBooleanConfigParamTag"/>
 
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag"/>
+    
+    <bean id="trendNameTagPrototype" class="com.cannontech.web.taglib.TrendNameTag"/>
 
     <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag">
         <property name="registrationService" ref="dataUpdaterService"/>

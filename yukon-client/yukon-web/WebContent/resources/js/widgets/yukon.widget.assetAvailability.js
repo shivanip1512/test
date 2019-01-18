@@ -164,7 +164,12 @@ yukon.widget.assetAvailability = (function () {
             series: [{
                 type: 'pie',
                 data: _getData(data)
-            }]
+            }],
+            navigation: {
+                buttonOptions: {
+                    enabled: false
+                }
+            }
         });
         
         chart.removeClass('js-initialize');

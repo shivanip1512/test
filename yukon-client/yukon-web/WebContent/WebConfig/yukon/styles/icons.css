@@ -1372,7 +1372,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .image-monitor-subscriptions { background-position: 0px -200px; }
 .image-monitors { background-position: -150px -200px; }
 .image-scheduled-requests { background-position: -300px 0px; }
-.image-trends { background-position: -300px -100px; }
+.image-csr-trend { background-position: -300px -100px; }
 .image-system-messaging { background-position: -300px -200px; }
 .image-favorites { background-position: 0px -300px; }
 .image-data-collection { background-position: -150px -300px; }
@@ -1381,6 +1381,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .image-notes-search { background-position: -150px -400px; }
 .image-asset-availability { background-position: -300px -400px; }
 .image-rf-broadcast { background-position: -0px -500px; }
+.image-trends { background-position: -150px -500px; }
 
 /* 32 x 32 icons */
 .icon-app {
