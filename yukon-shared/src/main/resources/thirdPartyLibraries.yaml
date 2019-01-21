@@ -2644,6 +2644,20 @@
   jira : YUK-18790
   notes : 
 
+- filename : tomcat-juli-9.0.12.jar
+  yukon group : Tomcat
+  project : Apache Tomcat
+  version : 9.0.12
+  project URL : "https://tomcat.apache.org/"
+  license : Apache 2.0
+  license URLs : "https://opensource.org/licenses/Apache-2.0"
+  maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.12"
+  md5 : bf8a8688ae8d4a0367eceb084ca0b2a4
+  sha1 : 42992b0ce1982997e797eb8ffdf8a387da117ffb
+  updated : 2018-09-12
+  jira : YUK-19299
+  notes : 
+
 - filename : tomcat-util.jar
   yukon group : Tomcat
   project : Apache Tomcat

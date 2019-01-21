@@ -66,7 +66,9 @@ public class ThirdPartyLibraryTest {
             "ant-launcher.jar",
             "ant.jar", 
             "ant-junit4.jar", 
-            "ant-junit.jar");
+            "ant-junit.jar",
+            "itronDeviceManagerTypes_v1_8.jar",
+            "itronServicePointManagerTypes_v1_3.jar");
 
     private static Set<String> tomcatJars = ImmutableSet.of(
             //  Tomcat libraries stored in yukon-install that are not available to check during build, but are present when this test is run from Eclipse
@@ -89,7 +91,9 @@ public class ThirdPartyLibraryTest {
             "tomcat-jdbc.jar",
             "tomcat-jni.jar",
             "tomcat-websocket.jar",
-            "websocket-api.jar");
+            "websocket-api.jar",
+            "catalina.jar",
+            "tomcat-juli-9.0.12.jar");
 
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
