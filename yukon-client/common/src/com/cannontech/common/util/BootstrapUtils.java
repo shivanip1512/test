@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.spring.YukonSpringHook;
@@ -184,14 +185,19 @@ public class BootstrapUtils {
         if (appName != null) {
             return appName;
         }
-        
-        ApplicationId defaultAppName = 
-            CtiUtilities.isRunningAsWebApplication()
-                ? ApplicationId.WEBSERVER
-                : ApplicationId.UNKNOWN;
-        
-        CtiUtilities.setCtiAppName(defaultAppName);            
-
+        ApplicationId defaultAppName = ApplicationId.UNKNOWN;
+        if (CtiUtilities.isRunningAsWebApplication()) {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader instanceof ParallelWebappClassLoader) {
+                String contextName = ((ParallelWebappClassLoader) classLoader).getContextName();
+                if ("api".equals(contextName)) {
+                    defaultAppName = ApplicationId.WEB_SERVICES;
+                } else if ("yukon".equals(contextName)) {
+                    defaultAppName = ApplicationId.WEBSERVER;
+                }
+            }
+        }
+        CtiUtilities.setCtiAppName(defaultAppName);
         return defaultAppName.getApplicationName();
     }
 
