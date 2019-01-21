@@ -101,7 +101,7 @@ public class PermissionController {
         LiteYukonUser user = userDao.getLiteYukonUser(userId);
         String type = permission == Permission.PAO_VISIBLE ? "DENY" : "ALLOW";
         userPermissions.removePermission(user, pao, permission);
-        usersEventLogService.permissionRemoved(type, user.getUsername(), (PaoType) pao.getPaoType(), pao.getPaoName(),
+        usersEventLogService.permissionRemoved(type, user.getUsername(), pao.getPaoType(), pao.getPaoName(),
             me);
         log.info(me.getUsername() + " removed permission " + permission + ": " + type
                 + " for " + pao

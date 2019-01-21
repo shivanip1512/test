@@ -244,7 +244,7 @@ public class PasswordController {
     
     @RequestMapping(value = "/change-password", method = RequestMethod.POST)
     public String submitChangePassword(@ModelAttribute Login login, BindingResult result,
-                                       FlashScope flashScope, String k, ModelMap model, LiteYukonUser createdBy) {
+                                       FlashScope flashScope, String k, ModelMap model) {
         // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  
         // It might be overkill.
         LiteYukonUser suppliedPasswordResetUser = userDao.getLiteYukonUser(login.getUserId());
@@ -275,7 +275,7 @@ public class PasswordController {
         }
         
         // Update the user's password to their new supplied password.
-        authService.setPassword(passwordResetUser, login.getPassword1(), createdBy);
+        authService.setPassword(passwordResetUser, login.getPassword1(), passwordResetUser);
         passwordResetService.invalidatePasswordKey(k);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.login.passwordChange.successful"));
         
