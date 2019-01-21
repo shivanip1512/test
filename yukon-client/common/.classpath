@@ -537,5 +537,7 @@
 	<classpathentry kind="lib" path="/third-party/spring-ws-core-3.0.4.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-ws-core-3.0.4.RELEASE-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itronDeviceManagerTypes_v1_8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itronServicePointManagerTypes_v1_3.jar"/>
+	<classpathentry kind="lib" path="/third-party/catalina.jar"/>
+	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.12.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
