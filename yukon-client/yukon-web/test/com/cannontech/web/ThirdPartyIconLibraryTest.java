@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
 
 public class ThirdPartyIconLibraryTest {
 
-    private static String iconBasePath = "WebContent/WebConfig/yukon/Icons";
+    private static String iconBasePath = "../yukon-web/WebContent/WebConfig/yukon/Icons";
     private static Set<Path> ignoredIcons = buildIgnoredIconSet();
     
     private static Stream<Path> recurse(Path p) {
