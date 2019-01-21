@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 
 public class ThirdPartyJavaScriptLibraryTest {
 
-    private static String jsPath = "WebContent/resources/js/lib";
+    private static String jsPath = "../yukon-web/WebContent/resources/js/lib";
     
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
