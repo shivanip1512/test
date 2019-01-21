@@ -79,8 +79,7 @@ public class LoginFilter implements Filter {
                          "/common/images/*",
                          "/resources/favicon.ico",
                          "/dev/mockecobee/**",
-                         "/dev/nestApi/**",
-                         "/dev/itron/**");
+                         "/dev/nestApi/**");
 
     private final static ImmutableList<String> excludedRedirectedPaths =
         ImmutableList.of("/servlet/SOAPClient/**",
