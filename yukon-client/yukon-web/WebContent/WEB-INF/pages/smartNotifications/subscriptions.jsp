@@ -58,10 +58,9 @@
                                         <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}/${subscription.parameters['monitorId']}"/>
                                     </c:if>
                                     <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
-                                    <cti:uniqueIdentifier var="dialogId"/>
-                                    <cm:dropdownOption id="unsubscribe-${dialogId}" key=".unsubscribe" icon="icon-email-delete"
-                                        data-subscription-id="${subId}" data-ok-event="yukon:notifications:remove" classes="js-hide-dropdown"/>
-                                    <d:confirm on="#unsubscribe-${dialogId}" nameKey="unsubscribeConfirmation" argument="${subDescription}"/>
+                                    <cm:dropdownOption key=".unsubscribe" icon="icon-email-delete" data-subscription-id="${subId}" 
+                                        data-ok-event="yukon:notifications:remove" classes="js-hide-dropdown js-unsubscribe-${subId}"/>
+                                    <d:confirm on=".js-unsubscribe-${subId}" nameKey="unsubscribeConfirmation" argument="${subDescription}"/>
                                 </cm:dropdown>
                             </td>
                         </tr>
