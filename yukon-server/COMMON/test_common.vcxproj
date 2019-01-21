@@ -386,6 +386,7 @@
     </ClCompile>
     <ClCompile Include="test_string_util.cpp">
     </ClCompile>
+    <ClCompile Include="test_ThirdPartyLibraries.cpp" />
     <ClCompile Include="test_timeperiod.cpp">
     </ClCompile>
     <ClCompile Include="test_utility.cpp">

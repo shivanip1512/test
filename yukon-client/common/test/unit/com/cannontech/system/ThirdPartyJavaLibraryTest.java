@@ -22,16 +22,17 @@ import java.util.stream.Stream;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections4.CollectionUtils;
-import org.h2.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.common.stream.StreamUtils;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public class ThirdPartyLibraryTest {
+public class ThirdPartyJavaLibraryTest {
 
     private static Set<String> excludedJars = ImmutableSet.of(
             //  Yukon project JARs owned by Eaton, third-party license not applicable
@@ -67,8 +68,10 @@ public class ThirdPartyLibraryTest {
             "ant.jar", 
             "ant-junit4.jar", 
             "ant-junit.jar",
-            "itronDeviceManagerTypes_v1_8.jar",
-            "itronServicePointManagerTypes_v1_3.jar");
+            //  Itron WSDL jars, license indeterminate
+            "itronDeviceManagerTypes_v1_8.jar", 
+            "itronServicePointManagerTypes_v1_3.jar"
+            );
 
     private static Set<String> tomcatJars = ImmutableSet.of(
             //  Tomcat libraries stored in yukon-install that are not available to check during build, but are present when this test is run from Eclipse
@@ -97,7 +100,7 @@ public class ThirdPartyLibraryTest {
 
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
-            return Arrays.stream(f.listFiles()).flatMap(ThirdPartyLibraryTest::recurse);
+            return Arrays.stream(f.listFiles()).flatMap(ThirdPartyJavaLibraryTest::recurse);
         }
         return Stream.of(f);
     }
@@ -107,16 +110,14 @@ public class ThirdPartyLibraryTest {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibrary[] documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
+        ThirdPartyLibraries documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
         
-        Map<String, ThirdPartyLibrary> documentedLibrariesByFilename = 
-                Arrays.stream(documentedLibraries)
-                    .collect(StreamUtils.mapToSelf(l -> l.filename));
+        Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries, l -> l.filename); 
         
         String javaClassPath = System.getProperty("java.class.path");
         Multimap<String, File> classpathJars = Arrays.stream(javaClassPath.split(File.pathSeparator))
                 .map(File::new)
-                .flatMap(ThirdPartyLibraryTest::recurse)
+                .flatMap(ThirdPartyJavaLibraryTest::recurse)
                 .filter(f -> f.getName().endsWith(".jar"))
                 .collect(StreamUtils.toMultimap(File::getName, Function.identity()));
         
@@ -132,14 +133,14 @@ public class ThirdPartyLibraryTest {
         MessageDigest md_sha1 = MessageDigest.getInstance("SHA1");
 
         documentedLibrariesByFilename.entrySet().stream().forEach(e -> {
-            assertFalse(e.getKey() + " must have a project name", StringUtils.isNullOrEmpty(e.getValue().project));
-            assertFalse(e.getKey() + " must have a project version", StringUtils.isNullOrEmpty(e.getValue().version));
-            assertFalse(e.getKey() + " must have a project URL", StringUtils.isNullOrEmpty(e.getValue().projectUrl));
-            assertFalse(e.getKey() + " must have a Maven URL", StringUtils.isNullOrEmpty(e.getValue().mavenUrl));
+            assertFalse(e.getKey() + " must have a project name", StringUtils.isEmpty(e.getValue().project));
+            assertFalse(e.getKey() + " must have a project version", StringUtils.isEmpty(e.getValue().version));
+            assertFalse(e.getKey() + " must have a project URL", StringUtils.isEmpty(e.getValue().projectUrl));
+            assertFalse(e.getKey() + " must have a Maven URL", StringUtils.isEmpty(e.getValue().mavenUrl));
             assertThat(e.getKey() + " must have a valid Maven URL", e.getValue().mavenUrl, anyOf(startsWith("https://mvnrepository.com/artifact/"), equalTo("n/a")));
             assertFalse(e.getKey() + " must have a license type", CollectionUtils.isEmpty(e.getValue().licenses));
             assertFalse(e.getKey() + " must have a license URL", CollectionUtils.isEmpty(e.getValue().licenseUrls));
-            assertFalse(e.getKey() + " must have a JIRA entry", StringUtils.isNullOrEmpty(e.getValue().jira));
+            assertFalse(e.getKey() + " must have a JIRA entry", StringUtils.isEmpty(e.getValue().jira));
             assertNotNull(e.getKey() + " must have an updated date", e.getValue().updated);
             for (File f : classpathJars.get(e.getKey())) {
                 Path p = f.toPath();

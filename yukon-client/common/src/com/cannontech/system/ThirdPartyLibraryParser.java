@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ThirdPartyLibraryParser {
     
-    public static ThirdPartyLibrary[] parse(InputStream inputStream) throws IOException {
+    public static ThirdPartyLibraries parse(InputStream inputStream) throws IOException {
         Yaml y = new Yaml();
         
         Object yamlObject = y.load(inputStream);
@@ -18,7 +18,7 @@ public class ThirdPartyLibraryParser {
         
         byte[] jsonBytes = jsonFormatter.writeValueAsBytes(yamlObject);
         
-        ThirdPartyLibrary[] parsedLicensing = jsonFormatter.readValue(jsonBytes, ThirdPartyLibrary[].class);
+        ThirdPartyLibraries parsedLicensing = jsonFormatter.readValue(jsonBytes, ThirdPartyLibraries.class);
         
         return parsedLicensing;
     }

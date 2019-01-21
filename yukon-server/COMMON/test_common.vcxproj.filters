@@ -110,6 +110,9 @@
     <ClCompile Include="test_CallSite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_ThirdPartyLibraries.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\boost_test_helpers.h">
