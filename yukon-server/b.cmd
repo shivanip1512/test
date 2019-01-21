@@ -47,10 +47,11 @@ if "%~1" == "clean" goto cleanup
 
 rem Run Unit Tests on Success
 
-echo SOURCEBASE %SOURCEBASE%
-pushd %SOURCEBASE%
-call runalltests.cmd
-popd
+rem ---  commented out on 2019-01-21 - unit tests are automatically run by the build
+rem echo SOURCEBASE %SOURCEBASE%
+rem pushd %SOURCEBASE%
+rem call runalltests.cmd
+rem popd
 
 rem This follows the buildhere exit strategy, why exit /b is called despite --exit being set is unknown.
 
