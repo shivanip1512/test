@@ -37,7 +37,7 @@ std::string getExceptionCause(const xercesc::SAXException& ex)
 
 } // namespace Logging
 
-IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
+void parseXmlFiles( const std::string & yukonBase )
 {
     try
     {

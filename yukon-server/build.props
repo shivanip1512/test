@@ -19,6 +19,7 @@
     <MICROSOFT>$(CPP_LIBRARIES)\microsoft</MICROSOFT>
     <MICROSOFT_SQL>$(MICROSOFT)\sql-server-client-dll\2000.80.194.0</MICROSOFT_SQL>
     <DBGHELP>$(MICROSOFT)\dbghelp\6.12.2.633-vc140-1</DBGHELP>
+    <YAML_CPP>$(CPP_LIBRARIES)\yaml-cpp\0.6.2-vc141</YAML_CPP>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
@@ -94,6 +95,10 @@
     </BuildMacro>
     <BuildMacro Include="DBGHELP">
       <Value>$(DBGHELP)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="YAML_CPP">
+      <Value>$(YAML_CPP)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

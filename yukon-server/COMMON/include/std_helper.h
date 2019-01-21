@@ -13,8 +13,6 @@
 
 namespace Cti {
 
-#if __cplusplus >= 201703L  //  only enable if the translation unit is C++17 or above
-
 template<typename... Lambdas>
 struct lambda_overloads : Lambdas...
 {
@@ -26,8 +24,6 @@ struct lambda_overloads : Lambdas...
 };
 
 template<typename... Lambdas> lambda_overloads(Lambdas... lambdas) -> lambda_overloads<Lambdas...>;
-
-#endif
 
 class ScopeExit 
 {

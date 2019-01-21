@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -151,7 +151,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(SQLAPI)\lib\sqlapid.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;$(SQLAPI)\lib\sqlapid.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -183,7 +183,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -202,7 +202,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(SQLAPI)\lib\sqlapi.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;$(SQLAPI)\lib\sqlapi.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>
       </OptimizeReferences>
@@ -481,6 +481,7 @@
     </ClCompile>
     <ClCompile Include="string_util.cpp">
     </ClCompile>
+    <ClCompile Include="ThirdPartyLibraries.cpp" />
     <ClCompile Include="thread.cpp">
     </ClCompile>
     <ClCompile Include="thread_monitor.cpp">
@@ -510,6 +511,7 @@
     <ClCompile Include="xml.cpp">
     </ClCompile>
     <ClCompile Include="xml_parsers.cpp" />
+    <ClCompile Include="yaml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Attribute.h" />
@@ -621,6 +623,7 @@
     <ClInclude Include="include\test_cmdparse_input.h" />
     <ClInclude Include="include\test_cmdparse_output.h" />
     <ClInclude Include="include\test_reader.h" />
+    <ClInclude Include="include\ThirdPartyLibraries.h" />
     <ClInclude Include="include\thread.h" />
     <ClInclude Include="include\thread_listener.h" />
     <ClInclude Include="include\thread_monitor.h" />
@@ -640,6 +643,7 @@
     <ClInclude Include="include\xfer.h" />
     <ClInclude Include="include\xml.h" />
     <ClInclude Include="include\xml_parsers.h" />
+    <ClInclude Include="include\yaml.h" />
     <ClInclude Include="include\yukon.h" />
   </ItemGroup>
   <ItemGroup>

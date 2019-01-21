@@ -1,11 +1,9 @@
 #pragma once
 
-#include "dlldefs.h"
+#include <string>
 
-namespace Cti
-{
+namespace Cti {
 
-IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase );
+void parseXmlFiles( const std::string & yukonBase );
 
 }
-

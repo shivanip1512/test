@@ -8,3 +8,4 @@
 
 METRIC_ID_TO_ATTRIBUTE_MAPPING_ID   JSON    "..\\..\\yukon-shared\\src\\main\\resources\\metricIdToAttributeMapping.json"
 ERROR_CODE_ID                       XML     "..\\..\\yukon-shared\\src\\main\\resources\\error-code.xml"
+THIRD_PARTY_LIBRARIES_ID            YAML    "..\\..\\yukon-shared\\src\\main\\resources\\thirdPartyLibraries.yaml"
