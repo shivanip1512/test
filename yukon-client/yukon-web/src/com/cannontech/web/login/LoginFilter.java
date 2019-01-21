@@ -201,7 +201,7 @@ public class LoginFilter implements Filter {
         } else {
             String redirectFromUrl = request.getRequestURI().substring(request.getContextPath().length());
             //TODO: Remove this logging later. Added for YUK-18491.
-            log.trace("Unexpexted logout? from url:" + redirectFromUrl);
+            log.trace("Unexpected logout? from url:" + redirectFromUrl);
             String urlParams = request.getQueryString();
             String unencodedNavUrl = redirectFromUrl + ((urlParams != null) ? "?" + urlParams : "");
             String encodedNavUrl = ServletUtil.urlEncode(unencodedNavUrl);
