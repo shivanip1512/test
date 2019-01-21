@@ -21,6 +21,7 @@ public enum LibraryLicenseType {
     BSD_STYLE("BSD-style", Attribution.REQUIRED),
     CC0("CC0", Attribution.NONE),
     CCA_2_5("Creative Commons Attribution 2.5", Attribution.REQUIRED),
+    CCA_3_0("Creative Commons Attribution 3.0", Attribution.REQUIRED),
     CDDL("CDDL", Attribution.REQUIRED),
     CDDL_1_0("CDDL 1.0", Attribution.REQUIRED),
     CDDL_1_1("CDDL 1.1", Attribution.REQUIRED),

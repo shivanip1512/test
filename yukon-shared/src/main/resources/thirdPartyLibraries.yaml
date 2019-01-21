@@ -3190,7 +3190,31 @@ Icons :
     sha1 : c84afc4da19c2ea51dc46769bf9861372acebc46
     updated : 2018-07-09
     jira : YUK-18415
-    notes : Custom built sprite assembled from the individual icons 
+    notes : Custom built sprite assembled from the individual icons
+    
+  - path : icons-app-32.png
+    project : FatCow Farm-Fresh Web Icons
+    version : 3.9.2
+    project URL : "https://www.fatcow.com/free-icons"
+    license : Creative Commons Attribution 3.0
+    license URLs : "https://www.fatcow.com/free-icons"
+    md5 : b081c18b63d8bfa337b75a1a79721d38
+    sha1 : 5d2ad1573429fb609e0d871ba2239a8267ab5839
+    updated : 2018-05-01
+    jira : YUK-18151
+    notes : Custom built sprite assembled from the individual icons
+
+  - path : icons-app-32-disabled.png
+    project : FatCow Farm-Fresh Web Icons
+    version : 3.9.2
+    project URL : "https://www.fatcow.com/free-icons"
+    license : Creative Commons Attribution 3.0
+    license URLs : "https://www.fatcow.com/free-icons"
+    md5 : 276c2eb0879c50938133efe3e2e1a779
+    sha1 : 9bb87c977fe8f70686a75d826aff7ccfacdd9d44
+    updated : 2018-05-01
+    jira : YUK-18151
+    notes : Custom built sprite assembled from the individual icons
 
 
 # -------
