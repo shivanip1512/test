@@ -353,7 +353,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUSPECTED_LEAK">Suspected Leak</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TABLE_CRC_ERROR">Table Crc Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_DETECT">Tamper Detect</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE_OUT_OF_RANGE">Temperature Out Of Change</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE_OUT_OF_RANGE">Temperature Out Of Range</entry>
     <entry key="yukon.common.attribute.builtInAttribute.THD_V_OR_TDD_I_ERROR">%THD V or %TDD I Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.THIRTY_DAYS_NO_USAGE">Thirty Days No Usage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TIME_ADJUSTMENT">Time Adjustment</entry>
