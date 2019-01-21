@@ -5,57 +5,9 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
 
+    <%@ include file="summaryTable.jsp" %>
+
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
-    <table class="compact-results-table no-stripes infrastructure-warnings-summary">
-        <c:if test="${summary.totalGateways != 0 || summary.totalRelays != 0}">
-            <tr>
-                <c:if test="${summary.totalGateways != 0}">
-                    <td>
-                        <a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><i:inline key=".gateways"/></a>:
-                    </td>
-                    <td>
-                        <span class="label bg-color-pie-green">${summary.totalGateways - summary.warningGateways}</span>
-                        <span class="label bg-color-orange">${summary.warningGateways}</span>
-                    </td>
-                </c:if>
-                <c:if test="${summary.totalRelays != 0}">
-                    <td width="10%">
-                    </td>
-                    <td>
-                        <a href="${allWarningsUrl}?types=RELAY" target="_blank"><i:inline key=".relays"/></a>:
-                    </td>
-                    <td>
-                        <span class="label bg-color-pie-green">${summary.totalRelays - summary.warningRelays}</span>
-                        <span class="label bg-color-orange">${summary.warningRelays}</span>
-                    </td>
-                </c:if>
-            </tr>            
-        </c:if>
-        <c:if test="${summary.totalCcus != 0 || summary.totalRepeaters != 0}">
-            <tr>
-                <c:if test="${summary.totalCcus != 0}">
-                    <td>
-                        <a href="${allWarningsUrl}?types=CCU" target="_blank"><i:inline key=".CCUs"/></a>:
-                    </td>
-                    <td>
-                        <span class="label bg-color-pie-green">${summary.totalCcus - summary.warningCcus}</span>
-                        <span class="label bg-color-orange">${summary.warningCcus}</span>
-                    </td>
-                </c:if>
-                <c:if test="${summary.totalRepeaters != 0}">
-                    <td width="10%">
-                    </td>
-                    <td>
-                        <a href="${allWarningsUrl}?types=REPEATER" target="_blank"><i:inline key=".repeaters"/></a>:
-                    </td>
-                    <td>
-                        <span class="label bg-color-pie-green">${summary.totalRepeaters - summary.warningRepeaters}</span>
-                        <span class="label bg-color-orange">${summary.warningRepeaters}</span>
-                    </td>
-                </c:if>
-            </tr>
-        </c:if>
-    </table>  
     <span class="fr"><a href="${allWarningsUrl}" target="_blank"><i:inline key=".seeAll"/></a></span>
         
     <tags:sectionContainer2 nameKey="recentIssues">

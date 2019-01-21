@@ -14,6 +14,10 @@ yukon.infrastructurewarnings.detail = (function () {
     _initialized = false,
     
     _filterResults = function () {
+        //select all types if none were selected
+        if ($("input[name=types]:checked").length === 0) {
+            $("input[name=types").prop("checked", true);
+        }
         $('#warnings-form').ajaxSubmit({
             success: function(data, status, xhr, $form) {
                 $('#results-table').html(data);

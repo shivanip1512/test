@@ -124,6 +124,13 @@ public class InfrastructureWarningsController {
     public String filteredResults(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
                          InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
         getFilteredResults(types, model, paging, sorting, userContext);
+        return "infrastructureWarnings/filteredResults.jsp";
+    }
+    
+    @GetMapping("filteredResultsTable")
+    public String filteredResultsTable(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
+                         InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
+        getFilteredResults(types, model, paging, sorting, userContext);
         return "infrastructureWarnings/filteredTable.jsp";
     }
     
