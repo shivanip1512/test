@@ -1,19 +1,41 @@
 package com.cannontech.dr.itron.service.impl;
 
-import javax.jws.WebMethod;
 import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
-import javax.jws.soap.SOAPBinding.Style;
+import javax.xml.ws.Endpoint;
 
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceRequest;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceResponse;
 import com.cannontech.dr.itron.service.ItronSimulatorService;
 
-@WebService
+@WebService(endpointInterface = "com.cannontech.dr.itron.service.ItronSimulatorService")
 public class ItronSimulatorServiceImpl implements ItronSimulatorService{
 
-    @WebMethod
-    @SOAPBinding(style=Style.DOCUMENT)
-    public AddHANDeviceResponse addHANDeviceRequest() {
+    private Endpoint endPoint;
+
+    @Override
+    public void startSimulator() {
+        endPoint = Endpoint.create(new ItronSimulatorServiceImpl());
+        endPoint.publish("http://localhost:8080/itronSimulatorServer");        
+    }
+    
+    @Override
+    public void stopSimulator() {
+       if(endPoint != null)    {
+           endPoint.stop();
+           endPoint = null;
+       }
+    }
+    
+    @Override
+    public boolean isSimulatorRunning() {
+        return endPoint != null;
+     }
+
+    @Override
+    public AddHANDeviceResponse addHANDevice(AddHANDeviceRequest request) {
+        System.out.println(request.getDeviceIdentifiers().getDeviceName() + "  " + request.getDeviceIdentifiers().getMacID());
         AddHANDeviceResponse response = new AddHANDeviceResponse();
         // get response options from simulator settings
         
@@ -27,4 +49,22 @@ public class ItronSimulatorServiceImpl implements ItronSimulatorService{
         // ErrorFault
         return response;
     }
+    
+    @Override
+    public EditHANDeviceResponse editHANDevice(EditHANDeviceRequest request) {
+        EditHANDeviceResponse response = new EditHANDeviceResponse();
+        System.out.println(request.getD2GAttributes().getServicePointUtilID().getValue());
+        // get response options from simulator settings
+        
+        // possible responses:
+
+        // success
+        response.setMacID("2");
+
+        // error
+
+        // ErrorFault
+        return response;
+    }
 }
+

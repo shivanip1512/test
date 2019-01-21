@@ -197,5 +197,44 @@
             <report todir="${test.results.dir}" />
         </junitreport>
     </target>
+	
+	<!-- Target to generate the jaxb classes for the Itron schema -->
+	<target name="generateItronJaxbClasses">
+		<!-- This task uses the JAXB2 Basics version of the xjc ant task
+             because the Oracle version has classpath issues with plugins
+             and we are using the JAXB 2 Default Value plugin-->
+		<taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task">
+			<classpath>
+				<fileset dir=".." includes="**/*.jar" />
+			</classpath>
+		</taskdef>
+		
+		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8">
+		    <arg value="-extension"/>
+		    <arg value="-no-header"/>
+		    <arg value="-Xdefault-value"/>
+			<schema dir="src/com/cannontech/dr/itron/schema" includes="DeviceManagerTypes_v1_8.xsd" />
+			<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
+		</xjc>
+		
+		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3">
+			<arg value="-extension"/>
+		    <arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
+			<schema dir="src/com/cannontech/dr/itron/schema" includes="ServicePointManagerTypes_v1_3.xsd" />
+			<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
+		</xjc>
+		
+		<mkdir dir="build" />
+		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8" destdir="build" />	
+		<jar destfile="lib/itronDeviceManagerTypes_v1_8.jar" basedir="build" />
+		<delete dir="build"/>
+		
+		<mkdir dir="build" />
+		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" destdir="build" />	
+		<jar destfile="lib/itronServicePointManagerTypes_v1_3.jar" basedir="build" />
+		<delete dir="build"/>
+		
+	</target>
 
 </project>

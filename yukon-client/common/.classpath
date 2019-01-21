@@ -277,21 +277,21 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/spring-context-indexer-5.0.2.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-context-indexer-5.0.2.RELEASE-sources.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
-        <classpathentry exported="true" kind="lib" path="/third-party/spring-jcl-5.0.2.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-jcl-5.0.2.RELEASE.jar-sources.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
-        <classpathentry exported="true" kind="lib" path="/third-party/spring-webflux-5.0.2.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-webflux-5.0.2.RELEASE-sources.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-indexer-5.0.2.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-context-indexer-5.0.2.RELEASE-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-jcl-5.0.2.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-jcl-5.0.2.RELEASE.jar-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-webflux-5.0.2.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-webflux-5.0.2.RELEASE-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/javax.jms-api-2.0.1.jar" sourcepath="/third-party/linked-sources/javax.jms-api-2.0.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -345,16 +345,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/jaxb-api.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/jaxb-impl.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jaxb2-default-value-1.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -400,11 +390,11 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.9.6-sources.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.9.6-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.18.2.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.18.2-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/objenesis-1.2.jar"/>
@@ -514,7 +504,6 @@
 	<classpathentry kind="lib" path="/third-party/jackson-mapper-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/jackson-xc-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/javax.inject-1.jar"/>
-	<classpathentry kind="lib" path="/third-party/jaxb-impl-2.2.3-1.jar"/>
 	<classpathentry kind="lib" path="/third-party/jersey-client-1.13.jar"/>
 	<classpathentry kind="lib" path="/third-party/jersey-core-1.13.jar"/>
 	<classpathentry kind="lib" path="/third-party/jersey-json-1.13.jar"/>
@@ -545,6 +534,9 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/spring-ws-core-3.0.4.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-ws-core-3.0.4.RELEASE-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itronDeviceManagerTypes_v1_8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itronServicePointManagerTypes_v1_3.jar"/>
 	<classpathentry kind="lib" path="/third-party/catalina.jar"/>
 	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.12.jar"/>
 	<classpathentry kind="output" path="bin"/>
