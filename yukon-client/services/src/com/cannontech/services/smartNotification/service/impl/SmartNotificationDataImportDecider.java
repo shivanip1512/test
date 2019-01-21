@@ -1,9 +1,10 @@
 package com.cannontech.services.smartNotification.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.smartNotification.model.DataImportAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
@@ -36,7 +37,9 @@ public class SmartNotificationDataImportDecider extends SmartNotificationDecider
         }
 
         List<SmartNotificationSubscription> allSubscriptions = subscriptionDao.getSubscriptions(eventType, frequency);
-        List<SmartNotificationEvent> eventWithImportError = allEvents.stream().filter(event -> isEventWithError(event.getParameters())).collect(Collectors.toList());
+        List<SmartNotificationEvent> eventWithImportError = allEvents.stream()
+                                                                     .filter(this::isEventWithError)
+                                                                     .collect(Collectors.toList());
         allSubscriptions.forEach(s -> {
             if (s.getParameters().get(ASSETIMPORT_RESULT_TYPE).toString().equalsIgnoreCase(IMPORTS_WITH_ERRORS)) {
                 subscriptions.putAll(s, eventWithImportError);
@@ -68,8 +71,10 @@ public class SmartNotificationDataImportDecider extends SmartNotificationDecider
     /**
      * This method will determine if the event have import with error or not.
      */
-    private boolean isEventWithError(Map<String, Object> parameters) {
-        return parameters.entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(DataImportAssembler.FILES_WITH_ERROR))
-                .anyMatch(entry -> entry.getValue() != null && !"".equalsIgnoreCase(entry.getValue().toString().trim()));
+    private boolean isEventWithError(SmartNotificationEvent event) {
+        return event.getParameters().entrySet()
+                                    .stream()
+                                    .filter(entry -> entry.getKey().equalsIgnoreCase(DataImportAssembler.FILES_WITH_ERROR))
+                                    .anyMatch(entry -> StringUtils.isNotBlank(entry.getValue().toString()));
     }
 }

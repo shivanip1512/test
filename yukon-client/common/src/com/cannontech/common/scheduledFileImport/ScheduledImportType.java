@@ -1,5 +1,7 @@
 package com.cannontech.common.scheduledFileImport;
 
+import java.util.HashMap;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
@@ -11,6 +13,11 @@ public enum ScheduledImportType implements DisplayableEnum, DatabaseRepresentati
 
     ASSET_IMPORT("AssetImport");
 
+    private static HashMap<String, ScheduledImportType> importTypeMap;
+    static {
+        importTypeMap = new HashMap<>();
+        importTypeMap.put(ASSET_IMPORT.getImportType(), ASSET_IMPORT);
+    }
     private String importType;
 
     private ScheduledImportType(String importType) {
@@ -31,12 +38,7 @@ public enum ScheduledImportType implements DisplayableEnum, DatabaseRepresentati
         return getImportType();
     }
 
-    public static ScheduledImportType fromName(String type) {
-        for (ScheduledImportType importType : values()) {
-            if (importType.getImportType().equalsIgnoreCase(type)) {
-                return importType;
-            }
-        }
-        return null;
+    public static ScheduledImportType fromImportTypeMap(String importType) {
+        return importTypeMap.get(importType);
     }
 }

@@ -188,4 +188,5 @@ See {3}]]></entry>
 See {3}]]></entry>
     <entry key="yukon.web.modules.smartNotifications.ASSET_IMPORT.multi.EXPANDED.body.text"><![CDATA[{0} {1,choice, 0#(No error)|1#(1 error)|1< ({1} errors)}
 {2}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName">Manual Customer/Hardware Import</entry>
 </properties>

@@ -3,6 +3,7 @@ package com.cannontech.common.smartNotification.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.common.scheduledFileImport.DataImportWarning;
@@ -26,8 +27,9 @@ public class DataImportAssembler {
         SmartNotificationEvent event = new SmartNotificationEvent(now);
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put(TASK_NAME, warning.getTaskName());
-        if (warning.getFilesWithError() != null && !"".equalsIgnoreCase(warning.getFilesWithError().trim()))
-        parameters.put(FILES_WITH_ERROR, warning.getFilesWithError());
+        if (StringUtils.isNotBlank(warning.getFilesWithError())) {
+            parameters.put(FILES_WITH_ERROR, warning.getFilesWithError());
+        }
         parameters.put(SUCCESS_FILE_COUNT, warning.getSuccessFileCount());
         parameters.put(IMPORT_TYPE, warning.getImportType());
         event.setParameters(parameters);
@@ -35,7 +37,7 @@ public class DataImportAssembler {
     }
 
     public static ScheduledImportType getImportType(Map<String, Object> parameters) {
-        return ScheduledImportType.fromName(parameters.get(IMPORT_TYPE).toString());
+        return ScheduledImportType.fromImportTypeMap(parameters.get(IMPORT_TYPE).toString());
     }
 
     public static String getTaskName(Map<String, Object> parameters) {

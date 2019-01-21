@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,9 +19,9 @@ import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -126,7 +127,7 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
         scheduledDataImport.setCronString(job.getCronString());
         scheduledDataImport.setErrorFileOutputPath(task.getErrorFileOutputPath());
         scheduledDataImport.setScheduleDescription(getScheduleDescription(job));
-        scheduledDataImport.setImportType(ScheduledImportType.fromName(task.getImportType()));
+        scheduledDataImport.setImportType(ScheduledImportType.fromImportTypeMap(task.getImportType()));
         scheduledDataImport.setJobState(scheduleControllerHelper.getJobState(job.getId()));
         return scheduledDataImport;
     }

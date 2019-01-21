@@ -34,6 +34,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.scheduledFileImport.DataImportWarning;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
@@ -47,6 +48,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -111,6 +113,7 @@ public class AccountImportService {
     @Autowired private YukonListDao yukonListDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private PrintWriter importLog;
@@ -121,13 +124,13 @@ public class AccountImportService {
             @Override
             public void run() {
                 result.setStartTime(new Instant());
-                processAccountImport(result, context.getYukonUser());
+                processAccountImport(result, context);
             }
         });
     }
     
     @SuppressWarnings("deprecation")
-    private void processAccountImport(AccountImportResult result, LiteYukonUser user) {
+    private void processAccountImport(AccountImportResult result, YukonUserContext context) {
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
@@ -163,7 +166,7 @@ public class AccountImportService {
         try {
             final String fs = System.getProperty("file.separator");
             YukonEnergyCompany energyCompany = result.getEnergyCompany();
-            File baseDir = getBaseDir(energyCompany, user);
+            File baseDir = getBaseDir(energyCompany, context.getYukonUser());
             
             //  Gets the archive directory found inside the default directory
             File archiveDir = new File(baseDir, fs + "archive");
@@ -371,7 +374,7 @@ public class AccountImportService {
                     
                     if (!preScan) {
                         try {
-                            liteAcctInfo = importAccount(custFields, result, user);
+                            liteAcctInfo = importAccount(custFields, result, context.getYukonUser());
                         } catch (Exception ex) {
                             result.custFileErrors++;
                             String[] value = result.getCustLines().get(lineNoKey);
@@ -624,7 +627,7 @@ public class AccountImportService {
                                 LiteInventoryBase liteInv = null;
                                 
                                 // IMPORT HARDWARE
-                                liteInv = importHardware(hwFields, liteAcctInfo, result, user);
+                                liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());
 
                                 if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                         && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -927,7 +930,7 @@ public class AccountImportService {
                     if (!preScan) {
                         LiteInventoryBase liteInv;
                         try {
-                            liteInv = importHardware(hwFields, liteAcctInfo, result, user);                           
+                            liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());                           
 
                             if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                     && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -1062,7 +1065,9 @@ public class AccountImportService {
             } catch (Exception e) {
                 log.error("Failed to send the import log by email");
             }
-            List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning("Manual Customer/Hardware Import", ScheduledImportType.ASSET_IMPORT.getImportType(), result);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+            String taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName");
+            List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(taskName, ScheduledImportType.ASSET_IMPORT.getImportType(), result);
             List<SmartNotificationEvent> smartNotificationEvent =
                     dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
                                               .collect(Collectors.toList());

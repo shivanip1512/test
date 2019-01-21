@@ -100,7 +100,7 @@ public class ScheduledDataImportTaskJobWrapperFactory {
         }
 
         public ScheduledImportType getImportType() {
-            return ScheduledImportType.fromName(this.task.getImportType());
+            return ScheduledImportType.fromImportTypeMap(this.task.getImportType());
         }
     }
 

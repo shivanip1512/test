@@ -12,8 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.scheduledFileImport.ScheduledDataImport;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobRunStatus;
@@ -90,7 +90,7 @@ public class ScheduledDataImportServiceImplTest {
         assertThat(scheduledDataImport.getCronString(), equalTo(job.getCronString()));
         assertThat(scheduledDataImport.getErrorFileOutputPath(), equalTo(task.getErrorFileOutputPath()));
         assertThat(scheduledDataImport.getImportPath(), equalTo(task.getImportPath()));
-        assertThat(scheduledDataImport.getImportType(), equalTo(ScheduledImportType.fromName(task.getImportType())));
+        assertThat(scheduledDataImport.getImportType(), equalTo(ScheduledImportType.fromImportTypeMap(task.getImportType())));
         assertThat(scheduledDataImport.getScheduleDescription(), equalTo("Daily, at 01:00 AM"));
         assertThat(scheduledDataImport.getJobState(), equalTo(JobState.RUNNING));
     }
