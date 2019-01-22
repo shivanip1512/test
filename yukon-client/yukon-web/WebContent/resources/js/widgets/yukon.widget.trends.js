@@ -48,8 +48,7 @@ yukon.widget.trends = (function () {
                         selected: 1
                     },
                     chartWidth : widgetContainer.closest('.widgetWrapper').width() - 20,
-                    // TODO: Explain the formula here.
-                    chartHeight : trend.isDataAvaliableForAnySeries ? 470 + 18 * 4 : 235 + 18 * 4,
+                    chartHeight : trend.isDataAvaliableForAnySeries ? 425 : 310,
                     animateSeriesPloting: animateSeriesPloting
             };
             if (widgetContainer.exists()) {
@@ -106,7 +105,6 @@ yukon.widget.trends = (function () {
                     detailsUrl = yukon.url("/tools/trends/" + trendId);
                 widgetContainer.find(".js-trends-details-link").attr("href", detailsUrl);
                 widgetContainer.find(".js-trends-chart").data("trend", trendId);
-                widgetContainer.find(".js-trends-chart").empty();
                 _updateChart(widgetContainer, true);
             });
             

@@ -71,8 +71,7 @@ yukon.tools.trends = (function () {
                             selected: selectedZoomOption
                         },
                         chartWidth : null, //When null the width is calculated from the offset width of the containing element.
-                        // TODO: Explain the formula here.
-                        chartHeight : 600 + 18 * 4,
+                        chartHeight : 675,
                         animateSeriesPloting: true
                 };
                 if (trendChartContainer.exists()) {

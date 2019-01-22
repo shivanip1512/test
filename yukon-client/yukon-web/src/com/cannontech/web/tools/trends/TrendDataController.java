@@ -14,6 +14,7 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -60,13 +61,13 @@ public class TrendDataController {
     
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
 
-    @RequestMapping("/trends/{id}/data")
+    @GetMapping("/trends/{id}/data")
     public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
         return getTrendJson(userContext,id);
     }
     
-    @RequestMapping("/trends/widgetDisplay/{id}/data")
-    public @ResponseBody Map<String, Object> getTrendForWidgetDeisplay(YukonUserContext userContext, @PathVariable int id) {
+    @GetMapping("/trends/widgetDisplay/{id}/data")
+    public @ResponseBody Map<String, Object> getTrendForWidgetDisplay(YukonUserContext userContext, @PathVariable int id) {
         Map<String, Object> json = getTrendJson(userContext,id);
         Instant lastUpdateTime = new Instant();
         json.put("lastAttemptedRefresh", lastUpdateTime);

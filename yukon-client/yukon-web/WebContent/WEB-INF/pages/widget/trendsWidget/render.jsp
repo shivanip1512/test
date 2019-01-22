@@ -21,15 +21,12 @@
                                initialId="${trendId}"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-    <br>
     <div class="js-trends-chart" data-trend="${trendId}"></div>
-    <div class="PT20">
-        <cti:url value="/tools/trends/${trendId}" var="trendsUrl"/>
-        <a href="${trendsUrl}" class="js-details-link" target="_blank"><i:inline key="yukon.common.details"/></a>
-        <span class="fr">
-            <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedLbl"/>
-            <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedLbl}"></span>
-            <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-trends-update"/>
-        </span>
-    </div>
+    <cti:url value="/tools/trends/${trendId}" var="trendsUrl"/>
+    <a href="${trendsUrl}" class="js-details-link" target="_blank"><i:inline key="yukon.common.details"/></a>
+    <span class="fr">
+        <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedLbl"/>
+        <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedLbl}"></span>
+        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-trends-update"/>
+    </span>
 </div>

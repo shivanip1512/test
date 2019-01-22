@@ -265,7 +265,14 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
 <br><br>]]></entry>
 
 <entry key="yukon.web.widgets.trendsWidget">Trends</entry>
-<entry key="yukon.web.widgets.trendsWidget.helpText"><![CDATA[ ]]></entry>
+<entry key="yukon.web.widgets.trendsWidget.helpText"><![CDATA[
+        Select a predefined Trend to view a up to 1 months of archived data.
+        Click on the zoom buttons 1d, 1w or 1m to view archived data for 1 day, 1 week and 1 month respectively.
+        Use the slider bars to change the start and/or end date of archived data displayed in the trend.
+        Click "Details" to navigate to the full featured Web Trends display for the selected trend.
+        The trend updates every 30 minutes by default. 
+        The Refresh button will force an update of the trend data (this is available every 15 minutes).
+]]></entry>
 <entry key="yukon.web.widgets.trendsWidget.trendId">Trends</entry>
 <entry key="yukon.web.widgets.trendsWidget.widgetIdentity">Trends - {0}</entry>
 

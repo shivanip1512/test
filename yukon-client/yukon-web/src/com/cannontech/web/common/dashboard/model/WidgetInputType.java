@@ -11,7 +11,7 @@ public enum WidgetInputType {
     MONITOR_PICKER(String.class, "monitorPicker"),
     PORT_PICKER(String.class, "portPicker"),
     CONTROL_AREA_OR_PROGRAM_OR_SCENARIO_PICKER(Integer.class, "controlAreaOrProgramOrScenarioPicker"),
-    TREND_PIKCER(Integer.class, "trendPicker");
+    TREND_PICKER(Integer.class, "trendPicker");
     
     private final Class<?> inputClass;
     private String jspName;
