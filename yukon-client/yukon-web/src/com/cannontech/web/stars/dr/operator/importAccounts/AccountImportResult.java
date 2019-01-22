@@ -156,7 +156,11 @@ public class AccountImportResult implements Completable {
     private boolean canceled = false;
     public int custFileErrors = 0;
     public int hwFileErrors = 0;
-    
+    private File custArchiveDir;
+    private File hwArchiveDir;
+    private File outputLogDir;
+    private boolean isScheduled = false;
+
     public Instant getStartTime() {
         return startTime;
     }
@@ -472,6 +476,38 @@ public class AccountImportResult implements Completable {
     
     public int getImportErrors() {
         return custFileErrors + hwFileErrors;
+    }
+
+    public boolean isScheduled() {
+        return isScheduled;
+    }
+
+    public void setScheduled(boolean isScheduled) {
+        this.isScheduled = isScheduled;
+    }
+
+    public File getOutputLogDir() {
+        return outputLogDir;
+    }
+
+    public void setOutputLogDir(File outputLogDir) {
+        this.outputLogDir = outputLogDir;
+    }
+
+    public File getCustArchiveDir() {
+        return custArchiveDir;
+    }
+
+    public void setCustArchiveDir(File custArchiveDir) {
+        this.custArchiveDir = custArchiveDir;
+    }
+
+    public File getHwArchiveDir() {
+        return hwArchiveDir;
+    }
+
+    public void setHwArchiveDir(File hwArchiveDir) {
+        this.hwArchiveDir = hwArchiveDir;
     }
 
 }

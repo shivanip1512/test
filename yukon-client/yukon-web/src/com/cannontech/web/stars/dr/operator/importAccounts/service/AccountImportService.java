@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 import javax.mail.internet.InternetAddress;
 
@@ -34,21 +33,13 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.scheduledFileImport.DataImportWarning;
-import com.cannontech.common.scheduledFileImport.ScheduledImportType;
-import com.cannontech.common.smartNotification.model.DataImportAssembler;
-import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
-import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
-import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -83,7 +74,6 @@ import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.dataImport.DataImportHelper;
 import com.cannontech.web.stars.dr.operator.AccountImportFields;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.google.common.collect.Lists;
@@ -112,29 +102,118 @@ public class AccountImportService {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
-    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private PrintWriter importLog;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                result.setStartTime(new Instant());
-                processAccountImport(result, context);
-            }
+        executor.execute(() -> {
+            Instant startTime = Instant.now();
+            result.setStartTime(startTime);
+            processAccountImport(result, context.getYukonUser(), startTime.toDate());
         });
     }
-    
+
+    private File setUpArchiveBaseDir(File baseDir) {
+        final String fs = System.getProperty("file.separator");
+        File archiveDir = new File(baseDir, fs + "archive");
+        if (!archiveDir.exists()) {
+            archiveDir.mkdirs();
+        }
+        return archiveDir;
+
+    }
+
+    private File setUpImportFailsDir(File archiveDir) {
+        final String fs = System.getProperty("file.separator");
+        File importFailsDir = new File(archiveDir, fs + "failedImport");
+        if (!importFailsDir.exists()) {
+            importFailsDir.mkdirs();
+        }
+        return importFailsDir;
+    }
+
+    private void setUpArchiveFile(Date startTime, File archiveDir, AccountImportResult result) {
+
+        File custFile = result.getCustomerFile();
+
+        if (custFile != null && custFile.length() > 4) {
+            String custFileName = custFile.getName();
+
+            String archiveCustFileName = custFileName.substring(0, custFileName.length() - 4) + "-"
+                + StarsUtils.starsDateFormat.format(startTime) + "_" + StarsUtils.starsTimeFormat.format(startTime)
+                + ".csv";
+            File archiveCustFile = new File(archiveDir, archiveCustFileName);
+
+            result.setCustArchiveDir(archiveCustFile);
+        }
+
+        File hwFile = result.getHardwareFile();
+        if (hwFile != null && hwFile.length() > 4) {
+            String hwFileName = hwFile.getName();
+
+            String archivehwFileName = hwFileName + StarsUtils.starsDateFormat.format(startTime) + "_"
+                + StarsUtils.starsTimeFormat.format(startTime) + ".csv";
+            File archivehwFile = new File(archiveDir, archivehwFileName);
+
+            result.setHwArchiveDir(archivehwFile);
+        }
+
+    }
+
+    private void setUpLogFile(Date startTime, File importFailsDir, AccountImportResult result) {
+        String logFileName = null;
+        boolean preScan = result.isPrescan();
+        File custFile = result.getCustomerFile();
+
+        if (custFile != null && custFile.length() > 4) {
+            String custFileName = custFile.getName();
+            logFileName = custFileName.substring(0, custFileName.length() - 4) + "-"
+                + StarsUtils.starsDateFormat.format(startTime) + "_" + StarsUtils.starsTimeFormat.format(startTime)
+                + ".log";
+            if (preScan) {
+                logFileName = "Prescan-" + logFileName;
+            }
+
+        }
+
+        File hwFile = result.getHardwareFile();
+        if (hwFile != null && hwFile.length() > 4) {
+            String hwFileName = hwFile.getName();
+            logFileName =
+                hwFileName.substring(0, hwFileName.length() - 4) + "-" + StarsUtils.starsDateFormat.format(startTime)
+                    + "_" + StarsUtils.starsTimeFormat.format(startTime) + ".log";
+            if (preScan) {
+                logFileName = "Prescan-" + logFileName;
+            }
+
+        }
+
+        result.setOutputLogDir(new File(importFailsDir, logFileName));
+
+    }
+
+    private void createFileDirectory(AccountImportResult result, LiteYukonUser user, Date startTime) throws Exception {
+
+        YukonEnergyCompany energyCompany = result.getEnergyCompany();
+        File baseDir = getBaseDir(energyCompany, user);
+
+        // Gets the archive directory found inside the default directory
+        File archiveDir = setUpArchiveBaseDir(baseDir);
+        // Gets the upload directory found inside the default directory
+        File importFailsDir = setUpImportFailsDir(archiveDir);
+
+        setUpArchiveFile(startTime, archiveDir, result);
+        setUpLogFile(startTime, importFailsDir, result);
+
+    }
+
     @SuppressWarnings("deprecation")
-    private void processAccountImport(AccountImportResult result, YukonUserContext context) {
+    private void processAccountImport(AccountImportResult result, LiteYukonUser user, Date startTime) {
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
-        File logFile = null;
         
         List<String[]> custFieldsList = null;
         List<String[]> hwFieldsList = null;
@@ -164,48 +243,14 @@ public class AccountImportService {
 
 
         try {
-            final String fs = System.getProperty("file.separator");
             YukonEnergyCompany energyCompany = result.getEnergyCompany();
-            File baseDir = getBaseDir(energyCompany, context.getYukonUser());
-            
-            //  Gets the archive directory found inside the default directory
-            File archiveDir = new File(baseDir, fs + "archive");
-            if (!archiveDir.exists()) {
-                archiveDir.mkdirs();
+            if (!result.isScheduled()) {
+                createFileDirectory(result, user, startTime);
             }
-
-            // Gets the upload directory found inside the default directory
-            File importFailsDir = new File(archiveDir, fs + "failedImport");
-            if (!importFailsDir.exists()) {
-                importFailsDir.mkdirs();
-            }
-            
-            Date now = new Date();
-            String logFileName = null; 
-            String custFileName = null;
-            String hwFileName = null;
-            if (custFile != null && custFile.length() > 4) {
-                custFileName = custFile.getName();
-                logFileName = custFileName.substring(0, custFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
-                if (preScan) {
-                    logFileName = "Prescan-"+logFileName;
-                }
-            }
-            
-            if (hwFile != null && hwFile.length() > 4) {
-                hwFileName = hwFile.getName();
-                logFileName = hwFileName.substring(0, hwFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
-                if (preScan) {
-                    logFileName = "Prescan-"+logFileName;
-                }
-            }
-            
-            logFile = new File(importFailsDir, logFileName);
-            
-            importLog = new PrintWriter(new FileWriter(logFile), true);
+            importLog = new PrintWriter(new FileWriter(result.getOutputLogDir()), true);
             
             importLog.println("Start time: " 
-                    + StarsUtils.formatDate(now, ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId())));
+                    + StarsUtils.formatDate(startTime, ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId())));
             importLog.println();
             
             // Creates a list of all the appliance categories names
@@ -225,19 +270,15 @@ public class AccountImportService {
                 
                 result.setCustLines(new TreeMap<Integer, String[]>());
                 boolean hwInfoContained = false;
-                
-                FileInputStream fiStream = new FileInputStream(custFile);
-                InputStreamReader isReader = new InputStreamReader(fiStream);
-                BufferedReader reader = new BufferedReader(isReader);
-                
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(custFile)));
+
                 String line = null;
                 lineNo = 0;
                 Integer lineNoKey;
                 
                 // Sets up the archive file
-                String archiveFileName = custFileName.substring(0,custFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".csv";
-                File archiveFile = new File(archiveDir, archiveFileName);
-                PrintWriter archive = new PrintWriter(new FileWriter(archiveFile), true);
+                PrintWriter archive = new PrintWriter(new FileWriter(result.getCustArchiveDir()), true);
                 
                 while ((line = reader.readLine()) != null) {
                     // This line adds the latest line to the archive file
@@ -371,19 +412,8 @@ public class AccountImportService {
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
-                    
-                    if (!preScan) {
-                        try {
-                            liteAcctInfo = importAccount(custFields, result, context.getYukonUser());
-                        } catch (Exception ex) {
-                            result.custFileErrors++;
-                            String[] value = result.getCustLines().get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: " + ex.getMessage() + "]";
-                            result.getCustLines().put(lineNoKey, value);
-                            addToLog(lineNoKey, value, importLog);
-                            continue;
-                        }
-                    } else {
+
+                    if (preScan) {
                         if (custFields[ImportFields.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
                             // The current record is a "REMOVE"
                             String[] prevFields = custFieldsMap.get(custFields[ImportFields.IDX_ACCOUNT_NO]);
@@ -517,7 +547,20 @@ public class AccountImportService {
                             }
                         }
                     }
-                    
+
+                    if (!preScan || result.isScheduled()) {
+                        try {
+                            liteAcctInfo = importAccount(custFields, result, user);
+                        } catch (Exception ex) {
+                            result.custFileErrors++;
+                            String[] value = result.getCustLines().get(lineNoKey);
+                            value[1] = "[line: " + lineNo + " error: " + ex.getMessage() + "]";
+                            result.getCustLines().put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
+                            continue;
+                        }
+                    }
+
                     if (hwInfoContained) {
                         if (preScan) {
                             if (hwFieldsList == null) {
@@ -622,26 +665,7 @@ public class AccountImportService {
                             }
                         }
                         
-                        if (!preScan) {
-                            try {
-                                LiteInventoryBase liteInv = null;
-                                
-                                // IMPORT HARDWARE
-                                liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());
-
-                                if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
-                                        && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                                    programSignUp(hwFields, appFields, liteAcctInfo, liteInv, result);
-                                }
-                            } catch (Exception e) {
-                                result.custFileErrors++;
-                                String[] value = result.getCustLines().get(lineNoKey);
-                                value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
-                                result.getCustLines().put(lineNoKey, value);
-                                addToLog(lineNoKey, value, importLog);
-                                continue;
-                            }
-                        } else {
+                        if (preScan) {
                             String acctNo = hwFieldsMap.get(hwFields[ImportFields.IDX_SERIAL_NO]);
                             if (acctNo == null) {
                                 LiteLmHardwareBase liteHw = starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], energyCompany);
@@ -654,19 +678,16 @@ public class AccountImportService {
                                 // Remove a hardware from an account, if hardware doesn't exist in the account, report a warning
                                 if (acctNo == null || !acctNo.equalsIgnoreCase(custFields[ImportFields.IDX_ACCOUNT_NO])) {
                                     importLog.println("WARNING at " + result.getPosition() + ": serial #" + hwFields[ImportFields.IDX_SERIAL_NO] + " not found in the customer account");
-                                    if (preScan) {
-                                        hwFieldsList.add(null);
-                                        if (appFieldsList != null) {
-                                            appFieldsList.add(null);
-                                        }
+                                    hwFieldsList.add(null);
+                                    if (appFieldsList != null) {
+                                        appFieldsList.add(null);
                                     }
                                     continue;
                                 }
-                                
-                                if (preScan) {
-                                    hwFieldsList.add(hwFields);
-                                    hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], "");
-                                }
+
+                                hwFieldsList.add(hwFields);
+                                hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], "");
+
                             } else {
                                 // Insert/update a hardware in an account, if hardware already exists in another account, report an error 
                                 if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase(custFields[ImportFields.IDX_ACCOUNT_NO])) {
@@ -683,17 +704,36 @@ public class AccountImportService {
                                 } else {
                                     hwFields[ImportFields.IDX_HARDWARE_ACTION] = "INSERT";
                                 }
-                                
-                                if (preScan) {
-                                    hwFieldsList.add(hwFields);
-                                    hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], custFields[ImportFields.IDX_ACCOUNT_NO]);
-                                }
+
+                                hwFieldsList.add(hwFields);
+                                hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], custFields[ImportFields.IDX_ACCOUNT_NO]);
                             }
                             
                             if (appFieldsList != null) {
                                 appFieldsList.add(appFields);
                             }
                         }
+
+                        if (!preScan || result.isScheduled()) {
+                            try {
+                                LiteInventoryBase liteInv = null;
+                                
+                                // IMPORT HARDWARE
+                                liteInv = importHardware(hwFields, liteAcctInfo, result, user);
+
+                                if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
+                                        && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
+                                    programSignUp(hwFields, appFields, liteAcctInfo, liteInv, result);
+                                }
+                            } catch (Exception e) {
+                                result.custFileErrors++;
+                                String[] value = result.getCustLines().get(lineNoKey);
+                                value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
+                                result.getCustLines().put(lineNoKey, value);
+                                addToLog(lineNoKey, value, importLog);
+                                continue;
+                            }
+                        } 
                     }
                     
                     if (result.isCanceled()) {
@@ -706,7 +746,7 @@ public class AccountImportService {
                 reader.close();
                 archive.close();
                 
-                if (!preScan) {
+                if (!preScan || result.isScheduled()) {
                     result.setNumAcctTotal(custFieldsList.size());
                     
                     boolean isDeleted = custFile.delete();
@@ -726,9 +766,7 @@ public class AccountImportService {
                 Integer lineNoKey;
                 
                 // Sets up the archive file
-                String archiveFileName = hwFileName+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".csv";
-                File archiveFile = new File(archiveDir, archiveFileName);
-                PrintWriter archive = new PrintWriter(new FileWriter(archiveFile), true);
+                PrintWriter archive = new PrintWriter(new FileWriter(result.getHwArchiveDir()), true);
 
                 while ((line = reader.readLine()) != null) {
                     // This line adds the latest line to the archive file
@@ -863,28 +901,6 @@ public class AccountImportService {
                             continue;
                         }
                     }
-
-                    String[] custFields = null;
-                    if (preScan) {
-                        custFields = custFieldsMap.get(hwFields[ImportFields.IDX_ACCOUNT_ID]);
-                    }
-                    LiteAccountInfo liteAcctInfo = null;
-                    
-                    if (custFields != null) {
-                        if (custFields[ImportFields.IDX_ACCOUNT_ACTION].equals("REMOVE")) {
-                            if (hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                                importLog.println("WARNING at " + result.getPosition() + ": account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " is removed by the import program, record ignored");
-                                continue;
-                            }
-                            
-                            result.hwFileErrors++;
-                            String[] value = result.getHwLines().get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " will be removed by the import program]";
-                            result.getHwLines().put(lineNoKey, value);
-                            addToLog(lineNoKey, value, importLog);
-                            continue;
-                        }
-                    } else {
                         /*
                          * Some customers use rotation digits on the end of account numbers.
                          * EXAMPLE: if a customer changed at account 123456, the whole account number
@@ -892,22 +908,21 @@ public class AccountImportService {
                          * to only consider the accountnumber itself.  The number of digits to consider
                          * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
                          */
-                        liteAcctInfo = starsSearchService.searchAccountByAccountNo(energyCompany, hwFields[ImportFields.IDX_ACCOUNT_ID]);
-                        if (liteAcctInfo == null) {
-                            if (hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                                importLog.println("WARNING at " + result.getPosition() + ": account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist, record ignored");
-                                continue;
-                            }
-                            
-                            result.hwFileErrors++;
-                            String[] value = result.getHwLines().get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist]";
-                            result.getHwLines().put(lineNoKey, value);
-                            addToLog(lineNoKey, value, importLog);
+                    LiteAccountInfo liteAcctInfo = starsSearchService.searchAccountByAccountNo(energyCompany, hwFields[ImportFields.IDX_ACCOUNT_ID]);
+                    if (liteAcctInfo == null) {
+                        if (hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
+                            importLog.println("WARNING at " + result.getPosition() + ": account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist, record ignored");
                             continue;
                         }
+                            
+                        result.hwFileErrors++;
+                        String[] value = result.getHwLines().get(lineNoKey);
+                        value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist]";
+                        result.getHwLines().put(lineNoKey, value);
+                        addToLog(lineNoKey, value, importLog);
+                        continue;
                     }
-                    
+
                     String[] appFields = null;
                     if (hwColIdx[result.COL_APP_TYPE] != -1) {
                         appFields = prepareFields(ImportFields.NUM_APP_FIELDS);
@@ -926,25 +941,8 @@ public class AccountImportService {
                             continue;
                         }
                     }
-                    
-                    if (!preScan) {
-                        LiteInventoryBase liteInv;
-                        try {
-                            liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());                           
-
-                            if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
-                                    && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                                programSignUp(hwFields, appFields, liteAcctInfo, liteInv, result);
-                            }
-                        } catch (Exception e) {
-                            result.hwFileErrors++;
-                            String[] value = result.getHwLines().get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
-                            result.getHwLines().put(lineNoKey, value);
-                            addToLog(lineNoKey, value, importLog);
-                            continue;
-                        }
-                    } else {
+                   
+                    if (preScan) {
                         String acctNo = hwFieldsMap.get(hwFields[ImportFields.IDX_SERIAL_NO]);
                         if (acctNo == null) {
                             LiteLmHardwareBase liteHw = starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], energyCompany);
@@ -958,11 +956,9 @@ public class AccountImportService {
                                 importLog.println("WARNING at " + result.getPosition() + ": serial #" + hwFields[ImportFields.IDX_SERIAL_NO] + " not found in the customer account, record ignored");
                                 continue;
                             }
-                            
-                            if (preScan) {
-                                hwFieldsList.add(hwFields);
-                                hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], "");
-                            }
+
+                            hwFieldsList.add(hwFields);
+                            hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], "");
                         } else {
                             if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase(hwFields[ImportFields.IDX_ACCOUNT_ID])) {
                                 result.hwFileErrors++;
@@ -979,10 +975,8 @@ public class AccountImportService {
                                 hwFields[ImportFields.IDX_HARDWARE_ACTION] = "INSERT";
                             }
                             
-                            if (preScan) {
-                                hwFieldsList.add(hwFields);
-                                hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], hwFields[ImportFields.IDX_ACCOUNT_ID]);
-                            }
+                            hwFieldsList.add(hwFields);
+                            hwFieldsMap.put(hwFields[ImportFields.IDX_SERIAL_NO], hwFields[ImportFields.IDX_ACCOUNT_ID]);
                         }
                         
                         if (appFieldsList != null){
@@ -990,6 +984,25 @@ public class AccountImportService {
                         }
                     }
                     
+                    if (!preScan || result.isScheduled()) {
+                        LiteInventoryBase liteInv;
+                        try {
+                            liteInv = importHardware(hwFields, liteAcctInfo, result, user);                           
+
+                            if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
+                                    && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
+                                programSignUp(hwFields, appFields, liteAcctInfo, liteInv, result);
+                            }
+                        } catch (Exception e) {
+                            result.hwFileErrors++;
+                            String[] value = result.getHwLines().get(lineNoKey);
+                            value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
+                            result.getHwLines().put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
+                            continue;
+                        }
+                    } 
+
                     if (result.isCanceled()) {
                         throw new Exception();
                     }
@@ -1000,7 +1013,7 @@ public class AccountImportService {
                 reader.close();
                 archive.close();
                 
-                if (!preScan) {
+                if (!preScan || result.isScheduled()) {
                     result.setNumHwTotal(hwFieldsList.size());
                     boolean isDeleted = hwFile.delete();
                     if (isDeleted == false) {
@@ -1019,7 +1032,7 @@ public class AccountImportService {
                 
                 if (importLog == null) {
                     try {
-                        importLog = new PrintWriter(new FileWriter(logFile), true);
+                        importLog = new PrintWriter(new FileWriter(result.getOutputLogDir()), true);
                         importLog.println("Error Occurred");
                     } catch (IOException e1) {
                         CTILogger.error(e1);
@@ -1059,19 +1072,12 @@ public class AccountImportService {
             importLog.close();
 
             try {
-                if (!StringUtils.isBlank(result.getEmail()) && ((preScan && result.hasErrors()) || !preScan)) {
-                    sendImportLog(logFile, result.getEmail(), result.getEnergyCompany());
+                if (!result.isScheduled() && !StringUtils.isBlank(result.getEmail()) && ((preScan && result.hasErrors()) || !preScan)) {
+                    sendImportLog(result.getOutputLogDir(), result.getEmail(), result.getEnergyCompany());
                 }
             } catch (Exception e) {
                 log.error("Failed to send the import log by email");
             }
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-            String taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName");
-            List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(taskName, ScheduledImportType.ASSET_IMPORT.getImportType(), result);
-            List<SmartNotificationEvent> smartNotificationEvent =
-                    dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
-                                              .collect(Collectors.toList());
-            smartNotificationEventCreationService.send(SmartNotificationEventType.ASSET_IMPORT, smartNotificationEvent);
         }
     }
     
