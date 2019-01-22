@@ -22,14 +22,13 @@ import com.cannontech.web.security.annotation.CheckCparm;
 @RequestMapping("/itron/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class ItronSimulatorController {
-    @Autowired ItronSimulatorService simulatorService;
-    @Autowired ItronCommunicationService communicationService;
+    
     @Autowired private SimulatedItronSettings itronSimulatorSettings;
     
 
     @GetMapping("itronSimulator")
     public String itronSimulator(ModelMap model) {
-        boolean simulatorRunning = simulatorService.isSimulatorRunning();
+        boolean simulatorRunning = false;
         model.addAttribute("simulatorRunning", simulatorRunning);
         SimulatedItronSettings settings = itronSimulatorSettings;
         model.addAttribute("settings", settings);
@@ -42,8 +41,8 @@ public class ItronSimulatorController {
     
     @GetMapping("test")
     public String test() {
-        simulatorService.startSimulator();
-        communicationService.addHANDevice();
+        //simulatorService.startSimulator();
+        //communicationService.addHANDevice();
         return "redirect:itronSimulator";
     }
     
@@ -55,13 +54,13 @@ public class ItronSimulatorController {
     
     @GetMapping("start")
     public String start() {
-        simulatorService.startSimulator();
+        //simulatorService.startSimulator();
         return "redirect:itronSimulator";
     }
     
     @GetMapping("stop")
     public String stop() {
-        simulatorService.stopSimulator();
+        //?ssimulatorService.stopSimulator();
         return "redirect:itronSimulator";
     }
 }
