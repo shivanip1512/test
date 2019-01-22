@@ -11,9 +11,9 @@
     <c:if test="${warnings.hitCount > 0}">
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
-                <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" classes="js-collection-action" data-url="/bulk/collectionActions"/> 
-                <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download-warnings"/>  
-                <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" classes="js-collection-action" data-url="/tools/map"/>
+                <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" classes="js-collection-action" data-collection-action="${collectionActionsType}"/>
+                <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download-warnings"/>
+                <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
             </cm:dropdown>
         </span>
     </c:if>

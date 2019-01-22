@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -189,16 +190,20 @@ public class InfrastructureWarningsController {
                                                                              .map(warning -> warning.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
+        
+        //add collection action types for page
+        model.addAttribute("collectionActionsType", CollectionActionUrl.COLLECTION_ACTIONS);
+        model.addAttribute("mappingType", CollectionActionUrl.MAPPING);
     }
     
-    @GetMapping(value = "collectionAction")
-    public String collectionAction(InfrastructureWarningDeviceCategory[] types, String actionUrl) {
+    @GetMapping("collectionAction")
+    public String collectionAction(InfrastructureWarningDeviceCategory[] types, CollectionActionUrl actionType) {
         types = types != null ? types : getTypesInSystem();
         List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         List<YukonPao> devices = warnings.stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-        return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
+        return "redirect:" + actionType.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
     
     @GetMapping("download")

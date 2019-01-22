@@ -49,10 +49,10 @@ yukon.infrastructurewarnings.detail = (function () {
             });
             
             $(document).on('click', '.js-collection-action', function () {
-                var actionUrl = $(this).data('url'),
+                var collectionAction = $(this).data('collection-action'),
                     form = $('#warnings-form'),
                     data = form.serialize();
-                window.open(yukon.url('/stars/infrastructureWarnings/collectionAction?actionUrl=' + actionUrl + '&' + data), '_blank');
+                window.open(yukon.url('/stars/infrastructureWarnings/collectionAction?actionType=' + collectionAction + '&' + data), '_blank');
             });
 
             _initialized = true;
