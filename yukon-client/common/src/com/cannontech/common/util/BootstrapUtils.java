@@ -185,11 +185,15 @@ public class BootstrapUtils {
         if (appName != null) {
             return appName;
         }
+        //TODO : Remove sysouts
         ApplicationId defaultAppName = ApplicationId.UNKNOWN;
         if (CtiUtilities.isRunningAsWebApplication()) {
+            System.out.println("Running as Webapplication");
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             if (classLoader instanceof ParallelWebappClassLoader) {
+                System.out.println("type : ParallelWebappClassLoader");
                 String contextName = ((ParallelWebappClassLoader) classLoader).getContextName();
+                System.out.println("context name : " + contextName);
                 if ("api".equals(contextName)) {
                     defaultAppName = ApplicationId.WEB_SERVICES;
                 } else if ("yukon".equals(contextName)) {
