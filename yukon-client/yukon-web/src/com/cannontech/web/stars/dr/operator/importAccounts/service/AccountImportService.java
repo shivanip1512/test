@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import javax.mail.internet.InternetAddress;
 
@@ -33,13 +34,21 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.scheduledFileImport.DataImportWarning;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
+import com.cannontech.common.smartNotification.model.DataImportAssembler;
+import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -74,6 +83,7 @@ import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.dataImport.DataImportHelper;
 import com.cannontech.web.stars.dr.operator.AccountImportFields;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.google.common.collect.Lists;
@@ -102,6 +112,8 @@ public class AccountImportService {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
+    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private PrintWriter importLog;
@@ -111,7 +123,7 @@ public class AccountImportService {
         executor.execute(() -> {
             Instant startTime = Instant.now();
             result.setStartTime(startTime);
-            processAccountImport(result, context.getYukonUser(), startTime.toDate());
+            processAccountImport(result, context, startTime.toDate());
         });
     }
 
@@ -210,7 +222,7 @@ public class AccountImportService {
     }
 
     @SuppressWarnings("deprecation")
-    private void processAccountImport(AccountImportResult result, LiteYukonUser user, Date startTime) {
+    private void processAccountImport(AccountImportResult result, YukonUserContext context, Date startTime) {
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
@@ -245,7 +257,7 @@ public class AccountImportService {
         try {
             YukonEnergyCompany energyCompany = result.getEnergyCompany();
             if (!result.isScheduled()) {
-                createFileDirectory(result, user, startTime);
+                createFileDirectory(result, context.getYukonUser(), startTime);
             }
             importLog = new PrintWriter(new FileWriter(result.getOutputLogDir()), true);
             
@@ -550,7 +562,7 @@ public class AccountImportService {
 
                     if (!preScan || result.isScheduled()) {
                         try {
-                            liteAcctInfo = importAccount(custFields, result, user);
+                            liteAcctInfo = importAccount(custFields, result, context.getYukonUser());
                         } catch (Exception ex) {
                             result.custFileErrors++;
                             String[] value = result.getCustLines().get(lineNoKey);
@@ -719,7 +731,7 @@ public class AccountImportService {
                                 LiteInventoryBase liteInv = null;
                                 
                                 // IMPORT HARDWARE
-                                liteInv = importHardware(hwFields, liteAcctInfo, result, user);
+                                liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());
 
                                 if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                         && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -987,7 +999,7 @@ public class AccountImportService {
                     if (!preScan || result.isScheduled()) {
                         LiteInventoryBase liteInv;
                         try {
-                            liteInv = importHardware(hwFields, liteAcctInfo, result, user);                           
+                            liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());                           
 
                             if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                     && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -1079,6 +1091,14 @@ public class AccountImportService {
                 log.error("Failed to send the import log by email");
             }
         }
+        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        String taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName");
+        List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(taskName, ScheduledImportType.ASSET_IMPORT.getImportType(), result);
+        List<SmartNotificationEvent> smartNotificationEvent =
+                dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
+                                          .collect(Collectors.toList());
+        smartNotificationEventCreationService.send(SmartNotificationEventType.ASSET_IMPORT, smartNotificationEvent);
     }
     
     private LiteInventoryBase importHardware(String[] hwFields, 
