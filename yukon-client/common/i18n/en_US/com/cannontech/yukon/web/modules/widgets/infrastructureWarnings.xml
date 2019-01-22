@@ -31,8 +31,8 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.category.CCU">CCU</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.category.REPEATER">Repeater</entry>
     
-    <entry key="yukon.web.widgets.infrastructureWarnings.noWarning.hoverText"># of {0} without infrastructure warnings.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warning.hoverText"># of {0} with infrastructure warnings.</entry>    
+    <entry key="yukon.web.widgets.infrastructureWarnings.noWarning.hoverText">Number of {0} without infrastructure warnings.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warning.hoverText">Number of {0} with infrastructure warnings.</entry>    
       
     <entry key="yukon.web.widgets.infrastructureWarnings.noRecentWarnings">No recent warnings found.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.noWarnings">No warnings found.</entry>
