@@ -25,7 +25,7 @@
                             <td class="wsnw">
                                 <span title="${queue.queueName}">
                                     <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
-                                    <a href="${detailUrl}">
+                                    <a href="${detailUrl}" target="_blank">
                                         <i:inline key="${queue}"/>
                                     </a>
                                 </span>
@@ -59,7 +59,7 @@
                             <td class="wsnw">
                                 <span title="${queue.queueName}">
                                     <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
-                                    <a href="${detailUrl}">
+                                    <a href="${detailUrl}" target="_blank">
                                         <i:inline key="${queue}"/>
                                     </a>
                                 </span>
