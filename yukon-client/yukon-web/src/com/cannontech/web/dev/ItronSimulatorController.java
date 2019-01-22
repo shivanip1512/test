@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.dr.itron.service.ItronCommunicationService;
-import com.cannontech.dr.itron.service.ItronSimulatorService;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
 import com.cannontech.dr.itron.simulator.model.ESIGroupError;
 import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
