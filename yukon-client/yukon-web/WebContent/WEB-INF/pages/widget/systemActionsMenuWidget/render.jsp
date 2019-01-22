@@ -10,20 +10,20 @@
 
 <div>
     <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS">
-        <a href="${archiveDataAnalysesUrl}"><i:inline key=".archiveDataAnalysis"/></a><br/>
+        <a href="${archiveDataAnalysesUrl}" target="_blank"><i:inline key=".archiveDataAnalysis"/></a><br/>
     </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="PHASE_DETECT">
-        <a href="${phaseDetectUrl}"><i:inline key=".phaseDetect"/></a><br/>
+        <a href="${phaseDetectUrl}" target="_blank"><i:inline key=".phaseDetect"/></a><br/>
     </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="METER_EVENTS">
-        <a href="${meterEventsReportUrl}"><i:inline key=".meterEventsReport"/></a><br/>
+        <a href="${meterEventsReportUrl}" target="_blank"><i:inline key=".meterEventsReport"/></a><br/>
     </cti:checkRolesAndProperties>
     <c:if test="${showWaterLeak}">
         <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
-            <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
+            <a href="${waterLeakReportUrl}" target="_blank"><i:inline key=".waterLeakReport"/></a><br/>
         </cti:checkRolesAndProperties>
     </c:if>
     <cti:checkRolesAndProperties value="USAGE_THRESHOLD_REPORT">
-        <a href="${usageThresholdReportUrl}"><i:inline key=".usageThresholdReport"/></a><br/>
+        <a href="${usageThresholdReportUrl}" target="_blank"><i:inline key=".usageThresholdReport"/></a><br/>
     </cti:checkRolesAndProperties>
 </div>
