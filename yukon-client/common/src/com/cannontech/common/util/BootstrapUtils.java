@@ -192,7 +192,7 @@ public class BootstrapUtils {
                 String contextName = ((ParallelWebappClassLoader) classLoader).getContextName();
                 if ("api".equals(contextName)) {
                     defaultAppName = ApplicationId.WEB_SERVICES;
-                } else if ("yukon".equals(contextName)) {
+                } else {
                     defaultAppName = ApplicationId.WEBSERVER;
                 }
             }
