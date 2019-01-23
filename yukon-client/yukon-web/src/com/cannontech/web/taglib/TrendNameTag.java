@@ -7,10 +7,12 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 
@@ -21,6 +23,8 @@ public class TrendNameTag extends YukonTagSupport {
 
     private Integer trendId = 0;
     private String var = null;
+    
+    private final static Logger log = YukonLogManager.getLogger(TrendNameTag.class);
 
     public Integer getTrendId() {
         return trendId;
@@ -45,12 +49,13 @@ public class TrendNameTag extends YukonTagSupport {
             throw new JspException("trendId is not set");
         }
 
+        String formattedName = "";
         LiteGraphDefinition liteGraphDefinition = graphDao.getLiteGraphDefinition(trendId);
         if (liteGraphDefinition == null) {
-            throw new JspException("trendId: " + trendId + " is not a valid trendId");
+            log.error("trendId: " + trendId + " is not a valid trendId");
+        } else {
+            formattedName = liteGraphDefinition.getName();
         }
-
-        String formattedName = liteGraphDefinition.getName();
         JspContext jspContext = getJspContext();
         if (var == null) {
             JspWriter out = jspContext.getOut();
@@ -59,5 +64,4 @@ public class TrendNameTag extends YukonTagSupport {
             jspContext.setAttribute(var, formattedName);
         }
     }
-
 }

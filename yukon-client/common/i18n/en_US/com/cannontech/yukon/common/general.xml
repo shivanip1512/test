@@ -341,6 +341,7 @@
 <entry key="yukon.common.value">Value/State</entry>
 <entry key="yukon.common.view">view</entry>
 <entry key="yukon.common.viewAll">View All</entry>
+<entry key="yukon.common.viewDetails">View Details</entry>
 <entry key="yukon.common.warning">Warning</entry>
 <entry key="yukon.common.warningMessage">Warning: {0}</entry>
 <entry key="yukon.common.weekday">Weekday</entry>

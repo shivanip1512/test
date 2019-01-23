@@ -68,7 +68,10 @@ yukon.tools.trends = (function () {
                         rangeSelector: {
                             inputEnabled: true,
                             rangeSelectorButtons : rangeSelectorButtons,
-                            selected: selectedZoomOption
+                            selected: selectedZoomOption,
+                            inputStyle : {
+                                color: '#333333'
+                            }
                         },
                         chartWidth : null, //When null the width is calculated from the offset width of the containing element.
                         chartHeight : 675,

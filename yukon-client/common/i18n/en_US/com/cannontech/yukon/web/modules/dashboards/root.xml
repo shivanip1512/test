@@ -65,6 +65,7 @@
     <entry key="yukon.web.modules.dashboard.exception.controlAreaOrProgramOrScenarioId.required">Valid Scenario, Control Area, or Program selection is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.meter.required">Meter is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.trendId.required">Valid trend selection is required.</entry>
+    <entry key="yukon.web.modules.dashboard.exception.trendId.notFound">The selected trend was not found.</entry>
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>
     <entry key="yukon.web.modules.dashboard.addWidgets.addWidget.label">Add Widget</entry>

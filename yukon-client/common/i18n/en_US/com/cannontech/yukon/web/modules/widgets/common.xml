@@ -260,7 +260,6 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
 <entry key="yukon.web.widgets.hours.withDays">{0,choice,0# | 1# and {0} hour | 1 &lt; and {0} hours}</entry>
 <entry key="yukon.web.widgets.rfBroadcastWidget">RF Broadcast Performance</entry>
 <entry key="yukon.web.widgets.rfBroadcastWidget.lastRun">Last Run</entry>
-<entry key="yukon.web.widgets.rfBroadcastWidget.viewDetails">View Details</entry>
 <entry key="yukon.web.widgets.rfBroadcastWidget.widgetDetail"><![CDATA[RF Broadcast Performance widget provides summary of expected RF LCR response performance from the previous 5 days of Demand Response test message events. The RF Broadcast performance widget is updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 1 minute. The date/time next to the Refresh button displays the date/time when the performance was last updated.
 <br><br>]]></entry>
 

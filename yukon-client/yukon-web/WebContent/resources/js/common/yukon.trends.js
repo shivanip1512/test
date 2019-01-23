@@ -76,6 +76,9 @@ yukon.trends = (function () {
                     buttons: trendChartOptions.rangeSelector.rangeSelectorButtons,
                     inputEnabled: trendChartOptions.rangeSelector.inputEnabled,
                     selected: trendChartOptions.rangeSelector.selected,
+                    inputStyle: {
+                        color: trendChartOptions.rangeSelector.inputStyle.color
+                    }
                 },
                 series : trend.series,
                 tooltip: {

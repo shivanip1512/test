@@ -37,7 +37,7 @@
                 </table>
                 <div class="PT20">
                     <cti:url value="/dr/rf/details" var="detailsUrl"/>
-                    <a href="${detailsUrl}" target="_blank"><i:inline key=".viewDetails"/></a>
+                    <a href="${detailsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a>
                     <span class="fr">
                         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
                         <span class="fl" style="font-size:11px" title="${lastUpdatedMsg}"><cti:formatDate value="${lastAttemptedRefresh}" type="DATEHMS_12"/></span>

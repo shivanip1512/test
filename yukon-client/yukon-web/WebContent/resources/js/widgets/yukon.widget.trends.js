@@ -16,6 +16,7 @@ yukon.widget.trends = (function () {
     _updateTimeout = null,
     
     _updateChart = function (widgetContainer, animateSeriesPloting) {
+        widgetContainer.removeMessages();
         if (animateSeriesPloting) {
             yukon.ui.block(widgetContainer, 200);
         }
@@ -40,39 +41,51 @@ yukon.widget.trends = (function () {
             }];
         
         $.getJSON(yukon.url('/tools/trends/widgetDisplay/' + trendId + '/data'), function (trend) {
-            var chartContainer = widgetContainer.find('.js-trends-chart'),
+            if (trend.hasOwnProperty('errorMessage')) {
+                widgetContainer.addMessage({
+                    message: trend.errorMessage,
+                    messageClass: "error"
+                });
+                widgetContainer.find(".js-details-section").addClass("dn");
+            } else {
+                widgetContainer.find(".js-details-section").removeClass("dn");
+                var chartContainer = widgetContainer.find('.js-trends-chart'),
                 chartOptions = {
                     rangeSelector: {
-                        inputEnabled: true,
                         rangeSelectorButtons : rangeSelectorButtons,
-                        selected: 1
+                        selected: 1,
+                        inputStyle: {
+                            color: '#9e9d9d'
+                        }
                     },
                     chartWidth : widgetContainer.closest('.widgetWrapper').width() - 20,
                     chartHeight : trend.isDataAvaliableForAnySeries ? 425 : 310,
                     animateSeriesPloting: animateSeriesPloting
-            };
-            if (widgetContainer.exists()) {
-                // disable editing the date fields. 
-                Highcharts.wrap(Highcharts.RangeSelector.prototype, 'drawInput', function (proceed, name) {
-                    proceed.call(this, name);
-                    this[name + 'DateBox'].attr("fill", "#f7f7f7");
-                    this[name + 'DateBox'].on('click', function () {} );
-                });
-                yukon.trends.buildChart(chartContainer, chartOptions, trend);
-                chartContainer.find(".highcharts-input-group").attr('cursor','default');
-            }
-            var refreshButton = widgetContainer.find('.js-trends-update'),
-                dateTime = moment(trend.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
-                nextRunDateTime = moment(trend.nextRun.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
-                tooltipTemplate = widgetContainer.find('.js-tooltip-template').val();
-            refreshButton.prop('title', tooltipTemplate + nextRunDateTime);
-            refreshButton.attr('disabled', true);
-            widgetContainer.find('.js-last-updated').text(dateTime);
+                };
+                if (widgetContainer.exists()) {
+                    // disable editing the date fields. 
+                    Highcharts.wrap(Highcharts.RangeSelector.prototype, 'drawInput', function (proceed, name) {
+                        proceed.call(this, name);
+                        this[name + 'DateBox'].attr("fill", "#f7f7f7");
+                        this[name + 'DateBox'].on('click', function () {} );
+                    });
+                    yukon.trends.buildChart(chartContainer, chartOptions, trend);
+                    chartContainer.find(".highcharts-input-group").attr('cursor','default');
+                    chartContainer.find('.highcharts-range-label').first().attr('visibility', 'hidden');
+                }
+                var refreshButton = widgetContainer.find('.js-trends-update'),
+                    dateTime = moment(trend.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+                    nextRunDateTime = moment(trend.nextRun.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+                    tooltipTemplate = widgetContainer.find('.js-tooltip-template').val();
+                refreshButton.prop('title', tooltipTemplate + nextRunDateTime);
+                refreshButton.attr('disabled', true);
+                widgetContainer.find('.js-last-updated').text(dateTime);
 
-            setTimeout(function() { 
-                refreshButton.attr('disabled', false);
-                refreshButton.prop('title', trend.updateTooltip);
+                setTimeout(function() { 
+                    refreshButton.attr('disabled', false);
+                    refreshButton.prop('title', trend.updateTooltip);
                 }, trend.refreshMillis);
+            }
         }).always(function () {
             yukon.ui.unblock(widgetContainer, 200);
         });
@@ -102,9 +115,14 @@ yukon.widget.trends = (function () {
             $(document).on("yukon:trends:selection", function (event, items, picker) {
                 var trendId = $(picker.inputAreaDiv).find("input[name=js-trend-id]").val(),
                     widgetContainer = $(picker.inputAreaDiv).closest('.widgetWrapper').find('.js-trends-widget-container'),
+                    widgetHeight = widgetContainer.height(),
+                    chartHeight = widgetContainer.find(".js-trends-chart").height(),
                     detailsUrl = yukon.url("/tools/trends/" + trendId);
                 widgetContainer.find(".js-trends-details-link").attr("href", detailsUrl);
                 widgetContainer.find(".js-trends-chart").data("trend", trendId);
+                widgetContainer.height(widgetHeight);
+                widgetContainer.find(".js-trends-chart").height(chartHeight);
+                widgetContainer.find(".js-trends-chart").empty();
                 _updateChart(widgetContainer, true);
             });
             

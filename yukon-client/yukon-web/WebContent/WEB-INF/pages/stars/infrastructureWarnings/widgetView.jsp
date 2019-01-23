@@ -8,7 +8,7 @@
     <%@ include file="summaryTable.jsp" %>
 
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
-    <span class="fr"><a href="${allWarningsUrl}" target="_blank"><i:inline key=".seeAll"/></a></span>
+    <span class="fr"><a href="${allWarningsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a></span>
         
     <tags:sectionContainer2 nameKey="recentIssues">
         <table class="compact-results-table" width="100%">

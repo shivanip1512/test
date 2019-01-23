@@ -63,19 +63,26 @@ public class TrendDataController {
 
     @GetMapping("/trends/{id}/data")
     public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
-        return getTrendJson(userContext,id);
+        LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
+        return getTrendJson(userContext,trend);
     }
     
     @GetMapping("/trends/widgetDisplay/{id}/data")
     public @ResponseBody Map<String, Object> getTrendForWidgetDisplay(YukonUserContext userContext, @PathVariable int id) {
-        Map<String, Object> json = getTrendJson(userContext,id);
-        Instant lastUpdateTime = new Instant();
-        json.put("lastAttemptedRefresh", lastUpdateTime);
-        json.put("refreshMillis", trendDataService.getRefreshMilliseconds());
-        Instant nextRun = trendDataService.getNextRefreshTime(lastUpdateTime);
-        json.put("nextRun", nextRun);
+        LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
+        Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        json.put("updateTooltip", accessor.getMessage("yukon.web.widgets.forceUpdate"));
+        if (trend != null) {
+            json = getTrendJson(userContext, trend);
+            Instant lastUpdateTime = new Instant();
+            json.put("lastAttemptedRefresh", lastUpdateTime);
+            json.put("refreshMillis", trendDataService.getRefreshMilliseconds());
+            Instant nextRun = trendDataService.getNextRefreshTime(lastUpdateTime);
+            json.put("nextRun", nextRun);
+            json.put("updateTooltip", accessor.getMessage("yukon.web.widgets.forceUpdate"));
+        } else {
+            json.put("errorMessage", accessor.getMessage("yukon.web.modules.dashboard.exception.trendId.notFound"));
+        }
         return json;
     }
 
@@ -98,11 +105,11 @@ public class TrendDataController {
      * @see {@link #yesterdayGraphDataProvider(List)}
      * @see {@link #usageGraphDataProvider(List)} 
      * 
-     * @param id - the graphDefinition id
+     * @param trend - the LiteGraphDefinition object
      * @return {@link ResponseBody} json serialized data.
      */
-    private Map<String, Object> getTrendJson(YukonUserContext userContext, int id) {
-        LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
+    private Map<String, Object> getTrendJson(YukonUserContext userContext, LiteGraphDefinition trend) {
+        
         List<GraphDataSeries> graphDataSeriesList = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
         List<GraphDataSeries> dateGraphDataSeriesList = new ArrayList<>();
         List<Map<String, Object>> seriesList = new ArrayList<>();
