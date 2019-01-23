@@ -238,8 +238,8 @@
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_IMPORT_PATH.description">Comma separated list of directories that can be selected for scheduled file import.</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_EXPORT_PATH">Allowable Export Path Directories</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_EXPORT_PATH.description">Comma separated list of directories allowed to select for exporting a scheduled report to.</entry>
-    <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP">Export History Days To Keep</entry>
-    <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP.description">The number of days to save archived export history files. Archived files older than this will be deleted. Select 0 to keep files forever. (Requires Export History Archive File Deletion Maintenance task to be enabled.)</entry>
+    <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP">Import/Export Days To Keep</entry>
+    <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP.description">The number of days to save archived files from Yukon operations. Archived files older than this will be deleted. Select 0 to keep files forever. This is used by actions that keep historical file records for a time period such as Import and Export History and Collection Actions Results.</entry>
     <entry key="yukon.common.setting.HISTORY_CLEANUP_FILES_TO_KEEP">Export History Files To Keep</entry>
     <entry key="yukon.common.setting.HISTORY_CLEANUP_FILES_TO_KEEP.description">The maximum number of archived files to keep per export schedule. Any additional files for a given schedule will be deleted. Select 0 to keep all files. (Requires Export History Archive File Deletion Maintenance task to be enabled.)</entry>
     <entry key="yukon.common.setting.COOP_ID_CADP_ONLY">Billing COOP ID (CADP Only)</entry>

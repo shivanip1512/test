@@ -143,7 +143,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Defaulting to directory specified by CTIUtilities.getExportDirPath(), typically C:\Yukon\Client\Export.
     SCHEDULE_PARAMETERS_IMPORT_PATH(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), CtiUtilities.getImportDirPath()),
     SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), CtiUtilities.getExportDirPath()),
-    HISTORY_CLEANUP_DAYS_TO_KEEP(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, integerType(), 0),
+    HISTORY_CLEANUP_DAYS_TO_KEEP(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, integerType(), 365),
     HISTORY_CLEANUP_FILES_TO_KEEP(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, integerType(), 0),
 
     // AMI  (may fit better for future under Misc.?)
