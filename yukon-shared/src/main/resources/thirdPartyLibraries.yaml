@@ -3192,6 +3192,18 @@ Icons :
     jira : YUK-18415
     notes : Custom built sprite assembled from the individual icons
     
+  - path : icons-disabled.png
+    project : famfamfam Silk
+    version : 1.3
+    project URL : "http://www.famfamfam.com/lab/icons/silk/"
+    license : Creative Commons Attribution 2.5
+    license URLs : "https://creativecommons.org/licenses/by/2.5/"
+    md5 : 07421d4cb5b2595d739b583077146368
+    sha1 : 04c0f982b11e64a2bf9499ab0e60605c8a5f5b2d
+    updated : 2018-07-09
+    jira : YUK-18415
+    notes : Custom built sprite assembled from the individual icons
+    
   - path : icons-app-32.png
     project : FatCow Farm-Fresh Web Icons
     version : 3.9.2

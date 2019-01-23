@@ -414,7 +414,6 @@ public class ThirdPartyIconLibraryTest {
                     "icon_blockexpanded.png", 
                     "icons-32-disabled.png", 
                     "icons-32.png", 
-                    "icons-disabled.png", 
                     "information.gif", 
                     "marker-blank.png", 
                     "marker-generic.png", 
