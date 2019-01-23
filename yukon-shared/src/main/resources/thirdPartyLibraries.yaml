@@ -3405,8 +3405,8 @@ C++ :
     project URL : "https://github.com/jbeder/yaml-cpp/"
     license : MIT
     license URLs : "https://github.com/jbeder/yaml-cpp/blob/master/LICENSE"
-    md5 : 297af8fbd0a4e858b55235a9d8700b4b
-    sha1 : 1b91ebf487e050105e3a7175641a6580e7c2d2ff
-    updated : 2019-01-17  
+    md5 : b3fc8396baab6fced89a506e1c8696d3
+    sha1 : d7f24f0acc589ee8149ce6c80599ebf7ba167bf4
+    updated : 2019-01-21  
     jira : YUK-19388
     notes :
