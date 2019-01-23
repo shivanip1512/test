@@ -118,6 +118,19 @@ public class InfrastructureWarningSummary {
         this.lastRun = lastRun;
     }
     
+    /** Used in JSP **/
+    public int getDevicesWithWarningsCount() {
+        return warningGateways + warningRelays + warningCcus + warningRepeaters;
+    }
+
+    /** Used in JSP **/
+    public int getDevicesWithoutWarningsCount() {
+        return totalGateways - warningGateways +
+               totalRelays - warningRelays +
+               totalCcus - warningCcus +
+               totalRepeaters - warningRepeaters;
+    }
+    
     @Override
     public String toString() {
         return "InfrastructureWarningSummary [totalGateways=" + totalGateways + ", warningGateways=" + warningGateways

@@ -12,13 +12,10 @@
                     <span class="fl">
                         <cti:msg2 var="allTypesLabel" key=".allTypes"/>
                         ${allTypesLabel}:&nbsp;&nbsp;
-                        <c:set var="totalSuccess" value="${summary.totalGateways - summary.warningGateways + summary.totalRelays - summary.warningRelays + 
-                            summary.totalCcus - summary.warningCcus + summary.totalRepeaters - summary.warningRepeaters}"/>
                         <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${allTypesLabel}"/>
-                        <span class="label bg-color-pie-green" title="${hoverText}">${totalSuccess}</span>
-                        <c:set var="totalWarnings" value="${summary.warningGateways + summary.warningRelays + summary.warningCcus + summary.warningRepeaters}"/>
+                        <span class="label bg-color-pie-green" title="${hoverText}">${summary.devicesWithoutWarningsCount}</span>
                         <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${allTypesLabel}"/>
-                        <span class="label bg-color-orange" title="${hoverText}">${totalWarnings}</span>
+                        <span class="label bg-color-orange" title="${hoverText}">${summary.devicesWithWarningsCount}</span>
                     </span>
                     <cti:url var="downloadAll" value="/stars/infrastructureWarnings/downloadAll"/>
                     <cti:icon icon="icon-csv" nameKey="downloadAll" href="${downloadAll}" style="margin-top:2px;"/>
