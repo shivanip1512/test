@@ -26,7 +26,7 @@ public class InfrastructureWarning implements Displayable, Serializable {
     private final Instant timestamp;
     
     /**
-     * Create a new InfrastructureWarning with the default severity.
+     * Create a new InfrastructureWarning with the default severity and no arguments.
      */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType) {
@@ -34,7 +34,7 @@ public class InfrastructureWarning implements Displayable, Serializable {
     }
     
     /**
-     * Create a new InfrastructureWarning with the default severity.
+     * Create a new InfrastructureWarning with the default severity and arguments.
      */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType,
@@ -42,8 +42,19 @@ public class InfrastructureWarning implements Displayable, Serializable {
         this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, Instant.now(), arguments);
     }
     
+    
     /**
-     * Create a new InfrastructureWarning with the specified severity.
+     * Create a new InfrastructureWarning with the specified severity and arguments.
+     */
+    public InfrastructureWarning(PaoIdentifier paoIdentifier, 
+                                 InfrastructureWarningType warningType,
+                                 InfrastructureWarningSeverity severity,
+                                 Object... arguments) {
+        this(paoIdentifier, warningType, severity, Instant.now(), arguments);
+    }
+    
+    /**
+     * Create a new InfrastructureWarning with the specified severity, date/time as an Instant and arguments.
      */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType, 
