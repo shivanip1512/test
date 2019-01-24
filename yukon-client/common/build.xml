@@ -12,9 +12,10 @@
        <javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
-       	      source="${yukon.javac.source}"
-              bootclasspath="${yukon.javac.bootclasspath}"
+              source="${yukon.javac.source}"
               debug="${yukon.javac.debug}">
+          <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
+          <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
           <classpath>
               <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
@@ -148,7 +149,6 @@
                destdir="${destdir}"
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
-               bootclasspath="${yukon.javac.bootclasspath}"
                debug="${yukon.javac.debug}">
             <classpath>
                 <fileset dir="${yukon.lib}">
@@ -172,6 +172,7 @@
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
         <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}">
+            <sysproperty key="java.locale.providers" value="COMPAT,SPI"/> 
             <classpath id="junit.class.path">
                 <pathelement location="${srcdir}"/>
                 <pathelement location="${destdir}"/>
