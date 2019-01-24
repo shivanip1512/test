@@ -387,6 +387,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="LMEcobeeMessages.cpp">
     </ClCompile>
     <ClCompile Include="LMHoneywellMessages.cpp" />
+    <ClCompile Include="LMItronMessages.cpp" />
     <ClCompile Include="LMNestMessages.cpp" />
     <ClCompile Include="LMSepControlMessage.cpp">
     </ClCompile>
@@ -473,6 +474,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\IVVCAnalysisMessage.h" />
     <ClInclude Include="include\LMEcobeeMessages.h" />
     <ClInclude Include="include\LMHoneywellMessages.h" />
+    <ClInclude Include="include\LMItronMessages.h" />
     <ClInclude Include="include\LMNestMessages.h" />
     <ClInclude Include="include\LMSepControlMessage.h" />
     <ClInclude Include="include\LMSepRestoreMessage.h" />

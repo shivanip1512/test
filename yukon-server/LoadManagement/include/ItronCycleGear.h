@@ -23,6 +23,17 @@ public:
     bool stopControl( CtiLMGroupPtr currentLMGroup ) override;
 
     unsigned long estimateOffTime( long controlSeconds ) override;
+
+    // Custom Gear settings
+
+    bool isRampIn() const;
+    bool isRampOut() const;
+    long getDutyCyclePercentage() const;
+    long getDutyCyclePeriod() const;
+    long getCriticality() const;
+    long getGroupCapacityReduction() const;
+
+    double calculateLoadReduction( double groupCapacity ) const;
 };
 
 }

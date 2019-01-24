@@ -8,7 +8,12 @@ namespace Cti::LoadManagement {
 
 struct ItronControlInterface
 {
-    virtual bool sendCycleControl( long controlDurationSeconds ) = 0;
+    virtual bool sendCycleControl( long controlDurationSeconds,
+                                   bool rampInOption,
+                                   bool rampOutOption,
+                                   long dutyCyclePercent,
+                                   long dutyCyclePeriod,
+                                   long criticality ) = 0;
 
 };
 

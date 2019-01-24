@@ -32,6 +32,12 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::NestRestore
     {"yukon.notif.stream.dr.NestRestoreMessage"};
 const IM_EX_MSG OutboundQueue
+    OutboundQueue::ItronCyclingControl
+    {"yukon.notif.stream.dr.ItronCyclingControlMessage"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::ItronRestore
+    {"yukon.notif.stream.dr.ItronRestoreMessage"};
+const IM_EX_MSG OutboundQueue
     OutboundQueue::HistoryRowAssociationResponse
     {"yukon.notif.stream.dr.HistoryRowAssociationResponse"};
 const IM_EX_MSG OutboundQueue

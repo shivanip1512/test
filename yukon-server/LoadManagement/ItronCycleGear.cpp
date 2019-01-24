@@ -27,11 +27,14 @@ bool ItronCycleGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
 {
     if ( ItronControlInterfacePtr itronGroup = boost::dynamic_pointer_cast<ItronControlInterface>( currentLMGroup ) )
     {
-        const double loadScalar = ( ( getPercentReduction() == 0 ) ? 100.0 : getPercentReduction() ) / 100.0;
+        expectedLoadReduced += calculateLoadReduction( currentLMGroup->getKWCapacity() );
 
-        expectedLoadReduced += ( currentLMGroup->getKWCapacity() * loadScalar );
-
-        return itronGroup->sendCycleControl( controlSeconds );
+        return itronGroup->sendCycleControl( controlSeconds,
+                                             isRampIn(),
+                                             isRampOut(),
+                                             getDutyCyclePercentage(),
+                                             getDutyCyclePeriod(),
+                                             getCriticality() );
     }
 
     CTILOG_WARN( dout, "Group does not implement the Itron control interface: " << currentLMGroup->getPAOName() );
@@ -57,6 +60,46 @@ unsigned long ItronCycleGear::estimateOffTime( long controlSeconds )
 {
     return controlSeconds;
 }
+
+// Custom Gear settings
+
+bool ItronCycleGear::isRampIn() const
+{
+    return ciStringEqual( getFrontRampOption(), RandomizeRandomOptionType );
+}
+
+bool ItronCycleGear::isRampOut() const
+{
+    return ciStringEqual( getBackRampOption(), RandomizeRandomOptionType );
+}
+
+long ItronCycleGear::getDutyCyclePercentage() const
+{
+    return getMethodRate();
+}
+
+long ItronCycleGear::getDutyCyclePeriod() const
+{
+    return getMethodPeriod();   // seconds
+}
+
+long ItronCycleGear::getCriticality() const
+{
+    return std::stol( getMethodOptionType() );
+}
+
+long ItronCycleGear::getGroupCapacityReduction() const
+{
+    return getPercentReduction();
+}
+
+double ItronCycleGear::calculateLoadReduction( double groupCapacity ) const
+{
+    const double loadScalar = ( getPercentReduction() == 0 ) ? 1.0 : getPercentReduction() / 100.0;
+
+    return loadScalar * groupCapacity;
+}
+
 
 }
 

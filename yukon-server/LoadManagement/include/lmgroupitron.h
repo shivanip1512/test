@@ -20,9 +20,12 @@ public:
     virtual bool sendStopControl( bool stopImmediately ) override;
     virtual bool sendShedControl( long controlMinutes ) override;
 
-    bool sendCycleControl( long controlDurationSeconds ) override;
-
-    bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
+    bool sendCycleControl( long controlDurationSeconds,
+                           bool rampInOption,
+                           bool rampOutOption,
+                           long dutyCyclePercent,
+                           long dutyCyclePeriod,
+                           long criticality ) override;
 };
 
 typedef boost::shared_ptr<LMGroupItron> LMGroupItronPtr;
