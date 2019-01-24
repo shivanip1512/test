@@ -70,7 +70,16 @@ public class ThirdPartyJavaLibraryTest {
             "ant-junit.jar",
             //  Itron WSDL jars, license indeterminate
             "itronDeviceManagerTypes_v1_8.jar", 
-            "itronServicePointManagerTypes_v1_3.jar"
+            "itronServicePointManagerTypes_v1_3.jar",
+            "groovy-all-2.4.11.jar",
+            "groovy-patch.jar",
+            "jaxws-api.jar", 
+            "saaj-api-1.3.5.jar", 
+            "stax-ex-1.8.jar", 
+            "saaj-impl-1.4.0.jar", 
+            "javax.annotation-api-1.3.2.jar",
+            "wrapper.jar",
+            "wrapperApp.jar"
             );
 
     private static Set<String> tomcatJars = ImmutableSet.of(

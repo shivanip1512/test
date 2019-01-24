@@ -15,8 +15,8 @@
               destdir="build"
               target="${yukon.javac.target}" 
  	          source="${yukon.javac.source}"
-              bootclasspath="${yukon.javac.bootclasspath}"
-              debug="${yukon.javac.debug}">                               
+              debug="${yukon.javac.debug}">
+          <compilerarg line="--add-exports java.xml/javax.xml.namespace=ALL-UNNAMED"/>
           <classpath>
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>

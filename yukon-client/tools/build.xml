@@ -13,7 +13,6 @@
               destdir="build"
               target="${yukon.javac.target}" 
  	          source="${yukon.javac.source}"
-              bootclasspath="${yukon.javac.bootclasspath}"
               debug="${yukon.javac.debug}">                               
           <classpath>                        
              <fileset dir="${yukon.lib}">

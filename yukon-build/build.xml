@@ -252,8 +252,8 @@
             <fileset dir="${webcontent.bag}" />
         </copy>
         <copy todir="${install.bag}/Yukon Web Deployment/ROOT/client" file="${basedir}/yukon-install/JRE/bin/server/jvm.dll" preservelastmodified="true"/>
-        <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${basedir}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
-        <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${basedir}/yukon-install/JRE/lib/amd64/jvm.cfg" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${basedir}/yukon-install/JRE/lib/jrt-fs.jar" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${basedir}/yukon-install/JRE/lib/jvm.cfg" preservelastmodified="true"/>
 
         <!-- Wrapper files -->
         <copy todir="${install.bag}/Wrapper/Client/bin" preservelastmodified="true">

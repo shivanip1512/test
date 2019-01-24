@@ -23,6 +23,10 @@ import com.cannontech.spring.YukonSpringHook;
 public class BootstrapUtils {
     private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
 
+    static {
+        System.setProperty("java.locale.providers", "COMPAT,SPI");
+    }
+
     /**
      * Returns the base/home directory where yukon is installed.
      * From here we can assume the canonical yukon directory

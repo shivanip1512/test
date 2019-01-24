@@ -127,3 +127,8 @@ Class-Path: ./
  jjwt-0.5.1.jar 
  jsr305-1.3.9.jar 
  mail-1.4.5.jar 
+ jaxws-api.jar 
+ javax.annotation-api-1.3.2.jar 
+ saaj-api-1.3.5.jar 
+ saaj-impl-1.4.0.jar 
+ stax-ex-1.8.jar

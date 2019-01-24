@@ -2722,34 +2722,6 @@ Java :
     jira : YUK-18790
     notes : 
   
-  - filename : wrapper.jar
-    yukon group : Yet Another Java Service Wrapper
-    project : YAJSW
-    version : 12.12
-    project URL : "http://yajsw.sourceforge.net/"
-    license : Apache 2.0, LGPL 2.1
-    license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
-    maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : f19b12305762327877ca78eaaf41ef99
-    sha1 : e88657e1fd8f0a2746f19063d919b8198805efb6
-    updated : 2018-06-15
-    jira : YUK-18370
-    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.12
-  
-  - filename : wrapperApp.jar
-    yukon group : Yet Another Java Service Wrapper
-    project : YAJSW
-    version : 12.12
-    project URL : "http://yajsw.sourceforge.net/"
-    license : Apache 2.0, LGPL 2.1
-    license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
-    maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : 1e71817b033442e730f80f3284b3adae
-    sha1 : 56295c47872f4395367a0559dbb0f8961181a6c7
-    updated : 2018-06-15
-    jira : YUK-18370
-    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.12
-  
   - filename : wro4j-core-1.6.3.jar
     yukon group : UI
     project : Web Resource Optimizer

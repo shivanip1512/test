@@ -49,7 +49,6 @@
 		       destdir="${yukon.web.src_build}"
 		       target="${yukon.javac.target}" 
 	 	       source="${yukon.javac.source}"
-   		       bootclasspath="${yukon.javac.bootclasspath}"
 		       debug="${yukon.javac.debug}">
 			<classpath>
 		        <fileset dir="${yukon.build}/lib">
@@ -121,7 +120,6 @@
                destdir="${yukon-web}/build_jsp"
                target="${yukon.javac.target}" 
                source="${yukon.javac.source}"
-               bootclasspath="${yukon.javac.bootclasspath}"
                debug="${yukon.javac.debug}">
             <classpath refid="jspc.class.path"/>
         </javac>
@@ -154,7 +152,6 @@
                destdir="${destdir}"
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
-               bootclasspath="${yukon.javac.bootclasspath}"
                debug="${yukon.javac.debug}">
             <classpath>
                 <fileset dir="${yukon.lib}">

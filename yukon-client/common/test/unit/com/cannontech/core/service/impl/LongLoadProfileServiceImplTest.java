@@ -13,8 +13,6 @@ import java.util.TimeZone;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +36,8 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
+
+import junit.framework.Assert;
 
 public class LongLoadProfileServiceImplTest {
     private final class PorterConnection implements BasicServerConnection {
@@ -120,6 +120,7 @@ public class LongLoadProfileServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
+        System.setProperty("java.locale.providers", "COMPAT,SPI");
         serviceDebug = new LoadProfileServiceImpl();
         scheduledExecutorMock = new ScheduledExecutorMock(true);
         ReflectionTestUtils.setField(serviceDebug, "executor", scheduledExecutorMock);

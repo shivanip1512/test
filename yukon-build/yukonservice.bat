@@ -72,7 +72,7 @@ set PR_JVM=
 
 
 rem Set extra parameters using //US// option on already installed service
-"%EXECUTABLE%"//US//%SERVICE_NAME% --JvmOptions "-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode jvm --StopMode jvm
+"%EXECUTABLE%"//US//%SERVICE_NAME% --JvmOptions "-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%" --StartMode jvm --StopMode jvm
 
 rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
