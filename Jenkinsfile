@@ -12,9 +12,8 @@ pipeline {
                     agent {
                         label "java"
                     }
-                    environment {
-                        JAVA_HOME="${tool 'jdk-8u181'}"
-                        PATH="${env.JAVA_HOME}/bin:${env.PATH}"
+                    tools {
+                        jdk "jdk-11(18.9)"
                     }
                 
                     steps {
@@ -77,6 +76,10 @@ pipeline {
                         label "cpp"
                     }
                     
+                    tools {
+                        jdk "jdk-11(18.9)"
+                    }
+                    
                     steps {
                        script {
                           if (params.RELEASE_MODE) {
@@ -135,6 +138,9 @@ pipeline {
         stage('installer') {
             agent {
                 label "install"
+            }
+            tools {
+               jdk "jdk-11(18.9)"
             }
             steps {
                script {
