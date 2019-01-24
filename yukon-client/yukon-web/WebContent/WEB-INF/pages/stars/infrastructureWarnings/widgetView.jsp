@@ -5,9 +5,9 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
 
+    <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
     <%@ include file="summaryTable.jsp" %>
 
-    <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
     <span class="fr"><a href="${allWarningsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a></span>
         
     <tags:sectionContainer2 nameKey="recentIssues">
