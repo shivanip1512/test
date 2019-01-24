@@ -127,94 +127,92 @@ public class AccountImportService {
         });
     }
 
-    private File setUpArchiveBaseDir(File baseDir) {
+    /**
+     * create File directory based on baseDir and filename
+     */
+    private File setupFileDir(File baseDir, String filename) {
         final String fs = System.getProperty("file.separator");
-        File archiveDir = new File(baseDir, fs + "archive");
-        if (!archiveDir.exists()) {
-            archiveDir.mkdirs();
+        File fileDir = new File(baseDir, fs + filename);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
         }
-        return archiveDir;
+        return fileDir;
 
     }
 
-    private File setUpImportFailsDir(File archiveDir) {
-        final String fs = System.getProperty("file.separator");
-        File importFailsDir = new File(archiveDir, fs + "failedImport");
-        if (!importFailsDir.exists()) {
-            importFailsDir.mkdirs();
-        }
-        return importFailsDir;
-    }
+    /**
+     * setup archive file directory for hardware and customer files.
+     */
 
     private void setUpArchiveFile(Date startTime, File archiveDir, AccountImportResult result) {
 
-        File custFile = result.getCustomerFile();
-
-        if (custFile != null && custFile.length() > 4) {
-            String custFileName = custFile.getName();
-
-            String archiveCustFileName = custFileName.substring(0, custFileName.length() - 4) + "-"
-                + StarsUtils.starsDateFormat.format(startTime) + "_" + StarsUtils.starsTimeFormat.format(startTime)
-                + ".csv";
-            File archiveCustFile = new File(archiveDir, archiveCustFileName);
-
+        String archiveCustFilename = getFilename(startTime, result.getCustomerFile(), ".csv");
+        if (archiveCustFilename != null) {
+            File archiveCustFile = new File(archiveDir, archiveCustFilename);
             result.setCustArchiveDir(archiveCustFile);
         }
 
-        File hwFile = result.getHardwareFile();
-        if (hwFile != null && hwFile.length() > 4) {
-            String hwFileName = hwFile.getName();
-
-            String archivehwFileName = hwFileName + StarsUtils.starsDateFormat.format(startTime) + "_"
-                + StarsUtils.starsTimeFormat.format(startTime) + ".csv";
-            File archivehwFile = new File(archiveDir, archivehwFileName);
-
-            result.setHwArchiveDir(archivehwFile);
+        String archiveHardFilename = getFilename(startTime, result.getHardwareFile(), ".csv");
+        if (archiveHardFilename != null) {
+            File archiveHardFile = new File(archiveDir, archiveHardFilename);
+            result.setHwArchiveDir(archiveHardFile);
         }
-
     }
 
+    /**
+     * setup log directory for hardware and customer files.
+     */
+
     private void setUpLogFile(Date startTime, File importFailsDir, AccountImportResult result) {
-        String logFileName = null;
+
         boolean preScan = result.isPrescan();
-        File custFile = result.getCustomerFile();
+        String logFileName = null;
+        String archiveCustFilename = getFilename(startTime, result.getCustomerFile(), ".log");
 
-        if (custFile != null && custFile.length() > 4) {
-            String custFileName = custFile.getName();
-            logFileName = custFileName.substring(0, custFileName.length() - 4) + "-"
-                + StarsUtils.starsDateFormat.format(startTime) + "_" + StarsUtils.starsTimeFormat.format(startTime)
-                + ".log";
+        if (archiveCustFilename != null) {
             if (preScan) {
-                logFileName = "Prescan-" + logFileName;
+                logFileName = "Prescan-" + archiveCustFilename;
             }
-
         }
 
-        File hwFile = result.getHardwareFile();
-        if (hwFile != null && hwFile.length() > 4) {
-            String hwFileName = hwFile.getName();
-            logFileName =
-                hwFileName.substring(0, hwFileName.length() - 4) + "-" + StarsUtils.starsDateFormat.format(startTime)
-                    + "_" + StarsUtils.starsTimeFormat.format(startTime) + ".log";
+        String archiveHardFilename = getFilename(startTime, result.getHardwareFile(), ".log");
+        if (archiveHardFilename != null) {
             if (preScan) {
-                logFileName = "Prescan-" + logFileName;
+                logFileName = "Prescan-" + archiveHardFilename;
             }
-
         }
 
         result.setOutputLogDir(new File(importFailsDir, logFileName));
-
     }
 
+    /**
+     * create file name (tempFile_YYYYMMDD_HHMM) based on start time and fileToProcess.
+     */
+    private String getFilename(Date startTime, File fileToProcess, String ext) {
+
+        if (fileToProcess != null && fileToProcess.length() > 4) {
+            String fileName = fileToProcess.getName();
+            //Removed .tmp extension from tempFile
+            String archiveFileName =
+                fileName.substring(0, fileName.length() - 4) + "-" + StarsUtils.starsDateFormat.format(startTime) + "_"
+                    + StarsUtils.starsTimeFormat.format(startTime) + ext;
+            return archiveFileName;
+        }
+        return null;
+    }
+
+    /**
+     * Create File Directory for archive, failedImport and log file
+     */
     private void createFileDirectory(AccountImportResult result, LiteYukonUser user, Date startTime) throws Exception {
 
         YukonEnergyCompany energyCompany = result.getEnergyCompany();
         File baseDir = getBaseDir(energyCompany, user);
 
         // Gets the archive directory found inside the default directory
-        File archiveDir = setUpArchiveBaseDir(baseDir);
+        File archiveDir = setupFileDir(baseDir, "archive");
         // Gets the upload directory found inside the default directory
-        File importFailsDir = setUpImportFailsDir(archiveDir);
+        File importFailsDir = setupFileDir(archiveDir, "failedImport");
 
         setUpArchiveFile(startTime, archiveDir, result);
         setUpLogFile(startTime, importFailsDir, result);
