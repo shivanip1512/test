@@ -133,6 +133,14 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
                 YukonValidationUtils.checkRange(errors, "values[" + globalSettingType + "]", noOfMonths, 0, 240, true);
             }
         });
+        
+        validators.put(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS, new TypeValidator() {
+            @Override
+            public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
+                Integer noOfDays = (Integer) value;
+                YukonValidationUtils.checkRange(errors, "values[" + globalSettingType + "]", noOfDays, 1, 7, true);
+            }
+        });
 
         validators.put(GlobalSettingType.ECOBEE_SERVER_URL, urlValidator);
         validators.put(GlobalSettingType.HONEYWELL_SERVER_URL, urlValidator);

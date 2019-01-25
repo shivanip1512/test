@@ -242,8 +242,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
          */
         private RangeType getRangeType(Instant pointDate) {       
             for (Range<Instant> range : rangeToType.keySet()) {
-                boolean containsPointDate =
-                    (!pointDate.isBefore(range.getMin())) && (pointDate.isBefore(range.getMax()));
+                boolean containsPointDate = (pointDate.isAfter(range.getMin()) && !pointDate.isAfter(range.getMax()));
                 if (containsPointDate) {
                     return rangeToType.get(range);
                 }

@@ -157,8 +157,8 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         Map<RangeType, Range<Instant>> ranges = new TreeMap<>();
         Instant startOfTheDay = new Instant(new DateTime().withTimeAtStartOfDay());
         Range<Instant> currentRange = buildRange(RangeType.AVAILABLE, ranges, startOfTheDay.minus(days), now());
-        currentRange = buildRange(RangeType.EXPECTED, ranges, currentRange.getMin().minus(DAYS_7), currentRange.getMin());
-        currentRange = buildRange(RangeType.OUTDATED, ranges, currentRange.getMin().minus(DAYS_14), currentRange.getMin());
+        currentRange = buildRange(RangeType.EXPECTED, ranges, startOfTheDay.minus(DAYS_7), currentRange.getMin());
+        currentRange = buildRange(RangeType.OUTDATED, ranges, startOfTheDay.minus(DAYS_14), currentRange.getMin());
         buildRange(RangeType.UNAVAILABLE, ranges, null, currentRange.getMin());
         return ranges;
     }

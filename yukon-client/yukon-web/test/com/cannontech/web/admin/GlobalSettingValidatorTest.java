@@ -257,6 +257,39 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
         assertTrue(errors.hasErrors());
+        
+        //Test Data Availability Window validation
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.DASHBOARD_WIDGET);
+        globalSettings.put(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS, 5);
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertFalse(errors.hasErrors());
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.DASHBOARD_WIDGET);
+        globalSettings.put(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS, 0);
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.DASHBOARD_WIDGET);
+        globalSettings.put(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS, 8);
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.DASHBOARD_WIDGET);
+        globalSettings.put(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS, 7);
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertFalse(errors.hasErrors());
 
     }
 }
