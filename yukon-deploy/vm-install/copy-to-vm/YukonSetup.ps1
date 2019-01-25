@@ -145,7 +145,7 @@ Function Update-YukonDatabase () {
     Write-Host "Database Script Path: $($sourcePath)"
 
     Remove-Item -Path "C:\yukon\server\log\DBUpdater.log" -ErrorAction SilentlyContinue
-    $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp %YUKON_BASE%/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dsrc_path=$($sourcePath) -Dverbose=false -DignoreError=true" -Wait -PassThru
+    $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp C:/Yukon/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dsrc_path=$($sourcePath) -Dverbose=false -DignoreError=true" -Wait -PassThru -NoNewWindow
     Write-Host "Database Update Log"
     Get-Content c:\yukon\server\log\dbupdater.log | foreach {Write-Output $_}
 
@@ -186,7 +186,7 @@ Function RunSetupExe() {
 Function Uninstall-Yukon() {
     StopAllServices
     Write-Host "Uninstall Java Simulator"
-    C:\Yukon\Runtime\bin\java.exe -jar c:\Yukon\Client\bin\wrapper.jar -removeWait simulators.conf
+    C:\Yukon\Runtime\bin\java.exe -jar c:\Yukon\Client\bin\wrapper.jar -removeWait c:\Yukon\Client\bin\simulators.conf
 
     Write-Host "Uninstall Field Simulator"
     sc.exe delete "Yukon Field Simulator Service"
