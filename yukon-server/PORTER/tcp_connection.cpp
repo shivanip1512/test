@@ -152,7 +152,12 @@ EstablishedTcpConnection::~EstablishedTcpConnection()
 {
     if( shutdown(sock(), 2) )  //  SD_BOTH
     {
-        CTILOG_ERROR(dout, formatSocketError("shutdown", WSAGetLastError()));
+        const auto wsaError = WSAGetLastError();
+
+        if( wsaError != WSAENOTSOCK )
+        {
+            CTILOG_ERROR(dout, formatSocketError("shutdown", wsaError));
+        }
     }
 }
 
