@@ -183,10 +183,7 @@ public class FdrTranslationManagerController {
         responseMap.put("ignoreInvalidColumns", ignoreInvalidColumns);
         responseMap.put("fileName", dataFile.getOriginalFilename());
         
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.TEXT_HTML);
-        
-        return new ResponseEntity<Map<String, ? extends Object>>(responseMap, responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<Map<String, ? extends Object>>(responseMap, HttpStatus.CREATED);
     }
     
     @RequestMapping("importResults")
@@ -281,10 +278,7 @@ public class FdrTranslationManagerController {
         String errorMessage = StringEscapeUtils.escapeXml11(messageSourceAccessor.getMessage(resolvable));
         Map<String, String> responseMap = Collections.singletonMap("error", errorMessage);
         
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.TEXT_HTML);
-        
-        return new ResponseEntity<Map<String, ? extends Object>>(responseMap, responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<Map<String, ? extends Object>>(responseMap, HttpStatus.CREATED);
     }
     
     @Resource(name="recentResultsCache")
