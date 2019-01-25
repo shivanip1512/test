@@ -58,4 +58,21 @@
         <name>Tamper - Cable Cut</name>
         <stategroup value="TrueFalse"/>
     </point>
+    <point offset="90" type="Status">
+        <name>Reverse Flow Direction</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="91" type="Status">
+        <name>Register Removal</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="92" type="Status">
+        <name>Magnet Tampering</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="93" type="Status">
+        <name>Low Battery Warning</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    
 </points>

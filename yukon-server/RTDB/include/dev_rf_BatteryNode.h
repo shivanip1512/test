@@ -21,6 +21,7 @@ private:
 
 typedef RfBatteryNodeDevice Rfw201Device;
 typedef RfBatteryNodeDevice Rfg201Device;
+typedef RfBatteryNodeDevice Rfg301Device;
 
 }
 }

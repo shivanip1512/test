@@ -290,6 +290,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
 
     //  --- RF gas meters ---
     { "rfg-201",            TYPE_RFG201 },
+    { "rfg-301",            TYPE_RFG301 },
 
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },

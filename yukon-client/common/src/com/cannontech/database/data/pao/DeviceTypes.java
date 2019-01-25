@@ -272,6 +272,8 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_GROUP_ITRON = DEVICE_OFFSET + 206;
     public final static int LM_ITRON_PROGRAM = DEVICE_OFFSET + 207;
     
+    public final static int RFG301 = DEVICE_OFFSET + 208;
+    
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
     public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
@@ -432,4 +434,5 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_RFW201 = {"RFW-201", "RFW 201" };
     public static final String[] STRING_CBC_LOGICAL  = {"CBC Logical"};
     public static final String[] STRING_RFG201 = {"RFG-201", "RFG 201" };
+    public static final String[] STRING_RFG301 = {"RFG-301", "RFG 301" };
 }

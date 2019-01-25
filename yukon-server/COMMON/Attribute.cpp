@@ -478,6 +478,10 @@ INIT_ATTRIBUTE( ChecksumError,                                      "METER_READ_
 INIT_ATTRIBUTE( TamperCableCut,                                     "TAMPER_CABLE_CUT" );
 INIT_ATTRIBUTE( DebugEvent,                                         "DEBUG_EVENT" );
 
+INIT_ATTRIBUTE( ReverseFlowDirection,                               "REVERSE_FLOW_DIRECTION" );
+INIT_ATTRIBUTE( RegisterRemoval,                                    "REGISTER_REMOVAL" );
+INIT_ATTRIBUTE( MagnetTampering,                                    "MAGNET_TAMPERING" );
+
 INIT_ATTRIBUTE( TamperNoUsageOver24Hours,                           "TAMPER_NO_USAGE_OVER_24_HOURS" );
 INIT_ATTRIBUTE( TamperReverseWhDetected,                            "TAMPER_REVERSE_WH_DETECTED" );
 INIT_ATTRIBUTE( TamperLargeIncreaseAfterOutage,                     "TAMPER_LARGE_INCREASE_AFTER_OUTAGE" );

@@ -2491,8 +2491,10 @@
         </point>
     </pointGroup>
         
-        <pointGroup>
+    <pointGroup>
         <paoType value="RFG201"/>
+        <paoType value="RFG301"/>
+        
         <point name="Gas Usage"> 
             <uom>-</uom>
             <parseSiPrefix/>

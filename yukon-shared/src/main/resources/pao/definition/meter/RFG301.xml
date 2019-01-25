@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFG301" changeGroup="rfg" creatable="false"  displayGroup="RFMESH" displayName="RFG-301" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RFG.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="DEVICE_ICON_TYPE" option="gas_meter"/>
+        <tag name="RFN_EVENTS"/>
+        <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="GAS_METER_DETAIL_DISPLAYABLE"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Battery Voltage" init="true"/>
+        <pointInfo name="Gas Usage" init="true" attributes="USAGE_GAS, USAGE"/>
+        <pointInfo name="Gas Usage per Interval" init="true" attributes="GAS_USAGE_PER_INTERVAL"/>
+        <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
+        <pointInfo name="Magnet Tampering" attributes="MAGNET_TAMPERING"/>
+        <pointInfo name="Register Removal" attributes="REGISTER_REMOVAL"/>
+        <pointInfo name="Reverse Flow Direction" attributes="REVERSE_FLOW_DIRECTION"/>
+        <pointInfo name="Temperature" init="true"/>
+    </pointInfos>
+</pao>
