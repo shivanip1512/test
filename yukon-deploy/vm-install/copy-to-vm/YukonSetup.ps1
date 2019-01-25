@@ -145,7 +145,7 @@ Function Update-YukonDatabase () {
     Write-Host "Database Script Path: $($sourcePath)"
 
     Remove-Item -Path "C:\yukon\server\log\DBUpdater.log" -ErrorAction SilentlyContinue
-    $p = Start-Process java -ArgumentList "-cp %YUKON_BASE%/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dsrc_path=$($sourcePath) -Dverbose=false -DignoreError=true" -Wait -PassThru
+    $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp %YUKON_BASE%/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dsrc_path=$($sourcePath) -Dverbose=false -DignoreError=true" -Wait -PassThru
     Write-Host "Database Update Log"
     Get-Content c:\yukon\server\log\dbupdater.log | foreach {Write-Output $_}
 
