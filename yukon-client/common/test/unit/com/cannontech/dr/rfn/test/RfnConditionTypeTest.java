@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -48,11 +49,11 @@ public class RfnConditionTypeTest {
                     }
                 }
             }
-/*            if (!found) {
+            if (!found) {
                 Assert.fail("The rfnConditionType: " + rfnConditionType.name() + 
                         " is in not in BuiltInAttribute rfnEventGroupAttributes(). " +
                         "Make sure a corresponding BuiltInAttribute exists and that it is part of the rnfEventGroupedAttributes.");
-            }*/
+            }
         }
     }
 }
