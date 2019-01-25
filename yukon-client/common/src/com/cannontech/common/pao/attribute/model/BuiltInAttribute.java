@@ -382,6 +382,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     BATTERY_END_OF_LIFE("Battery End Of Life", AttributeGroup.RFN_HARDWARE_EVENT, false),
     CONFIGURATION_ERROR("Configuration Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     CLOCK_ERROR("Clock Error", AttributeGroup.RFN_OTHER_EVENT, false),
+    CRC_FAILURE_MEMORY_CORRUPT("CRC Failure Memory Corrupt", AttributeGroup.RFN_METERING_EVENT, false),
     CRYSTAL_OSCILLATOR_ERROR("Crystal Oscillator Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
     CURRENT_LOSS("Current Loss", AttributeGroup.RFN_CURRENT_EVENT, false),
     CURRENT_WAVEFORM_DISTORTION("Current Waveform Distortion", AttributeGroup.RFN_OTHER_EVENT, false),

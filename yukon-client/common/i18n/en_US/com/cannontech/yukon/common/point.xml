@@ -282,6 +282,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.CONFIGURATION_ERROR">Configuration Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CLOCK_ERROR">Clock Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_STATUS">Control Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CRC_FAILURE_MEMORY_CORRUPT">CRC Failure Memory Corrupt</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CRYSTAL_OSCILLATOR_ERROR">Crystal Oscillator Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_WAVEFORM_DISTORTION">Current Waveform Distortion</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_LOSS">Current Loss</entry>

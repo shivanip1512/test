@@ -374,6 +374,7 @@ public:
     static const Attribute  BatteryEndOfLife;
     static const Attribute  ConfigurationError;
     static const Attribute  ClockError;
+    static const Attribute  CRCFailureMemoryCorrupt;
     static const Attribute  CrystalOscillatorError;
     static const Attribute  CurrentLoss;
     static const Attribute  CurrentWaveformDistortion;

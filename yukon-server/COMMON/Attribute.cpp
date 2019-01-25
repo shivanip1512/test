@@ -383,6 +383,7 @@ INIT_ATTRIBUTE( BadUpgradeSecurityParameter,                        "BAD_UPGRADE
 INIT_ATTRIBUTE( BatteryEndOfLife,                                   "BATTERY_END_OF_LIFE" );
 INIT_ATTRIBUTE( ConfigurationError,                                 "CONFIGURATION_ERROR" );
 INIT_ATTRIBUTE( ClockError,                                         "CLOCK_ERROR" );
+INIT_ATTRIBUTE( CRCFailureMemoryCorrupt,                            "CRC_FAILURE_MEMORY_CORRUPT" );
 INIT_ATTRIBUTE( CrystalOscillatorError,                             "CRYSTAL_OSCILLATOR_ERROR" );
 INIT_ATTRIBUTE( CurrentLoss,                                        "CURRENT_LOSS" );
 INIT_ATTRIBUTE( CurrentWaveformDistortion,                          "CURRENT_WAVEFORM_DISTORTION" );
