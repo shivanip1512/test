@@ -547,7 +547,6 @@
     
     <entry key="yukon.common.attribute.builtInAttribute.MAGNET_TAMPERING">Magnet Tampering</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REGISTER_REMOVAL">Register Removal</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_FLOW_DIRECTION">Reverse Flow Direction</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_NO_USAGE_OVER_24_HOURS">Tamper - No Usage over 24 hours</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_REVERSE_WH_DETECTED">Tamper - Reverse Wh Detected</entry>

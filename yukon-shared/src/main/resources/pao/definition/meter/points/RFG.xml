@@ -59,7 +59,7 @@
         <stategroup value="TrueFalse"/>
     </point>
     <point offset="90" type="Status">
-        <name>Reverse Flow Direction</name>
+        <name>Reverse Flow</name>
         <stategroup value="TrueFalse"/>
     </point>
     <point offset="91" type="Status">

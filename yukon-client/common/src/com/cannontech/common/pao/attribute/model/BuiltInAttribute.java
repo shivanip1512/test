@@ -480,7 +480,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // RFN Integrated Gas Meter Events
     MAGNET_TAMPERING("Magnet Tampering", AttributeGroup.RFN_METERING_EVENT, false),
     REGISTER_REMOVAL("Register Removal", AttributeGroup.RFN_METERING_EVENT, false),
-    REVERSE_FLOW_DIRECTION("Reverse Flow Direction", AttributeGroup.RFN_METERING_EVENT, false),
     
     // RFN Tamper Alarm/Event
     TAMPER_NO_USAGE_OVER_24_HOURS("Tamper - No Usage over 24 hours", AttributeGroup.RFN_METERING_EVENT, false),

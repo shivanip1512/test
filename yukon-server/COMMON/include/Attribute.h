@@ -469,7 +469,6 @@ public:
     static const Attribute  TamperCableCut;
     static const Attribute  DebugEvent;
 
-    static const Attribute  ReverseFlowDirection;
     static const Attribute  RegisterRemoval;
     static const Attribute  MagnetTampering;
 

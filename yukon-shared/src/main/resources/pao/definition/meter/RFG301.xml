@@ -18,7 +18,7 @@
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Magnet Tampering" attributes="MAGNET_TAMPERING"/>
         <pointInfo name="Register Removal" attributes="REGISTER_REMOVAL"/>
-        <pointInfo name="Reverse Flow Direction" attributes="REVERSE_FLOW_DIRECTION"/>
+        <pointInfo name="Reverse Flow" attributes="REVERSE_FLOW"/>
         <pointInfo name="Temperature" init="true"/>
     </pointInfos>
 </pao>
