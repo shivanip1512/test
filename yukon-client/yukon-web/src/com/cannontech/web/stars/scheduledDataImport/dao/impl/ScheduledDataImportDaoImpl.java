@@ -1,13 +1,16 @@
 package com.cannontech.web.stars.scheduledDataImport.dao.impl;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -15,18 +18,78 @@ import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
 
 public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+
     private ScheduledDataImportHistoryRowMapper scheduledDataImportHistoryRowMapper =
         new ScheduledDataImportHistoryRowMapper();
 
     @Override
-    public List<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId) {
+    public SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
+                                                          SortBy sortBy,
+                                                          Direction direction,
+                                                          PagingParameters paging) {
+        
+        if (direction == null) {
+            direction = Direction.desc;
+        }
+        if (paging == null) {
+            paging = PagingParameters.of(25, 1);
+        }
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EntryId, FileName, ImportDate, ArchiveFileName, ArchiveFilePath,");
         sql.append("    ArchiveFileExists, FailedFileName, FailedFilePath, SuccessCount, FailureCount");
+        sql.append(getAllFileHistorySql(jobGroupId, from, to));
+        sql.append("ORDER BY").append(getOrderBy(sortBy, direction));
+
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+
+        PagingResultSetExtractor<ScheduleImportHistoryEntry> rse = new PagingResultSetExtractor<>(start, count, scheduledDataImportHistoryRowMapper);
+        yukonJdbcTemplate.query(sql, rse);
+
+        SearchResults<ScheduleImportHistoryEntry> searchResults = new SearchResults<>();
+        searchResults.setBounds(start, count, getAllFileHistoryByFilterCount(jobGroupId, from, to));
+        searchResults.setResultList(rse.getResultList());
+
+        return searchResults;
+    }
+
+    private SqlStatementBuilder getOrderBy(SortBy sortBy, Direction direction) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (sortBy == null) {
+            sql.append(sortBy.FILENAME.getDbString()).append(direction);
+        } else if (sortBy == sortBy.TOTAL) {
+            sql.append(sortBy.SUCCESS.getDbString());
+            sql.append("+");
+            sql.append(sortBy.FAILURE.getDbString()).append(direction);
+        } else {
+            sql.append(sortBy.getDbString()).append(direction);
+        }
+        return sql;
+    }
+    
+    
+    private int getAllFileHistoryByFilterCount(int jobGroupId, Instant from, Instant to) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append(getAllFileHistorySql(jobGroupId, from, to));
+        return yukonJdbcTemplate.queryForInt(sql);
+    }
+
+    private SqlStatementBuilder getAllFileHistorySql(int jobGroupId, Instant from, Instant to) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("FROM ScheduledDataImportHistory");
+
+        if(from!= null && to!=null){
+        sql.append("WHERE ImportDate").gte(from);
+        sql.append("AND ImportDate").lte(to);
+        sql.append("AND JobGroupId").eq(jobGroupId);
+        }
+        else{
         sql.append("WHERE JobGroupId").eq(jobGroupId);
-        sql.append("ORDER BY ImportDate DESC");
-        return yukonJdbcTemplate.query(sql, scheduledDataImportHistoryRowMapper);
+        }
+
+        return sql;
     }
 
     private class ScheduledDataImportHistoryRowMapper implements YukonRowMapper<ScheduleImportHistoryEntry> {

@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -64,6 +67,7 @@ import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTask
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao.SortBy;
 
 @Controller
 @RequestMapping("scheduledDataImport")
@@ -75,9 +79,9 @@ public class ScheduledDataImportController {
     @Autowired private ScheduledDataImportService scheduledDataImportService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ScheduleControllerHelper scheduleControllerHelper;
-    
+
     private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportDetail.";
-    
+
     private Validator scheduledDataImportValidator = new SimpleValidator<ScheduledDataImport>(ScheduledDataImport.class) {
 
         @Override
@@ -214,10 +218,32 @@ public class ScheduledDataImportController {
     }
 
     @GetMapping("{jobGroupId}/viewHistory")
-    public String viewHistory(ModelMap model, @PathVariable int jobGroupId) throws ServletException {
-        List<ScheduleImportHistoryEntry> results = scheduledDataImportService.getImportHistory(jobGroupId);
-        model.addAttribute("results", results);
+    public String viewHistory(ModelMap model, @PathVariable int jobGroupId, YukonUserContext userContext,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "MM/dd/yyyy HH:mm") Instant from,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "MM/dd/yyyy HH:mm") Instant to,
+            @DefaultItemsPerPage(10) PagingParameters paging,
+            @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting) throws ServletException {
+
+        SearchResults<ScheduleImportHistoryEntry> searchResults = new SearchResults<>();
+
+        model.addAttribute("from", from);
+        model.addAttribute("to", to);
+
+        searchResults = scheduledDataImportService.getImportHistory(jobGroupId, from, to,
+            FileImportHistory.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
+
+        model.addAttribute("results", searchResults);
         model.addAttribute("jobGroupId", jobGroupId);
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        FileImportHistory sortBy = FileImportHistory.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        for (FileImportHistory column : FileImportHistory.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn sortableColumn = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), sortableColumn);
+        }
+
         return "/scheduledDataImport/history.jsp";
     }
 
@@ -283,4 +309,29 @@ public class ScheduledDataImportController {
             return "yukon.web.modules.operator.scheduledDataImportList." + name();
         }
     }
+
+    public enum FileImportHistory implements DisplayableEnum {
+        fileName(SortBy.FILENAME),
+        dateTime(SortBy.DATETIME),
+        success(SortBy.SUCCESS),
+        total(SortBy.TOTAL),
+        failure(SortBy.FAILURE),
+        failedFileName(SortBy.FAILEDFILENAME);
+
+        private final SortBy value;
+
+        private FileImportHistory(SortBy value) {
+            this.value = value;
+        }
+
+        public SortBy getValue() {
+            return value;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.fileImportHistory." + name();
+        }
+    }
+    
 }

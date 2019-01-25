@@ -46,13 +46,15 @@
 
 <c:choose>
     <c:when test="${empty pageScope.value}">
-        <spring:bind path="${path}">
-            <c:if test="${not empty pageScope.path && not empty status.actualValue}">
-                <cti:formatDate var="dateTimeValue" value="${status.actualValue}" type="DATEHM"/>
-                <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
-                <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
-           </c:if>
-        </spring:bind>
+        <c:if test="${not empty pageScope.path}">
+            <spring:bind path="${path}">
+                <c:if test="${not empty pageScope.path && not empty status.actualValue}">
+                    <cti:formatDate var="dateTimeValue" value="${status.actualValue}" type="DATEHM"/>
+                    <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
+                    <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
+                </c:if>
+            </spring:bind>
+        </c:if>
     </c:when>
     <c:otherwise>
         <cti:formatDate var="dateTimeValue" value="${pageScope.value}" type="DATEHM"/>

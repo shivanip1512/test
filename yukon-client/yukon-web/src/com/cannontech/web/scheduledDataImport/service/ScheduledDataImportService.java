@@ -2,8 +2,11 @@ package com.cannontech.web.scheduledDataImport.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
+
+import org.joda.time.Instant;
+
 import com.cannontech.common.exception.FileCreationException;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
@@ -12,6 +15,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
+import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao.SortBy;
 
 public interface ScheduledDataImportService {
 
@@ -47,7 +51,8 @@ public interface ScheduledDataImportService {
     /**
      * Retrieve the file import history of a job with specified jobGroupId.
      */
-    public List<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId);
+    SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
+            SortBy sortBy, Direction direction, PagingParameters paging);
 
     /**
      * Returns a file object. This will be used to download both archived results

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -37,6 +38,7 @@ import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService
 import com.cannontech.web.scheduledDataImport.tasks.ScheduledDataImportTask;
 import com.cannontech.web.stars.scheduledDataImport.ScheduledDataImportController.Column;
 import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
+import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao.SortBy;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -157,8 +159,9 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     }
 
     @Override
-    public List<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId) {
-        return scheduledDataImportDao.getImportHistory(jobGroupId);
+    public SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
+            SortBy sortBy, Direction direction, PagingParameters paging) {
+        return scheduledDataImportDao.getImportHistory(jobGroupId, from, to, sortBy, direction, paging);
     }
 
     @Override
