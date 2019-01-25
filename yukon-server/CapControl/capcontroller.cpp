@@ -1304,7 +1304,7 @@ void CtiCapController::writeEventLogsToDatabase()
     {
         if ( entries > 0 )
         {
-            CTILOG_DEBUG(dout, "Processed " << entries << " CC Event Log entries in " << timer.elapsed() / 1000 << " seconds.");
+            CTILOG_DEBUG(dout, "Processed " << entries << " CC Event Log entries in " << CtiNumStr( timer.elapsed() / 1000.0, 3 ).toString() << " seconds.");
         }
     }
 }
@@ -4115,6 +4115,8 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                     CTILOG_DEBUG( dout, "Performing VERIFICATION Post-Op Scan on bus: " << currentSubstationBus->getPaoName() );
 
                     currentSubstationBus->scanAllMonitorPoints();
+
+                    [[fallthrough]];
                 }
                 case LocalScanState::State::PostOpScanWait:
                 {
@@ -4156,6 +4158,8 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                     CTILOG_DEBUG( dout, "Performing VERIFICATION Pre-Op Scan on bus: " << currentSubstationBus->getPaoName() );
 
                     currentSubstationBus->scanAllMonitorPoints();
+
+                    [[fallthrough]];
                 }
                 case LocalScanState::State::PreOpScanWait:
                 {
@@ -4170,6 +4174,8 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                     currentSubstationBus->clearMonitorPointsScanInProgress();
 
                     states[ busID ].state = LocalScanState::State::SkipAScan;
+
+                    [[fallthrough]];
                 }
                 case LocalScanState::State::SkipAScan:
                 {
