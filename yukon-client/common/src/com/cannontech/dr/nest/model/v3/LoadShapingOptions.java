@@ -1,12 +1,17 @@
 package com.cannontech.dr.nest.model.v3;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class LoadShapingOptions {
-    private PrepLoadShape prepLoadShape;
+public class LoadShapingOptions implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	private PrepLoadShape prepLoadShape;
     private PeakLoadShape peakLoadShape;
     private PostLoadShape postLoadShape;
     
