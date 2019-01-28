@@ -15,7 +15,7 @@
                <tags:nameValue2 nameKey=".setupDevDatabase.option.stars.parentEnergyCompany">
                    <form:select path="energyCompany" cssClass="js-ec_select">
                        <c:forEach items="${allEnergyCompanies}" var="energyCompany">
-                           <form:option value="${energyCompany.energyCompanyId}">${energyCompany.name}</form:option>
+                           <form:option value="${energyCompany.energyCompanyId}">${fn:escapeXml(energyCompany.name)}</form:option>
                        </c:forEach>
                        <option value="0" id="createNewEnergyCompanyOpt">*Create New Energy Company </option>
                    </form:select>
