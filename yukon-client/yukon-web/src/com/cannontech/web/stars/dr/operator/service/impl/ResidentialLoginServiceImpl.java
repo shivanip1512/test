@@ -99,26 +99,42 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
         transactionTemplate.execute(new TransactionCallback<Object>() {
             @Override
             public Object doInTransaction(TransactionStatus status) {
-
                 // Update the user group for the user
                 checkSuppliedResidentialUserGroup(energyCompanyId, loginBackingBean);
                 LiteUserGroup newUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+                String oldUserGroupName = StringUtils.EMPTY;
+                if (residentialUser.getUserGroupId() != null) {
+                    oldUserGroupName =
+                        userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId()).getUserGroupName();
+                }
                 if (newUserGroup != null) {
                     residentialUser.setUserGroupId(newUserGroup.getUserGroupId());
                     yukonUserDao.updateUserGroupId(residentialUser.getUserID(), newUserGroup.getUserGroupId());
-                    usersEventLogService.userAdded(residentialUser.getUsername(), newUserGroup.getUserGroupName(), userContext.getYukonUser());
+                    if (StringUtils.isNotEmpty(oldUserGroupName)) {
+                        usersEventLogService.userRemoved(residentialUser.getUsername(), oldUserGroupName,
+                            userContext.getYukonUser());
+                    }
+                    usersEventLogService.userAdded(residentialUser.getUsername(), newUserGroup.getUserGroupName(),
+                        userContext.getYukonUser());
                 } else {
                     yukonUserDao.updateUserGroupId(residentialUser.getUserID(), null);
-                    usersEventLogService.userAdded(residentialUser.getUsername(), null, userContext.getYukonUser());
+                    if (StringUtils.isNotEmpty(oldUserGroupName)) {
+                        usersEventLogService.userRemoved(residentialUser.getUsername(), oldUserGroupName,
+                            userContext.getYukonUser());
+                    }
                 }
 
-                updateLoginStatus(loginBackingBean, residentialUser);
+                LoginStatusEnum updatedStatus = updateLoginStatus(loginBackingBean, residentialUser);
                 
                 if (!loginBackingBean.getUsername().equals(residentialUser.getUsername())) {
                     // Security check for username change.
                     rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, userContext.getYukonUser());
                     yukonUserDao.changeUsername(userContext.getYukonUser(), residentialUser.getUserID(), loginBackingBean.getUsername());
                 }
+                String energyCompany = ecDao.getEnergyCompany(energyCompanyId).getName();
+                usersEventLogService.userUpdated(residentialUser.getUsername(),
+                    newUserGroup != null ? newUserGroup.getUserGroupName() : null, energyCompany, updatedStatus,
+                    userContext.getYukonUser());
                 return null;
             }
         });
@@ -166,7 +182,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
         }
     }
     
-    private void updateLoginStatus(Login loginBackingBean, LiteYukonUser residentialUser) {
+    private LoginStatusEnum updateLoginStatus(Login loginBackingBean, LiteYukonUser residentialUser) {
         
         LoginStatusEnum loginStatus = null;
         if (loginBackingBean.isLoginEnabled()) {
@@ -175,5 +191,6 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
             loginStatus = LoginStatusEnum.DISABLED;
         }
         yukonUserDao.setUserStatus(residentialUser, loginStatus);
+        return loginStatus;
     }
 }

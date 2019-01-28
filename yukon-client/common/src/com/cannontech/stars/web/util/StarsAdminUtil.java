@@ -764,7 +764,7 @@ public class StarsAdminUtil {
         YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(liteUser.getUserID());
         UsersEventLogService usersEventLogService = YukonSpringHook.getBean("usersEventLogService", UsersEventLogService.class);
-        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("EnergyCompanyDao", EnergyCompanyDao.class);
+        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
         
         if (!liteUser.getUsername().equalsIgnoreCase(username) && yukonUserDao.findUserByUsername(username) != null) {
             throw new WebClientException("Username '" + username + "' already exists");
