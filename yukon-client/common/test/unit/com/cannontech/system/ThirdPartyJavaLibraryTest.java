@@ -34,54 +34,6 @@ import com.google.common.collect.Sets;
 
 public class ThirdPartyJavaLibraryTest {
 
-    private static Set<String> excludedJars = ImmutableSet.of(
-            //  Yukon project JARs owned by Eaton, third-party license not applicable
-            "api.jar",
-            "billing.jar",
-            "cbc.jar",
-            "common.jar",
-            "dbeditor.jar",
-            "export.jar",
-            "graph.jar",
-            "i18n-en_US.jar",
-            "macs.jar",
-            "multispeak.jar",
-            "notification.jar",
-            "report.jar",
-            "SchemaCompare.jar",
-            "SchemaDumpToXml.jar",
-            "services.jar",
-            "simulators.jar",
-            "tdc.jar",
-            "tools.jar",
-            "web-common.jar",
-            "yc.jar",
-            "yukonappserver.jar",
-            "yukon-help.jar",
-            "yukon-message-broker.jar",
-            "yukon-shared.jar",
-            "yukon-watchdog-service.jar",
-            "yukon-web.jar",
-            "yukon-web-jsp.jar",
-            //  Ant helpers on the classpath while the test is executed, but not redistributed
-            "ant-launcher.jar",
-            "ant.jar", 
-            "ant-junit4.jar", 
-            "ant-junit.jar",
-            //  Itron WSDL jars, license indeterminate
-            "itronDeviceManagerTypes_v1_8.jar", 
-            "itronServicePointManagerTypes_v1_3.jar",
-            "groovy-all-2.4.11.jar",
-            "groovy-patch.jar",
-            "jaxws-api.jar", 
-            "saaj-api-1.3.5.jar", 
-            "stax-ex-1.8.jar", 
-            "saaj-impl-1.4.0.jar", 
-            "javax.annotation-api-1.3.2.jar",
-            "wrapper.jar",
-            "wrapperApp.jar"
-            );
-
     private static Set<String> tomcatJars = ImmutableSet.of(
             //  Tomcat libraries stored in yukon-install that are not available to check during build, but are present when this test is run from Eclipse
             "annotations-api.jar",
@@ -130,10 +82,10 @@ public class ThirdPartyJavaLibraryTest {
                 .filter(f -> f.getName().endsWith(".jar"))
                 .collect(StreamUtils.toMultimap(File::getName, Function.identity()));
         
-        Set<String> thirdPartyFilenames = Sets.difference(classpathJars.keySet(), excludedJars);
+        Set<String> thirdPartyFilenames = Sets.difference(classpathJars.keySet(), IgnoredThirdPartyJavaLibraries.getFilenames());
         
         Set<String> unknownFiles = Sets.difference(thirdPartyFilenames, documentedLibrariesByFilename.keySet());
-        assertTrue("Unknown JAR files found: " + unknownFiles, unknownFiles.isEmpty());
+        assertTrue("Unknown JAR files found.  These must be added to thirdPartyLibraries.yaml or IgnoredThirdPartyJavaLibraries.java: " + unknownFiles, unknownFiles.isEmpty());
 
         Set<String> missingFiles = Sets.difference(documentedLibrariesByFilename.keySet(), Sets.union(thirdPartyFilenames, tomcatJars));
         assertTrue("JAR files listed in thirdPartyLibraries.yaml, but missing from classpath: " + missingFiles, missingFiles.isEmpty());
@@ -142,6 +94,7 @@ public class ThirdPartyJavaLibraryTest {
         MessageDigest md_sha1 = MessageDigest.getInstance("SHA1");
 
         documentedLibrariesByFilename.entrySet().stream().forEach(e -> {
+            assertNotNull(e.getKey() + " must have a Yukon library group", e.getValue().group);
             assertFalse(e.getKey() + " must have a project name", StringUtils.isEmpty(e.getValue().project));
             assertFalse(e.getKey() + " must have a project version", StringUtils.isEmpty(e.getValue().version));
             assertFalse(e.getKey() + " must have a project URL", StringUtils.isEmpty(e.getValue().projectUrl));
@@ -161,8 +114,8 @@ public class ThirdPartyJavaLibraryTest {
                 }
                 String md5 = Hex.encodeHexString(md_md5.digest(contents));
                 String sha1 = Hex.encodeHexString(md_sha1.digest(contents));
-                assertEquals("MD5 mismatch for " + e.getKey() + " " + p + "\n", e.getValue().md5, md5);
-                assertEquals("SHA1 mismatch for " + e.getKey() + " " + p + "\n", e.getValue().sha1, sha1);
+                assertEquals("MD5 mismatch for " + e.getKey() + " " + p, e.getValue().md5, md5);
+                assertEquals("SHA1 mismatch for " + e.getKey() + " " + p, e.getValue().sha1, sha1);
             }
         });
     }
