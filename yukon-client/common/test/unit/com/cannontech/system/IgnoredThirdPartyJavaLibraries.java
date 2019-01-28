@@ -6,6 +6,14 @@ import java.util.stream.Collectors;
 
 import static com.cannontech.system.IgnoredThirdPartyJavaLibraries.IgnoreReason.*;
 
+/**
+ * The only files that are allowed to be ignored are:
+ * <ol>
+ *   <li>Eaton-owned libraries</li> 
+ *   <li>files that are not redistributed (such as the Ant helpers used in the build that are visible on the classpath at build time, but not included in the Yukon install).</li>
+ * </ol>
+ * @author E9816181
+ */
 public enum IgnoredThirdPartyJavaLibraries {
 
     API("api.jar", YUKON_PROJECT),
