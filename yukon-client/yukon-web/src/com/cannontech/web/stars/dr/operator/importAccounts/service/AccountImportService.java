@@ -172,6 +172,8 @@ public class AccountImportService {
         if (archiveCustFilename != null) {
             if (preScan) {
                 logFileName = "Prescan-" + archiveCustFilename;
+            } else {
+                logFileName = archiveCustFilename;
             }
         }
 
@@ -179,6 +181,8 @@ public class AccountImportService {
         if (archiveHardFilename != null) {
             if (preScan) {
                 logFileName = "Prescan-" + archiveHardFilename;
+            } else {
+                logFileName = archiveHardFilename;
             }
         }
 
