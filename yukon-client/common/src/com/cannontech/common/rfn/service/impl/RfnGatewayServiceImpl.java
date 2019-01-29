@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.service.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -719,7 +720,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     @Override
     public void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value,
-            boolean tagsPointMustArchive) {
+            boolean tagsPointMustArchive, Long time) {
 
         boolean pointCreated = attributeService.createPointForAttribute(gateway, attribute);
         LitePoint point = attributeService.getPointForAttribute(gateway, attribute);
@@ -734,11 +735,19 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         pointData.setValue(value);
         pointData.setType(point.getPointType());
         pointData.setTagsPointMustArchive(tagsPointMustArchive);
-
+        if (time != null) {
+            pointData.setTime(new Date(time));
+        }
         log.debug("Creating point data for " + pointData + " device:" + gateway.getRfnIdentifier() + " archive tags="
             + tagsPointMustArchive);
 
         dataSource.putValue(pointData);
+    }
+    
+    @Override
+    public void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value,
+                                  boolean tagsPointMustArchive) { 
+        generatePointData(gateway, attribute, value, tagsPointMustArchive, null);
     }
     
     @Override

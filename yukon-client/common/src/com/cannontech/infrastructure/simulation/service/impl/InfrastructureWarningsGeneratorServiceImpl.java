@@ -27,7 +27,7 @@ public class InfrastructureWarningsGeneratorServiceImpl implements Infrastructur
     @Autowired private IDatabaseCache cache;
     
     @Override
-    public InfrastructureWarning genarate(InfrastructureWarningType type) {
+    public InfrastructureWarning generate(InfrastructureWarningType type) {
         int threshold = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_READY_NODES_THRESHOLD);
         List<RfnGateway> gateways = new ArrayList<>(rfnGatewayService.getAllGateways());
         if(gateways.isEmpty()){
@@ -76,6 +76,8 @@ public class InfrastructureWarningsGeneratorServiceImpl implements Infrastructur
             } else {
                 throw new RuntimeException("Create repeaters.");
             }
+        case GATEWAY_TIME_SYNC_FAILED:
+            return new InfrastructureWarning(warnableGateway.getPaoIdentifier(), type);
         }
         
         return null;

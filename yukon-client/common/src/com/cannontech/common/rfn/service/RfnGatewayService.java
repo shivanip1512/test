@@ -249,7 +249,12 @@ public interface RfnGatewayService {
      * 
      * @param tagsPointMustArchive - sets Pointdata.setTagsPointMustArchive to true or false.
      */
-    void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value, boolean tagsPointMustArchive);
+    void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value,
+                           boolean tagsPointMustArchive);
+    /**
+     * Generates point data for an attribute and allows time to be set
+     */
+    void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value, boolean tagsPointMustArchive, Long time);
 
     /**
      * Sends Ipv6 prefix to NM.
@@ -263,6 +268,5 @@ public interface RfnGatewayService {
 
     /** Converts an {@link RfnGateway} to a {@link GatewayConfiguration} */
     GatewayConfiguration gatewayAsConfiguration(RfnGateway gateway);
-    
 
 }

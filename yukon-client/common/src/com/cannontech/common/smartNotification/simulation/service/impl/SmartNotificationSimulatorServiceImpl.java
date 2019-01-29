@@ -112,7 +112,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                             if(type == SmartNotificationEventType.INFRASTRUCTURE_WARNING){
                                 List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
                                 Collections.shuffle(types);
-                                InfrastructureWarning warning = infrastructureWarningsGeneratorService.genarate(types.get(0));
+                                InfrastructureWarning warning = infrastructureWarningsGeneratorService.generate(types.get(0));
                                 events.add(InfrastructureWarningsEventAssembler.assemble(Instant.now(), warning));
                             } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
                                 int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(

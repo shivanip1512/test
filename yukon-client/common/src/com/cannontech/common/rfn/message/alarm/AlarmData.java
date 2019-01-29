@@ -43,7 +43,7 @@ public class AlarmData implements Serializable {
     // Additional parameters to be added to a specific alarm assert/clear
     //      Map<alarmParamCodeID, alarmParamValue>
     // Current GBP only defines one parameter type: 0 - Description
-    private Map<Short, byte[]> additionalAlarmParams;
+    private Map<Short, String> additionalAlarmParams;
         
     public RfnIdentifier getRaisedBy() {
         return raisedBy;
@@ -81,10 +81,10 @@ public class AlarmData implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    public Map<Short, byte[]> getAdditionalAlarmParams() {
+    public Map<Short, String> getAdditionalAlarmParams() {
         return additionalAlarmParams;
     }
-    public void setAdditionalAlarmParams(Map<Short, byte[]> additionalAlarmParams) {
+    public void setAdditionalAlarmParams(Map<Short, String> additionalAlarmParams) {
         this.additionalAlarmParams = additionalAlarmParams;
     }
     public RfnIdentifier getAppliedTo() {

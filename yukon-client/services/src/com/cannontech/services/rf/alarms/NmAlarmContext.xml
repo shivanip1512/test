@@ -1,0 +1,17 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:jms="http://www.springframework.org/schema/jms"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+    
+    <bean id="nmAlarmListener" class="com.cannontech.services.rf.alarms.service.impl.NmAlarmServiceImpl"/>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.qr.obj.common.rfn.AlarmArchiveRequest" />
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="nmAlarmListener"/>
+    </bean>
+    
+</beans>

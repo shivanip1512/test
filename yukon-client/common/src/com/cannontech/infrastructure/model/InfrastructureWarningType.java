@@ -15,6 +15,12 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     RELAY_OUTAGE,
     CCU_COMM_STATUS,
     REPEATER_COMM_STATUS,
+    GATEWAY_SECURITY_ALARM,
+    GATEWAY_POWER_FAILURE,
+    GATEWAY_RADIO_FAILURE,
+    GATEWAY_TIME_SYNC_FAILED,
+    GATEWAY_DOOR_OPEN,
+    GATEWAY_NODE_COUNT_EXCEEDED,
     ;
     
     private static final String keyBase = "yukon.web.widgets.infrastructureWarnings.warningType.";

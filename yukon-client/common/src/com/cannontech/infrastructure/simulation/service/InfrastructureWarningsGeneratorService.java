@@ -10,6 +10,6 @@ public interface InfrastructureWarningsGeneratorService {
      * @param type of InfrastructureWarning
      * @return an InfrastructureWarning with the given type
      */
-    InfrastructureWarning genarate(InfrastructureWarningType type);
+    InfrastructureWarning generate(InfrastructureWarningType type);
 
 }

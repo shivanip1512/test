@@ -30,6 +30,8 @@ import com.cannontech.common.device.data.collection.message.RecalculationRequest
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
+import com.cannontech.common.rfn.message.alarm.AlarmArchiveRequest;
+import com.cannontech.common.rfn.message.alarm.AlarmArchiveResponse;
 import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
 import com.cannontech.common.rfn.message.archive.RfRelayArchiveResponse;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
@@ -1031,6 +1033,18 @@ public final class JmsApiDirectory {
             .receiver(YUKON_SERVICE_MANAGER)
             .build();
     
+    public static JmsApi<AlarmArchiveRequest,?,AlarmArchiveResponse> NM_ALARM =
+            JmsApi.builder(AlarmArchiveRequest.class, AlarmArchiveResponse.class)
+            .name("NM Gateway Alarms")
+            .description("Sent from NM and received by Yukon manager to handle processing of NM Alarms")
+            .communicationPattern(REQUEST_RESPONSE)
+            .queue(new JmsQueue("yukon.qr.obj.common.rfn.AlarmArchiveRequest"))
+            .responseQueue(new JmsQueue("yukon.qr.obj.common.rfn.AlarmArchiveResponse"))
+            .requestMessage(AlarmArchiveRequest.class)
+            .responseMessage(AlarmArchiveResponse.class)
+            .sender(NETWORK_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
+            .build();
     
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
@@ -1087,6 +1101,8 @@ public final class JmsApiDirectory {
             .put(RF_GATEWAY, RF_GATEWAY_SCHEDULE_REQUEST)
             .put(RF_GATEWAY, RF_UPDATE_SERVER_AVAILABLE_VERSION)
             .put(RF_GATEWAY, RF_GATEWAY_SET_CONFIG)
+            .put(RF_GATEWAY, NM_ALARM)
+
             
             .put(RF_NETWORK, NETWORK_NEIGHBOR)
             .put(RF_NETWORK, NETWORK_PARENT)
