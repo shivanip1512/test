@@ -154,12 +154,22 @@ public class RolePropertyController {
         
         rpEditorDao.save(propertyValues);
 
-        beforeUpdatePropertyValues.getValueMap().entrySet().stream()
-        .filter( e -> propertyValues.getValueMap().get(e.getKey()) != null &&
-            !propertyValues.getValueMap().get(e.getKey()).equals(e.getValue()))
-        .forEach(e -> usersEventLogService.rolePropertyUpdated(liteYukonGroup.getGroupName(), role, e.getKey(),
-                        e.getValue().toString(), propertyValues.getValueMap().get(e.getKey()).toString(),
-                        context.getYukonUser()));
+        beforeUpdatePropertyValues.getValueMap().entrySet().stream().forEach(e -> {
+            String oldValue = "Blank";
+            String newValue = "Blank";
+            if (propertyValues.getValueMap().get(e.getKey()) != null && e.getValue() != null) {
+                oldValue = e.getValue().toString();
+                newValue = propertyValues.getValueMap().get(e.getKey()).toString();
+            } else if (propertyValues.getValueMap().get(e.getKey()) == null && e.getValue() != null) {
+                oldValue = e.getValue().toString();
+            } else if (propertyValues.getValueMap().get(e.getKey()) != null && e.getValue() == null) {
+                newValue = propertyValues.getValueMap().get(e.getKey()).toString();
+            }
+            if (!oldValue.equals(newValue)) {
+                usersEventLogService.rolePropertyUpdated(liteYukonGroup.getGroupName(), role, e.getKey(), oldValue,
+                    newValue, context.getYukonUser());
+            }
+        });
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(context);
         String roleName = accessor.getMessage(role);
